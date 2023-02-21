@@ -118,7 +118,7 @@
     "@react-native-community/cli-platform-android": "10.0.0",
     "@react-native-community/cli-platform-ios": "10.0.0",
     "@react-native/assets-registry": "^0.72.0",
-    "@react-native/gradle-plugin": "^0.72.3",
+    "@react-native/gradle-plugin": "^0.72.4",
     "@react-native/js-polyfills": "^0.72.1",
     "@react-native/normalize-colors": "^0.72.0",
     "@react-native/virtualized-lists": "^0.72.1",
