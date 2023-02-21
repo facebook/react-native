@@ -90,6 +90,12 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+repositories {
+    maven {
+        url rootProject.file("node_modules/jsc-android/dist")
+    }
+}
+
 android {
     buildToolsVersion = "33.0.0"
     compileSdkVersion 33
