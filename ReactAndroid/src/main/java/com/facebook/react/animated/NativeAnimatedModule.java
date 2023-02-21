@@ -265,11 +265,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void initialize() {
-    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+    super.initialize();
 
-    if (reactApplicationContext != null) {
-      reactApplicationContext.addLifecycleEventListener(this);
-    }
+    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   @Override
@@ -981,10 +979,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void invalidate() {
-    ReactApplicationContext context = getReactApplicationContextIfActiveOrWarn();
-    if (context != null) {
-      context.removeLifecycleEventListener(this);
-    }
+    super.invalidate();
+
+    getReactApplicationContext().removeLifecycleEventListener(this);
   }
 
   /**

@@ -26,7 +26,8 @@ import java.util.Map;
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
 public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleEventListener {
 
-  private @Nullable ReactApplicationContext mReactApplicationContext;
+  private final @Nullable ReactApplicationContext mReactApplicationContext;
+
   private float mFontScale;
   private @Nullable ReadableMap mPreviousDisplayMetrics;
 
@@ -104,9 +105,8 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
   public void invalidate() {
     super.invalidate();
 
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
+    if (mReactApplicationContext != null) {
+      mReactApplicationContext.removeLifecycleEventListener(this);
     }
   }
 }
