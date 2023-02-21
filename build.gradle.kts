@@ -43,13 +43,6 @@ nexusPublishing {
   }
 }
 
-allprojects {
-  repositories {
-    google()
-    mavenCentral()
-  }
-}
-
 tasks.register("cleanAll", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
