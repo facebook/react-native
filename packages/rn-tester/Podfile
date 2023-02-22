@@ -37,7 +37,7 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
     hermes_enabled: hermes_enabled,
-    flipper_configuration: FlipperConfiguration.disabled,
+    flipper_configuration: FlipperConfiguration.disabled, # [macOS] Disable Flipper as it's not supported on macOS
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: !ENV['PRODUCTION'].nil?
