@@ -127,10 +127,6 @@ public class ReactTextViewManager
          * you can avoid the overhead from calling setText() multiple times by keeping a reference to the span as it's created.
          * When you need to modify the span, you can modify the reference and then call either invalidate() or requestLayout() on the TextView,
          * depending on the type of attribute that you changed.
-         *
-         * Calling setText(spannable) after the mutation does achieve the expected result ()
-         * https://www.icloud.com/iclouddrive/0e3YRsM1KKEs0SXo0nvkEy9OQ#call_set_text_before_mutation
-         * https://www.icloud.com/iclouddrive/0e3YRsM1KKEs0SXo0nvkEy9OQ#call_set_text_before_mutation
          */
         for (CustomStyleSpan span : customStyleSpans) {
           span.updateSpan(highestLineHeight, highestFontSize);
