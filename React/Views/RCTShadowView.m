@@ -549,6 +549,69 @@ RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
   return YGNodeStyleGetPosition(_yogaNode, edge);
 }
 
+- (void)setInset:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeAll);
+}
+- (YGValue)inset
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeAll);
+}
+
+- (void)setInsetInline:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeHorizontal);
+}
+- (YGValue)insetInline
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeHorizontal);
+}
+
+- (void)setInsetInlineEnd:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeEnd);
+}
+- (YGValue)insetInlineEnd
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeEnd);
+}
+
+- (void)setInsetInlineStart:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeStart);
+}
+- (YGValue)insetInlineStart
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeStart);
+}
+
+- (void)setInsetBlock:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeVertical);
+}
+- (YGValue)insetBlock
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeVertical);
+}
+
+- (void)setInsetBlockEnd:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeBottom);
+}
+- (YGValue)insetBlockEnd
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeBottom);
+}
+
+- (void)setInsetBlockStart:(YGValue)value
+{
+  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, YGEdgeTop);
+}
+- (YGValue)insetBlockStart
+{
+  return YGNodeStyleGetPosition(_yogaNode, YGEdgeTop);
+}
+
 // Size
 
 - (CGSize)size
