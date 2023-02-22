@@ -31,7 +31,7 @@ jobs:
     displayName: PR
     strategy:
       matrix:
-        'iOS Paper Debug':
+        'iOS Paper Debug JSC':
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
@@ -39,7 +39,17 @@ jobs:
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
           use_fabric: '0'
-        'iOS Paper Release':
+          use_hermes: '0'
+        'iOS Paper Debug Hermes':
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build test'
+          use_fabric: '0'
+          use_hermes: '1'
+        'iOS Paper Release JSC':
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
@@ -47,7 +57,17 @@ jobs:
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build'
           use_fabric: '0'
-        'iOS Fabric Debug': 
+          use_hermes: '0'
+        'iOS Paper Release Hermes':
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build'
+          use_fabric: '0'
+          use_hermes: '1'
+        'iOS Fabric Debug JSC': 
           packager_platform: 'ios'
           xcode_sdk: iphonesimulator
           xcode_scheme: 'RNTester'
@@ -55,16 +75,35 @@ jobs:
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
           use_fabric: '1'
-        # Disable failing job
-        # 'iOS Fabric Release': 
-        #   packager_platform: 'ios'
-        #   xcode_sdk: iphonesimulator
-        #   xcode_scheme: 'RNTester'
-        #   xcode_configuration: 'Release'
-        #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
-        #   xcode_actions: 'build'
-        #   use_fabric: '1' 
-        'macOS Paper Debug':
+          use_hermes: '0'
+        'iOS Fabric Debug Hermes': 
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build test'
+          use_fabric: '1'
+          use_hermes: '1'
+        'iOS Fabric Release JSC': 
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build'
+          use_fabric: '1' 
+          use_hermes: '0'
+        'iOS Fabric Release Hermes': 
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+          xcode_actions: 'build'
+          use_fabric: '1' 
+          use_hermes: '0'
+        'macOS Paper Debug JSC':
           packager_platform: 'macos'
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
@@ -72,7 +111,17 @@ jobs:
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
           use_fabric: '0'
-        'macOS Paper Release':
+          use_hermes: '0'
+        'macOS Paper Debug Hermes':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build test'
+          use_fabric: '0'
+          use_hermes: '1'
+        'macOS Paper Release JSC':
           packager_platform: 'macos'
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
@@ -80,7 +129,17 @@ jobs:
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
           use_fabric: '0'
-        'macOS Fabric Debug':
+          use_hermes: '0'
+        'macOS Paper Release Hermes':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build'
+          use_fabric: '0'
+          use_hermes: '1'
+        'macOS Fabric Debug JSC':
           packager_platform: 'macos'
           xcode_sdk: macosx
           xcode_scheme: 'RNTester-macOS'
@@ -88,15 +147,34 @@ jobs:
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
           use_fabric: '1'
-        # Disable failing job
-        # 'macOS Fabric Release':
-        #   packager_platform: 'macos'
-        #   xcode_sdk: macosx
-        #   xcode_scheme: 'RNTester-macOS'
-        #   xcode_configuration: 'Release'
-        #   xcode_destination: 'platform=macOS,arch=x86_64'
-        #   xcode_actions: 'build'
-        #   use_fabric: '1'
+          use_hermes: '0'
+        'macOS Fabric Debug Hermes':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Debug'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build test'
+          use_fabric: '1'
+          use_hermes: '1'
+        'macOS Fabric Release JSC':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build'
+          use_fabric: '1'
+          use_hermes: '0'
+        'macOS Fabric Release Hermes':
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_configuration: 'Release'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+          xcode_actions: 'build'
+          use_fabric: '1'
+          use_hermes: '1'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
