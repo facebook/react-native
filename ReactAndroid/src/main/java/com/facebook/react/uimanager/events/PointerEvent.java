@@ -124,14 +124,14 @@ public class PointerEvent extends Event<PointerEvent> {
           new EventAnimationDriverMatchSpec() {
             @Override
             public boolean match(int viewTag, String eventName) {
-              if (!PointerEventHelper.isBubblingEvent(eventName)) {
+              if (!eventName.equals(mEventName) || !PointerEventHelper.isBubblingEvent(eventName)) {
                 return false;
               }
 
               List<TouchTargetHelper.ViewTarget> viewTargets =
                   mEventState.getHitPathForActivePointer();
               for (TouchTargetHelper.ViewTarget viewTarget : viewTargets) {
-                if (viewTarget.getViewId() == viewTag && eventName.equals(mEventName)) {
+                if (viewTarget.getViewId() == viewTag) {
                   return true;
                 }
               }
