@@ -38,6 +38,14 @@ public class ViewProps {
   public static final String HEIGHT = "height";
   public static final String JUSTIFY_CONTENT = "justifyContent";
   public static final String LEFT = "left";
+  public static final String INSET = "inset";
+  public static final String INSET_BLOCK = "insetBlock";
+  public static final String INSET_BLOCK_END = "insetBlockEnd";
+  public static final String INSET_BLOCK_START = "insetBlockStart";
+  public static final String INSET_INLINE = "insetInline";
+  public static final String INSET_INLINE_END = "insetInlineEnd";
+  public static final String INSET_INLINE_START = "insetInlineStart";
+
 
   public static final String MARGIN = "margin";
   public static final String MARGIN_VERTICAL = "marginVertical";
@@ -230,6 +238,13 @@ public class ViewProps {
               LEFT,
               START,
               END,
+              INSET,
+              INSET_BLOCK,
+              INSET_BLOCK_END,
+              INSET_BLOCK_START,
+              INSET_INLINE,
+              INSET_INLINE_END,
+              INSET_INLINE_START,
 
               /* dimensions */
               WIDTH,

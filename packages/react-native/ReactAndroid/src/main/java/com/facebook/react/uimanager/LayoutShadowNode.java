@@ -765,6 +765,13 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         ViewProps.RIGHT,
         ViewProps.TOP,
         ViewProps.BOTTOM,
+        ViewProps.INSET,
+        ViewProps.INSET_BLOCK,
+        ViewProps.INSET_BLOCK_END,
+        ViewProps.INSET_BLOCK_START,
+        ViewProps.INSET_INLINE,
+        ViewProps.INSET_INLINE_END,
+        ViewProps.INSET_INLINE_START,
       })
   public void setPositionValues(int index, Dynamic position) {
     if (isVirtual()) {
@@ -772,7 +779,19 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     final int[] POSITION_SPACING_TYPES = {
-      Spacing.START, Spacing.END, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM
+      Spacing.START,
+      Spacing.END,
+      Spacing.LEFT,
+      Spacing.RIGHT,
+      Spacing.TOP,
+      Spacing.BOTTOM,
+      Spacing.ALL,
+      Spacing.VERTICAL,
+      Spacing.BOTTOM,
+      Spacing.TOP,
+      Spacing.HORIZONTAL,
+      Spacing.START,
+      Spacing.END
     };
 
     int spacingType = maybeTransformLeftRightToStartEnd(POSITION_SPACING_TYPES[index]);
