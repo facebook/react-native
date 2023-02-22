@@ -483,6 +483,12 @@ NS_ASSUME_NONNULL_END
 
 #endif // ] TARGET_OS_OSX
 
+#if !TARGET_OS_OSX
+typedef UIApplication RCTUIApplication;
+#else
+typedef NSApplication RCTUIApplication;
+#endif
+
 //
 // fabric component types
 //

@@ -66,7 +66,11 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import "RNTesterTurboModuleProvider.h"
 
+#if !TARGET_OS_OSX // [macOS]
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
+#else // [macOS
+@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate, NSUserNotificationCenterDelegate> { // [macOS]
+#endif // macOS]
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
@@ -74,6 +78,9 @@
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
+#if TARGET_OS_OSX // [macOS
+  // std::shared_ptr<winrt::Microsoft::ReactNative::TurboModulesProvider> _turboModulesProvider;
+#endif // macOS]
 }
 @end
 
@@ -81,11 +88,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+#else // [macOS
+- (void)applicationDidFinishLaunching:(__unused NSNotification *)notification
+#endif // macOS]
 {
   RCTEnableTurboModule(YES);
 
+#if !TARGET_OS_OSX // [macOS]
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+#else // [macOS
+  _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
+#endif // macOS]
 
   // [macOS
   // Optionally set the global `fontSmoothing` setting.
@@ -106,13 +121,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
-                                                                       moduleName:@"RNTesterApp"
-                                                                initialProperties:initProps];
+  RCTUIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge // [macOS]
+                                                                          moduleName:@"RNTesterApp"
+                                                                   initialProperties:initProps];
 #else
-  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  RCTUIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps]; // [macOS]
 #endif
 
+#if !TARGET_OS_OSX // [macOS
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -120,6 +136,22 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [self.window makeKeyAndVisible];
   [self initializeFlipper:application];
   return YES;
+#else // [macOS
+  NSRect frame = NSMakeRect(0,0,800,600);
+  self.window = [[NSWindow alloc] initWithContentRect:frame
+                                            styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
+                                              backing:NSBackingStoreBuffered
+                                                defer:NO];
+  NSViewController *rootViewController = [NSViewController new];
+  rootViewController.view = rootView;
+  rootView.frame = frame;
+  self.window.contentViewController = rootViewController;
+  self.window.title = @"RNTester-macOS";
+  self.window.autorecalculatesKeyViewLoop = YES;
+  [self.window center];
+  [self.window makeKeyAndOrderFront:self];
+  [self initializeFlipper:[NSApplication sharedApplication]];
+#endif // macOS]
 }
 
 - (BOOL)concurrentRootEnabled
@@ -146,7 +178,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
+#if !TARGET_OS_OSX // [macOS]
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"];
+#else // [macOS
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.macos"];
+#endif
 }
 
 - (void)initializeFlipper:(UIApplication *)application
@@ -165,12 +201,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   return [RCTLinkingManager application:app openURL:url options:options];
 }
+#endif // [macOS]
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                  onProgress:(RCTSourceLoadProgressBlock)onProgress
@@ -225,6 +263,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
+  // if (!_turboModulesProvider) {
+  //   _turboModulesProvider = std::make_shared<winrt::Microsoft::ReactNative::TurboModulesProvider>();
+  //   _turboModulesProvider->SetReactContext(winrt::Microsoft::ReactNative::CreateMacOSReactContext(jsInvoker));
+
+  //   _turboModulesProvider->AddModuleProvider(
+  //       L"ScreenshotManager", winrt::Microsoft::ReactNative::MakeModuleProvider<ScreenshotManagerCxx>());
+  // }
+  // return _turboModulesProvider->getModule(name, jsInvoker);
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
@@ -257,40 +303,61 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
+#if !TARGET_OS_OSX // [macOS]
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
   [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
 }
+#endif // [macOS]
 
 // Required for the remoteNotificationsRegistered event.
-- (void)application:(__unused UIApplication *)application
+- (void)application:(__unused RCTUIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 // Required for the remoteNotificationRegistrationError event.
-- (void)application:(__unused UIApplication *)application
+- (void)application:(__unused RCTUIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
   [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 // Required for the remoteNotificationReceived event.
-- (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+- (void)application:(__unused RCTUIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [RCTPushNotificationManager didReceiveRemoteNotification:notification];
 }
 
+#if !TARGET_OS_OSX // [macOS]
 // Required for the localNotificationReceived event.
 - (void)application:(__unused UIApplication *)application
     didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
+#endif // [macOS]
+#if TARGET_OS_OSX // [macOS
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+        didDeliverNotification:(NSUserNotification *)notification
+{
+}
 
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+       didActivateNotification:(NSUserNotification *)notification
+{
+  [RCTPushNotificationManager didReceiveUserNotification:notification];
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+     shouldPresentNotification:(NSUserNotification *)notification
+{
+  return YES;
+}
+#endif // macOS]
 #endif
 
 @end
