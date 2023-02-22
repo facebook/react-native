@@ -206,4 +206,12 @@ afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+
+    // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
+    // `.cxx/Release` folder where the CMake intermediates are stored.
+    // We fixing this by instructing Gradle to always mergeLibs after they've been built.
+    mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
+    mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
+    mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
+    mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
 }
