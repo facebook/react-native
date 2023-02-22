@@ -7,7 +7,7 @@
  * @format
  */
 
-import {HostComponent} from '../../types/public//ReactNativeTypes';
+import {HostComponent} from '../../types/public/ReactNativeTypes';
 
 /**
  * Creates values that can be used like React components which represent native
