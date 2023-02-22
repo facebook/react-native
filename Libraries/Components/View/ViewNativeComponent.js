@@ -50,6 +50,13 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderStartEndRadius: true,
           borderStartStartRadius: true,
           borderStyle: true,
+          borderBlockEndStyle: true,
+          borderBlockStartStyle: true,
+          borderBlockStyle: true,
+          borderInlineStyle: true,
+          borderInlineEndStyle: true,
+          borderInlineStartStyle: true,
+
           hitSlop: true,
           pointerEvents: true,
           nativeBackgroundAndroid: true,
