@@ -1336,12 +1336,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     ReadableNativeMap state = stateWrapper.getStateData();
-
-    if (state == null) {
-      return null;
-    }
-
-    if (!state.hasKey("attributedString")) {
+    if (state == null || !state.hasKey("attributedString")) {
       return null;
     }
     ReadableMap attributedString = state.getMap("attributedString");
@@ -1356,12 +1351,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
     int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
+    int currentJustificationMode =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
-        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
+        TextAttributeProps.getTextAlignment(
+            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
@@ -1387,12 +1386,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+    int currentJustificationMode =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
+            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }

@@ -249,35 +249,35 @@ public class TextAttributeProps {
     return result;
   }
 
-  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
-    @Nullable
-    String textAlignPropValue =
-        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
-    int textAlignment;
+  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL, int defaultValue) {
+    if (!props.hasKey(ViewProps.TEXT_ALIGN)) {
+      return defaultValue;
+    }
 
+    String textAlignPropValue = props.getString(ViewProps.TEXT_ALIGN);
     if ("justify".equals(textAlignPropValue)) {
-      textAlignment = Gravity.LEFT;
+      return Gravity.LEFT;
     } else {
       if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
-        textAlignment = Gravity.NO_GRAVITY;
+        return Gravity.NO_GRAVITY;
       } else if ("left".equals(textAlignPropValue)) {
-        textAlignment = isRTL ? Gravity.RIGHT : Gravity.LEFT;
+        return isRTL ? Gravity.RIGHT : Gravity.LEFT;
       } else if ("right".equals(textAlignPropValue)) {
-        textAlignment = isRTL ? Gravity.LEFT : Gravity.RIGHT;
+        return isRTL ? Gravity.LEFT : Gravity.RIGHT;
       } else if ("center".equals(textAlignPropValue)) {
-        textAlignment = Gravity.CENTER_HORIZONTAL;
+        return Gravity.CENTER_HORIZONTAL;
       } else {
         throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlignPropValue);
       }
     }
-    return textAlignment;
   }
 
-  public static int getJustificationMode(ReactStylesDiffMap props) {
-    @Nullable
-    String textAlignPropValue =
-        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
+  public static int getJustificationMode(ReactStylesDiffMap props, int defaultValue) {
+    if (!props.hasKey(ViewProps.TEXT_ALIGN)) {
+      return defaultValue;
+    }
 
+    String textAlignPropValue = props.getString(ViewProps.TEXT_ALIGN);
     if ("justify".equals(textAlignPropValue) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       return Layout.JUSTIFICATION_MODE_INTER_WORD;
     }
