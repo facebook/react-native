@@ -1,0 +1,48 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "HERMES_BYTECODE_VERSION", "react_native_dep", "rn_android_build_config", "rn_android_library")
+
+SUB_PROJECTS = [
+    "network/**/*",
+    "mapbuffer/**/*",
+]
+
+rn_android_library(
+    name = "common",
+    srcs = glob(
+        ["**/*.java"],
+        exclude = SUB_PROJECTS,
+    ),
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":build_config",
+        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+    ],
+    exported_deps = [
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+    ],
+)
+
+rn_android_build_config(
+    name = "build_config",
+    package = "com.facebook.react",
+    values = [
+        "boolean IS_INTERNAL_BUILD = true",
+        "int HERMES_BYTECODE_VERSION = {}".format(HERMES_BYTECODE_VERSION),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)

@@ -1,0 +1,350 @@
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("@fbsource//xplat/hermes/defs:hermes.bzl", "HERMES_BYTECODE_VERSION")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs:fb_xplat_platform_specific_rule.bzl", "fb_xplat_platform_specific_rule")
+load("//tools/build_defs:fb_xplat_resource.bzl", "fb_xplat_resource")
+load("//tools/build_defs/apple:fb_apple_asset_catalog.bzl", "fb_apple_asset_catalog")
+load("//tools/build_defs/apple:fb_apple_bundle.bzl", "fb_apple_bundle")
+load("//tools/build_defs/apple:fb_apple_test.bzl", "fb_apple_test")
+load("//tools/build_defs/apple:fb_js_dep.bzl", "rn_js_bundle_dep")
+load("//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode")
+load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "YOGA_APPLE_TARGET",
+    "js_library_glob",
+    "make_resource_glob",
+    "react_fabric_component_plugin_provider",
+    "react_module_plugin_providers",
+    "rn_apple_library",
+    "rn_apple_xplat_cxx_library",
+    "rn_extra_build_flags",
+    "rn_xplat_cxx_library",
+)
+load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
+
+yarn_workspace(
+    name = "yarn-workspace",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/__fixtures__/**",
+            "**/__flowtests__/**",
+            "**/__mocks__/**",
+            "**/__server_snapshot_tests__/**",
+            "**/__tests__/**",
+            "**/node_modules/**",
+            "**/node_modules/.bin/**",
+            "**/.*",
+            "**/.*/**",
+            "**/.*/.*",
+            "**/*.xcodeproj/**",
+            "**/*.xcworkspace/**",
+        ],
+    ),
+    visibility = ["PUBLIC"],
+)
+
+rn_library(
+    name = "rn-tester",
+    srcs = js_library_glob(
+        [
+            "js",
+            "NativeCxxModuleExample",
+            "NativeModuleExample",
+            "NativeComponentExample",
+            "RCTTest",
+        ],
+        excludes = [
+            "**/__*__/**",
+            "**/*.md",
+            "js/examples/WebSocket/http_test_server.js",
+            "js/examples/WebSocket/websocket_test_server.js",
+        ],
+    ),
+    codegen_components = True,
+    codegen_modules = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    native_component_spec_name = "AppSpecs",
+    native_module_android_package_name = "com.facebook.fbreact.specs",
+    native_module_spec_name = "AppSpecs",
+    skip_processors = True,
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js:node_modules__flow_19enums_19runtime",
+        "//xplat/js:node_modules__nullthrows",
+        "//xplat/js/RKJSModules/Libraries/Core:Core",
+        "//xplat/js/RKJSModules/vendor/react:react",
+        "//xplat/js/react-native-github:react-native",
+        "//xplat/js/react-native-github/packages/assets:assets",
+    ],
+)
+
+fb_native.filegroup(
+    name = "nativecomponent-srcs",
+    srcs = glob(
+        [
+            "**/*NativeComponent.js",
+        ],
+        exclude = [
+            "NativeComponentExample/**/*",
+        ],
+    ),
+    visibility = ["PUBLIC"],
+)
+
+REACT_CORE_OSS_DEPS = [
+    "//xplat/js/react-native-github:ReactInternalApple",
+    "//xplat/js/react-native-github:RCTPushNotificationApple",
+    "//xplat/js/react-native-github:RCTLinkingApple",
+    "//xplat/js/react-native-github:RCTAnimationApple",
+    "//xplat/js/react-native-github:RCTImageApple",
+    "//xplat/js/react-native-github:RCTNetworkApple",
+    "//xplat/js/react-native-github:RCTTextApple",
+    "//xplat/js/react-native-github:RCTBlobApple",
+]
+
+fb_xplat_resource(
+    name = "RNTesterUnitTestsResources",
+    dirs = [],
+    files = [
+        "RNTesterUnitTests/RNTesterUnitTestsBundle.js",
+    ],
+    platforms = APPLE,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+fb_apple_test(
+    name = "RNTesterUnitTests",
+    srcs = glob(
+        [
+            "RNTesterUnitTests/**/*.m",
+        ],
+    ),
+    headers = glob([
+        "RNTesterUnitTests/**/*.h",
+    ]),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    frameworks = [
+        "$PLATFORM_DIR/Developer/Library/Frameworks/XCTest.framework",
+        "CoreGraphics",
+        "Foundation",
+        "QuartzCore",
+        "UIKit",
+    ],
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + [
+        "-DHERMES_BYTECODE_VERSION={}".format(HERMES_BYTECODE_VERSION),
+    ] + get_preprocessor_flags_for_build_mode(),
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:workspace",
+    ],
+    deps = REACT_CORE_OSS_DEPS + [
+        "//xplat/js/react-native-github:RCTCxxBridgeApple",
+        ":RCTTestApple",
+        ":RNTesterUnitTestsResourcesApple",
+        "//fbobjc/VendorLib/OCMock:OCMock",
+    ],
+)
+
+fb_xplat_resource(
+    name = "RNTesterIntegrationTestsResources",
+    files = make_resource_glob("RNTesterIntegrationTests"),
+    platforms = APPLE,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+fb_apple_test(
+    name = "RNTesterIntegrationTests",
+    autoglob = True,
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    frameworks = [
+        "$PLATFORM_DIR/Developer/Library/Frameworks/XCTest.framework",
+        "CoreGraphics",
+        "Foundation",
+        "QuartzCore",
+        "UIKit",
+    ],
+    info_plist = "//xplat/configurations/buck/common_info_plists:ApplicationTest-Info.plist",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
+    test_host_app = "//fbobjc/Configurations/Buck/CommonTestHost:CommonTestHost",
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:workspace",
+    ],
+    deps = REACT_CORE_OSS_DEPS + [
+        ":RCTTestApple",
+        ":RNTesterIntegrationTestsResourcesApple",
+        ":RNTesterResourcesApple",
+        "//xplat/js/react-native-github:RCTCxxBridgeApple",
+        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        rn_js_bundle_dep("//xplat/js/RKJSModules/EntryPoints:RNTesterTestBundle"),
+    ],
+)
+
+fb_xplat_platform_specific_rule(
+    name = "RNTesterBundleAssetCatalog",
+    dirs = ["RNTester/RNTesterBundle/OtherImages.xcassets"],
+    platform = APPLE,
+    rule = fb_apple_asset_catalog,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+fb_xplat_resource(
+    name = "RNTesterBundleResources",
+    dirs = [],
+    files = [
+        "RNTester/RNTesterBundle/ImageInBundle.png",
+    ],
+    platforms = APPLE,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+rn_apple_xplat_cxx_library(
+    name = "RNTesterBundleBinary",
+    srcs = ["//xplat/configurations/buck/apple/common_files:dummy.c"],
+    deps = [":RNTesterBundleAssetCatalog"],
+)
+
+fb_apple_bundle(
+    name = "RNTesterBundle",
+    binary = ":RNTesterBundleBinaryApple#static",
+    extension = "bundle",
+    info_plist = "RNTester/RNTesterBundle/Info.plist",
+    info_plist_substitutions = {
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.facebook.react.RNTesterBundle",
+    },
+    deps = [
+        ":RNTesterBundleResourcesApple",
+    ],
+)
+
+fb_xplat_platform_specific_rule(
+    name = "RNTesterAssetCatalog",
+    dirs = ["RNTester/Images.xcassets"],
+    platform = APPLE,
+    rule = fb_apple_asset_catalog,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+fb_xplat_resource(
+    name = "RNTesterResources",
+    dirs = [],
+    files = [
+        "RNTester/legacy_image@2x.png",
+        "RNTester/LaunchScreen.storyboard",
+        ":RNTesterBundle",
+    ],
+    platforms = APPLE,
+    visibility = [
+        "//fbobjc/Libraries/FBReactKit:",
+    ],
+)
+
+rn_apple_library(
+    name = "RCTTestApple",
+    srcs = glob([
+        "RCTTest/**/*.m",
+        "RCTTest/**/*.mm",
+    ]),
+    headers = glob([
+        "RCTTest/**/*.h",
+    ]),
+    exported_headers = {
+        "RCTTest/RCTTestRunner.h": "RCTTest/RCTTestRunner.h",
+    },
+    autoglob = False,
+    frameworks = [
+        "XCTest",
+    ],
+    header_path_prefix = "React",
+    labels = [
+        "disable_plugins_only_validation",
+    ],
+    plugins = react_module_plugin_providers(
+        name = "TestModule",
+        native_class_func = "RCTTestModuleCls",
+    ),
+    plugins_header = "FBRCTTestPlugins.h",
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags() + [
+        "-DRN_DISABLE_OSS_PLUGIN_HEADER",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/js/react-native-github:RCTLinkingApple",
+        "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:ReactInternalApple",
+        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        YOGA_APPLE_TARGET,
+    ],
+)
+
+rn_apple_xplat_cxx_library(
+    name = "NativeComponentExample",
+    plugins_only = True,
+    srcs = glob(
+        [
+            "NativeComponentExample/ios/*.m",
+            "NativeComponentExample/ios/*.mm",
+        ],
+    ),
+    headers = glob(
+        [
+            "NativeComponentExample/ios/*.h",
+        ],
+    ),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    plugins = [
+        react_fabric_component_plugin_provider("RNTMyNativeView", "RNTMyNativeViewCls"),
+    ],
+    plugins_header = "RCTFabricComponentsPlugins.h",
+    reexport_all_header_dependencies = False,
+    visibility = ["PUBLIC"],
+    deps = [
+        ":generated_components-AppSpecs",
+        "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "NativeCxxModuleExample",
+    srcs = glob(["NativeCxxModuleExample/*.cpp"]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("NativeCxxModuleExample", "*.h"),
+        ],
+        prefix = "NativeCxxModuleExample",
+    ),
+    fbandroid_compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    platforms = (ANDROID, APPLE),
+    visibility = ["PUBLIC"],
+    deps = [
+        ":AppSpecsJSI",
+    ],
+)

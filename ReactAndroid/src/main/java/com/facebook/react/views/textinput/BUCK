@@ -1,0 +1,41 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_android_toplevel_dep", "react_native_dep", "react_native_target", "rn_android_library")
+
+# TODO(T115916830): Remove when Kotlin files are used in this module
+KOTLIN_STDLIB_DEPS = [react_native_android_toplevel_dep("third-party/kotlin:kotlin-stdlib")] if IS_OSS_BUILD else []
+
+rn_android_library(
+    name = "textinput",
+    srcs = glob(["*.java"]),
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "KOTLIN",
+    pure_kotlin = False,
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("third-party/android/androidx:autofill"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        react_native_target("java/com/facebook/react/modules/core:core"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/imagehelper:imagehelper"),
+        react_native_target("java/com/facebook/react/views/scroll:scroll"),
+        react_native_target("java/com/facebook/react/views/text:text"),
+        react_native_target("java/com/facebook/react/common/mapbuffer:mapbuffer"),
+        react_native_target("java/com/facebook/react/views/view:view"),
+        react_native_target("java/com/facebook/react/config:config"),
+    ] + KOTLIN_STDLIB_DEPS,
+    exported_deps = [
+        react_native_dep("third-party/android/androidx:appcompat"),
+    ],
+)

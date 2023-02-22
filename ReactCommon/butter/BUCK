@@ -1,0 +1,47 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "butter",
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "butter",
+    ),
+    compiler_flags_pedantic = True,
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:memory",
+        "//xplat/folly:shared_mutex",
+        "//xplat/folly:small_vector",
+        "//xplat/folly/container:f14_hash",
+    ],
+)

@@ -1,0 +1,28 @@
+{
+  "name": "@react-native/gradle-plugin",
+  "version": "0.72.4",
+  "description": "⚛️ Gradle Plugin for React Native",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-gradle-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-gradle-plugin"
+  },
+  "scripts": {
+    "build": "./gradlew build",
+    "clean": "./gradlew clean",
+    "test": "./gradlew check"
+  },
+  "license": "MIT",
+  "files": [
+    "settings.gradle.kts",
+    "build.gradle.kts",
+    "gradle",
+    "gradlew",
+    "gradlew.bat",
+    "src/main",
+    "README.md"
+  ],
+  "dependencies": {},
+  "devDependencies": {}
+}

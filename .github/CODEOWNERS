@@ -1,0 +1,40 @@
+# See https://help.github.com/en/articles/about-code-owners
+# to learn more about code owners.
+# Order is important; the last matching pattern takes the most
+# precedence. You may specify either a GitHub username, or an
+# email address if you prefer, as the code owner.
+
+# Any Markdown file anywhere in the repository
+**/*.md @hramos @cpojer
+
+# GitHub Settings, Bots
+/.github/ @hramos
+/packages/react-native-bots @hramos
+
+# Continuous Integration
+/.circleci/ @hramos
+/.circleci/Dockerfiles @gengjiawen
+/.appveyor/ @gengjiawen
+
+# Internals
+React/Base/* @shergin
+React/Views/* @shergin
+React/Modules/* @shergin
+React/CxxBridge/* @mhorowitz
+
+# Components and APIs
+ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
+Libraries/Animated/* @janicduplessis
+Libraries/NativeAnimation/* @janicduplessis
+Libraries/Image/* @shergin
+Libraries/Text/* @shergin
+
+# Modifications to package.json typically require
+# additional effort from a Facebook employee to land
+/package.json @hramos @cpojer
+
+# These should not be modified through a GitHub PR
+LICENSE* @hramos @cpojer @yungsters
+
+# The eslint-config-react-native-community package requires manual publishing after merging
+/packages/eslint-config-react-native-community/* @matt-oakes

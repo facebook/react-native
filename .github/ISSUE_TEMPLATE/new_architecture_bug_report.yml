@@ -1,0 +1,53 @@
+name: 💫 New Architecture - Bug Report
+description: Report a reproducible bug or a build issue when using the New Architecture (Fabric & TurboModules) in React Native.
+labels: ["Needs: Triage :mag:", "Type: New Architecture"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide all the information requested. Issues that do not follow this format are going to be closed.
+        This issue report is reserved to bug & build issues for users on the New Architecture. If you're not using
+        the New Architecture, please don't open issues on this category.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: |
+        Please provide a clear and concise description of what the bug or issue is. Include screenshots if needed.
+        Please make sure you check the New Architecture documentation first, as your issue might
+        already be answered there - https://reactnative.dev/docs/next/new-architecture-intro
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What react-native version does this appear on? Please test against the latest stable version. Bug reports against older versions are more likely to stall.
+      placeholder: ex. 0.68.0
+    validations:
+      required: true
+  - type: textarea
+    id: react-native-info
+    attributes:
+      label: Output of `npx react-native info`
+      description: Run `npx react-native info` in your terminal, copy and paste the results here.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Provide a detailed list of steps that reproduce the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Snack, code example, screenshot, or link to a repository
+      description: |
+        Please provide a Snack (https://snack.expo.dev/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
+        You may provide a screenshot of the application if you think it is relevant to your bug report.
+        Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve
+        Please note that a reproducer is **mandatory**. Issues without reproducer are more likely to stall and will be closed.
+    validations:
+      required: true

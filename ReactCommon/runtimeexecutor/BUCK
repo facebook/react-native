@@ -1,0 +1,50 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
+    "rn_xplat_cxx_library",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "runtimeexecutor",
+    srcs = glob(
+        [
+            "**/*.cpp",
+            "**/*.mm",
+        ],
+        exclude = glob(["tests/**/*.cpp"]),
+    ),
+    headers = glob(
+        ["**/*.h"],
+        exclude = glob(["tests/**/*.h"]),
+    ),
+    header_namespace = "",
+    exported_headers = {
+        "ReactCommon/RuntimeExecutor.h": "ReactCommon/RuntimeExecutor.h",
+    },
+    compiler_flags_pedantic = True,
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_frameworks = ["Foundation"],
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [],
+    visibility = ["PUBLIC"],
+    deps = [
+        "//xplat/jsi:jsi",
+    ],
+)

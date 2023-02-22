@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ProgressBarAndroid /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<AndroidProgressBar
+  animating={true}
+  indeterminate={true}
+  styleAttr="Horizontal"
+/>
+`;
+
+exports[`<ProgressBarAndroid /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<AndroidProgressBar
+  animating={true}
+  indeterminate={true}
+  styleAttr="Horizontal"
+/>
+`;
+
+exports[`<ProgressBarAndroid /> should render as expected: should shallow render as <ProgressBarAndroid /> when mocked 1`] = `
+<ForwardRef(ProgressBarAndroid)
+  indeterminate={true}
+  styleAttr="Horizontal"
+/>
+`;
+
+exports[`<ProgressBarAndroid /> should render as expected: should shallow render as <ProgressBarAndroid /> when not mocked 1`] = `
+<ForwardRef(ProgressBarAndroid)
+  indeterminate={true}
+  styleAttr="Horizontal"
+/>
+`;

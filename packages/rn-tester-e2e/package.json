@@ -1,0 +1,31 @@
+{
+    "name": "@react-native/tester-e2e",
+    "private": true,
+	  "version": "0.0.1",
+	  "license": "MIT",
+	  "description": "React Native E2E tester app.",
+	  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester-e2e",
+	  "repository": {
+	    "type": "git",
+	    "url": "git@github.com:facebook/react-native.git",
+	    "directory": "packages/rn-tester-e2e"
+	  },
+    "devDependencies": {
+        "appium": "^2.0.0-beta.53",
+        "appium-uiautomator2-driver": "^2.12.3",
+        "appium-xcuitest-driver": "^4.16.12",
+        "eslint": "^8.19.0",
+        "jest": "^29.2.1",
+        "webdriverio": "^7.25.4"
+    },
+    "scripts": {
+        "test": "jest --runInBand",
+        "test-android-e2e": "E2E_DEVICE=\"android\" npm run test",
+        "test-ios-e2e": "E2E_DEVICE=\"ios\" npm run test"
+    },
+    "dependencies": {
+        "@babel/core": "^7.20.0",
+        "@babel/preset-env": "^7.20.0",
+        "@types/jest": "^29.2.1"
+    }
+}

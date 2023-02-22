@@ -1,0 +1,27 @@
+name: Run Danger on PR
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  issues: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  danger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Yarn Install on Root
+        run: yarn install
+        working-directory: .
+      - name: Danger
+        run: yarn danger ci --use-github-checks --failOnErrors
+        working-directory: packages/react-native-bots
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

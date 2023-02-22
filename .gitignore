@@ -1,0 +1,145 @@
+# Xcode
+!**/*.xcodeproj
+!**/*.pbxproj
+!**/*.xcworkspacedata
+!**/*.xcsettings
+!**/*.xcscheme
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+**/.xcode.env.local
+
+# Gradle
+/build/
+/packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
+/packages/rn-tester/android/app/.cxx/
+/packages/rn-tester/android/app/build/
+/packages/rn-tester/android/app/gradle/
+/packages/rn-tester/android/app/gradlew
+/packages/rn-tester/android/app/gradlew.bat
+/ReactAndroid/build/
+/ReactAndroid/.cxx/
+/ReactAndroid/gradle/
+/ReactAndroid/gradlew
+/ReactAndroid/gradlew.bat
+/ReactAndroid/external-artifacts/build/
+/ReactAndroid/external-artifacts/artifacts/
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
+/template/android/app/build/
+/template/android/build/
+
+# Buck
+.buckd
+buck-out
+/.lsp.buckd
+/.lsp-buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/
+/ReactAndroid/src/main/gen
+
+# Android Studio
+.project
+.settings
+.classpath
+
+# Watchman
+.watchmanconfig
+
+# Android
+.idea
+.gradle
+local.properties
+*.iml
+/android/*
+!/android/README.md
+
+# Node
+node_modules
+*.log
+.nvm
+package-lock.json
+
+# OS X
+.DS_Store
+
+# Test generated files
+/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+*.js.meta
+
+/coverage
+/third-party
+
+# Test Reports
+/reports
+
+# Stack Dumps generated when programs crash (Ex. bash.exe.stackdump on Win)
+*.stackdump
+
+# Root dir shouldn't have Xcode project
+/*.xcodeproj
+
+# ReactCommon subdir shouldn't have Xcode project
+/ReactCommon/**/*.xcodeproj
+
+# Libs that shouldn't have Xcode project
+/Libraries/FBLazyVector/**/*.xcodeproj
+/Libraries/RCTRequired/**/*.xcodeproj
+/React/CoreModules/**/*.xcodeproj
+/React/FBReactNativeSpec/**/*.xcodeproj
+/packages/react-native-codegen/**/*.xcodeproj
+
+# Ruby Gems (Bundler)
+/vendor
+/template/vendor
+
+# iOS / CocoaPods
+/template/ios/build/
+/template/ios/Pods/
+/template/ios/Podfile.lock
+/packages/rn-tester/Gemfile.lock
+
+# Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
+/packages/rn-tester/Pods/*
+!/packages/rn-tester/Pods/__offline_mirrors_hermes__
+!/packages/rn-tester/Pods/__offline_mirrors_jsc__
+
+# @react-native/codegen
+/React/FBReactNativeSpec/FBReactNativeSpec
+/packages/react-native-codegen/lib
+/packages/react-native-codegen/tmp/
+/ReactCommon/react/renderer/components/rncore/
+/packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
+/**/RCTThirdPartyFabricComponentsProvider.*
+
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
+
+# Visual studio
+.vscode
+.vs
+
+# Android memory profiler files
+*.hprof
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
+# E2E files
+/packages/rn-tester-e2e/apps

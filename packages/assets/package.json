@@ -1,0 +1,11 @@
+{
+  "name": "@react-native/assets-registry",
+  "version": "0.72.0",
+  "description": "Asset support code for React Native.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/assets"
+  },
+  "license": "MIT"
+}

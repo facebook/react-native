@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+function retry3 {
+  local n=1
+  local max=3
+  local delay=1
+  while true; do
+    # shellcheck disable=SC2015
+    "$@" && break || {
+      if [[ $n -lt $max ]]; then
+        ((n++))
+        echo "Command failed. Attempt $n/$max:"
+        sleep $delay;
+      else
+        echo "The command has failed after $n attempts." >&2
+        return 1
+      fi
+    }
+  done
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  retry3 "$@"
+fi

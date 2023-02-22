@@ -1,0 +1,253 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={false}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 2 of 2
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={false}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</View>
+`;
+
+exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 1 of 1
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</View>
+`;
+
+exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(243, 83, 105, 1)",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Failed to compile
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`LogBoxInspectorHeader should render two buttons for three or more total 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "paddingTop": 40,
+      },
+      Object {
+        "backgroundColor": "rgba(250, 186, 48, 1)",
+      },
+    ]
+  }
+>
+  <View
+    style={
+      Object {
+        "flexDirection": "row",
+        "height": 44,
+      }
+    }
+  >
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+    <View
+      style={
+        Object {
+          "alignItems": "center",
+          "flex": 1,
+          "justifyContent": "center",
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "color": "rgba(255, 255, 255, 1)",
+            "fontSize": 16,
+            "fontWeight": "600",
+            "includeFontPadding": false,
+            "lineHeight": 20,
+          }
+        }
+      >
+        Log 1 of 1
+      </Text>
+    </View>
+    <LogBoxInspectorHeaderButton
+      disabled={true}
+      image={
+        Object {
+          "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
+        }
+      }
+      level="warn"
+      onPress={[Function]}
+    />
+  </View>
+</View>
+`;

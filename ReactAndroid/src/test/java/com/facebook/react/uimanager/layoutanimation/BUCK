@@ -1,0 +1,15 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_robolectric_test")
+
+rn_robolectric_test(
+    name = "layoutanimation",
+    srcs = glob(["**/*.java"]),
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    language = "JAVA",
+    visibility = ["PUBLIC"],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/assertj:assertj-core"),
+        react_native_dep("third-party/java/junit:junit"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+    ],
+)

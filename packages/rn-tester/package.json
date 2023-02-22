@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "name": "@react-native/tester",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "React Native tester app.",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/rn-tester",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/rn-tester"
+  },
+  "scripts": {
+    "start": "../../scripts/packager.sh",
+    "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
+    "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
+    "clean-android": "rm -rf android/app/build",
+    "setup-ios-jsc": "bundle install && USE_HERMES=0 bundle exec pod install",
+    "setup-ios-hermes": "bundle install && USE_HERMES=1 bundle exec pod install",
+    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1",
+    "flow-enums-runtime": "^0.0.5"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-flow-enums":"^0.0.2",
+    "connect": "^3.6.5",
+    "ws": "^6.2.2"
+  },
+  "codegenConfig": {
+    "name": "AppSpecs",
+    "type": "all",
+    "jsSrcsDir": ".",
+    "android": {
+      "javaPackageName": "com.facebook.fbreact.specs"
+    }
+  }
+}

@@ -1,0 +1,129 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "CXX",
+    "FBJNI_TARGET",
+    "fb_xplat_cxx_test",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "get_preprocessor_flags_for_build_mode",
+    "react_native_target",
+    "react_native_xplat_target",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+oncall("react_native")
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "graphics",
+    srcs = glob(
+        [
+            "*.cpp",
+        ],
+    ),
+    headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "",
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
+    compiler_flags_pedantic = True,
+    cxx_exported_headers = subdir_glob(
+        [
+            ("platform/cxx/react/renderer/graphics", "**/*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
+    cxx_srcs = glob(
+        [
+            "platform/cxx/react/renderer/graphics/**/*.cpp",
+        ],
+    ),
+    fbandroid_allow_jni_merging = True,
+    fbandroid_deps = [
+        FBJNI_TARGET,
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("platform/android/react/renderer/graphics", "**/*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
+    fbandroid_srcs = glob(
+        [
+            "platform/android/react/renderer/graphics/**/*.cpp",
+        ],
+    ),
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_exported_headers = subdir_glob(
+        [
+            ("platform/ios/react/renderer/graphics", "*.h"),
+        ],
+        prefix = "react/renderer/graphics",
+    ),
+    fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+    force_static = True,
+    ios_deps = [
+        "//xplat/js/react-native-github:RCTCxxBridge",
+        "//xplat/js/react-native-github:RCTImage",
+    ],
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    ios_srcs = glob(
+        [
+            "platform/ios/**/*.cpp",
+            "platform/ios/**/*.mm",
+        ],
+    ),
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE, CXX),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [":tests"],
+    visibility = ["PUBLIC"],
+    deps = [
+        react_native_xplat_target("react/debug:debug"),
+        react_native_xplat_target("butter:butter"),
+        "//third-party/glog:glog",
+        "//xplat/fbsystrace:fbsystrace",
+        "//xplat/folly:hash",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/**/*.cpp"]),
+    headers = glob(["tests/**/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (ANDROID, APPLE, CXX),
+    deps = [
+        ":graphics",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)

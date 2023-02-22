@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="catalyst_reload" project="catalyst" translatable="false">Reload</string>
+  <string name="catalyst_reload_error" project="catalyst" translatable="false">Failed to load bundle. Try restarting the bundler or reconnecting your device.</string>
+  <string name="catalyst_change_bundle_location" project="catalyst" translatable="false">Change Bundle Location</string>
+  <string name="catalyst_open_flipper_error" project="catalyst" translatable="false">Failed to open Flipper. Please check that Metro is running.</string>
+  <string name="catalyst_devtools_open" project="catalyst" translatable="false">Open React DevTools</string>
+  <string name="catalyst_debug_open" project="catalyst" translatable="false">Open Debugger</string>
+  <string name="catalyst_debug" project="catalyst" translatable="false">Debug</string>
+  <string name="catalyst_debug_stop" project="catalyst" translatable="false">Stop Debugging</string>
+  <string name="catalyst_debug_connecting" project="catalyst" translatable="false">Connecting to debugger...</string>
+  <string name="catalyst_debug_error" project="catalyst" translatable="false">Failed to connect to debugger!</string>
+  <string name="catalyst_debug_chrome" project="catalyst" translatable="false">Debug with Chrome</string>
+  <string name="catalyst_debug_chrome_stop" project="catalyst" translatable="false">Stop Chrome Debugging</string>
+  <string name="catalyst_hot_reloading" project="catalyst" translatable="false">Enable Fast Refresh</string>
+  <string name="catalyst_hot_reloading_stop" project="catalyst" translatable="false">Disable Fast Refresh</string>
+  <string name="catalyst_hot_reloading_auto_disable" project="catalyst" translatable="false">Disabling Fast Refresh because it requires a development bundle.</string>
+  <string name="catalyst_hot_reloading_auto_enable" project="catalyst" translatable="false">Switching to development bundle in order to enable Fast Refresh.</string>
+  <string name="catalyst_inspector" project="catalyst" translatable="false">Show Element Inspector</string>
+  <string name="catalyst_inspector_stop" project="catalyst" translatable="false">Hide Element Inspector</string>
+  <string name="catalyst_perf_monitor" project="catalyst" translatable="false">Show Perf Monitor</string>
+  <string name="catalyst_perf_monitor_stop" project="catalyst" translatable="false">Hide Perf Monitor</string>
+  <string name="catalyst_settings" project="catalyst" translatable="false">Settings</string>
+  <string name="catalyst_settings_title" project="catalyst" translatable="false">Debug Settings</string>
+  <string name="catalyst_heap_capture" project="catalyst" translatable="false">Capture Heap</string>
+  <string name="catalyst_dismiss_button" project="catalyst" translatable="false">Dismiss\n(ESC)</string>
+  <string name="catalyst_reload_button" project="catalyst" translatable="false">Reload\n(R,\u00A0R)</string>
+  <string name="catalyst_copy_button" project="catalyst" translatable="false">Copy\n</string>
+  <string name="catalyst_report_button" project="catalyst" translatable="false">Report</string>
+  <string name="catalyst_loading_from_url" project="catalyst" translatable="false">Loading from %1$s…</string>
+  <string name="catalyst_sample_profiler_disable" project="catalyst" translatable="false">Disable Sampling Profiler</string>
+  <string name="catalyst_sample_profiler_enable" project="catalyst" translatable="false">Enable Sampling Profiler</string>
+</resources>

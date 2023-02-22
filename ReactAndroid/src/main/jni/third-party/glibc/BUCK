@@ -1,0 +1,69 @@
+# NOTE(agallagher): The platform really should be responsible for providing
+# this type of provided dependency.  As it is now, we need to setup dummy
+# rules to model glibc's libraries.
+
+# libpthread is implicitly included in the android runtime so, when building
+# on an android platform, we don't do anything.
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_cxx_library(
+    name = "pthread",
+    exported_platform_linker_flags = [
+        (
+            "android",
+            [],
+        ),
+        (
+            "^(default|linux)",
+            ["-lpthread"],
+        ),
+        (
+            "static",
+            ["-lpthread"],
+        ),
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+fb_native.prebuilt_cxx_library(
+    name = "dl",
+    exported_linker_flags = [
+        "-ldl",
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+fb_native.prebuilt_cxx_library(
+    name = "m",
+    exported_linker_flags = [
+        "-lm",
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+fb_native.prebuilt_cxx_library(
+    name = "rt",
+    exported_platform_linker_flags = [
+        (
+            "android",  # Empty, since `-lc` is implicit
+            [],
+        ),
+        (
+            "^(default|linux)",
+            ["-lrt"],
+        ),
+    ],
+    header_only = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)

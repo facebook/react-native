@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
+"// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
+import type { NativeComponentType } from 'codegenNativeComponent';
+import type { ViewProps } from 'ViewPropTypes';
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // Props
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
+  // Events
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+|}>;
+type NativeType = NativeComponentType<ModuleProps>;
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
+}
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
+const {
+  dispatchCommand
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
+let nativeComponentName = 'RCTModule';
+export const __INTERNAL_VIEW_CONFIG = {
+  uiViewClassName: 'RCTModule',
+  bubblingEventTypes: {
+    topBubblingEventDefinedInlineNull: {
+      phasedRegistrationNames: {
+        captured: 'onBubblingEventDefinedInlineNullCapture',
+        bubbled: 'onBubblingEventDefinedInlineNull'
+      }
+    }
+  },
+  directEventTypes: {
+    topDirectEventDefinedInlineNull: {
+      registrationName: 'onDirectEventDefinedInlineNull'
+    }
+  },
+  validAttributes: {
+    boolean_default_true_optional_both: true,
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
+  }
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
+export const Commands = {
+  hotspotUpdate(ref, x, y) {
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+  },
+  scrollTo(ref, y, animated) {
+    dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
+  }
+};"
+`;
+
+exports[`Babel plugin inline view configs can inline config for FullTypedNativeComponent.js 1`] = `
+"// @flow
+
+const codegenNativeCommands = require('codegenNativeCommands');
+const codegenNativeComponent = require('codegenNativeComponent');
+import type { NativeComponentType } from 'codegenNativeComponent';
+import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
+import type { ViewProps } from 'ViewPropTypes';
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
+  // Props
+  boolean_default_true_optional_both?: WithDefault<boolean, true>,
+  // Events
+  onDirectEventDefinedInlineNull: DirectEventHandler<null>,
+  onBubblingEventDefinedInlineNull: BubblingEventHandler<null>,
+|}>;
+type NativeType = NativeComponentType<ModuleProps>;
+interface NativeCommands {
+  +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
+  +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
+}
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
+const {
+  dispatchCommand
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
+let nativeComponentName = 'RCTModule';
+export const __INTERNAL_VIEW_CONFIG = {
+  uiViewClassName: 'RCTModule',
+  bubblingEventTypes: {
+    topBubblingEventDefinedInlineNull: {
+      phasedRegistrationNames: {
+        captured: 'onBubblingEventDefinedInlineNullCapture',
+        bubbled: 'onBubblingEventDefinedInlineNull'
+      }
+    }
+  },
+  directEventTypes: {
+    topDirectEventDefinedInlineNull: {
+      registrationName: 'onDirectEventDefinedInlineNull'
+    }
+  },
+  validAttributes: {
+    boolean_default_true_optional_both: true,
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
+  }
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
+export const Commands = {
+  hotspotUpdate(ref, x, y) {
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
+  },
+  scrollTo(ref, y, animated) {
+    dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
+  }
+};"
+`;
+
+exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
+"import requireNativeComponent from 'requireNativeComponent';
+export default 'Not a view config';"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithDifferentNameNativeComponent.js 1`] = `
+"/CommandsExportedWithDifferentNameNativeComponent.js: Native commands must be exported with the name 'Commands'
+  17 | }
+  18 |
+> 19 | export const Foo = codegenNativeCommands<NativeCommands>();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  20 |
+  21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  22 |"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for CommandsExportedWithShorthandNativeComponent.js 1`] = `
+"/CommandsExportedWithShorthandNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  19 | const Commands = 4;
+  20 |
+> 21 | export {Commands};
+     | ^^^^^^^^^^^^^^^^^^
+  22 |
+  23 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  24 |"
+`;
+
+exports[`Babel plugin inline view configs fails on inline config for OtherCommandsExportNativeComponent.js 1`] = `
+"/OtherCommandsExportNativeComponent.js: 'Commands' is a reserved export and may only be used to export the result of codegenNativeCommands.
+  17 | }
+  18 |
+> 19 | export const Commands = 4;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  20 |
+  21 | export default (codegenNativeComponent<ModuleProps>('Module'): NativeType);
+  22 |"
+`;

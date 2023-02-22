@@ -1,0 +1,209 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id("com.android.application")
+    id("com.facebook.react")
+}
+
+/**
+ * This is the configuration block to customize your React Native Android app.
+ * By default you don't need to apply any configuration, just uncomment the lines you need.
+ */
+react {
+    /* Folders */
+    //   The root of your project, i.e. where "package.json" lives. Default is '..'
+    root = file("../../")
+    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
+    reactNativeDir = rootDir
+    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
+    codegenDir = file("$rootDir/node_modules/@react-native/codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
+    cliFile = file("$rootDir/cli.js")
+
+    /* Variants */
+    //   The list of variants to that are debuggable. For those we're going to
+    //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
+    //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
+    debuggableVariants = ["hermesDebug", "jscDebug"]
+
+    /* Bundling */
+    //   A list containing the node command and its flags. Default is just 'node'.
+    // nodeExecutableAndArgs = ["node"]
+    //
+    //   The command to run when bundling. By default is 'bundle'
+    // bundleCommand = "ram-bundle"
+    //
+    //   The path to the CLI configuration file. Default is empty.
+    // bundleConfig = file(../rn-cli.config.js)
+    //
+    //   The name of the generated asset file containing your JS bundle
+    bundleAssetName = "RNTesterApp.android.bundle"
+    //
+    //   The entry file for bundle generation. Default is 'index.android.js' or 'index.js'
+    entryFile = file("../../js/RNTesterApp.android.js")
+    //
+    //   A list of extra flags to pass to the 'bundle' commands.
+    //   See https://github.com/react-native-community/cli/blob/main/docs/commands.md#bundle
+    // extraPackagerArgs = []
+
+    /* Hermes Commands */
+    //   The hermes compiler command to run. By default it is 'hermesc'
+    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
+}
+
+/**
+ * Set this to true to create four separate APKs instead of one,
+ * one for each native architecture. This is useful if you don't
+ * use App Bundles (https://developer.android.com/guide/app-bundle/)
+ * and want to have separate APKs to upload to the Play Store.
+ */
+def enableSeparateBuildPerCPUArchitecture = true
+
+/**
+ * Run Proguard to shrink the Java bytecode in release builds.
+ */
+def enableProguardInReleaseBuilds = true
+
+/**
+ * The preferred build flavor of JavaScriptCore (JSC)
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ */
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+/**
+ * This allows to customized the CMake version used for compiling RN Tester.
+ */
+def cmakeVersion = project(":ReactAndroid").cmake_version
+
+/**
+ * Architectures to build native code for.
+ */
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+repositories {
+    maven {
+        url rootProject.file("node_modules/jsc-android/dist")
+    }
+}
+
+android {
+    buildToolsVersion = "33.0.0"
+    compileSdkVersion 33
+    namespace "com.facebook.react.uiapp"
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
+    flavorDimensions "vm"
+    productFlavors {
+        hermes {
+            dimension "vm"
+            buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "true")
+        }
+        jsc {
+            dimension "vm"
+            buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "false")
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.facebook.react.uiapp"
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+    signingConfigs {
+        release {
+            storeFile file(MYAPP_RELEASE_STORE_FILE)
+            storePassword MYAPP_RELEASE_STORE_PASSWORD
+            keyAlias MYAPP_RELEASE_KEY_ALIAS
+            keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version cmakeVersion
+        }
+    }
+    splits {
+        abi {
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false
+            reset()
+            include (*reactNativeArchitectures())
+        }
+    }
+    buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.release
+        }
+        release {
+            debuggable false
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    sourceSets.main {
+        java {
+            // SampleTurboModule.
+            srcDirs += [
+                "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
+            ]
+        }
+    }
+}
+
+dependencies {
+    // Build React Native from source
+    implementation project(':ReactAndroid')
+
+    // Consume Hermes as built from source only for the Hermes variant.
+    hermesImplementation(project(":ReactAndroid:hermes-engine"))
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
+
+    jscImplementation jscFlavor
+
+    androidTestImplementation 'junit:junit:4.12'
+}
+
+android {
+    externalNativeBuild {
+        cmake {
+            // RN Tester is doing custom linking of C++ libraries therefore needs
+            // a dedicated CMakeLists.txt file.
+            path "src/main/jni/CMakeLists.txt"
+        }
+    }
+}
+
+afterEvaluate {
+    // As we're consuming Hermes from source, we want to make sure
+    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
+    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+}

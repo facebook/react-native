@@ -1,0 +1,75 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+EXPORTED_HEADERS = [
+    "CxxModuleWrapper.h",
+    "CxxModuleWrapperBase.h",
+    "CxxSharedModuleWrapper.h",
+    "JavaModuleWrapper.h",
+    "JavaScriptExecutorHolder.h",
+    "JCallback.h",
+    "JMessageQueueThread.h",
+    "JReactMarker.h",
+    "JSLoader.h",
+    "JSLogging.h",
+    "MethodInvoker.h",
+    "ModuleRegistryBuilder.h",
+    "NativeArray.h",
+    "NativeCommon.h",
+    "NativeMap.h",
+    "ReadableNativeArray.h",
+    "ReadableNativeMap.h",
+    "JRuntimeExecutor.h",
+    "JRuntimeScheduler.h",
+    "WritableNativeArray.h",
+    "WritableNativeMap.h",
+]
+
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+        exclude = EXPORTED_HEADERS,
+    ),
+    header_namespace = "react/jni",
+    exported_headers = EXPORTED_HEADERS,
+    compiler_flags = [
+        "-Wno-pessimizing-move",
+        "-Wno-inconsistent-missing-override",
+    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,  # dynamic_cast used within ReadableNative*
+    fbandroid_allow_jni_merging = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    platforms = ANDROID,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNativeJNI\"",
+        "-DWITH_FBSYSTRACE=1",
+        "-DWITH_INSPECTOR=1",
+    ],
+    soname = "libreactnativejni.$(ext)",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//xplat/third-party/linker_lib:android",
+        "//xplat/third-party/linker_lib:atomic",
+        "//third-party/glog:glog",
+        "//xplat/folly:dynamic",
+        "//xplat/folly:json",
+        "//fbandroid/xplat/fbgloginit:fbgloginit",
+        "//xplat/fbsystrace:fbsystrace",
+        react_native_target("jni/react/turbomodule:callinvokerholder"),
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:jsbigstring"),
+        react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jsinspector:jsinspector"),
+        react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("react/renderer/runtimescheduler:runtimescheduler"),
+        react_native_xplat_target("logger:logger"),
+        react_native_xplat_dep("jsi:jsi"),
+        FBJNI_TARGET,
+    ] if not IS_OSS_BUILD else [],
+)

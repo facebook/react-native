@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+plugins {
+    id("maven-publish")
+}
+
+group = "com.facebook.react"
+version = parent.publishing_version
+configurations.maybeCreate("default")
+
+// Those artifacts should be placed inside the `artifacts/hermes-ios-*.tar.gz` location.
+def hermesiOSDebugArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios-debug.tar.gz')
+def hermesiOSDebugArtifact = artifacts.add('default', hermesiOSDebugArtifactFile) {
+    type 'tgz'
+    extension 'tar.gz'
+    classifier 'hermes-ios-debug'
+}
+def hermesiOSReleaseArtifactFile = layout.projectDirectory.file('artifacts/hermes-ios-release.tar.gz')
+def hermesiOSReleaseArtifact = artifacts.add('default', hermesiOSReleaseArtifactFile) {
+    type 'tgz'
+    extension 'tar.gz'
+    classifier 'hermes-ios-release'
+}
+
+
+apply from: "../publish.gradle"
+
+publishing {
+    publications {
+        getByName("release") {
+            artifactId 'react-native-artifacts'
+            artifact hermesiOSDebugArtifact
+            artifact hermesiOSReleaseArtifact
+        }
+    }
+}

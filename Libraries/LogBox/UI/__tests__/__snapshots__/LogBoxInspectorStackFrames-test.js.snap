@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LogBoxInspectorStackFrame should render null for empty stack frames 1`] = `null`;
+
+exports[`LogBoxInspectorStackFrame should render stack frames with 1 frame collapsed 1`] = `
+<LogBoxInspectorSection
+  action={
+    <LogBoxInspectorSourceMapStatus
+      onPress={null}
+      status="NONE"
+    />
+  }
+  heading="Call Stack"
+>
+  <View
+    style={
+      Object {
+        "backgroundColor": "rgba(51, 51, 51, 1)",
+        "borderRadius": 5,
+        "marginBottom": 5,
+        "marginHorizontal": 10,
+        "paddingHorizontal": 5,
+        "paddingVertical": 10,
+      }
+    }
+  >
+    <Text
+      style={
+        Object {
+          "color": "rgba(255, 255, 255, 0.7)",
+          "fontSize": 13,
+          "fontWeight": "400",
+          "includeFontPadding": false,
+          "lineHeight": 18,
+          "marginHorizontal": 10,
+        }
+      }
+    >
+      This call stack is not symbolicated. Some features are unavailable such as viewing the function name or tapping to open files.
+    </Text>
+  </View>
+  <StackFrameList
+    list={
+      Array [
+        Object {
+          "collapse": false,
+          "column": 1,
+          "file": "dependency.js",
+          "lineNumber": 1,
+          "methodName": "foo",
+        },
+      ]
+    }
+    status="NONE"
+  />
+  <StackFrameFooter
+    message="See 1 more frame"
+    onPress={[Function]}
+  />
+</LogBoxInspectorSection>
+`;

@@ -1,0 +1,56 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "IOS", "MACOSX", "fb_xplat_cxx_test", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library")
+
+rn_xplat_cxx_library(
+    name = "bridging",
+    srcs = glob(["*.cpp"]),
+    header_namespace = "react/bridging",
+    exported_headers = glob(["*.h"]),
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,
+    compiler_flags_pedantic = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    platforms = (ANDROID, APPLE, CXX),
+    tests = [":tests"],
+    visibility = ["PUBLIC"],
+    deps = [
+    ],
+    exported_deps = [
+        react_native_xplat_target("butter:butter"),
+        react_native_xplat_target("callinvoker:callinvoker"),
+        react_native_xplat_shared_library_target("jsi:jsi"),
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "testlib",
+    header_namespace = "react/bridging",
+    exported_headers = glob(["tests/*.h"]),
+    compiler_flags_pedantic = True,
+    platforms = (ANDROID, APPLE, CXX),
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":bridging",
+        "//xplat/third-party/gmock:gtest",
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/*.cpp"]),
+    headers = glob(["tests/*.h"]),
+    apple_sdks = (IOS, MACOSX),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (ANDROID, APPLE, CXX),
+    deps = [
+        ":testlib",
+        "//xplat/hermes/API:HermesAPI",
+    ],
+)

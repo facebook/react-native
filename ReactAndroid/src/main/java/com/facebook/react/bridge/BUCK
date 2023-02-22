@@ -1,0 +1,92 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
+
+INTERFACES = [
+    "Dynamic.java",
+    "ReadableMap.java",
+    "ReadableMapKeySetIterator.java",
+    "WritableArray.java",
+    "WritableMap.java",
+    "NativeModule.java",
+    "JSInstance.java",
+    "ReadableArray.java",
+    "ReadableType.java",
+    "NativeArrayInterface.java",
+    "LifecycleEventListener.java",
+]
+
+rn_android_library(
+    name = "bridge",
+    srcs = glob(
+        ["**/*.java"],
+        exclude = INTERFACES,
+    ),
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
+    proguard_config = "reactnative.pro",
+    required_for_source_only_abi = True,
+    tests = [
+        react_native_tests_target("java/com/facebook/react/bridge:bridge"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("java/com/facebook/debug/debugoverlay/model:model"),
+        react_native_dep("java/com/facebook/systrace:systrace"),
+        react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
+        react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/debug/holder:holder"),
+        react_native_target("java/com/facebook/debug/tags:tags"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/config:config"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        react_native_target("java/com/facebook/react/module/model:model"),
+        react_native_target("java/com/facebook/react/turbomodule/core:callinvokerholder"),
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
+        react_native_target("java/com/facebook/react/uimanager/common:common"),
+    ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
+    exported_deps = [
+        react_native_dep("libraries/fbjni:java"),
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+        react_native_dep("third-party/java/jsr-330:jsr-330"),
+        react_native_target("java/com/facebook/react/bridge:interfaces"),
+    ],
+)
+
+rn_android_library(
+    name = "interfaces",
+    srcs = glob(INTERFACES),
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
+    proguard_config = "reactnative.pro",
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx:core"),
+        react_native_dep("third-party/android/androidx:fragment"),
+        react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/debug/tags:tags"),
+    ],
+    exported_deps = [
+        react_native_dep("java/com/facebook/proguard/annotations:annotations"),
+        react_native_dep("third-party/java/jsr-330:jsr-330"),
+    ],
+)

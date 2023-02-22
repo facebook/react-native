@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when mocked 1`] = `
+<RCTInputAccessoryView
+  nativeID="1"
+  style={
+    Array [
+      undefined,
+      Object {
+        "position": "absolute",
+      },
+    ]
+  }
+>
+  <View />
+</RCTInputAccessoryView>
+`;
+
+exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when not mocked 1`] = `
+<RCTInputAccessoryView
+  nativeID="1"
+  style={
+    Array [
+      undefined,
+      Object {
+        "position": "absolute",
+      },
+    ]
+  }
+>
+  <View />
+</RCTInputAccessoryView>
+`;
+
+exports[`<InputAccessoryView /> should shallow render as <InputAccessoryView> when mocked 1`] = `
+<InputAccessoryView
+  nativeID="1"
+>
+  <View />
+</InputAccessoryView>
+`;
+
+exports[`<InputAccessoryView /> should shallow render as <InputAccessoryView> when not mocked 1`] = `
+<InputAccessoryView
+  nativeID="1"
+>
+  <View />
+</InputAccessoryView>
+`;

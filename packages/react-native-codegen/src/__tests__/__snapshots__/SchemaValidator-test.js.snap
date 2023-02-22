@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SchemaValidator fails on components across modules with same name 1`] = `
+Array [
+  "Duplicate components found with name Component1. Found in modules Module1, Module2",
+]
+`;
