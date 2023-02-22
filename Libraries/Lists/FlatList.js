@@ -33,10 +33,10 @@ const React = require('react');
 
 type RequiredProps<ItemT> = {|
   /**
-   * For simplicity, data is just a plain array. If you want to use something else, like an
-   * immutable list, use the underlying `VirtualizedList` directly.
+   * An array (or array-like list) of items to render. Other data types can be
+   * used by targetting VirtualizedList directly.
    */
-  data: ?$ReadOnlyArray<ItemT>,
+  data: ?$ArrayLike<ItemT>,
 |};
 type OptionalProps<ItemT> = {|
   /**
@@ -500,8 +500,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _getItem = (data: Array<ItemT>, index: number) => {
+  _getItem = (
+    data: $ArrayLike<ItemT>,
+    index: number,
+  ): ?(ItemT | $ReadOnlyArray<ItemT>) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
@@ -518,8 +520,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   };
 
-  _getItemCount = (data: ?Array<ItemT>): number => {
-    if (Array.isArray(data)) {
+  _getItemCount = (data: ?$ArrayLike<ItemT>): number => {
+    if (data != null && typeof Object(data).length === 'number') {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
