@@ -124,6 +124,7 @@ public class ReactTextViewManager
         for (CustomStyleSpan span : customStyleSpans) {
           span.updateSpan(highestLineHeight, highestFontSize);
         }
+        view.requestLayout();
       }
     }
   }

@@ -370,7 +370,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       Linkify.addLinks(spannable, mLinkifyMaskType);
       setMovementMethod(LinkMovementMethod.getInstance());
     }
-    setText(spannable);
+    // allows to mutate CustomStyleSpan attributes mMaximumLineHeight
+    // https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
+    setText(spannable, BufferType.SPANNABLE);
     float paddingLeft = update.getPaddingLeft();
     float paddingTop = update.getPaddingTop();
     float paddingRight = update.getPaddingRight();
