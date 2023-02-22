@@ -10,8 +10,10 @@
 
 import type {Overlay} from './TraceUpdateOverlayNativeComponent';
 
+import UIManager from '../../ReactNative/UIManager';
 import processColor from '../../StyleSheet/processColor';
 import StyleSheet from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
 import View from '../View/View';
 import TraceUpdateOverlayNativeComponent, {
   Commands,
@@ -53,6 +55,9 @@ type ReactDevToolsGlobalHook = {
 
 const {useEffect, useRef, useState} = React;
 const hook: ReactDevToolsGlobalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+const isNativeComponentReady =
+  Platform.OS === 'android' &&
+  UIManager.hasViewManagerConfig('TraceUpdateOverlay');
 let devToolsAgent: ?Agent;
 
 export default function TraceUpdateOverlay(): React.Node {
@@ -60,6 +65,10 @@ export default function TraceUpdateOverlay(): React.Node {
   // This effect is designed to be explictly shown here to avoid re-subscribe from the same
   // overlay component.
   useEffect(() => {
+    if (!isNativeComponentReady) {
+      return;
+    }
+
     function attachToDevtools(agent: Agent) {
       devToolsAgent = agent;
       agent.addListener('drawTraceUpdates', onAgentDrawTraceUpdates);
@@ -141,7 +150,8 @@ export default function TraceUpdateOverlay(): React.Node {
     useRef<?React.ElementRef<typeof TraceUpdateOverlayNativeComponent>>(null);
 
   return (
-    !overlayDisabled && (
+    !overlayDisabled &&
+    isNativeComponentReady && (
       <View pointerEvents="none" style={styles.overlay}>
         <TraceUpdateOverlayNativeComponent
           ref={nativeComponentRef}
