@@ -18,6 +18,7 @@ const {
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleTypeIsUnsupported,
@@ -33,6 +34,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   MoreThanOneModuleInterfaceParserError,
@@ -458,6 +460,55 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
         typescriptParser,
       );
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
+  });
+});
+
+describe('throwIfIncorrectModuleRegistryCallArgument', () => {
+  const nativeModuleName = 'moduleName';
+  const methodName = 'methodName';
+
+  it('throw error if callExpressionArg type is unsupported in Flow', () => {
+    const callExpressionArg = {type: 'NotLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it("don't throw error if callExpressionArg type is `Literal` in Flow", () => {
+    const callExpressionArg = {type: 'Literal'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it('throw error if callExpressionArg type is unsupported in TypeScript', () => {
+    const callExpressionArg = {type: 'NotStringLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it("don't throw error if callExpressionArg type is `StringLiteral` in TypeScript", () => {
+    const callExpressionArg = {type: 'StringLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
   });
 });
 
