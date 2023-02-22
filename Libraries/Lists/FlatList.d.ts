@@ -66,7 +66,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
    */
   getItemLayout?:
     | ((
-        data: Array<ItemT> | null | undefined,
+        data: ArrayLike<ItemT> | null | undefined,
         index: number,
       ) => {length: number; offset: number; index: number})
     | undefined;
