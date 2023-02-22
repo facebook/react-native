@@ -5,17 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef __ANDROID__
-
 #include <android/log.h>
+#include <react/debug/react_native_assert.h>
 
-// Provide a prototype to silence missing prototype warning in release
-// mode.
-extern "C" void react_native_assert_fail(
-    const char *func,
-    const char *file,
-    int line,
-    const char *expr);
+#ifdef REACT_NATIVE_DEBUG
 
 extern "C" void react_native_assert_fail(
     const char *func,
@@ -42,4 +35,4 @@ extern "C" void react_native_assert_fail(
       expr);
 }
 
-#endif // __ANDROID__
+#endif

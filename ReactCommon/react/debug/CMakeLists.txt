@@ -16,7 +16,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 
-file(GLOB react_debug_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB react_debug_SRC CONFIGURE_DEPENDS android/*.cpp)
 add_library(react_debug SHARED ${react_debug_SRC})
 
 target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})

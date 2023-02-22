@@ -28,9 +28,8 @@
 
 #else // REACT_NATIVE_DEBUG
 
-#ifdef __ANDROID__
-
-#include <android/log.h>
+#define react_native_assert(e) \
+  ((e) ? (void)0 : react_native_assert_fail(__func__, __FILE__, __LINE__, #e))
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,28 +42,5 @@ void react_native_assert_fail(
 #ifdef __cplusplus
 }
 #endif // __cpusplus
-
-#define react_native_assert(e) \
-  ((e) ? (void)0 : react_native_assert_fail(__func__, __FILE__, __LINE__, #e))
-
-#else // __ANDROID__
-
-#include <glog/logging.h>
-#include <cassert>
-
-// For all platforms, but iOS+Xcode especially: flush logs because some might be
-// lost on iOS if an assert is hit right after this. If you are trying to debug
-// something actively and have added lots of LOG statements to track down an
-// issue, there is race between flushing the final logs and stopping execution
-// when the assert hits. Thus, if we know an assert will fail, we force flushing
-// to happen right before the assert.
-#define react_native_assert(cond)                           \
-  if (!(cond)) {                                            \
-    LOG(ERROR) << "react_native_assert failure: " << #cond; \
-    google::FlushLogFiles(google::GLOG_INFO);               \
-    assert(cond);                                           \
-  }
-
-#endif // platforms besides __ANDROID__
 
 #endif // REACT_NATIVE_DEBUG
