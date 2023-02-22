@@ -371,7 +371,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       setMovementMethod(LinkMovementMethod.getInstance());
     }
     // allows to mutate CustomStyleSpan attributes mMaximumLineHeight
+    // after the spannable is set on the text
     // https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
+    // https://github.com/facebook/react-native/pull/35704/files#r1114801208
     setText(spannable, BufferType.SPANNABLE);
     float paddingLeft = update.getPaddingLeft();
     float paddingTop = update.getPaddingTop();
