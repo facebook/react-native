@@ -115,7 +115,7 @@ export * from '../Libraries/LayoutAnimation/LayoutAnimation';
 export * from '../Libraries/Linking/Linking';
 export * from '../Libraries/Lists/FlatList';
 export * from '../Libraries/Lists/SectionList';
-export * from '../Libraries/Lists/VirtualizedList';
+export * from '@react-native/virtualized-lists';
 export * from '../Libraries/LogBox/LogBox';
 export * from '../Libraries/Modal/Modal';
 export * as Systrace from '../Libraries/Performance/Systrace';
@@ -147,7 +147,6 @@ export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
-export * from '../Libraries/vendor/emitter/EventEmitter';
 
 export * from './public/DeprecatedPropertiesAlias';
 export * from './public/Insets';

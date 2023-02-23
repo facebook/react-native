@@ -11,7 +11,7 @@ import org.gradle.configurationcache.extensions.serviceOf
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.6.10"
+  kotlin("jvm") version "1.7.22"
   id("java-gradle-plugin")
 }
 
@@ -33,7 +33,7 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
-  implementation("com.android.tools.build:gradle:7.3.1")
+  implementation("com.android.tools.build:gradle:7.4.1")
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")

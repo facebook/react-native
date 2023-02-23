@@ -12,6 +12,8 @@ import android.content.res.Resources;
 import android.util.TypedValue;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 
 public class ColorPropConverter {
   private static final String JSON_KEY = "resource_paths";
@@ -59,6 +61,15 @@ public class ColorPropConverter {
 
     throw new JSApplicationCausedNativeException(
         "ColorValue: the value must be a number or Object.");
+  }
+
+  public static Integer getColor(Object value, Context context, int defaultInt) {
+    try {
+      return getColor(value, context);
+    } catch (JSApplicationCausedNativeException e) {
+      FLog.w(ReactConstants.TAG, e, "Error converting ColorValue");
+      return defaultInt;
+    }
   }
 
   public static Integer resolveResourcePath(Context context, @Nullable String resourcePath) {

@@ -18,6 +18,8 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMemberType,
+  NativeModuleEnumMembers,
 } from '../CodegenSchema';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
@@ -25,6 +27,22 @@ const flowParser = require('flow-parser');
 const {
   UnsupportedObjectPropertyTypeAnnotationParserError,
 } = require('./errors');
+
+const schemaMock = {
+  modules: {
+    StringPropNativeComponentView: {
+      type: 'Component',
+      components: {
+        StringPropNativeComponentView: {
+          extendsProps: [],
+          events: [],
+          props: [],
+          commands: [],
+        },
+      },
+    },
+  },
+};
 
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
@@ -43,16 +61,6 @@ export class MockedParser implements Parser {
       );
     }
     return property.key.name;
-  }
-
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
-    return maybeEnumDeclaration.body.type
-      .replace('EnumNumberBody', 'NumberTypeAnnotation')
-      .replace('EnumStringBody', 'StringTypeAnnotation');
-  }
-
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
-    return maybeEnumDeclaration.type === 'EnumDeclaration';
   }
 
   language(): ParserType {
@@ -74,21 +82,15 @@ export class MockedParser implements Parser {
   }
 
   parseFile(filename: string): SchemaType {
-    return {
-      modules: {
-        StringPropNativeComponentView: {
-          type: 'Component',
-          components: {
-            StringPropNativeComponentView: {
-              extendsProps: [],
-              events: [],
-              props: [],
-              commands: [],
-            },
-          },
-        },
-      },
-    };
+    return schemaMock;
+  }
+
+  parseString(contents: string, filename: ?string): SchemaType {
+    return schemaMock;
+  }
+
+  parseModuleFixture(filename: string): SchemaType {
+    return schemaMock;
   }
 
   getAst(contents: string): $FlowFixMe {
@@ -121,5 +123,40 @@ export class MockedParser implements Parser {
     functionTypeAnnotation: $FlowFixMe,
   ): $FlowFixMe {
     return functionTypeAnnotation.returnType;
+  }
+
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
+    return typeAnnotation.type;
+  }
+
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void {
+    return;
+  }
+
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+    return typeAnnotation.type === 'StringTypeAnnotation'
+      ? [
+          {
+            name: 'Hello',
+            value: 'hello',
+          },
+          {
+            name: 'Goodbye',
+            value: 'goodbye',
+          },
+        ]
+      : [
+          {
+            name: 'On',
+            value: '1',
+          },
+          {
+            name: 'Off',
+            value: '0',
+          },
+        ];
   }
 }

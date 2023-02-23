@@ -15,6 +15,10 @@
 #endif
 #endif
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#define RN_FABRIC_ENABLED
+#endif
+
 #if RCT_USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
 #else
@@ -48,6 +52,9 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 
 #import <react/config/ReactNativeConfig.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #endif
 
 #if DEBUG
@@ -70,6 +77,7 @@
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
@@ -84,17 +92,18 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   RCTEnableTurboModule(YES);
 
+#ifdef RN_FABRIC_ENABLED
+  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+#endif
+
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
   // Appetizer.io params check
   NSDictionary *initProps = [self prepareInitialProps];
 
 #ifdef RN_FABRIC_ENABLED
-  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-
-  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-
   _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:_contextContainer];
 
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
@@ -174,11 +183,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #pragma mark - RCTCxxBridgeDelegate
 
+// This function is called during
+// `[[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                             delegate:self
-                                                            jsInvoker:bridge.jsCallInvoker];
+  std::shared_ptr<facebook::react::CallInvoker> callInvoker = bridge.jsCallInvoker;
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
+  _contextContainer->erase("RuntimeScheduler");
+  _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
+  callInvoker = std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
+#endif
+  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
   [bridge setRCTTurboModuleRegistry:_turboModuleManager];
 
 #if RCT_DEV
@@ -190,6 +207,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   __weak __typeof(self) weakSelf = self;
+
 #if RCT_USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
@@ -200,6 +218,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
           return;
         }
         __typeof(self) strongSelf = weakSelf;
+        if (strongSelf && strongSelf->_runtimeScheduler) {
+          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, strongSelf->_runtimeScheduler);
+        }
         if (strongSelf) {
           facebook::react::RuntimeExecutor syncRuntimeExecutor =
               [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };

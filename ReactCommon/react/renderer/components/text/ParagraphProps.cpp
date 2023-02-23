@@ -66,6 +66,8 @@ void ParagraphProps::setProp(
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 
+  static auto defaults = ParagraphProps{};
+
   // ParagraphAttributes has its own switch statement - to keep all
   // of these fields together, and because there are some collisions between
   // propnames parsed here and outside of ParagraphAttributes.
@@ -119,8 +121,8 @@ void ParagraphProps::setProp(
   }
 
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout);
   }
 
   /*

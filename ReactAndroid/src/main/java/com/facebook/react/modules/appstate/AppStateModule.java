@@ -117,9 +117,6 @@ public class AppStateModule extends NativeAppStateSpec
   public void invalidate() {
     super.invalidate();
 
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
-    }
+    getReactApplicationContext().removeLifecycleEventListener(this);
   }
 }

@@ -424,6 +424,10 @@ def react_module_plugin_providers(*args, **kwargs):
 def react_fabric_component_plugin_provider(name, native_class_func):
     return None
 
+# C++ TurboModule plugins support (stubbed)
+def react_cxx_module_plugin_provider(name, function):
+    return None
+
 HERMES_BYTECODE_VERSION = -1
 
 RCT_IMAGE_DATA_DECODER_SOCKET = None

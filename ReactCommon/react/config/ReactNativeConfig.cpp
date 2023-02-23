@@ -21,6 +21,9 @@ ReactNativeConfig::~ReactNativeConfig() {}
 EmptyReactNativeConfig::EmptyReactNativeConfig() {}
 
 bool EmptyReactNativeConfig::getBool(const std::string &param) const {
+  if (param == "react_fabric:enabled_layout_animations_ios") {
+    return true;
+  }
   return false;
 }
 

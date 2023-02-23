@@ -25,6 +25,11 @@ class CoreFeatures {
   // its ShadowNode traits must set the MapBuffer trait; and this
   // must be set to "true" globally.
   static bool enableMapBuffer;
+
+  // When enabled, Fabric will block paint to allow for state updates in
+  // useLayoutEffect hooks to be processed. This changes affects scheduling of
+  // when a transaction is mounted.
+  static bool blockPaintForUseLayoutEffect;
 };
 
 } // namespace react

@@ -32,12 +32,12 @@ fi
 if [ -n "$NODE_BINARY" ]; then
     echo "Node found at: ${NODE_BINARY}"
 else
-    echo "[Warning] You need to configure your node path in the `'.xcode.env' file` environment. " \
-       "You can set it up quickly by running: " \
-       "echo 'export NODE_BINARY=$(command -v node)' > .xcode.env " \
-       "in the ios folder. This is needed by React Native to work correctly. " \
-       "We fallback to the DEPRECATED behavior of finding `node`. This will be REMOVED in a future version. " \
-       "You can read more about this here: https://reactnative.dev/docs/environment-setup#optional-configuring-your-environment" >&2
+    echo '[Warning] You need to configure your node path in the `".xcode.env" file` environment. ' \
+       'You can set it up quickly by running: ' \
+       '`echo export NODE_BINARY=$(command -v node) > .xcode.env` ' \
+       'in the ios folder. This is needed by React Native to work correctly. ' \
+       'We fallback to the DEPRECATED behavior of finding `node`. This will be REMOVED in a future version. ' \
+       'You can read more about this here: https://reactnative.dev/docs/environment-setup#optional-configuring-your-environment' >&2
     source "${REACT_NATIVE_PATH}/scripts/find-node-for-xcode.sh"
 fi
 

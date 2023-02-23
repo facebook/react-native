@@ -21,6 +21,9 @@ add_compile_options(
         -Wno-error=unused-but-set-variable
         -DHAVE_POSIX_CLOCKS
 )
+if(${CMAKE_BUILD_TYPE} MATCHES Release)
+        add_compile_options(-DNDEBUG)
+endif()
 
 # Yogacore needs to link towards android and log from the NDK libs
 target_link_libraries(fb dl android log)

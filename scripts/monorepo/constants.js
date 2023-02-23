@@ -8,6 +8,6 @@
  * @format
  */
 
-const BUMP_COMMIT_MESSAGE = '[ci][monorepo] bump package versions';
+const PUBLISH_PACKAGES_TAG = '@publish-packages-to-npm';
 
-module.exports = {BUMP_COMMIT_MESSAGE};
+module.exports = {PUBLISH_PACKAGES_TAG};

@@ -26,6 +26,10 @@ bool SampleTurboCxxModule::getBool(jsi::Runtime &rt, bool arg) {
   return arg;
 }
 
+double SampleTurboCxxModule::getEnum(jsi::Runtime &rt, double arg) {
+  return arg;
+}
+
 double SampleTurboCxxModule::getNumber(jsi::Runtime &rt, double arg) {
   return arg;
 }

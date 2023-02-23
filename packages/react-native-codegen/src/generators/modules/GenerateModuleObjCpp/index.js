@@ -132,14 +132,14 @@ module.exports = {
     const hasteModuleNames: Array<string> = Object.keys(nativeModules).sort();
     for (const hasteModuleName of hasteModuleNames) {
       const {
-        aliases,
+        aliasMap,
         excludedPlatforms,
         spec: {properties},
       } = nativeModules[hasteModuleName];
       if (excludedPlatforms != null && excludedPlatforms.includes('iOS')) {
         continue;
       }
-      const resolveAlias = createAliasResolver(aliases);
+      const resolveAlias = createAliasResolver(aliasMap);
       const structCollector = new StructCollector();
 
       const methodSerializations: Array<MethodSerializationOutput> = [];

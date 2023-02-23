@@ -97,12 +97,12 @@ AncestorList ShadowNodeFamily::getAncestors(
 }
 
 State::Shared ShadowNodeFamily::getMostRecentState() const {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
   return mostRecentState_;
 }
 
 void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
 
   /*
    * Checking and setting `isObsolete_` prevents old states to be recommitted
@@ -123,7 +123,7 @@ void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
 
 std::shared_ptr<State const> ShadowNodeFamily::getMostRecentStateIfObsolete(
     State const &state) const {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
   if (!state.isObsolete_) {
     return {};
   }

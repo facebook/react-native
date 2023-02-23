@@ -138,7 +138,7 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
       transform = CATransform3DConcat(next, transform);
 
     } else {
-      RCTLogError(@"Unsupported transform type for a CATransform3D: %@.", property);
+      RCTLogInfo(@"Unsupported transform type for a CATransform3D: %@.", property);
     }
   }
   return transform;

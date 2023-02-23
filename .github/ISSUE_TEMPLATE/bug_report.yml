@@ -16,9 +16,9 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version
-      description: What react-native version does this appear on? Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
-      placeholder: ex. 0.70.0
+      label: React Native Version
+      description: What is the latest version of react-native that this issue reproduces on? Please only list the highest version you tested. Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
+      placeholder: ex. 0.71.0
     validations:
       required: true
   - type: textarea

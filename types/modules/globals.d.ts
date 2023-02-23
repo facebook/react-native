@@ -260,11 +260,11 @@ interface XMLHttpRequest extends EventTarget, XMLHttpRequestEventTarget {
   overrideMimeType(mime: string): void;
   send(data?: any): void;
   setRequestHeader(header: string, value: string): void;
-  readonly DONE: number;
-  readonly HEADERS_RECEIVED: number;
-  readonly LOADING: number;
-  readonly OPENED: number;
-  readonly UNSENT: number;
+  readonly DONE: 4;
+  readonly HEADERS_RECEIVED: 2;
+  readonly LOADING: 3;
+  readonly OPENED: 1;
+  readonly UNSENT: 0;
   addEventListener<K extends keyof XMLHttpRequestEventMap>(
     type: K,
     listener: (this: XMLHttpRequest, ev: XMLHttpRequestEventMap[K]) => any,
@@ -280,11 +280,11 @@ interface XMLHttpRequest extends EventTarget, XMLHttpRequestEventTarget {
 declare var XMLHttpRequest: {
   prototype: XMLHttpRequest;
   new (): XMLHttpRequest;
-  readonly DONE: number;
-  readonly HEADERS_RECEIVED: number;
-  readonly LOADING: number;
-  readonly OPENED: number;
-  readonly UNSENT: number;
+  readonly DONE: 4;
+  readonly HEADERS_RECEIVED: 2;
+  readonly LOADING: 3;
+  readonly OPENED: 1;
+  readonly UNSENT: 0;
 };
 
 interface XMLHttpRequestEventTargetEventMap {
@@ -551,9 +551,9 @@ interface FileReader extends EventTarget {
   // readAsBinaryString(blob: Blob): void;
   readAsDataURL(blob: Blob): void;
   readAsText(blob: Blob, encoding?: string): void;
-  readonly DONE: number;
-  readonly EMPTY: number;
-  readonly LOADING: number;
+  readonly DONE: 2;
+  readonly EMPTY: 0;
+  readonly LOADING: 1;
   addEventListener<K extends keyof FileReaderEventMap>(
     type: K,
     listener: (this: FileReader, ev: FileReaderEventMap[K]) => any,
@@ -571,7 +571,7 @@ interface FileReader extends EventTarget {
 declare var FileReader: {
   prototype: FileReader;
   new (): FileReader;
-  readonly DONE: number;
-  readonly EMPTY: number;
-  readonly LOADING: number;
+  readonly DONE: 2;
+  readonly EMPTY: 0;
+  readonly LOADING: 1;
 };

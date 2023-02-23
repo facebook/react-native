@@ -8,12 +8,13 @@
  */
 
 const chalk = require('chalk');
+const {execSync} = require('child_process');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 
-const {BUMP_COMMIT_MESSAGE} = require('../constants');
+const {PUBLISH_PACKAGES_TAG} = require('../constants');
 const forEachPackage = require('../for-each-package');
 const checkForGitChanges = require('../check-for-git-changes');
 const bumpPackageVersion = require('./bump-package-version');
@@ -167,7 +168,21 @@ const main = async () => {
           return;
         }
 
-        exec(`git commit -a -m "${BUMP_COMMIT_MESSAGE}"`, {cwd: ROOT_LOCATION});
+        // exec from shelljs currently does not support interactive input
+        // https://github.com/shelljs/shelljs/wiki/FAQ#running-interactive-programs-with-exec
+        execSync('git commit -a', {cwd: ROOT_LOCATION, stdio: 'inherit'});
+
+        const enteredCommitMessage = exec('git log -n 1 --format=format:%B', {
+          cwd: ROOT_LOCATION,
+          silent: true,
+        }).stdout.trim();
+        const commitMessageWithTag =
+          enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}`;
+
+        exec(`git commit --amend -m "${commitMessageWithTag}"`, {
+          cwd: ROOT_LOCATION,
+          silent: true,
+        });
       })
       .then(() => echo());
   }

@@ -128,6 +128,9 @@ Scheduler::Scheduler(
   reduceDeleteCreateMutationLayoutAnimation_ = true;
 #endif
 
+  CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
+      "react_fabric:block_paint_for_use_layout_effect");
+
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
         componentDescriptorRegistry_);
@@ -264,7 +267,8 @@ void Scheduler::renderTemplateToSurface(
                         std::make_shared<ShadowNode::ListOfShared>(
                             ShadowNode::ListOfShared{tree}),
                     });
-              });
+              },
+              {/* default commit options */});
         });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -298,11 +302,34 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared const &mountingCoordinator) {
+    MountingCoordinator::Shared mountingCoordinator,
+    bool mountSynchronously) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
-    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
+    if (CoreFeatures::blockPaintForUseLayoutEffect) {
+      auto weakRuntimeScheduler =
+          contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+              "RuntimeScheduler");
+      auto runtimeScheduler = weakRuntimeScheduler.has_value()
+          ? weakRuntimeScheduler.value().lock()
+          : nullptr;
+      if (runtimeScheduler && !mountSynchronously) {
+        runtimeScheduler->scheduleTask(
+            SchedulerPriority::UserBlockingPriority,
+            [delegate = delegate_,
+             mountingCoordinator =
+                 std::move(mountingCoordinator)](jsi::Runtime &) {
+              delegate->schedulerDidFinishTransaction(
+                  std::move(mountingCoordinator));
+            });
+      } else {
+        delegate_->schedulerDidFinishTransaction(
+            std::move(mountingCoordinator));
+      }
+    } else {
+      delegate_->schedulerDidFinishTransaction(std::move(mountingCoordinator));
+    }
   }
 }
 void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode &shadowNode) {

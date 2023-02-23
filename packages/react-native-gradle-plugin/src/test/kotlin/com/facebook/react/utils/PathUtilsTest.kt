@@ -58,6 +58,20 @@ class PathUtilsTest {
   }
 
   @Test
+  fun detectedEntryFile_withEnvironmentVariable() {
+    val extension = TestReactExtension(ProjectBuilder.builder().build())
+    val expected = tempFolder.newFile("./fromenv.index.js")
+    // As we can't override env variable for tests, we're going to emulate them here.
+    val envVariable = "./fromenv.index.js"
+
+    extension.root.set(tempFolder.root)
+
+    val actual = detectedEntryFile(extension, envVariable)
+
+    assertEquals(expected, actual)
+  }
+
+  @Test
   fun detectedCliPath_withCliPathFromExtensionAndFileExists_returnsIt() {
     val project = ProjectBuilder.builder().build()
     val cliFile = tempFolder.newFile("cli.js").apply { createNewFile() }
@@ -231,7 +245,7 @@ class PathUtilsTest {
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
-    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -245,7 +259,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    assertEquals(localFile, findPackageJsonFile(project, extension))
+    assertEquals(localFile, findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -257,7 +271,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNull(actual)
   }
@@ -272,7 +286,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNull(actual!!.codegenConfig)
@@ -298,7 +312,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNotNull(actual!!.codegenConfig)

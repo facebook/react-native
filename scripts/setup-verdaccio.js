@@ -28,6 +28,10 @@ function setupVerdaccio(
     );
   }
 
+  execSync('echo "//localhost:4873/:_authToken=secretToken" > .npmrc', {
+    cwd: reactNativeRootPath,
+  });
+
   const verdaccioProcess = spawn(
     'npx',
     ['verdaccio@5.16.3', '--config', verdaccioConfigPath],
@@ -37,11 +41,7 @@ function setupVerdaccio(
   const VERDACCIO_PID = verdaccioProcess.pid;
 
   execSync('npx wait-on@6.0.1 http://localhost:4873');
-
   execSync('npm set registry http://localhost:4873');
-  execSync('echo "//localhost:4873/:_authToken=secretToken" > .npmrc', {
-    cwd: reactNativeRootPath,
-  });
 
   return VERDACCIO_PID;
 }
