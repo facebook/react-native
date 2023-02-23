@@ -79,9 +79,15 @@ RCT_EXPORT_MODULE()
     if (self->_presentationBlock) {
       self->_presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
-      [[modalHostView reactViewController] presentViewController:viewController
-                                                        animated:animated
-                                                      completion:completionBlock];
+        UIViewController *modelParentVC = [modalHostView reactViewController];
+        CGSize curSize = modelParentVC.view.frame.size;
+        [modelParentVC addChildViewController:viewController];
+        viewController.view.frame = CGRectMake(0, 0, curSize.width, curSize.height);
+        [modelParentVC.view addSubview:viewController.view];
+        [viewController didMoveToParentViewController:modelParentVC];
+        !completionBlock ?: completionBlock();
+        !self.dismissWaitingBlock ?: self.dismissWaitingBlock();
+        self.dismissWaitingBlock = nil;
     }
   });
 }
@@ -99,7 +105,10 @@ RCT_EXPORT_MODULE()
     if (self->_dismissalBlock) {
       self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
-      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+        [viewController.view removeFromSuperview];
+        [viewController removeFromParentViewController];
+        [viewController willMoveToParentViewController:nil];
+        completionBlock();
     }
   });
 }
