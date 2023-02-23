@@ -105,8 +105,8 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
         mAssetManager,
         mTextAlignVertical,
         mSize,
-        mHighestLineHeight,
-        mHighestFontSize);
+        0,
+        0);
   }
 
   public int getStyle() {
