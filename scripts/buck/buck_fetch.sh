@@ -49,6 +49,5 @@ retry 3 scripts/buck/download-kotlin-compiler-with-buck.sh
 retry 3 buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
 retry 3 buck fetch ReactAndroid/src/main/java/com/facebook/react
 retry 3 buck fetch ReactAndroid/src/main/java/com/facebook/react/shell
-retry 3 buck fetch ReactAndroid/src/main/java/com/facebook/react/defaults
 retry 3 buck fetch ReactAndroid/src/test/...
 retry 3 buck fetch ReactAndroid/src/androidTest/...

@@ -2,12 +2,14 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_tar
 
 rn_android_library(
     name = "defaults",
-    srcs = glob(["**/*.java"]),
+    srcs = glob(["*.kt"]),
     autoglob = False,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
-    language = "JAVA",
+    language = "KOTLIN",
+    pure_kotlin = False,
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
