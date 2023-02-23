@@ -124,18 +124,21 @@ public class PointerEvent extends Event<PointerEvent> {
           new EventAnimationDriverMatchSpec() {
             @Override
             public boolean match(int viewTag, String eventName) {
-              if (!eventName.equals(mEventName) || !PointerEventHelper.isBubblingEvent(eventName)) {
+              if (!eventName.equals(mEventName)) {
                 return false;
               }
 
-              List<TouchTargetHelper.ViewTarget> viewTargets =
-                  mEventState.getHitPathForActivePointer();
-              for (TouchTargetHelper.ViewTarget viewTarget : viewTargets) {
-                if (viewTarget.getViewId() == viewTag) {
-                  return true;
+              if (PointerEventHelper.isBubblingEvent(eventName)) {
+                for (TouchTargetHelper.ViewTarget viewTarget :
+                    mEventState.getHitPathForActivePointer()) {
+                  if (viewTarget.getViewId() == viewTag) {
+                    return true;
+                  }
                 }
+                return false;
+              } else {
+                return getViewTag() == viewTag;
               }
-              return false;
             }
           };
     }
