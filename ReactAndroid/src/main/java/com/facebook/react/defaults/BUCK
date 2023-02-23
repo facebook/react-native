@@ -23,5 +23,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager:uimanager"),  
         react_native_target("java/com/facebook/react/config:config"),
         react_native_target("jni/react/reactperflogger:jni"),
+        react_native_target("java/com/facebook/react:react"),
     ],
 )
