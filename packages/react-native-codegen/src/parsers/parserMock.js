@@ -159,4 +159,13 @@ export class MockedParser implements Parser {
           },
         ];
   }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'InterfaceDeclaration' &&
+      node.extends.length === 1 &&
+      node.extends[0].type === 'InterfaceExtends' &&
+      node.extends[0].id.name === 'TurboModule'
+    );
+  }
 }

@@ -152,4 +152,9 @@ export interface Parser {
    * Calculates enum's members
    */
   parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
+
+  /**
+   * Given a node, it returns true if it is a module interface
+   */
+  isModuleInterface(node: $FlowFixMe): boolean;
 }

@@ -196,6 +196,15 @@ class FlowParser implements Parser {
       value: member.init?.value ?? member.id.name,
     }));
   }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'InterfaceDeclaration' &&
+      node.extends.length === 1 &&
+      node.extends[0].type === 'InterfaceExtends' &&
+      node.extends[0].id.name === 'TurboModule'
+    );
+  }
 }
 
 module.exports = {
