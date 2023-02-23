@@ -32,6 +32,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/config:config"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
+        react_native_target("java/com/facebook/react/defaults:defaults"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
         react_native_target("java/com/facebook/react/jstasks:jstasks"),
@@ -57,6 +58,5 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
-        react_native_target("java/com/facebook/react/defaults:defaults"),
     ],
 )
