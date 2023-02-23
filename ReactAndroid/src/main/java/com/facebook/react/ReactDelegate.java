@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
@@ -40,7 +41,7 @@ public class ReactDelegate {
       @Nullable Bundle launchOptions) {
     mActivity = activity;
     mMainComponentName = appKey;
-    mLaunchOptions = launchOptions;
+    mLaunchOptions = composeLaunchOptions(launchOptions);
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
     mReactNativeHost = reactNativeHost;
   }
@@ -143,5 +144,25 @@ public class ReactDelegate {
 
   public ReactInstanceManager getReactInstanceManager() {
     return getReactNativeHost().getReactInstanceManager();
+  }
+
+  /**
+    * Override this method if you wish to selectively toggle Fabric for a specific surface. This will
+    * also control if Concurrent Root (React 18) should be enabled or not.
+    *
+    * @return true if Fabric is enabled for this Activity, false otherwise.
+    */
+  protected boolean isFabricEnabled() {
+    return false;
+  }
+
+  private @NonNull Bundle composeLaunchOptions(Bundle composedLaunchOptions) {
+    if (isFabricEnabled()) {
+      if (composedLaunchOptions == null) {
+        composedLaunchOptions = new Bundle();
+      }
+      composedLaunchOptions.putBoolean("concurrentRoot", true);
+    }
+    return composedLaunchOptions;
   }
 }
