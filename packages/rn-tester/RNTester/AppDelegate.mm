@@ -88,15 +88,21 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
+#if RCT_NEW_ARCH_ENABLED
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+  }
+  return self;
+}
+#endif
+
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTEnableTurboModule(YES);
-
-#ifdef RN_FABRIC_ENABLED
-  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-#endif
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 

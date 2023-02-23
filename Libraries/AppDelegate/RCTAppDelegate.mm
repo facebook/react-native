@@ -33,17 +33,24 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation RCTAppDelegate
 
+#if RCT_NEW_ARCH_ENABLED
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+  }
+  return self;
+}
+#endif
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   BOOL enableTM = NO;
 #if RCT_NEW_ARCH_ENABLED
   enableTM = self.turboModuleEnabled;
-
-  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 #endif
-
   RCTAppSetupPrepareApp(application, enableTM);
 
   if (!self.bridge) {
