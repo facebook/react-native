@@ -11,6 +11,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
