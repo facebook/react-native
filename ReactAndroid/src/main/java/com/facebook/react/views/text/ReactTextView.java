@@ -370,10 +370,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       Linkify.addLinks(spannable, mLinkifyMaskType);
       setMovementMethod(LinkMovementMethod.getInstance());
     }
-    // allows to mutate CustomStyleSpan attributes mMaximumLineHeight
-    // after the spannable is set on the text
-    // https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
-    // https://github.com/facebook/react-native/pull/35704/files#r1114801208
+    /*
+     * BufferType.SPANNABLE is required to change internal attribute of a mutable span,
+     * such as the bullet color in a custom bullet span, you can avoid the overhead from
+     * calling setText() multiple times by keeping a reference to the span as it's created.
+     * When you need to modify the span, you can modify the reference and then call either invalidate()
+     * or requestLayout() on the TextView, depending on the type of attribute that you changed.
+     * https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
+     * https://github.com/facebook/react-native/pull/35704/files#r1114801208
+     */
     setText(spannable, BufferType.SPANNABLE);
     float paddingLeft = update.getPaddingLeft();
     float paddingTop = update.getPaddingTop();
