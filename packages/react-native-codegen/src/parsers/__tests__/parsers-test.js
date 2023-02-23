@@ -67,6 +67,28 @@ describe('FlowParser', () => {
       ]);
     });
   });
+
+  describe('isModuleInterface', () => {
+    it('returns true if it is a valid node', () => {
+      const node = {
+        type: 'InterfaceDeclaration',
+        extends: [
+          {
+            type: 'InterfaceExtends',
+            id: {
+              name: 'TurboModule',
+            },
+          },
+        ],
+      };
+      expect(parser.isModuleInterface(node)).toBe(true);
+    });
+
+    it('returns false if it is a invalid node', () => {
+      const node = {};
+      expect(parser.isModuleInterface(node)).toBe(false);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -114,6 +136,28 @@ describe('TypeScriptParser', () => {
         'ObjectTypeAnnotation',
         'StringTypeAnnotation',
       ]);
+    });
+  });
+
+  describe('isModuleInterface', () => {
+    it('returns true if it is a valid node', () => {
+      const node = {
+        type: 'TSInterfaceDeclaration',
+        extends: [
+          {
+            type: 'TSExpressionWithTypeArguments',
+            expression: {
+              name: 'TurboModule',
+            },
+          },
+        ],
+      };
+      expect(parser.isModuleInterface(node)).toBe(true);
+    });
+
+    it('returns false if it is a invalid node', () => {
+      const node = {};
+      expect(parser.isModuleInterface(node)).toBe(false);
     });
   });
 });

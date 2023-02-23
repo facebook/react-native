@@ -192,6 +192,15 @@ class TypeScriptParser implements Parser {
       value: member.initializer?.value ?? member.id.name,
     }));
   }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'TSInterfaceDeclaration' &&
+      node.extends?.length === 1 &&
+      node.extends[0].type === 'TSExpressionWithTypeArguments' &&
+      node.extends[0].expression.name === 'TurboModule'
+    );
+  }
 }
 module.exports = {
   TypeScriptParser,

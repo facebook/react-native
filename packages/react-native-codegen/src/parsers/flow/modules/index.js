@@ -330,15 +330,6 @@ function translateTypeAnnotation(
   }
 }
 
-function isModuleInterface(node: $FlowFixMe) {
-  return (
-    node.type === 'InterfaceDeclaration' &&
-    node.extends.length === 1 &&
-    node.extends[0].type === 'InterfaceExtends' &&
-    node.extends[0].id.name === 'TurboModule'
-  );
-}
-
 function buildModuleSchema(
   hasteModuleName: string,
   /**
@@ -350,7 +341,7 @@ function buildModuleSchema(
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
-    isModuleInterface,
+    t => parser.isModuleInterface(t),
   );
 
   throwIfModuleInterfaceNotFound(
