@@ -21,6 +21,7 @@ import type {
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+import type {TypeDeclarationMap} from '../utils';
 
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
@@ -200,6 +201,13 @@ class TypeScriptParser implements Parser {
       node.extends[0].type === 'TSExpressionWithTypeArguments' &&
       node.extends[0].expression.name === 'TurboModule'
     );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
 }
 module.exports = {

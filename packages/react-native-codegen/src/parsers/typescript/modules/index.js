@@ -75,6 +75,7 @@ const {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -249,14 +250,16 @@ function translateTypeAnnotation(
             );
           }
 
-          const annotatedElement =
-            types[typeAnnotation.typeParameters.params[0].typeName.name];
+          const annotatedElement = parser.extractAnnotatedElement(
+            typeAnnotation,
+            types,
+          );
 
-          if (!annotatedElement) {
-            throw new Error(
-              'Partials only support annotating a type parameter.',
-            );
-          }
+          throwIfPartialNotAnnotatingTypeParameter(
+            typeAnnotation,
+            types,
+            parser,
+          );
 
           const properties = annotatedElement.typeAnnotation.members.map(
             member => {
