@@ -57,5 +57,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/core:core"),
         react_native_target("java/com/facebook/react/packagerconnection:packagerconnection"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/defaults:defaults"),
     ],
 )
