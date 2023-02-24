@@ -56,6 +56,7 @@ public class NativeModuleRegistryBuilder {
                   + ". Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true. "
                   + "This error may also be present if the package is present only once in getPackages() but is also automatically added later during build time by autolinking. Try removing the existing entry and rebuild.");
         }
+        mModules.remove(existingNativeModule);
       }
       mModules.put(name, moduleHolder);
     }
