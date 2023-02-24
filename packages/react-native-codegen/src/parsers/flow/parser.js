@@ -21,6 +21,7 @@ import type {
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+import type {TypeDeclarationMap} from '../utils';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -204,6 +205,13 @@ class FlowParser implements Parser {
       node.extends[0].type === 'InterfaceExtends' &&
       node.extends[0].id.name === 'TurboModule'
     );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].id.name];
   }
 }
 

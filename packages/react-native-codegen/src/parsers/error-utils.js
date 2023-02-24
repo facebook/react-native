@@ -13,6 +13,7 @@
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
+import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -280,6 +281,21 @@ function throwIfIncorrectModuleRegistryCallArgument(
   }
 }
 
+function throwIfPartialNotAnnotatingTypeParameter(
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) {
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+
+  if (!annotatedElement) {
+    throw new Error('Partials only support annotating a type parameter.');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -295,4 +311,5 @@ module.exports = {
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
 };

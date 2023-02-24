@@ -69,6 +69,7 @@ const {
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfUntypedModule,
   throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfPartialNotAnnotatingTypeParameter,
 } = require('../../error-utils');
 
 const language = 'Flow';
@@ -168,14 +169,16 @@ function translateTypeAnnotation(
             );
           }
 
-          const annotatedElement =
-            types[typeAnnotation.typeParameters.params[0].id.name];
+          const annotatedElement = parser.extractAnnotatedElement(
+            typeAnnotation,
+            types,
+          );
 
-          if (!annotatedElement) {
-            throw new Error(
-              'Partials only support annotating a type parameter.',
-            );
-          }
+          throwIfPartialNotAnnotatingTypeParameter(
+            typeAnnotation,
+            types,
+            parser,
+          );
 
           const properties = annotatedElement.right.properties.map(prop => {
             return {

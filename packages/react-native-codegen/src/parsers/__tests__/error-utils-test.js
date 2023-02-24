@@ -25,6 +25,7 @@ const {
   throwIfUntypedModule,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfPartialNotAnnotatingTypeParameter,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -718,5 +719,80 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         'StringTypeAnnotation',
       );
     }).not.toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+});
+
+describe('throwIfPartialNotAnnotatingTypeParameter', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+  const typerscriptTypeAnnotation = {
+    typeParameters: {
+      params: [
+        {
+          typeName: {
+            name: 'TypeDeclaration',
+          },
+        },
+      ],
+    },
+  };
+  const flowTypeAnnotation = {
+    typeParameters: {
+      params: [
+        {
+          id: {
+            name: 'TypeDeclaration',
+          },
+        },
+      ],
+    },
+  };
+
+  it('throw error if Partial Not Annotating Type Parameter in Flow', () => {
+    const types = {};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        flowTypeAnnotation,
+        types,
+        flowParser,
+      );
+    }).toThrowError('Partials only support annotating a type parameter.');
+  });
+
+  it('throw error if Partial Not Annotating Type Parameter in TypeScript', () => {
+    const types = {};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        typerscriptTypeAnnotation,
+        types,
+        typescriptParser,
+      );
+    }).toThrowError('Partials only support annotating a type parameter.');
+  });
+
+  it('does not throw error if Partial Annotating Type Parameter in Flow', () => {
+    const types = {TypeDeclaration: {}};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        flowTypeAnnotation,
+        types,
+        flowParser,
+      );
+    }).not.toThrowError();
+  });
+
+  it('does not throw error if Partial Annotating Type Parameter in TypeScript', () => {
+    const types = {TypeDeclaration: {}};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        typerscriptTypeAnnotation,
+        types,
+        typescriptParser,
+      );
+    }).not.toThrowError();
   });
 });
