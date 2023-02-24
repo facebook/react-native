@@ -30,8 +30,6 @@ import com.facebook.react.uimanager.ViewProps;
 public class ReactDrawableHelper {
 
   private static final TypedValue sResolveOutValue = new TypedValue();
-  private static final String BORDERLESS_KEY = "borderless";
-  private static final String RIPPLE_RADIUS_KEY = "rippleRadius";
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public static Drawable createDrawableFromJSDescription(
@@ -82,10 +80,10 @@ public class ReactDrawableHelper {
 
   private static Drawable setRadius(ReadableMap drawableDescriptionDict, Drawable drawable) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        && drawableDescriptionDict.hasKey(RIPPLE_RADIUS_KEY)
+        && drawableDescriptionDict.hasKey("rippleRadius")
         && drawable instanceof RippleDrawable) {
       RippleDrawable rippleDrawable = (RippleDrawable) drawable;
-      double rippleRadius = drawableDescriptionDict.getDouble(RIPPLE_RADIUS_KEY);
+      double rippleRadius = drawableDescriptionDict.getDouble("rippleRadius");
       rippleDrawable.setRadius((int) PixelUtil.toPixelFromDIP(rippleRadius));
     }
     return drawable;
@@ -108,9 +106,9 @@ public class ReactDrawableHelper {
   }
 
   private static @Nullable Drawable getMask(ReadableMap drawableDescriptionDict) {
-    if (!drawableDescriptionDict.hasKey(BORDERLESS_KEY)
-        || drawableDescriptionDict.isNull(BORDERLESS_KEY)
-        || !drawableDescriptionDict.getBoolean(BORDERLESS_KEY)) {
+    if (!drawableDescriptionDict.hasKey("borderless")
+        || drawableDescriptionDict.isNull("borderless")
+        || !drawableDescriptionDict.getBoolean("borderless")) {
       return new ColorDrawable(Color.WHITE);
     }
     return null;

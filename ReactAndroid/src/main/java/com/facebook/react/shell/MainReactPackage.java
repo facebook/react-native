@@ -7,7 +7,6 @@
 
 package com.facebook.react.shell;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.animated.NativeAnimatedModule;
@@ -149,7 +148,6 @@ public class MainReactPackage extends TurboReactPackage {
     }
   }
 
-  @NonNull
   @Override
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagers = new ArrayList<>();

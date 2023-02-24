@@ -8,12 +8,9 @@
 package com.facebook.react.perflogger;
 
 import com.facebook.jni.HybridData;
-import com.facebook.jni.annotations.DoNotStrip;
 import com.facebook.soloader.SoLoader;
 
 public abstract class NativeModulePerfLogger {
-  @DoNotStrip
-  @SuppressWarnings("unused")
   private final HybridData mHybridData;
 
   private static volatile boolean sIsSoLibraryLoaded;
