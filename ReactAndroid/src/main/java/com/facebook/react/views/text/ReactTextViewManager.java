@@ -121,17 +121,16 @@ public class ReactTextViewManager
             highestFontSize = span.getSize();
           }
         }
-        /*
-         * https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
-         * Changes the internal span attribute of a mutable span, such as the bullet color in a custom bullet span,
-         * you can avoid the overhead from calling setText() multiple times by keeping a reference to the span as it's created.
-         * When you need to modify the span, you can modify the reference and then call either invalidate() or requestLayout() on the TextView,
-         * depending on the type of attribute that you changed.
-         */
         for (CustomStyleSpan span : customStyleSpans) {
+          /*
+           * https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
+           * Changes the internal span attribute of a mutable span, such as the bullet color in a custom bullet span,
+           * you can avoid the overhead from calling setText() multiple times by keeping a reference to the span as it's created.
+           * When you need to modify the span, you can modify the reference and then call either invalidate() or requestLayout() on the TextView,
+           * depending on the type of attribute that you changed.
+           */
           span.updateSpan(highestLineHeight, highestFontSize);
         }
-        view.requestLayout();
       }
     }
   }

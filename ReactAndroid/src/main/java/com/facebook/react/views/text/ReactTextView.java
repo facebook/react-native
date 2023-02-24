@@ -379,7 +379,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
      * https://developer.android.com/develop/ui/views/text-and-emoji/spans#change-internal-attributes
      * https://github.com/facebook/react-native/pull/35704/files#r1114801208
      */
-    setText(spannable, BufferType.SPANNABLE);
+    setText(spannable);
     float paddingLeft = update.getPaddingLeft();
     float paddingTop = update.getPaddingTop();
     float paddingRight = update.getPaddingRight();
