@@ -11,6 +11,7 @@
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import {
+  DeviceEventEmitter,
   StyleSheet,
   Text,
   View,
@@ -53,7 +54,8 @@ type Examples =
   | 'getValue'
   | 'promise'
   | 'rejectPromise'
-  | 'voidFunc';
+  | 'voidFunc'
+  | 'emitCustomDeviceEvent';
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
@@ -97,6 +99,17 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    emitCustomDeviceEvent: () => {
+      const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
+      DeviceEventEmitter.removeAllListeners(CUSTOM_EVENT_TYPE);
+      DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
+        this._setResult(
+          'emitCustomDeviceEvent',
+          `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
+        );
+      });
+      NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
+    },
   };
 
   _setResult(

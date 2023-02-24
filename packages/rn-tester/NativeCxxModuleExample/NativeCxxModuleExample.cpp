@@ -121,4 +121,19 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime &rt) {
   // Nothing to do
 }
 
+void NativeCxxModuleExample::emitCustomDeviceEvent(
+    jsi::Runtime &rt,
+    jsi::String eventName) {
+  // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
+  // TurboModule with arbitrary arguments
+  emitDeviceEvent(
+      rt,
+      eventName.utf8(rt).c_str(),
+      [](jsi::Runtime &rt, std::vector<jsi::Value> &args) {
+        args.emplace_back(jsi::Value(true));
+        args.emplace_back(jsi::Value(42));
+        args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+      });
+}
+
 } // namespace facebook::react
