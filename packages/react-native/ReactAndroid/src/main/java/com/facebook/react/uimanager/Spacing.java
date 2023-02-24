@@ -55,10 +55,23 @@ public class Spacing {
    * Spacing type that represents the block start direction (top). E.g. {@code marginBlockStart}.
    */
   public static final int BLOCK_START = 11;
+  /** Spacing type that represents inline directions (left, right). E.g. {@code marginInline}. */
+  public static final int INLINE = 12;
+  /**
+   * Spacing type that represents the inline end direction (right in left-to-right, left in
+   * right-to-left). E.g. {@code marginInlineEnd}.
+   */
+  public static final int INLINE_END = 13;
+  /**
+   * Spacing type that represents the inline start direction (left in left-to-right, right in
+   * right-to-left). E.g. {@code marginInlineStart}.
+   */
+  public static final int INLINE_START = 14;
 
   private static final int[] sFlagsMap = {
     1, /*LEFT*/ 2, /*TOP*/ 4, /*RIGHT*/ 8, /*BOTTOM*/ 16, /*START*/ 32, /*END*/ 64, /*HORIZONTAL*/
     128, /*VERTICAL*/ 256, /*ALL*/ 512, /*BLOCK*/ 1024, /*BLOCK_END*/ 2048, /*BLOCK_START*/
+    4096, /*INLINE*/ 8192, /*INLINE_END*/ 16384, /*INLINE_START*/
   };
 
   private final float[] mSpacing;
@@ -105,7 +118,8 @@ public class Spacing {
           (mValueFlags & sFlagsMap[ALL]) != 0
               || (mValueFlags & sFlagsMap[VERTICAL]) != 0
               || (mValueFlags & sFlagsMap[HORIZONTAL]) != 0
-              || (mValueFlags & sFlagsMap[BLOCK]) != 0;
+              || (mValueFlags & sFlagsMap[BLOCK]) != 0
+              || (mValueFlags & sFlagsMap[INLINE]) != 0;
 
       return true;
     }
@@ -125,6 +139,9 @@ public class Spacing {
                 || spacingType == BLOCK
                 || spacingType == BLOCK_END
                 || spacingType == BLOCK_START
+                || spacingType == INLINE
+                || spacingType == INLINE_END
+                || spacingType == INLINE_START
             ? YogaConstants.UNDEFINED
             : mDefaultValue);
 
@@ -180,6 +197,9 @@ public class Spacing {
 
   private static float[] newFullSpacingArray() {
     return new float[] {
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
