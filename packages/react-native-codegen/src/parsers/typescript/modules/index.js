@@ -63,7 +63,6 @@ const {
 const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors');
 
 const {
@@ -75,6 +74,7 @@ const {
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -501,15 +501,11 @@ function buildModuleSchema(
       callExpression.arguments.length,
     );
 
-    if (callExpression.arguments[0].type !== 'StringLiteral') {
-      const {type} = callExpression.arguments[0];
-      throw new IncorrectModuleRegistryCallArgumentTypeParserError(
-        hasteModuleName,
-        callExpression.arguments[0],
-        methodName,
-        type,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallArgument(
+      hasteModuleName,
+      callExpression.arguments[0],
+      methodName,
+    );
 
     const $moduleName = callExpression.arguments[0].value;
 

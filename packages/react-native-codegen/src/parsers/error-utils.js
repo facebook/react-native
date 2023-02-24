@@ -22,6 +22,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
@@ -260,6 +261,25 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   }
 }
 
+function throwIfIncorrectModuleRegistryCallArgument(
+  nativeModuleName: string,
+  callExpressionArg: $FlowFixMe,
+  methodName: string,
+) {
+  if (
+    callExpressionArg.type !== 'StringLiteral' &&
+    callExpressionArg.type !== 'Literal'
+  ) {
+    const {type} = callExpressionArg;
+    throw new IncorrectModuleRegistryCallArgumentTypeParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      type,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -274,4 +294,5 @@ module.exports = {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfIncorrectModuleRegistryCallArgument,
 };
