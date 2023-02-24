@@ -36,5 +36,29 @@ jsi::Value TurboModule::get(
   return result;
 }
 
+void TurboModule::emitDeviceEvent(
+    jsi::Runtime &runtime,
+    const std::string &eventName,
+    ArgFactory argFactory) {
+  jsInvoker_->invokeAsync([&runtime, eventName, argFactory]() {
+    jsi::Value emitter =
+        runtime.global().getProperty(runtime, "__rctDeviceEventEmitter");
+    if (!emitter.isUndefined()) {
+      jsi::Object emitterObject = emitter.asObject(runtime);
+      // TODO: consider caching these
+      jsi::Function emitFunction =
+          emitterObject.getPropertyAsFunction(runtime, "emit");
+      std::vector<jsi::Value> args;
+      args.emplace_back(
+          jsi::String::createFromAscii(runtime, eventName.c_str()));
+      if (argFactory) {
+        argFactory(runtime, args);
+      }
+      emitFunction.callWithThis(
+          runtime, emitterObject, (const jsi::Value *)args.data(), args.size());
+    }
+  });
+}
+
 } // namespace react
 } // namespace facebook

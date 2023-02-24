@@ -845,6 +845,11 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
+  /* package */ int getGravityHorizontal() {
+    return getGravity()
+        & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+  }
+
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
       gravityHorizontal = mDefaultGravityHorizontal;

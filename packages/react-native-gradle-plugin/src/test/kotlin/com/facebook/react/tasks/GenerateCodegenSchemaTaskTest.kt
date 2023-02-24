@@ -51,7 +51,7 @@ class GenerateCodegenSchemaTaskTest {
         tempFolder.newFolder("js").apply {
           File(this, "afolder/includedfile.js").createFileAndPath()
           // Those files should be excluded due to their filepath
-          File(this, "afolder/generated/source/codegen/anotherfolder/excludedfile.js")
+          File(this, "afolder/build/generated/source/codegen/anotherfolder/excludedfile.js")
               .createFileAndPath()
           File(this, "afolder/build/generated/assets/react/anotherfolder/excludedfile.js")
               .createFileAndPath()
@@ -68,13 +68,10 @@ class GenerateCodegenSchemaTaskTest {
     assertEquals(jsRootDir, task.jsInputFiles.dir)
     assertEquals(
         setOf(
-            "**/generated/source/codegen/**/*",
             "**/build/ASSETS/**/*",
             "**/build/RES/**/*",
-            "**/build/generated/assets/react/**/*",
-            "**/build/generated/res/react/**/*",
-            "**/build/generated/sourcemaps/react/**/*",
-            "**/build/intermediates/sourcemaps/react/**/*",
+            "**/build/generated/**/*",
+            "**/build/intermediates/**/*",
         ),
         task.jsInputFiles.excludes)
     assertEquals(1, task.jsInputFiles.files.size)
