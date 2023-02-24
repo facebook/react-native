@@ -21,6 +21,7 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is the main class and entry point for TurboModules. Note that this is a hybrid class, and
@@ -65,35 +66,29 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
 
     mJavaModuleProvider =
-        new TurboModuleProvider() {
-          @Nullable
-          public TurboModule getModule(String moduleName) {
-            if (delegate == null) {
-              return null;
-            }
-
-            return delegate.getModule(moduleName);
+        moduleName -> {
+          if (delegate == null) {
+            return null;
           }
+
+          return delegate.getModule(moduleName);
         };
 
     mCxxModuleProvider =
-        new TurboModuleProvider() {
-          @Nullable
-          public TurboModule getModule(String moduleName) {
-            if (delegate == null) {
-              return null;
-            }
-
-            CxxModuleWrapper nativeModule = delegate.getLegacyCxxModule(moduleName);
-            if (nativeModule != null) {
-              // TurboModuleManagerDelegate must always return TurboModules
-              Assertions.assertCondition(
-                  nativeModule instanceof TurboModule,
-                  "CxxModuleWrapper \"" + moduleName + "\" is not a TurboModule");
-              return (TurboModule) nativeModule;
-            }
+        moduleName -> {
+          if (delegate == null) {
             return null;
           }
+
+          CxxModuleWrapper nativeModule = delegate.getLegacyCxxModule(moduleName);
+          if (nativeModule != null) {
+            // TurboModuleManagerDelegate must always return TurboModules
+            Assertions.assertCondition(
+                nativeModule instanceof TurboModule,
+                "CxxModuleWrapper \"" + moduleName + "\" is not a TurboModule");
+            return (TurboModule) nativeModule;
+          }
+          return null;
         };
   }
 
@@ -101,6 +96,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mEagerInitModuleNames;
   }
 
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
@@ -112,6 +108,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return (CxxModuleWrapper) turboModule;
   }
 
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private TurboModule getJavaModule(String moduleName) {
@@ -347,12 +344,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     private volatile TurboModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
-    private static volatile int sHolderCount = 0;
-    private volatile int mModuleId;
+    private static final AtomicInteger sHolderCount = new AtomicInteger(0);
+    private final int mModuleId;
 
     public TurboModuleHolder() {
-      mModuleId = sHolderCount;
-      sHolderCount += 1;
+      mModuleId = sHolderCount.get();
+      sHolderCount.incrementAndGet();
     }
 
     int getModuleId() {
