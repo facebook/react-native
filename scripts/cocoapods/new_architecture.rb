@@ -38,16 +38,20 @@ class NewArchitectureHelper
         end
     end
 
-    def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled, is_release: false)
+    def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
         unless is_new_arch_enabled
             return
         end
-        ndebug_flag = (is_release ? " -DNDEBUG" : "")
+        ndebug_flag = " -DNDEBUG"
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags + ndebug_flag
-                config_file.attributes['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+
+                if config_name == "Release"
+                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + ndebug_flag
+                    config_file.attributes['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                end
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
@@ -63,9 +67,11 @@ class NewArchitectureHelper
             end
 
             target_installation_result.native_target.build_configurations.each do |config|
-                current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : ""
-                config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
-                config.build_settings['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                if config.name == "Release"
+                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : ""
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
+                    config.build_settings['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                end
             end
         end
     end
