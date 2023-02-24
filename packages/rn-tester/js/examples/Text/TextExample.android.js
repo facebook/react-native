@@ -257,67 +257,63 @@ class NestedTextVerticalAlign extends React.Component<
     const textAlignVerticalOppositeSideIndex =
       textAlignVerticalIndex === 0 ? 0 : (textAlignVerticalIndex + 2) % 3;
     return (
-      <>
-        <RNTesterBlock title="lineHeight and verticalAlign">
-          <Text>
-            vertical align is set to{' '}
-            <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
-          </Text>
-          <Text>
-            fontSize is set to{' '}
-            <Text style={{backgroundColor: 'green'}}>{fontSize}</Text>
-          </Text>
-          <Button
-            onPress={this._changeVerticalAlign}
-            title="change vertical align"
-          />
-          <Button
-            onPress={this._resetVerticalAlign}
-            title="set vertical align CENTER"
-          />
-          <Button onPress={this._increaseFont} title="increase font" />
-          <Button onPress={this._resetFont} title="reset font" />
-          <View>
+      <RNTesterBlock title="lineHeight and verticalAlign">
+        <Text>
+          vertical align is set to{' '}
+          <Text style={{backgroundColor: 'red'}}>{textAlignVertical}</Text>
+        </Text>
+        <Text>
+          fontSize is set to{' '}
+          <Text style={{backgroundColor: 'green'}}>{fontSize}</Text>
+        </Text>
+        <Button
+          onPress={this._changeVerticalAlign}
+          title="change vertical align"
+        />
+        <Button
+          onPress={this._resetVerticalAlign}
+          title="set vertical align CENTER"
+        />
+        <Button onPress={this._increaseFont} title="increase font" />
+        <Button onPress={this._resetFont} title="reset font" />
+        <View>
+          <Text
+            style={{
+              textAlignVertical,
+              backgroundColor: 'yellow',
+            }}>
+            parent
             <Text
               style={{
+                fontSize,
                 textAlignVertical,
-                backgroundColor: 'yellow',
+                backgroundColor: 'green',
+                color: 'white',
               }}>
-              parent
-              <Text
-                style={{
-                  fontSize,
-                  textAlignVertical,
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}>
-                span aligned {textAlignVertical}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 8,
-                  textAlignVertical:
-                    textAlignVerticalOptions[
-                      textAlignVerticalOppositeSideIndex
-                    ],
-                  lineHeight: 100,
-                  backgroundColor: 'red',
-                }}>
-                span aligned
-                {textAlignVerticalOptions[textAlignVerticalOppositeSideIndex]}
-              </Text>
-              <Text
-                style={{
-                  textAlignVertical: 'center',
-                  backgroundColor: 'blue',
-                  color: 'white',
-                }}>
-                span aligned center{' '}
-              </Text>
+              span aligned {textAlignVertical}
             </Text>
-          </View>
-        </RNTesterBlock>
-      </>
+            <Text
+              style={{
+                fontSize: 8,
+                textAlignVertical:
+                  textAlignVerticalOptions[textAlignVerticalOppositeSideIndex],
+                lineHeight: 100,
+                backgroundColor: 'red',
+              }}>
+              span aligned
+              {textAlignVerticalOptions[textAlignVerticalOppositeSideIndex]}
+            </Text>
+            <Text
+              style={{
+                textAlignVertical: 'center',
+                backgroundColor: 'blue',
+                color: 'white',
+              }}>
+              span aligned center{' '}
+            </Text>
+          </Text>
+        </View>
+      </RNTesterBlock>
     );
   }
 }
