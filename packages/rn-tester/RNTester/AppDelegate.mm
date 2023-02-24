@@ -88,7 +88,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
-#if RCT_NEW_ARCH_ENABLED
+#ifdef RN_FABRIC_ENABLED
 - (instancetype)init
 {
   if (self = [super init]) {
