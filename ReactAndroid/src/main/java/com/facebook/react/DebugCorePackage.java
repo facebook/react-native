@@ -103,7 +103,14 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
       appendMap(
-          viewManagers, TraceUpdateOverlayManager.REACT_CLASS, TraceUpdateOverlayManager::new);
+          viewManagers,
+          TraceUpdateOverlayManager.REACT_CLASS,
+          new Provider<NativeModule>() {
+            @Override
+            public NativeModule get() {
+              return new TraceUpdateOverlayManager();
+            }
+          });
 
       mViewManagers = viewManagers;
     }

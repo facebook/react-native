@@ -25,11 +25,14 @@ public class CompositeReactPackageTurboModuleManagerDelegate
 
   protected native HybridData initHybrid();
 
+  private final List<TurboModuleManagerDelegate> mDelegates;
+
   private CompositeReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext context,
       List<ReactPackage> packages,
       List<TurboModuleManagerDelegate> delegates) {
     super(context, packages);
+    mDelegates = delegates;
     for (TurboModuleManagerDelegate delegate : delegates) {
       addTurboModuleManagerDelegate(delegate);
     }
