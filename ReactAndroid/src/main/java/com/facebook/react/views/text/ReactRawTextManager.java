@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import android.view.View;
+import androidx.annotation.NonNull;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -22,18 +23,19 @@ public class ReactRawTextManager extends ViewManager<View, ReactRawTextShadowNod
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTRawText";
 
+  @NonNull
   @Override
   public String getName() {
     return REACT_CLASS;
   }
 
   @Override
-  public ReactTextView createViewInstance(ThemedReactContext context) {
+  public ReactTextView createViewInstance(@NonNull ThemedReactContext context) {
     throw new IllegalStateException("Attempt to create a native view for RCTRawText");
   }
 
   @Override
-  public void updateExtraData(View view, Object extraData) {}
+  public void updateExtraData(@NonNull View view, Object extraData) {}
 
   @Override
   public Class<ReactRawTextShadowNode> getShadowNodeClass() {

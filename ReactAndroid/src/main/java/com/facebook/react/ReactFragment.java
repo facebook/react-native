@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -85,7 +86,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mReactDelegate.loadApp();
     return mReactDelegate.getReactRootView();
   }
@@ -140,7 +141,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
   @Override
   public void onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     if (mPermissionListener != null
         && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
@@ -170,8 +171,8 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   /** Builder class to help instantiate a ReactFragment */
   public static class Builder {
 
-    String mComponentName;
-    Bundle mLaunchOptions;
+    @Nullable String mComponentName;
+    @Nullable Bundle mLaunchOptions;
 
     public Builder() {
       mComponentName = null;

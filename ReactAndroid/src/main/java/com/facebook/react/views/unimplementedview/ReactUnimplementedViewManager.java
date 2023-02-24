@@ -9,6 +9,7 @@ package com.facebook.react.views.unimplementedview;
 
 import static com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager.REACT_CLASS;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -24,11 +25,13 @@ public class ReactUnimplementedViewManager extends ViewGroupManager<ReactUnimple
 
   public static final String REACT_CLASS = "UnimplementedNativeView";
 
+  @NonNull
   @Override
-  protected ReactUnimplementedView createViewInstance(ThemedReactContext reactContext) {
+  protected ReactUnimplementedView createViewInstance(@NonNull ThemedReactContext reactContext) {
     return new ReactUnimplementedView(reactContext);
   }
 
+  @NonNull
   @Override
   public String getName() {
     return REACT_CLASS;
