@@ -91,7 +91,7 @@ type OptionalProps<ItemT> = {|
    * specify `ItemSeparatorComponent`.
    */
   getItemLayout?: (
-    data: ?Array<ItemT>,
+    data: ?$ArrayLike<ItemT>,
     index: number,
   ) => {
     length: number,
