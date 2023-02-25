@@ -24,7 +24,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 /**
  * Module that monitors and provides information about the state of Touch Exploration service on the
@@ -130,9 +129,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
-        reactApplicationContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
+        reactApplicationContext.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, mReduceMotionEnabled);
       }
     }
   }
@@ -144,8 +141,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
         getReactApplicationContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
+            .emitDeviceEvent(TOUCH_EXPLORATION_EVENT_NAME, mTouchExplorationEnabled);
       }
     }
   }
@@ -157,8 +153,7 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
       ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       if (reactApplicationContext != null) {
         getReactApplicationContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(ACCESSIBILITY_SERVICE_EVENT_NAME, mAccessibilityServiceEnabled);
+            .emitDeviceEvent(ACCESSIBILITY_SERVICE_EVENT_NAME, mAccessibilityServiceEnabled);
       }
     }
   }

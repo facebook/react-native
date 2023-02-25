@@ -16,7 +16,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = NativeAppearanceSpec.NAME)
@@ -108,9 +107,7 @@ public class AppearanceModule extends NativeAppearanceSpec {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      reactApplicationContext
-          .getJSModule(RCTDeviceEventEmitter.class)
-          .emit(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences);
+      reactApplicationContext.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences);
     }
   }
 }

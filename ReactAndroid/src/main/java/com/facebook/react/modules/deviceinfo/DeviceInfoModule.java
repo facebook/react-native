@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,9 +88,7 @@ public class DeviceInfoModule extends NativeDeviceInfoSpec implements LifecycleE
         mPreviousDisplayMetrics = displayMetrics.copy();
       } else if (!displayMetrics.equals(mPreviousDisplayMetrics)) {
         mPreviousDisplayMetrics = displayMetrics.copy();
-        mReactApplicationContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit("didUpdateDimensions", displayMetrics);
+        mReactApplicationContext.emitDeviceEvent("didUpdateDimensions", displayMetrics);
       }
     } else {
       ReactSoftExceptionLogger.logSoftException(

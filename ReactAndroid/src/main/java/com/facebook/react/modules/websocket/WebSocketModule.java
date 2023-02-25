@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
 import java.io.IOException;
 import java.net.URI;
@@ -66,9 +65,7 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
   private void sendEvent(String eventName, WritableMap params) {
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     if (reactApplicationContext.hasActiveReactInstance()) {
-      reactApplicationContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(eventName, params);
+      reactApplicationContext.emitDeviceEvent(eventName, params);
     }
   }
 

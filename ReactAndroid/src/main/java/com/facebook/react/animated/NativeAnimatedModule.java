@@ -26,7 +26,6 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -566,9 +565,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
             ReactApplicationContext reactApplicationContext =
                 getReactApplicationContextIfActiveOrWarn();
             if (reactApplicationContext != null) {
-              reactApplicationContext
-                  .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                  .emit("onAnimatedValueUpdate", onAnimatedValueData);
+              reactApplicationContext.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData);
             }
           }
         };
@@ -1090,9 +1087,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                           ReactApplicationContext reactApplicationContext =
                               getReactApplicationContextIfActiveOrWarn();
                           if (reactApplicationContext != null) {
-                            reactApplicationContext
-                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit("onAnimatedValueUpdate", onAnimatedValueData);
+                            reactApplicationContext.emitDeviceEvent(
+                                "onAnimatedValueUpdate", onAnimatedValueData);
                           }
                         }
                       };

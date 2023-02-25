@@ -47,9 +47,7 @@ public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
     ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     if (reactApplicationContext != null) {
-      reactApplicationContext
-          .getJSModule(RCTDeviceEventEmitter.class)
-          .emit("hardwareBackPress", null);
+      reactApplicationContext.emitDeviceEvent("hardwareBackPress", null);
     }
   }
 
@@ -60,7 +58,7 @@ public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
     if (reactApplicationContext != null) {
       WritableMap map = Arguments.createMap();
       map.putString("url", uri.toString());
-      reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit("url", map);
+      reactApplicationContext.emitDeviceEvent("url", map);
     }
   }
 
