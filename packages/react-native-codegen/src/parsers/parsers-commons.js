@@ -473,7 +473,12 @@ const parseModuleName = (
   );
 
   const [callExpression] = callExpressions;
-  const {typeArguments} = callExpression;
+  let typeParameters;
+  if (parser.language() === 'TypeScript') {
+    typeParameters = callExpression.typeParameters;
+  } else {
+    typeParameters = callExpression.typeArguments;
+  }
   const methodName = callExpression.callee.property.name;
 
   throwIfWrongNumberOfCallExpressionArgs(
@@ -492,7 +497,7 @@ const parseModuleName = (
   const $moduleName = callExpression.arguments[0].value;
 
   throwIfUntypedModule(
-    typeArguments,
+    typeParameters,
     hasteModuleName,
     callExpression,
     methodName,
@@ -501,7 +506,7 @@ const parseModuleName = (
 
   throwIfIncorrectModuleRegistryCallTypeParameterParserError(
     hasteModuleName,
-    typeArguments,
+    typeParameters,
     methodName,
     $moduleName,
     parser,
