@@ -29,6 +29,12 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   META_PROP_HORIZONTAL,
   META_PROP_VERTICAL,
   META_PROP_ALL,
+  META_PROP_INLINE,
+  META_PROP_INLINE_END,
+  META_PROP_INLINE_START,
+  META_PROP_BLOCK,
+  META_PROP_BLOCK_END,
+  META_PROP_BLOCK_START,
   META_PROP_COUNT,
 };
 
@@ -38,9 +44,11 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   BOOL _recomputePadding;
   BOOL _recomputeMargin;
   BOOL _recomputeBorder;
+  BOOL _recomputePosition;
   YGValue _paddingMetaProps[META_PROP_COUNT];
   YGValue _marginMetaProps[META_PROP_COUNT];
   YGValue _borderMetaProps[META_PROP_COUNT];
+  YGValue _positionMetaProps[META_PROP_COUNT];
 }
 
 + (YGConfigRef)yogaConfig
@@ -162,6 +170,47 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
   YGNodeStyleSetBorder(node, YGEdgeAll, metaProps[META_PROP_ALL].value);
 }
 
+static void RCTProcessMetaPropsPosition(const YGValue metaProps[META_PROP_COUNT], YGNodeRef node)
+{
+  YGNodeStyleSetPosition(node, YGEdgeTop, metaProps[META_PROP_TOP].value);
+  YGNodeStyleSetPosition(node, YGEdgeBottom, metaProps[META_PROP_BOTTOM].value);
+  YGNodeStyleSetPosition(node, YGEdgeStart, metaProps[META_PROP_START].value);
+  YGNodeStyleSetPosition(node, YGEdgeEnd, metaProps[META_PROP_END].value);
+
+  if (![[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
+    YGNodeStyleSetPosition(node, YGEdgeLeft, metaProps[META_PROP_LEFT].value);
+    YGNodeStyleSetPosition(node, YGEdgeRight, metaProps[META_PROP_RIGHT].value);
+  } else {
+    YGNodeStyleSetPosition(node, YGEdgeStart, metaProps[META_PROP_LEFT].value);
+    YGNodeStyleSetPosition(node, YGEdgeEnd, metaProps[META_PROP_RIGHT].value);
+  }
+
+  // Aliases with precedence
+  if (!YGFloatIsUndefined(metaProps[META_PROP_ALL].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeAll, metaProps[META_PROP_ALL].value);
+  }
+  if (!YGFloatIsUndefined(metaProps[META_PROP_BLOCK].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeVertical, metaProps[META_PROP_BLOCK].value);
+  }
+  if (!YGFloatIsUndefined(metaProps[META_PROP_INLINE].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeHorizontal, metaProps[META_PROP_INLINE].value);
+  }
+  if (!YGFloatIsUndefined(metaProps[META_PROP_INLINE_END].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeEnd, metaProps[META_PROP_INLINE_END].value);
+  }
+  if (!YGFloatIsUndefined(metaProps[META_PROP_INLINE_START].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeStart, metaProps[META_PROP_INLINE_START].value);
+  }
+
+  // Aliases without precedence
+  if (YGFloatIsUndefined(metaProps[META_PROP_BOTTOM].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeBottom, metaProps[META_PROP_BLOCK_END].value);
+  }
+  if (YGFloatIsUndefined(metaProps[META_PROP_TOP].value)) {
+    YGNodeStyleSetPosition(node, YGEdgeTop, metaProps[META_PROP_BLOCK_START].value);
+  }
+}
+
 - (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
 {
   CGPoint offset = CGPointZero;
@@ -193,6 +242,7 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
       _paddingMetaProps[ii] = YGValueUndefined;
       _marginMetaProps[ii] = YGValueUndefined;
       _borderMetaProps[ii] = YGValueUndefined;
+      _positionMetaProps[ii] = YGValueUndefined;
     }
 
     _intrinsicContentSize = CGSizeMake(UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric);
@@ -512,42 +562,30 @@ RCT_MIN_MAX_DIMENSION_PROPERTY(MaxHeight, maxHeight, MaxHeight)
 
 // Position
 
-#define RCT_POSITION_PROPERTY(setProp, getProp, edge)                \
-  -(void)set##setProp : (YGValue)value                               \
-  {                                                                  \
-    RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge); \
-  }                                                                  \
-  -(YGValue)getProp                                                  \
-  {                                                                  \
-    return YGNodeStyleGetPosition(_yogaNode, edge);                  \
+#define RCT_POSITION_PROPERTY(setProp, getProp, metaProp) \
+  -(void)set##setProp : (YGValue)value                    \
+  {                                                       \
+    _positionMetaProps[META_PROP_##metaProp] = value;     \
+    _recomputePosition = YES;                             \
+  }                                                       \
+  -(YGValue)getProp                                       \
+  {                                                       \
+    return _positionMetaProps[META_PROP_##metaProp];      \
   }
 
-RCT_POSITION_PROPERTY(Top, top, YGEdgeTop)
-RCT_POSITION_PROPERTY(Bottom, bottom, YGEdgeBottom)
-RCT_POSITION_PROPERTY(Start, start, YGEdgeStart)
-RCT_POSITION_PROPERTY(End, end, YGEdgeEnd)
-
-- (void)setLeft:(YGValue)value
-{
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
-  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-}
-- (YGValue)left
-{
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeStart : YGEdgeLeft;
-  return YGNodeStyleGetPosition(_yogaNode, edge);
-}
-
-- (void)setRight:(YGValue)value
-{
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
-  RCT_SET_YGVALUE(value, YGNodeStyleSetPosition, _yogaNode, edge);
-}
-- (YGValue)right
-{
-  YGEdge edge = [[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL] ? YGEdgeEnd : YGEdgeRight;
-  return YGNodeStyleGetPosition(_yogaNode, edge);
-}
+RCT_POSITION_PROPERTY(Top, top, TOP)
+RCT_POSITION_PROPERTY(Bottom, bottom, BOTTOM)
+RCT_POSITION_PROPERTY(Left, left, LEFT)
+RCT_POSITION_PROPERTY(Right, right, RIGHT)
+RCT_POSITION_PROPERTY(Start, start, START)
+RCT_POSITION_PROPERTY(End, end, END)
+RCT_POSITION_PROPERTY(Inset, inset, ALL)
+RCT_POSITION_PROPERTY(InsetInline, insetInline, INLINE)
+RCT_POSITION_PROPERTY(InsetInlineEnd, insetInlineEnd, INLINE_END)
+RCT_POSITION_PROPERTY(InsetInlineStart, insetInlineStart, INLINE_START)
+RCT_POSITION_PROPERTY(InsetBlock, insetBlock, BLOCK)
+RCT_POSITION_PROPERTY(InsetBlockEnd, insetBlockEnd, BLOCK_END)
+RCT_POSITION_PROPERTY(InsetBlockStart, insetBlockStart, BLOCK_START)
 
 // Size
 
@@ -697,9 +735,13 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
   if (_recomputeBorder) {
     RCTProcessMetaPropsBorder(_borderMetaProps, _yogaNode);
   }
+  if (_recomputePosition) {
+    RCTProcessMetaPropsPosition(_positionMetaProps, _yogaNode);
+  }
   _recomputeMargin = NO;
   _recomputePadding = NO;
   _recomputeBorder = NO;
+  _recomputePosition = NO;
 }
 
 @end
