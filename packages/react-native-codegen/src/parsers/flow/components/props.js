@@ -10,11 +10,9 @@
 
 'use strict';
 
-const {
-  flattenProperties,
-  getSchemaInfo,
-  getTypeAnnotation,
-} = require('./componentsUtils.js');
+const {flattenProperties} = require('./componentsUtils.js');
+
+const {buildPropSchema} = require('../../parsers-commons.js');
 
 import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
@@ -22,36 +20,12 @@ import type {TypeDeclarationMap} from '../../utils';
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type PropAST = Object;
 
-function buildPropSchema(
-  property: PropAST,
-  types: TypeDeclarationMap,
-): ?NamedShape<PropTypeAnnotation> {
-  const info = getSchemaInfo(property, types);
-  if (info == null) {
-    return null;
-  }
-  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
-
-  return {
-    name,
-    optional,
-    typeAnnotation: getTypeAnnotation(
-      name,
-      typeAnnotation,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildPropSchema,
-    ),
-  };
-}
-
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
   return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types))
+    .map(property => buildPropSchema(property, types, 'Flow'))
     .filter(Boolean);
 }
 

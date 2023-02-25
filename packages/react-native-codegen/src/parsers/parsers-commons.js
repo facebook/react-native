@@ -21,6 +21,7 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   SchemaType,
+  PropTypeAnnotation,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -46,6 +47,16 @@ const {
   MoreThanOneTypeParameterGenericParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
+
+const {
+  getSchemaInfo: getTsSchemaInfo,
+  getTypeAnnotation: getTsTypeAnnotation,
+} = require('./typescript/components/componentsUtils');
+
+const {
+  getSchemaInfo: getFlowSchemaInfo,
+  getTypeAnnotation: getFlowTypeAnnotation,
+} = require('./flow/components/componentsUtils');
 
 const invariant = require('invariant');
 import type {NativeModuleEnumMap} from '../CodegenSchema';
@@ -432,6 +443,44 @@ function buildSchema(
   );
 }
 
+function buildPropSchema(
+  property: Object,
+  types: TypeDeclarationMap,
+  language: string,
+): ?NamedShape<PropTypeAnnotation> {
+  const info =
+    language === 'Typescript'
+      ? getTsSchemaInfo(property, types)
+      : getFlowSchemaInfo(property, types);
+  if (info == null) {
+    return null;
+  }
+  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+
+  return {
+    name,
+    optional,
+    typeAnnotation:
+      language === 'Typescript'
+        ? getTsTypeAnnotation(
+            name,
+            typeAnnotation,
+            defaultValue,
+            withNullDefault,
+            types,
+            buildPropSchema,
+          )
+        : getFlowTypeAnnotation(
+            name,
+            typeAnnotation,
+            defaultValue,
+            withNullDefault,
+            types,
+            buildPropSchema,
+          ),
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -443,4 +492,5 @@ module.exports = {
   buildPropertySchema,
   buildSchemaFromConfigType,
   buildSchema,
+  buildPropSchema,
 };
