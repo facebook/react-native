@@ -15,7 +15,12 @@ import {
 import {View} from '../Components/View/View';
 import {Image} from '../Image/Image';
 import {FlatListProps} from '../Lists/FlatList';
-import {DefaultSectionT, SectionListProps} from '../Lists/SectionList';
+import {
+  DefaultSectionT,
+  SectionListProps,
+  SectionListScrollParams,
+} from '../Lists/SectionList';
+import {NodeHandle} from '../ReactNative/RendererProxy';
 import {ColorValue} from '../StyleSheet/StyleSheet';
 import {Text} from '../Text/Text';
 import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
@@ -675,7 +680,38 @@ export namespace Animated {
   export class SectionList<
     ItemT = any,
     SectionT = DefaultSectionT,
-  > extends React.Component<AnimatedProps<SectionListProps<ItemT, SectionT>>> {}
+  > extends React.Component<AnimatedProps<SectionListProps<ItemT, SectionT>>> {
+    /**
+     * Scrolls to the item at the specified sectionIndex and itemIndex (within the section)
+     * positioned in the viewable area such that viewPosition 0 places it at the top
+     * (and may be covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle.
+     */
+    scrollToLocation(params: SectionListScrollParams): void;
+
+    /**
+     * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
+     * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
+     * taps on items or by navigation actions.
+     */
+    recordInteraction(): void;
+
+    /**
+     * Displays the scroll indicators momentarily.
+     *
+     * @platform ios
+     */
+    flashScrollIndicators(): void;
+
+    /**
+     * Provides a handle to the underlying scroll responder.
+     */
+    getScrollResponder(): ScrollView | undefined;
+
+    /**
+     * Provides a handle to the underlying scroll node.
+     */
+    getScrollableNode(): NodeHandle | undefined;
+  }
 }
 
 // We need to alias these views so we can reference them in the Animated
