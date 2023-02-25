@@ -14,9 +14,9 @@ import type {
   VirtualizedListProps,
 } from './VirtualizedList';
 import type {ScrollViewComponent} from '../Components/ScrollView/ScrollView';
-import {StyleProp} from '../StyleSheet/StyleSheet';
-import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
-import {View} from '../Components/View/View';
+import type {StyleProp} from '../StyleSheet/StyleSheet';
+import type {ViewStyle} from '../StyleSheet/StyleSheetTypes';
+import type {View} from '../Components/View/View';
 
 export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   /**
@@ -40,10 +40,10 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
     | undefined;
 
   /**
-   * For simplicity, data is just a plain array. If you want to use something else,
-   * like an immutable list, use the underlying VirtualizedList directly.
+   * An array (or array-like list) of items to render. Other data types can be
+   * used by targetting VirtualizedList directly.
    */
-  data: ReadonlyArray<ItemT> | null | undefined;
+  data: ArrayLike<ItemT> | null | undefined;
 
   /**
    * A marker property for telling the list to re-render (since it implements PureComponent).

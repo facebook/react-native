@@ -30,10 +30,10 @@ const React = require('react');
 
 type RequiredProps<ItemT> = {|
   /**
-   * For simplicity, data is just a plain array. If you want to use something else, like an
-   * immutable list, use the underlying `VirtualizedList` directly.
+   * An array (or array-like list) of items to render. Other data types can be
+   * used by targetting VirtualizedList directly.
    */
-  data: ?$ReadOnlyArray<ItemT>,
+  data: ?$ArrayLike<ItemT>,
 |};
 type OptionalProps<ItemT> = {|
   /**
@@ -161,6 +161,11 @@ function removeClippedSubviewsOrDefault(removeClippedSubviews: ?boolean) {
 // numColumnsOrDefault(this.props.numColumns)
 function numColumnsOrDefault(numColumns: ?number) {
   return numColumns ?? 1;
+}
+
+function isArrayLike(data: mixed): boolean {
+  // $FlowExpectedError[incompatible-use]
+  return typeof Object(data).length === 'number';
 }
 
 type FlatListProps<ItemT> = {|
@@ -497,8 +502,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     );
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _getItem = (data: Array<ItemT>, index: number) => {
+  _getItem = (
+    data: $ArrayLike<ItemT>,
+    index: number,
+  ): ?(ItemT | $ReadOnlyArray<ItemT>) => {
     const numColumns = numColumnsOrDefault(this.props.numColumns);
     if (numColumns > 1) {
       const ret = [];
@@ -515,8 +522,14 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   };
 
-  _getItemCount = (data: ?Array<ItemT>): number => {
-    if (Array.isArray(data)) {
+  _getItemCount = (data: ?$ArrayLike<ItemT>): number => {
+    // Legacy behavior of FlatList was to forward "undefined" length if invalid
+    // data like a non-arraylike object is passed. VirtualizedList would then
+    // coerce this, and the math would work out to no-op. For compatibility, if
+    // invalid data is passed, we tell VirtualizedList there are zero items
+    // available to prevent it from trying to read from the invalid data
+    // (without propagating invalidly typed data).
+    if (data != null && isArrayLike(data)) {
       const numColumns = numColumnsOrDefault(this.props.numColumns);
       return numColumns > 1 ? Math.ceil(data.length / numColumns) : data.length;
     } else {
