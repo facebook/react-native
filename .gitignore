@@ -105,6 +105,8 @@ package-lock.json
 # Ruby Gems (Bundler)
 /vendor
 /template/vendor
+.ruby-version
+/**/.ruby-version
 
 # iOS / CocoaPods
 /template/ios/build/
