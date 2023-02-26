@@ -473,12 +473,7 @@ const parseModuleName = (
   );
 
   const [callExpression] = callExpressions;
-  let typeParameters;
-  if (parser.language() === 'TypeScript') {
-    typeParameters = callExpression.typeParameters;
-  } else {
-    typeParameters = callExpression.typeArguments;
-  }
+  const typeParameters = parser.callExpressionTypeParameters(callExpression);
   const methodName = callExpression.callee.property.name;
 
   throwIfWrongNumberOfCallExpressionArgs(
