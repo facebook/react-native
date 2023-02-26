@@ -174,4 +174,11 @@ export interface Parser {
    * Given the AST, returns the TypeDeclarationMap
    */
   getTypes(ast: $FlowFixMe): TypeDeclarationMap;
+
+  /**
+   * Given a callExpression, it returns the typeParameters of the callExpression.
+   * @paramater callExpression: the callExpression.
+   * @returns: the typeParameters of the callExpression or null if it does not exist.
+   */
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null;
 }

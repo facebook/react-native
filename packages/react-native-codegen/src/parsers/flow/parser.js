@@ -253,6 +253,10 @@ class FlowParser implements Parser {
       return types;
     }, {});
   }
+
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
+    return callExpression.typeArguments || null;
+  }
 }
 
 module.exports = {
