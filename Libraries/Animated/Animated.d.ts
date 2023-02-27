@@ -8,15 +8,13 @@
  */
 
 import type * as React from 'react';
-import {
-  ScrollView,
-  ScrollViewComponent,
-} from '../Components/ScrollView/ScrollView';
+import {ScrollView} from '../Components/ScrollView/ScrollView';
 import {View} from '../Components/View/View';
 import {Image} from '../Image/Image';
-import {FlatListProps} from '../Lists/FlatList';
+import {FlatListComponent, FlatListProps} from '../Lists/FlatList';
 import {
   DefaultSectionT,
+  SectionListComponent,
   SectionListProps,
   SectionListScrollParams,
 } from '../Lists/SectionList';
@@ -606,112 +604,18 @@ export namespace Animated {
   /**
    * FlatList and SectionList infer generic Type defined under their `data` and `section` props.
    */
-  export class FlatList<ItemT = any> extends React.Component<
+
+  export class FlatList<ItemT = any> extends FlatListComponent<
+    ItemT,
     AnimatedProps<FlatListProps<ItemT>>
-  > {
-    /**
-     * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
-     */
-    scrollToEnd: (params?: {animated?: boolean | null | undefined}) => void;
-
-    /**
-     * Scrolls to the item at the specified index such that it is positioned in the viewable area
-     * such that viewPosition 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
-     * Cannot scroll to locations outside the render window without specifying the getItemLayout prop.
-     */
-    scrollToIndex: (params: {
-      animated?: boolean | null | undefined;
-      index: number;
-      viewOffset?: number | undefined;
-      viewPosition?: number | undefined;
-    }) => void;
-
-    /**
-     * Requires linear scan through data - use `scrollToIndex` instead if possible.
-     * May be janky without `getItemLayout` prop.
-     */
-    scrollToItem: (params: {
-      animated?: boolean | null | undefined;
-      item: ItemT;
-      viewOffset?: number | undefined;
-      viewPosition?: number | undefined;
-    }) => void;
-
-    /**
-     * Scroll to a specific content pixel offset, like a normal `ScrollView`.
-     */
-    scrollToOffset: (params: {
-      animated?: boolean | null | undefined;
-      offset: number;
-    }) => void;
-
-    /**
-     * Tells the list an interaction has occurred, which should trigger viewability calculations,
-     * e.g. if waitForInteractions is true and the user has not scrolled. This is typically called
-     * by taps on items or by navigation actions.
-     */
-    recordInteraction: () => void;
-
-    /**
-     * Displays the scroll indicators momentarily.
-     */
-    flashScrollIndicators: () => void;
-
-    /**
-     * Provides a handle to the underlying scroll responder.
-     */
-    getScrollResponder: () => JSX.Element | null | undefined;
-
-    /**
-     * Provides a reference to the underlying host component
-     */
-    getNativeScrollRef: () =>
-      | React.ElementRef<typeof View>
-      | React.ElementRef<typeof ScrollViewComponent>
-      | null
-      | undefined;
-
-    getScrollableNode: () => any;
-
-    // TODO: use `unknown` instead of `any` for Typescript >= 3.0
-    setNativeProps: (props: {[key: string]: any}) => void;
-  }
+  > {}
 
   export class SectionList<
     ItemT = any,
     SectionT = DefaultSectionT,
-  > extends React.Component<AnimatedProps<SectionListProps<ItemT, SectionT>>> {
-    /**
-     * Scrolls to the item at the specified sectionIndex and itemIndex (within the section)
-     * positioned in the viewable area such that viewPosition 0 places it at the top
-     * (and may be covered by a sticky header), 1 at the bottom, and 0.5 centered in the middle.
-     */
-    scrollToLocation(params: SectionListScrollParams): void;
-
-    /**
-     * Tells the list an interaction has occurred, which should trigger viewability calculations, e.g.
-     * if `waitForInteractions` is true and the user has not scrolled. This is typically called by
-     * taps on items or by navigation actions.
-     */
-    recordInteraction(): void;
-
-    /**
-     * Displays the scroll indicators momentarily.
-     *
-     * @platform ios
-     */
-    flashScrollIndicators(): void;
-
-    /**
-     * Provides a handle to the underlying scroll responder.
-     */
-    getScrollResponder(): ScrollView | undefined;
-
-    /**
-     * Provides a handle to the underlying scroll node.
-     */
-    getScrollableNode(): NodeHandle | undefined;
-  }
+  > extends SectionListComponent<
+    AnimatedProps<SectionListProps<ItemT, SectionT>>
+  > {}
 }
 
 // We need to alias these views so we can reference them in the Animated

@@ -166,9 +166,10 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   fadingEdgeLength?: number | undefined;
 }
 
-export class FlatList<ItemT = any> extends React.Component<
-  FlatListProps<ItemT>
-> {
+export abstract class FlatListComponent<
+  ItemT,
+  Props,
+> extends React.Component<Props> {
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
@@ -236,3 +237,8 @@ export class FlatList<ItemT = any> extends React.Component<
   // TODO: use `unknown` instead of `any` for Typescript >= 3.0
   setNativeProps: (props: {[key: string]: any}) => void;
 }
+
+export class FlatList<ItemT = any> extends FlatListComponent<
+  ItemT,
+  FlatListProps<ItemT>
+> {}
