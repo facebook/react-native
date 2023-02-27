@@ -17,7 +17,6 @@ import {
   SectionListComponent,
   SectionListProps,
 } from '../Lists/SectionList';
-import {NodeHandle} from '../ReactNative/RendererProxy';
 import {ColorValue} from '../StyleSheet/StyleSheet';
 import {Text} from '../Text/Text';
 import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
