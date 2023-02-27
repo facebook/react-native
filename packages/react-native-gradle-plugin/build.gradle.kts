@@ -54,8 +54,12 @@ java {
   targetCompatibility = JavaVersion.VERSION_11
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-  kotlinOptions { jvmTarget = JavaVersion.VERSION_11.majorVersion }
+tasks.withType<KotlinCompile> {
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    apiVersion = "1.5"
+    languageVersion = "1.5"
+  }
 }
 
 tasks.withType<Test>().configureEach {

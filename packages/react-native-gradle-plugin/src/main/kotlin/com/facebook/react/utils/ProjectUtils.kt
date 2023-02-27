@@ -8,6 +8,8 @@
 package com.facebook.react.utils
 
 import com.facebook.react.model.ModelPackageJson
+import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
+import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 
@@ -22,13 +24,18 @@ internal object ProjectUtils {
   internal val Project.isHermesEnabled: Boolean
     get() =
         if (project.hasProperty("hermesEnabled")) {
-          project.property("hermesEnabled").toString().lowercase().toBooleanStrictOrNull() ?: true
+          project
+              .property("hermesEnabled")
+              .toString()
+              .lowercaseCompat()
+              .toBooleanStrictOrNullCompat()
+              ?: true
         } else if (project.extensions.extraProperties.has("react")) {
           @Suppress("UNCHECKED_CAST")
           val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
           when (val enableHermesKey = reactMap?.get("enableHermes")) {
             is Boolean -> enableHermesKey
-            is String -> enableHermesKey.lowercase().toBooleanStrictOrNull() ?: true
+            is String -> enableHermesKey.lowercaseCompat().toBooleanStrictOrNullCompat() ?: true
             else -> HERMES_FALLBACK
           }
         } else {
