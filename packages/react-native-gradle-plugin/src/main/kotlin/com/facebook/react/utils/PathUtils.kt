@@ -11,6 +11,7 @@ package com.facebook.react.utils
 
 import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
+import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.Os.cliPath
 import java.io.File
 import org.gradle.api.Project
@@ -188,7 +189,7 @@ internal fun getHermesOSBin(): String {
 internal fun projectPathToLibraryName(projectPath: String): String =
     projectPath
         .split(':', '-', '_', '.')
-        .joinToString("") { token -> token.replaceFirstChar { it.uppercase() } }
+        .joinToString("") { token -> token.capitalizeCompat() }
         .plus("Spec")
 
 /**
