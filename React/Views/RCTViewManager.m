@@ -502,8 +502,6 @@ RCT_EXPORT_VIEW_PROPERTY(onBlur, RCTBubblingEventBlock)
 #pragma mark - macOS properties
 
 RCT_EXPORT_VIEW_PROPERTY(cursor, RCTCursor)
-RCT_EXPORT_VIEW_PROPERTY(onDoubleClick, RCTDirectEventBlock)
-RCT_EXPORT_VIEW_PROPERTY(onClick, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMouseEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)

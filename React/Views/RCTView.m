@@ -511,8 +511,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   } else if (selector == @selector(accessibilityPerformPress)) {
     if (_onAccessibilityTap != nil ||
-        (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"activate"]) ||
-        _onClick != nil) {
+        (_onAccessibilityAction != nil && accessibilityActionsNameMap[@"activate"])) {
       isAllowed = YES;
     }
   } else if (selector == @selector(accessibilityPerformIncrement)) {
@@ -644,12 +643,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   } else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
-#if TARGET_OS_OSX // [macOS
-  } else if (_onClick != nil) {
-    // macOS is not simulating a click if there is no onAccessibilityAction like it does on iOS, so we simulate it here.
-    _onClick(nil);
-    return YES;
-#endif // macOS]
   } else {
     return NO;
   }
@@ -1454,23 +1447,6 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   NSCursor *cursor = [RCTConvert NSCursor:self.cursor];
   if (cursor) {
     [self addCursorRect:self.bounds cursor:cursor];
-  }
-}
-
-- (void)setOnDoubleClick:(RCTDirectEventBlock)block
-{
-  if (_onDoubleClick != block) {
-    _onDoubleClick = [block copy];
-  }
-}
-
-- (void)mouseUp:(NSEvent *)event
-{
-  if (_onDoubleClick && event.clickCount == 2) {
-    _onDoubleClick(nil);
-  }
-  else {
-    [super mouseUp:event];
   }
 }
 

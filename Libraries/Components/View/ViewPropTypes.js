@@ -57,12 +57,6 @@ type DirectEventProps = $ReadOnly<{|
 
   // [macOS
   /**
-   * When `accessible` is true, the system will try to invoke this function
-   * when the user performs accessibility double click gesture.
-   */
-  onDoubleClick?: ?(event: SyntheticEvent<{}>) => mixed,
-
-  /**
    * This event is fired when the scrollView's inverted property changes.
    * @platform macos
    */
@@ -538,8 +532,6 @@ type MacOSViewProps = $ReadOnly<{|
    * @platform macos
    */
   inverted?: ?boolean,
-
-  onDoubleClick?: ?(event: MouseEvent) => mixed,
 |}>;
 // macOS]
 

@@ -12,13 +12,9 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 /* $FlowFixMe allow macOS to share iOS file */
 import PlatformBaseViewConfigIos from './BaseViewConfig.ios';
-import {
-  ConditionallyIgnoredEventHandlers,
-  DynamicallyInjectedByGestureHandler,
-} from './ViewConfigIgnore';
+import {ConditionallyIgnoredEventHandlers} from './ViewConfigIgnore';
 
 const bubblingEventTypes = {
   ...PlatformBaseViewConfigIos.bubblingEventTypes,
@@ -26,9 +22,6 @@ const bubblingEventTypes = {
 
 const directEventTypes = {
   ...PlatformBaseViewConfigIos.directEventTypes,
-  topDoubleClick: {
-    registrationName: 'onDoubleClick',
-  },
   topDragEnter: {
     registrationName: 'onDragEnter',
   },
@@ -68,8 +61,6 @@ const validAttributesForNonEventProps = {
 const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   ...PlatformBaseViewConfigIos.validAttributesForEventProps,
   onBlur: true,
-  onClick: true,
-  onDoubleClick: true,
   onDragEnter: true,
   onDragLeave: true,
   onDrop: true,
