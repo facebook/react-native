@@ -977,38 +977,6 @@ describe('parseModuleName', () => {
     });
   });
 
-  // TODO: add/complete the tests for 'IncorrectModuleRegistryCallTypeParameterParserError' error; using 'parseModuleName' function.
-  //
-  // describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
-  //    it("throws an 'IncorrectModuleRegistryCallTypeParameterParserError' error if Incorrect ...", () => {
-  //      ...
-  //
-  //     const expected = new IncorrectModuleRegistryCallTypeParameterParserError(
-  //       ...
-  //     );
-  //
-  //     expect(() =>
-  //       parseModuleName(
-  //         ...
-  //       ),
-  //     ).toThrow(expected);
-  //    });
-  //
-  //    it("doesn't throw an 'IncorrectModuleRegistryCallTypeParameterParserError' error if correct ...", () => {
-  //      ...
-  //
-  //     const expected = new IncorrectModuleRegistryCallTypeParameterParserError(
-  //       ...
-  //     );
-  //
-  //     expect(() =>
-  //       parseModuleName(
-  //         ...
-  //       ),
-  //     ).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
-  //    });
-  // });
-
   describe('when flow ast with valid module is passed', () => {
     it("returns the correct ModuleName and doesn't throw any error", () => {
       const moduleType = 'Spec';
