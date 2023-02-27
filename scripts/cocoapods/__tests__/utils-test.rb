@@ -541,7 +541,13 @@ class UtilsTests < Test::Unit::TestCase
         # Arrange
         ENV['USE_FRAMEWORKS'] = 'static'
         first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
+        second_target = prepare_target("SecondTarget", nil, [
+            DependencyMock.new("RCT-Folly"),
+            DependencyMock.new("React-Codegen"),
+            DependencyMock.new("ReactCommon"),
+            DependencyMock.new("React-RCTFabric"),
+            DependencyMock.new("React-ImageManager"),
+        ])
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
         user_project_mock = UserProjectMock.new("a/path", [
                 prepare_config("Debug"),
@@ -563,8 +569,22 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
             assert_equal(expected_search_path, received_search_path)
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name == "SecondTarget"
+                target_installation_result.native_target.build_configurations.each do |config|
+                    received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    assert_equal(received_search_path, expected_Search_path)
+                end
+            else
+                target_installation_result.native_target.build_configurations.each do |config|
+                    assert_nil(config.build_settings["HEADER_SEARCH_PATHS"])
+                end
+            end
         end
     end
 
@@ -595,70 +615,69 @@ class UtilsTests < Test::Unit::TestCase
             assert_nil(config.build_settings["HEADER_SEARCH_PATHS"])
         end
     end
-end
 
-# ============================= #
-# Test - Apply Flags For Fabric #
-# ============================= #
-def test_applyFlagsForFabric_whenFabricEnabled_addsTheFlag
-    # Arrange
-    first_target = prepare_target("FirstTarget")
-    second_target = prepare_target("SecondTarget")
-    third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-    user_project_mock = UserProjectMock.new("a/path", [
-            prepare_config("Debug"),
-            prepare_config("Release"),
-        ],
-        :native_targets => [
-            first_target,
-            second_target
-        ]
-    )
-    pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-    installer = InstallerMock.new(pods_projects_mock, [
-        AggregatedProjectMock.new(user_project_mock)
-    ])
+    # ============================= #
+    # Test - Apply Flags For Fabric #
+    # ============================= #
+    def test_applyFlagsForFabric_whenFabricEnabled_addsTheFlag
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
 
-    # Act
-    ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: true)
+        # Act
+        ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: true)
 
-    # Assert
-    user_project_mock.build_configurations.each do |config|
-        received_cflags = config.build_settings["OTHER_CFLAGS"]
-        expected_cflags = "$(inherited) -DRN_FABRIC_ENABLED"
-        assert_equal(received_cflags, expected_cflags)
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            received_cflags = config.build_settings["OTHER_CFLAGS"]
+            expected_cflags = "$(inherited) -DRN_FABRIC_ENABLED"
+            assert_equal(received_cflags, expected_cflags)
+        end
+
     end
 
-end
+    def test_applyFlagsForFabric_whenFabricDisabled_doNothing
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
 
-def test_applyFlagsForFabric_whenFabricDisabled_doNothing
-    # Arrange
-    first_target = prepare_target("FirstTarget")
-    second_target = prepare_target("SecondTarget")
-    third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-    user_project_mock = UserProjectMock.new("a/path", [
-            prepare_config("Debug"),
-            prepare_config("Release"),
-        ],
-        :native_targets => [
-            first_target,
-            second_target
-        ]
-    )
-    pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-    installer = InstallerMock.new(pods_projects_mock, [
-        AggregatedProjectMock.new(user_project_mock)
-    ])
+        # Act
+        ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: false)
 
-    # Act
-    ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: false)
-
-    # Assert
-    user_project_mock.build_configurations.each do |config|
-        assert_nil(config.build_settings["OTHER_CFLAGS"])
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_nil(config.build_settings["OTHER_CFLAGS"])
+        end
     end
 end
-
 
 # ===== #
 # UTILS #
@@ -679,11 +698,11 @@ def prepare_config(config_name)
     ]})
 end
 
-def prepare_target(name, product_type = nil)
+def prepare_target(name, product_type = nil, dependencies = [])
   return TargetMock.new(name, [
       prepare_config("Debug"),
       prepare_config("Release")
-  ], product_type)
+  ], product_type, dependencies)
 end
 
 def prepare_Code_Signing_build_configuration(name, param)
