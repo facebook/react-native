@@ -54,14 +54,10 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        projects = installer.aggregate_targets
-            .map{ |t| t.user_project }
-            .uniq{ |p| p.path }
-            .push(installer.pods_project)
-
+        projects = self.exrtract_projects(installer)
 
         # Hermes does not support `i386` architecture
-        excluded_archs_default = ReactNativePodsUtils.has_pod(installer, 'hermes-engine') ? "i386" : ""
+        excluded_archs_default = self.has_pod(installer, 'hermes-engine') ? "i386" : ""
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -74,10 +70,7 @@ class ReactNativePodsUtils
 
     def self.set_node_modules_user_settings(installer, react_native_path)
         Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = installer.aggregate_targets
-            .map{ |t| t.user_project }
-            .uniq{ |p| p.path }
-            .push(installer.pods_project)
+        projects = self.exrtract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -89,18 +82,15 @@ class ReactNativePodsUtils
     end
 
     def self.fix_library_search_paths(installer)
-        projects = installer.aggregate_targets
-            .map{ |t| t.user_project }
-            .uniq{ |p| p.path }
-            .push(installer.pods_project)
+        projects = self.exrtract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                ReactNativePodsUtils.fix_library_search_path(config)
+                self.fix_library_search_path(config)
             end
             project.native_targets.each do |target|
                 target.build_configurations.each do |config|
-                    ReactNativePodsUtils.fix_library_search_path(config)
+                    self.fix_library_search_path(config)
                 end
             end
             project.save()
@@ -135,10 +125,7 @@ class ReactNativePodsUtils
         return if !fabric_enabled
 
         fabric_flag = "-DRN_FABRIC_ENABLED"
-        projects = installer.aggregate_targets
-            .map{ |t| t.user_project }
-            .uniq{ |p| p.path }
-            .push(installer.pods_project)
+        projects = self.exrtract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -211,26 +198,145 @@ class ReactNativePodsUtils
     def self.update_search_paths(installer)
         return if ENV['USE_FRAMEWORKS'] == nil
 
-        projects = installer.aggregate_targets
-            .map{ |t| t.user_project }
-            .uniq{ |p| p.path }
-            .push(installer.pods_project)
+        projects = self.exrtract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
+
                 header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
 
-                if !header_search_paths.include?("${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios")
-                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios"
-                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core"
-                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios"
-                    header_search_paths << " ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples"
-                end
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
 
                 config.build_settings["HEADER_SEARCH_PATHS"] = header_search_paths
             end
 
             project.save()
         end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if self.react_native_pods.include?(pod_name) || pod_name.include?("Pod") || pod_name.include?("Tests")
+                next
+            end
+
+            self.set_rctfolly_search_paths(target_installation_result)
+            self.set_codegen_search_paths(target_installation_result)
+            self.set_reactcommon_searchpaths(target_installation_result)
+            self.set_rctfabric_search_paths(target_installation_result)
+            self.set_imagemanager_search_path(target_installation_result)
+        end
+    end
+
+    def self.exrtract_projects(installer)
+        return installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .push(installer.pods_project)
+    end
+
+    def self.add_search_path_if_not_included(current_search_paths, new_search_path)
+        if !current_search_paths.include?(new_search_path)
+            current_search_paths << " #{new_search_path}"
+        end
+        return current_search_paths
+    end
+
+    def self.update_header_paths_if_depends_on(target_installation_result, dependency_name, header_paths)
+        depends_on_framework = target_installation_result.native_target.dependencies.any? { |d| d.name == dependency_name }
+        if depends_on_framework
+            target_installation_result.native_target.build_configurations.each do |config|
+                header_search_path = config.build_settings["HEADER_SEARCH_PATHS"] != nil ? config.build_settings["HEADER_SEARCH_PATHS"] : "$(inherited)"
+                header_paths.each { |header| header_search_path = ReactNativePodsUtils.add_search_path_if_not_included(header_search_path, header) }
+                config.build_settings["HEADER_SEARCH_PATHS"] = header_search_path
+            end
+        end
+    end
+
+    def self.set_rctfolly_search_paths(target_installation_result)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "RCT-Folly", [
+            "\"$(PODS_ROOT)/RCT-Folly\"",
+            "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/boost\""
+        ])
+    end
+
+    def self.set_codegen_search_paths(target_installation_result)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-Codegen", [
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
+        ])
+    end
+
+    def self.set_reactcommon_searchpaths(target_installation_result)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", [
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+        ])
+
+    end
+
+    def self.set_rctfabric_search_paths(target_installation_result)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
+        ])
+    end
+
+    def self.set_imagemanager_search_path(target_installation_result)
+        ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+        ])
+    end
+
+    def self.react_native_pods
+        return [
+            "DoubleConversion",
+            "FBLazyVector",
+            "RCT-Folly",
+            "RCTRequired",
+            "RCTTypeSafety",
+            "React",
+            "React-Codegen",
+            "React-Core",
+            "React-CoreModules",
+            "React-Fabric",
+            "React-ImageManager",
+            "React-RCTActionSheet",
+            "React-RCTAnimation",
+            "React-RCTAppDelegate",
+            "React-RCTBlob",
+            "React-RCTFabric",
+            "React-RCTImage",
+            "React-RCTLinking",
+            "React-RCTNetwork",
+            "React-RCTPushNotification",
+            "React-RCTSettings",
+            "React-RCTText",
+            "React-RCTTest",
+            "React-RCTVibration",
+            "React-callinvoker",
+            "React-cxxreact",
+            "React-graphics",
+            "React-jsc",
+            "React-jsi",
+            "React-jsiexecutor",
+            "React-jsinspector",
+            "React-logger",
+            "React-perflogger",
+            "React-rncore",
+            "React-runtimeexecutor",
+            "ReactCommon",
+            "Yoga",
+            "boost",
+            "fmt",
+            "glog",
+            "hermes-engine",
+            "libevent",
+            "React-hermes",
+        ]
     end
 end
