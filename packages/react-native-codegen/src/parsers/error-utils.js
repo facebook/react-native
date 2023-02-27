@@ -296,6 +296,12 @@ function throwIfPartialNotAnnotatingTypeParameter(
   }
 }
 
+function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.typeParameters.params.length !== 1) {
+    throw new Error('Partials only support annotating exactly one parameter.');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -312,4 +318,5 @@ module.exports = {
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 };
