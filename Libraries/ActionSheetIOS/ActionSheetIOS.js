@@ -11,9 +11,9 @@
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 
+import processColor from '../StyleSheet/processColor';
 import RCTActionSheetManager from './NativeActionSheetManager';
 
-import processColor from '../StyleSheet/processColor';
 const invariant = require('invariant');
 
 /**
