@@ -986,7 +986,7 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 30db98fdddd84a8ecbce1d31599fbc499979cc11
+  hermes-engine: e9181cfd1197b666a2741ad585ebfaaa75fb432e
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -998,7 +998,7 @@ SPEC CHECKSUMS:
   React-Core: 279a6e5ee79e88faa99157169b560c49635973d7
   React-CoreModules: d3ee40954b381edc514301341e8b895febfc1848
   React-cxxreact: aff243750dad852080636e615d7ae5639381735b
-  React-Fabric: b7a35c275593cbb089c29daafc200a314767b556
+  React-Fabric: 6b5c30b6e60a85446cc5d3702fa262fd1fc15619
   React-graphics: e70886fff4b79bec3745de761900a770029591f2
   React-hermes: 7f0e87d44b1c7cfbdd11aa3c070d04435fe75d57
   React-ImageManager: 9fd3521fb8871cd5bea83d2d282da27d6ef91199
