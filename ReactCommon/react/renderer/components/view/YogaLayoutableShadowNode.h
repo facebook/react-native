@@ -31,6 +31,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       kShadowNodeChildrenSmallVectorSize>;
 
   static ShadowNodeTraits BaseTraits();
+  static ShadowNodeTraits::Trait IdentifierTrait();
 
 #pragma mark - Constructors
 
@@ -139,6 +140,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+  static YogaLayoutableShadowNode &shadowNodeFromContext(YGNode *yogaNode);
 
 #pragma mark - RTL Legacy Autoflip
 
@@ -189,30 +191,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   void ensureYogaChildrenOwnersConsistency() const;
   void ensureYogaChildrenLookFine() const;
 };
-
-template <>
-inline YogaLayoutableShadowNode const &
-traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
-  bool castable =
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
-  react_native_assert(castable);
-  (void)castable;
-  return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
-}
-
-template <>
-inline YogaLayoutableShadowNode const *
-traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
-  if (!shadowNode) {
-    return nullptr;
-  }
-  bool castable = shadowNode->getTraits().check(
-      ShadowNodeTraits::Trait::YogaLayoutableKind);
-  if (!castable) {
-    return nullptr;
-  }
-  return static_cast<YogaLayoutableShadowNode const *>(shadowNode);
-}
 
 } // namespace react
 } // namespace facebook

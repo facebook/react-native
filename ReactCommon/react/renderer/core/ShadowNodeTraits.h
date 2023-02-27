@@ -92,17 +92,8 @@ class ShadowNodeTraits {
     // Temporary (?) to indicate MapBuffer support on Android
     AndroidMapBufferPropsSupported = 1 << 15,
 
-    // Reserved
-    ReservedTrait0 = 1 << 16,
-    ReservedTrait1 = 1 << 17,
-    ReservedTrait2 = 1 << 18,
-    ReservedTrait3 = 1 << 19,
-    ReservedTrait4 = 1 << 20,
-    ReservedTrait5 = 1 << 21,
-    ReservedTrait6 = 1 << 22,
-
-    // Unserved - alias these for local usage
-    UnreservedTrait1 = 1 << 23
+    // Inherits 'ArtBaseShadowNode' (previously built into RN)
+    Art = 1 << 16,
   };
 
   /*
@@ -118,6 +109,10 @@ class ShadowNodeTraits {
 
   inline bool check(Trait traits) const {
     return ShadowNodeTraits::Trait(traits_ & traits) == traits;
+  }
+
+  inline Trait get() const {
+    return traits_;
   }
 
  private:
