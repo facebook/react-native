@@ -20,7 +20,7 @@ LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
 # set default environment variables
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV KOTLIN_HOME="third-party/kotlin"
 
 ADD .buckconfig /app/.buckconfig
