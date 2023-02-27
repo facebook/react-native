@@ -248,7 +248,7 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 
 final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
     it.dependsOn(boostPath ? [] : [downloadBoost])
-    it.boostPath.setFrom(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    it.boostPath.setFrom(boostPath ?: tarTree(downloadBoost.dest))
     it.boostVersion.set(BOOST_VERSION)
     it.outputDir.set(new File(thirdPartyNdkDir, "boost"))
 }
