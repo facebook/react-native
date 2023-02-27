@@ -9,9 +9,9 @@
  */
 
 import NativeActionSheetManager from '../ActionSheetIOS/NativeActionSheetManager';
+import processColor from '../StyleSheet/processColor';
 import NativeShareModule from './NativeShareModule';
 
-import processColor from '../StyleSheet/processColor';
 const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 
