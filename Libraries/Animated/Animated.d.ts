@@ -16,7 +16,6 @@ import {
   DefaultSectionT,
   SectionListComponent,
   SectionListProps,
-  SectionListScrollParams,
 } from '../Lists/SectionList';
 import {NodeHandle} from '../ReactNative/RendererProxy';
 import {ColorValue} from '../StyleSheet/StyleSheet';
