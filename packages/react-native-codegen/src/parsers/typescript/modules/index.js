@@ -76,6 +76,7 @@ const {
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -244,11 +245,7 @@ function translateTypeAnnotation(
           return emitGenericObject(nullable);
         }
         case 'Partial': {
-          if (typeAnnotation.typeParameters.params.length !== 1) {
-            throw new Error(
-              'Partials only support annotating exactly one parameter.',
-            );
-          }
+          throwIfPartialWithMoreParameter(typeAnnotation);
 
           const annotatedElement = parser.extractAnnotatedElement(
             typeAnnotation,

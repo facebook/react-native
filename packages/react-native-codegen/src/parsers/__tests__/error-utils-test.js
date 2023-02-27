@@ -26,6 +26,7 @@ const {
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -793,6 +794,29 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
         types,
         typescriptParser,
       );
+    }).not.toThrowError();
+  });
+});
+
+describe('throwIfPartialWithMoreParameter', () => {
+  it('throw error if Partial does not have exactly one parameter', () => {
+    const typeAnnotation = {
+      type: '',
+      typeParameters: {params: [{}, {}]},
+    };
+    expect(() => {
+      throwIfPartialWithMoreParameter(typeAnnotation);
+    }).toThrowError('Partials only support annotating exactly one parameter.');
+  });
+
+  it('does not throw error if Partial has exactly one parameter', () => {
+    const typeAnnotation = {
+      type: '',
+      typeParameters: {params: [{}]},
+    };
+
+    expect(() => {
+      throwIfPartialWithMoreParameter(typeAnnotation);
     }).not.toThrowError();
   });
 });
