@@ -62,7 +62,6 @@
 #endif
 #endif
 
-#import <React/RCTTextAttributes.h> // [macOS]
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import "RNTesterTurboModuleProvider.h"
 
@@ -101,12 +100,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #else // [macOS
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
 #endif // macOS]
-
-  // [macOS
-  // Optionally set the global `fontSmoothing` setting.
-  // If not explicitly set, the default is subpixel-antialiased
-  [RCTTextAttributes setFontSmoothingDefault:RCTFontSmoothingSubpixelAntialiased];
-  // macOS]
 
   // Appetizer.io params check
   NSDictionary *initProps = [self prepareInitialProps];

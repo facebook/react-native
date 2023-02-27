@@ -220,40 +220,11 @@
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-	// [macOS
-	NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-	[_textStorage enumerateAttribute:RCTTextAttributesFontSmoothingAttributeName
-													 inRange:characterRange
-													 options:0
-												usingBlock:
-		^(NSNumber *value, NSRange range, __unused BOOL *stop) {
-		RCTFontSmoothing smoothing = value.integerValue;
-		if (smoothing == RCTFontSmoothingAuto) {
-			smoothing = [RCTTextAttributes fontSmoothingDefault];
-		}
-		CGContextRef context = UIGraphicsGetCurrentContext();
-		CGContextSaveGState(context);
-		switch (smoothing) {
-			case RCTFontSmoothingNone:
-				CGContextSetShouldAntialias(context, false);
-				break;
-			case RCTFontSmoothingAntialiased:
-				CGContextSetAllowsFontSmoothing(context, false);
-				CGContextSetShouldSmoothFonts(context, false);
-				break;
-			case RCTFontSmoothingAuto:
-			case RCTFontSmoothingSubpixelAntialiased:
-				break;
-		}
-		NSRange subGlyphRange = [layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
-		[layoutManager drawBackgroundForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
-		[layoutManager drawGlyphsForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
-		CGContextRestoreGState(context);
-	}];
-	// macOS]
-
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
   __block UIBezierPath *highlightPath = nil;
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
   [_textStorage
       enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
                  inRange:characterRange
@@ -277,7 +248,7 @@
 #if !TARGET_OS_OSX // [macOS]
                                                   [highlightPath appendPath:path];
 #else // [macOS
-                                                    [highlightPath appendBezierPath:path];
+                                                  [highlightPath appendBezierPath:path];
 #endif // macOS]
                                                 } else {
                                                   highlightPath = path;

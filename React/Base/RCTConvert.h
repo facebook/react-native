@@ -15,7 +15,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
-#import <React/RCTFontSmoothing.h> // [macOS]
 #import <yoga/Yoga.h>
 #if TARGET_OS_IPHONE
 #import <WebKit/WebKit.h>
@@ -145,7 +144,6 @@ typedef BOOL css_backface_visibility_t;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
 + (RCTBorderCurve)RCTBorderCurve:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
-+ (RCTFontSmoothing)RCTFontSmoothing:(id)json; // [macOS]
 
 #if TARGET_OS_OSX // [macOS
 + (NSString *)accessibilityRoleFromTraits:(id)json;

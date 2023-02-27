@@ -552,43 +552,6 @@ exports.category = 'Basic';
 exports.description = 'Base component for rendering styled text.';
 exports.displayName = 'TextExample';
 exports.examples = [
-  // [macOS
-  {
-    title: 'Apple Font Smoothing',
-    render: function (): React.Node {
-      return (
-        <View>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>auto: </Text>
-            <Text style={{apple_fontSmoothing: 'auto'}}>
-              This will render using the global [RCTTextAttributes
-              fontSmoothingDefault] setting. The default is the same as
-              subpixel-antialiased if not explicitly set by the native app.
-            </Text>
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>none: </Text>
-            <Text style={{apple_fontSmoothing: 'none'}}>
-              This will render with no antialiasing.
-            </Text>
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>antialiased: </Text>
-            <Text style={{apple_fontSmoothing: 'antialiased'}}>
-              This will render with antialiasing.
-            </Text>
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>subpixel-antialiased: </Text>
-            <Text style={{apple_fontSmoothing: 'subpixel-antialiased'}}>
-              This will render with subpixel antialiasing.
-            </Text>
-          </Text>
-        </View>
-      );
-    },
-  },
-  // macOS]
   {
     title: 'Wrap',
     render: function (): React.Node {

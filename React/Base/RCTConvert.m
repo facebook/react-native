@@ -365,19 +365,6 @@ RCT_ENUM_CONVERTER(
     RCTTextDecorationLineTypeNone,
     integerValue)
 
-// [macOS
-RCT_ENUM_CONVERTER(
-    RCTFontSmoothing,
-    (@{
-      @"auto": @(RCTFontSmoothingAuto),
-      @"none": @(RCTFontSmoothingNone),
-      @"antialiased": @(RCTFontSmoothingAntialiased),
-      @"subpixel-antialiased": @(RCTFontSmoothingSubpixelAntialiased),
-    }),
-    RCTFontSmoothingAuto,
-    integerValue)
-// macOS]
-
 RCT_ENUM_CONVERTER(
     NSWritingDirection,
     (@{

@@ -690,11 +690,6 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,
   fontVariant?: ____FontVariantArray_Internal | string,
-  apple_fontSmoothing?:  // [macOS
-    | 'auto'
-    | 'none'
-    | 'antialiased'
-    | 'subpixel-antialiased', // macOS]
   textShadowOffset?: $ReadOnly<{
     width: number,
     height: number,

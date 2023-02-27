@@ -16,7 +16,6 @@
 #endif // macOS]
 
 NSString *const RCTTextAttributesIsHighlightedAttributeName = @"RCTTextAttributesIsHighlightedAttributeName";
-NSString *const RCTTextAttributesFontSmoothingAttributeName = @"RCTTextAttributesFontSmoothingAttributeName"; // [macOS]
 NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttributeName";
 
 @implementation RCTTextAttributes
@@ -81,7 +80,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _allowFontScaling = textAttributes->_allowFontScaling || _allowFontScaling; // *
   _dynamicTypeRamp = textAttributes->_dynamicTypeRamp != RCTDynamicTypeRampUndefined ? textAttributes->_dynamicTypeRamp : _dynamicTypeRamp; // [macOS]
   _letterSpacing = !isnan(textAttributes->_letterSpacing) ? textAttributes->_letterSpacing : _letterSpacing;
-  _fontSmoothing = textAttributes->_fontSmoothing != RCTFontSmoothingAuto ? textAttributes->_fontSmoothing : _fontSmoothing; // [macOS]
 
   // Paragraph Styles
   _lineHeight = !isnan(textAttributes->_lineHeight) ? textAttributes->_lineHeight : _lineHeight;
@@ -230,12 +228,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     attributes[RCTTextAttributesIsHighlightedAttributeName] = @YES;
   }
 
-  // [macOS
-  if (_fontSmoothing != RCTFontSmoothingAuto) {
-    attributes[RCTTextAttributesFontSmoothingAttributeName] = @(_fontSmoothing);
-  }
-  // macOS]
-
   if (_tag) {
     attributes[RCTTextAttributesTagAttributeName] = _tag;
   }
@@ -368,8 +360,7 @@ static NSString *capitalizeText(NSString *text)
       RCTTextAttributesCompareFloats(_fontSizeMultiplier) && RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
       RCTTextAttributesCompareStrings(_fontWeight) && RCTTextAttributesCompareObjects(_fontStyle) &&
       RCTTextAttributesCompareObjects(_fontVariant) && RCTTextAttributesCompareOthers(_allowFontScaling) &&
-      RCTTextAttributesCompareFloats(_letterSpacing) &&
-      RCTTextAttributesCompareOthers(_dynamicTypeRamp) && RCTTextAttributesCompareOthers(_fontSmoothing) && // [macOS]
+      RCTTextAttributesCompareOthers(_dynamicTypeRamp) && RCTTextAttributesCompareFloats(_letterSpacing) &&
       // Paragraph Styles
       RCTTextAttributesCompareFloats(_lineHeight) && RCTTextAttributesCompareFloats(_alignment) &&
       RCTTextAttributesCompareOthers(_baseWritingDirection) && RCTTextAttributesCompareOthers(_lineBreakStrategy) &&
@@ -383,17 +374,5 @@ static NSString *capitalizeText(NSString *text)
       RCTTextAttributesCompareOthers(_isHighlighted) && RCTTextAttributesCompareObjects(_tag) &&
       RCTTextAttributesCompareOthers(_layoutDirection) && RCTTextAttributesCompareOthers(_textTransform);
 }
-
-// [macOS
-static RCTFontSmoothing _fontSmoothingDefault = RCTFontSmoothingAuto;
-
-+ (RCTFontSmoothing)fontSmoothingDefault {
-  return _fontSmoothingDefault;
-}
-
-+ (void)setFontSmoothingDefault:(RCTFontSmoothing)fontSmoothingDefault {
-  _fontSmoothingDefault = fontSmoothingDefault;
-}
-// macOS]
 
 @end
