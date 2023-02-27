@@ -16,7 +16,10 @@ import warnOnce from '../Utilities/warnOnce';
 import EventCounts from './EventCounts';
 import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
+import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
+import {warnNoNativePerformanceObserver} from './PerformanceObserver';
+import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 
 type DetailType = mixed;
 
@@ -135,12 +138,15 @@ export default class Performance {
   }
 
   clearMarks(markName?: string): void {
-    if (!NativePerformance?.clearMarks) {
-      warnNoNativePerformance();
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
       return;
     }
 
-    NativePerformance.clearMarks(markName);
+    NativePerformanceObserver?.clearEntries(
+      RawPerformanceEntryTypeValues.MARK,
+      markName,
+    );
   }
 
   measure(
@@ -213,12 +219,15 @@ export default class Performance {
   }
 
   clearMeasures(measureName?: string): void {
-    if (!NativePerformance?.clearMeasures) {
-      warnNoNativePerformance();
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
       return;
     }
 
-    NativePerformance.clearMeasures(measureName);
+    NativePerformanceObserver?.clearEntries(
+      RawPerformanceEntryTypeValues.MEASURE,
+      measureName,
+    );
   }
 
   /**
