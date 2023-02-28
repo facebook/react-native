@@ -12,11 +12,9 @@ import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import {
   DeviceEventEmitter,
-  StyleSheet,
   Text,
   View,
   FlatList,
-  Platform,
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
@@ -25,6 +23,8 @@ import NativeCxxModuleExample, {
   EnumInt,
   EnumNone,
 } from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+
+import styles from './TurboModuleExampleCommon';
 
 type State = {|
   testResults: {
@@ -55,7 +55,7 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
-  | 'emitCustomDeviceEvent';
+  | 'emitDeviceEvent';
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
@@ -99,12 +99,12 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
-    emitCustomDeviceEvent: () => {
+    emitDeviceEvent: () => {
       const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
       DeviceEventEmitter.removeAllListeners(CUSTOM_EVENT_TYPE);
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
-          'emitCustomDeviceEvent',
+          'emitDeviceEvent',
           `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
         );
       });
@@ -196,47 +196,5 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    flexDirection: 'row',
-    margin: 6,
-  },
-  column: {
-    flex: 2,
-    justifyContent: 'center',
-    padding: 3,
-  },
-  result: {
-    alignItems: 'stretch',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 12,
-  },
-  type: {
-    color: '#333',
-    fontSize: 10,
-  },
-  button: {
-    borderColor: '#444',
-    padding: 3,
-    flex: 1,
-  },
-  buttonTextLarge: {
-    textAlign: 'center',
-    color: 'rgb(0,122,255)',
-    fontSize: 16,
-    padding: 6,
-  },
-  buttonText: {
-    color: 'rgb(0,122,255)',
-    textAlign: 'center',
-  },
-});
 
 module.exports = NativeCxxModuleExampleExample;

@@ -12,7 +12,6 @@ import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/
 import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {
-  StyleSheet,
   Text,
   View,
   FlatList,
@@ -20,6 +19,8 @@ import {
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
+
+import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
 
 type State = {|
@@ -182,47 +183,5 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    flexDirection: 'row',
-    margin: 6,
-  },
-  column: {
-    flex: 2,
-    justifyContent: 'center',
-    padding: 3,
-  },
-  result: {
-    alignItems: 'stretch',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 12,
-  },
-  type: {
-    color: '#333',
-    fontSize: 10,
-  },
-  button: {
-    borderColor: '#444',
-    padding: 3,
-    flex: 1,
-  },
-  buttonTextLarge: {
-    textAlign: 'center',
-    color: 'rgb(0,122,255)',
-    fontSize: 16,
-    padding: 6,
-  },
-  buttonText: {
-    color: 'rgb(0,122,255)',
-    textAlign: 'center',
-  },
-});
 
 module.exports = SampleTurboModuleExample;
