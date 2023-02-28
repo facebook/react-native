@@ -21,12 +21,20 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const RN_ROOT = path.join(__dirname, '../..');
+const REACT_NATIVE_REPOSITORY_ROOT = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+  '..',
+);
+const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
+
 const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
-const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${RN_ROOT}/../${CODEGEN_DEPENDENCY_NAME}`;
+const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
+const CODEGEN_NPM_PATH = `${REACT_NATIVE_PACKAGE_ROOT_FOLDER}/../${CODEGEN_DEPENDENCY_NAME}`;
 const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-  rncore: path.join(RN_ROOT, 'ReactCommon'),
+  rncore: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   FBReactNativeSpec: null,
 };
 const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
@@ -121,7 +129,7 @@ function extractLibrariesFromJSON(
   var isBlocking = false;
   if (dependency == null) {
     dependency = REACT_NATIVE_DEPENDENCY_NAME;
-    dependencyPath = RN_ROOT;
+    dependencyPath = REACT_NATIVE_PACKAGE_ROOT_FOLDER;
     // If we are exploring the ReactNative libraries, we want to raise an error
     // if the codegen is not properly configured.
     isBlocking = true;
@@ -162,7 +170,10 @@ function handleReactNativeCodeLibraries(
   // Handle react-native core libraries.
   // This is required when react-native is outside of node_modules.
   console.log('[Codegen] Processing react-native core libraries');
-  const reactNativePkgJson = path.join(RN_ROOT, codegenConfigFilename);
+  const reactNativePkgJson = path.join(
+    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+    codegenConfigFilename,
+  );
   if (!fs.existsSync(reactNativePkgJson)) {
     throw '[Codegen] Error: Could not find config file for react-native.';
   }
@@ -178,7 +189,9 @@ function handleThirdPartyLibraries(
   codegenConfigKey,
 ) {
   // Determine which of these are codegen-enabled libraries
-  const configDir = baseCodegenConfigFileDir || path.join(RN_ROOT, '..');
+  const configDir =
+    baseCodegenConfigFileDir ||
+    path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, '..');
   console.log(
     `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${configDir}`,
   );
@@ -338,7 +351,11 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
 
   executeNodeScript(
     node,
-    `${path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js')} \
+    `${path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'scripts',
+      'generate-specs-cli.js',
+    )} \
         --platform ios \
         --schemaPath ${pathToSchema} \
         --outputDir ${tmpOutputDir} \
@@ -401,14 +418,18 @@ function createComponentProvider(
     fs.closeSync(fd);
     console.log(`Generated schema list: ${schemaListTmpPath}`);
 
-    const outputDir = path.join(RN_ROOT, 'React', 'Fabric');
+    const outputDir = path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'React',
+      'Fabric',
+    );
 
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
     executeNodeScript(
       node,
       `${path.join(
-        RN_ROOT,
+        REACT_NATIVE_PACKAGE_ROOT_FOLDER,
         'scripts',
         'generate-provider-cli.js',
       )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${outputDir}`,

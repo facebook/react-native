@@ -33,7 +33,7 @@ def findCmakePath(cmakeVersion) {
     return "cmake"
 }
 
-def reactNativeRootDir = project(':ReactAndroid').projectDir.parent;
+def reactNativeRootDir = project(':packages:react-native:ReactAndroid').projectDir.parent;
 def customDownloadDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(reactNativeRootDir, "sdks/download")
 

@@ -664,7 +664,7 @@ dependencies {
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
-    compileOnly(project(":ReactAndroid:hermes-engine"))
+    compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")

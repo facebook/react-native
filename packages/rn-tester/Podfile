@@ -1,4 +1,4 @@
-require_relative '../../scripts/react_native_pods'
+require_relative '../react-native/scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, min_ios_version_supported
@@ -7,7 +7,7 @@ prepare_react_native_project!
 
 IN_CI = ENV['CI'] == 'true'
 
-@prefix_path = "../.."
+@prefix_path = "../react-native"
 
 linkage = ENV['USE_FRAMEWORKS']
 USE_FRAMEWORKS = linkage != nil

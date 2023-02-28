@@ -272,8 +272,8 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/packages/react-native/ReactAndroid/src/main/third-party/java/robolectric",
+        "-Dlibraries=buck-out/gen/packages/react-native/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",

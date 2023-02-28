@@ -235,7 +235,7 @@ def use_react_native_codegen!(spec, options={})
   # TODO: Once the new codegen approach is ready for use, we should output a warning here to let folks know to migrate.
 
   # The prefix to react-native
-  react_native_path = options[:react_native_path] ||= "../.."
+  react_native_path = options[:react_native_path] ||= ".."
 
   # Library name (e.g. FBReactNativeSpec)
   library_name = options[:library_name] ||= "#{spec.name.gsub('_','-').split('-').collect(&:capitalize).join}Spec"

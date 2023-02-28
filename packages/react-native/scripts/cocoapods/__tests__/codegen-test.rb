@@ -87,7 +87,7 @@ class CodegenTests < Test::Unit::TestCase
             @prefix + "/React/Fabric/" + @third_party_provider_header
         ])
         assert_equal(DirMock.exist_invocation_params, [
-            @base_path + "/"+ @prefix + "/packages/react-native-codegen",
+            @base_path + "/"+ @prefix + "/../react-native-codegen",
             @base_path + "/"+ @prefix + "/../@react-native/codegen",
         ])
         assert_equal(Pod::UI.collected_messages, [])
@@ -105,8 +105,8 @@ class CodegenTests < Test::Unit::TestCase
         ])
 
         DirMock.mocked_existing_dirs([
-            @base_path + "/"+ @prefix + "/packages/react-native-codegen",
-            @base_path + "/"+ @prefix + "/packages/react-native-codegen/lib"
+            @base_path + "/"+ @prefix + "/../react-native-codegen",
+            @base_path + "/"+ @prefix + "/../react-native-codegen/lib"
         ])
 
         # Act
@@ -121,8 +121,8 @@ class CodegenTests < Test::Unit::TestCase
             @prefix + "/React/Fabric/tmpSchemaList.txt",
         ])
         assert_equal(DirMock.exist_invocation_params, [
-            @base_path + "/"+ @prefix + "/packages/react-native-codegen",
-            @base_path + "/"+ @prefix + "/packages/react-native-codegen/lib",
+            @base_path + "/"+ @prefix + "/../react-native-codegen",
+            @base_path + "/"+ @prefix + "/../react-native-codegen/lib",
         ])
         assert_equal(Pod::UI.collected_messages, ["[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"])
         assert_equal($collected_commands, [])
@@ -160,7 +160,7 @@ class CodegenTests < Test::Unit::TestCase
             @prefix + "/React/Fabric/" + @tmp_schema_list_file
         ])
         assert_equal(DirMock.exist_invocation_params, [
-            @base_path + "/" + @prefix + "/packages/react-native-codegen",
+            @base_path + "/" + @prefix + "/../react-native-codegen",
             codegen_cli_path,
             codegen_cli_path + "/lib",
         ])
