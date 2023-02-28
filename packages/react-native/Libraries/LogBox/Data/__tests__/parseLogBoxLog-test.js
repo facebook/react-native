@@ -301,10 +301,10 @@ describe('parseLogBoxLog', () => {
       message: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
 
 If you are sure the module exists, try these steps:
- 1. Clear watchman watches: watchman watch-del-all
- 2. Delete node_modules and run yarn install
- 3. Reset Metro's cache: yarn start --reset-cache
- 4. Remove the cache: rm -rf /tmp/metro-*
+1. Clear watchman watches: watchman watch-del-all
+2. Delete node_modules and run yarn install
+3. Reset Metro's cache: yarn start --reset-cache
+4. Remove the cache: rm -rf /tmp/metro-*
 \u001b[0m \u001b[90m 10 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mColor\u001b[39m from \u001b[32m'Color'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
 \u001b[0m \u001b[90m 11 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mList\u001b[39m from \u001b[32m'List'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
 \u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mListCell\u001b[39m from \u001b[32m'ListCellx'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
@@ -315,10 +315,10 @@ If you are sure the module exists, try these steps:
       originalMessage: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
 
 If you are sure the module exists, try these steps:
- 1. Clear watchman watches: watchman watch-del-all
- 2. Delete node_modules and run yarn install
- 3. Reset Metro's cache: yarn start --reset-cache
- 4. Remove the cache: rm -rf /tmp/metro-*
+1. Clear watchman watches: watchman watch-del-all
+2. Delete node_modules and run yarn install
+3. Reset Metro's cache: yarn start --reset-cache
+4. Remove the cache: rm -rf /tmp/metro-*
 \u001b[0m \u001b[90m 10 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mColor\u001b[39m from \u001b[32m'Color'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
 \u001b[0m \u001b[90m 11 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mList\u001b[39m from \u001b[32m'List'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
 \u001b[0m\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 12 | \u001b[39m\u001b[36mimport\u001b[39m \u001b[33mListCell\u001b[39m from \u001b[32m'ListCellx'\u001b[39m\u001b[33m;\u001b[39m\u001b[0m
@@ -352,10 +352,10 @@ If you are sure the module exists, try these steps:
         content: `ListCellx could not be found within the project.
 
 If you are sure the module exists, try these steps:
- 1. Clear watchman watches: watchman watch-del-all
- 2. Delete node_modules and run yarn install
- 3. Reset Metro's cache: yarn start --reset-cache
- 4. Remove the cache: rm -rf /tmp/metro-*`,
+1. Clear watchman watches: watchman watch-del-all
+2. Delete node_modules and run yarn install
+3. Reset Metro's cache: yarn start --reset-cache
+4. Remove the cache: rm -rf /tmp/metro-*`,
         substitutions: [],
       },
       stack: [],
@@ -958,8 +958,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -995,8 +999,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -1025,8 +1033,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -1056,8 +1068,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -1089,8 +1105,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -1153,8 +1173,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
@@ -1214,8 +1238,12 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
             fileName: '/path/to/filename.js',
             location: {column: 1, row: 1},
           },
-          // TODO: we're missing the second component,
-          // because stackframe-parser does not recognize it.
+          {
+            collapse: false,
+            content: 'forEach',
+            fileName: '[native code]',
+            location: {column: -1, row: -1},
+          },
           {
             collapse: false,
             content: 'MyAppComponent',
