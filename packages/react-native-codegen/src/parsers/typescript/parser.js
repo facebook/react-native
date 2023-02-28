@@ -30,7 +30,9 @@ const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('./Visitor');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
-const {buildModuleSchema} = require('./modules');
+const {buildModuleSchema} = require('../parsers-commons.js');
+const {resolveTypeAnnotation} = require('./utils');
+const {typeScriptTranslateTypeAnnotation} = require('./modules');
 
 const fs = require('fs');
 
@@ -103,6 +105,8 @@ class TypeScriptParser implements Parser {
       buildModuleSchema,
       Visitor,
       this,
+      resolveTypeAnnotation,
+      typeScriptTranslateTypeAnnotation,
     );
   }
 
