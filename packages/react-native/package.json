@@ -113,6 +113,7 @@
     "@react-native-community/cli-platform-android": "11.0.0-alpha.2",
     "@react-native-community/cli-platform-ios": "11.0.0-alpha.2",
     "@react-native/assets-registry": "^0.72.0",
+    "@react-native/codegen": "^0.72.2",
     "@react-native/gradle-plugin": "^0.72.4",
     "@react-native/js-polyfills": "^0.72.1",
     "@react-native/normalize-colors": "^0.72.0",
@@ -143,13 +144,6 @@
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.2.2"
-  },
-  "devDependencies": {
-    "flow-bin": "^0.200.0",
-    "hermes-eslint": "0.8.0",
-    "mock-fs": "^5.1.4",
-    "react": "18.2.0",
-    "react-test-renderer": "^18.2.0"
   },
   "codegenConfig": {
     "libraries": [

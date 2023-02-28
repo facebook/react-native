@@ -6660,9 +6660,9 @@ mkdirp@^1.0.3:
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
 mock-fs@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-5.1.4.tgz#d64dc37b2793613ca7148b510b1167b5b8afb6b8"
-  integrity sha512-sudhLjCjX37qWIcAlIv1OnAxB2wI4EmXByVuUjILh1rKGNGpGU8GNnzw+EAbrhdpBe0TL/KONbK1y3RXZk8SxQ==
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-5.2.0.tgz#3502a9499c84c0a1218ee4bf92ae5bf2ea9b2b5e"
+  integrity sha512-2dF2R6YMSZbpip1V1WHKGLNjr/k48uQClqMVb5H3MOvwc9qhYis3/IWbj02qIg/Y8MDXKFF4c5v0rxx2o6xTZw==
 
 ms@2.0.0:
   version "2.0.0"
@@ -7350,7 +7350,7 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-react-test-renderer@18.2.0, react-test-renderer@^18.2.0:
+react-test-renderer@18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-18.2.0.tgz#1dd912bd908ff26da5b9fca4fd1c489b9523d37e"
   integrity sha512-JWD+aQ0lh2gvh4NM3bBM42Kx+XybOxCpgYK7F8ugAlpaTSnWsX+39Z4XkOykGZAHrjwwTZT3x3KxswVWxHPUqA==
