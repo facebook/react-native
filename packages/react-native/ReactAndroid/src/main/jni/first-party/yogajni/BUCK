@@ -16,7 +16,7 @@ oss_cxx_library(
     soname = "libyoga.$(ext)",
     visibility = ["PUBLIC"],
     deps = [
-        "//ReactCommon/yoga:yoga",
+        "//packages/react-native/ReactCommon/yoga:yoga",
         FBJNI_TARGET,
     ],
 )
