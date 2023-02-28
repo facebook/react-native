@@ -121,21 +121,27 @@ void PerformanceEntryReporter::mark(
        std::nullopt});
 }
 
-void PerformanceEntryReporter::clearMarks(
-    const std::optional<std::string> &markName) {
-  if (markName) {
-    PerformanceMark mark{{*markName, 0}};
+void PerformanceEntryReporter::clearEntries(
+    PerformanceEntryType entryType,
+    const char *entryName) {
+  if (entryName != nullptr && entryType == PerformanceEntryType::MARK) {
+    // remove a named mark from the mark/measure registry
+    PerformanceMark mark{{entryName, 0}};
     marksRegistry_.erase(&mark);
-    clearEntries([&markName](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK) &&
-          entry.name == markName;
-    });
-  } else {
-    marksRegistry_.clear();
-    clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK);
-    });
   }
+
+  int lastPos = entries_.size() - 1;
+  int pos = lastPos;
+  while (pos >= 0) {
+    const RawPerformanceEntry &entry = entries_[pos];
+    if (entry.entryType == static_cast<int32_t>(entryType) &&
+        (entryName == nullptr || entry.name == entryName)) {
+      entries_[pos] = entries_[lastPos];
+      lastPos--;
+    }
+    pos--;
+  }
+  entries_.resize(lastPos + 1);
 }
 
 void PerformanceEntryReporter::measure(
@@ -156,22 +162,6 @@ void PerformanceEntryReporter::measure(
        std::nullopt,
        std::nullopt,
        std::nullopt});
-}
-
-void PerformanceEntryReporter::clearMeasures(
-    const std::optional<std::string> &measureName) {
-  if (measureName) {
-    clearEntries([&measureName](const RawPerformanceEntry &entry) {
-      return entry.entryType ==
-          static_cast<int>(PerformanceEntryType::MEASURE) &&
-          entry.name == measureName;
-    });
-  } else {
-    marksRegistry_.clear();
-    clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MEASURE);
-    });
-  }
 }
 
 double PerformanceEntryReporter::getMarkTime(
@@ -200,20 +190,6 @@ void PerformanceEntryReporter::event(
        processingStart,
        processingEnd,
        interactionId});
-}
-
-void PerformanceEntryReporter::clearEntries(
-    std::function<bool(const RawPerformanceEntry &)> predicate) {
-  int lastPos = entries_.size() - 1;
-  int pos = lastPos;
-  while (pos >= 0) {
-    if (predicate(entries_[pos])) {
-      entries_[pos] = entries_[lastPos];
-      lastPos--;
-    }
-    pos--;
-  }
-  entries_.resize(lastPos + 1);
 }
 
 void PerformanceEntryReporter::scheduleFlushBuffer() {

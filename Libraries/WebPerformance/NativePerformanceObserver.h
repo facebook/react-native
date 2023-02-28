@@ -79,6 +79,11 @@ class NativePerformanceObserver
       int32_t entryType,
       double durationThreshold);
 
+  void clearEntries(
+      jsi::Runtime &rt,
+      int32_t entryType,
+      std::optional<std::string> entryName);
+
  private:
 };
 
