@@ -628,7 +628,9 @@ jobs:
                           export USE_HERMES=0
                         fi
 
-                        cd packages/rn-tester && bundle exec pod install --verbose
+                        cd packages/rn-tester
+                        bundle install
+                        bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -969,7 +971,9 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  cd packages/rn-tester && bundle exec pod install
+                  cd packages/rn-tester
+                  bundle install
+                  bundle exec pod install
 
       - run:
           name: Build RNTester

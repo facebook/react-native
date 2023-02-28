@@ -8,7 +8,7 @@
 # Usage:
 #   source scripts/update_podfile_lock && update_pods
 
-THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RNTESTER_DIR="$THIS_DIR/../packages/rn-tester"
 
 # Keep this separate for FB internal access.
@@ -20,6 +20,7 @@ validate_env () {
 
 update_pods () {
   cd "$RNTESTER_DIR" || exit
+  bundle install || exit
   bundle check || exit
   bundle exec pod install
   cd "$THIS_DIR" || exit
