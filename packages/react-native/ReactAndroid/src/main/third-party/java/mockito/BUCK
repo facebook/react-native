@@ -5,7 +5,7 @@ rn_android_library(
     name = "mockito",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":mockito-core",
         ":objenesis",
@@ -15,7 +15,7 @@ rn_android_library(
 rn_prebuilt_jar(
     name = "mockito-core",
     binary_jar = ":mockito-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -27,7 +27,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "objenesis",
     binary_jar = ":objenesis-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

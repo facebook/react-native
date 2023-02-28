@@ -15,7 +15,7 @@ plugins {
 
 val reactAndroidProperties = java.util.Properties()
 
-File("$rootDir/ReactAndroid/gradle.properties").inputStream().use {
+File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStream().use {
   reactAndroidProperties.load(it)
 }
 
@@ -50,14 +50,17 @@ tasks.register("cleanAll", Delete::class.java) {
   dependsOn(":ReactAndroid:hermes-engine:clean")
   dependsOn(":packages:rn-tester:android:app:clean")
   delete(allprojects.map { it.buildDir })
-  delete(rootProject.file("./ReactAndroid/.cxx"))
-  delete(rootProject.file("./ReactAndroid/hermes-engine/.cxx"))
-  delete(rootProject.file("./sdks/download/"))
-  delete(rootProject.file("./sdks/hermes/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/.cxx"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/hermes-engine/.cxx"))
+  delete(rootProject.file("./packages/react-native/sdks/download/"))
+  delete(rootProject.file("./packages/react-native/sdks/hermes/"))
+  delete(
+      rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
+  delete(
+      rootProject.file(
+          "./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
   delete(rootProject.file("./packages/react-native-codegen/lib"))
   delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
 }

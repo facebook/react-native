@@ -34,7 +34,7 @@ rn_android_library(
 rn_prebuilt_jar(
     name = "android-all-5.0.2_r3-robolectric-r0",  # name defines filename used by robolectric in runtime
     binary_jar = ":robolectric-android-all-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 # This new rule will make the .jar file appear in the "right" location,
@@ -54,7 +54,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "bouncycastle",
     binary_jar = ":bouncycastle-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -66,7 +66,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "guava",
     binary_jar = ":guava-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

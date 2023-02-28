@@ -5,7 +5,7 @@ rn_android_library(
     name = "okio",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":okio-binary",
         # Forces resolver to use OSS Kotlin version

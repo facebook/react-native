@@ -4,7 +4,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_android_pre
 rn_android_prebuilt_aar(
     name = "fresco-react-native",
     aar = ":fresco-binary-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -16,7 +16,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "fresco-drawee",
     aar = ":drawee-binary-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -29,7 +29,7 @@ rn_android_library(
     name = "imagepipeline",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":bolts",
         ":imagepipeline-base",
@@ -47,7 +47,7 @@ rn_android_library(
 rn_android_prebuilt_aar(
     name = "imagepipeline-base",
     aar = ":imagepipeline-base-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -59,7 +59,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "imagepipeline-core",
     aar = ":imagepipeline-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -71,7 +71,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "native-filters",
     aar = ":nativeimagefilters-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -83,7 +83,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "native-transcoder",
     aar = ":nativeimagetranscoder-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -95,7 +95,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "bolts",
     binary_jar = ":download-bolts.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -107,7 +107,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "fbcore",
     aar = ":fbcore-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -119,7 +119,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "imagepipeline-native",
     aar = ":imagepipeline-native-binary-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -131,7 +131,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "imagepipeline-okhttp3",
     aar = ":imagepipeline-okhttp3-binary-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -143,7 +143,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "memory-type-ashmem",
     aar = ":memory-type-ashmem-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -155,7 +155,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "memory-type-java",
     aar = ":memory-type-java-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -167,7 +167,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "memory-type-native",
     aar = ":memory-type-native-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -179,7 +179,7 @@ fb_native.remote_file(
 rn_android_prebuilt_aar(
     name = "ui-common",
     aar = ":ui-common-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
