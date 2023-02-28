@@ -85,6 +85,19 @@ module.exports = {
     return nativeColorScheme;
   },
 
+  setColorScheme(colorScheme: ?ColorSchemeName): void {
+    const nativeColorScheme = colorScheme == null ? 'unspecified' : colorScheme;
+
+    invariant(
+      colorScheme === 'dark' || colorScheme === 'light' || colorScheme == null,
+      "Unrecognized color scheme. Did you mean 'dark', 'light' or null?",
+    );
+
+    if (NativeAppearance != null && NativeAppearance.setColorScheme != null) {
+      NativeAppearance.setColorScheme(nativeColorScheme);
+    }
+  },
+
   /**
    * Add an event handler that is fired when appearance preferences change.
    */
