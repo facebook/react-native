@@ -1,6 +1,5 @@
 {
-  "name": "@react-native/monorepo",
-  "private": true,
+  "name": "react-native",
   "version": "1000.0.0",
   "bin": "./cli.js",
   "description": "A framework for building native apps using React",
@@ -105,10 +104,6 @@
     "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
     "align-package-versions": "node ./scripts/monorepo/align-package-versions.js"
   },
-  "workspaces": [
-    "packages/*",
-    "repo-config"
-  ],
   "peerDependencies": {
     "react": "18.2.0"
   },
