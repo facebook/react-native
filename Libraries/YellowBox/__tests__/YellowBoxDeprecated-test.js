@@ -11,8 +11,7 @@
 
 'use strict';
 
-import LogBox from '../../LogBox/LogBox';
-
+const LogBox = require('../../LogBox/LogBox').default;
 const YellowBox = require('../YellowBoxDeprecated');
 
 describe('YellowBox', () => {

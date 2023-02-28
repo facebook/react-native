@@ -10,10 +10,9 @@
 
 'use strict';
 
-import processColor from '../StyleSheet/processColor';
-
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const resolveAssetSource = require('../Image/resolveAssetSource');
+const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');

@@ -10,7 +10,7 @@
 
 'use strict';
 const NOT_A_NATIVE_COMPONENT = `
-import requireNativeComponent from 'requireNativeComponent';
+const requireNativeComponent = require('requireNativeComponent').default;
 
 export default 'Not a view config'
 `;

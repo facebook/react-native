@@ -20,8 +20,7 @@ export type ResolvedAssetSource = {|
 
 import type {PackagerAsset} from '@react-native/assets-registry/registry';
 
-import PixelRatio from '../Utilities/PixelRatio';
-
+const PixelRatio = require('../Utilities/PixelRatio').default;
 const Platform = require('../Utilities/Platform');
 const {pickScale} = require('./AssetUtils');
 const {
