@@ -683,7 +683,7 @@ dependencies {
     // mirror from a non-linux machine, while still executing inside a Linux CI
     // as we declare a dependency on aap2 @linux so we're sure the linux artifact
     // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.1-8841542:linux")
+    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {
