@@ -13,7 +13,7 @@ jobs:
   # then invokes actOnLabel to react to any added labels
   triage-issue:
     runs-on: ubuntu-latest
-    if: "${{ contains(github.event.label.name, 'Needs: Triage :mag:') }}"
+    if: "${{ github.repository == 'facebook/react-native' && contains(github.event.label.name, 'Needs: Triage :mag:') }}"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/github-script@v6
@@ -36,6 +36,7 @@ jobs:
   # Reacts to the label that triggered this workflow (added manually or via other workflows)
   act-on-label:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/github-script@v6
