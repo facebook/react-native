@@ -84,6 +84,11 @@ class NativePerformanceObserver
       int32_t entryType,
       std::optional<std::string> entryName);
 
+  std::vector<RawPerformanceEntry> getEntries(
+      jsi::Runtime &rt,
+      std::optional<int32_t> entryType,
+      std::optional<std::string> entryName);
+
  private:
 };
 

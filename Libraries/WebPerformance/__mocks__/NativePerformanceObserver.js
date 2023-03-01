@@ -85,6 +85,17 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
         (entryName == null || e.name === entryName),
     );
   },
+
+  getEntries: (
+    entryType?: RawPerformanceEntryType,
+    entryName?: string,
+  ): $ReadOnlyArray<RawPerformanceEntry> => {
+    return entries.filter(
+      e =>
+        (entryType === undefined || e.entryType === entryType) &&
+        (entryName === undefined || e.name === entryName),
+    );
+  },
 };
 
 export default NativePerformanceObserverMock;
