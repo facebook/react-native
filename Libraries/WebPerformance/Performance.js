@@ -10,7 +10,8 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {HighResTimeStamp} from './PerformanceEntry';
+import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {PerformanceEntryList} from './PerformanceObserver';
 
 import warnOnce from '../Utilities/warnOnce';
 import EventCounts from './EventCounts';
@@ -19,6 +20,10 @@ import NativePerformance from './NativePerformance';
 import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
 import {warnNoNativePerformanceObserver} from './PerformanceObserver';
+import {
+  performanceEntryTypeToRaw,
+  rawToPerformanceEntry,
+} from './RawPerformanceEntry';
 import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
 
 type DetailType = mixed;
@@ -236,5 +241,60 @@ export default class Performance {
    */
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
+  }
+
+  /**
+   * An extension that allows to get back to JS all currently logged marks/measures
+   * (in our case, be it from JS or native), see
+   * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
+   */
+  getEntries(): PerformanceEntryList {
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries().map(rawToPerformanceEntry);
+  }
+
+  getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList {
+    if (entryType !== 'mark' && entryType !== 'measure') {
+      console.log(
+        `Performance.getEntriesByType: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+      );
+      return [];
+    }
+
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries(
+      performanceEntryTypeToRaw(entryType),
+    ).map(rawToPerformanceEntry);
+  }
+
+  getEntriesByName(
+    entryName: string,
+    entryType?: PerformanceEntryType,
+  ): PerformanceEntryList {
+    if (
+      entryType !== undefined &&
+      entryType !== 'mark' &&
+      entryType !== 'measure'
+    ) {
+      console.log(
+        `Performance.getEntriesByName: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+      );
+      return [];
+    }
+
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries(
+      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
+      entryName,
+    ).map(rawToPerformanceEntry);
   }
 }
