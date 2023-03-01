@@ -248,7 +248,7 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
 
 final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
     it.dependsOn(boostPath ? [] : [downloadBoost])
-    it.boostPath.setFrom(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    it.boostPath.setFrom(boostPath ?: tarTree(downloadBoost.dest))
     it.boostVersion.set(BOOST_VERSION)
     it.outputDir.set(new File(thirdPartyNdkDir, "boost"))
 }
@@ -416,6 +416,14 @@ task packageReactNdkLibsForBuck(type: Copy) {
 
 task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
+}
+
+repositories {
+    // Normally RNGP will set repositories for all modules,
+    // but when consumed from source, we need to re-declare
+    // those repositories as there is no app module there.
+    mavenCentral()
+    google()
 }
 
 android {
@@ -675,7 +683,7 @@ dependencies {
     // mirror from a non-linux machine, while still executing inside a Linux CI
     // as we declare a dependency on aap2 @linux so we're sure the linux artifact
     // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.1-8841542:linux")
+    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {

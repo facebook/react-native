@@ -251,6 +251,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
+  @ReactProp(name = "accessibilityErrorMessage")
+  public void setScreenreaderError(@NonNull T view, @Nullable String accessibilityErrorMessage) {
+    view.setTag(R.id.accessibility_error_message, accessibilityErrorMessage);
+  }
+
   @Override
   @ReactProp(name = ViewProps.ACCESSIBILITY_COLLECTION)
   public void setAccessibilityCollection(

@@ -78,4 +78,13 @@ void NativePerformanceObserver::setDurationThreshold(
       static_cast<PerformanceEntryType>(entryType), durationThreshold);
 }
 
+void NativePerformanceObserver::clearEntries(
+    jsi::Runtime &rt,
+    int32_t entryType,
+    std::optional<std::string> entryName) {
+  PerformanceEntryReporter::getInstance().clearEntries(
+      static_cast<PerformanceEntryType>(entryType),
+      entryName ? entryName->c_str() : nullptr);
+}
+
 } // namespace facebook::react

@@ -116,7 +116,7 @@ executors:
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
-      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
@@ -628,7 +628,9 @@ jobs:
                           export USE_HERMES=0
                         fi
 
-                        cd packages/rn-tester && bundle exec pod install --verbose
+                        cd packages/rn-tester
+                        bundle install
+                        bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -969,7 +971,9 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  cd packages/rn-tester && bundle exec pod install
+                  cd packages/rn-tester
+                  bundle install
+                  bundle exec pod install
 
       - run:
           name: Build RNTester
@@ -1663,11 +1667,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1684,11 +1683,6 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1731,18 +1725,8 @@ workflows:
                 use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
               - architecture: "OldArch"
                 flavor: "Debug"

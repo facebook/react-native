@@ -63,7 +63,6 @@ const {
 const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
-  IncorrectModuleRegistryCallArgumentTypeParserError,
 } = require('../../errors');
 
 const {
@@ -75,6 +74,9 @@ const {
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
 
 const language = 'TypeScript';
@@ -243,20 +245,18 @@ function translateTypeAnnotation(
           return emitGenericObject(nullable);
         }
         case 'Partial': {
-          if (typeAnnotation.typeParameters.params.length !== 1) {
-            throw new Error(
-              'Partials only support annotating exactly one parameter.',
-            );
-          }
+          throwIfPartialWithMoreParameter(typeAnnotation);
 
-          const annotatedElement =
-            types[typeAnnotation.typeParameters.params[0].typeName.name];
+          const annotatedElement = parser.extractAnnotatedElement(
+            typeAnnotation,
+            types,
+          );
 
-          if (!annotatedElement) {
-            throw new Error(
-              'Partials only support annotating a type parameter.',
-            );
-          }
+          throwIfPartialNotAnnotatingTypeParameter(
+            typeAnnotation,
+            types,
+            parser,
+          );
 
           const properties = annotatedElement.typeAnnotation.members.map(
             member => {
@@ -436,15 +436,6 @@ function translateTypeAnnotation(
   }
 }
 
-function isModuleInterface(node: $FlowFixMe) {
-  return (
-    node.type === 'TSInterfaceDeclaration' &&
-    node.extends?.length === 1 &&
-    node.extends[0].type === 'TSExpressionWithTypeArguments' &&
-    node.extends[0].expression.name === 'TurboModule'
-  );
-}
-
 function buildModuleSchema(
   hasteModuleName: string,
   /**
@@ -456,7 +447,7 @@ function buildModuleSchema(
 ): NativeModuleSchema {
   const types = getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
-    isModuleInterface,
+    t => parser.isModuleInterface(t),
   );
 
   throwIfModuleInterfaceNotFound(
@@ -510,15 +501,11 @@ function buildModuleSchema(
       callExpression.arguments.length,
     );
 
-    if (callExpression.arguments[0].type !== 'StringLiteral') {
-      const {type} = callExpression.arguments[0];
-      throw new IncorrectModuleRegistryCallArgumentTypeParserError(
-        hasteModuleName,
-        callExpression.arguments[0],
-        methodName,
-        type,
-      );
-    }
+    throwIfIncorrectModuleRegistryCallArgument(
+      hasteModuleName,
+      callExpression.arguments[0],
+      methodName,
+    );
 
     const $moduleName = callExpression.arguments[0].value;
 

@@ -13,6 +13,7 @@
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
+import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -22,6 +23,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
@@ -260,6 +262,46 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   }
 }
 
+function throwIfIncorrectModuleRegistryCallArgument(
+  nativeModuleName: string,
+  callExpressionArg: $FlowFixMe,
+  methodName: string,
+) {
+  if (
+    callExpressionArg.type !== 'StringLiteral' &&
+    callExpressionArg.type !== 'Literal'
+  ) {
+    const {type} = callExpressionArg;
+    throw new IncorrectModuleRegistryCallArgumentTypeParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      type,
+    );
+  }
+}
+
+function throwIfPartialNotAnnotatingTypeParameter(
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) {
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+
+  if (!annotatedElement) {
+    throw new Error('Partials only support annotating a type parameter.');
+  }
+}
+
+function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.typeParameters.params.length !== 1) {
+    throw new Error('Partials only support annotating exactly one parameter.');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -274,4 +316,7 @@ module.exports = {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 };

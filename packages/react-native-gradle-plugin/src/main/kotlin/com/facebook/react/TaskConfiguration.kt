@@ -9,6 +9,7 @@ package com.facebook.react
 
 import com.android.build.api.variant.Variant
 import com.facebook.react.tasks.BundleHermesCTask
+import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
@@ -19,7 +20,7 @@ import org.gradle.api.Project
 
 @Suppress("SpreadOperator", "UnstableApiUsage")
 internal fun Project.configureReactTasks(variant: Variant, config: ReactExtension) {
-  val targetName = variant.name.replaceFirstChar { it.uppercase() }
+  val targetName = variant.name.capitalizeCompat()
   val targetPath = variant.name
 
   // Resources: generated/assets/react/<variant>/index.android.bundle

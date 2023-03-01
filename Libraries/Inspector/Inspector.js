@@ -13,13 +13,12 @@
 import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
-import Dimensions from '../Utilities/Dimensions';
-
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const StyleSheet = require('../StyleSheet/StyleSheet');
+const Dimensions = require('../Utilities/Dimensions').default;
 const Platform = require('../Utilities/Platform');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 const InspectorOverlay = require('./InspectorOverlay');

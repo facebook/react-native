@@ -15,10 +15,12 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
@@ -32,6 +34,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * CatalystInstance}
  */
 public class ReactContext extends ContextWrapper {
+  @DoNotStrip
+  public interface RCTDeviceEventEmitter extends JavaScriptModule {
+    void emit(@NonNull String eventName, @Nullable Object data);
+  }
 
   private static final String TAG = "ReactContext";
   private static final String EARLY_JS_ACCESS_EXCEPTION_MESSAGE =
@@ -181,6 +187,21 @@ public class ReactContext extends ContextWrapper {
       raiseCatalystInstanceMissingException();
     }
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
+  }
+
+  /**
+   * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and an optional list of
+   * arguments.
+   */
+  public void emitDeviceEvent(String eventName, @Nullable Object args) {
+    RCTDeviceEventEmitter eventEmitter = getJSModule(RCTDeviceEventEmitter.class);
+    if (eventEmitter != null) {
+      eventEmitter.emit(eventName, args);
+    }
+  }
+
+  public void emitDeviceEvent(String eventName) {
+    emitDeviceEvent(eventName, null);
   }
 
   public CatalystInstance getCatalystInstance() {

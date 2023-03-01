@@ -21,6 +21,7 @@ import type {
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+import type {TypeDeclarationMap} from '../utils';
 
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
@@ -28,7 +29,7 @@ const babelParser = require('@babel/parser');
 const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('./Visitor');
 const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
+const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('./modules');
 
 const fs = require('fs');
@@ -191,6 +192,22 @@ class TypeScriptParser implements Parser {
       name: member.id.name,
       value: member.initializer?.value ?? member.id.name,
     }));
+  }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'TSInterfaceDeclaration' &&
+      node.extends?.length === 1 &&
+      node.extends[0].type === 'TSExpressionWithTypeArguments' &&
+      node.extends[0].expression.name === 'TurboModule'
+    );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
 }
 module.exports = {

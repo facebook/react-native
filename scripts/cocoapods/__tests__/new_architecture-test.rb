@@ -81,7 +81,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
     end
 
-    def test_modifyFlagsForNewArch_whenOnNewArch_updateFlags
+    def test_modifyFlagsForNewArch_whenOnNewArchAndIsRelease_updateFlags
         # Arrange
         first_xcconfig = prepare_xcconfig("First")
         second_xcconfig = prepare_xcconfig("Second")
@@ -102,47 +102,17 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
         assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
+        assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
         assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
-        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
-        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
-    end
-
-    def test_modifyFlagsForNewArch_whenOnNewArchAndIsRelease_updateFlags
-        # Arrange
-        first_xcconfig = prepare_xcconfig("First")
-        second_xcconfig = prepare_xcconfig("Second")
-        react_core_debug_config = prepare_CXX_Flags_build_configuration("Debug")
-        react_core_release_config = prepare_CXX_Flags_build_configuration("Release")
-        yoga_debug_config = prepare_CXX_Flags_build_configuration("Debug")
-        yoga_release_config = prepare_CXX_Flags_build_configuration("Release")
-
-        installer = prepare_installer_for_cpp_flags(
-            [ first_xcconfig, second_xcconfig ],
-            {
-                "React-Core" => [ react_core_debug_config, react_core_release_config ],
-                "Yoga" => [ yoga_debug_config, yoga_release_config ],
-            }
-        )
-        # Act
-        NewArchitectureHelper.modify_flags_for_new_architecture(installer, true, is_release: true)
-
-        # Assert
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
-        assert_equal(first_xcconfig.attributes["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
-        assert_equal(second_xcconfig.attributes["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
-        assert_equal(react_core_debug_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
         assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DNDEBUG")
         assert_equal(react_core_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
-        assert_equal(yoga_debug_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
+        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DNDEBUG")
         assert_equal(yoga_release_config.build_settings["OTHER_CFLAGS"], "$(inherited) -DNDEBUG")
     end
@@ -159,7 +129,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, NewArchitectureHelper.folly_compiler_flags)
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1")
         assert_equal(
@@ -190,7 +160,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         # Assert
         assert_equal(spec.compiler_flags, "-Wno-nullability-completeness #{NewArchitectureHelper.folly_compiler_flags}")
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\"")
+        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "#{other_flags} \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++17")
         assert_equal(
             spec.dependencies,

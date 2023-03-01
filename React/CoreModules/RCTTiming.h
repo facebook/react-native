@@ -12,21 +12,25 @@
 #import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTTimingDelegate
 
 - (void)callTimers:(NSArray<NSNumber *> *)timers;
-- (void)immediatelyCallTimer:(nonnull NSNumber *)callbackID;
-- (void)callIdleCallbacks:(nonnull NSNumber *)absoluteFrameStartMS;
+- (void)immediatelyCallTimer:(NSNumber *)callbackID;
+- (void)callIdleCallbacks:(NSNumber *)absoluteFrameStartMS;
 
 @end
 
 @interface RCTTiming : NSObject <RCTBridgeModule, RCTInvalidating, RCTFrameUpdateObserver, RCTInitializing>
 
 - (instancetype)initWithDelegate:(id<RCTTimingDelegate>)delegate;
-- (void)createTimerForNextFrame:(nonnull NSNumber *)callbackID
+- (void)createTimerForNextFrame:(NSNumber *)callbackID
                        duration:(NSTimeInterval)jsDuration
-               jsSchedulingTime:(NSDate *)jsSchedulingTime
+               jsSchedulingTime:(nullable NSDate *)jsSchedulingTime
                         repeats:(BOOL)repeats;
 - (void)deleteTimer:(double)timerID;
 
 @end
+
+NS_ASSUME_NONNULL_END

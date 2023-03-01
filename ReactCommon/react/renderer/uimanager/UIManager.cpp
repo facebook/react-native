@@ -11,6 +11,7 @@
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>

@@ -11,6 +11,7 @@
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/primitives.h>

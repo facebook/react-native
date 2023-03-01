@@ -32,12 +32,6 @@ void NativePerformance::mark(
   PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
 }
 
-void NativePerformance::clearMarks(
-    jsi::Runtime &rt,
-    std::optional<std::string> markName) {
-  PerformanceEntryReporter::getInstance().clearMarks(markName);
-}
-
 void NativePerformance::measure(
     jsi::Runtime &rt,
     std::string name,
@@ -48,12 +42,6 @@ void NativePerformance::measure(
     std::optional<std::string> endMark) {
   PerformanceEntryReporter::getInstance().measure(
       name, startTime, endTime, duration, startMark, endMark);
-}
-
-void NativePerformance::clearMeasures(
-    jsi::Runtime &rt,
-    std::optional<std::string> measureName) {
-  PerformanceEntryReporter::getInstance().clearMeasures(measureName);
 }
 
 std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(

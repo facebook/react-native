@@ -66,6 +66,8 @@ CoreComponentsRegistry::sharedProviderRegistry() {
         concreteComponentDescriptorProvider<ParagraphComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           AndroidDrawerLayoutComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          TraceUpdateOverlayComponentDescriptor>());
 
     return providerRegistry;
   }();

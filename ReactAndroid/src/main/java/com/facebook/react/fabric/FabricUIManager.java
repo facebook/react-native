@@ -1063,6 +1063,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       eventType = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
     } else if ("click".equals(eventTypeJS)) {
       eventType = AccessibilityEvent.TYPE_VIEW_CLICKED;
+    } else if ("viewHoverEnter".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_VIEW_HOVER_ENTER;
     } else {
       throw new IllegalArgumentException(
           "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);

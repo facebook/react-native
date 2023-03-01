@@ -5,6 +5,7 @@ on:
 jobs:
   stale:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     permissions:
       issues: write
       pull-requests: write
@@ -19,6 +20,7 @@ jobs:
           close-pr-message: 'This PR was closed because it has been stalled for 7 days with no activity.'
   stale-needs-author-feedback:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     permissions:
       issues: write
       pull-requests: write

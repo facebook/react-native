@@ -54,7 +54,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mContainsImages;
   private final int mDefaultGravityHorizontal;
   private final int mDefaultGravityVertical;
-  private int mTextAlign;
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
@@ -69,8 +68,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     super(context);
 
     // Get these defaults only during the constructor - these should never be set otherwise
-    mDefaultGravityHorizontal =
-        getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+    mDefaultGravityHorizontal = getGravityHorizontal();
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
 
     initView();
@@ -89,10 +87,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     mReactBackgroundManager = new ReactViewBackgroundManager(this);
 
-    mTextAlign = Gravity.NO_GRAVITY;
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
     mAdjustsFontSizeToFit = false;
     mLinkifyMaskType = 0;
+    mNotifyOnInlineViewLayout = false;
     mTextIsSelectable = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
 
@@ -392,10 +390,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     int nextTextAlign = update.getTextAlign();
-    if (mTextAlign != nextTextAlign) {
-      mTextAlign = nextTextAlign;
+    if (nextTextAlign != getGravityHorizontal()) {
+      setGravityHorizontal(nextTextAlign);
     }
-    setGravityHorizontal(mTextAlign);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getBreakStrategy() != update.getTextBreakStrategy()) {
         setBreakStrategy(update.getTextBreakStrategy());
@@ -550,6 +547,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   public boolean hasOverlappingRendering() {
     return false;
+  }
+
+  /* package */ int getGravityHorizontal() {
+    return getGravity()
+        & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
   }
 
   /* package */ void setGravityHorizontal(int gravityHorizontal) {

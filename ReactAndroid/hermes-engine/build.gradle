@@ -116,6 +116,14 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+repositories {
+    // Normally RNGP will set repositories for all modules,
+    // but when consumed from source, we need to re-declare
+    // those repositories as there is no app module there.
+    mavenCentral()
+    google()
+}
+
 android {
     compileSdkVersion 31
     buildToolsVersion = "31.0.0"

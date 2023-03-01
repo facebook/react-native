@@ -26,6 +26,19 @@ open class DefaultReactActivityDelegate(
     private val fabricEnabled: Boolean = false,
 ) : ReactActivityDelegate(activity, mainComponentName) {
 
+  @Deprecated(
+      message =
+          "Creating DefaultReactActivityDelegate with both fabricEnabled and concurrentReactEnabled is deprecated. Please pass only one boolean value that will be used for both flags",
+      level = DeprecationLevel.WARNING,
+      replaceWith =
+          ReplaceWith("DefaultReactActivityDelegate(activity, mainComponentName, fabricEnabled)"))
+  constructor(
+      activity: ReactActivity,
+      mainComponentName: String,
+      fabricEnabled: Boolean,
+      @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean,
+  ) : this(activity, mainComponentName, fabricEnabled)
+
   override fun isFabricEnabled(): Boolean = fabricEnabled
 
   override fun createRootView(): ReactRootView =

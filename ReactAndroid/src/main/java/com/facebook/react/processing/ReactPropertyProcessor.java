@@ -92,8 +92,6 @@ public class ReactPropertyProcessor extends AbstractProcessor {
 
   private static final TypeName PROPERTY_MAP_TYPE =
       ParameterizedTypeName.get(Map.class, String.class, String.class);
-  private static final TypeName CONCRETE_PROPERTY_MAP_TYPE =
-      ParameterizedTypeName.get(HashMap.class, String.class, String.class);
 
   private final Map<ClassName, ClassInfo> mClasses;
 
@@ -186,7 +184,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return true;
   }
 
-  private boolean isShadowNodeType(TypeName typeName) {
+  private static boolean isShadowNodeType(TypeName typeName) {
     return typeName.equals(SHADOW_NODE_IMPL_TYPE);
   }
 
@@ -280,7 +278,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     javaFile.writeTo(mFiler);
   }
 
-  private String getClassName(TypeElement type, String packageName) {
+  private static String getClassName(TypeElement type, String packageName) {
     int packageLen = packageName.length() + 1;
     return type.getQualifiedName().toString().substring(packageLen).replace('.', '$');
   }
@@ -359,24 +357,25 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return builder.build();
   }
 
-  private static CodeBlock.Builder getPropertyExtractor(
+  private static void getPropertyExtractor(
       ClassInfo classInfo, PropertyInfo info, CodeBlock.Builder builder) {
     TypeName propertyType = info.propertyType;
     if (propertyType.equals(STRING_TYPE)) {
-      return builder.add("value instanceof $L ? ($L)value : null", STRING_TYPE, STRING_TYPE);
+      builder.add("value instanceof $L ? ($L)value : null", STRING_TYPE, STRING_TYPE);
+      return;
     } else if (propertyType.equals(READABLE_ARRAY_TYPE)) {
-      return builder.add(
-          "value instanceof $L ? ($L)value : null",
-          READABLE_ARRAY_TYPE,
-          READABLE_ARRAY_TYPE); // TODO: use real type but needs import
+      builder.add(
+          "value instanceof $L ? ($L)value : null", READABLE_ARRAY_TYPE, READABLE_ARRAY_TYPE);
+      return; // TODO: use real type but needs import
     } else if (propertyType.equals(READABLE_MAP_TYPE)) {
-      return builder.add(
-          "value instanceof $L ? ($L)value : null", READABLE_MAP_TYPE, READABLE_MAP_TYPE);
+      builder.add("value instanceof $L ? ($L)value : null", READABLE_MAP_TYPE, READABLE_MAP_TYPE);
+      return;
     } else if (propertyType.equals(DYNAMIC_TYPE)) {
-      return builder.add("new $L(value)", DYNAMIC_FROM_OBJECT_TYPE);
+      builder.add("new $L(value)", DYNAMIC_FROM_OBJECT_TYPE);
+      return;
     } else if (propertyType.equals(YOGA_VALUE_TYPE)) {
-      return builder.add(
-          "$T.getDimension(value)", com.facebook.react.bridge.DimensionPropConverter.class);
+      builder.add("$T.getDimension(value)", com.facebook.react.bridge.DimensionPropConverter.class);
+      return;
     }
 
     if (BOXED_PRIMITIVES.contains(propertyType)) {
@@ -384,46 +383,54 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     }
 
     if (propertyType.equals(TypeName.BOOLEAN)) {
-      return builder.add(
+      builder.add(
           "!(value instanceof Boolean) ? $L : (boolean)value", info.mProperty.defaultBoolean());
+      return;
     }
     if (propertyType.equals(TypeName.DOUBLE)) {
       double defaultDouble = info.mProperty.defaultDouble();
       if (Double.isNaN(defaultDouble)) {
-        return builder.add("!(value instanceof Double) ? $T.NaN : (double)value", Double.class);
+        builder.add("!(value instanceof Double) ? $T.NaN : (double)value", Double.class);
+        return;
       } else {
-        return builder.add("!(value instanceof Double) ? $Lf : (double)value", defaultDouble);
+        builder.add("!(value instanceof Double) ? $Lf : (double)value", defaultDouble);
+        return;
       }
     }
     if (propertyType.equals(TypeName.FLOAT)) {
       float defaultFloat = info.mProperty.defaultFloat();
       if (Float.isNaN(defaultFloat)) {
-        return builder.add(
+        builder.add(
             "!(value instanceof Double) ? $T.NaN : ((Double)value).floatValue()", Float.class);
+        return;
       } else {
-        return builder.add(
+        builder.add(
             "!(value instanceof Double) ? $Lf : ((Double)value).floatValue()", defaultFloat);
+        return;
       }
     }
     if ("Color".equals(info.mProperty.customType())) {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
-          return builder.add(
+          builder.add(
               "value == null ? $L : $T.getColor(value, view.getContext(), $L)",
               info.mProperty.defaultInt(),
               com.facebook.react.bridge.ColorPropConverter.class,
               info.mProperty.defaultInt());
+          return;
         case SHADOW_NODE:
-          return builder.add(
+          builder.add(
               "value == null ? $L : $T.getColor(value, node.getThemedContext(), $L)",
               info.mProperty.defaultInt(),
               com.facebook.react.bridge.ColorPropConverter.class,
               info.mProperty.defaultInt());
+          return;
       }
     } else if (propertyType.equals(TypeName.INT)) {
-      return builder.add(
+      builder.add(
           "!(value instanceof Double) ? $L : ((Double)value).intValue()",
           info.mProperty.defaultInt());
+      return;
     }
 
     throw new IllegalArgumentException();

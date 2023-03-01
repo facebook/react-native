@@ -22,6 +22,8 @@ import type {
   NativeModuleEnumMembers,
 } from '../CodegenSchema';
 
+import type {TypeDeclarationMap} from './utils';
+
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 const {
@@ -158,5 +160,21 @@ export class MockedParser implements Parser {
             value: '0',
           },
         ];
+  }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'InterfaceDeclaration' &&
+      node.extends.length === 1 &&
+      node.extends[0].type === 'InterfaceExtends' &&
+      node.extends[0].id.name === 'TurboModule'
+    );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].id.name];
   }
 }

@@ -20,6 +20,7 @@ import type {
   NativeModuleEnumMembers,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {TypeDeclarationMap} from './utils';
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -152,4 +153,20 @@ export interface Parser {
    * Calculates enum's members
    */
   parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
+
+  /**
+   * Given a node, it returns true if it is a module interface
+   */
+  isModuleInterface(node: $FlowFixMe): boolean;
+
+  /**
+   * Given a typeAnnotation, it returns the annotated element.
+   * @paramater typeAnnotation: the annotation for a type.
+   * @paramater types: a map of type declarations.
+   * @returns: the annotated element.
+   */
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe;
 }

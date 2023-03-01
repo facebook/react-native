@@ -21,6 +21,8 @@
 
 // Fabric
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #endif
 
 #ifdef FB_SONARKIT_ENABLED
@@ -96,7 +98,8 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,
-    RCTTurboModuleManager *turboModuleManager)
+    RCTTurboModuleManager *turboModuleManager,
+    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler)
 {
   // Necessary to allow NativeModules to lookup TurboModules
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
@@ -118,14 +121,18 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
 #endif
-      facebook::react::RCTJSIExecutorRuntimeInstaller([turboModuleManager, bridge](facebook::jsi::Runtime &runtime) {
-        if (!bridge || !turboModuleManager) {
-          return;
-        }
-        facebook::react::RuntimeExecutor syncRuntimeExecutor =
-            [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-        [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
-      }));
+      facebook::react::RCTJSIExecutorRuntimeInstaller(
+          [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+            if (!bridge || !turboModuleManager) {
+              return;
+            }
+            if (runtimeScheduler) {
+              facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+            }
+            facebook::react::RuntimeExecutor syncRuntimeExecutor =
+                [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
+            [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+          }));
 }
 
 #endif

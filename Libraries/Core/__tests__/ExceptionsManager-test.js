@@ -10,8 +10,6 @@
 
 'use strict';
 
-import LogBox from '../../LogBox/LogBox';
-
 const ExceptionsManager = require('../ExceptionsManager');
 const NativeExceptionsManager = require('../NativeExceptionsManager').default;
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;

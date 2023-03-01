@@ -278,6 +278,11 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'XHRExample',
     module: require('../examples/XHR/XHRExample'),
   },
+  {
+    key: 'PerformanceApiExample',
+    category: 'Basic',
+    module: require('../examples/Performance/PerformanceApiExample'),
+  },
 ];
 
 if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {

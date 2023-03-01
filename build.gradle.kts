@@ -7,10 +7,10 @@
 
 plugins {
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-  id("com.android.library") version "7.4.1" apply false
-  id("com.android.application") version "7.4.1" apply false
+  id("com.android.library") version "7.4.2" apply false
+  id("com.android.application") version "7.4.2" apply false
   id("de.undercouch.download") version "5.0.1" apply false
-  kotlin("android") version "1.6.10" apply false
+  kotlin("android") version "1.7.22" apply false
 }
 
 val reactAndroidProperties = java.util.Properties()
@@ -40,13 +40,6 @@ nexusPublishing {
       username.set(sonatypeUsername)
       password.set(sonatypePassword)
     }
-  }
-}
-
-allprojects {
-  repositories {
-    google()
-    mavenCentral()
   }
 }
 

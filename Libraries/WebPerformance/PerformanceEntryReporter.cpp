@@ -121,21 +121,27 @@ void PerformanceEntryReporter::mark(
        std::nullopt});
 }
 
-void PerformanceEntryReporter::clearMarks(
-    const std::optional<std::string> &markName) {
-  if (markName) {
-    PerformanceMark mark{{*markName, 0}};
+void PerformanceEntryReporter::clearEntries(
+    PerformanceEntryType entryType,
+    const char *entryName) {
+  if (entryName != nullptr && entryType == PerformanceEntryType::MARK) {
+    // remove a named mark from the mark/measure registry
+    PerformanceMark mark{{entryName, 0}};
     marksRegistry_.erase(&mark);
-    clearEntries([&markName](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK) &&
-          entry.name == markName;
-    });
-  } else {
-    marksRegistry_.clear();
-    clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MARK);
-    });
   }
+
+  int lastPos = entries_.size() - 1;
+  int pos = lastPos;
+  while (pos >= 0) {
+    const RawPerformanceEntry &entry = entries_[pos];
+    if (entry.entryType == static_cast<int32_t>(entryType) &&
+        (entryName == nullptr || entry.name == entryName)) {
+      entries_[pos] = entries_[lastPos];
+      lastPos--;
+    }
+    pos--;
+  }
+  entries_.resize(lastPos + 1);
 }
 
 void PerformanceEntryReporter::measure(
@@ -156,22 +162,6 @@ void PerformanceEntryReporter::measure(
        std::nullopt,
        std::nullopt,
        std::nullopt});
-}
-
-void PerformanceEntryReporter::clearMeasures(
-    const std::optional<std::string> &measureName) {
-  if (measureName) {
-    clearEntries([&measureName](const RawPerformanceEntry &entry) {
-      return entry.entryType ==
-          static_cast<int>(PerformanceEntryType::MEASURE) &&
-          entry.name == measureName;
-    });
-  } else {
-    marksRegistry_.clear();
-    clearEntries([](const RawPerformanceEntry &entry) {
-      return entry.entryType == static_cast<int>(PerformanceEntryType::MEASURE);
-    });
-  }
 }
 
 double PerformanceEntryReporter::getMarkTime(
@@ -202,20 +192,6 @@ void PerformanceEntryReporter::event(
        interactionId});
 }
 
-void PerformanceEntryReporter::clearEntries(
-    std::function<bool(const RawPerformanceEntry &)> predicate) {
-  int lastPos = entries_.size() - 1;
-  int pos = lastPos;
-  while (pos >= 0) {
-    if (predicate(entries_[pos])) {
-      entries_[pos] = entries_[lastPos];
-      lastPos--;
-    }
-    pos--;
-  }
-  entries_.resize(lastPos + 1);
-}
-
 void PerformanceEntryReporter::scheduleFlushBuffer() {
   if (callback_) {
     callback_->callWithPriority(SchedulerPriority::IdlePriority);
@@ -242,53 +218,58 @@ struct StrKeyHash {
 // https://www.w3.org/TR/event-timing/#sec-events-exposed
 // Not all of these are currently supported by RN, but we map them anyway for
 // future-proofing.
-static const std::unordered_map<StrKey, const char *, StrKeyHash>
-    SUPPORTED_EVENTS = {
-        {"topAuxClick", "auxclick"},
-        {"topClick", "click"},
-        {"topContextMenu", "contextmenu"},
-        {"topDblClick", "dblclick"},
-        {"topMouseDown", "mousedown"},
-        {"topMouseEnter", "mouseenter"},
-        {"topMouseLeave", "mouseleave"},
-        {"topMouseOut", "mouseout"},
-        {"topMouseOver", "mouseover"},
-        {"topMouseUp", "mouseup"},
-        {"topPointerOver", "pointerover"},
-        {"topPointerEnter", "pointerenter"},
-        {"topPointerDown", "pointerdown"},
-        {"topPointerUp", "pointerup"},
-        {"topPointerCancel", "pointercancel"},
-        {"topPointerOut", "pointerout"},
-        {"topPointerLeave", "pointerleave"},
-        {"topGotPointerCapture", "gotpointercapture"},
-        {"topLostPointerCapture", "lostpointercapture"},
-        {"topTouchStart", "touchstart"},
-        {"topTouchEnd", "touchend"},
-        {"topTouchCancel", "touchcancel"},
-        {"topKeyDown", "keydown"},
-        {"topKeyPress", "keypress"},
-        {"topKeyUp", "keyup"},
-        {"topBeforeInput", "beforeinput"},
-        {"topInput", "input"},
-        {"topCompositionStart", "compositionstart"},
-        {"topCompositionUpdate", "compositionupdate"},
-        {"topCompositionEnd", "compositionend"},
-        {"topDragStart", "dragstart"},
-        {"topDragEnd", "dragend"},
-        {"topDragEnter", "dragenter"},
-        {"topDragLeave", "dragleave"},
-        {"topDragOver", "dragover"},
-        {"topDrop", "drop"},
-};
+using SupportedEventTypeRegistry =
+    std::unordered_map<StrKey, const char *, StrKeyHash>;
+
+static const SupportedEventTypeRegistry &getSupportedEvents() {
+  static SupportedEventTypeRegistry SUPPORTED_EVENTS = {
+      {"topAuxClick", "auxclick"},
+      {"topClick", "click"},
+      {"topContextMenu", "contextmenu"},
+      {"topDblClick", "dblclick"},
+      {"topMouseDown", "mousedown"},
+      {"topMouseEnter", "mouseenter"},
+      {"topMouseLeave", "mouseleave"},
+      {"topMouseOut", "mouseout"},
+      {"topMouseOver", "mouseover"},
+      {"topMouseUp", "mouseup"},
+      {"topPointerOver", "pointerover"},
+      {"topPointerEnter", "pointerenter"},
+      {"topPointerDown", "pointerdown"},
+      {"topPointerUp", "pointerup"},
+      {"topPointerCancel", "pointercancel"},
+      {"topPointerOut", "pointerout"},
+      {"topPointerLeave", "pointerleave"},
+      {"topGotPointerCapture", "gotpointercapture"},
+      {"topLostPointerCapture", "lostpointercapture"},
+      {"topTouchStart", "touchstart"},
+      {"topTouchEnd", "touchend"},
+      {"topTouchCancel", "touchcancel"},
+      {"topKeyDown", "keydown"},
+      {"topKeyPress", "keypress"},
+      {"topKeyUp", "keyup"},
+      {"topBeforeInput", "beforeinput"},
+      {"topInput", "input"},
+      {"topCompositionStart", "compositionstart"},
+      {"topCompositionUpdate", "compositionupdate"},
+      {"topCompositionEnd", "compositionend"},
+      {"topDragStart", "dragstart"},
+      {"topDragEnd", "dragend"},
+      {"topDragEnter", "dragenter"},
+      {"topDragLeave", "dragleave"},
+      {"topDragOver", "dragover"},
+      {"topDrop", "drop"},
+  };
+  return SUPPORTED_EVENTS;
+}
 
 EventTag PerformanceEntryReporter::onEventStart(const char *name) {
   if (!isReportingEvents()) {
     return 0;
   }
-
-  auto it = SUPPORTED_EVENTS.find(name);
-  if (it == SUPPORTED_EVENTS.end()) {
+  const auto &supportedEvents = getSupportedEvents();
+  auto it = supportedEvents.find(name);
+  if (it == supportedEvents.end()) {
     return 0;
   }
 

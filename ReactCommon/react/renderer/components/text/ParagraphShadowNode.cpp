@@ -13,6 +13,7 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
@@ -205,8 +206,8 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     paragraphShadowNode =
         static_cast<ParagraphShadowNode *>(paragraphOwningShadowNode.get());
 
-    auto &layoutableShadowNode = const_cast<LayoutableShadowNode &>(
-        traitCast<LayoutableShadowNode const &>(*clonedShadowNode));
+    auto &layoutableShadowNode =
+        traitCast<LayoutableShadowNode &>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
     auto attachmentSize = roundToPixel<&ceil>(

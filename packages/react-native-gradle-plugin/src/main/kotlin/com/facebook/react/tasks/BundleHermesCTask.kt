@@ -133,35 +133,37 @@ abstract class BundleHermesCTask : DefaultTask() {
     }
   }
 
-  internal fun getBundleCommand(bundleFile: File, sourceMapFile: File): List<Any> =
-      windowsAwareCommandLine(
-          buildList {
-            val rootFile = root.get().asFile
-            addAll(nodeExecutableAndArgs.get())
-            add(cliFile.get().asFile.cliPath(rootFile))
-            add(bundleCommand.get())
-            add("--platform")
-            add("android")
-            add("--dev")
-            add(devEnabled.get().toString())
-            add("--reset-cache")
-            add("--entry-file")
-            add(entryFile.get().asFile.cliPath(rootFile))
-            add("--bundle-output")
-            add(bundleFile.cliPath(rootFile))
-            add("--assets-dest")
-            add(resourcesDir.get().asFile.cliPath(rootFile))
-            add("--sourcemap-output")
-            add(sourceMapFile.cliPath(rootFile))
-            if (bundleConfig.isPresent) {
-              add("--config")
-              add(bundleConfig.get().asFile.cliPath(rootFile))
-            }
-            add("--minify")
-            add(minifyEnabled.get().toString())
-            addAll(extraPackagerArgs.get())
-            add("--verbose")
-          })
+  internal fun getBundleCommand(bundleFile: File, sourceMapFile: File): List<Any> {
+    val rootFile = root.get().asFile
+    val commandLine =
+        mutableListOf<String>().apply {
+          addAll(nodeExecutableAndArgs.get())
+          add(cliFile.get().asFile.cliPath(rootFile))
+          add(bundleCommand.get())
+          add("--platform")
+          add("android")
+          add("--dev")
+          add(devEnabled.get().toString())
+          add("--reset-cache")
+          add("--entry-file")
+          add(entryFile.get().asFile.cliPath(rootFile))
+          add("--bundle-output")
+          add(bundleFile.cliPath(rootFile))
+          add("--assets-dest")
+          add(resourcesDir.get().asFile.cliPath(rootFile))
+          add("--sourcemap-output")
+          add(sourceMapFile.cliPath(rootFile))
+          if (bundleConfig.isPresent) {
+            add("--config")
+            add(bundleConfig.get().asFile.cliPath(rootFile))
+          }
+          add("--minify")
+          add(minifyEnabled.get().toString())
+          addAll(extraPackagerArgs.get())
+          add("--verbose")
+        }
+    return windowsAwareCommandLine(commandLine)
+  }
 
   internal fun getHermescCommand(
       hermesCommand: String,

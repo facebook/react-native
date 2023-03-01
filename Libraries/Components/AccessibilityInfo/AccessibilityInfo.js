@@ -41,7 +41,7 @@ type AccessibilityEventDefinitions = {
   screenReaderChanged: [boolean],
 };
 
-type AccessibilityEventTypes = 'click' | 'focus';
+type AccessibilityEventTypes = 'click' | 'focus' | 'viewHoverEnter';
 
 // Mapping of public event names to platform-specific event names.
 const EventNames: Map<

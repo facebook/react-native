@@ -72,9 +72,33 @@ class CodegenUtils
     def get_react_codegen_spec(package_json_file, folly_version: '2021.07.22.00', fabric_enabled: false, hermes_enabled: true, script_phases: nil, file_manager: File)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
-
+        new_arch_disabled = ENV['RCT_NEW_ARCH_ENABLED'] != "1"
+        use_frameworks = ENV['USE_FRAMEWORKS'] != nil
         folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
         boost_compiler_flags = '-Wno-documentation'
+
+        header_search_paths = [
+          "\"$(PODS_ROOT)/boost\"",
+          "\"$(PODS_ROOT)/RCT-Folly\"",
+          "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
+          "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
+          "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
+        ]
+        framework_search_paths = []
+
+        if use_frameworks
+          header_search_paths.concat([
+            "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_TARGET_SRCROOT)\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
+          ])
+        end
 
         spec = {
           'name' => "React-Codegen",
@@ -90,17 +114,11 @@ class CodegenUtils
             'ios' => '11.0',
           },
           'source_files' => "**/*.{h,mm,cpp}",
-          'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
-            [
-              "\"$(PODS_ROOT)/boost\"",
-              "\"$(PODS_ROOT)/RCT-Folly\"",
-              "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
-              "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
-              "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
-            ].join(' ')
+          'pod_target_xcconfig' => {
+            "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths
           },
           'dependencies': {
-            "FBReactNativeSpec": [],
             "React-jsiexecutor": [],
             "RCT-Folly": [],
             "RCTRequired": [],
@@ -108,14 +126,14 @@ class CodegenUtils
             "React-Core": [],
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
-            "ReactCommon/turbomodule/core": []
+            "ReactCommon/turbomodule/core": [],
           }
         }
 
         if fabric_enabled
           spec[:'dependencies'].merge!({
             'React-graphics': [],
-            'React-rncore':  [],
+            'React-Fabric': [],
           });
         end
 
@@ -127,6 +145,13 @@ class CodegenUtils
           spec[:'dependencies'].merge!({
             'React-jsc': [],
           });
+        end
+
+        if new_arch_disabled
+          spec[:dependencies].merge!({
+            'React-rncore': [],
+            'FBReactNativeSpec': [],
+          })
         end
 
         if script_phases
@@ -313,7 +338,7 @@ class CodegenUtils
       return @@CLEANUP_DONE
     end
 
-    def self.clean_up_build_folder(app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
+    def self.clean_up_build_folder(rn_path, app_path, ios_folder, codegen_dir, dir_manager: Dir, file_manager: File)
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
@@ -321,6 +346,9 @@ class CodegenUtils
       return if !dir_manager.exist?(codegen_path)
 
       FileUtils.rm_rf(dir_manager.glob("#{codegen_path}/*"))
+      base_provider_path = file_manager.join(rn_path, 'React', 'Fabric', 'RCTThirdPartyFabricComponentsProvider')
+      FileUtils.rm_rf("#{base_provider_path}.h")
+      FileUtils.rm_rf("#{base_provider_path}.mm")
       CodegenUtils.assert_codegen_folder_is_empty(app_path, ios_folder, codegen_dir, dir_manager: dir_manager, file_manager: file_manager)
     end
 

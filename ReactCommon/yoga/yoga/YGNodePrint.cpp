@@ -90,7 +90,9 @@ static void appendEdges(
     const string& key,
     const YGStyle::Edges& edges) {
   if (areFourValuesEqual(edges)) {
-    appendNumberIfNotZero(base, key, edges[YGEdgeLeft]);
+    auto edgeValue = YGNode::computeEdgeValueForColumn(
+        edges, YGEdgeLeft, detail::CompactValue::ofZero());
+    appendNumberIfNotZero(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
       string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
