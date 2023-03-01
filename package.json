@@ -147,8 +147,7 @@
     "stacktrace-parser": "^0.1.3",
     "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
-    "ws": "^6.2.2",
-    "yargs": "^17.6.2"
+    "ws": "^6.2.2"
   },
   "devDependencies": {
     "flow-bin": "^0.200.0",
