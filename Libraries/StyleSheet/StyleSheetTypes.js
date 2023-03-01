@@ -33,7 +33,9 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
-export type DimensionValue = null | number | string | AnimatedNode;
+
+export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
+export type AnimatableNumericValue = number | AnimatedNode;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -671,7 +673,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios
    */
-  shadowOpacity?: number | AnimatedNode,
+  shadowOpacity?: AnimatableNumericValue,
   /**
    * Sets the drop shadow blur radius
    * @platform ios
@@ -701,28 +703,28 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderBlockColor?: ____ColorValue_Internal,
   borderBlockEndColor?: ____ColorValue_Internal,
   borderBlockStartColor?: ____ColorValue_Internal,
-  borderRadius?: number | AnimatedNode,
-  borderBottomEndRadius?: number | AnimatedNode,
-  borderBottomLeftRadius?: number | AnimatedNode,
-  borderBottomRightRadius?: number | AnimatedNode,
-  borderBottomStartRadius?: number | AnimatedNode,
-  borderEndEndRadius?: number | AnimatedNode,
-  borderEndStartRadius?: number | AnimatedNode,
-  borderStartEndRadius?: number | AnimatedNode,
-  borderStartStartRadius?: number | AnimatedNode,
-  borderTopEndRadius?: number | AnimatedNode,
-  borderTopLeftRadius?: number | AnimatedNode,
-  borderTopRightRadius?: number | AnimatedNode,
-  borderTopStartRadius?: number | AnimatedNode,
+  borderRadius?: AnimatableNumericValue,
+  borderBottomEndRadius?: AnimatableNumericValue,
+  borderBottomLeftRadius?: AnimatableNumericValue,
+  borderBottomRightRadius?: AnimatableNumericValue,
+  borderBottomStartRadius?: AnimatableNumericValue,
+  borderEndEndRadius?: AnimatableNumericValue,
+  borderEndStartRadius?: AnimatableNumericValue,
+  borderStartEndRadius?: AnimatableNumericValue,
+  borderStartStartRadius?: AnimatableNumericValue,
+  borderTopEndRadius?: AnimatableNumericValue,
+  borderTopLeftRadius?: AnimatableNumericValue,
+  borderTopRightRadius?: AnimatableNumericValue,
+  borderTopStartRadius?: AnimatableNumericValue,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
-  borderWidth?: number | AnimatedNode,
-  borderBottomWidth?: number | AnimatedNode,
-  borderEndWidth?: number | AnimatedNode,
-  borderLeftWidth?: number | AnimatedNode,
-  borderRightWidth?: number | AnimatedNode,
-  borderStartWidth?: number | AnimatedNode,
-  borderTopWidth?: number | AnimatedNode,
-  opacity?: number | AnimatedNode,
+  borderWidth?: AnimatableNumericValue,
+  borderBottomWidth?: AnimatableNumericValue,
+  borderEndWidth?: AnimatableNumericValue,
+  borderLeftWidth?: AnimatableNumericValue,
+  borderRightWidth?: AnimatableNumericValue,
+  borderStartWidth?: AnimatableNumericValue,
+  borderTopWidth?: AnimatableNumericValue,
+  opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
 }>;
