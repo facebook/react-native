@@ -84,7 +84,6 @@ import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -274,13 +273,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     return mBinding.getInspectorDataForInstance(eventEmitter);
-  }
-
-  @Override
-  public void preInitializeViewManagers(List<String> viewManagerNames) {
-    for (String viewManagerName : viewManagerNames) {
-      mMountingManager.initializeViewManager(viewManagerName);
-    }
   }
 
   @Override
@@ -1063,6 +1055,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       eventType = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
     } else if ("click".equals(eventTypeJS)) {
       eventType = AccessibilityEvent.TYPE_VIEW_CLICKED;
+    } else if ("viewHoverEnter".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_VIEW_HOVER_ENTER;
     } else {
       throw new IllegalArgumentException(
           "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);

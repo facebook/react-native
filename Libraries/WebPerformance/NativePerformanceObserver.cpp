@@ -87,4 +87,14 @@ void NativePerformanceObserver::clearEntries(
       entryName ? entryName->c_str() : nullptr);
 }
 
+std::vector<RawPerformanceEntry> NativePerformanceObserver::getEntries(
+    jsi::Runtime &rt,
+    std::optional<int32_t> entryType,
+    std::optional<std::string> entryName) {
+  return PerformanceEntryReporter::getInstance().getEntries(
+      entryType ? static_cast<PerformanceEntryType>(*entryType)
+                : PerformanceEntryType::UNDEFINED,
+      entryName ? entryName->c_str() : nullptr);
+}
+
 } // namespace facebook::react

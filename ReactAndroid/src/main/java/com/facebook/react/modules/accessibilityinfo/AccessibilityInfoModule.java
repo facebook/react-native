@@ -194,12 +194,8 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   @Override
   public void invalidate() {
+    getReactApplicationContext().removeLifecycleEventListener(this);
     super.invalidate();
-
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
-    }
   }
 
   @Override

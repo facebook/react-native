@@ -58,14 +58,6 @@ react {
 }
 
 /**
- * Set this to true to create four separate APKs instead of one,
- * one for each native architecture. This is useful if you don't
- * use App Bundles (https://developer.android.com/guide/app-bundle/)
- * and want to have separate APKs to upload to the Play Store.
- */
-def enableSeparateBuildPerCPUArchitecture = true
-
-/**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
@@ -146,7 +138,7 @@ android {
     }
     splits {
         abi {
-            enable enableSeparateBuildPerCPUArchitecture
+            enable true
             universalApk false
             reset()
             include (*reactNativeArchitectures())

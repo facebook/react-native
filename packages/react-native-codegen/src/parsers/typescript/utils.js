@@ -14,36 +14,6 @@ import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
 
-/**
- * TODO(T108222691): Use flow-types for @babel/parser
- */
-function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    switch (node.type) {
-      case 'ExportNamedDeclaration': {
-        if (node.declaration) {
-          switch (node.declaration.type) {
-            case 'TSTypeAliasDeclaration':
-            case 'TSInterfaceDeclaration':
-            case 'TSEnumDeclaration': {
-              types[node.declaration.id.name] = node.declaration;
-              break;
-            }
-          }
-        }
-        break;
-      }
-      case 'TSTypeAliasDeclaration':
-      case 'TSInterfaceDeclaration':
-      case 'TSEnumDeclaration': {
-        types[node.id.name] = node;
-        break;
-      }
-    }
-    return types;
-  }, {});
-}
-
 // $FlowFixMe[unclear-type] Use flow-types for @babel/parser
 export type ASTNode = Object;
 
@@ -131,5 +101,4 @@ function resolveTypeAnnotation(
 
 module.exports = {
   resolveTypeAnnotation,
-  getTypes,
 };

@@ -213,6 +213,46 @@ class FlowParser implements Parser {
   ): $FlowFixMe {
     return types[typeAnnotation.typeParameters.params[0].id.name];
   }
+
+  /**
+   * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
+   * declaration type. Unfortunately, we don't have those types, because flow-parser
+   * generates them, and flow-parser is not type-safe. In the future, we should find
+   * a way to get these types from our flow parser library.
+   *
+   * TODO(T71778680): Flow type AST Nodes
+   */
+
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+    return ast.body.reduce((types, node) => {
+      if (
+        node.type === 'ExportNamedDeclaration' &&
+        node.exportKind === 'type'
+      ) {
+        if (
+          node.declaration != null &&
+          (node.declaration.type === 'TypeAlias' ||
+            node.declaration.type === 'InterfaceDeclaration')
+        ) {
+          types[node.declaration.id.name] = node.declaration;
+        }
+      } else if (
+        node.type === 'ExportNamedDeclaration' &&
+        node.exportKind === 'value' &&
+        node.declaration &&
+        node.declaration.type === 'EnumDeclaration'
+      ) {
+        types[node.declaration.id.name] = node.declaration;
+      } else if (
+        node.type === 'TypeAlias' ||
+        node.type === 'InterfaceDeclaration' ||
+        node.type === 'EnumDeclaration'
+      ) {
+        types[node.id.name] = node;
+      }
+      return types;
+    }, {});
+  }
 }
 
 module.exports = {

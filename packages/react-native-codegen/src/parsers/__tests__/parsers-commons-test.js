@@ -33,8 +33,11 @@ const {
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
+import {FlowParser} from '../flow/parser';
 
 const parser = new MockedParser();
+
+const flowParser = new FlowParser();
 
 const flowTranslateTypeAnnotation = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
@@ -384,7 +387,9 @@ describe('buildSchemaFromConfigType', () => {
   };
 
   const wrapComponentSchemaMock = jest.fn();
-  const buildComponentSchemaMock = jest.fn(_ => componentSchemaMock);
+  const buildComponentSchemaMock = jest.fn(
+    (_ast, _parser) => componentSchemaMock,
+  );
   const buildModuleSchemaMock = jest.fn((_0, _1, _2, _3) => moduleSchemaMock);
 
   const buildSchemaFromConfigTypeHelper = (
@@ -414,7 +419,7 @@ describe('buildSchemaFromConfigType', () => {
       buildSchemaFromConfigTypeHelper('component');
 
       expect(buildComponentSchemaMock).toHaveBeenCalledTimes(1);
-      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock);
+      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock, parser);
       expect(wrapComponentSchemaMock).toHaveBeenCalledTimes(1);
       expect(wrapComponentSchemaMock).toHaveBeenCalledWith(componentSchemaMock);
 
@@ -681,7 +686,7 @@ describe('buildSchema', () => {
         buildComponentSchema,
         buildModuleSchema,
         Visitor,
-        parser,
+        flowParser,
       );
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
@@ -734,7 +739,7 @@ describe('buildSchema', () => {
         buildComponentSchema,
         buildModuleSchema,
         Visitor,
-        parser,
+        flowParser,
       );
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);

@@ -31,7 +31,7 @@ const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils');
+const {resolveTypeAnnotation} = require('../utils');
 
 const {
   parseObjectProperty,
@@ -445,7 +445,7 @@ function buildModuleSchema(
   tryParse: ParserErrorCapturer,
   parser: Parser,
 ): NativeModuleSchema {
-  const types = getTypes(ast);
+  const types = parser.getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
     t => parser.isModuleInterface(t),
   );

@@ -26,9 +26,9 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using CompactValue = facebook::yoga::detail::CompactValue;
 
  public:
-  using UnsharedList = butter::small_vector<
-      YogaLayoutableShadowNode *,
-      kShadowNodeChildrenSmallVectorSize>;
+  using Shared = std::shared_ptr<YogaLayoutableShadowNode const>;
+  using ListOfShared =
+      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
 
   static ShadowNodeTraits BaseTraits();
   static ShadowNodeTraits::Trait IdentifierTrait();
@@ -52,7 +52,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  void appendChild(ShadowNode::Shared const &child);
+  void appendChild(ShadowNode::Shared const &child) override;
+  void replaceChild(
+      ShadowNode const &oldChild,
+      ShadowNode::Shared const &newChild,
+      size_t suggestedIndex = -1) override;
 
   void updateYogaChildren();
 
@@ -121,7 +125,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * The method does *not* do anything besides that (no cloning or `owner` field
    * adjustment).
    */
-  void appendYogaChild(ShadowNode const &childNode);
+  void appendYogaChild(YogaLayoutableShadowNode::Shared const &childNode);
 
   /*
    * Makes the child node with a given `index` (and Yoga node associated with) a
@@ -187,9 +191,15 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 #pragma mark - Consistency Ensuring Helpers
 
   void ensureConsistency() const;
-  void ensureYogaChildrenAlighment() const;
+  void ensureYogaChildrenAlignment() const;
   void ensureYogaChildrenOwnersConsistency() const;
   void ensureYogaChildrenLookFine() const;
+
+#pragma mark - Private member variables
+  /*
+   * List of children which derive from YogaLayoutableShadowNode
+   */
+  ListOfShared yogaLayoutableChildren_;
 };
 
 } // namespace react
