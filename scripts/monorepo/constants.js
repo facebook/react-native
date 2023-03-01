@@ -8,6 +8,6 @@
  * @format
  */
 
-const PUBLISH_PACKAGES_TAG = '@publish-packages-to-npm';
+const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
 
 module.exports = {PUBLISH_PACKAGES_TAG};
