@@ -46,7 +46,6 @@ const directEventTypes = {
 };
 
 const validAttributesForNonEventProps = {
-  ...PlatformBaseViewConfigIos.validAttributesForNonEventProps,
   acceptsFirstMouse: true,
   accessibilityTraits: true,
   cursor: true,
@@ -59,7 +58,6 @@ const validAttributesForNonEventProps = {
 
 // Props for bubbling and direct events
 const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
-  ...PlatformBaseViewConfigIos.validAttributesForEventProps,
   onBlur: true,
   onDragEnter: true,
   onDragLeave: true,
@@ -79,6 +77,7 @@ const PlatformBaseViewConfigMacOS: PartialViewConfigWithoutName = {
   bubblingEventTypes,
   directEventTypes,
   validAttributes: {
+    ...PlatformBaseViewConfigIos.validAttributes,
     ...validAttributesForNonEventProps,
     ...validAttributesForEventProps,
   },
