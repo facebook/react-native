@@ -186,6 +186,7 @@ describe('TextInput', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}
@@ -231,6 +232,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}
@@ -315,6 +317,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessibilityState={
           Object {
             "busy": true,
@@ -407,6 +410,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}

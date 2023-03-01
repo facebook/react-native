@@ -30,6 +30,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -37,8 +38,10 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
@@ -157,6 +160,36 @@ public class ReactEditText extends AppCompatEditText
     ReactAccessibilityDelegate editTextAccessibilityDelegate =
         new ReactAccessibilityDelegate(
             this, this.isFocusable(), this.getImportantForAccessibility()) {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            final String accessibilityErrorMessage =
+                (String) host.getTag(R.id.accessibility_error_message);
+            boolean contentInvalid = accessibilityErrorMessage == null ? false : true;
+            if (accessibilityErrorMessage != info.getError()) {
+              info.setError(accessibilityErrorMessage);
+              info.setContentInvalid(contentInvalid);
+            }
+          }
+
+          @Override
+          public void onInitializeAccessibilityEvent(View host, AccessibilityEvent event) {
+            super.onInitializeAccessibilityEvent(host, event);
+            if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED
+                && host.getParent() != null) {
+              try {
+                host.getParent().requestSendAccessibilityEvent(host, event);
+              } catch (AbstractMethodError e) {
+                FLog.w(
+                    TAG,
+                    host.getParent().getClass().getSimpleName()
+                        + " does not fully implement ViewParent",
+                    e);
+              }
+            }
+          }
+
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -537,6 +570,25 @@ public class ReactEditText extends AppCompatEditText
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public int incrementAndGetEventCounter() {
     return ++mNativeEventCount;
+  }
+
+  /**
+   * Attempt to set an accessibility error or fail silently. EventCounter is the same one used as
+   * with text.
+   *
+   * @param eventCounter
+   * @param accessibilityErrorMessage
+   */
+  public void maybeSetAccessibilityError(
+      int eventCounter, @Nullable String accessibilityErrorMessage) {
+    String previousScreenreaderError = (String) getTag(R.id.accessibility_error_message);
+    if (!canUpdateWithEventCount(eventCounter)
+        || previousScreenreaderError == accessibilityErrorMessage) {
+      return;
+    }
+
+    setTag(R.id.accessibility_error_message, accessibilityErrorMessage);
+    sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
   }
 
   public void maybeSetTextFromJS(ReactTextUpdate reactTextUpdate) {
