@@ -98,7 +98,7 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
   public void onSurfaceStopped(final int surfaceId) {
-    List<ViewManager> viewManagers;
+    final List<ViewManager> viewManagers;
     synchronized (this) {
       viewManagers = new ArrayList<>(mViewManagers.values());
     }
@@ -121,7 +121,7 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
   /** ComponentCallbacks2 method. */
   @Override
   public void onTrimMemory(int level) {
-    List<ViewManager> viewManagers;
+    final List<ViewManager> viewManagers;
     synchronized (this) {
       viewManagers = new ArrayList<>(mViewManagers.values());
     }
