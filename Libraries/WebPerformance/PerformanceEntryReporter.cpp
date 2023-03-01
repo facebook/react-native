@@ -218,53 +218,58 @@ struct StrKeyHash {
 // https://www.w3.org/TR/event-timing/#sec-events-exposed
 // Not all of these are currently supported by RN, but we map them anyway for
 // future-proofing.
-static const std::unordered_map<StrKey, const char *, StrKeyHash>
-    SUPPORTED_EVENTS = {
-        {"topAuxClick", "auxclick"},
-        {"topClick", "click"},
-        {"topContextMenu", "contextmenu"},
-        {"topDblClick", "dblclick"},
-        {"topMouseDown", "mousedown"},
-        {"topMouseEnter", "mouseenter"},
-        {"topMouseLeave", "mouseleave"},
-        {"topMouseOut", "mouseout"},
-        {"topMouseOver", "mouseover"},
-        {"topMouseUp", "mouseup"},
-        {"topPointerOver", "pointerover"},
-        {"topPointerEnter", "pointerenter"},
-        {"topPointerDown", "pointerdown"},
-        {"topPointerUp", "pointerup"},
-        {"topPointerCancel", "pointercancel"},
-        {"topPointerOut", "pointerout"},
-        {"topPointerLeave", "pointerleave"},
-        {"topGotPointerCapture", "gotpointercapture"},
-        {"topLostPointerCapture", "lostpointercapture"},
-        {"topTouchStart", "touchstart"},
-        {"topTouchEnd", "touchend"},
-        {"topTouchCancel", "touchcancel"},
-        {"topKeyDown", "keydown"},
-        {"topKeyPress", "keypress"},
-        {"topKeyUp", "keyup"},
-        {"topBeforeInput", "beforeinput"},
-        {"topInput", "input"},
-        {"topCompositionStart", "compositionstart"},
-        {"topCompositionUpdate", "compositionupdate"},
-        {"topCompositionEnd", "compositionend"},
-        {"topDragStart", "dragstart"},
-        {"topDragEnd", "dragend"},
-        {"topDragEnter", "dragenter"},
-        {"topDragLeave", "dragleave"},
-        {"topDragOver", "dragover"},
-        {"topDrop", "drop"},
-};
+using SupportedEventTypeRegistry =
+    std::unordered_map<StrKey, const char *, StrKeyHash>;
+
+static const SupportedEventTypeRegistry &getSupportedEvents() {
+  static SupportedEventTypeRegistry SUPPORTED_EVENTS = {
+      {"topAuxClick", "auxclick"},
+      {"topClick", "click"},
+      {"topContextMenu", "contextmenu"},
+      {"topDblClick", "dblclick"},
+      {"topMouseDown", "mousedown"},
+      {"topMouseEnter", "mouseenter"},
+      {"topMouseLeave", "mouseleave"},
+      {"topMouseOut", "mouseout"},
+      {"topMouseOver", "mouseover"},
+      {"topMouseUp", "mouseup"},
+      {"topPointerOver", "pointerover"},
+      {"topPointerEnter", "pointerenter"},
+      {"topPointerDown", "pointerdown"},
+      {"topPointerUp", "pointerup"},
+      {"topPointerCancel", "pointercancel"},
+      {"topPointerOut", "pointerout"},
+      {"topPointerLeave", "pointerleave"},
+      {"topGotPointerCapture", "gotpointercapture"},
+      {"topLostPointerCapture", "lostpointercapture"},
+      {"topTouchStart", "touchstart"},
+      {"topTouchEnd", "touchend"},
+      {"topTouchCancel", "touchcancel"},
+      {"topKeyDown", "keydown"},
+      {"topKeyPress", "keypress"},
+      {"topKeyUp", "keyup"},
+      {"topBeforeInput", "beforeinput"},
+      {"topInput", "input"},
+      {"topCompositionStart", "compositionstart"},
+      {"topCompositionUpdate", "compositionupdate"},
+      {"topCompositionEnd", "compositionend"},
+      {"topDragStart", "dragstart"},
+      {"topDragEnd", "dragend"},
+      {"topDragEnter", "dragenter"},
+      {"topDragLeave", "dragleave"},
+      {"topDragOver", "dragover"},
+      {"topDrop", "drop"},
+  };
+  return SUPPORTED_EVENTS;
+}
 
 EventTag PerformanceEntryReporter::onEventStart(const char *name) {
   if (!isReportingEvents()) {
     return 0;
   }
-
-  auto it = SUPPORTED_EVENTS.find(name);
-  if (it == SUPPORTED_EVENTS.end()) {
+  const auto &supportedEvents = getSupportedEvents();
+  auto it = supportedEvents.find(name);
+  if (it == supportedEvents.end()) {
     return 0;
   }
 
