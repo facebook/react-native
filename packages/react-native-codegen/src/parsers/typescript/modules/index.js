@@ -31,7 +31,7 @@ const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
 const {verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils');
+const {resolveTypeAnnotation} = require('../utils');
 
 const {
   parseObjectProperty,

@@ -25,7 +25,7 @@ import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils');
+const {resolveTypeAnnotation} = require('../utils');
 const {
   unwrapNullable,
   wrapNullable,
