@@ -161,11 +161,11 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
 
 #pragma mark - Mutating Methods
 
-  void appendChild(Shared const &child);
-  void replaceChild(
+  virtual void appendChild(Shared const &child);
+  virtual void replaceChild(
       ShadowNode const &oldChild,
       Shared const &newChild,
-      int suggestedIndex = -1);
+      size_t suggestedIndex = -1);
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.
