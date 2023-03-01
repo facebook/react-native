@@ -345,7 +345,10 @@ function buildSchemaFromConfigType(
   filename: ?string,
   ast: $FlowFixMe,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,
@@ -356,7 +359,7 @@ function buildSchemaFromConfigType(
 ): SchemaType {
   switch (configType) {
     case 'component': {
-      return wrapComponentSchema(buildComponentSchema(ast));
+      return wrapComponentSchema(buildComponentSchema(ast, parser));
     }
     case 'module': {
       if (filename === undefined || filename === null) {
@@ -398,7 +401,10 @@ function buildSchema(
   contents: string,
   filename: ?string,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,

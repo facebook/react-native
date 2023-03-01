@@ -209,6 +209,36 @@ class TypeScriptParser implements Parser {
   ): $FlowFixMe {
     return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
+
+  /**
+   * TODO(T108222691): Use flow-types for @babel/parser
+   */
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+    return ast.body.reduce((types, node) => {
+      switch (node.type) {
+        case 'ExportNamedDeclaration': {
+          if (node.declaration) {
+            switch (node.declaration.type) {
+              case 'TSTypeAliasDeclaration':
+              case 'TSInterfaceDeclaration':
+              case 'TSEnumDeclaration': {
+                types[node.declaration.id.name] = node.declaration;
+                break;
+              }
+            }
+          }
+          break;
+        }
+        case 'TSTypeAliasDeclaration':
+        case 'TSInterfaceDeclaration':
+        case 'TSEnumDeclaration': {
+          types[node.id.name] = node;
+          break;
+        }
+      }
+      return types;
+    }, {});
+  }
 }
 module.exports = {
   TypeScriptParser,
