@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/stale@v5
         with:
+          ascending: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           days-before-stale: 180
           stale-issue-message: 'This issue is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
@@ -27,6 +28,7 @@ jobs:
     steps:
       - uses: actions/stale@v5
         with:
+          ascending: true
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           any-of-labels: 'Needs: Author Feedback'
           days-before-stale: 24
