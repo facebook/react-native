@@ -113,7 +113,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
         @Override
         protected boolean isNewArchEnabled() {
-          return true;
+          return false;
         }
 
         @Override
@@ -127,7 +127,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    DefaultNewArchitectureEntryPoint.load();
+    DefaultNewArchitectureEntryPoint.load(false, false, false);
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

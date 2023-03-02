@@ -8,10 +8,27 @@
  * @flow
  */
 
-import {AppRegistry} from 'react-native';
+import React, {useState} from 'react';
+import {AppRegistry, TextInput, View} from 'react-native';
 
-import RNTesterApp from './RNTesterAppShared';
+//import RNTesterApp from './RNTesterAppShared';
 
-AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
+//AppRegistry.registerComponent('RNTesterApp', () => RNTesterApp);
 
-module.exports = RNTesterApp;
+AppRegistry.registerComponent('RNTesterApp', () => () => {
+  const [value, setValue] = useState('k');
+  return (
+    <View style={{padding: 50}}>
+      <TextInput
+        rows={5}
+        multiline={true}
+        style={{borderWidth: 1, borderColor: 'black', padding: 0}}
+        placeholder="Five line input using rows prop"
+        defaultValue={value}
+        onChangeText={setValue}
+      />
+    </View>
+  );
+});
+
+//module.exports = RNTesterApp;

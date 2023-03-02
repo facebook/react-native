@@ -401,6 +401,7 @@ exports.examples = ([
           <TextInput
             rows={5}
             multiline={true}
+            style={{borderWidth: 1, borderColor: 'black', padding: 0}}
             placeholder="Five line input using rows prop"
           />
         </View>
