@@ -89,6 +89,27 @@ describe('FlowParser', () => {
       expect(parser.isModuleInterface(node)).toBe(false);
     });
   });
+
+  describe('callExpressionTypeParameters', () => {
+    it('returns type arguments if it is a valid node', () => {
+      const node = {
+        type: 'CallExpression',
+        typeArguments: {
+          type: 'TypeParameterInstantiation',
+          params: [],
+        },
+      };
+      expect(parser.callExpressionTypeParameters(node)).toEqual({
+        type: 'TypeParameterInstantiation',
+        params: [],
+      });
+    });
+
+    it('returns null if it is a invalid node', () => {
+      const node = {};
+      expect(parser.callExpressionTypeParameters(node)).toBe(null);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -158,6 +179,27 @@ describe('TypeScriptParser', () => {
     it('returns false if it is a invalid node', () => {
       const node = {};
       expect(parser.isModuleInterface(node)).toBe(false);
+    });
+  });
+
+  describe('callExpressionTypeParameters', () => {
+    it('returns type parameters if it is a valid node', () => {
+      const node = {
+        type: 'CallExpression',
+        typeParameters: {
+          type: 'TypeParameterInstantiation',
+          params: [],
+        },
+      };
+      expect(parser.callExpressionTypeParameters(node)).toEqual({
+        type: 'TypeParameterInstantiation',
+        params: [],
+      });
+    });
+
+    it('returns null if it is a invalid node', () => {
+      const node = {};
+      expect(parser.callExpressionTypeParameters(node)).toBe(null);
     });
   });
 });

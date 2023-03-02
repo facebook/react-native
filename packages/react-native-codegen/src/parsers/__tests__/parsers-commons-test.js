@@ -19,6 +19,7 @@ import {
   unwrapNullable,
   buildSchemaFromConfigType,
   buildSchema,
+  parseModuleName,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -30,6 +31,11 @@ const {isModuleRegistryCall} = require('../utils.js');
 const {
   ParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnusedModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  IncorrectModuleRegistryCallArityParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
+  UntypedModuleRegistryCallParserError,
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
@@ -780,6 +786,224 @@ describe('buildSchema', () => {
           },
         },
       });
+    });
+  });
+});
+
+describe('parseModuleName', () => {
+  const hasteModuleName = 'testModuleName';
+  const emptyFlowAst = parser.getAst('');
+  const moduleSpecs = [{name: 'Spec'}];
+  const flowAstWithOneCallExpression = parser.getAst(
+    "export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');",
+  );
+
+  describe('throwIfUnusedModuleInterfaceParserError', () => {
+    it("throws an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'empty'", () => {
+      const expected = new UnusedModuleInterfaceParserError(
+        hasteModuleName,
+        moduleSpecs[0],
+      );
+
+      expect(() =>
+        parseModuleName(hasteModuleName, moduleSpecs[0], emptyFlowAst, parser),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'NOT empty'", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(UnusedModuleInterfaceParserError);
+    });
+  });
+
+  describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+    it("throws an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains more than one 'callExpression'", () => {
+      const flowAstWithTwoCallExpressions = parser.getAst(
+        "export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule'); TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');",
+      );
+
+      const callExpressions: Array<$FlowFixMe> =
+        flowAstWithTwoCallExpressions.body;
+
+      const expected = new MoreThanOneModuleRegistryCallsParserError(
+        hasteModuleName,
+        callExpressions,
+        callExpressions.length,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithTwoCallExpressions,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains extactly one 'callExpression'", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
+    });
+  });
+
+  describe('throwIfWrongNumberOfCallExpressionArgs', () => {
+    it("throws an 'IncorrectModuleRegistryCallArityParserError' error if wrong number of call expression args is used", () => {
+      const flowAstWithZeroCallExpressionArgs = parser.getAst(
+        'export default TurboModuleRegistry.getEnforcing();',
+      );
+      const flowCallExpressionWithoutArgs =
+        flowAstWithZeroCallExpressionArgs.body[0].declaration;
+      const numberOfCallExpressionArgs =
+        flowCallExpressionWithoutArgs.arguments.length;
+      const flowCallExpressionWithoutArgsCallee =
+        flowCallExpressionWithoutArgs.callee.property.name;
+
+      const expected = new IncorrectModuleRegistryCallArityParserError(
+        hasteModuleName,
+        flowCallExpressionWithoutArgs,
+        flowCallExpressionWithoutArgsCallee,
+        numberOfCallExpressionArgs,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithZeroCallExpressionArgs,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'IncorrectModuleRegistryCallArityParserError' error if correct number of call expression args is used", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(IncorrectModuleRegistryCallArityParserError);
+    });
+  });
+
+  describe('throwIfIncorrectModuleRegistryCallArgument', () => {
+    it("throws an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is NOT a string literal", () => {
+      const flowAstWithNonStringLiteralCallExpressionArg = parser.getAst(
+        'export default TurboModuleRegistry.getEnforcing(Spec);',
+      );
+      const flowCallExpression =
+        flowAstWithNonStringLiteralCallExpressionArg.body[0].declaration;
+      const flowCallExpressionCalllee = flowCallExpression.callee.property.name;
+      const flowCallExpressionArg = flowCallExpression.arguments[0];
+
+      const expected = new IncorrectModuleRegistryCallArgumentTypeParserError(
+        hasteModuleName,
+        flowCallExpressionArg,
+        flowCallExpressionCalllee,
+        flowCallExpressionArg.type,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithNonStringLiteralCallExpressionArg,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is a string literal", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+    });
+  });
+
+  describe('throwIfUntypedModule', () => {
+    it("throws an 'UntypedModuleRegistryCallParserError' error if call expression is untyped", () => {
+      const flowAstWithUntypedCallExpression = parser.getAst(
+        "export default TurboModuleRegistry.getEnforcing('SampleTurboModule');",
+      );
+      const flowCallExpression =
+        flowAstWithUntypedCallExpression.body[0].declaration;
+      const flowCallExpressionCallee = flowCallExpression.callee.property.name;
+      const moduleName = flowCallExpression.arguments[0].value;
+      const expected = new UntypedModuleRegistryCallParserError(
+        hasteModuleName,
+        flowCallExpression,
+        flowCallExpressionCallee,
+        moduleName,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithUntypedCallExpression,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'UntypedModuleRegistryCallParserError' error if call expression is typed", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(UntypedModuleRegistryCallParserError);
+    });
+  });
+
+  describe('when flow ast with valid module is passed', () => {
+    it("returns the correct ModuleName and doesn't throw any error", () => {
+      const moduleType = 'Spec';
+      const moduleName = 'SampleTurboModule';
+      const flowAstWithValidModule = parser.getAst(
+        `export default TurboModuleRegistry.getEnforcing<${moduleType}>('${moduleName}');`,
+      );
+
+      const expected = moduleName;
+
+      expect(
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithValidModule,
+          parser,
+        ),
+      ).toEqual(expected);
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithValidModule,
+          parser,
+        ),
+      ).not.toThrow();
     });
   });
 });

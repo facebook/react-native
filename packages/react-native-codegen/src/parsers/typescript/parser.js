@@ -239,6 +239,10 @@ class TypeScriptParser implements Parser {
       return types;
     }, {});
   }
+
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
+    return callExpression.typeParameters || null;
+  }
 }
 module.exports = {
   TypeScriptParser,

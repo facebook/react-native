@@ -180,4 +180,8 @@ export class MockedParser implements Parser {
   getTypes(ast: $FlowFixMe): TypeDeclarationMap {
     return {};
   }
+
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
+    return callExpression.typeArguments || null;
+  }
 }
