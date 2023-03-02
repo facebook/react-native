@@ -349,10 +349,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [_containerView insertSubview:childComponentView atIndex:index];
-  if ([childComponentView conformsToProtocol:@protocol(RCTCustomPullToRefreshViewProtocol)]) {
-    // Ignore the pull to refresh component.
-  } else {
-    RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview.");
+  if (![childComponentView conformsToProtocol:@protocol(RCTCustomPullToRefreshViewProtocol)]) {
     _contentView = childComponentView;
   }
 }
