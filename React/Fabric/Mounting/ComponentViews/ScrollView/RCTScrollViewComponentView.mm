@@ -357,10 +357,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [childComponentView removeFromSuperview];
-  if ([childComponentView conformsToProtocol:@protocol(RCTCustomPullToRefreshViewProtocol)]) {
-    // Ignore the pull to refresh component.
-  } else {
-    RCTAssert(_contentView == childComponentView, @"Attempted to remove non-existent subview");
+if (![childComponentView conformsToProtocol:@protocol(RCTCustomPullToRefreshViewProtocol)] &&
+      _contentView == childComponentView) {
     _contentView = nil;
   }
 }
