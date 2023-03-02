@@ -121,10 +121,6 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
             ),
             new PrefabPreprocessingEntry(
-                "rrc_legacyviewmanagerinterop",
-                new Pair("../ReactCommon/react/renderer/components/legacyviewmanagerinterop/", "react/renderer/components/legacyviewmanagerinterop/")
-            ),
-            new PrefabPreprocessingEntry(
                 "jsi",
                 new Pair("../ReactCommon/jsi/", "")
             ),
@@ -489,7 +485,6 @@ android {
                     "rrc_image",
                     "rrc_root",
                     "rrc_view",
-                    "rrc_legacyviewmanagerinterop",
                     "jsi",
                     "glog",
                     "fabricjni",
@@ -590,9 +585,6 @@ android {
         }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
-        }
-        rrc_legacyviewmanagerinterop {
-            headers(new File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath)
         }
         jsi {
             headers(new File(prefabHeadersDir, "jsi").absolutePath)
