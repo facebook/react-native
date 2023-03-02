@@ -11,11 +11,15 @@
 #import <React/RCTBridge.h>
 #import <React/RCTDevMenu.h>
 
+#if !TARGET_OS_OSX // [macOS]
 typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
+#endif // [macOS]
 
 @interface RCTDevMenu ()
 
+#if !TARGET_OS_OSX // [macOS]
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *)item;
+#endif // [macOS]
 
 @end
 
@@ -46,6 +50,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)testClosingActionSheetAfterAction
 {
   for (RCTDevMenuItem *item in _bridge.devMenu.presentedItems) {
@@ -59,5 +64,6 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
     XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
   }
 }
+#endif // [macOS]
 
 @end

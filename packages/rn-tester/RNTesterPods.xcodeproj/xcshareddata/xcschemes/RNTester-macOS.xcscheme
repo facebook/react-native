@@ -3,7 +3,7 @@
    LastUpgradeVersion = "1120"
    version = "1.3">
    <BuildAction
-      parallelizeBuildables = "NO"
+      parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+               BlueprintIdentifier = "ACC52F3D299ECB7A002A2B0B"
                BuildableName = "RNTester-macOS.app"
                BlueprintName = "RNTester-macOS"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9F15346C233AB2C7006DFE44"
+               BlueprintIdentifier = "ACC52F54299ECB8A002A2B0B"
                BuildableName = "RNTester-macOSUnitTests.xctest"
                BlueprintName = "RNTester-macOSUnitTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -46,7 +46,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+            BlueprintIdentifier = "ACC52F3D299ECB7A002A2B0B"
             BuildableName = "RNTester-macOS.app"
             BlueprintName = "RNTester-macOS"
             ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -64,7 +64,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9F15346C233AB2C7006DFE44"
+               BlueprintIdentifier = "ACC52F54299ECB8A002A2B0B"
                BuildableName = "RNTester-macOSUnitTests.xctest"
                BlueprintName = "RNTester-macOSUnitTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -74,7 +74,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9F153477233AB2C7006DFE44"
+               BlueprintIdentifier = "ACC52F61299ECB97002A2B0B"
                BuildableName = "RNTester-macOSIntegrationTests.xctest"
                BlueprintName = "RNTester-macOSIntegrationTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -96,7 +96,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+            BlueprintIdentifier = "ACC52F3D299ECB7A002A2B0B"
             BuildableName = "RNTester-macOS.app"
             BlueprintName = "RNTester-macOS"
             ReferencedContainer = "container:RNTesterPods.xcodeproj">
@@ -113,7 +113,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+            BlueprintIdentifier = "ACC52F3D299ECB7A002A2B0B"
             BuildableName = "RNTester-macOS.app"
             BlueprintName = "RNTester-macOS"
             ReferencedContainer = "container:RNTesterPods.xcodeproj">
