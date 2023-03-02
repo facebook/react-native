@@ -198,6 +198,7 @@ def _unique(li):
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
     _ = kwargs.pop("autoglob", False)
     _ = kwargs.pop("pure_kotlin", False)
+    kwargs.update({"source": "8", "target": "8"})
     if react_native_target(
         "java/com/facebook/react/uimanager/annotations:annotations",
     ) in deps and name != "processing":
@@ -431,7 +432,9 @@ def react_cxx_module_plugin_provider(name, function):
 HERMES_BYTECODE_VERSION = -1
 
 RCT_IMAGE_DATA_DECODER_SOCKET = None
+
 RCT_IMAGE_URL_LOADER_SOCKET = None
+
 RCT_URL_REQUEST_HANDLER_SOCKET = None
 
 def make_resource_glob(path):
