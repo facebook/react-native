@@ -25,7 +25,7 @@ type DimensionValue =
   | Animated.AnimatedNode
   | null;
 type AnimatableNumericValue = number | Animated.AnimatedNode;
-type AnimatableStringValue = number | Animated.AnimatedNode;
+type AnimatableStringValue = string | Animated.AnimatedNode;
 
 /**
  * Flex Prop Types
