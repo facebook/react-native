@@ -733,6 +733,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
   public void setNumLines(ReactEditText view, int numLines) {
     view.setLines(numLines);
+  }
+
+  @ReactProp(name = ViewProps.MAXIMUM_NUMBER_OF_LINES, defaultInt = 1)
+  public void setMaxNumLines(ReactEditText view, int numLines) {
     view.setMaxLines(numLines);
   }
 
