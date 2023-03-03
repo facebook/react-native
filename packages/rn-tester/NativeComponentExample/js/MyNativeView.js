@@ -30,7 +30,7 @@ const colors = [
 export default function MyNativeView(props: {}): React.Node {
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
-  const [color, setColor] = useState('#000000');
+  const [color, setColor] = useState('#FF0000');
   return (
     <View style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
