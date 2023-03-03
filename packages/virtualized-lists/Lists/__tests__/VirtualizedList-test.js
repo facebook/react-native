@@ -825,9 +825,11 @@ it('unmounts sticky headers moved below viewport', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('gracefully handles negaitve initialScrollIndex', () => {
+it('gracefully handles negative initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
+
+  const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   const component = ReactTestRenderer.create(
     <VirtualizedList
@@ -838,9 +840,56 @@ it('gracefully handles negaitve initialScrollIndex', () => {
     />,
   );
 
-  // Existing code assumes we handle this in some way. Do something reasonable
-  // here.
+  expect(mockWarn).toHaveBeenCalledTimes(1);
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
   expect(component).toMatchSnapshot();
+  expect(mockWarn).toHaveBeenCalledTimes(1);
+  mockWarn.mockRestore();
+});
+
+it('gracefully handles too large initialScrollIndex', () => {
+  const items = generateItems(10);
+  const ITEM_HEIGHT = 10;
+
+  const listRef = React.createRef();
+
+  const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  const component = ReactTestRenderer.create(
+    <VirtualizedList
+      ref={listRef}
+      initialScrollIndex={15}
+      initialNumToRender={4}
+      {...baseItemProps(items)}
+      {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+    />,
+  );
+
+  expect(mockWarn).toHaveBeenCalledTimes(1);
+  listRef.current.scrollToEnd = jest.fn();
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: 100},
+    });
+    performAllBatches();
+  });
+
+  expect(mockWarn).toHaveBeenCalledTimes(1);
+  mockWarn.mockRestore();
+
+  expect(listRef.current.scrollToEnd).toHaveBeenLastCalledWith({
+    animated: false,
+  });
 });
 
 it('renders offset cells in initial render when initialScrollIndex set', () => {
