@@ -19,7 +19,11 @@
 
 using namespace facebook::react;
 
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTSliderComponentView () <RCTImageResponseDelegate>
+#else // [macOS
+@interface RCTSliderComponentView () <RCTImageResponseDelegate, RCTUISliderDelegate>
+#endif // macOS]
 @end
 
 @implementation RCTSliderComponentView {
@@ -55,7 +59,11 @@ using namespace facebook::react;
     [_sliderView addTarget:self
                     action:@selector(sliderTouchEnd:)
           forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchUpOutside | UIControlEventTouchCancel)];
-#endif // [macOS]
+#else // [macOS
+    _sliderView.delegate = self;
+    [_sliderView setTarget:self];
+    [_sliderView setAction:@selector(onChange:)];
+#endif // macOS]
 
     _sliderView.value = (float)defaultProps->value;
 
@@ -64,12 +72,7 @@ using namespace facebook::react;
     _maximumTrackImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
     _thumbImageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
-#if !TARGET_OS_OSX // [macOS]
     self.contentView = _sliderView;
-#else // [macOS
-    self.contentView = [RCTUIView new];
-    [self.contentView addSubview:_sliderView];
-#endif // macOS]
   }
 
   return self;
@@ -241,6 +244,7 @@ using namespace facebook::react;
 
 - (void)setTrackImage:(UIImage *)trackImage
 {
+#if !TARGET_OS_OSX // [macOS]
   if ([trackImage isEqual:_trackImage]) {
     return;
   }
@@ -248,7 +252,6 @@ using namespace facebook::react;
   _trackImage = trackImage;
   _minimumTrackImage = nil;
   _maximumTrackImage = nil;
-#if !TARGET_OS_OSX // [macOS]
   CGFloat width = trackImage.size.width / 2;
   UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){0, width, 0, width}
                                                           resizingMode:UIImageResizingModeStretch];
@@ -261,13 +264,13 @@ using namespace facebook::react;
 
 - (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
 {
+#if !TARGET_OS_OSX // [macOS]
   if ([minimumTrackImage isEqual:_minimumTrackImage] && _trackImage == nil) {
     return;
   }
 
   _trackImage = nil;
   _minimumTrackImage = minimumTrackImage;
-#if !TARGET_OS_OSX // [macOS]
   _minimumTrackImage =
       [_minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, _minimumTrackImage.size.width, 0, 0}
                                          resizingMode:UIImageResizingModeStretch];
@@ -277,13 +280,13 @@ using namespace facebook::react;
 
 - (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
 {
+#if !TARGET_OS_OSX // [macOS]
   if ([maximumTrackImage isEqual:_maximumTrackImage] && _trackImage == nil) {
     return;
   }
 
   _trackImage = nil;
   _maximumTrackImage = maximumTrackImage;
-#if !TARGET_OS_OSX // [macOS]
   _maximumTrackImage =
       [_maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){0, 0, 0, _maximumTrackImage.size.width}
                                          resizingMode:UIImageResizingModeStretch];
@@ -293,12 +296,12 @@ using namespace facebook::react;
 
 - (void)setThumbImage:(UIImage *)thumbImage
 {
+#if !TARGET_OS_OSX // [macOS]
   if ([thumbImage isEqual:_thumbImage]) {
     return;
   }
 
   _thumbImage = thumbImage;
-#if !TARGET_OS_OSX // [macOS]
   [_sliderView setThumbImage:thumbImage forState:UIControlStateNormal];
 #endif // [macOS]
 }
@@ -339,6 +342,15 @@ using namespace facebook::react;
 
   _previousValue = value;
 }
+
+#if TARGET_OS_OSX // [macOS
+- (void)slider:(id)slider didPress:(BOOL)press
+{
+  if (!press) {
+    [self onChange:slider withContinuous:NO];
+  }
+}
+#endif // macOS]
 
 #pragma mark - RCTImageResponseDelegate
 

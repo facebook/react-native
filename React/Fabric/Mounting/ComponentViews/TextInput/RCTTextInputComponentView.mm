@@ -33,7 +33,7 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
   RCTUIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #else // [macOS
-  RCTUITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+  RCTPlatformView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #endif // macOS]
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
@@ -71,11 +71,7 @@ using namespace facebook::react;
     _props = defaultProps;
     auto &props = *defaultProps;
 
-#if !TARGET_OS_OSX // [macOS]
     _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
-#else // [macOS
-    _backedTextInputView = [RCTUITextView new];
-#endif // macOS]
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -433,6 +429,54 @@ using namespace facebook::react;
   }
 }
 
+#if TARGET_OS_OSX // [macOS
+- (void)automaticSpellingCorrectionDidChange:(BOOL)enabled {}
+
+
+- (void)continuousSpellCheckingDidChange:(BOOL)enabled {}
+
+
+- (void)grammarCheckingDidChange:(BOOL)enabled {}
+
+
+- (BOOL)hasValidKeyDownOrValidKeyUp:(nonnull NSString *)key {
+  return YES;
+}
+
+- (void)submitOnKeyDownIfNeeded:(nonnull NSEvent *)event {}
+
+- (void)textInputDidCancel {}
+
+- (NSDragOperation)textInputDraggingEntered:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return NSDragOperationNone;
+}
+
+- (void)textInputDraggingExited:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return;
+}
+
+- (BOOL)textInputShouldHandleDeleteBackward:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleDeleteForward:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleDragOperation:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleKeyEvent:(nonnull NSEvent *)event {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandlePaste:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+#endif // macOS]
+
 #pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
 
 - (void)scrollViewDidScroll:(RCTUIScrollView *)scrollView // [macOS]
@@ -554,11 +598,13 @@ using namespace facebook::react;
   metrics.selectionRange = [self _selectionRange];
   metrics.eventCount = _mostRecentEventCount;
 
+#if !TARGET_OS_OSX // [macOS]
   CGPoint contentOffset = _backedTextInputView.contentOffset;
   metrics.contentOffset = {contentOffset.x, contentOffset.y};
 
   UIEdgeInsets contentInset = _backedTextInputView.contentInset;
   metrics.contentInset = {contentInset.left, contentInset.top, contentInset.right, contentInset.bottom};
+#endif // [macOS]
 
   CGSize contentSize = _backedTextInputView.contentSize;
   metrics.contentSize = {contentSize.width, contentSize.height};
@@ -566,8 +612,10 @@ using namespace facebook::react;
   CGSize layoutMeasurement = _backedTextInputView.bounds.size;
   metrics.layoutMeasurement = {layoutMeasurement.width, layoutMeasurement.height};
 
+#if !TARGET_OS_OSX // [macOS]
   CGFloat zoomScale = _backedTextInputView.zoomScale;
   metrics.zoomScale = zoomScale;
+#endif // [macOS]
 
   return metrics;
 }

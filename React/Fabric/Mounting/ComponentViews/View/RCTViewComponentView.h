@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  * to embed/bridge pure native views as component views.
  * Defaults to `nil`. Assign `nil` to remove view as subview.
  */
-@property (nonatomic, strong, nullable) RCTUIView *contentView; // [macOS]
+@property (nonatomic, strong, nullable) RCTPlatformView *contentView; // [macOS]
 
 /**
  * Provides access to `nativeId` prop of the component.

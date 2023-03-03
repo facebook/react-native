@@ -7,14 +7,16 @@
 
 #import "RCTReactTaggedView.h"
 
+#import <React/RCTUIKit.h>
+
 @implementation RCTReactTaggedView
 
-+ (RCTReactTaggedView *)wrap:(UIView *)view
++ (RCTReactTaggedView *)wrap:(RCTUIView *)view // [macOS]
 {
   return [[RCTReactTaggedView alloc] initWithView:view];
 }
 
-- (instancetype)initWithView:(UIView *)view
+- (instancetype)initWithView:(RCTUIView *)view // [macOS]
 {
   if (self = [super init]) {
     _view = view;
@@ -23,7 +25,7 @@
   return self;
 }
 
-- (nullable UIView *)view
+- (nullable RCTUIView *)view // [macOS]
 {
   if (_view.tag == _tag) {
     return _view;

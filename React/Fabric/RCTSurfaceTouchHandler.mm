@@ -10,6 +10,7 @@
 #import <React/RCTReactTaggedView.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
+#import <React/RCTUIKit.h>
 
 #import "RCTConversions.h"
 #import "RCTTouchableComponentViewProtocol.h"
@@ -172,7 +173,8 @@ static CGFloat RadsToDegrees(CGFloat rads)
 static int ButtonMaskToButtons(UIEventButtonMask buttonMask)
 {
   int buttonsMaskResult = 0;
-  if (@available(iOS 13.4, *)) {
+#if !TARGET_OS_OSX // [macOS]
+    if (@available(iOS 13.4, *)) {
     if ((buttonMask & UIEventButtonMaskPrimary) != 0) {
       buttonsMaskResult |= 1;
     }
@@ -184,11 +186,13 @@ static int ButtonMaskToButtons(UIEventButtonMask buttonMask)
       buttonsMaskResult |= 4;
     }
   }
+#endif // [macOS]
   return buttonsMaskResult;
 }
 
 static int ButtonMaskDiffToButton(UIEventButtonMask prevButtonMask, UIEventButtonMask curButtonMask)
 {
+#if !TARGET_OS_OSX // [macOS]
   if (@available(iOS 13.4, *)) {
     if ((prevButtonMask & UIEventButtonMaskPrimary) != (curButtonMask & UIEventButtonMaskPrimary)) {
       return 0;
@@ -200,6 +204,7 @@ static int ButtonMaskDiffToButton(UIEventButtonMask prevButtonMask, UIEventButto
       return 2;
     }
   }
+#endif // [macOS]
   return -1;
 }
 
@@ -311,7 +316,7 @@ CreateTouchWithUITouch(RCTUITouch *uiTouch, UIEvent *uiEvent, RCTUIView *rootCom
 }
 
 #if !TARGET_OS_OSX // [macOS]
-static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
+static RCTUIView *FindClosestFabricManagedTouchableView(RCTUIView *componentView) // [macOS]
 {
   while (componentView) {
     if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
@@ -322,7 +327,7 @@ static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
   return nil;
 }
 
-static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(UIView *componentView)
+static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(RCTUIView *componentView) // [macOS]
 {
   NSMutableOrderedSet *results = [NSMutableOrderedSet orderedSet];
   do {
@@ -334,7 +339,7 @@ static NSOrderedSet<RCTReactTaggedView *> *GetTouchableViewsInPathToRoot(UIView 
   return results;
 }
 
-static SharedTouchEventEmitter GetTouchEmitterFromView(UIView *componentView, CGPoint point)
+static SharedTouchEventEmitter GetTouchEmitterFromView(RCTUIView *componentView, CGPoint point) // [macOS]
 {
   return [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:point];
 }
@@ -471,7 +476,7 @@ static BOOL AnyTouchesChanged(NSSet<RCTUITouch *> *touches) // [macOS]
 
 static BOOL IsViewListeningToEvent(RCTReactTaggedView *taggedView, ViewEvents::Offset eventType)
 {
-  UIView *view = taggedView.view;
+  RCTUIView *view = taggedView.view; // [macOS]
   if (view && [view.class conformsToProtocol:@protocol(RCTComponentViewProtocol)]) {
     auto props = ((id<RCTComponentViewProtocol>)view).props;
     if (SharedViewProps viewProps = std::dynamic_pointer_cast<ViewProps const>(props)) {
@@ -522,7 +527,9 @@ struct PointerHasher {
   __weak RCTUIView *_rootComponentView; // [macOS]
   IdentifierPool<11> _identifierPool;
 
-  UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
+#if !TARGET_OS_OSX // [macOS]
+    UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
+#endif // [macOS]
   NSMutableDictionary<NSNumber *, NSOrderedSet<RCTReactTaggedView *> *> *_currentlyHoveredViewsPerPointer;
 
   int _primaryTouchPointerId;
@@ -543,7 +550,9 @@ struct PointerHasher {
 
     self.delegate = self;
 
+#if !TARGET_OS_OSX // [macOS]
     _hoverRecognizer = nil;
+#endif // [macOS]
     _currentlyHoveredViewsPerPointer = [[NSMutableDictionary alloc] init];
     _primaryTouchPointerId = -1;
   }
@@ -561,10 +570,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   _rootComponentView = view;
 
   if (RCTGetDispatchW3CPointerEvents()) {
-    if (@available(iOS 13.0, *)) {
+#if !TARGET_OS_OSX // [macOS]
+      if (@available(iOS 13.0, *)) {
       _hoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(hovering:)];
       [view addGestureRecognizer:_hoverRecognizer];
     }
+#endif // [macOS]
   }
 }
 
@@ -576,10 +587,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [view removeGestureRecognizer:self];
   _rootComponentView = nil;
 
+#if !TARGET_OS_OSX // [macOS]
   if (_hoverRecognizer != nil) {
     [view removeGestureRecognizer:_hoverRecognizer];
     _hoverRecognizer = nil;
   }
+#endif // [macOS]
 }
 
 - (void)_registerTouches:(NSSet<RCTUITouch *> *)touches withEvent:(UIEvent *)event // [macOS]
@@ -689,7 +702,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     event.changedTouches.insert(activeTouch.touch);
     uniqueEventEmitters.insert(activeTouch.eventEmitter);
 
-    // emit w3c pointer events
+#if !TARGET_OS_OSX // [macOS]
+      // emit w3c pointer events
     if (RCTGetDispatchW3CPointerEvents()) {
       PointerEvent pointerEvent = CreatePointerEventFromActiveTouch(activeTouch, eventType);
 
@@ -698,8 +712,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         [self handleIncomingPointerEvent:pointerEvent onView:nil];
       } else {
         CGPoint clientLocation = CGPointMake(pointerEvent.clientPoint.x, pointerEvent.clientPoint.y);
-        UIView *targetView = FindClosestFabricManagedTouchableView([_rootComponentView hitTest:clientLocation
-                                                                                     withEvent:nil]);
+        RCTUIView *targetView = FindClosestFabricManagedTouchableView([_rootComponentView hitTest:clientLocation
+                                                                                     withEvent:nil]); // [macOS]
 
         NSOrderedSet<RCTReactTaggedView *> *eventPathViews = [self handleIncomingPointerEvent:pointerEvent
                                                                                        onView:targetView];
@@ -726,6 +740,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
       }
     }
+#endif // [macOS]
   }
 
   for (const auto &pair : _activeTouches) {
@@ -839,7 +854,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   {
     NSSet* touches = [NSSet setWithObject:event];
-    [self _registerTouches:touches withEvent:event];
+    [self _registerTouches:touches withEvent:event]; // [macOS]
     [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
     if (self.state == NSGestureRecognizerStatePossible) {
@@ -856,7 +871,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   {
     NSSet* touches = [NSSet setWithObject:event];
-		[self _registerTouches:touches withEvent:event];
+		[self _registerTouches:touches withEvent:event]; // [macOS]
     [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchStart];
 
     if (self.state == NSGestureRecognizerStatePossible) {
@@ -872,7 +887,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [super mouseDragged:event];
 
   NSSet* touches = [NSSet setWithObject:event];
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event]; // [macOS]
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchMove];
 
   self.state = NSGestureRecognizerStateChanged;
@@ -883,7 +898,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [super rightMouseDragged:event];
 
   NSSet* touches = [NSSet setWithObject:event];
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event]; // [macOS]
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchMove];
 
   self.state = NSGestureRecognizerStateChanged;
@@ -894,7 +909,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [super mouseUp:event];
 
   NSSet* touches = [NSSet setWithObject:event];
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event]; // [macOS]
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchEnd];
   [self _unregisterTouches:touches];
 
@@ -906,7 +921,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [super rightMouseUp:event];
 
   NSSet* touches = [NSSet setWithObject:event];
-  [self _updateTouches:touches];
+  [self _updateTouches:touches withEvent:event]; // [macOS]
   [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches] eventType:RCTTouchEventTypeTouchEnd];
   [self _unregisterTouches:touches];
 
@@ -978,14 +993,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [self setEnabled:YES];
 }
 
+#if !TARGET_OS_OSX
 - (void)hovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
 {
-  UIView *listenerView = recognizer.view;
+  RCTUIView *listenerView = recognizer.view; // [macOS]
   CGPoint clientLocation = [recognizer locationInView:listenerView];
   CGPoint screenLocation = [listenerView convertPoint:clientLocation
                                     toCoordinateSpace:listenerView.window.screen.coordinateSpace];
 
-  UIView *targetView = [listenerView hitTest:clientLocation withEvent:nil];
+  RCTUIView *targetView = [listenerView hitTest:clientLocation withEvent:nil]; // [macOS]
   targetView = FindClosestFabricManagedTouchableView(targetView);
 
   CGPoint offsetLocation = [recognizer locationInView:targetView];
@@ -1008,6 +1024,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     eventEmitter->onPointerMove(event);
   }
 }
+#endif
 
 /**
  * Private method which is used for tracking the location of pointer events to manage the entering/leaving events.
@@ -1017,8 +1034,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
  * the event indicates that the pointer has left the screen entirely), and a block/callback where the underlying event
  * should be fired.
  */
+#if !TARGET_OS_OSX
 - (NSOrderedSet<RCTReactTaggedView *> *)handleIncomingPointerEvent:(PointerEvent)event
-                                                            onView:(nullable UIView *)targetView
+                                                            onView:(nullable RCTUIView *)targetView // [macOS]
 {
   int pointerId = event.pointerId;
   CGPoint clientLocation = CGPointMake(event.clientPoint.x, event.clientPoint.y);
@@ -1031,7 +1049,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   RCTReactTaggedView *targetTaggedView = [RCTReactTaggedView wrap:targetView];
   RCTReactTaggedView *prevTargetTaggedView = [currentlyHoveredViews firstObject];
-  UIView *prevTargetView = prevTargetTaggedView.view;
+  RCTUIView *prevTargetView = prevTargetTaggedView.view; // [macOS]
 
   NSOrderedSet<RCTReactTaggedView *> *eventPathViews = GetTouchableViewsInPathToRoot(targetView);
 
@@ -1051,11 +1069,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
   // so we first iterate from the root to the target, collecting the views which need events fired for, of which
   // we reverse iterate (now from target to root), actually emitting the events.
-  NSMutableOrderedSet<UIView *> *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet];
+  NSMutableOrderedSet<RCTUIView *> *viewsToEmitLeaveEventsTo = [NSMutableOrderedSet orderedSet]; // [macOS]
 
   BOOL hasParentLeaveListener = NO;
   for (RCTReactTaggedView *taggedView in [currentlyHoveredViews reverseObjectEnumerator]) {
-    UIView *componentView = taggedView.view;
+    RCTUIView *componentView = taggedView.view; // [macOS]
 
     BOOL shouldEmitEvent = componentView != nil &&
         (hasParentLeaveListener || IsViewListeningToEvent(taggedView, ViewEvents::Offset::PointerLeave));
@@ -1069,7 +1087,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     }
   }
 
-  for (UIView *componentView in [viewsToEmitLeaveEventsTo reverseObjectEnumerator]) {
+  for (RCTUIView *componentView in [viewsToEmitLeaveEventsTo reverseObjectEnumerator]) { // [macOS]
     SharedTouchEventEmitter eventEmitter =
         GetTouchEmitterFromView(componentView, [_rootComponentView convertPoint:clientLocation toView:componentView]);
     if (eventEmitter != nil) {
@@ -1096,7 +1114,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // of events we send to JS
   BOOL hasParentEnterListener = NO;
   for (RCTReactTaggedView *taggedView in [eventPathViews reverseObjectEnumerator]) {
-    UIView *componentView = taggedView.view;
+    RCTUIView *componentView = taggedView.view; // [macOS]
 
     BOOL shouldEmitEvent = componentView != nil &&
         (hasParentEnterListener || IsViewListeningToEvent(taggedView, ViewEvents::Offset::PointerEnter));
@@ -1118,5 +1136,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   return eventPathViews;
 }
+#endif
 
 @end

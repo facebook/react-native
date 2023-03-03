@@ -86,7 +86,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
 
 inline static RCTUIColor *RCTEffectiveForegroundColorFromTextAttributes(const TextAttributes &textAttributes) // [macOS]
 {
-  RCTUIColor *effectiveForegroundColor = RCTUIColorFromSharedColor(textAttributes.foregroundColor) ?: [RCTUIColor blackColor]; // [macOS]
+  RCTUIColor *effectiveForegroundColor = RCTUIColorFromSharedColor(textAttributes.foregroundColor) ? RCTUIColorFromSharedColor(textAttributes.foregroundColor) : [RCTUIColor blackColor]; // [macOS]
 
   if (!isnan(textAttributes.opacity)) {
     effectiveForegroundColor = [effectiveForegroundColor
@@ -105,7 +105,7 @@ inline static RCTUIColor *RCTEffectiveBackgroundColorFromTextAttributes(const Te
         colorWithAlphaComponent:CGColorGetAlpha(effectiveBackgroundColor.CGColor) * textAttributes.opacity];
   }
 
-  return effectiveBackgroundColor ?: [RCTUIColor clearColor]; // [macOS]
+  return effectiveBackgroundColor ? effectiveBackgroundColor : [RCTUIColor clearColor]; // [macOS]
 }
 
 NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
@@ -341,8 +341,9 @@ static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
                             if (!font) {
                               return;
                             }
-
+#if !TARGET_OS_OSX // [macOS]
                             maximumFontLineHeight = MAX(font.lineHeight, maximumFontLineHeight);
+#endif // [macOS]
                           }];
 
   if (maximumLineHeight < maximumFontLineHeight) {

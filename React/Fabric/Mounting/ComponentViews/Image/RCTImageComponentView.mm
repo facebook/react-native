@@ -40,12 +40,7 @@ using namespace facebook::react;
 
     _imageResponseObserverProxy = RCTImageResponseObserverProxy(self);
 
-#if !TARGET_OS_OSX // [macOS]
     self.contentView = _imageView;
-#else // [macOS
-    self.contentView = [RCTUIView new];
-    [self.contentView addSubview:_imageView];
-#endif // macOS]
   }
 
   return self;

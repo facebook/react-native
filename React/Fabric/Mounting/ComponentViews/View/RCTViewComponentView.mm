@@ -51,7 +51,11 @@ using namespace facebook::react;
   return _props;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)setContentView:(RCTUIView *)contentView // [macOS]
+#else // [macOS
+- (void)setContentView:(RCTPlatformView *)contentView // [macOS]
+#endif // macOS]
 {
   if (_contentView) {
     [_contentView removeFromSuperview];
@@ -60,8 +64,11 @@ using namespace facebook::react;
   _contentView = contentView;
 
   if (_contentView) {
-    [self addSubview:_contentView];
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+#if TARGET_OS_OSX // [macOS
+    _contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+#endif // macOS]
+    [self addSubview:_contentView];
   }
 }
 

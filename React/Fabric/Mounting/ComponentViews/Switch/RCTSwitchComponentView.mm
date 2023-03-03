@@ -36,14 +36,12 @@ using namespace facebook::react;
 
 #if !TARGET_OS_OSX // [macOS]
     [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
-#endif // [macOS]
-
-#if !TARGET_OS_OSX // [macOS]
-    self.contentView = _switchView;
 #else // [macOS
-    self.contentView = [[RCTUIView alloc] initWithFrame:frame];
-    [self.contentView addSubview:_switchView];
+    [_switchView setTarget:self];
+    [_switchView setAction:@selector(onChange:)];
 #endif // macOS]
+
+    self.contentView = _switchView;
   }
 
   return self;
