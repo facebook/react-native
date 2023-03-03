@@ -7,6 +7,7 @@
  * @format
  */
 
+import {Animated} from '../Animated/Animated';
 import {ImageResizeMode} from '../Image/ImageResizeMode';
 import {ColorValue} from './StyleSheet';
 
@@ -16,6 +17,15 @@ type FlexAlignType =
   | 'center'
   | 'stretch'
   | 'baseline';
+
+type DimensionValue =
+  | number
+  | 'auto'
+  | `${number}%`
+  | Animated.AnimatedNode
+  | null;
+type AnimatableNumericValue = number | Animated.AnimatedNode;
+type AnimatableStringValue = number | Animated.AnimatedNode;
 
 /**
  * Flex Prop Types
@@ -35,17 +45,17 @@ export interface FlexStyle {
   alignSelf?: 'auto' | FlexAlignType | undefined;
   aspectRatio?: number | string | undefined;
   borderBottomWidth?: number | undefined;
-  borderEndWidth?: number | string | undefined;
+  borderEndWidth?: number | undefined;
   borderLeftWidth?: number | undefined;
   borderRightWidth?: number | undefined;
-  borderStartWidth?: number | string | undefined;
+  borderStartWidth?: number | undefined;
   borderTopWidth?: number | undefined;
   borderWidth?: number | undefined;
-  bottom?: number | string | undefined;
+  bottom?: DimensionValue | undefined;
   display?: 'none' | 'flex' | undefined;
-  end?: number | string | undefined;
+  end?: DimensionValue | undefined;
   flex?: number | undefined;
-  flexBasis?: number | string | undefined;
+  flexBasis?: DimensionValue | undefined;
   flexDirection?:
     | 'row'
     | 'column'
@@ -58,14 +68,14 @@ export interface FlexStyle {
   flexGrow?: number | undefined;
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
-  height?: number | string | undefined;
-  inset?: number | string | undefined;
-  insetBlock?: number | string | undefined;
-  insetBlockEnd?: number | string | undefined;
-  insetBlockStart?: number | string | undefined;
-  insetInline?: number | string | undefined;
-  insetInlineEnd?: number | string | undefined;
-  insetInlineStart?: number | string | undefined;
+  height?: DimensionValue | undefined;
+  inset?: DimensionValue | undefined;
+  insetBlock?: DimensionValue | undefined;
+  insetBlockEnd?: DimensionValue | undefined;
+  insetBlockStart?: DimensionValue | undefined;
+  insetInline?: DimensionValue | undefined;
+  insetInlineEnd?: DimensionValue | undefined;
+  insetInlineStart?: DimensionValue | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -74,47 +84,47 @@ export interface FlexStyle {
     | 'space-around'
     | 'space-evenly'
     | undefined;
-  left?: number | string | undefined;
-  margin?: number | string | undefined;
-  marginBlock?: number | string | undefined;
-  marginBlockEnd?: number | string | undefined;
-  marginBlockStart?: number | string | undefined;
-  marginBottom?: number | string | undefined;
-  marginEnd?: number | string | undefined;
-  marginHorizontal?: number | string | undefined;
-  marginInline?: number | string | undefined;
-  marginInlineEnd?: number | string | undefined;
-  marginInlineStart?: number | string | undefined;
-  marginLeft?: number | string | undefined;
-  marginRight?: number | string | undefined;
-  marginStart?: number | string | undefined;
-  marginTop?: number | string | undefined;
-  marginVertical?: number | string | undefined;
-  maxHeight?: number | string | undefined;
-  maxWidth?: number | string | undefined;
-  minHeight?: number | string | undefined;
-  minWidth?: number | string | undefined;
+  left?: DimensionValue | undefined;
+  margin?: DimensionValue | undefined;
+  marginBlock?: DimensionValue | undefined;
+  marginBlockEnd?: DimensionValue | undefined;
+  marginBlockStart?: DimensionValue | undefined;
+  marginBottom?: DimensionValue | undefined;
+  marginEnd?: DimensionValue | undefined;
+  marginHorizontal?: DimensionValue | undefined;
+  marginInline?: DimensionValue | undefined;
+  marginInlineEnd?: DimensionValue | undefined;
+  marginInlineStart?: DimensionValue | undefined;
+  marginLeft?: DimensionValue | undefined;
+  marginRight?: DimensionValue | undefined;
+  marginStart?: DimensionValue | undefined;
+  marginTop?: DimensionValue | undefined;
+  marginVertical?: DimensionValue | undefined;
+  maxHeight?: DimensionValue | undefined;
+  maxWidth?: DimensionValue | undefined;
+  minHeight?: DimensionValue | undefined;
+  minWidth?: DimensionValue | undefined;
   overflow?: 'visible' | 'hidden' | 'scroll' | undefined;
-  padding?: number | string | undefined;
-  paddingBottom?: number | string | undefined;
-  paddingBlock?: number | string | undefined;
-  paddingBlockEnd?: number | string | undefined;
-  paddingBlockStart?: number | string | undefined;
-  paddingEnd?: number | string | undefined;
-  paddingHorizontal?: number | string | undefined;
-  paddingInline?: number | string | undefined;
-  paddingInlineEnd?: number | string | undefined;
-  paddingInlineStart?: number | string | undefined;
-  paddingLeft?: number | string | undefined;
-  paddingRight?: number | string | undefined;
-  paddingStart?: number | string | undefined;
-  paddingTop?: number | string | undefined;
-  paddingVertical?: number | string | undefined;
+  padding?: DimensionValue | undefined;
+  paddingBottom?: DimensionValue | undefined;
+  paddingBlock?: DimensionValue | undefined;
+  paddingBlockEnd?: DimensionValue | undefined;
+  paddingBlockStart?: DimensionValue | undefined;
+  paddingEnd?: DimensionValue | undefined;
+  paddingHorizontal?: DimensionValue | undefined;
+  paddingInline?: DimensionValue | undefined;
+  paddingInlineEnd?: DimensionValue | undefined;
+  paddingInlineStart?: DimensionValue | undefined;
+  paddingLeft?: DimensionValue | undefined;
+  paddingRight?: DimensionValue | undefined;
+  paddingStart?: DimensionValue | undefined;
+  paddingTop?: DimensionValue | undefined;
+  paddingVertical?: DimensionValue | undefined;
   position?: 'absolute' | 'relative' | undefined;
-  right?: number | string | undefined;
-  start?: number | string | undefined;
-  top?: number | string | undefined;
-  width?: number | string | undefined;
+  right?: DimensionValue | undefined;
+  start?: DimensionValue | undefined;
+  top?: DimensionValue | undefined;
+  width?: DimensionValue | undefined;
   zIndex?: number | undefined;
 
   /**
@@ -125,61 +135,61 @@ export interface FlexStyle {
 
 export interface ShadowStyleIOS {
   shadowColor?: ColorValue | undefined;
-  shadowOffset?: {width: number; height: number} | undefined;
-  shadowOpacity?: number | undefined;
+  shadowOffset?: Readonly<{width: number; height: number}> | undefined;
+  shadowOpacity?: AnimatableNumericValue | undefined;
   shadowRadius?: number | undefined;
 }
 
 interface PerpectiveTransform {
-  perspective: number;
+  perspective: AnimatableNumericValue;
 }
 
 interface RotateTransform {
-  rotate: string;
+  rotate: AnimatableStringValue;
 }
 
 interface RotateXTransform {
-  rotateX: string;
+  rotateX: AnimatableStringValue;
 }
 
 interface RotateYTransform {
-  rotateY: string;
+  rotateY: AnimatableStringValue;
 }
 
 interface RotateZTransform {
-  rotateZ: string;
+  rotateZ: AnimatableStringValue;
 }
 
 interface ScaleTransform {
-  scale: number;
+  scale: AnimatableNumericValue;
 }
 
 interface ScaleXTransform {
-  scaleX: number;
+  scaleX: AnimatableNumericValue;
 }
 
 interface ScaleYTransform {
-  scaleY: number;
+  scaleY: AnimatableNumericValue;
 }
 
 interface TranslateXTransform {
-  translateX: number;
+  translateX: AnimatableNumericValue;
 }
 
 interface TranslateYTransform {
-  translateY: number;
+  translateY: AnimatableNumericValue;
 }
 
 interface SkewXTransform {
-  skewX: string;
+  skewX: AnimatableStringValue;
 }
 
 interface SkewYTransform {
-  skewY: string;
+  skewY: AnimatableStringValue;
 }
 
 interface MatrixTransform {
-  matrix: number[];
+  matrix: AnimatableNumericValue[];
 }
 
 export interface TransformsStyle {
@@ -207,23 +217,23 @@ export interface TransformsStyle {
   /**
    * @deprecated Use rotate in transform prop instead.
    */
-  rotation?: number | undefined;
+  rotation?: AnimatableNumericValue | undefined;
   /**
    * @deprecated Use scaleX in transform prop instead.
    */
-  scaleX?: number | undefined;
+  scaleX?: AnimatableNumericValue | undefined;
   /**
    * @deprecated Use scaleY in transform prop instead.
    */
-  scaleY?: number | undefined;
+  scaleY?: AnimatableNumericValue | undefined;
   /**
    * @deprecated Use translateX in transform prop instead.
    */
-  translateX?: number | undefined;
+  translateX?: AnimatableNumericValue | undefined;
   /**
    * @deprecated Use translateY in transform prop instead.
    */
-  translateY?: number | undefined;
+  translateY?: AnimatableNumericValue | undefined;
 }
 
 /**
@@ -236,11 +246,10 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBlockEndColor?: ColorValue | undefined;
   borderBlockStartColor?: ColorValue | undefined;
   borderBottomColor?: ColorValue | undefined;
-  borderBottomEndRadius?: number | undefined;
-  borderBottomLeftRadius?: number | undefined;
-  borderBottomRightRadius?: number | undefined;
-  borderBottomStartRadius?: number | undefined;
-  borderBottomWidth?: number | undefined;
+  borderBottomEndRadius?: AnimatableNumericValue | undefined;
+  borderBottomLeftRadius?: AnimatableNumericValue | undefined;
+  borderBottomRightRadius?: AnimatableNumericValue | undefined;
+  borderBottomStartRadius?: AnimatableNumericValue | undefined;
   borderColor?: ColorValue | undefined;
   /**
    * On iOS 13+, it is possible to change the corner curve of borders.
@@ -248,25 +257,21 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    */
   borderCurve?: 'circular' | 'continuous' | undefined;
   borderEndColor?: ColorValue | undefined;
-  borderEndEndRadius?: number | undefined;
-  borderEndStartRadius?: number | undefined;
+  borderEndEndRadius?: AnimatableNumericValue | undefined;
+  borderEndStartRadius?: AnimatableNumericValue | undefined;
   borderLeftColor?: ColorValue | undefined;
-  borderLeftWidth?: number | undefined;
-  borderRadius?: number | undefined;
+  borderRadius?: AnimatableNumericValue | undefined;
   borderRightColor?: ColorValue | undefined;
-  borderRightWidth?: number | undefined;
   borderStartColor?: ColorValue | undefined;
-  borderStartEndRadius?: number | undefined;
-  borderStartStartRadius?: number | undefined;
+  borderStartEndRadius?: AnimatableNumericValue | undefined;
+  borderStartStartRadius?: AnimatableNumericValue | undefined;
   borderStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
   borderTopColor?: ColorValue | undefined;
-  borderTopEndRadius?: number | undefined;
-  borderTopLeftRadius?: number | undefined;
-  borderTopRightRadius?: number | undefined;
-  borderTopStartRadius?: number | undefined;
-  borderTopWidth?: number | undefined;
-  borderWidth?: number | undefined;
-  opacity?: number | undefined;
+  borderTopEndRadius?: AnimatableNumericValue | undefined;
+  borderTopLeftRadius?: AnimatableNumericValue | undefined;
+  borderTopRightRadius?: AnimatableNumericValue | undefined;
+  borderTopStartRadius?: AnimatableNumericValue | undefined;
+  opacity?: AnimatableNumericValue | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).
@@ -290,7 +295,6 @@ export type FontVariant =
   | 'proportional-nums';
 export interface TextStyleIOS extends ViewStyle {
   fontVariant?: FontVariant[] | undefined;
-  letterSpacing?: number | undefined;
   textDecorationColor?: ColorValue | undefined;
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed' | undefined;
   writingDirection?: 'auto' | 'ltr' | 'rtl' | undefined;
@@ -351,17 +355,16 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
 export interface ImageStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   resizeMode?: ImageResizeMode | undefined;
   backfaceVisibility?: 'visible' | 'hidden' | undefined;
-  borderBottomLeftRadius?: number | undefined;
-  borderBottomRightRadius?: number | undefined;
+  borderBottomLeftRadius?: AnimatableNumericValue | undefined;
+  borderBottomRightRadius?: AnimatableNumericValue | undefined;
   backgroundColor?: ColorValue | undefined;
   borderColor?: ColorValue | undefined;
-  borderWidth?: number | undefined;
-  borderRadius?: number | undefined;
-  borderTopLeftRadius?: number | undefined;
-  borderTopRightRadius?: number | undefined;
+  borderRadius?: AnimatableNumericValue | undefined;
+  borderTopLeftRadius?: AnimatableNumericValue | undefined;
+  borderTopRightRadius?: AnimatableNumericValue | undefined;
   overflow?: 'visible' | 'hidden' | undefined;
   overlayColor?: ColorValue | undefined;
   tintColor?: ColorValue | undefined;
-  opacity?: number | undefined;
+  opacity?: AnimatableNumericValue | undefined;
   objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | undefined;
 }

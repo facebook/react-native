@@ -992,12 +992,15 @@ static NSString *RCTSemanticColorNames()
     if ([s isEqualToString:@"auto"]) {
       return (YGValue){YGUndefined, YGUnitAuto};
     } else if ([s hasSuffix:@"%"]) {
-      return (YGValue){[[s substringToIndex:s.length] floatValue], YGUnitPercent};
+      float floatValue;
+      if ([[NSScanner scannerWithString:s] scanFloat:&floatValue]) {
+        return (YGValue){floatValue, YGUnitPercent};
+      }
     } else {
-      RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
+      RCTLogAdvice(
+          @"\"%@\" is not a valid dimension. Dimensions must be a number, \"auto\", or a string suffixed with \"%%\".",
+          s);
     }
-  } else {
-    RCTLogConvertError(json, @"a YGValue.");
   }
   return YGValueUndefined;
 }
