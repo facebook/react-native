@@ -16,7 +16,9 @@
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED
+#ifndef RN_FABRIC_ENABLED
 #define RN_FABRIC_ENABLED
+#endif
 #endif
 
 #if RCT_USE_HERMES
@@ -51,6 +53,7 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
@@ -117,6 +120,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
                                                                        moduleName:@"RNTesterApp"
                                                                 initialProperties:initProps];
+
+  [self registerPaperComponents:@[ @"RNTMyLegacyNativeView" ]];
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif
@@ -127,6 +132,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [self initializeFlipper:application];
+
   return YES;
 }
 
@@ -253,24 +259,32 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
           return @[ [RCTLocalAssetImageLoader new] ];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
           return @[ [RCTGIFImageDecoder new] ];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc]
-        initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
-            [RCTHTTPRequestHandler new],
-            [RCTDataRequestHandler new],
-            [RCTFileRequestHandler new],
-          ];
-        }];
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *) {
+      return @[
+        [RCTHTTPRequestHandler new],
+        [RCTDataRequestHandler new],
+        [RCTFileRequestHandler new],
+      ];
+    }];
   }
   // No custom initializer here.
   return [moduleClass new];
+}
+
+#pragma mark - Interop layer
+
+- (void)registerPaperComponents:(NSArray<NSString *> *)components
+{
+  for (NSString *component in components) {
+    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:component];
+  }
 }
 
 #pragma mark - Push Notifications
