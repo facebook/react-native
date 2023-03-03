@@ -10,12 +10,15 @@
  */
 
 'use strict';
+import type ReactNativeStartupTiming from '../../../../../Libraries/WebPerformance/ReactNativeStartupTiming';
 
 import * as React from 'react';
 import {StyleSheet, View, Text, Button} from 'react-native';
 import RNTesterPage from '../../components/RNTesterPage';
+import Performance from '../../../../../Libraries/WebPerformance/Performance';
 
-const {useState} = React;
+const {useState, useCallback} = React;
+const performance = new Performance();
 
 function MemoryExample(): React.Node {
   // Memory API testing
@@ -24,13 +27,13 @@ function MemoryExample(): React.Node {
     totalJSHeapSize?: ?number,
     usedJSHeapSize?: ?number,
   }>({});
-  const onGetMemoryInfo = () => {
+  const onGetMemoryInfo = useCallback(() => {
     // performance.memory is not included in bom.js yet.
     // Once we release the change in flow this can be removed.
     // $FlowFixMe[prop-missing]
     // $FlowFixMe[incompatible-call]
     setMemoryInfo(performance.memory);
-  };
+  }, []);
   return (
     <RNTesterPage noSpacer={true} noScroll={true} title="performance.memory">
       <View style={styles.container}>
@@ -63,6 +66,52 @@ function MemoryExample(): React.Node {
   );
 }
 
+function StartupTimingExample(): React.Node {
+  // React Startup Timing API testing
+  const [startUpTiming, setStartUpTiming] =
+    useState<?ReactNativeStartupTiming>(null);
+  const onGetStartupTiming = useCallback(() => {
+    // performance.reactNativeStartupTiming is not included in bom.js yet.
+    // Once we release the change in flow this can be removed.
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-call]
+    setStartUpTiming(performance.reactNativeStartupTiming);
+  }, []);
+  return (
+    <RNTesterPage
+      noSpacer={true}
+      noScroll={true}
+      title="performance.reactNativeStartupTiming">
+      <View style={styles.container}>
+        <Button
+          onPress={onGetStartupTiming}
+          title="Click to update React startup timing"
+        />
+        <View>
+          <Text>{`startTime: ${
+            startUpTiming == null ? 'N/A' : startUpTiming.startTime
+          } ms`}</Text>
+          <Text>
+            {`executeJavaScriptBundleEntryPointStart: ${
+              startUpTiming == null
+                ? 'N/A'
+                : startUpTiming.executeJavaScriptBundleEntryPointStart
+            } ms`}
+          </Text>
+          <Text>{`executeJavaScriptBundleEntryPointEnd: ${
+            startUpTiming == null
+              ? 'N/A'
+              : startUpTiming.executeJavaScriptBundleEntryPointEnd
+          } ms`}</Text>
+          <Text>{`endTime: ${
+            startUpTiming == null ? 'N/A' : startUpTiming.endTime
+          } ms`}</Text>
+        </View>
+      </View>
+    </RNTesterPage>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     padding: 10,
@@ -77,6 +126,12 @@ exports.examples = [
     title: 'performance.memory',
     render: function (): React.Element<typeof MemoryExample> {
       return <MemoryExample />;
+    },
+  },
+  {
+    title: 'performance.reactNativeStartupTiming',
+    render: function (): React.Element<typeof StartupTimingExample> {
+      return <StartupTimingExample />;
     },
   },
 ];

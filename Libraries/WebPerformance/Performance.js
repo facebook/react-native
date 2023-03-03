@@ -25,6 +25,7 @@ import {
   rawToPerformanceEntry,
 } from './RawPerformanceEntry';
 import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
+import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 
 type DetailType = mixed;
 
@@ -125,6 +126,16 @@ export default class Performance {
     }
 
     return new MemoryInfo();
+  }
+
+  // Startup metrics is not used in web, but only in React Native.
+  get reactNativeStartupTiming(): ReactNativeStartupTiming {
+    if (NativePerformance?.getReactNativeStartupTiming) {
+      return new ReactNativeStartupTiming(
+        NativePerformance.getReactNativeStartupTiming(),
+      );
+    }
+    return new ReactNativeStartupTiming();
   }
 
   mark(

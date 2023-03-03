@@ -17,8 +17,8 @@ namespace react {
 void JReactMarker::setLogPerfMarkerIfNeeded() {
   static std::once_flag flag{};
   std::call_once(flag, []() {
-    ReactMarker::logTaggedMarker = JReactMarker::logPerfMarker;
-    ReactMarker::logTaggedMarkerBridgeless =
+    ReactMarker::logTaggedMarkerImpl = JReactMarker::logPerfMarker;
+    ReactMarker::logTaggedMarkerBridgelessImpl =
         JReactMarker::logPerfMarkerBridgeless;
   });
 }

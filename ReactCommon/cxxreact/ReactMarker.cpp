@@ -6,6 +6,7 @@
  */
 
 #include "ReactMarker.h"
+#include <cxxreact/JSExecutor.h>
 
 namespace facebook {
 namespace react {
@@ -16,8 +17,9 @@ namespace ReactMarker {
 #pragma clang diagnostic ignored "-Wglobal-constructors"
 #endif
 
-LogTaggedMarker logTaggedMarker = nullptr;
-LogTaggedMarker logTaggedMarkerBridgeless = nullptr;
+LogTaggedMarker logTaggedMarkerImpl = nullptr;
+LogTaggedMarker logTaggedMarkerBridgelessImpl = nullptr;
+GetAppStartTime getAppStartTimeImpl = nullptr;
 
 #if __clang__
 #pragma clang diagnostic pop
@@ -27,8 +29,50 @@ void logMarker(const ReactMarkerId markerId) {
   logTaggedMarker(markerId, nullptr);
 }
 
+void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
+  StartupLogger::getInstance().logStartupEvent(markerId, tag);
+  logTaggedMarkerImpl(markerId, tag);
+}
+
 void logMarkerBridgeless(const ReactMarkerId markerId) {
   logTaggedMarkerBridgeless(markerId, nullptr);
+}
+
+void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
+  StartupLogger::getInstance().logStartupEvent(markerId, tag);
+  logTaggedMarkerBridgelessImpl(markerId, tag);
+}
+
+double getAppStartTime() {
+  if (getAppStartTimeImpl == nullptr) {
+    return 0;
+  }
+
+  return getAppStartTimeImpl();
+}
+
+StartupLogger &StartupLogger::getInstance() {
+  static StartupLogger instance;
+  return instance;
+}
+
+void StartupLogger::logStartupEvent(
+    const ReactMarkerId markerId,
+    const char *tag) {
+  if (startupStopped) {
+    return;
+  }
+
+  if (markerId == ReactMarkerId::RUN_JS_BUNDLE_START ||
+      markerId == ReactMarkerId::RUN_JS_BUNDLE_STOP) {
+    startupReactMarkers.push_back(
+        {markerId, tag, JSExecutor::performanceNow()});
+    startupStopped = markerId == ReactMarkerId::RUN_JS_BUNDLE_STOP;
+  }
+}
+
+std::vector<ReactMarkerEvent> StartupLogger::getStartupReactMarkers() {
+  return startupReactMarkers;
 }
 
 } // namespace ReactMarker
