@@ -64,6 +64,9 @@ def use_react_native! (
   ios_folder: 'ios'
 )
 
+  # Set the app_path as env variable so the podspecs can access it.
+  ENV['APP_PATH'] = app_path
+
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
