@@ -33,7 +33,7 @@
 /**
  * Denotes a view which implements custom pull to refresh functionality.
  */
-@protocol RCTCustomRefreshContolProtocol
+@protocol RCTCustomRefreshControlProtocol
 
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 @property (nonatomic, readonly, getter=isRefreshing) BOOL refreshing;
