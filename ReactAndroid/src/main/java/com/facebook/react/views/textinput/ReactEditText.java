@@ -477,7 +477,13 @@ public class ReactEditText extends AppCompatEditText
      * href='https://android.googlesource.com/platform/frameworks/base/+/jb-release/core/java/android/widget/TextView.java'>TextView.java</a>}
      */
     if (isMultiline()) {
+      // we save max lines as setSingleLines overwrites it
+      // https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/widget/TextView.java#10671
+      int maxLines = getMaxLines();
       setSingleLine(false);
+      if (maxLines != -1) {
+        setMaxLines(maxLines);
+      }
     }
 
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware

@@ -41,9 +41,9 @@ public final class ReactTextInputLocalData {
   public void apply(EditText editText) {
     editText.setText(mText);
     editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize);
+    editText.setInputType(mInputType);
     editText.setMinLines(mMinLines);
     editText.setMaxLines(mMaxLines);
-    editText.setInputType(mInputType);
     editText.setHint(mPlaceholder);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       editText.setBreakStrategy(mBreakStrategy);
