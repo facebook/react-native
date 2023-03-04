@@ -112,7 +112,7 @@ export type PressabilityConfig = $ReadOnly<{|
   onLongPress?: ?(event: PressEvent) => mixed,
 
   /**
-   * Called when a press gestute has been triggered.
+   * Called when a press gesture has been triggered.
    */
   onPress?: ?(event: PressEvent) => mixed,
 

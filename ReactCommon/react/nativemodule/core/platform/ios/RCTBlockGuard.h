@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * RCTBlockGuard is designed to be used with obj-c blocks to assist with manual deallocation of C++ resources
  * tied to lifetime of a block. If C++ resources needs to be manually released at the end of block or when the block
- * is deallocated, place the clean up code inside constructor and make sure the instace of the class is references in
+ * is deallocated, place the clean up code inside constructor and make sure the instance of the class is references in
  * the block.
  */
 @interface RCTBlockGuard : NSObject
