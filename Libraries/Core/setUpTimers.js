@@ -63,7 +63,6 @@ if (global.RN$Bridgeless !== true) {
 if (hasPromiseQueuedToJSVM) {
   // When promise queues to the JSVM microtasks queue, we shim the immedaite
   // APIs via `queueMicrotask` to maintain the backward compatibility.
-  
   polyfillGlobal(
     'setImmediate',
     () => require('./Timers/immediateShim').setImmediate,
