@@ -67,7 +67,9 @@ RCT_TEST(AppEventsTest)
 // RCT_TEST(ImageCachePolicyTest) // This test never passed.
 // RCT_TEST(ImageSnapshotTest)
 // RCT_TEST(LayoutEventsTest) // Disabled due to flakiness: #8686784
+#if !TARGET_OS_OSX // [macOS] Github #1739: Disable these failing tests
 RCT_TEST(SimpleSnapshotTest)
+#endif // [macOS]
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh

@@ -40,6 +40,7 @@
     [_runner runTest:_cmd module:@ #name]; \
   }
 
+#if !TARGET_OS_OSX // [macOS] Github #1739: Disable these failing tests
 RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ScrollViewExample)
@@ -48,6 +49,7 @@ RCT_TEST(TextExample)
 // No switch available on tvOS
 RCT_TEST(SwitchExample)
 #endif
+#endif // [macOS]
 
 - (void)testZZZNotInRecordMode
 {
