@@ -43,6 +43,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   RCT_RUN_RUNLOOP_WHILE(_bridge.isLoading);
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)testShowCreatingActionSheet
 {
   XCTAssertFalse([_bridge.devMenu isActionSheetShown]);
@@ -50,7 +51,6 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
   XCTAssertTrue([_bridge.devMenu isActionSheetShown]);
 }
 
-#if !TARGET_OS_OSX // [macOS]
 - (void)testClosingActionSheetAfterAction
 {
   for (RCTDevMenuItem *item in _bridge.devMenu.presentedItems) {

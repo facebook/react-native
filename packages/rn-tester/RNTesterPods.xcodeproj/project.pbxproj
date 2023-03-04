@@ -61,6 +61,7 @@
 		ACC52F6C299ECDDA002A2B0B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ACC52F6B299ECDDA002A2B0B /* Info.plist */; };
 		ACC52FD129A47474002A2B0B /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
 		ACC52FF829A6C0A3002A2B0B /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
+		ACDBF0D529B2BF0A00EEBD9E /* RNTesterUnitTestsBundle.js in Resources */ = {isa = PBXBuildFile; fileRef = E7DB20B322B2BAA4005AC45F /* RNTesterUnitTestsBundle.js */; };
 		D19DB1AC8A1EBBFA0D14DB66 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B78D39CC03C49968A739B2 /* libPods-RNTester.a */; };
 		DCD006323AC907670B0D60A1 /* libPods-RNTesterUnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D4E0A9AD185CE086FAC9BD09 /* libPods-RNTesterUnitTests.a */; };
 		E7C1241A22BEC44B00DA25C0 /* RNTesterIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */; };
@@ -706,6 +707,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACDBF0D529B2BF0A00EEBD9E /* RNTesterUnitTestsBundle.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

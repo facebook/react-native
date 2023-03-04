@@ -27,6 +27,7 @@ static UIEdgeInsets RCTContentInsetsMock(RCTUIView *view) // [macOS]
 
 @implementation RCTViewTests
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)testAutoAdjustInsetsUpdateOffsetNo
 {
   RCT_MOCK_SET(RCTView, RCTContentInsets, RCTContentInsetsMock);
@@ -44,5 +45,6 @@ static UIEdgeInsets RCTContentInsetsMock(RCTUIView *view) // [macOS]
 
   RCT_MOCK_RESET(RCTView, RCTContentInsets);
 }
+#endif // [macOS]
 
 @end
