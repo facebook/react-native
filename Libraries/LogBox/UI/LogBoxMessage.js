@@ -76,6 +76,7 @@ function TappableLinks(props: {
     fragments.push(
       <Text
         onPress={() => {
+          // $FlowFixMe[unused-promise]
           Linking.openURL(link);
         }}
         key={++indexCounter}
