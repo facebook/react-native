@@ -91,6 +91,7 @@ public class ViewProps {
   public static final String FONT_WEIGHT = "fontWeight";
   public static final String FONT_STYLE = "fontStyle";
   public static final String FONT_VARIANT = "fontVariant";
+  public static final String FONT_VARIATION_SETTINGS = "fontVariationSettings";
   public static final String FONT_FAMILY = "fontFamily";
   public static final String LINE_HEIGHT = "lineHeight";
   public static final String LETTER_SPACING = "letterSpacing";

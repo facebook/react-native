@@ -154,6 +154,7 @@ public class TextLayoutManager {
                   new CustomStyleSpan(
                       textAttributes.mFontStyle,
                       textAttributes.mFontWeight,
+                      textAttributes.mFontVariationSettings,
                       textAttributes.mFontFeatureSettings,
                       textAttributes.mFontFamily,
                       context.getAssets())));

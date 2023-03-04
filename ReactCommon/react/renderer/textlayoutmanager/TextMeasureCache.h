@@ -91,6 +91,7 @@ inline bool areTextAttributesEquivalentLayoutWise(
   // colors).
   return std::tie(
              lhs.fontFamily,
+             lhs.fontVariationSettings,
              lhs.fontWeight,
              lhs.fontStyle,
              lhs.fontVariant,
@@ -99,6 +100,7 @@ inline bool areTextAttributesEquivalentLayoutWise(
              lhs.alignment) ==
       std::tie(
              rhs.fontFamily,
+             rhs.fontVariationSettings,
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
@@ -118,6 +120,7 @@ inline size_t textAttributesHashLayoutWise(
   return folly::hash::hash_combine(
       0,
       textAttributes.fontFamily,
+      textAttributes.fontVariationSettings,
       textAttributes.fontSize,
       textAttributes.fontSizeMultiplier,
       textAttributes.fontWeight,

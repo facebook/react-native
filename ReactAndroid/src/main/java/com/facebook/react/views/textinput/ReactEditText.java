@@ -822,6 +822,7 @@ public class ReactEditText extends AppCompatEditText
               new CustomStyleSpan(
                   mFontStyle,
                   mFontWeight,
+                  "",
                   null, // TODO: do we need to support FontFeatureSettings / fontVariant?
                   mFontFamily,
                   getReactContext(ReactEditText.this).getAssets())));

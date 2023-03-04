@@ -12,7 +12,9 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
+
 import androidx.annotation.Nullable;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -22,6 +24,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +57,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 20;
   public static final short TA_KEY_LAYOUT_DIRECTION = 21;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
+  public static final short TA_KEY_LINE_BREAK_STRATEGY = 23;
+  public static final short TA_KEY_FONT_VARIATION_SETTINGS = 24;
 
   public static final int UNSET = -1;
 
@@ -67,11 +72,11 @@ public class TextAttributeProps {
 
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
   private static final int DEFAULT_JUSTIFICATION_MODE =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+    (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
   private static final int DEFAULT_BREAK_STRATEGY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
   private static final int DEFAULT_HYPHENATION_FREQUENCY =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
+    (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.HYPHENATION_FREQUENCY_NONE;
 
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
@@ -105,6 +110,11 @@ public class TextAttributeProps {
   protected boolean mIsAccessibilityRoleSet = false;
   protected boolean mIsAccessibilityLink = false;
 
+  /**
+   * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
+   */
+  protected String mFontVariationSettings = "";
+
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
   /**
@@ -130,15 +140,19 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
-  /** @see android.graphics.Paint#setFontFeatureSettings */
+  /**
+   * @see android.graphics.Paint#setFontFeatureSettings
+   */
   protected @Nullable String mFontFeatureSettings = null;
-
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
-  private TextAttributeProps() {}
+  private TextAttributeProps() {
+  }
 
-  /** Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter. */
+  /**
+   * Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter.
+   */
   public static TextAttributeProps fromMapBuffer(MapBuffer props) {
     TextAttributeProps result = new TextAttributeProps();
 
@@ -206,6 +220,12 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
           break;
+        case TA_KEY_FONT_VARIATION_SETTINGS:
+          result.setFontVariationSettings(entry.getStringValue());
+          break;
+        case TA_KEY_LINE_BREAK_STRATEGY:
+          // TODO: add line break strategy
+          break;
       }
     }
 
@@ -227,21 +247,22 @@ public class TextAttributeProps {
     result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
-        props.hasKey(ViewProps.FOREGROUND_COLOR)
-            ? props.getInt(ViewProps.FOREGROUND_COLOR, 0)
-            : null);
+      props.hasKey(ViewProps.FOREGROUND_COLOR)
+        ? props.getInt(ViewProps.FOREGROUND_COLOR, 0)
+        : null);
     result.setBackgroundColor(
-        props.hasKey(ViewProps.BACKGROUND_COLOR)
-            ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
-            : null);
+      props.hasKey(ViewProps.BACKGROUND_COLOR)
+        ? props.getInt(ViewProps.BACKGROUND_COLOR, 0)
+        : null);
     result.setFontFamily(getStringProp(props, ViewProps.FONT_FAMILY));
     result.setFontWeight(getStringProp(props, ViewProps.FONT_WEIGHT));
     result.setFontStyle(getStringProp(props, ViewProps.FONT_STYLE));
+    result.setFontVariationSettings(getStringProp(props, ViewProps.FONT_VARIATION_SETTINGS));
     result.setFontVariant(getArrayProp(props, ViewProps.FONT_VARIANT));
     result.setIncludeFontPadding(getBooleanProp(props, ViewProps.INCLUDE_FONT_PADDING, true));
     result.setTextDecorationLine(getStringProp(props, ViewProps.TEXT_DECORATION_LINE));
     result.setTextShadowOffset(
-        props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
+      props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
     result.setTextShadowRadius(getFloatProp(props, PROP_SHADOW_RADIUS, 1));
     result.setTextShadowColor(getIntProp(props, PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
@@ -287,7 +308,7 @@ public class TextAttributeProps {
   }
 
   private static boolean getBooleanProp(
-      ReactStylesDiffMap mProps, String name, boolean defaultValue) {
+    ReactStylesDiffMap mProps, String name, boolean defaultValue) {
     if (mProps.hasKey(name)) {
       return mProps.getBoolean(name, defaultValue);
     } else {
@@ -331,9 +352,9 @@ public class TextAttributeProps {
   // and the height of the inline images.
   public float getEffectiveLineHeight() {
     boolean useInlineViewHeight =
-        !Float.isNaN(mLineHeight)
-            && !Float.isNaN(mHeightOfTallestInlineImage)
-            && mHeightOfTallestInlineImage > mLineHeight;
+      !Float.isNaN(mLineHeight)
+        && !Float.isNaN(mHeightOfTallestInlineImage)
+        && mHeightOfTallestInlineImage > mLineHeight;
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
   }
 
@@ -347,9 +368,9 @@ public class TextAttributeProps {
       mLineHeight = Float.NaN;
     } else {
       mLineHeight =
-          mAllowFontScaling
-              ? PixelUtil.toPixelFromSP(lineHeight)
-              : PixelUtil.toPixelFromDIP(lineHeight);
+        mAllowFontScaling
+          ? PixelUtil.toPixelFromSP(lineHeight)
+          : PixelUtil.toPixelFromDIP(lineHeight);
     }
   }
 
@@ -359,13 +380,13 @@ public class TextAttributeProps {
 
   public float getLetterSpacing() {
     float letterSpacingPixels =
-        mAllowFontScaling
-            ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
-            : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+      mAllowFontScaling
+        ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
+        : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
 
     if (mFontSize <= 0) {
       throw new IllegalArgumentException(
-          "FontSize should be a positive value. Current value: " + mFontSize);
+        "FontSize should be a positive value. Current value: " + mFontSize);
     }
     // `letterSpacingPixels` and `mFontSize` are both in pixels,
     // yielding an accurate em value.
@@ -385,9 +406,9 @@ public class TextAttributeProps {
     mFontSizeInput = fontSize;
     if (fontSize != UNSET) {
       fontSize =
-          mAllowFontScaling
-              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
-              : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+        mAllowFontScaling
+          ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+          : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
   }
@@ -512,6 +533,10 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
+  private void setFontVariationSettings(String fontVariationSettings) {
+    mFontVariationSettings = fontVariationSettings;
+  }
+
   private void setFontWeight(@Nullable String fontWeightString) {
     mFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
@@ -544,14 +569,14 @@ public class TextAttributeProps {
 
     if (offsetMap != null) {
       if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH)
-          && !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+        && !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
         mTextShadowOffsetDx =
-            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
+          PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH));
       }
       if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT)
-          && !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+        && !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
         mTextShadowOffsetDy =
-            PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
+          PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
       }
     }
   }
@@ -606,9 +631,9 @@ public class TextAttributeProps {
     if (accessibilityRole != null) {
       mIsAccessibilityRoleSet = true;
       mAccessibilityRole =
-          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
+        ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
       mIsAccessibilityLink =
-          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
+        mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
     }
   }
 

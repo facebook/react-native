@@ -204,6 +204,24 @@ class TextExample extends React.Component<{...}> {
   render(): React.Node {
     return (
       <RNTesterPage title="<Text>">
+        <RNTesterBlock title="Font Variation Settings">
+          <Text
+            style={{
+              fontFamily: 'MaterialSymbolsSharp',
+              fontVariationSettings: "'wght' 100, 'FILL' 0",
+              fontSize: 64,
+            }}>
+            {String.fromCodePoint(59576)}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'MaterialSymbolsSharp',
+              fontVariationSettings: "'wght' 600, 'FILL' 1",
+              fontSize: 64,
+            }}>
+            {String.fromCodePoint(59576)}
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Dynamic Font Size Adjustment">
           <AdjustingFontSize />
         </RNTesterBlock>

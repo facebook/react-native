@@ -815,6 +815,7 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
   color?: ____ColorValue_Internal,
   fontFamily?: string,
+  fontVariationSettings?: string,
   fontSize?: number,
   fontStyle?: 'normal' | 'italic',
   fontWeight?: ____FontWeight_Internal,

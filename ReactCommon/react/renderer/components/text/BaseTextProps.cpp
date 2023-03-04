@@ -37,6 +37,12 @@ static TextAttributes convertRawProp(
       "fontFamily",
       sourceTextAttributes.fontFamily,
       defaultTextAttributes.fontFamily);
+  textAttributes.fontVariationSettings = convertRawProp(
+      context,
+      rawProps,
+      "fontVariationSettings",
+      sourceTextAttributes.fontVariationSettings,
+      defaultTextAttributes.fontVariationSettings);
   textAttributes.fontSize = convertRawProp(
       context,
       rawProps,
@@ -297,6 +303,8 @@ void BaseTextProps::setProp(
         defaults, value, textAttributes, opacity, "opacity");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, backgroundColor, "backgroundColor");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, fontVariationSettings, "fontVariationSettings");
   }
 }
 

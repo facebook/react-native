@@ -310,6 +310,7 @@ export interface TextStyleAndroid extends ViewStyle {
 export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
   color?: ColorValue | undefined;
   fontFamily?: string | undefined;
+  fontVariationSettings?: string | undefined;
   fontSize?: number | undefined;
   fontStyle?: 'normal' | 'italic' | undefined;
   /**

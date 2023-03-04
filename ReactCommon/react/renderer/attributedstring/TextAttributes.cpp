@@ -31,6 +31,10 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   // Font
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily
                                                   : fontFamily;
+
+  fontVariationSettings = !textAttributes.fontVariationSettings.empty() ? textAttributes.fontVariationSettings
+                                                  : fontVariationSettings;
+
   fontSize =
       !std::isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
   fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
@@ -110,6 +114,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              foregroundColor,
              backgroundColor,
              fontFamily,
+             fontVariationSettings,
              fontWeight,
              fontStyle,
              fontVariant,
@@ -131,6 +136,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.foregroundColor,
              rhs.backgroundColor,
              rhs.fontFamily,
+             rhs.fontVariationSettings,
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
@@ -168,6 +174,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     textAttributes.backgroundColor = clearColor();
     textAttributes.fontSize = 14.0;
     textAttributes.fontSizeMultiplier = 1.0;
+    textAttributes.fontVariationSettings = "";
     return textAttributes;
   }();
   return textAttributes;
@@ -190,6 +197,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("fontWeight", fontWeight),
       debugStringConvertibleItem("fontStyle", fontStyle),
       debugStringConvertibleItem("fontVariant", fontVariant),
+      debugStringConvertibleItem("fontVariationSettings", fontVariationSettings),
       debugStringConvertibleItem("allowFontScaling", allowFontScaling),
       debugStringConvertibleItem("dynamicTypeRamp", dynamicTypeRamp),
       debugStringConvertibleItem("letterSpacing", letterSpacing),

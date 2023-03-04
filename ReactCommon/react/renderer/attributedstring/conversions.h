@@ -962,6 +962,9 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   if (!textAttributes.fontFamily.empty()) {
     _textAttributes("fontFamily", textAttributes.fontFamily);
   }
+  if (!textAttributes.fontVariationSettings.empty()) {
+    _textAttributes("fontVariationSettings", textAttributes.fontVariationSettings);
+  }
   if (!std::isnan(textAttributes.fontSize)) {
     _textAttributes("fontSize", textAttributes.fontSize);
   }
@@ -1110,6 +1113,7 @@ constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
+constexpr static MapBuffer::Key TA_KEY_FONT_VARIATION_SETTINGS = 24;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1176,6 +1180,9 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   }
   if (!textAttributes.fontFamily.empty()) {
     builder.putString(TA_KEY_FONT_FAMILY, textAttributes.fontFamily);
+  }
+  if (!textAttributes.fontVariationSettings.empty()) {
+    builder.putString(TA_KEY_FONT_VARIATION_SETTINGS, textAttributes.fontVariationSettings);
   }
   if (!std::isnan(textAttributes.fontSize)) {
     builder.putDouble(TA_KEY_FONT_SIZE, textAttributes.fontSize);
