@@ -87,6 +87,9 @@ public class ReactFeatureFlags {
   /** Feature flag to configure eager attachment of the root view/initialisation of the JS code */
   public static boolean enableEagerRootViewAttachment = false;
 
+  /** Feature flag to configure synchronized queue access for Animated module */
+  public static boolean enableSynchronizationForAnimated = true;
+
   /* Enables or disables MapBuffer use in Props infrastructure. */
   public static boolean useMapBufferProps = false;
 
