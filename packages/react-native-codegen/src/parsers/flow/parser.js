@@ -18,10 +18,14 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMemberType,
   NativeModuleEnumMembers,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
-import type {TypeDeclarationMap} from '../utils';
+import type {ParserErrorCapturer, TypeDeclarationMap} from '../utils';
+
+const {flowTranslateTypeAnnotation} = require('./modules');
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -256,6 +260,33 @@ class FlowParser implements Parser {
 
   callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
     return callExpression.typeArguments || null;
+  }
+
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe> {
+    return properties.map(prop => {
+      return {
+        name: prop.key.name,
+        optional: true,
+        typeAnnotation: flowTranslateTypeAnnotation(
+          hasteModuleName,
+          prop.value,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          this,
+        ),
+      };
+    });
   }
 }
 

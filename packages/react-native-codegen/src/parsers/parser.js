@@ -18,9 +18,11 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMemberType,
   NativeModuleEnumMembers,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -181,4 +183,25 @@ export interface Parser {
    * @returns: the typeParameters of the callExpression or null if it does not exist.
    */
   callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null;
+
+  /**
+   * Given an array of properties from a Partial type, it returns an array of remaped properties.
+   * @paramater properties: properties from a Partial types.
+   * @parameter hasteModuleName: a string with the native module name.
+   * @paramater types: a map of type declarations.
+   * @paramater aliasMap: a map of type aliases.
+   * @paramater enumMap: a map of type enums.
+   * @paramater tryParse: a parser error capturer.
+   * @paramater cxxOnly: a boolean specifying if the module is Cxx only.
+   * @returns: an array of remaped properties
+   */
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe>;
 }
