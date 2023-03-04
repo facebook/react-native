@@ -64,7 +64,7 @@ if (hasPromiseQueuedToJSVM) {
   // When promise queues to the JSVM microtasks queue, we shim the immedaite
   // APIs via `queueMicrotask` to maintain the backward compatibility.
   
-  fillGlobal(
+  polyfillGlobal(
     'setImmediate',
     () => require('./Timers/immediateShim').setImmediate,
   );
