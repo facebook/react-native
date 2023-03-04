@@ -204,6 +204,8 @@ AndroidTextInputProps::AndroidTextInputProps(
           convertRawProp(context, rawProps, "fontWeight", sourceProps.fontWeight, {})),
       fontFamily(CoreFeatures::enablePropIteratorSetter? sourceProps.fontFamily :
           convertRawProp(context, rawProps, "fontFamily", sourceProps.fontFamily, {})),
+      fontVariationSettings(CoreFeatures::enablePropIteratorSetter? sourceProps.fontVariationSettings :
+          convertRawProp(context, rawProps, "fontVariationSettings", sourceProps.fontVariationSettings, {})),
       textAlignVertical(CoreFeatures::enablePropIteratorSetter? sourceProps.textAlignVertical : convertRawProp(context, rawProps,
           "textAlignVertical",
           sourceProps.textAlignVertical,
@@ -373,6 +375,7 @@ void AndroidTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(includeFontPadding);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontWeight);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fontFamily);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fontVariationSettings);
     RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
@@ -475,6 +478,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["includeFontPadding"] = includeFontPadding;
   props["fontWeight"] = fontWeight;
   props["fontFamily"] = fontFamily;
+  props["fontVariationSettings"] = fontVariationSettings;
   props["textAlignVertical"] = textAlignVertical;
   props["cursorColor"] = toAndroidRepr(cursorColor);
   props["mostRecentEventCount"] = mostRecentEventCount;

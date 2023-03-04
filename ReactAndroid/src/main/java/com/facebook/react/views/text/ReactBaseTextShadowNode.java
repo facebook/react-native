@@ -521,6 +521,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.FONT_WEIGHT)
   public void setFontWeight(@Nullable String fontWeightString) {
+    Log.d("ReactBaseTextShadowNode", "Font weight: " + fontWeightString);
     int fontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
     if (fontWeight != mFontWeight) {
       mFontWeight = fontWeight;

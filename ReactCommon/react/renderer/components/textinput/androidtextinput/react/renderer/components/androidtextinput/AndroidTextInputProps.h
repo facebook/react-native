@@ -160,6 +160,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   bool includeFontPadding{false};
   std::string fontWeight{};
   std::string fontFamily{};
+  std::string fontVariationSettings{};
   std::string textAlignVertical{};
   SharedColor cursorColor{};
   int mostRecentEventCount{0};
