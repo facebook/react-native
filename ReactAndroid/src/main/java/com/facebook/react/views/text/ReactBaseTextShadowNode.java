@@ -201,6 +201,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET
+          || textShadowNode.mFontVariationSettings != null
           || textShadowNode.mFontFamily != null) {
         ops.add(
             new SetSpanOperation(
@@ -358,7 +359,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   /**
    * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
    */
-  protected String mFontVariationSettings = "";
+  protected String mFontVariationSettings;
   
   protected int mFontWeight = UNSET;
   /**
