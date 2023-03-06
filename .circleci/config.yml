@@ -596,12 +596,17 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
       - checkout_code_with_cache
       - setup_artifacts
-      - setup_ruby
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - brew_install:
           package: xcbeautify
       - run:
@@ -895,6 +900,10 @@ jobs:
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
         enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -904,7 +913,8 @@ jobs:
       - attach_workspace:
           at: .
       - *attach_hermes_workspace
-      - setup_ruby
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - when:
           condition:
             equal: ["Hermes", << parameters.jsengine >>]
@@ -977,6 +987,10 @@ jobs:
         description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
         type: enum
         enum: ["NewArch", "OldArch"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -989,7 +1003,8 @@ jobs:
           name: Delete iOS Simulators
           background: true
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
-      - setup_ruby
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
@@ -1676,6 +1691,20 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
+          name: "Test Template with Ruby 2.7.7"
+          ruby_version: "2.7.7"
+          architecture: "NewArch"
+          flavor: "Debug"
+      - test_ios_template:
+          requires:
+            - build_npm_package
+          name: "Test Template with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+          flavor: "Debug"
+      - test_ios_template:
+          requires:
+            - build_npm_package
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
@@ -1807,10 +1836,34 @@ workflows:
       - test_ios_rntester:
           requires:
             - build_hermes_macos
+          name: "Test RNTester with Ruby 2.7.7"
+          ruby_version: "2.7.7"
+          architecture: "NewArch"
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
+          name: "Test RNTester with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
+      - test_ios:
+          name: "Test iOS with Ruby 2.7.7"
+          run_unit_tests: true
+          requires:
+            - build_hermes_macos
+          ruby_version: "2.7.7"
+      - test_ios:
+          name: "Test iOS with Ruby 3.2.0"
+          run_unit_tests: true
+          requires:
+            - build_hermes_macos
+          ruby_version: "3.2.0"
       - test_ios:
           run_unit_tests: true
           requires:
