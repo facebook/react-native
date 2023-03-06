@@ -183,7 +183,7 @@ class PerformanceEntryReporter : public EventLogger {
       size_t bufferPosition,
       const char *entryName = nullptr) const {
     std::vector<RawPerformanceEntry> res;
-    size_t pos = bufferPosition;
+    size_t pos = (bufferPosition - entryCount + buffer.size()) % buffer.size();
     for (size_t i = 0; i < entryCount; i++) {
       if (entryName == nullptr || buffer[pos].name == entryName) {
         res.push_back(buffer[pos].toRawPerformanceEntry());
@@ -202,7 +202,7 @@ class PerformanceEntryReporter : public EventLogger {
     std::array<T, N> newBuffer;
     size_t newEntryCount = 0;
 
-    size_t pos = bufferPosition;
+    size_t pos = (bufferPosition - entryCount + buffer.size()) % buffer.size();
     for (size_t i = 0; i < entryCount; i++) {
       if (buffer[pos].name != entryName) {
         newBuffer[newEntryCount++] = buffer[pos];
@@ -211,7 +211,7 @@ class PerformanceEntryReporter : public EventLogger {
     }
 
     buffer = newBuffer;
-    bufferPosition = 0;
+    bufferPosition = newEntryCount;
     entryCount = newEntryCount;
   }
 };
