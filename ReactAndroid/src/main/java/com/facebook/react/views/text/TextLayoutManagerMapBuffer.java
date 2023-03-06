@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -404,6 +405,8 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : UNSET;
+
+    Log.v("numberOfLines", "numberOfLines: " + paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES) + " val:" + paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES) );
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0

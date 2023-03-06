@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.AnyThread;
@@ -486,6 +487,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float maxWidth,
       float minHeight,
       float maxHeight) {
+    Log.v("numberOfLines", "numberOfLines");
     return measure(
         rootTag,
         componentName,
@@ -524,7 +526,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minHeight,
       float maxHeight,
       @Nullable float[] attachmentsPositions) {
-
+    Log.v("numberOfLines", "numberOfLines2");
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =
@@ -562,7 +564,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       float minHeight,
       float maxHeight,
       @Nullable float[] attachmentsPositions) {
-
+    Log.v("numberOfLines", "numberOfLinesMapBuffer");
     ReactContext context;
     if (surfaceId > 0) {
       SurfaceMountingManager surfaceMountingManager =

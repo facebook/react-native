@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LayoutDirection;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -384,6 +385,8 @@ public class TextLayoutManager {
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
             ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
             : UNSET;
+
+    Log.v("numberOfLines", "" + paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY) + " val2:" + paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY));
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0

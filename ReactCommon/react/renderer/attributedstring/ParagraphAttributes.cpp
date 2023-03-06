@@ -24,7 +24,7 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
              includeFontPadding,
              android_hyphenationFrequency) ==
       std::tie(
-             numberOfLines,
+             rhs.numberOfLines,
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
              rhs.textBreakStrategy,
