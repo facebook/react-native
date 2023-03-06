@@ -78,6 +78,7 @@ PODS:
   - hermes-engine/JSI (1000.0.0)
   - hermes-engine/Public (1000.0.0)
   - libevent (2.1.12)
+  - OCMock (3.9.1)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -825,6 +826,7 @@ DEPENDENCIES:
   - glog (from `../../third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../../sdks/hermes/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - OCMock (~> 3.9.1)
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../third-party-podspecs/RCT-Folly.podspec`)
@@ -880,6 +882,7 @@ SPEC REPOS:
     - FlipperKit
     - fmt
     - libevent
+    - OCMock
     - OpenSSL-Universal
     - SocketRocket
     - YogaKit
@@ -986,8 +989,9 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 7907a32084d03d32827639c9d977a4581ab0ef71
+  hermes-engine: 9dd16fe1cfa47002229300b94e89fc661e198b10
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 54a4f03dbbebb0cfdb4e2ba8d3b1d0b1258f8c08
@@ -1028,6 +1032,6 @@ SPEC CHECKSUMS:
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5f0460f3a7599f90e5d4759fdec7d7343fe7923d
+PODFILE CHECKSUM: 041d77a36c7a31e8cd4f62ad87890e1436d3e1a9
 
 COCOAPODS: 1.12.0
