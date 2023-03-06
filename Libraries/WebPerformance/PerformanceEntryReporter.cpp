@@ -68,6 +68,10 @@ void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
   reportingType_[static_cast<int>(entryType)] = false;
 }
 
+void PerformanceEntryReporter::stopReporting() {
+  reportingType_.fill(false);
+}
+
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::lock_guard<std::mutex> lock(entriesMutex_);
 
@@ -83,13 +87,13 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
     eventCounts_[entry.name]++;
   }
 
-  if (!isReportingType(entryType)) {
+  if (!isReporting(entryType)) {
     return;
   }
 
   if (entry.duration < durationThreshold_[entry.entryType]) {
     // The entries duration is lower than the desired reporting threshold, skip
-    return;
+    // return;
   }
 
   std::lock_guard<std::mutex> lock(entriesMutex_);
@@ -147,7 +151,8 @@ void PerformanceEntryReporter::mark(
 void PerformanceEntryReporter::clearEntries(
     PerformanceEntryType entryType,
     const char *entryName) {
-  if (entryType == PerformanceEntryType::MARK) {
+  if (entryType == PerformanceEntryType::MARK ||
+      entryType == PerformanceEntryType::UNDEFINED) {
     if (entryName != nullptr) {
       // remove a named mark from the mark/measure registry
       PerformanceMark mark{{entryName, 0}};
@@ -157,8 +162,11 @@ void PerformanceEntryReporter::clearEntries(
           marksBuffer_, marksCount_, marksBufferPosition_, entryName);
     } else {
       marksCount_ = 0;
+      marksRegistry_.clear();
     }
-  } else if (entryType == PerformanceEntryType::MEASURE) {
+  } else if (
+      entryType == PerformanceEntryType::MEASURE ||
+      entryType == PerformanceEntryType::UNDEFINED) {
     if (entryName != nullptr) {
       clearCircularBuffer(
           measuresBuffer_, measuresCount_, measuresBufferPosition_, entryName);
