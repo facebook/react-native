@@ -839,6 +839,12 @@ inline ParagraphAttributes convertRawProp(
       context,
       rawProps,
       "numberOfLines",
+      sourceParagraphAttributes.numberOfLines,
+      defaultParagraphAttributes.numberOfLines);
+  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+      context,
+      rawProps,
+      "maximumNumberOfLines",
       sourceParagraphAttributes.maximumNumberOfLines,
       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
