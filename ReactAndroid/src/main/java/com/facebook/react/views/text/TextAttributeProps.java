@@ -12,9 +12,7 @@ import android.text.Layout;
 import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
-
 import androidx.annotation.Nullable;
-
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -24,7 +22,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -110,11 +107,6 @@ public class TextAttributeProps {
   protected boolean mIsAccessibilityRoleSet = false;
   protected boolean mIsAccessibilityLink = false;
 
-  /**
-   * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
-   */
-  protected String mFontVariationSettings = "";
-
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
   /**
@@ -141,18 +133,19 @@ public class TextAttributeProps {
   protected @Nullable String mFontFamily = null;
 
   /**
-   * @see android.graphics.Paint#setFontFeatureSettings
+   * mFontVariationSettings can be used for variable font features e.g: 'wght' 850
    */
+  protected String mFontVariationSettings = "";
+
+  /** @see android.graphics.Paint#setFontFeatureSettings */
   protected @Nullable String mFontFeatureSettings = null;
+
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
-  private TextAttributeProps() {
-  }
+  private TextAttributeProps() {}
 
-  /**
-   * Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter.
-   */
+  /** Build a TextAttributeProps using data from the {@link MapBuffer} received as a parameter. */
   public static TextAttributeProps fromMapBuffer(MapBuffer props) {
     TextAttributeProps result = new TextAttributeProps();
 
