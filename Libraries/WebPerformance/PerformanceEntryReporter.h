@@ -81,6 +81,7 @@ class PerformanceEntryReporter : public EventLogger {
   void setReportingCallback(std::optional<AsyncCallback<>> callback);
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
+  void stopReporting();
   void setDurationThreshold(
       PerformanceEntryType entryType,
       double durationThreshold);
@@ -88,8 +89,12 @@ class PerformanceEntryReporter : public EventLogger {
   GetPendingEntriesResult popPendingEntries();
   void logEntry(const RawPerformanceEntry &entry);
 
-  bool isReportingType(PerformanceEntryType entryType) const {
+  bool isReporting(PerformanceEntryType entryType) const {
     return reportingType_[static_cast<int>(entryType)];
+  }
+
+  bool isReportingEvents() const {
+    return isReporting(PerformanceEntryType::EVENT);
   }
 
   uint32_t getDroppedEntryCount() const {
@@ -102,16 +107,16 @@ class PerformanceEntryReporter : public EventLogger {
       const std::string &name,
       double startTime,
       double endTime,
-      const std::optional<double> &duration,
-      const std::optional<std::string> &startMark,
-      const std::optional<std::string> &endMark);
+      const std::optional<double> &duration = std::nullopt,
+      const std::optional<std::string> &startMark = std::nullopt,
+      const std::optional<std::string> &endMark = std::nullopt);
 
   void clearEntries(
-      PerformanceEntryType entryType,
+      PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
       const char *entryName = nullptr);
 
   std::vector<RawPerformanceEntry> getEntries(
-      PerformanceEntryType entryType,
+      PerformanceEntryType entryType = PerformanceEntryType::UNDEFINED,
       const char *entryName = nullptr) const;
 
   void event(
@@ -170,10 +175,6 @@ class PerformanceEntryReporter : public EventLogger {
 
   double getMarkTime(const std::string &markName) const;
   void scheduleFlushBuffer();
-
-  bool isReportingEvents() const {
-    return isReportingType(PerformanceEntryType::EVENT);
-  }
 
   template <class T, size_t N>
   std::vector<RawPerformanceEntry> getCircularBufferContents(
