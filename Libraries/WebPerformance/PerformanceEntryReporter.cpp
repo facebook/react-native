@@ -164,8 +164,9 @@ void PerformanceEntryReporter::clearEntries(
       marksCount_ = 0;
       marksRegistry_.clear();
     }
-  } else if (
-      entryType == PerformanceEntryType::MEASURE ||
+  }
+
+  if (entryType == PerformanceEntryType::MEASURE ||
       entryType == PerformanceEntryType::UNDEFINED) {
     if (entryName != nullptr) {
       clearCircularBuffer(
