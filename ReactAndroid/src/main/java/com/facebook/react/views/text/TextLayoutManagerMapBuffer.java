@@ -420,7 +420,7 @@ public class TextLayoutManagerMapBuffer {
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
       for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append('\n');
+        ssb.append("\n");
       }
 
       Object[] spans = text.getSpans(0, 0, Object.class);
@@ -428,8 +428,10 @@ public class TextLayoutManagerMapBuffer {
         ssb.setSpan(span, 0, ssb.length(), text.getSpanFlags(span));
       };
 
+      text = new SpannableStringBuilder(TextUtils.concat(text, ssb));
+      boring = null;
       layout = createLayout(
-        (Spannable) TextUtils.concat(text, ssb),
+        text,
           boring,
           width,
           widthYogaMeasureMode,
@@ -441,7 +443,7 @@ public class TextLayoutManagerMapBuffer {
     Log.v("numberOfLines", "numberOfLines: " + paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES) + " val:" + paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES) );
 
 
-    if (numberOfLines != UNSET && numberOfLines > lines) {
+    if (numberOfLines != UNSET && numberOfLines <= lines) {
       maximumNumberOfLines = numberOfLines;
     }
 

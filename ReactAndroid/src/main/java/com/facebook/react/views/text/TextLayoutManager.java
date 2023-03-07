@@ -415,7 +415,7 @@ public class TextLayoutManager {
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
       for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append('\n');
+        ssb.append("\n");
       }
 
       Object[] spans = text.getSpans(0, 0, Object.class);
@@ -423,8 +423,10 @@ public class TextLayoutManager {
         ssb.setSpan(span, 0, ssb.length(), text.getSpanFlags(span));
       };
 
+      text = new SpannableStringBuilder(TextUtils.concat(text, ssb));
+      boring = null;
       layout = createLayout(
-        (Spannable) TextUtils.concat(text, ssb),
+        text,
         boring,
         width,
         widthYogaMeasureMode,
@@ -434,7 +436,7 @@ public class TextLayoutManager {
     }
 
 
-    if (numberOfLines != UNSET && numberOfLines > lines) {
+    if (numberOfLines != UNSET && numberOfLines <= lines) {
       maximumNumberOfLines = numberOfLines;
     }
 
