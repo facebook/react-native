@@ -1342,7 +1342,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     Spannable spanned =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
+            view.getContext(), attributedString, mReactTextViewManagerCallback, false);
 
     boolean containsMultipleFragments =
         attributedString.getArray("fragments").toArrayList().size() > 1;

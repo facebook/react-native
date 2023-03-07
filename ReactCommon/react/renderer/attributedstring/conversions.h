@@ -835,7 +835,7 @@ inline ParagraphAttributes convertRawProp(
     ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
-  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+  paragraphAttributes.numberOfLines = convertRawProp(
       context,
       rawProps,
       "numberOfLines",

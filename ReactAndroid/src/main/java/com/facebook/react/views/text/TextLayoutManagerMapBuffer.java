@@ -18,6 +18,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.util.Log;
 import android.util.LruCache;
@@ -35,6 +36,7 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +64,7 @@ public class TextLayoutManagerMapBuffer {
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
   public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
+  public static final short PA_KEY_NUMBER_OF_LINES = 6;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -406,7 +409,41 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : UNSET;
 
+    int numberOfLines =
+      paragraphAttributes.contains(PA_KEY_NUMBER_OF_LINES)
+        ? paragraphAttributes.getInt(PA_KEY_NUMBER_OF_LINES)
+        : UNSET;
+
+    int lines = layout.getLineCount();
+    if (numberOfLines != UNSET && numberOfLines > lines && text.length() > 0) {
+      int numberOfEmptyLines = numberOfLines - lines;
+      SpannableStringBuilder ssb = new SpannableStringBuilder();
+
+      for (int i = 0; i < numberOfEmptyLines; ++i) {
+        ssb.append('\n');
+      }
+
+      Object[] spans = text.getSpans(0, 0, Object.class);
+      for (Object span : spans) { // It's possible we need to set exl-exl
+        ssb.setSpan(span, 0, ssb.length(), text.getSpanFlags(span));
+      };
+
+      layout = createLayout(
+        (Spannable) TextUtils.concat(text, ssb),
+          boring,
+          width,
+          widthYogaMeasureMode,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency);
+    }
+
     Log.v("numberOfLines", "numberOfLines: " + paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES) + " val:" + paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES) );
+
+
+    if (numberOfLines != UNSET && numberOfLines > lines) {
+      maximumNumberOfLines = numberOfLines;
+    }
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0

@@ -56,6 +56,10 @@ AndroidTextInputProps::AndroidTextInputProps(
           "numberOfLines",
           sourceProps.numberOfLines,
           {0})),
+      maximumNumberOfLines(CoreFeatures::enablePropIteratorSetter? sourceProps.maximumNumberOfLines : convertRawProp(context, rawProps,
+                                                                                                       "maximumNumberOfLines",
+                                                                                                       sourceProps.maximumNumberOfLines,
+                                                                                                       {0})),
       disableFullscreenUI(CoreFeatures::enablePropIteratorSetter? sourceProps.disableFullscreenUI : convertRawProp(context, rawProps,
           "disableFullscreenUI",
           sourceProps.disableFullscreenUI,
@@ -278,11 +282,17 @@ void AndroidTextInputProps::setProp(
   // This code is also duplicated in ParagraphProps.
   static auto paDefaults = ParagraphAttributes{};
   switch (hash) {
+  REBUILD_FIELD_SWITCH_CASE(
+          paDefaults,
+          value,
+          paragraphAttributes,
+          maximumNumberOfLines,
+          "maximumNumberOfLines");
     REBUILD_FIELD_SWITCH_CASE(
         paDefaults,
         value,
         paragraphAttributes,
-        maximumNumberOfLines,
+        numberOfLines,
         "numberOfLines");
     REBUILD_FIELD_SWITCH_CASE(
         paDefaults, value, paragraphAttributes, ellipsizeMode, "ellipsizeMode");
@@ -325,6 +335,7 @@ void AndroidTextInputProps::setProp(
   }
 
   switch (hash) {
+      RAW_SET_PROP_SWITCH_CASE_BASIC(maximumNumberOfLines);
     RAW_SET_PROP_SWITCH_CASE_BASIC(autoComplete);
     RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyLabel);
     RAW_SET_PROP_SWITCH_CASE_BASIC(numberOfLines);
@@ -427,6 +438,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   folly::dynamic props = folly::dynamic::object();
   props["autoComplete"] = autoComplete;
   props["returnKeyLabel"] = returnKeyLabel;
+  props["maximumNumberOfLines"] = maximumNumberOfLines;
   props["numberOfLines"] = numberOfLines;
   props["disableFullscreenUI"] = disableFullscreenUI;
   props["textBreakStrategy"] = textBreakStrategy;
