@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
