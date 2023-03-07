@@ -25,12 +25,17 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboCxxModule.h>
-#import <ReactCommon/TurboModuleBinding.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
 
 using namespace facebook;
 using namespace facebook::react;
+
+static TurboModuleBindingMode sTurboModuleBindingMode = TurboModuleBindingMode::HostObject;
+void RCTTurboModuleSetBindingMode(TurboModuleBindingMode bindingMode)
+{
+  sTurboModuleBindingMode = bindingMode;
+}
 
 /**
  * A global variable whose address we use to associate method queues to id<RCTTurboModule> objects.
@@ -181,7 +186,7 @@ static Class getFallbackClassFromName(const char *name)
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   if (self = [super init]) {
-    _jsInvoker = jsInvoker;
+    _jsInvoker = std::move(jsInvoker);
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
@@ -691,7 +696,7 @@ static Class getFallbackClassFromName(const char *name)
   return requiresMainQueueSetup;
 }
 
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
 {
   if (!runtimeExecutor) {
     // jsi::Runtime doesn't exist when attached to Chrome debugger.
@@ -736,7 +741,7 @@ static Class getFallbackClassFromName(const char *name)
   };
 
   runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    TurboModuleBinding::install(runtime, std::move(turboModuleProvider), TurboModuleBindingMode::HostObject);
+    TurboModuleBinding::install(runtime, std::move(turboModuleProvider), sTurboModuleBindingMode);
   });
 }
 
