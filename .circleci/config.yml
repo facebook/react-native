@@ -46,7 +46,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "14.0.1"
+    xcode_version: &xcode_version "14.2.0"
     nodelts_image: &nodelts_image "cimg/node:18.12.1"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
@@ -177,15 +177,18 @@ commands:
 
             if [[ -z "$(command -v rbenv)" ]]; then
               brew install rbenv ruby-build
+              # Load and init rbenv
+              (rbenv init 2> /dev/null) || true
+              echo '' >>  ~/.bash_profile
+              echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
+              source ~/.bash_profile
             else
               echo "rbenv found; Skipping installation"
             fi
 
-            # Load and init rbenv
-            (rbenv init 2> /dev/null) || true
-            echo '' >>  ~/.bash_profile
-            echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
-            source ~/.bash_profile
+            brew reinstall libyaml
+            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
+            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
 
             # Install the right version of ruby
             if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
@@ -194,6 +197,7 @@ commands:
 
             # Set ruby dependencies
             rbenv global << parameters.ruby_version >>
+            gem install bundler
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: *rbenv_cache_key
@@ -632,11 +636,6 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
-      - run:
-          # Python 3.10 already exists in the environment, this is a workaround for:
-          # https://github.com/actions/setup-python/issues/577
-          name: "Unlink environment's Python 3.10"
-          command: brew unlink python@3.10
       - brew_install:
           package: applesimutils watchman
 
