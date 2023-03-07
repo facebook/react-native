@@ -19,6 +19,7 @@ import {
   TextInput,
   View,
   StyleSheet,
+  Switch,
 } from 'react-native';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -587,6 +588,44 @@ class SelectionExample extends React.Component<
   }
 }
 
+type FontWeightStyleToggleExampleState = {
+  bold: boolean,
+  italic: boolean,
+};
+
+class FontWeightStyleToggleExample extends React.Component<
+  {},
+  FontWeightStyleToggleExampleState,
+> {
+  state: FontWeightStyleToggleExampleState = {bold: false, italic: false};
+
+  render() {
+    return (
+      <View>
+        {Object.entries(this.state).map(
+          ([stateKey, value]: [string, boolean]) => (
+            <WithLabel label={stateKey} key={stateKey}>
+              <Switch
+                value={value}
+                onValueChange={newValue =>
+                  this.setState({[stateKey]: newValue})
+                }
+              />
+            </WithLabel>
+          ),
+        )}
+        <TextInput
+          defaultValue="Some text that can be formatted"
+          style={[
+            this.state.bold && {fontWeight: 'bold'},
+            this.state.italic && {fontStyle: 'italic'},
+          ]}
+        />
+      </View>
+    );
+  }
+}
+
 function UncontrolledExample() {
   const [isFocused, setIsFocused] = React.useState(false);
 
@@ -1053,6 +1092,13 @@ module.exports = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'fontWeight and fontStyle with toggles',
+    name: 'fontWeightAndStyleToggles',
+    render: function (): React.Node {
+      return <FontWeightStyleToggleExample />;
     },
   },
   {
