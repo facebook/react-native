@@ -410,7 +410,7 @@ public class TextLayoutManager {
         : UNSET;
 
     int lines = layout.getLineCount();
-    if (numberOfLines != UNSET && numberOfLines > lines && text.length() > 0) {
+    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines > lines && text.length() > 0) {
       int numberOfEmptyLines = numberOfLines - lines;
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
@@ -436,7 +436,7 @@ public class TextLayoutManager {
     }
 
 
-    if (numberOfLines != UNSET && numberOfLines <= lines) {
+    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines <= lines) {
       maximumNumberOfLines = numberOfLines;
     }
 

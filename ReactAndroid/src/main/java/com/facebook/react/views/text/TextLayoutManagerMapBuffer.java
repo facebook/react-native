@@ -415,7 +415,7 @@ public class TextLayoutManagerMapBuffer {
         : UNSET;
 
     int lines = layout.getLineCount();
-    if (numberOfLines != UNSET && numberOfLines > lines && text.length() > 0) {
+    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines > lines && text.length() > 0) {
       int numberOfEmptyLines = numberOfLines - lines;
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
@@ -443,7 +443,7 @@ public class TextLayoutManagerMapBuffer {
     Log.v("numberOfLines", "numberOfLines: " + paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES) + " val:" + paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES) );
 
 
-    if (numberOfLines != UNSET && numberOfLines <= lines) {
+    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines <= lines) {
       maximumNumberOfLines = numberOfLines;
     }
 
