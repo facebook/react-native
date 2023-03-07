@@ -10,6 +10,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -624,12 +625,19 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      auto viewChildNode = traitCast<ViewShadowNode const *>(&childNode);
+      auto hitSlop = viewChildNode != nullptr
+          ? viewChildNode->getConcreteProps().hitSlop
+          : EdgeInsets{};
+
       // The contentFrame should always union with existing child node layout +
       // overflowInset. The transform may in a deferred animation and not
       // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+      contentFrame.unionInPlace(
+          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
 
       auto childTransform = childNode.getTransform();
       if (childTransform != Transform::Identity()) {
@@ -639,6 +647,8 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         contentFrame.unionInPlace(insetBy(
             layoutMetricsWithOverflowInset.frame * childTransform,
             layoutMetricsWithOverflowInset.overflowInset * childTransform));
+        contentFrame.unionInPlace(outsetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
       }
     }
   }

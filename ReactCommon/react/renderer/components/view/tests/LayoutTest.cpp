@@ -45,7 +45,14 @@ namespace facebook::react {
 //  ***********************│          │************************************
 //  ***********************└──────────┘************************************
 
-enum TestCase { AS_IS, CLIPPING, TRANSFORM_SCALE, TRANSFORM_TRANSLATE };
+enum TestCase {
+  AS_IS,
+  CLIPPING,
+  HIT_SLOP,
+  HIT_SLOP_TRANSFORM_TRANSLATE,
+  TRANSFORM_SCALE,
+  TRANSFORM_TRANSLATE,
+};
 
 class LayoutTest : public ::testing::Test {
  protected:
@@ -105,9 +112,14 @@ class LayoutTest : public ::testing::Test {
                       props.transform = props.transform * Transform::Scale(2, 2, 1);
                     }
 
-                    if (testCase == TRANSFORM_TRANSLATE) {
+                    if (testCase == TRANSFORM_TRANSLATE || testCase == HIT_SLOP_TRANSFORM_TRANSLATE) {
                       props.transform = props.transform * Transform::Translate(10, 10, 0);
                     }
+
+                    if (testCase == HIT_SLOP || testCase == HIT_SLOP_TRANSFORM_TRANSLATE) {
+                      props.hitSlop = EdgeInsets{50, 50, 50, 50};
+                    }
+
                     return sharedProps;
                   })
                   .children({
@@ -352,6 +364,80 @@ TEST_F(LayoutTest, overflowInsetTransformScaleTest) {
   // surprising, but the overflowInset values will be scaled up via pixel
   // density ratio along with width/height of the view. When we do hit-testing,
   // the overflowInset value will appears to be doubled as expected.
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
+}
+
+TEST_F(LayoutTest, overflowInsetHitSlopTest) {
+  initialize(HIT_SLOP);
+
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
+
+  // Change on parent node
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -80);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -100);
+
+  auto layoutMetricsAB = viewShadowNodeAB_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsAB.frame.size.width, 30);
+  EXPECT_EQ(layoutMetricsAB.frame.size.height, 90);
+
+  // No change on self node
+  EXPECT_EQ(layoutMetricsAB.overflowInset.left, -60);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.bottom, 0);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  // No change on child node
+  EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
+  EXPECT_EQ(layoutMetricsABC.overflowInset.bottom, 0);
+}
+
+TEST_F(LayoutTest, overflowInsetHitSlopTransformTranslateTest) {
+  initialize(HIT_SLOP_TRANSFORM_TRANSLATE);
+
+  auto layoutMetricsA = viewShadowNodeA_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsA.frame.size.width, 50);
+  EXPECT_EQ(layoutMetricsA.frame.size.height, 50);
+
+  // Change on parent node
+  EXPECT_EQ(layoutMetricsA.overflowInset.left, -50);
+  EXPECT_EQ(layoutMetricsA.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsA.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsA.overflowInset.bottom, -110);
+
+  auto layoutMetricsAB = viewShadowNodeAB_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsAB.frame.size.width, 30);
+  EXPECT_EQ(layoutMetricsAB.frame.size.height, 90);
+
+  // No change on self node
+  EXPECT_EQ(layoutMetricsAB.overflowInset.left, -60);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.top, -40);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.right, -90);
+  EXPECT_EQ(layoutMetricsAB.overflowInset.bottom, 0);
+
+  auto layoutMetricsABC = viewShadowNodeABC_->getLayoutMetrics();
+
+  EXPECT_EQ(layoutMetricsABC.frame.size.width, 110);
+  EXPECT_EQ(layoutMetricsABC.frame.size.height, 20);
+
+  // No change on child node
   EXPECT_EQ(layoutMetricsABC.overflowInset.left, 0);
   EXPECT_EQ(layoutMetricsABC.overflowInset.top, -50);
   EXPECT_EQ(layoutMetricsABC.overflowInset.right, 0);
