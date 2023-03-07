@@ -42,6 +42,31 @@ const generateViewConfigJs = require('./components/GenerateViewConfigJs.js');
 const path = require('path');
 const schemaValidator = require('../SchemaValidator.js');
 
+const ALL_GENERATORS = {
+  generateComponentDescriptorH : generateComponentDescriptorH.generate,
+  generateComponentHObjCpp : generateComponentHObjCpp.generate,
+  generateEventEmitterCpp : generateEventEmitterCpp.generate,
+  generateEventEmitterH : generateEventEmitterH.generate,
+  generatePropsCpp : generatePropsCpp.generate,
+  generatePropsH : generatePropsH.generate,
+  generateStateCpp : generateStateCpp.generate,
+  generateStateH : generateStateH.generate,
+  generateModuleH : generateModuleH.generate,
+  generateModuleCpp : generateModuleCpp.generate,
+  generateModuleObjCpp : generateModuleObjCpp.generate,
+  generateModuleJavaSpec : generateModuleJavaSpec.generate,
+  GenerateModuleJniCpp : GenerateModuleJniCpp.generate,
+  GenerateModuleJniH : GenerateModuleJniH.generate,
+  generatePropsJavaInterface : generatePropsJavaInterface.generate,
+  generatePropsJavaDelegate : generatePropsJavaDelegate.generate,
+  generateTests : generateTests.generate,
+  generateShadowNodeCpp : generateShadowNodeCpp.generate,
+  generateShadowNodeH : generateShadowNodeH.generate,
+  generateThirdPartyFabricComponentsProviderObjCpp : generateThirdPartyFabricComponentsProviderObjCpp.generate,
+  generateThirdPartyFabricComponentsProviderH : generateThirdPartyFabricComponentsProviderH.generate,
+  generateViewConfigJs : generateViewConfigJs.generate,
+};
+
 import type {SchemaType} from '../CodegenSchema';
 
 type LibraryOptions = $ReadOnly<{
@@ -194,6 +219,7 @@ function checkOrWriteFiles(
 }
 
 module.exports = {
+  allGenerators: ALL_GENERATORS,
   libraryGenerators: LIBRARY_GENERATORS,
   schemaGenerators: SCHEMAS_GENERATORS,
 

@@ -1,8 +1,53 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 import type { SchemaType } from "../CodegenSchema";
 
 export type FilesOutput = Map<string, string>;
-export type LibraryGeneratorFunction = (libraryName: string, schema: SchemaType, packageName: string, assumeNonnull: boolean) => FilesOutput;
+export type LibraryGeneratorFunction = (libraryName: string, schema: SchemaType, packageName: string | undefined, assumeNonnull: boolean) => FilesOutput;
 export type SchemaGeneratorFunction = (schemas: { [key: string]: SchemaType }) => FilesOutput;
+export type ViewGeneratorFunction = (libraryName: string, schema: SchemaType) => FilesOutput;
+
+type LibraryGeneratorNames =
+    | 'generateComponentDescriptorH'
+    | 'generateComponentHObjCpp'
+    | 'generateEventEmitterCpp'
+    | 'generateEventEmitterH'
+    | 'generatePropsCpp'
+    | 'generatePropsH'
+    | 'generateStateCpp'
+    | 'generateStateH'
+    | 'generateModuleH'
+    | 'generateModuleCpp'
+    | 'generateModuleObjCpp'
+    | 'generateModuleJavaSpec'
+    | 'GenerateModuleJniCpp'
+    | 'GenerateModuleJniH'
+    | 'generatePropsJavaInterface'
+    | 'generatePropsJavaDelegate'
+    | 'generateTests'
+    | 'generateShadowNodeCpp'
+    | 'generateShadowNodeH'
+    ;
+
+type SchemaGeneratorNames =
+    | 'generateThirdPartyFabricComponentsProviderObjCpp'
+    | 'generateThirdPartyFabricComponentsProviderH'
+    ;
+
+type ViewGeneratorNames =
+    | 'generateViewConfigJs'
+    ;
+
+export type AllGenerators =
+    & { readonly [key in LibraryGeneratorNames]: LibraryGeneratorFunction; }
+    & { readonly [key in SchemaGeneratorNames]: SchemaGeneratorFunction; }
+    & { readonly [key in ViewGeneratorNames]: ViewGeneratorFunction; }
+    ;
 
 export type LibraryGenerators =
     | 'componentsAndroid'
@@ -18,7 +63,9 @@ export type LibraryGenerators =
     | 'modulesIOS'
     ;
 
-export type SchemaGenerators = 'providerIOS';
+export type SchemaGenerators =
+    | 'providerIOS'
+    ;
 
 export interface LibraryOptions {
     libraryName: string;
