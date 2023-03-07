@@ -193,32 +193,16 @@ public class TextLayoutManager {
   public static Spannable getOrCreateSpannableForText(
       Context context,
       ReadableMap attributedString,
-      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback,
-      boolean calledFromViewManager) {
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     return createSpannableFromAttributedString(
-        context, attributedString, reactTextViewManagerCallback, calledFromViewManager);
+        context, attributedString, reactTextViewManagerCallback);
   }
 
-  public static Spannable getOrCreateSpannableForText(
-    Context context,
-    ReadableMap attributedString,
-    @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
-
-    return getOrCreateSpannableForText(context,attributedString, reactTextViewManagerCallback, false);
-  }
-
-  private static Spannable createSpannableFromAttributedString(
-    Context context,
-    ReadableMap attributedString,
-    @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
-    return createSpannableFromAttributedString(context, attributedString, reactTextViewManagerCallback, false);
-  }
   private static Spannable createSpannableFromAttributedString(
       Context context,
       ReadableMap attributedString,
-      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback,
-      boolean calledFromViewManager) {
+      @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
 
     SpannableStringBuilder sb = new SpannableStringBuilder();
 
