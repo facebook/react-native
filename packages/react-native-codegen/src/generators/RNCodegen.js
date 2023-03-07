@@ -194,6 +194,9 @@ function checkOrWriteFiles(
 }
 
 module.exports = {
+  libraryGenerators: LIBRARY_GENERATORS,
+  schemaGenerators: SCHEMAS_GENERATORS,
+
   generate(
     {
       libraryName,
