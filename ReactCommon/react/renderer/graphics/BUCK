@@ -8,7 +8,6 @@ load(
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
-    "react_native_target",
     "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
@@ -53,7 +52,7 @@ rn_xplat_cxx_library(
     fbandroid_allow_jni_merging = True,
     fbandroid_deps = [
         FBJNI_TARGET,
-        react_native_target("jni/react/jni:jni"),
+        "//xplat/folly:dynamic",
     ],
     fbandroid_exported_headers = subdir_glob(
         [
