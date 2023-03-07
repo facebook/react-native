@@ -90,6 +90,7 @@ export interface SchemasConfig {
     test?: boolean;
 }
 
+export declare const allGenerators: AllGenerators;
 export declare const libraryGenerators: { readonly [key in LibraryGenerators]: LibraryGeneratorFunction };
 export declare const schemaGenerators: { readonly [key in SchemaGenerators]: SchemaGeneratorFunction };
 export declare function generate(options: LibraryOptions, config: LibraryConfig): boolean;
