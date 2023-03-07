@@ -70,10 +70,6 @@ Pod::Spec.new do |s|
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
                          "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
-      excluded_files = ENV['USE_FRAMEWORKS'] == nil ?
-        "react/nativemodule/core/ReactCommon/LongLivedObject.h" :
-        "react/nativemodule/core/ReactCommon/{LongLivedObject,CallbackWrapper}.h"
-      sss.exclude_files = excluded_files
     end
 
     ss.subspec "samples" do |sss|
