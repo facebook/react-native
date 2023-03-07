@@ -18,10 +18,14 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
-import type {TypeDeclarationMap} from '../utils';
+import type {ParserErrorCapturer, TypeDeclarationMap} from '../utils';
+
+const {typeScriptTranslateTypeAnnotation} = require('./modules');
 
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
@@ -243,7 +247,35 @@ class TypeScriptParser implements Parser {
   callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
     return callExpression.typeParameters || null;
   }
+
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe> {
+    return properties.map(prop => {
+      return {
+        name: prop.key.name,
+        optional: true,
+        typeAnnotation: typeScriptTranslateTypeAnnotation(
+          hasteModuleName,
+          prop.typeAnnotation.typeAnnotation,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          this,
+        ),
+      };
+    });
+  }
 }
+
 module.exports = {
   TypeScriptParser,
 };

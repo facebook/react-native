@@ -110,6 +110,61 @@ describe('FlowParser', () => {
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
     });
   });
+
+  describe('computePartialProperties', () => {
+    it('returns partial properties', () => {
+      const properties = [
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          value: {
+            type: 'StringTypeAnnotation',
+            range: [],
+          },
+        },
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          value: {
+            type: 'BooleanTypeAnnotation',
+            range: [],
+          },
+        },
+      ];
+
+      const expected = [
+        {
+          name: 'a',
+          optional: true,
+          typeAnnotation: {type: 'StringTypeAnnotation'},
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {type: 'BooleanTypeAnnotation'},
+        },
+      ];
+
+      expect(
+        parser.computePartialProperties(
+          properties,
+          'hasteModuleName',
+          {},
+          {},
+          {},
+          () => null,
+          false,
+        ),
+      ).toEqual(expected);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -200,6 +255,75 @@ describe('TypeScriptParser', () => {
     it('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
+    });
+  });
+
+  describe('computePartialProperties', () => {
+    it('returns partial properties', () => {
+      const properties = [
+        {
+          type: 'TSPropertySignature',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          typeAnnotation: {
+            type: 'TSTypeAnnotation',
+            typeAnnotation: {
+              type: 'TSTypeLiteral',
+              key: {
+                type: 'Identifier',
+                name: 'a',
+              },
+              members: [],
+            },
+          },
+        },
+        {
+          type: 'TSPropertySignature',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          typeAnnotation: {
+            type: 'TSTypeAnnotation',
+            typeAnnotation: {
+              type: 'TSStringKeyword',
+              key: {
+                type: 'Identifier',
+                name: 'b',
+              },
+              members: [],
+            },
+          },
+        },
+      ];
+
+      const expected = [
+        {
+          name: 'a',
+          optional: true,
+          typeAnnotation: {properties: [], type: 'ObjectTypeAnnotation'},
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {type: 'StringTypeAnnotation'},
+        },
+      ];
+
+      expect(
+        parser.computePartialProperties(
+          properties,
+          'hasteModuleName',
+          {},
+          {},
+          {},
+          () => null,
+          false,
+        ),
+      ).toEqual(expected);
     });
   });
 });

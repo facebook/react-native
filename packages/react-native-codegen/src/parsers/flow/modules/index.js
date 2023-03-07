@@ -172,22 +172,15 @@ function translateTypeAnnotation(
             parser,
           );
 
-          const properties = annotatedElement.right.properties.map(prop => {
-            return {
-              name: prop.key.name,
-              optional: true,
-              typeAnnotation: translateTypeAnnotation(
-                hasteModuleName,
-                prop.value,
-                types,
-                aliasMap,
-                enumMap,
-                tryParse,
-                cxxOnly,
-                parser,
-              ),
-            };
-          });
+          const properties = parser.computePartialProperties(
+            annotatedElement.right.properties,
+            hasteModuleName,
+            types,
+            aliasMap,
+            enumMap,
+            tryParse,
+            cxxOnly,
+          );
 
           return emitObject(nullable, properties);
         }

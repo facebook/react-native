@@ -18,9 +18,11 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMemberType,
   NativeModuleEnumMembers,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -161,8 +163,8 @@ export interface Parser {
 
   /**
    * Given a typeAnnotation, it returns the annotated element.
-   * @paramater typeAnnotation: the annotation for a type.
-   * @paramater types: a map of type declarations.
+   * @parameter typeAnnotation: the annotation for a type.
+   * @parameter types: a map of type declarations.
    * @returns: the annotated element.
    */
   extractAnnotatedElement(
@@ -177,8 +179,29 @@ export interface Parser {
 
   /**
    * Given a callExpression, it returns the typeParameters of the callExpression.
-   * @paramater callExpression: the callExpression.
+   * @parameter callExpression: the callExpression.
    * @returns: the typeParameters of the callExpression or null if it does not exist.
    */
   callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null;
+
+  /**
+   * Given an array of properties from a Partial type, it returns an array of remaped properties.
+   * @parameter properties: properties from a Partial types.
+   * @parameter hasteModuleName: a string with the native module name.
+   * @parameter types: a map of type declarations.
+   * @parameter aliasMap: a map of type aliases.
+   * @parameter enumMap: a map of type enums.
+   * @parameter tryParse: a parser error capturer.
+   * @parameter cxxOnly: a boolean specifying if the module is Cxx only.
+   * @returns: an array of remaped properties
+   */
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe>;
 }

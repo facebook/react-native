@@ -253,23 +253,14 @@ function translateTypeAnnotation(
             parser,
           );
 
-          const properties = annotatedElement.typeAnnotation.members.map(
-            member => {
-              return {
-                name: member.key.name,
-                optional: true,
-                typeAnnotation: translateTypeAnnotation(
-                  hasteModuleName,
-                  member.typeAnnotation.typeAnnotation,
-                  types,
-                  aliasMap,
-                  enumMap,
-                  tryParse,
-                  cxxOnly,
-                  parser,
-                ),
-              };
-            },
+          const properties = parser.computePartialProperties(
+            annotatedElement.typeAnnotation.members,
+            hasteModuleName,
+            types,
+            aliasMap,
+            enumMap,
+            tryParse,
+            cxxOnly,
           );
 
           return emitObject(nullable, properties);
