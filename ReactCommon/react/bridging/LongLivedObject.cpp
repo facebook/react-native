@@ -16,27 +16,22 @@ LongLivedObjectCollection &LongLivedObjectCollection::get() {
   return instance;
 }
 
-LongLivedObjectCollection::LongLivedObjectCollection() {}
-
-void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) const {
+void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) {
   std::lock_guard<std::mutex> lock(collectionMutex_);
-  collection_.insert(so);
+  collection_.insert(std::move(so));
 }
 
-void LongLivedObjectCollection::remove(const LongLivedObject *o) const {
+void LongLivedObjectCollection::remove(const LongLivedObject *o) {
   std::lock_guard<std::mutex> lock(collectionMutex_);
-  auto p = collection_.begin();
-  for (; p != collection_.end(); p++) {
+  for (auto p = collection_.begin(); p != collection_.end(); p++) {
     if (p->get() == o) {
+      collection_.erase(p);
       break;
     }
   }
-  if (p != collection_.end()) {
-    collection_.erase(p);
-  }
 }
 
-void LongLivedObjectCollection::clear() const {
+void LongLivedObjectCollection::clear() {
   std::lock_guard<std::mutex> lock(collectionMutex_);
   collection_.clear();
 }
@@ -47,8 +42,6 @@ size_t LongLivedObjectCollection::size() const {
 }
 
 // LongLivedObject
-LongLivedObject::LongLivedObject() {}
-LongLivedObject::~LongLivedObject() {}
 
 void LongLivedObject::allowRelease() {
   LongLivedObjectCollection::get().remove(this);
