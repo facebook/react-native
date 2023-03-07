@@ -29,7 +29,9 @@ static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 class ComponentDescriptor;
 struct ShadowNodeFragment;
 
-class ShadowNode : public Sealable, public DebugStringConvertible {
+class ShadowNode : public Sealable,
+                   public DebugStringConvertible,
+                   public jsi::NativeState {
  public:
   using Shared = std::shared_ptr<ShadowNode const>;
   using Weak = std::weak_ptr<ShadowNode const>;

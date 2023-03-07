@@ -11,6 +11,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 
@@ -38,9 +39,9 @@ struct ShadowNodeWrapper : public jsi::HostObject {
   ShadowNode::Shared shadowNode;
 };
 
-struct ShadowNodeListWrapper : public jsi::HostObject {
+struct ShadowNodeListWrapper : public jsi::HostObject, public jsi::NativeState {
   ShadowNodeListWrapper(ShadowNode::UnsharedListOfShared shadowNodeList)
-      : shadowNodeList(shadowNodeList) {}
+      : shadowNodeList(std::move(shadowNodeList)) {}
 
   // The below method needs to be implemented out-of-line in order for the class
   // to have at least one "key function" (see
@@ -52,29 +53,63 @@ struct ShadowNodeListWrapper : public jsi::HostObject {
 
 inline static ShadowNode::Shared shadowNodeFromValue(
     jsi::Runtime &runtime,
-    jsi::Value const &value) {
+    const jsi::Value &value) {
   if (value.isNull()) {
     return nullptr;
   }
 
-  return value.getObject(runtime)
-      .getHostObject<ShadowNodeWrapper>(runtime)
-      ->shadowNode;
+  if (CoreFeatures::useNativeState) {
+    return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
+  } else {
+    return value.getObject(runtime)
+        .getHostObject<ShadowNodeWrapper>(runtime)
+        ->shadowNode;
+  }
 }
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime &runtime,
     ShadowNode::Shared shadowNode) {
-  return jsi::Object::createFromHostObject(
-      runtime, std::make_shared<ShadowNodeWrapper>(std::move(shadowNode)));
+  if (CoreFeatures::useNativeState) {
+    jsi::Object obj(runtime);
+    // Need to const_cast since JSI only allows non-const pointees
+    obj.setNativeState(
+        runtime, std::const_pointer_cast<ShadowNode>(std::move(shadowNode)));
+    return obj;
+  } else {
+    return jsi::Object::createFromHostObject(
+        runtime, std::make_shared<ShadowNodeWrapper>(std::move(shadowNode)));
+  }
 }
 
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     jsi::Runtime &runtime,
-    jsi::Value const &value) {
-  return value.getObject(runtime)
-      .getHostObject<ShadowNodeListWrapper>(runtime)
-      ->shadowNodeList;
+    const jsi::Value &value) {
+  if (CoreFeatures::useNativeState) {
+    return value.getObject(runtime)
+        .getNativeState<ShadowNodeListWrapper>(runtime)
+        ->shadowNodeList;
+  } else {
+    return value.getObject(runtime)
+        .getHostObject<ShadowNodeListWrapper>(runtime)
+        ->shadowNodeList;
+  }
+}
+
+inline static jsi::Value valueFromShadowNodeList(
+    jsi::Runtime &runtime,
+    ShadowNode::UnsharedListOfShared shadowNodeList) {
+  auto wrapper =
+      std::make_shared<ShadowNodeListWrapper>(std::move(shadowNodeList));
+  if (CoreFeatures::useNativeState) {
+    // Use the wrapper for NativeState too, otherwise we can't implement
+    // the marker interface. Could be simplifed to a simple struct wrapper.
+    jsi::Object obj(runtime);
+    obj.setNativeState(runtime, std::move(wrapper));
+    return obj;
+  } else {
+    return jsi::Object::createFromHostObject(runtime, std::move(wrapper));
+  }
 }
 
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
@@ -93,23 +128,12 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
 inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
     jsi::Runtime &runtime,
     jsi::Value const &value) {
-  auto shadowNodeList = value.getObject(runtime)
-                            .getHostObject<ShadowNodeListWrapper>(runtime)
-                            ->shadowNodeList;
-
+  auto shadowNodeList = shadowNodeListFromValue(runtime, value);
   auto weakShadowNodeList = std::make_shared<ShadowNode::ListOfWeak>();
   for (auto const &shadowNode : *shadowNodeList) {
     weakShadowNodeList->push_back(shadowNode);
   }
-
   return weakShadowNodeList;
-}
-
-inline static jsi::Value valueFromShadowNodeList(
-    jsi::Runtime &runtime,
-    const ShadowNode::UnsharedListOfShared &shadowNodeList) {
-  return jsi::Object::createFromHostObject(
-      runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
 }
 
 inline static Tag tagFromValue(jsi::Value const &value) {

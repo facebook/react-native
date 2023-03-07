@@ -277,6 +277,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enablePropIteratorSetter = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:use_native_state")) {
+    CoreFeatures::useNativeState = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

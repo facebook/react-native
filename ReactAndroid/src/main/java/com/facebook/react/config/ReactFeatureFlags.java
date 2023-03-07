@@ -118,4 +118,10 @@ public class ReactFeatureFlags {
    * SurfaceMountingManager.
    */
   public static boolean reduceDeleteCreateMutation = false;
+
+  /**
+   * Use JSI NativeState API to store references to native objects rather than the more expensive
+   * HostObject pattern
+   */
+  public static boolean useNativeState = false;
 }

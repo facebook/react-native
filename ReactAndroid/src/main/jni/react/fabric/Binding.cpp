@@ -433,6 +433,9 @@ void Binding::installFabricUIManager(
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
 
+  // NativeState experiment
+  CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
+
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
       getFeatureFlagValue("enableRemoveDeleteTreeInstruction");

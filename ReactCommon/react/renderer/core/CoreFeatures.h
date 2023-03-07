@@ -30,6 +30,10 @@ class CoreFeatures {
   // useLayoutEffect hooks to be processed. This changes affects scheduling of
   // when a transaction is mounted.
   static bool blockPaintForUseLayoutEffect;
+
+  // Whether to use Hermes' NativeState instead of HostObject
+  // in simple data passing scenarios with JS
+  static bool useNativeState;
 };
 
 } // namespace react
