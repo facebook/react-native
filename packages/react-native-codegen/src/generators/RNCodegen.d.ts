@@ -1,12 +1,8 @@
 import type { SchemaType } from "../CodegenSchema";
 
 export type FilesOutput = Map<string, string>;
-
-export type GeneratorFunction = (libraryName: string, schema: SchemaType, packageName: string, assumeNonnull: boolean) => FilesOutput;
-
-export interface GeneratorInterface {
-    readonly generate: GeneratorFunction;
-}
+export type LibraryGeneratorFunction = (libraryName: string, schema: SchemaType, packageName: string, assumeNonnull: boolean) => FilesOutput;
+export type SchemaGeneratorFunction = (schemas: { [key: string]: SchemaType }) => FilesOutput;
 
 export type LibraryGenerators =
     | 'componentsAndroid'
@@ -47,8 +43,8 @@ export interface SchemasConfig {
     test?: boolean;
 }
 
-export declare const libraryGenerators: { readonly [key in LibraryGenerators]: GeneratorFunction };
-export declare const schemaGenerators: { readonly [key in SchemaGenerators]: GeneratorFunction };
+export declare const libraryGenerators: { readonly [key in LibraryGenerators]: LibraryGeneratorFunction };
+export declare const schemaGenerators: { readonly [key in SchemaGenerators]: SchemaGeneratorFunction };
 export declare function generate(options: LibraryOptions, config: LibraryConfig): boolean;
 export declare function generateFromSchemas(options: SchemasOptions, config: SchemasConfig): boolean;
 export declare function generateViewConfig(options: LibraryOptions): string;
