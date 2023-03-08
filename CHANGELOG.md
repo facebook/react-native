@@ -6,7 +6,9 @@
 
 - Make FlatList permissive of ArrayLike data ([c03de97fb4](https://github.com/facebook/react-native/commit/c03de97fb44f0aecbec8f930bd99fe26f37f9648) by [@NickGerleman](https://github.com/NickGerleman))
 - Bumping RNGP to `^0.71.16` ([3df4a79c3d](https://github.com/facebook/react-native/commit/3df4a79c3d8e788ffb113fde801836251eed4c03) by [@kelset](https://github.com/kelset))
-- Update CLI to 10.2.0, Metro to 0.73.8 ([20a6fbd373](https://github.com/facebook/react-native/commit/20a6fbd37312ff4e6bb11f6f43b9abc2f559e1fb) by [@robhogan](https://github.com/robhogan))
+- Update CLI to 10.2.0, Metro to 0.73.8 ([20a6fbd373](https://github.com/facebook/react-native/commit/20a6fbd37312ff4e6bb11f6f43b9abc2f559e1fb) by [@robhogan](https://github.com/robhogan)) - contains:
+  - fix: Source maps may have invalid entries when using Terser minification. ((`metro/#928`)[https://github.com/facebook/metro/pull/928])
+  - fix: Mitigate potential source map mismatches with concurrent transformations due to terser#1341. ((`metro/#929`)[https://github.com/facebook/metro/pull/929])
 - Bump Hermes Version ([291cc0af10](https://github.com/facebook/react-native/commit/291cc0af100fe2aa6201f04ebd6c8c889a018d45)) - contains:
   - use ConsecutiveStringStorage to dedup serialized literals ([62d58e](https://github.com/facebook/hermes/commit/62d58e5d6747da8b8ee9e18eb8d0f57469acf201))
   - Remove register stack size override in hermes.cpp ([6146eb](https://github.com/facebook/hermes/commit/6146eb39e9eb8e712169697eac75001c2aeab40d))
