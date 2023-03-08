@@ -9,8 +9,8 @@
 
 #include <react/renderer/components/scrollview/conversions.h>
 #include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/renderer/graphics/conversions.h>
 
 #include <react/renderer/core/propsConversions.h>
 

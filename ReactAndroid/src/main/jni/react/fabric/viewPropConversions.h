@@ -10,7 +10,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewPropsMapBuffer.h>
 #include <react/renderer/components/view/conversions.h>
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
