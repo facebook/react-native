@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *text;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, assign) NSInteger maximumNumberOfLines;
+@property (nonatomic, assign) NSInteger exactNumberOfLines;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 
 - (void)uiManagerWillPerformMounting;

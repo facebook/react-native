@@ -26,7 +26,7 @@
 
 RCT_EXPORT_MODULE(RCTText)
 
-RCT_REMAP_SHADOW_PROPERTY(numberOfLines, maximumNumberOfLines, NSInteger)
+RCT_EXPORT_SHADOW_PROPERTY(maximumNumberOfLines, NSInteger)
 RCT_REMAP_SHADOW_PROPERTY(ellipsizeMode, lineBreakMode, NSLineBreakMode)
 RCT_REMAP_SHADOW_PROPERTY(adjustsFontSizeToFit, adjustsFontSizeToFit, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(minimumFontScale, minimumFontScale, CGFloat)

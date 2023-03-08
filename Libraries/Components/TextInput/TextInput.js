@@ -519,7 +519,6 @@ type AndroidProps = $ReadOnly<{|
   /**
    * Sets the number of lines for a `TextInput`. Use it with multiline set to
    * `true` to be able to fill the lines.
-   * @platform android
    */
   numberOfLines?: ?number,
 
@@ -532,9 +531,13 @@ type AndroidProps = $ReadOnly<{|
   /**
    * Sets the number of rows for a `TextInput`. Use it with multiline set to
    * `true` to be able to fill the lines.
-   * @platform android
    */
   rows?: ?number,
+
+  /**
+   * Sets the maximum number of lines the TextInput can have.
+   */
+  maximumNumberOfLines?: ?number,
 
   /**
    * When `false`, it will prevent the soft keyboard from showing when the field is focused.
@@ -1077,6 +1080,8 @@ function InternalTextInput(props: Props): React.Node {
     accessibilityState,
     id,
     tabIndex,
+    rows,
+    numberOfLines,
     ...otherProps
   } = props;
 
@@ -1447,6 +1452,7 @@ function InternalTextInput(props: Props): React.Node {
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
         nativeID={id ?? props.nativeID}
+        numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}

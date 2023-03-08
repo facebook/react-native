@@ -178,26 +178,50 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
-- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
+- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)inputAttributedString
                                  paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                 size:(CGSize)size
 {
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
 
-  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
-  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
-      : NSLineBreakByClipping;
-  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+  NSMutableAttributedString *attributedString = [ inputAttributedString mutableCopy];
 
+  /*
+    * The block below is responsible for setting the exact height of the view in lines
+    * Unfortunatelly, iOS doesn't export any easy way to do it. So we set maximumNumberOfLines
+    * prop and then add random lines at the front. However, they are only used for layout
+    * so they are not visible on the screen. This method is used for drawing only for Paragraph component
+    * but we set exact height in lines only on TextInput that doesn't use it. 
+    */
+  if (paragraphAttributes.numberOfLines) {
+    paragraphAttributes.maximumNumberOfLines = paragraphAttributes.numberOfLines;
+    NSMutableString *newLines = [NSMutableString stringWithCapacity: paragraphAttributes.numberOfLines];
+    for (NSUInteger i = 0UL; i < paragraphAttributes.numberOfLines; ++i) {
+      // K is added on purpose. New line seems to be not enough for NTtextContainer
+      [newLines appendString:@"K\n"];
+    }
+      NSDictionary<NSAttributedStringKey, id> * attributesOfFirstCharacter = [inputAttributedString attributesAtIndex:0 effectiveRange:NULL];
+      
+
+    [attributedString insertAttributedString:[[NSAttributedString alloc] initWithString:newLines attributes:attributesOfFirstCharacter] atIndex:0];
+  }
+    
+  NSTextContainer *textContainer = [NSTextContainer new];
+    
   NSLayoutManager *layoutManager = [NSLayoutManager new];
   layoutManager.usesFontLeading = NO;
   [layoutManager addTextContainer:textContainer];
-
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
-
+  NSTextStorage *textStorage = [NSTextStorage new];
   [textStorage addLayoutManager:layoutManager];
 
+  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
+    ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
+    : NSLineBreakByClipping;
+  textContainer.size = size;
+  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+
+  [textStorage replaceCharactersInRange:(NSRange){0, textStorage.length} withAttributedString:attributedString];
+    
   if (paragraphAttributes.adjustsFontSizeToFit) {
     CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
     CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;

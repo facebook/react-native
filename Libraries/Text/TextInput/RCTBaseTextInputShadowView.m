@@ -218,7 +218,22 @@
 
 - (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  NSAttributedString *attributedText = [self measurableAttributedText];
+  NSMutableAttributedString *attributedText = [[self measurableAttributedText] mutableCopy];
+
+  /*
+  * The block below is responsible for setting the exact height of the view in lines
+  * Unfortunatelly, iOS doesn't export any easy way to do it. So we set maximumNumberOfLines
+  * prop and then add random lines at the front. However, they are only used for layout
+  * so they are not visible on the screen.
+  */
+  if (self.exactNumberOfLines) {
+    NSMutableString *newLines = [NSMutableString stringWithCapacity: self.exactNumberOfLines];
+    for (NSUInteger i = 0UL; i < self.exactNumberOfLines; ++i) {
+      [newLines appendString:@"\n"];
+    }
+    [attributedText insertAttributedString:[[NSAttributedString alloc] initWithString:newLines attributes:self.textAttributes.effectiveTextAttributes] atIndex:0];
+    _maximumNumberOfLines = self.exactNumberOfLines;
+  }
 
   if (!_textStorage) {
     _textContainer = [NSTextContainer new];

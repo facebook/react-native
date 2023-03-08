@@ -19,6 +19,7 @@ RCT_EXPORT_MODULE()
   RCTBaseTextInputShadowView *shadowView = (RCTBaseTextInputShadowView *)[super shadowView];
 
   shadowView.maximumNumberOfLines = 1;
+  shadowView.exactNumberOfLines = 0;
 
   return shadowView;
 }
