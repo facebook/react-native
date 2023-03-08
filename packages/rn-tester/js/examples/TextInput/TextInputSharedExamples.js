@@ -1107,6 +1107,20 @@ module.exports = ([
     },
   },
   {
+    title: 'Overflowed text behavior on render',
+    name: 'overflowedOnRender',
+    render: function(): React.Node {
+      return (
+        <View>
+          <TextInput
+            style={[styles.default]}
+            value={'The quick brown fox expertly jumps over the lazy dog, lying still on the grass.'}
+          />
+        </View>
+      );
+    }
+  },
+  {
     title: 'Uncontrolled component with layout changes',
     name: 'uncontrolledComponent',
     render: () => <UncontrolledExample />,
