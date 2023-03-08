@@ -13,7 +13,9 @@ const yargs = require('yargs');
 const fs = require('fs');
 
 const CONFIG_FILE_NAME = 'react-native.config.js';
-const LEGACY_COMPONENTS_FIELD = 'unstable_reactLegacyComponent';
+const PROJECT_FIELD = 'project';
+const IOS_FIELD = 'ios';
+const LEGACY_COMPONENTS_FIELD = 'unstable_reactLegacyComponentNames';
 const OUTPUT_FILE_NAME = 'RCTLegacyInteropComponents.mm';
 
 const argv = yargs
@@ -57,6 +59,39 @@ ${components}
   // eslint-enable duplicate-license-header
 }
 
+function extractComponentsNames(reactNativeConfig) {
+  if (!reactNativeConfig) {
+    console.log('No reactNativeConfig in the react-native.config.js file');
+    return null;
+  }
+
+  const project = reactNativeConfig[PROJECT_FIELD];
+
+  if (!project) {
+    console.log(`No ${PROJECT_FIELD} in the react-native config`);
+    return null;
+  }
+
+  const ios = project[IOS_FIELD];
+
+  if (!ios) {
+    console.log(
+      `No ${IOS_FIELD} in the ${PROJECT_FIELD} object of the config file`,
+    );
+    return null;
+  }
+
+  const componentNames = ios[LEGACY_COMPONENTS_FIELD];
+
+  if (!componentNames) {
+    console.log(
+      `No '${LEGACY_COMPONENTS_FIELD}' field in the ${PROJECT_FIELD}.${IOS_FIELD} object`,
+    );
+    return null;
+  }
+  return componentNames;
+}
+
 function generateRCTLegacyInteropComponents() {
   const configFilePath = `${appRoot}/${CONFIG_FILE_NAME}`;
   let reactNativeConfig = null;
@@ -64,26 +99,25 @@ function generateRCTLegacyInteropComponents() {
     reactNativeConfig = require(configFilePath);
   } catch (error) {
     console.log(`No ${configFilePath}. Skip LegacyInterop generation`);
+    return;
   }
 
-  if (reactNativeConfig && reactNativeConfig[LEGACY_COMPONENTS_FIELD]) {
-    let componentsArray = reactNativeConfig[LEGACY_COMPONENTS_FIELD].map(
-      name => `\t\t\t@"${name}",`,
-    );
-    // Remove the last comma
-    if (componentsArray.length > 0) {
-      componentsArray[componentsArray.length - 1] = componentsArray[
-        componentsArray.length - 1
-      ].slice(0, -1);
-    }
-
-    const filePath = `${outputPath}/${OUTPUT_FILE_NAME}`;
-    fs.writeFileSync(filePath, fileBody(componentsArray.join('\n')));
-  } else {
-    console.log(
-      `No '${LEGACY_COMPONENTS_FIELD}' field. Skip LegacyInterop generation`,
-    );
+  const componentNames = extractComponentsNames(reactNativeConfig);
+  if (!componentNames) {
+    console.log('Skip LegacyInterop generation');
+    return;
   }
+
+  let componentsArray = componentNames.map(name => `\t\t\t@"${name}",`);
+  // Remove the last comma
+  if (componentsArray.length > 0) {
+    componentsArray[componentsArray.length - 1] = componentsArray[
+      componentsArray.length - 1
+    ].slice(0, -1);
+  }
+
+  const filePath = `${outputPath}/${OUTPUT_FILE_NAME}`;
+  fs.writeFileSync(filePath, fileBody(componentsArray.join('\n')));
 }
 
 generateRCTLegacyInteropComponents();
