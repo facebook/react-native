@@ -27,16 +27,16 @@ type Event = Readonly<{
 }>;
 
 interface NativeProps extends ViewProps {
-  string?: string;
-  number?: number;
-  boolean?: boolean;
-  default?: WithDefault<'option1' | 'option2', 'option1'>;
-  double?: Double;
-  float?: Float;
-  int32?: Int32;
-  unsafeObject?: UnsafeObject;
-  onBubblingEventHandler?: BubblingEventHandler<Event>;
-  onDirectEventHandler?: DirectEventHandler<Event>;
+  string?: string | undefined;
+  number?: number | undefined;
+  boolean?: boolean | undefined;
+  default?: WithDefault<'option1' | 'option2', 'option1'> | undefined;
+  double?: Double | undefined;
+  float?: Float | undefined;
+  int32?: Int32 | undefined;
+  unsafeObject?: UnsafeObject | undefined;
+  onBubblingEventHandler?: BubblingEventHandler<Event> | undefined;
+  onDirectEventHandler?: DirectEventHandler<Event> | undefined;
 }
 
 export type SampleViewType = NativeComponentType<NativeProps>;

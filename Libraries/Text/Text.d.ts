@@ -107,7 +107,7 @@ export interface TextProps
    */
   allowFontScaling?: boolean | undefined;
 
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 
   /**
    * This can be one of the following values:

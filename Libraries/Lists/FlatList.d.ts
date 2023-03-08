@@ -50,7 +50,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
    * If any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the `data` prop,
    * stick it here and treat it immutably.
    */
-  extraData?: any;
+  extraData?: any | undefined;
 
   /**
    * `getItemLayout` is an optional optimization that lets us skip measurement of dynamic
@@ -144,7 +144,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
   /**
    * See `ViewabilityHelper` for flow type and further documentation.
    */
-  viewabilityConfig?: any;
+  viewabilityConfig?: any | undefined;
 
   /**
    * Note: may have bugs (missing content) in some circumstances - use at your own risk.

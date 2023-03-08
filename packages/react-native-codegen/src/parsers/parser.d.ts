@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { SchemaType } from "../CodegenSchema";
-import type { ParserType } from "./errors";
+import type { SchemaType } from '../CodegenSchema';
+import type { ParserType } from './errors';
 
 // useful members only for downstream
 export interface Parser {

@@ -579,7 +579,7 @@ export namespace Animated {
     extends React.FC<AnimatedProps<React.ComponentPropsWithRef<T>>> {}
 
   export type AnimatedComponentOptions = {
-    collapsable?: boolean;
+    collapsable?: boolean | undefined;
   };
 
   /**

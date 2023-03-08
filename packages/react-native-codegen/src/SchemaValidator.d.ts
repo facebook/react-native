@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { SchemaType } from "./CodegenSchema";
+import type { SchemaType } from './CodegenSchema';
 
 export declare function getErrors(schema: SchemaType): readonly string[];
 export declare function validate(schema: SchemaType): void;

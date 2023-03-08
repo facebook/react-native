@@ -137,7 +137,7 @@ export interface AccessibilityInfoStatic {
    */
   announceForAccessibilityWithOptions(
     announcement: string,
-    options: {queue?: boolean},
+    options: {queue?: boolean | undefined},
   ): void;
 
   /**
