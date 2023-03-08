@@ -38,10 +38,8 @@
 
 - (NSString *)description
 {
-  NSString *superDescription = super.description;
-  NSRange replacementRange = [superDescription rangeOfString:@">"];
-  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@>", self.reactTag, _textStorage.string];
-  return [superDescription stringByReplacingCharactersInRange:replacementRange withString:replacement];
+  NSString *stringToAppend = [NSString stringWithFormat:@" reactTag: %@; text: %@", self.reactTag, _textStorage.string];
+  return [[super description] stringByAppendingString:stringToAppend];
 }
 
 - (void)setSelectable:(BOOL)selectable

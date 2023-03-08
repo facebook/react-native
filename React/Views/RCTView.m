@@ -452,10 +452,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
 - (NSString *)description
 {
-  NSString *superDescription = super.description;
-  NSRange semicolonRange = [superDescription rangeOfString:@";"];
-  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
-  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  return [[super description] stringByAppendingFormat:@" reactTag: %@; frame = %@; layer = %@",
+                                                      self.reactTag,
+                                                      NSStringFromCGRect(self.frame),
+                                                      self.layer];
 }
 
 #pragma mark - Statics for dealing with layoutGuides
