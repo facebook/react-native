@@ -38,6 +38,7 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
           use_fabric: '0'
           use_hermes: '0'
         'iOS Paper Release JSC':
@@ -47,6 +48,7 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
           use_fabric: '0'
           use_hermes: '0'
         'macOS Paper Debug JSC':
@@ -56,6 +58,7 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
           use_fabric: '0'
           use_hermes: '0'
         'macOS Paper Release JSC':
@@ -65,6 +68,7 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
           use_fabric: '0'
           use_hermes: '0'
         'iOS Fabric Debug JSC':
@@ -74,6 +78,7 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
           use_fabric: '1'
           use_hermes: '0'
         'iOS Fabric Release JSC':
@@ -83,6 +88,7 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
           use_fabric: '1' 
           use_hermes: '0'
         'macOS Fabric Debug JSC':
@@ -92,6 +98,7 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
           use_fabric: '1'
           use_hermes: '0'
         'macOS Fabric Release JSC':
@@ -101,6 +108,7 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
           use_fabric: '1'
           use_hermes: '0'
         # Disable Hermes Jobs for now
@@ -111,6 +119,7 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build test'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
         #   use_fabric: '0'
         #   use_hermes: '1'
         # 'iOS Paper Release Hermes':
@@ -119,6 +128,7 @@ jobs:
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
         #   xcode_actions: 'build'
         #   use_fabric: '0'
         #   use_hermes: '1'
@@ -129,6 +139,7 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build test'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
         #   use_fabric: '0'
         #   use_hermes: '1'
         # 'macOS Paper Release Hermes':
@@ -138,6 +149,7 @@ jobs:
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
         #   use_fabric: '0'
         #   use_hermes: '1'
         # 'iOS Fabric Debug Hermes': 
@@ -147,6 +159,7 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build test'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
         #   use_fabric: '1'
         #   use_hermes: '1'
         # 'iOS Fabric Release Hermes': 
@@ -156,6 +169,7 @@ jobs:
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
         #   use_fabric: '1' 
         #   use_hermes: '0'
         # 'macOS Fabric Debug Hermes':
@@ -165,6 +179,7 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build test'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
         #   use_fabric: '1'
         #   use_hermes: '1'
         # 'macOS Fabric Release Hermes':
@@ -174,12 +189,13 @@ jobs:
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
         #   use_fabric: '1'
         #   use_hermes: '1'
     pool:
       vmImage: $(VmImageApple)
       demands: ['xcode', 'sh', 'npm']
-    timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
     steps:
       - template: templates/apple-job-react-native.yml
@@ -192,6 +208,7 @@ jobs:
           xcode_destination: $(xcode_destination)
           slice_name: $(slice_name)
           xcode_version: $(xcode_version)
+          xcode_extraArgs: $(xcode_extraArgs)
 
   - job: CliInit
     displayName: Verify react-native-macos-init

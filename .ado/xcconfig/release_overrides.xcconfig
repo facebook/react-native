@@ -1,0 +1,21 @@
+#include "release_staticanalysis.xcconfig"
+// For publish builds, only provide line tables for symbolizing crashes
+CLANG_DEBUG_INFORMATION_LEVEL[config=Release]=line-tables-only
+// The following build setting caused build errors, so it is commented out and placed in every podspec instead
+// OTHER_SWIFT_FLAGS=-gline-tables-only
+
+// Optimize for size in publish builds
+SWIFT_OPTIMIZATION_LEVEL[config=Release]=-Osize
+
+// Build for all architectures, not just the active one
+ONLY_ACTIVE_ARCH=NO
+
+// react-native/react_native_pods.rb sometimes makes our lives difficult
+EXCLUDED_ARCHS =
+
+// Specify the exact Swift version used for reproducibility
+SWIFT_VERSION = 5.0
+
+// Turn off Sanitizers for Release Builds
+CLANG_ADDRESS_SANITIZER = NO
+CLANG_UNDEFINED_BEHAVIOR_SANITIZER = NO
