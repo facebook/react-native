@@ -180,6 +180,13 @@ export type NativeProps = $ReadOnly<{|
   numberOfLines?: ?Int32,
 
   /**
+   * Sets the maximum number of lines for a `TextInput`. Use it with multiline set to
+   * `true` to be able to fill the lines.
+   * @platform android
+   */
+  maximumNumberOfLines?: ?Int32,
+
+  /**
    * When `false`, if there is a small amount of space available around a text input
    * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
    * the text inside of a full screen text input mode. When `true`, this feature is
