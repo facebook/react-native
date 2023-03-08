@@ -118,6 +118,10 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
       if (mNumberOfLines != UNSET) {
         editText.setLines(mNumberOfLines);
+      } else {
+        if (mMaxNumberOfLines != UNSET) {
+          editText.setMaxLines(mMaxNumberOfLines);
+        }
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M

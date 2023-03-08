@@ -16,6 +16,7 @@ namespace facebook::react {
 
 bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
   return std::tie(
+             numberOfLines,
              maximumNumberOfLines,
              ellipsizeMode,
              textBreakStrategy,
@@ -23,6 +24,7 @@ bool ParagraphAttributes::operator==(const ParagraphAttributes &rhs) const {
              includeFontPadding,
              android_hyphenationFrequency) ==
       std::tie(
+             rhs.numberOfLines,
              rhs.maximumNumberOfLines,
              rhs.ellipsizeMode,
              rhs.textBreakStrategy,
@@ -42,6 +44,7 @@ bool ParagraphAttributes::operator!=(const ParagraphAttributes &rhs) const {
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ParagraphAttributes::getDebugProps() const {
   return {
+      debugStringConvertibleItem("numberOfLines", numberOfLines),
       debugStringConvertibleItem("maximumNumberOfLines", maximumNumberOfLines),
       debugStringConvertibleItem("ellipsizeMode", ellipsizeMode),
       debugStringConvertibleItem("textBreakStrategy", textBreakStrategy),

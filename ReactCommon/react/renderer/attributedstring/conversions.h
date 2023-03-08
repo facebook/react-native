@@ -835,12 +835,18 @@ inline ParagraphAttributes convertRawProp(
     ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
-  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+  paragraphAttributes.numberOfLines = convertRawProp(
       context,
       rawProps,
       "numberOfLines",
-      sourceParagraphAttributes.maximumNumberOfLines,
-      defaultParagraphAttributes.maximumNumberOfLines);
+      sourceParagraphAttributes.numberOfLines,
+      defaultParagraphAttributes.numberOfLines);
+  paragraphAttributes.maximumNumberOfLines = convertRawProp(
+       context,
+       rawProps,
+       "maximumNumberOfLines",
+       sourceParagraphAttributes.maximumNumberOfLines,
+       defaultParagraphAttributes.maximumNumberOfLines);
   paragraphAttributes.ellipsizeMode = convertRawProp(
       context,
       rawProps,
@@ -913,6 +919,7 @@ inline std::string toString(AttributedString::Range const &range) {
 inline folly::dynamic toDynamic(
     const ParagraphAttributes &paragraphAttributes) {
   auto values = folly::dynamic::object();
+  values("numberOfLines", paragraphAttributes.numberOfLines);
   values("maximumNumberOfLines", paragraphAttributes.maximumNumberOfLines);
   values("ellipsizeMode", toString(paragraphAttributes.ellipsizeMode));
   values("textBreakStrategy", toString(paragraphAttributes.textBreakStrategy));
@@ -1118,6 +1125,7 @@ constexpr static MapBuffer::Key PA_KEY_TEXT_BREAK_STRATEGY = 2;
 constexpr static MapBuffer::Key PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
 constexpr static MapBuffer::Key PA_KEY_INCLUDE_FONT_PADDING = 4;
 constexpr static MapBuffer::Key PA_KEY_HYPHENATION_FREQUENCY = 5;
+constexpr static MapBuffer::Key PA_KEY_NUMBER_OF_LINES = 6;
 
 inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   auto builder = MapBufferBuilder();
@@ -1135,6 +1143,8 @@ inline MapBuffer toMapBuffer(const ParagraphAttributes &paragraphAttributes) {
   builder.putString(
       PA_KEY_HYPHENATION_FREQUENCY,
       toString(paragraphAttributes.android_hyphenationFrequency));
+  builder.putInt(
+       PA_KEY_NUMBER_OF_LINES, paragraphAttributes.numberOfLines);
 
   return builder.build();
 }

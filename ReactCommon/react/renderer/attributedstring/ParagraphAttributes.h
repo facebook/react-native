@@ -31,6 +31,11 @@ class ParagraphAttributes : public DebugStringConvertible {
 #pragma mark - Fields
 
   /*
+   *  Number of lines which paragraph takes.
+   */
+  int numberOfLines{};
+
+  /*
    * Maximum number of lines which paragraph can take.
    * Zero value represents "no limit".
    */
@@ -92,6 +97,7 @@ struct hash<facebook::react::ParagraphAttributes> {
       const facebook::react::ParagraphAttributes &attributes) const {
     return folly::hash::hash_combine(
         0,
+        attributes.numberOfLines,
         attributes.maximumNumberOfLines,
         attributes.ellipsizeMode,
         attributes.textBreakStrategy,

@@ -31,7 +31,7 @@ const textViewConfig = {
   validAttributes: {
     isHighlighted: true,
     isPressable: true,
-    numberOfLines: true,
+    maximumNumberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
     dynamicTypeRamp: true,

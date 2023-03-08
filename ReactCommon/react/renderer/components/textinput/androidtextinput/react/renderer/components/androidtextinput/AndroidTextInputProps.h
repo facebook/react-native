@@ -117,6 +117,7 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   std::string autoComplete{};
   std::string returnKeyLabel{};
   int numberOfLines{0};
+  int maximumNumberOfLines{0};
   bool disableFullscreenUI{false};
   std::string textBreakStrategy{};
   SharedColor underlineColorAndroid{};
