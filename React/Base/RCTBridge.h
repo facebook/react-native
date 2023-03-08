@@ -95,6 +95,12 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
                    moduleProvider:(RCTBridgeModuleListProvider)block
                     launchOptions:(NSDictionary *)launchOptions;
 
+
+- (instancetype)initWithDelegateWithBundleURL:(id<RCTBridgeDelegate>)delegate
+                          bundleURL:(NSURL *)bundleURL
+                     moduleProvider:(RCTBridgeModuleListProvider)block
+                      launchOptions:(NSDictionary *)launchOptions;
+
 /**
  * This method is used to call functions in the JavaScript application context.
  * It is primarily intended for use by modules that require two-way communication
