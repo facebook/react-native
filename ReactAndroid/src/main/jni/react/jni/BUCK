@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBGLOGINIT_TARGET", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_target", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "CxxModuleWrapper.h",
@@ -48,7 +48,7 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNativeJNI\"",
         "-DWITH_FBSYSTRACE=1",
         "-DWITH_INSPECTOR=1",
-    ],
+    ] + ["-DWITH_GLOGINIT=0"] if not IS_OSS_BUILD else [],
     soname = "libreactnativejni.$(ext)",
     visibility = [
         "PUBLIC",
@@ -59,7 +59,6 @@ rn_xplat_cxx_library(
         "//third-party/glog:glog",
         "//xplat/folly:dynamic",
         "//xplat/folly:json",
-        "//fbandroid/xplat/fbgloginit:fbgloginit",
         "//xplat/fbsystrace:fbsystrace",
         react_native_target("jni/react/turbomodule:callinvokerholder"),
         react_native_xplat_target("cxxreact:bridge"),
@@ -71,5 +70,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("logger:logger"),
         react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
-    ] if not IS_OSS_BUILD else [],
+    ] + ([
+        FBGLOGINIT_TARGET,
+    ] if IS_OSS_BUILD else []),
 )
