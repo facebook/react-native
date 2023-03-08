@@ -110,14 +110,15 @@ export default class Performance {
       const memoryInfo = NativePerformance.getSimpleMemoryInfo();
       if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
         // We got memory information from Hermes
-        const {hermes_heapSize, hermes_allocatedBytes} = memoryInfo;
-        const totalJSHeapSize = Number(hermes_heapSize);
-        const usedJSHeapSize = Number(hermes_allocatedBytes);
+        const {
+          hermes_heapSize: totalJSHeapSize,
+          hermes_allocatedBytes: usedJSHeapSize,
+        } = memoryInfo;
 
         return new MemoryInfo({
           jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
-          totalJSHeapSize: isNaN(totalJSHeapSize) ? null : totalJSHeapSize,
-          usedJSHeapSize: isNaN(usedJSHeapSize) ? null : usedJSHeapSize,
+          totalJSHeapSize,
+          usedJSHeapSize,
         });
       } else {
         // JSC and V8 has no native implementations for memory information in JSI::Instrumentation

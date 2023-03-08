@@ -10,6 +10,7 @@
  */
 
 'use strict';
+import type MemoryInfo from '../../../../../Libraries/WebPerformance/MemoryInfo';
 import type ReactNativeStartupTiming from '../../../../../Libraries/WebPerformance/ReactNativeStartupTiming';
 
 import * as React from 'react';
@@ -22,11 +23,7 @@ const performance = new Performance();
 
 function MemoryExample(): React.Node {
   // Memory API testing
-  const [memoryInfo, setMemoryInfo] = useState<{
-    jsHeapSizeLimit?: ?number,
-    totalJSHeapSize?: ?number,
-    usedJSHeapSize?: ?number,
-  }>({});
+  const [memoryInfo, setMemoryInfo] = useState<?MemoryInfo>(null);
   const onGetMemoryInfo = useCallback(() => {
     // performance.memory is not included in bom.js yet.
     // Once we release the change in flow this can be removed.
@@ -40,25 +37,13 @@ function MemoryExample(): React.Node {
         <Button onPress={onGetMemoryInfo} title="Click to update memory info" />
         <View>
           <Text>
-            {`jsHeapSizeLimit: ${
-              memoryInfo.jsHeapSizeLimit == null
-                ? 'N/A'
-                : memoryInfo.jsHeapSizeLimit
-            } bytes`}
+            {`jsHeapSizeLimit: ${String(memoryInfo?.jsHeapSizeLimit)} bytes`}
           </Text>
           <Text>
-            {`totalJSHeapSize: ${
-              memoryInfo.totalJSHeapSize == null
-                ? 'N/A'
-                : memoryInfo.totalJSHeapSize
-            } bytes`}
+            {`totalJSHeapSize: ${String(memoryInfo?.totalJSHeapSize)} bytes`}
           </Text>
           <Text>
-            {`usedJSHeapSize: ${
-              memoryInfo.usedJSHeapSize == null
-                ? 'N/A'
-                : memoryInfo.usedJSHeapSize
-            } bytes`}
+            {`usedJSHeapSize: ${String(memoryInfo?.usedJSHeapSize)} bytes`}
           </Text>
         </View>
       </View>
