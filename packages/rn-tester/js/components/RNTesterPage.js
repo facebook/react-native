@@ -10,7 +10,7 @@
 
 const RNTesterTitle = require('./RNTesterTitle');
 const React = require('react');
-const {ScrollView, StyleSheet, View} = require('react-native');
+const {SafeAreaView, ScrollView, StyleSheet, View} = require('react-native');
 import {RNTesterThemeContext} from './RNTesterTheme';
 
 type Props = $ReadOnly<{|
@@ -44,7 +44,7 @@ class RNTesterPage extends React.Component<Props> {
       <RNTesterThemeContext.Consumer>
         {theme => {
           return (
-            <View
+            <SafeAreaView
               style={[
                 styles.container,
                 {backgroundColor: theme.SecondarySystemBackgroundColor},
@@ -54,7 +54,7 @@ class RNTesterPage extends React.Component<Props> {
                 {this.props.children}
                 {spacer}
               </ContentWrapper>
-            </View>
+            </SafeAreaView>
           );
         }}
       </RNTesterThemeContext.Consumer>
