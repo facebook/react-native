@@ -11,16 +11,19 @@
 'use strict';
 import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
-import type {CommandOptions} from './options';
+import type {CommandOptions} from '../../parsers-commons';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getCommandOptions, getOptions} = require('./options');
+const {getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
-const {createComponentConfig} = require('../../parsers-commons');
+const {
+  createComponentConfig,
+  getCommandOptions,
+} = require('../../parsers-commons');
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */

@@ -61,6 +61,13 @@ const {
 
 const invariant = require('invariant');
 
+export type CommandOptions = $ReadOnly<{
+  supportedCommands: $ReadOnlyArray<string>,
+}>;
+
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type OptionsAST = Object;
+
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
   hasteModuleName: string,
@@ -657,6 +664,34 @@ const buildModuleSchema = (
     );
 };
 
+function getCommandOptions(
+  commandOptionsExpression: OptionsAST,
+): ?CommandOptions {
+  if (commandOptionsExpression == null) {
+    return null;
+  }
+
+  let foundOptions;
+  try {
+    foundOptions = commandOptionsExpression.properties.reduce(
+      (options, prop) => {
+        options[prop.key.name] = (
+          (prop && prop.value && prop.value.elements) ||
+          []
+        ).map(element => element && element.value);
+        return options;
+      },
+      {},
+    );
+  } catch (e) {
+    throw new Error(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
+  }
+
+  return foundOptions;
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -671,4 +706,5 @@ module.exports = {
   createComponentConfig,
   parseModuleName,
   buildModuleSchema,
+  getCommandOptions,
 };

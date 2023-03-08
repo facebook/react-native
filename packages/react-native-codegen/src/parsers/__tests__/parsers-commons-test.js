@@ -21,6 +21,7 @@ import {
   buildSchema,
   parseModuleName,
   createComponentConfig,
+  getCommandOptions,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1275,5 +1276,48 @@ describe('createComponentConfig', () => {
       const configs = createComponentConfig(foundConfig, commandsTypeNames);
       expect(configs).toEqual(expectedConfig);
     });
+  });
+});
+
+describe('getCommandOptions', () => {
+  it('returns null when commandOptionsExpression is null', () => {
+    const result = getCommandOptions(null);
+    expect(result).toBeNull();
+  });
+
+  it('parses and returns command options correctly', () => {
+    const commandOptionsExpression = {
+      properties: [
+        {
+          range: [],
+          loc: {},
+          type: '',
+          key: {
+            name: 'hotspotUpdate',
+            loc: {},
+          },
+          value: {
+            elements: [
+              {
+                value: 'value',
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const result = getCommandOptions(commandOptionsExpression);
+    expect(result).toEqual({
+      hotspotUpdate: ['value'],
+    });
+  });
+
+  it('should throw an error if command options are not defined correctly', () => {
+    const commandOptionsExpression = {
+      properties: null,
+    };
+    expect(() => getCommandOptions(commandOptionsExpression)).toThrowError(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
   });
 });
