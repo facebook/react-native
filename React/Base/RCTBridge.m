@@ -162,6 +162,14 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
   return [self initWithDelegate:nil bundleURL:bundleURL moduleProvider:block launchOptions:launchOptions];
 }
 
+- (instancetype)initWithDelegateAndBundleURL:(id<RCTBridgeDelegate>)delegate
+                       bundleURL:(NSURL *)bundleURL
+                  moduleProvider:(RCTBridgeModuleListProvider)block
+                   launchOptions:(NSDictionary *)launchOptions
+{
+    return [self initWithDelegate:delegate bundleURL:bundleURL moduleProvider:block launchOptions:launchOptions];
+}
+
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
                   moduleProvider:(RCTBridgeModuleListProvider)block
