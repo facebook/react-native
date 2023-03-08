@@ -18,6 +18,7 @@ import {type TextProps} from './TextProps';
 
 type NativeTextProps = $ReadOnly<{
   ...TextProps,
+  maximumNumberOfLines?: ?number,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
   onClick?: ?(event: PressEvent) => mixed,
