@@ -36,7 +36,8 @@ class TextLayoutManager {
   TextMeasurement measure(
       AttributedStringBox attributedStringBox,
       ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
+      LayoutConstraints layoutConstraints,
+      std::shared_ptr<void>) const;
 
   /*
    * Measures lines of `attributedString` using native text rendering
@@ -52,6 +53,11 @@ class TextLayoutManager {
    * Is used on a native views layer to delegate text rendering to the manager.
    */
   void *getNativeTextLayoutManager() const;
+
+  std::shared_ptr<void> getHostTextStorage(
+      AttributedString attributedStringBox,
+      ParagraphAttributes paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 };
 
 } // namespace react

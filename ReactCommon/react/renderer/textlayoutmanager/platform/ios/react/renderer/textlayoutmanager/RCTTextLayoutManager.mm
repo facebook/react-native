@@ -37,6 +37,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 - (TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                            layoutConstraints:(LayoutConstraints)layoutConstraints
+                                 textStorage:(NSTextStorage *_Nullable)textStorage
 {
   if (attributedString.length == 0) {
     // This is not really an optimization because that should be checked much earlier on the call stack.
@@ -47,9 +48,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
 
-  NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
-                                                                  paragraphAttributes:paragraphAttributes
-                                                                                 size:maximumSize];
+  if (!textStorage) {
+    textStorage = [self _textStorageForNSAttributesString:attributedString
+                                      paragraphAttributes:paragraphAttributes
+                                                     size:maximumSize];
+  } else {
+    textStorage.layoutManagers.firstObject.textContainers.firstObject.size = maximumSize;
+  }
 
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -93,20 +98,24 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
                        paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                          layoutConstraints:(LayoutConstraints)layoutConstraints
+                               textStorage:(NSTextStorage *_Nullable)textStorage
 {
   return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
                      paragraphAttributes:paragraphAttributes
-                       layoutConstraints:layoutConstraints];
+                       layoutConstraints:layoutConstraints
+                             textStorage:textStorage];
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
          paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                        frame:(CGRect)frame
+                 textStorage:(NSTextStorage *_Nullable)textStorage
 {
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+  if (!textStorage) {
+    textStorage = [self textStorageForAttributesString:attributedString
                                    paragraphAttributes:paragraphAttributes
                                                   size:frame.size];
+  }
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
@@ -125,14 +134,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 }
 
-- (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
-                             paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+- (LinesMeasurements)getLinesForAttributedString:(AttributedString)attributedString
+                             paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                             size:(CGSize)size
 {
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                                   paragraphAttributes:paragraphAttributes
-                                                  size:size];
+  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
+                                                paragraphAttributes:paragraphAttributes
+                                                               size:size];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
@@ -170,9 +178,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
-- (NSTextStorage *)_textStorageAndLayoutManagerWithAttributesString:(NSAttributedString *)attributedString
-                                                paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                               size:(CGSize)size
+- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
+                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                size:(CGSize)size
 {
   NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
 
@@ -199,15 +207,23 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return textStorage;
 }
 
+- (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString
+                              paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                             size:(CGSize)size
+{
+  return [self _textStorageForNSAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
+                             paragraphAttributes:paragraphAttributes
+                                            size:size];
+}
+
 - (SharedEventEmitter)getEventEmitterWithAttributeString:(AttributedString)attributedString
                                      paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                    frame:(CGRect)frame
                                                  atPoint:(CGPoint)point
 {
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                                   paragraphAttributes:paragraphAttributes
-                                                  size:frame.size];
+  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
+                                                paragraphAttributes:paragraphAttributes
+                                                               size:frame.size];
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
@@ -245,10 +261,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                               frame:(CGRect)frame
                          usingBlock:(RCTTextLayoutFragmentEnumerationBlock)block
 {
-  NSTextStorage *textStorage = [self
-      _textStorageAndLayoutManagerWithAttributesString:[self _nsAttributedStringFromAttributedString:attributedString]
-                                   paragraphAttributes:paragraphAttributes
-                                                  size:frame.size];
+  NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
+                                                paragraphAttributes:paragraphAttributes
+                                                               size:frame.size];
 
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
