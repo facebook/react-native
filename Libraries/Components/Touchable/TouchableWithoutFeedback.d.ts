@@ -40,7 +40,7 @@ export interface TouchableWithoutFeedbackProps
   extends TouchableWithoutFeedbackPropsIOS,
     TouchableWithoutFeedbackPropsAndroid,
     AccessibilityProps {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
 
   /**
    * Delay in ms, from onPressIn, before onLongPress is called.

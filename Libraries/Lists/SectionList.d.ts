@@ -75,7 +75,7 @@ export interface SectionListProps<ItemT, SectionT = DefaultSectionT>
    * If any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the `data` prop,
    * stick it here and treat it immutably.
    */
-  extraData?: any;
+  extraData?: any | undefined;
 
   /**
    * `getItemLayout` is an optional optimization that lets us skip measurement of dynamic

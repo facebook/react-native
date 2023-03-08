@@ -47,7 +47,7 @@ export interface VoidTypeAnnotation {
 export interface ObjectTypeAnnotation<T> {
   readonly type: 'ObjectTypeAnnotation';
   readonly properties: readonly NamedShape<T>[];
-  readonly baseTypes?: readonly string[];
+  readonly baseTypes?: readonly string[] | undefined;
 }
 
 export interface FunctionTypeAnnotation<P, R> {
@@ -77,10 +77,10 @@ export interface ComponentShape extends OptionsShape {
 }
 
 export interface OptionsShape {
-  readonly interfaceOnly?: boolean;
-  readonly paperComponentName?: string;
-  readonly excludedPlatforms?: readonly PlatformType[];
-  readonly paperComponentNameDeprecated?: string;
+  readonly interfaceOnly?: boolean | undefined;
+  readonly paperComponentName?: string | undefined;
+  readonly excludedPlatforms?: readonly PlatformType[] | undefined;
+  readonly paperComponentNameDeprecated?: string | undefined;
 }
 
 export interface ExtendsPropsShape {
@@ -94,10 +94,10 @@ export interface EventTypeShape {
     | 'direct'
     | 'bubble';
   readonly optional: boolean;
-  readonly paperTopLevelNameDeprecated?: string;
+  readonly paperTopLevelNameDeprecated?: string | undefined;
   readonly typeAnnotation: {
     readonly type: 'EventTypeAnnotation';
-    readonly argument?: ObjectTypeAnnotation<EventTypeAnnotation>;
+    readonly argument?: ObjectTypeAnnotation<EventTypeAnnotation> | undefined;
   };
 }
 
@@ -211,7 +211,7 @@ export interface NativeModuleSchema {
   readonly enumMap: NativeModuleEnumMap;
   readonly spec: NativeModuleSpec;
   readonly moduleName: string;
-  readonly excludedPlatforms?: readonly PlatformType[];
+  readonly excludedPlatforms?: readonly PlatformType[] | undefined;
 }
 
 export interface NativeModuleSpec {
@@ -234,7 +234,7 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<Nullable<Nat
 
 export interface NativeModuleArrayTypeAnnotation<T extends Nullable<NativeModuleBaseTypeAnnotation>> {
   readonly type: 'ArrayTypeAnnotation';
-  readonly elementType?: T;
+  readonly elementType?: T | undefined;
 }
 
 export interface NativeModuleStringTypeAnnotation {
@@ -294,7 +294,7 @@ export interface NativeModuleTypeAliasTypeAnnotation {
 
 export interface NativeModulePromiseTypeAnnotation {
   readonly type: 'PromiseTypeAnnotation';
-  readonly elementType?: Nullable<NativeModuleBaseTypeAnnotation>;
+  readonly elementType?: Nullable<NativeModuleBaseTypeAnnotation> | undefined;
 }
 
 export type UnionTypeAnnotationMemberType =

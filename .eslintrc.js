@@ -91,5 +91,15 @@ module.exports = {
         'react/self-closing-comp': 'off',
       },
     },
+    {
+      files: ['**/*.d.ts'],
+      plugins: ['redundant-undefined'],
+      rules: {
+        'redundant-undefined/redundant-undefined': [
+          'error',
+          {followExactOptionalPropertyTypes: true},
+        ],
+      },
+    },
   ],
 };
