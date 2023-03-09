@@ -100,6 +100,7 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
                           key:(NSString *)key
+                   iosKeyCode:(NSInteger *)iosKeyCode
                    eventCount:(NSInteger)eventCount;
 
 /**

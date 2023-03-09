@@ -77,6 +77,7 @@ RCT_EXPORT_MODULE()
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
                           key:(NSString *)key
+                   iosKeyCode:(NSInteger *)iosKeyCode
                    eventCount:(NSInteger)eventCount
 {
   static NSString *events[] = {@"focus", @"blur", @"change", @"submitEditing", @"endEditing", @"keyPress"};

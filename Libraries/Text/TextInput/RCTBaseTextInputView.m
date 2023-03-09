@@ -346,6 +346,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                                  reactTag:self.reactTag
                                      text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
+                               iosKeyCode:nil
                                eventCount:_nativeEventCount];
 }
 
@@ -360,13 +361,37 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                                  reactTag:self.reactTag
                                      text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
+                               iosKeyCode:nil
                                eventCount:_nativeEventCount];
 
   [_eventDispatcher sendTextEventWithType:RCTTextEventTypeBlur
                                  reactTag:self.reactTag
                                      text:[self.backedTextInputView.attributedText.string copy]
                                       key:nil
+                               iosKeyCode:nil
                                eventCount:_nativeEventCount];
+}
+
+- (void)pressesBegan:(NSSet<UIPress *> *)presses withEvent:(UIPressesEvent *)event{
+  UIPress* firstPress = [[presses allObjects] objectAtIndex:0];
+  
+  if (@available(iOS 13.4, *)) {
+    if(firstPress != nil){
+      UIKey* key = firstPress.key;
+      CFIndex keyCode = (CFIndex) key.keyCode;
+      NSInteger *iosKeyCode = (NSInteger*) keyCode;
+      
+      if(key != nil){
+        [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
+                                       reactTag:self.reactTag
+                                           text:nil
+                                            key:key.characters
+                                     iosKeyCode:iosKeyCode
+                                     eventCount:_nativeEventCount];
+      }
+    }
+  }
+  [super pressesBegan:presses withEvent:event];
 }
 
 - (BOOL)textInputShouldSubmitOnReturn
@@ -383,6 +408,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                                    reactTag:self.reactTag
                                        text:[self.backedTextInputView.attributedText.string copy]
                                         key:nil
+                                 iosKeyCode:nil
                                  eventCount:_nativeEventCount];
   }
   return shouldSubmit;
@@ -403,11 +429,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
   if (!backedTextInputView.textWasPasted) {
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
+    if (@available(iOS 13.4, *)) {
+
+    } else {
+      [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                    reactTag:self.reactTag
                                        text:nil
                                         key:text
+                                 iosKeyCode:nil
                                  eventCount:_nativeEventCount];
+    }
   }
 
   if (_maxLength) {
