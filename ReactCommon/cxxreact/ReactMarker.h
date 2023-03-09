@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <vector>
-
 #ifdef __APPLE__
 #include <functional>
 #endif
@@ -74,16 +72,18 @@ class StartupLogger {
  public:
   static StartupLogger &getInstance();
 
-  void logStartupEvent(const ReactMarkerId markerId, const char *tag);
-  std::vector<ReactMarkerEvent> getStartupReactMarkers();
+  void logStartupEvent(const ReactMarker::ReactMarkerId markerId);
+  double getAppStartTime();
+  double getRunJSBundleStartTime();
+  double getRunJSBundleEndTime();
 
  private:
   StartupLogger() = default;
   StartupLogger(const StartupLogger &) = delete;
   StartupLogger &operator=(const StartupLogger &) = delete;
 
-  bool startupStopped;
-  std::vector<ReactMarkerEvent> startupReactMarkers;
+  double runJSBundleStartTime;
+  double runJSBundleEndTime;
 };
 
 } // namespace ReactMarker

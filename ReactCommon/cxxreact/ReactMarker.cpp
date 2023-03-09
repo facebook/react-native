@@ -30,7 +30,7 @@ void logMarker(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
-  StartupLogger::getInstance().logStartupEvent(markerId, tag);
+  StartupLogger::getInstance().logStartupEvent(markerId);
   logTaggedMarkerImpl(markerId, tag);
 }
 
@@ -39,16 +39,8 @@ void logMarkerBridgeless(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
-  StartupLogger::getInstance().logStartupEvent(markerId, tag);
+  StartupLogger::getInstance().logStartupEvent(markerId);
   logTaggedMarkerBridgelessImpl(markerId, tag);
-}
-
-double getAppStartTime() {
-  if (getAppStartTimeImpl == nullptr) {
-    return 0;
-  }
-
-  return getAppStartTimeImpl();
 }
 
 StartupLogger &StartupLogger::getInstance() {
@@ -56,23 +48,40 @@ StartupLogger &StartupLogger::getInstance() {
   return instance;
 }
 
-void StartupLogger::logStartupEvent(
-    const ReactMarkerId markerId,
-    const char *tag) {
-  if (startupStopped) {
-    return;
-  }
+void StartupLogger::logStartupEvent(const ReactMarkerId markerId) {
+  auto now = JSExecutor::performanceNow();
+  switch (markerId) {
+    case ReactMarkerId::RUN_JS_BUNDLE_START:
+      if (runJSBundleStartTime == 0) {
+        runJSBundleStartTime = now;
+      }
+      return;
 
-  if (markerId == ReactMarkerId::RUN_JS_BUNDLE_START ||
-      markerId == ReactMarkerId::RUN_JS_BUNDLE_STOP) {
-    startupReactMarkers.push_back(
-        {markerId, tag, JSExecutor::performanceNow()});
-    startupStopped = markerId == ReactMarkerId::RUN_JS_BUNDLE_STOP;
+    case ReactMarkerId::RUN_JS_BUNDLE_STOP:
+      if (runJSBundleEndTime == 0) {
+        runJSBundleEndTime = now;
+      }
+      return;
+
+    default:
+      return;
   }
 }
 
-std::vector<ReactMarkerEvent> StartupLogger::getStartupReactMarkers() {
-  return startupReactMarkers;
+double StartupLogger::getAppStartTime() {
+  if (getAppStartTimeImpl == nullptr) {
+    return 0;
+  }
+
+  return getAppStartTimeImpl();
+}
+
+double StartupLogger::getRunJSBundleStartTime() {
+  return runJSBundleStartTime;
+}
+
+double StartupLogger::getRunJSBundleEndTime() {
+  return runJSBundleEndTime;
 }
 
 } // namespace ReactMarker
