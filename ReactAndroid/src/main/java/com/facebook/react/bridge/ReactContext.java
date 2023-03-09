@@ -511,7 +511,10 @@ public class ReactContext extends ContextWrapper {
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
   public JavaScriptContextHolder getJavaScriptContextHolder() {
-    return mCatalystInstance.getJavaScriptContextHolder();
+    if (mCatalystInstance != null) {
+      return mCatalystInstance.getJavaScriptContextHolder();
+    }
+    return null;
   }
 
   public @Nullable JSIModule getJSIModule(JSIModuleType moduleType) {

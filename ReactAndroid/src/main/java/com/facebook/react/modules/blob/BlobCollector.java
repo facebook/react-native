@@ -23,7 +23,7 @@ import com.facebook.soloader.SoLoader;
           public void run() {
             JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder();
             // When debugging in chrome the JS context is not available.
-            if (jsContext.get() != 0) {
+            if (jsContext != null && jsContext.get() != 0) {
               nativeInstall(blobModule, jsContext.get());
             }
           }
