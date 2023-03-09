@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.71.4
+
+### Changed
+
+- Make FlatList permissive of ArrayLike data ([c03de97fb4](https://github.com/facebook/react-native/commit/c03de97fb44f0aecbec8f930bd99fe26f37f9648) by [@NickGerleman](https://github.com/NickGerleman))
+- Bumping RNGP to `^0.71.16` ([3df4a79c3d](https://github.com/facebook/react-native/commit/3df4a79c3d8e788ffb113fde801836251eed4c03) by [@kelset](https://github.com/kelset))
+- Update CLI to 10.2.0, Metro to 0.73.8 ([20a6fbd373](https://github.com/facebook/react-native/commit/20a6fbd37312ff4e6bb11f6f43b9abc2f559e1fb) by [@robhogan](https://github.com/robhogan)) - contains:
+  - fix: Source maps may have invalid entries when using Terser minification. ((`metro/#928`)[https://github.com/facebook/metro/pull/928])
+  - fix: Mitigate potential source map mismatches with concurrent transformations due to terser#1341. ((`metro/#929`)[https://github.com/facebook/metro/pull/929])
+- Bump Hermes Version ([291cc0af10](https://github.com/facebook/react-native/commit/291cc0af100fe2aa6201f04ebd6c8c889a018d45)) - contains:
+  - use ConsecutiveStringStorage to dedup serialized literals ([62d58e](https://github.com/facebook/hermes/commit/62d58e5d6747da8b8ee9e18eb8d0f57469acf201))
+  - Remove register stack size override in hermes.cpp ([6146eb](https://github.com/facebook/hermes/commit/6146eb39e9eb8e712169697eac75001c2aeab40d))
+  - fix: specify currency in locale identifier when formatting currency plural ([21f15c](https://github.com/facebook/hermes/commit/21f15c537a49a39bdf1b5440cde0b7312497431d))
+  - Increase default max stack size ([ee2588](https://github.com/facebook/hermes/commit/ee25883ea34374f687883a641c8101ac0d292fc6))
+  - Refactor HBC test helper ([31fdcf](https://github.com/facebook/hermes/commit/31fdcf738940875c9bacf251e149006cf515d763))
+
+#### Android specific
+
+- Expose `rrc_root` via prefab. ([3418f65d88](https://github.com/facebook/react-native/commit/3418f65d88fa8be3473f757e932ecba1bbfce783) by [@tomekzaw](https://github.com/tomekzaw))
+
+### Fixed
+
+- Fix touchable hitSlop type ([23607aea68](https://github.com/facebook/react-native/commit/23607aea688c950fe0cf424b280a2339636130fe) by [@bigcupcoffee](https://github.com/bigcupcoffee))
+- Fix TouchableOpacity componentDidUpdate causing an excessive number of pending callbacks ([8b1f6e09c1](https://github.com/facebook/react-native/commit/8b1f6e09c1b11e07096156d8d01aaff649745fbc) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+#### Android specific
+
+- ENTRY_FILE should resolve relative paths from root ([6dde1dc7cb](https://github.com/facebook/react-native/commit/6dde1dc7cb487271567aaa9c7e093bb76c0689ad) by [@cortinico](https://github.com/cortinico))
+- Better Monorepo support for New Architecture ([0487108461](https://github.com/facebook/react-native/commit/0487108461010154cf959bb0bf6ba9e82fdcc4d1) by [@cortinico](https://github.com/cortinico))
+
 ## v0.71.3
 
 ### Changed
