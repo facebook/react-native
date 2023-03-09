@@ -1257,6 +1257,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _onCellUnmount = (cellKey: string) => {
+    delete this._cellRefs[cellKey];
     const curr = this._frames[cellKey];
     if (curr) {
       this._frames[cellKey] = {...curr, inLayout: false};
@@ -1878,14 +1879,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const lastFocusedCellRenderer = this._cellRefs[this._lastFocusedCellKey];
     const focusedCellIndex = lastFocusedCellRenderer.props.index;
     const itemCount = props.getItemCount(props.data);
-
-    // The cell may have been unmounted and have a stale index
-    if (
-      focusedCellIndex >= itemCount ||
-      this._indicesToKeys.get(focusedCellIndex) !== this._lastFocusedCellKey
-    ) {
-      return [];
-    }
 
     let first = focusedCellIndex;
     let heightOfCellsBeforeFocused = 0;
