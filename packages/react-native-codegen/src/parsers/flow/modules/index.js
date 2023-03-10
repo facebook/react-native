@@ -295,7 +295,6 @@ function translateTypeAnnotation(
         typeResolutionStatus,
         nullable,
         hasteModuleName,
-        language,
         enumMap,
         parser,
       );

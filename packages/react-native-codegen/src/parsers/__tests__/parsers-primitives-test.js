@@ -358,7 +358,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );
@@ -402,7 +401,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );

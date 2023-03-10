@@ -34,7 +34,6 @@ import type {
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
 } from '../CodegenSchema';
-import type {ParserType} from './errors';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
@@ -204,7 +203,6 @@ function typeEnumResolution(
   typeResolution: TypeResolutionStatus,
   nullable: boolean,
   hasteModuleName: string,
-  language: ParserType,
   enumMap: {...NativeModuleEnumMap},
   parser: Parser,
 ): Nullable<NativeModuleEnumDeclaration> {
@@ -212,7 +210,7 @@ function typeEnumResolution(
     throw new UnsupportedTypeAnnotationParserError(
       hasteModuleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 
