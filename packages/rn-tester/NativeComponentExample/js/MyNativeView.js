@@ -16,6 +16,7 @@ import RNTMyNativeView, {
 } from './MyNativeViewNativeComponent';
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
+import {UIManager} from 'react-native';
 
 const colors = [
   '#0000FF',
@@ -76,6 +77,10 @@ export default function MyNativeView(props: {}): React.Node {
         }
       />
       <Text>HSBA: {hsba.toString()}</Text>
+      <Text>
+        Constants From Interop Layer:{' '}
+        {UIManager.RNTMyLegacyNativeView.Constants.PI}
+      </Text>
       <Button
         title="Change Background"
         onPress={() => {
