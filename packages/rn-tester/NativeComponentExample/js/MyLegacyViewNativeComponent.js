@@ -12,10 +12,22 @@ import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import {requireNativeComponent} from 'react-native';
 
+type ColorChangedEvent = {
+  nativeEvent: {
+    backgroundColor: {
+      hue: number,
+      saturation: number,
+      brightness: number,
+      alpha: number,
+    },
+  },
+};
+
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
   opacity?: number,
   color?: string,
+  onColorChanged?: (event: ColorChangedEvent) => void,
 |}>;
 
 export type MyLegacyViewType = HostComponent<NativeProps>;
