@@ -17,6 +17,11 @@
 
 @implementation RNTMyLegacyNativeViewManager
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(color, backgroundColor, UIColor)
@@ -31,4 +36,8 @@ RCT_EXPORT_VIEW_PROPERTY(onColorChanged, RCTBubblingEventBlock)
   return view;
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{@"PI" : @3.14};
+}
 @end
