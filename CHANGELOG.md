@@ -851,14 +851,6 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
 
-## v0.69.8
-
-### Fixed
-
-#### Android specific
-
-- Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
-
 ## v0.69.7
 
 ### Fixed
@@ -1158,14 +1150,6 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 ### Security
 
 - Encode URL params in URLSearchParams.toString() ([1042a8012f](https://github.com/facebook/react-native/commit/1042a8012fb472bd5c882b469fe507dd6279d562) by [@sshic](https://github.com/sshic))
-
-## v0.68.6
-
-### Fixed
-
-#### Android specific
-
-- Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
 
 ## v0.68.6
 
