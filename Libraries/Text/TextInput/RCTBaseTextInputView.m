@@ -378,10 +378,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   if (@available(iOS 13.4, *)) {
     if(firstPress != nil){
       UIKey* key = firstPress.key;
-      CFIndex keyCode = (CFIndex) key.keyCode;
-      NSInteger *iosKeyCode = (NSInteger*) keyCode;
       
       if(key != nil){
+        CFIndex keyCode = (CFIndex) key.keyCode;
+        NSInteger *iosKeyCode = (NSInteger*) keyCode;
         [_eventDispatcher sendTextEventWithType:RCTTextEventTypeKeyPress
                                        reactTag:self.reactTag
                                            text:nil
