@@ -393,12 +393,17 @@ public class TextLayoutManager {
         : UNSET;
 
     int lines = layout.getLineCount();
-    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines > lines && text.length() > 0) {
+    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines >= lines && text.length() > 0) {
       int numberOfEmptyLines = numberOfLines - lines;
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
+      // for some reason a newline on end causes issues with computing height so we add a character
+      if (text.toString().endsWith("\n")) {
+        ssb.append("A");
+      }
+
       for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append("\n");
+        ssb.append("\nA");
       }
 
       Object[] spans = text.getSpans(0, 0, Object.class);
@@ -419,7 +424,7 @@ public class TextLayoutManager {
     }
 
 
-    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines <= lines) {
+    if (numberOfLines != UNSET && numberOfLines != 0) {
       maximumNumberOfLines = numberOfLines;
     }
 

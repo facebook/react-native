@@ -417,8 +417,13 @@ public class TextLayoutManagerMapBuffer {
       int numberOfEmptyLines = numberOfLines - lines;
       SpannableStringBuilder ssb = new SpannableStringBuilder();
 
+      // for some reason a newline on end causes issues with computing height so we add a character
+      if (text.toString().endsWith("\n")) {
+        ssb.append("A");
+      }
+
       for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append("\n");
+        ssb.append("\nA");
       }
 
       Object[] spans = text.getSpans(0, 0, Object.class);
@@ -438,7 +443,7 @@ public class TextLayoutManagerMapBuffer {
           hyphenationFrequency);
     }
 
-    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines <= lines) {
+    if (numberOfLines != UNSET && numberOfLines != 0) {
       maximumNumberOfLines = numberOfLines;
     }
 
