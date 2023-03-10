@@ -64,8 +64,6 @@ const {
   throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
 
-const language = 'TypeScript';
-
 function translateObjectTypeAnnotation(
   hasteModuleName: string,
   /**
@@ -405,7 +403,7 @@ function translateTypeAnnotation(
       throw new UnsupportedTypeAnnotationParserError(
         hasteModuleName,
         typeAnnotation,
-        language,
+        parser.language(),
       );
     }
   }
