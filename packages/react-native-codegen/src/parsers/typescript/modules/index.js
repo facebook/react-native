@@ -15,9 +15,7 @@ import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModulePropertyShape,
   NativeModuleTypeAnnotation,
-  NativeModuleSchema,
   Nullable,
 } from '../../../CodegenSchema';
 
@@ -30,14 +28,9 @@ import type {
 const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
-const {verifyPlatforms} = require('../../utils');
 const {resolveTypeAnnotation} = require('../utils');
 
-const {
-  parseObjectProperty,
-  buildPropertySchema,
-  parseModuleName,
-} = require('../../parsers-commons');
+const {parseObjectProperty} = require('../../parsers-commons');
 const {typeEnumResolution} = require('../../parsers-primitives');
 
 const {
@@ -67,9 +60,6 @@ const {
 } = require('../../errors');
 
 const {
-  throwIfModuleInterfaceNotFound,
-  throwIfModuleInterfaceIsMisnamed,
-  throwIfMoreThanOneModuleInterfaceParserError,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
@@ -422,118 +412,6 @@ function translateTypeAnnotation(
   }
 }
 
-function buildModuleSchema(
-  hasteModuleName: string,
-  /**
-   * TODO(T108222691): Use flow-types for @babel/parser
-   */
-  ast: $FlowFixMe,
-  tryParse: ParserErrorCapturer,
-  parser: Parser,
-): NativeModuleSchema {
-  const types = parser.getTypes(ast);
-  const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
-    t => parser.isModuleInterface(t),
-  );
-
-  throwIfModuleInterfaceNotFound(
-    moduleSpecs.length,
-    hasteModuleName,
-    ast,
-    language,
-  );
-
-  throwIfMoreThanOneModuleInterfaceParserError(
-    hasteModuleName,
-    moduleSpecs,
-    language,
-  );
-
-  const [moduleSpec] = moduleSpecs;
-
-  throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
-
-  // Parse Module Name
-  // Also checks and throws error if:
-  // - Module Interface is Unused
-  // - More than 1 Module Registry Calls
-  // - Wrong number of Call Expression Args
-  // - Module Registry Call Args are Incorrect
-  // - Module is Untyped
-  // - Module Registry Call Type Parameter is Icorrect
-  const moduleName = parseModuleName(hasteModuleName, moduleSpec, ast, parser);
-
-  // Some module names use platform suffix to indicate platform-exclusive modules.
-  // Eventually this should be made explicit in the Flow type itself.
-  // Also check the hasteModuleName for platform suffix.
-  // Note: this shape is consistent with ComponentSchema.
-  const {cxxOnly, excludedPlatforms} = verifyPlatforms(
-    hasteModuleName,
-    moduleName,
-  );
-
-  // $FlowFixMe[missing-type-arg]
-  return (moduleSpec.body.body: $ReadOnlyArray<$FlowFixMe>)
-    .filter(
-      property =>
-        property.type === 'TSMethodSignature' ||
-        property.type === 'TSPropertySignature',
-    )
-    .map<?{
-      aliasMap: NativeModuleAliasMap,
-      enumMap: NativeModuleEnumMap,
-      propertyShape: NativeModulePropertyShape,
-    }>(property => {
-      const aliasMap: {...NativeModuleAliasMap} = {};
-      const enumMap: {...NativeModuleEnumMap} = {};
-
-      return tryParse(() => ({
-        aliasMap: aliasMap,
-        enumMap: enumMap,
-        propertyShape: buildPropertySchema(
-          hasteModuleName,
-          property,
-          types,
-          aliasMap,
-          enumMap,
-          tryParse,
-          cxxOnly,
-          resolveTypeAnnotation,
-          translateTypeAnnotation,
-          parser,
-        ),
-      }));
-    })
-    .filter(Boolean)
-    .reduce(
-      (
-        moduleSchema: NativeModuleSchema,
-        {aliasMap, enumMap, propertyShape},
-      ) => {
-        return {
-          type: 'NativeModule',
-          aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
-          enumMap: {...moduleSchema.enumMap, ...enumMap},
-          spec: {
-            properties: [...moduleSchema.spec.properties, propertyShape],
-          },
-          moduleName: moduleSchema.moduleName,
-          excludedPlatforms: moduleSchema.excludedPlatforms,
-        };
-      },
-      {
-        type: 'NativeModule',
-        aliasMap: {},
-        enumMap: {},
-        spec: {properties: []},
-        moduleName: moduleName,
-        excludedPlatforms:
-          excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
-      },
-    );
-}
-
 module.exports = {
-  buildModuleSchema,
   typeScriptTranslateTypeAnnotation: translateTypeAnnotation,
 };
