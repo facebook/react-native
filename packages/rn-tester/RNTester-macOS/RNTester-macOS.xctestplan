@@ -1,0 +1,46 @@
+{
+  "configurations" : [
+    {
+      "id" : "59C4DFC4-597F-41C6-99FD-32D94C5488D4",
+      "name" : "Address Sanitizer",
+      "options" : {
+        "addressSanitizer" : {
+          "detectStackUseAfterReturn" : true,
+          "enabled" : true
+        }
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "environmentVariableEntries" : [
+      {
+        "key" : "CI_USE_PACKAGER",
+        "value" : "1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:RNTesterPods.xcodeproj",
+      "identifier" : "ACC52F3D299ECB7A002A2B0B",
+      "name" : "RNTester-macOS"
+    },
+    "undefinedBehaviorSanitizerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:RNTesterPods.xcodeproj",
+        "identifier" : "ACC52F54299ECB8A002A2B0B",
+        "name" : "RNTester-macOSUnitTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:RNTesterPods.xcodeproj",
+        "identifier" : "ACC52F61299ECB97002A2B0B",
+        "name" : "RNTester-macOSIntegrationTests"
+      }
+    }
+  ],
+  "version" : 1
+}
