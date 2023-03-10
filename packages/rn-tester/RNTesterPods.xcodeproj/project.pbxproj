@@ -100,6 +100,7 @@
 		7EF713A10F318708C60DCC62 /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNTester/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8845E748A7EF4BC0568D4419 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNTester.xctestplan; path = RNTester/RNTester.xctestplan; sourceTree = "<group>"; };
 		AE4D4DA9DA2F3F27E040F3B6 /* Pods-RNTesterIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B48B1AF9A9C9D998832E8B46 /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
 		BF43347F8AFCCDDE032BA797 /* libPods-RNTesterIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -225,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */,
+				AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */,
 				E771AEEA22B44E3100EA1189 /* Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5C60EB1B226440DB0018C04F /* AppDelegate.mm */,
