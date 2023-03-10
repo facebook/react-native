@@ -96,7 +96,7 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
-    Bundle launchOptions = composeLaunchOptions();
+    final Bundle launchOptions = composeLaunchOptions();
     mReactDelegate =
         new ReactDelegate(
             getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
