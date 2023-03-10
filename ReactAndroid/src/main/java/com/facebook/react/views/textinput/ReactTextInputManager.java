@@ -1070,9 +1070,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void afterTextChanged(Editable s) {
-      if (!mEditText.hasFocus()) {
-        mEditText.post(() -> mEditText.scrollTo(0,0));
-      }
+      mEditText.post(new Runnable() {
+        @Override
+        public void run() {
+          mEditText.scrollTo(0, 0);
+        }
+      });
     }
   }
 
