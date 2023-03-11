@@ -1262,6 +1262,7 @@ describe('createComponentConfig', () => {
 
   describe('when commandTypeNames is an empty array', () => {
     it('returns the foundConfig and null for the command parameters', () => {
+      // $FlowFixMe[missing-empty-array-annot]
       const commandsTypeNames = [];
 
       const expectedConfig = {

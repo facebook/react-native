@@ -469,7 +469,7 @@ function buildSchema(
 function createComponentConfig(
   foundConfig: $FlowFixMe,
   commandsTypeNames: $FlowFixMe,
-) {
+): $FlowFixMe {
   return {
     ...foundConfig,
     commandTypeName:
