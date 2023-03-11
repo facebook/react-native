@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { SchemaType } from "../CodegenSchema";
+import type { SchemaType } from '../CodegenSchema';
 
 export type FilesOutput = Map<string, string>;
 export type LibraryGeneratorFunction = (libraryName: string, schema: SchemaType, packageName: string | undefined, assumeNonnull: boolean) => FilesOutput;
