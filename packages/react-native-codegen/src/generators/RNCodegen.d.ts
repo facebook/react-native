@@ -71,13 +71,13 @@ export interface LibraryOptions {
     libraryName: string;
     schema: SchemaType;
     outputDirectory: string;
-    packageName?: string;
+    packageName?: string | undefined;
     assumeNonnull: boolean;
 }
 
 export interface LibraryConfig {
     generators: LibraryGenerators[];
-    test?: boolean;
+    test?: boolean | undefined;
 }
 
 export interface SchemasOptions {
@@ -87,7 +87,7 @@ export interface SchemasOptions {
 
 export interface SchemasConfig {
     generators: SchemaGenerators[];
-    test?: boolean;
+    test?: boolean | undefined;
 }
 
 export declare const allGenerators: AllGenerators;
