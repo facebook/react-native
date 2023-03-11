@@ -29,8 +29,8 @@ const generateModuleH = require('./modules/GenerateModuleH.js');
 const generateModuleCpp = require('./modules/GenerateModuleCpp.js');
 const generateModuleObjCpp = require('./modules/GenerateModuleObjCpp');
 const generateModuleJavaSpec = require('./modules/GenerateModuleJavaSpec.js');
-const GenerateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
-const GenerateModuleJniH = require('./modules/GenerateModuleJniH.js');
+const generateModuleJniCpp = require('./modules/GenerateModuleJniCpp.js');
+const generateModuleJniH = require('./modules/GenerateModuleJniH.js');
 const generatePropsJavaInterface = require('./components/GeneratePropsJavaInterface.js');
 const generatePropsJavaDelegate = require('./components/GeneratePropsJavaDelegate.js');
 const generateTests = require('./components/GenerateTests.js');
@@ -55,8 +55,8 @@ const ALL_GENERATORS = {
   generateModuleCpp: generateModuleCpp.generate,
   generateModuleObjCpp: generateModuleObjCpp.generate,
   generateModuleJavaSpec: generateModuleJavaSpec.generate,
-  GenerateModuleJniCpp: GenerateModuleJniCpp.generate,
-  GenerateModuleJniH: GenerateModuleJniH.generate,
+  generateModuleJniCpp: generateModuleJniCpp.generate,
+  generateModuleJniH: generateModuleJniH.generate,
   generatePropsJavaInterface: generatePropsJavaInterface.generate,
   generatePropsJavaDelegate: generatePropsJavaDelegate.generate,
   generateTests: generateTests.generate,
@@ -149,8 +149,8 @@ const LIBRARY_GENERATORS = {
     generateShadowNodeH.generate,
   ],
   modulesAndroid: [
-    GenerateModuleJniCpp.generate,
-    GenerateModuleJniH.generate,
+    generateModuleJniCpp.generate,
+    generateModuleJniH.generate,
     generateModuleJavaSpec.generate,
   ],
   modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
