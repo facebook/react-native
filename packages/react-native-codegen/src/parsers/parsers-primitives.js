@@ -509,6 +509,59 @@ function emitPartial(
   return emitObject(nullable, partialProperties);
 }
 
+function emitCommonTypes(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  typeAnnotation: $FlowFixMe,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  parser: Parser,
+): $FlowFixMe {
+  const typeAnnotationType =
+    parser.language() === 'TypeScript'
+      ? typeAnnotation.type
+      : typeAnnotation.id.name;
+
+  switch (typeAnnotationType) {
+    case 'Stringish': {
+      return emitStringish(nullable);
+    }
+    case 'Int32': {
+      return emitInt32(nullable);
+    }
+    case 'Double': {
+      return emitDouble(nullable);
+    }
+    case 'Float': {
+      return emitFloat(nullable);
+    }
+    case 'UnsafeObject':
+    case 'Object': {
+      return emitGenericObject(nullable);
+    }
+    case '$Partial':
+    case 'Partial': {
+      return emitPartial(
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        nullable,
+        parser,
+      );
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -527,6 +580,7 @@ module.exports = {
   emitMixed,
   emitUnion,
   emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
   translateArrayTypeAnnotation,

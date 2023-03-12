@@ -31,26 +31,22 @@ const {flattenProperties} = require('../components/componentsUtils');
 const {resolveTypeAnnotation} = require('../utils');
 
 const {parseObjectProperty} = require('../../parsers-commons');
-const {typeEnumResolution} = require('../../parsers-primitives');
 
 const {
   emitArrayType,
   emitBoolean,
-  emitDouble,
-  emitFloat,
   emitFunction,
   emitNumber,
-  emitInt32,
   emitGenericObject,
   emitPromise,
   emitRootTag,
   emitVoid,
   emitString,
-  emitStringish,
   emitMixed,
   emitUnion,
-  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
+  typeEnumResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
 

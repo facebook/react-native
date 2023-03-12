@@ -32,20 +32,16 @@ const {
 const {
   emitArrayType,
   emitBoolean,
-  emitDouble,
-  emitFloat,
   emitFunction,
   emitNumber,
-  emitInt32,
   emitGenericObject,
   emitPromise,
   emitRootTag,
   emitVoid,
   emitString,
-  emitStringish,
   emitMixed,
   emitUnion,
-  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
 } = require('../../parsers-primitives');
@@ -127,25 +123,8 @@ function translateTypeAnnotation(
 
           return wrapNullable(nullable || isParamNullable, paramType);
         }
-        case 'Stringish': {
-          return emitStringish(nullable);
-        }
-        case 'Int32': {
-          return emitInt32(nullable);
-        }
-        case 'Double': {
-          return emitDouble(nullable);
-        }
-        case 'Float': {
-          return emitFloat(nullable);
-        }
-        case 'UnsafeObject':
-        case 'Object': {
-          return emitGenericObject(nullable);
-        }
-        case 'Partial':
-        case '$Partial': {
-          return emitPartial(
+        default: {
+          const commonType = emitCommonTypes(
             hasteModuleName,
             types,
             typeAnnotation,
@@ -154,14 +133,18 @@ function translateTypeAnnotation(
             tryParse,
             cxxOnly,
             nullable,
-          );
-        }
-        default: {
-          throw new UnsupportedGenericParserError(
-            hasteModuleName,
-            typeAnnotation,
             parser,
           );
+
+          if (commonType !== null) {
+            return commonType;
+          } else {
+            throw new UnsupportedGenericParserError(
+              hasteModuleName,
+              typeAnnotation,
+              parser,
+            );
+          }
         }
       }
     }
