@@ -37,7 +37,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final Object mModuleCleanupLock = new Object();
 
   @GuardedBy("mModuleCleanupLock")
-  private boolean mTurboModuleCleanupStarted = false;
+  private boolean mModuleCleanupStarted = false;
 
   // List of TurboModules that have been, or are currently being, instantiated
   @GuardedBy("mModuleCleanupLock")
@@ -134,7 +134,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     ModuleHolder moduleHolder;
 
     synchronized (mModuleCleanupLock) {
-      if (mTurboModuleCleanupStarted) {
+      if (mModuleCleanupStarted) {
         /*
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
          */
@@ -308,7 +308,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * created TurboModules.
      */
     synchronized (mModuleCleanupLock) {
-      mTurboModuleCleanupStarted = true;
+      mModuleCleanupStarted = true;
     }
 
     for (final Map.Entry<String, ModuleHolder> moduleHolderEntry : mModuleHolders.entrySet()) {
