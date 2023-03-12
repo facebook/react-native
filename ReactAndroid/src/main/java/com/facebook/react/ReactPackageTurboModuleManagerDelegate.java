@@ -79,6 +79,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         continue;
       }
 
+      if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
+        // TODO(T145105887): Output error that ReactPackage was used
+
+        continue;
+      }
+
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
 
