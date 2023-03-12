@@ -49,6 +49,8 @@ const {
 
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('./error-utils');
 const {nullGuard} = require('./parsers-utils');
 const {
@@ -473,6 +475,40 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
   };
 }
 
+function emitPartial(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  parser: Parser,
+): Nullable<NativeModuleTypeAnnotation> {
+  throwIfPartialWithMoreParameter(typeAnnotation);
+
+  throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
+
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+  const annotatedElementProperties = annotatedElement.right.properties;
+
+  const partialProperties = parser.computePartialProperties(
+    annotatedElementProperties,
+    hasteModuleName,
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+  );
+
+  return emitObject(nullable, partialProperties);
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -490,6 +526,7 @@ module.exports = {
   emitStringish,
   emitMixed,
   emitUnion,
+  emitPartial,
   typeAliasResolution,
   typeEnumResolution,
   translateArrayTypeAnnotation,

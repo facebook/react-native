@@ -38,7 +38,6 @@ const {
   emitNumber,
   emitInt32,
   emitGenericObject,
-  emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -46,6 +45,7 @@ const {
   emitStringish,
   emitMixed,
   emitUnion,
+  emitPartial,
   typeAliasResolution,
   typeEnumResolution,
 } = require('../../parsers-primitives');
@@ -54,11 +54,6 @@ const {
   UnsupportedTypeAnnotationParserError,
   UnsupportedGenericParserError,
 } = require('../../errors');
-
-const {
-  throwIfPartialNotAnnotatingTypeParameter,
-  throwIfPartialWithMoreParameter,
-} = require('../../error-utils');
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -150,30 +145,16 @@ function translateTypeAnnotation(
         }
         case 'Partial':
         case '$Partial': {
-          throwIfPartialWithMoreParameter(typeAnnotation);
-
-          const annotatedElement = parser.extractAnnotatedElement(
-            typeAnnotation,
-            types,
-          );
-
-          throwIfPartialNotAnnotatingTypeParameter(
-            typeAnnotation,
-            types,
-            parser,
-          );
-
-          const properties = parser.computePartialProperties(
-            annotatedElement.right.properties,
+          return emitPartial(
             hasteModuleName,
             types,
+            typeAnnotation,
             aliasMap,
             enumMap,
             tryParse,
             cxxOnly,
+            nullable,
           );
-
-          return emitObject(nullable, properties);
         }
         default: {
           throw new UnsupportedGenericParserError(

@@ -42,7 +42,6 @@ const {
   emitNumber,
   emitInt32,
   emitGenericObject,
-  emitObject,
   emitPromise,
   emitRootTag,
   emitVoid,
@@ -50,6 +49,7 @@ const {
   emitStringish,
   emitMixed,
   emitUnion,
+  emitPartial,
   typeAliasResolution,
   translateArrayTypeAnnotation,
 } = require('../../parsers-primitives');
@@ -58,11 +58,6 @@ const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
 } = require('../../errors');
-
-const {
-  throwIfPartialNotAnnotatingTypeParameter,
-  throwIfPartialWithMoreParameter,
-} = require('../../error-utils');
 
 function translateObjectTypeAnnotation(
   hasteModuleName: string,
