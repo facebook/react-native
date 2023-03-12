@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -76,6 +77,55 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mPackageModuleInfos.put(
             moduleProvider, lazyPkg.getReactModuleInfoProvider().getReactModuleInfos());
         continue;
+      }
+
+      if (shouldSupportLegacyPackages()) {
+        // TODO(T145105887): Output warnings that ReactPackage was used
+
+        final List<NativeModule> nativeModules =
+            reactPackage.createNativeModules(reactApplicationContext);
+
+        final Map<String, NativeModule> moduleMap = new HashMap<>();
+        final Map<String, ReactModuleInfo> reactModuleInfoMap = new HashMap<>();
+
+        for (final NativeModule module : nativeModules) {
+          final Class<? extends NativeModule> moduleClass = module.getClass();
+          final @Nullable ReactModule reactModule = moduleClass.getAnnotation(ReactModule.class);
+
+          final String moduleName = reactModule != null ? reactModule.name() : module.getName();
+
+          final ReactModuleInfo moduleInfo =
+              reactModule != null
+                  ? new ReactModuleInfo(
+                      moduleName,
+                      moduleClass.getName(),
+                      reactModule.canOverrideExistingModule(),
+                      true,
+                      reactModule.hasConstants(),
+                      reactModule.isCxxModule(),
+                      TurboModule.class.isAssignableFrom(moduleClass))
+                  : new ReactModuleInfo(
+                      moduleName,
+                      moduleClass.getName(),
+                      module.canOverrideExistingModule(),
+                      true,
+                      true,
+                      CxxModuleWrapper.class.isAssignableFrom(moduleClass),
+                      TurboModule.class.isAssignableFrom(moduleClass));
+
+          reactModuleInfoMap.put(moduleName, moduleInfo);
+          moduleMap.put(moduleName, module);
+        }
+
+        final ModuleProvider moduleProvider =
+            new ModuleProvider() {
+              public NativeModule getModule(String moduleName) {
+                return moduleMap.get(moduleName);
+              }
+            };
+
+        mModuleProviders.add(moduleProvider);
+        mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
       }
     }
   }
