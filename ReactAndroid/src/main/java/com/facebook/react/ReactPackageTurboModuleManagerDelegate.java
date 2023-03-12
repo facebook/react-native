@@ -22,20 +22,30 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
-  private final List<TurboReactPackage> mPackages = new ArrayList<>();
-  private final Map<TurboReactPackage, Map<String, ReactModuleInfo>> mPackageModuleInfos =
+  interface ModuleProvider {
+    @Nullable
+    NativeModule getModule(String moduleName);
+  }
+
+  private final List<ModuleProvider> mModuleProviders = new ArrayList<>();
+  private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
-  private final ReactApplicationContext mReactApplicationContext;
 
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
-    mReactApplicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof TurboReactPackage) {
-        TurboReactPackage pkg = (TurboReactPackage) reactPackage;
-        mPackages.add(pkg);
-        mPackageModuleInfos.put(pkg, pkg.getReactModuleInfoProvider().getReactModuleInfos());
+        final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
+        final ModuleProvider moduleProvider =
+            new ModuleProvider() {
+              public NativeModule getModule(String moduleName) {
+                return turboPkg.getModule(moduleName, reactApplicationContext);
+              }
+            };
+        mModuleProviders.add(moduleProvider);
+        mPackageModuleInfos.put(
+            moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
       }
     }
   }
@@ -75,16 +85,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private TurboModule resolveModule(String moduleName) {
     NativeModule resolvedModule = null;
 
-    for (final TurboReactPackage pkg : mPackages) {
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
       try {
-        final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(pkg).get(moduleName);
+        final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
         if (moduleInfo == null
             || !moduleInfo.isTurboModule()
             || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
           continue;
         }
 
-        final NativeModule module = pkg.getModule(moduleName, mReactApplicationContext);
+        final NativeModule module = moduleProvider.getModule(moduleName);
         if (module != null) {
           resolvedModule = module;
         }
@@ -107,10 +117,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Override
   public List<String> getEagerInitModuleNames() {
     List<String> moduleNames = new ArrayList<>();
-    for (TurboReactPackage reactPackage : mPackages) {
-      for (ReactModuleInfo moduleInfo :
-          reactPackage.getReactModuleInfoProvider().getReactModuleInfos().values()) {
-
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      for (final ReactModuleInfo moduleInfo : mPackageModuleInfos.get(moduleProvider).values()) {
         if (moduleInfo.isTurboModule() && moduleInfo.needsEagerInit()) {
           moduleNames.add(moduleInfo.name());
         }
