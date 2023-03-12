@@ -136,15 +136,14 @@ function translateTypeAnnotation(
             parser,
           );
 
-          if (commonType !== null) {
-            return commonType;
-          } else {
+          if (!commonType) {
             throw new UnsupportedGenericParserError(
               hasteModuleName,
               typeAnnotation,
               parser,
             );
           }
+          return commonType;
         }
       }
     }
