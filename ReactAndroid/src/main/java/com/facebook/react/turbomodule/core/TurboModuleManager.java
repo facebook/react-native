@@ -15,6 +15,7 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -181,7 +182,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
           TurboModulePerfLogger.moduleCreateCacheHit(moduleName, moduleHolder.getModuleId());
         }
 
-        return moduleHolder.getModule();
+        return (TurboModule) moduleHolder.getModule();
       }
 
       if (!moduleHolder.isCreatingModule()) {
@@ -204,7 +205,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
       if (turboModule != null) {
         synchronized (moduleHolder) {
-          moduleHolder.setModule(turboModule);
+          moduleHolder.setModule((NativeModule) turboModule);
         }
 
         /*
@@ -244,7 +245,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         Thread.currentThread().interrupt();
       }
 
-      return moduleHolder.getModule();
+      return (TurboModule) moduleHolder.getModule();
     }
   }
 
@@ -260,7 +261,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       synchronized (moduleHolder) {
         // No need to wait for the TurboModule to finish being created and initialized
         if (moduleHolder.getModule() != null) {
-          turboModules.add(moduleHolder.getModule());
+          turboModules.add((TurboModule) moduleHolder.getModule());
         }
       }
     }
@@ -342,7 +343,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   private static class ModuleHolder {
-    private volatile TurboModule mModule = null;
+    private volatile NativeModule mModule = null;
     private volatile boolean mIsTryingToCreate = false;
     private volatile boolean mIsDoneCreatingModule = false;
     private static volatile int sHolderCount = 0;
@@ -357,12 +358,12 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       return mModuleId;
     }
 
-    void setModule(@NonNull TurboModule module) {
+    void setModule(@NonNull NativeModule module) {
       mModule = module;
     }
 
     @Nullable
-    TurboModule getModule() {
+    NativeModule getModule() {
       return mModule;
     }
 
