@@ -11,8 +11,10 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
+import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Provider;
 
 public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModuleManagerDelegate {
   interface ModuleProvider {
@@ -30,6 +33,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final List<ModuleProvider> mModuleProviders = new ArrayList<>();
   private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
+
+  private static boolean shouldSupportLegacyPackages() {
+    return ReactFeatureFlags.enableBridgelessArchitecture
+        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  }
 
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
@@ -46,6 +54,28 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
             moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
+        continue;
+      }
+
+      if (shouldSupportLegacyPackages() && reactPackage instanceof LazyReactPackage) {
+        // TODO(T145105887): Output warnings that LazyReactPackage was used
+        final LazyReactPackage lazyPkg = ((LazyReactPackage) reactPackage);
+        final List<ModuleSpec> moduleSpecs = lazyPkg.getNativeModules(reactApplicationContext);
+        final Map<String, Provider<? extends NativeModule>> moduleSpecProviderMap = new HashMap<>();
+        for (final ModuleSpec moduleSpec : moduleSpecs) {
+          moduleSpecProviderMap.put(moduleSpec.getName(), moduleSpec.getProvider());
+        }
+
+        final ModuleProvider moduleProvider =
+            (name) -> {
+              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(name);
+              return provider != null ? provider.get() : null;
+            };
+
+        mModuleProviders.add(moduleProvider);
+        mPackageModuleInfos.put(
+            moduleProvider, lazyPkg.getReactModuleInfoProvider().getReactModuleInfos());
+        continue;
       }
     }
   }
