@@ -10,7 +10,9 @@ react_native_path = File.join(__dir__, "..", "..")
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-version = package['version']
+# We patch this so to remove the -wanderlog.X part of this, since we don't
+# release our own version of hermes-engine
+version = package['version'].split('-').first
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
