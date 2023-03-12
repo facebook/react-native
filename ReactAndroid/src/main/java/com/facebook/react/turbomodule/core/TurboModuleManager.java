@@ -30,8 +30,8 @@ import java.util.*;
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private static volatile boolean sIsSoLibraryLoaded;
   private final List<String> mEagerInitModuleNames;
-  private final TurboModuleProvider mJavaModuleProvider;
-  private final TurboModuleProvider mCxxModuleProvider;
+  private final ModuleProvider<TurboModule> mJavaModuleProvider;
+  private final ModuleProvider<TurboModule> mCxxModuleProvider;
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
   private final Object mModuleCleanupLock = new Object();
@@ -65,7 +65,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
 
     mJavaModuleProvider =
-        new TurboModuleProvider() {
+        new ModuleProvider<TurboModule>() {
           @Nullable
           public TurboModule getModule(String moduleName) {
             if (delegate == null) {
@@ -77,7 +77,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         };
 
     mCxxModuleProvider =
-        new TurboModuleProvider() {
+        new ModuleProvider<TurboModule>() {
           @Nullable
           public TurboModule getModule(String moduleName) {
             if (delegate == null) {
@@ -384,8 +384,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
   }
 
-  private interface TurboModuleProvider {
+  private interface ModuleProvider<T> {
     @Nullable
-    TurboModule getModule(String name);
+    T getModule(String name);
   }
 }
