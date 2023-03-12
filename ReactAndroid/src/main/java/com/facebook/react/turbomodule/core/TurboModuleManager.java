@@ -154,7 +154,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
 
     TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
-    TurboModule module = getModule(moduleName, moduleHolder, true);
+    TurboModule module = getOrCreateModule(moduleName, moduleHolder, true);
 
     if (module != null) {
       TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
@@ -172,7 +172,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
    * first thread creates x. All n - 1 other threads wait until the x is created and initialized.
    */
   @Nullable
-  private TurboModule getModule(
+  private TurboModule getOrCreateModule(
       String moduleName, @NonNull ModuleHolder moduleHolder, boolean shouldPerfLog) {
     boolean shouldCreateModule = false;
 
@@ -321,7 +321,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
        * initialized. In this case, we should wait for initialization to complete, before destroying
        * the TurboModule.
        */
-      final TurboModule turboModule = getModule(moduleName, moduleHolder, false);
+      final TurboModule turboModule = getOrCreateModule(moduleName, moduleHolder, false);
 
       if (turboModule != null) {
         turboModule.invalidate();
