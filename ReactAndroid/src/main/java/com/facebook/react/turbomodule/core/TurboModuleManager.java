@@ -34,13 +34,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private final TurboModuleProvider mCxxModuleProvider;
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
-  private final Object mTurboModuleCleanupLock = new Object();
+  private final Object mModuleCleanupLock = new Object();
 
-  @GuardedBy("mTurboModuleCleanupLock")
+  @GuardedBy("mModuleCleanupLock")
   private boolean mTurboModuleCleanupStarted = false;
 
   // List of TurboModules that have been, or are currently being, instantiated
-  @GuardedBy("mTurboModuleCleanupLock")
+  @GuardedBy("mModuleCleanupLock")
   private final Map<String, ModuleHolder> mModuleHolders = new HashMap<>();
 
   @DoNotStrip
@@ -133,7 +133,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   public TurboModule getModule(String moduleName) {
     ModuleHolder moduleHolder;
 
-    synchronized (mTurboModuleCleanupLock) {
+    synchronized (mModuleCleanupLock) {
       if (mTurboModuleCleanupStarted) {
         /*
          * Always return null after cleanup has started, so that getModule(moduleName) returns null.
@@ -251,7 +251,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   /** Which TurboModules have been created? */
   public Collection<TurboModule> getModules() {
     final List<ModuleHolder> moduleHolders = new ArrayList<>();
-    synchronized (mTurboModuleCleanupLock) {
+    synchronized (mModuleCleanupLock) {
       moduleHolders.addAll(mModuleHolders.values());
     }
 
@@ -270,7 +270,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
   public boolean hasModule(String moduleName) {
     ModuleHolder moduleHolder;
-    synchronized (mTurboModuleCleanupLock) {
+    synchronized (mModuleCleanupLock) {
       moduleHolder = mModuleHolders.get(moduleName);
     }
 
@@ -307,7 +307,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
      * <p>The ModuleHolders in mModuleHolders, however, can still be populated with newly
      * created TurboModules.
      */
-    synchronized (mTurboModuleCleanupLock) {
+    synchronized (mModuleCleanupLock) {
       mTurboModuleCleanupStarted = true;
     }
 
