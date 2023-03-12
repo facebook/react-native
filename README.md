@@ -4,6 +4,7 @@
   </a>
 </h1>
 
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
 <p align="center">
   <strong>Learn once, write anywhere:</strong><br>
   Build mobile apps with React.
