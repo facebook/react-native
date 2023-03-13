@@ -132,6 +132,7 @@ PODS:
     - React-graphics
     - React-jsi
     - React-jsiexecutor
+    - React-NativeModulesApple
     - React-rncore
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -675,6 +676,15 @@ PODS:
   - React-jsinspector (1000.0.0)
   - React-logger (1000.0.0):
     - glog
+  - React-NativeModulesApple (1000.0.0):
+    - hermes-engine
+    - React-callinvoker
+    - React-Core
+    - React-cxxreact
+    - React-jsi
+    - React-runtimeexecutor
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
   - React-perflogger (1000.0.0)
   - React-RCTActionSheet (1000.0.0):
     - React-Core/RCTActionSheetHeaders (= 1000.0.0)
@@ -756,13 +766,21 @@ PODS:
   - React-rncore (1000.0.0)
   - React-runtimeexecutor (1000.0.0):
     - React-jsi (= 1000.0.0)
+  - ReactCommon-Samples (1000.0.0):
+    - DoubleConversion
+    - hermes-engine
+    - RCT-Folly
+    - React-Codegen
+    - React-Core
+    - React-cxxreact
+    - React-NativeModulesApple
+    - ReactCommon/turbomodule/core
   - ReactCommon/turbomodule/bridging (1000.0.0):
     - DoubleConversion
     - glog
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-logger (= 1000.0.0)
@@ -773,23 +791,10 @@ PODS:
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
-  - ReactCommon/turbomodule/samples (1000.0.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-logger (= 1000.0.0)
-    - React-perflogger (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
   - ScreenshotManager (0.0.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -848,6 +853,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
   - React-logger (from `../../ReactCommon/logger`)
+  - React-NativeModulesApple (from `../../ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
@@ -864,8 +870,8 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../Libraries/Vibration`)
   - React-rncore (from `../../ReactCommon`)
   - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
+  - ReactCommon-Samples (from `../../ReactCommon/react/nativemodule/samples`)
   - ReactCommon/turbomodule/core (from `../../ReactCommon`)
-  - ReactCommon/turbomodule/samples (from `../../ReactCommon`)
   - ScreenshotManager (from `NativeModuleExample`)
   - Yoga (from `../../ReactCommon/yoga`)
 
@@ -934,6 +940,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/jsinspector"
   React-logger:
     :path: "../../ReactCommon/logger"
+  React-NativeModulesApple:
+    :path: "../../ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
     :path: "../../ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -968,6 +976,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../../ReactCommon"
+  ReactCommon-Samples:
+    :path: "../../ReactCommon/react/nativemodule/samples"
   ScreenshotManager:
     :path: NativeModuleExample
   Yoga:
@@ -989,7 +999,7 @@ SPEC CHECKSUMS:
   FlipperKit: 2efad7007d6745a3f95e4034d547be637f89d3f6
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  hermes-engine: 9dd16fe1cfa47002229300b94e89fc661e198b10
+  hermes-engine: a3aafd582c2460eb341f717ee861ee2fe7ca7e6b
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
@@ -998,7 +1008,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: a41e253b4ed644708899857d912b2f50c7b6214d
   React: 2fc6c4c656cccd6753016528ad41199c16fd558e
   React-callinvoker: a7d5e883a83bb9bd3985b08be832c5e76451d18f
-  React-Codegen: 1d5974f7b1384b458c5e38f1aad902d0bfce1c80
+  React-Codegen: ecc7c203dcc86316ff12a865dbfc71190458b367
   React-Core: 279a6e5ee79e88faa99157169b560c49635973d7
   React-CoreModules: d3ee40954b381edc514301341e8b895febfc1848
   React-cxxreact: aff243750dad852080636e615d7ae5639381735b
@@ -1010,10 +1020,11 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 8361f78286021782d885e0888bb059a4045c59b9
   React-jsinspector: 9b56a373a6797114e1d89a7dffa98ee98af67a8f
   React-logger: 07c9b44040a6f948b8e2033207b23cb623f0b9b4
+  React-NativeModulesApple: 47a650ab999a254890d8294581b59761f09d3867
   React-perflogger: b4b9fb2ddd856b78003708ab3cf66ce03e6bc7c4
   React-RCTActionSheet: 1b1501ef80928be10702cd0ce09120358094cd82
   React-RCTAnimation: 6741f7be3e269e057c1426074cc70f34b56e114b
-  React-RCTAppDelegate: 0b3b2c1e02c02f952f5033535ddb23d690e3b890
+  React-RCTAppDelegate: 777164f9f62174c65df37286df4eee43b44a6fb0
   React-RCTBlob: fd1ee93e48aa67b0183346a59754375de93de63d
   React-RCTFabric: 179b2203e1b8b89b6ec8fa6104071beb553b1684
   React-RCTImage: 055685a12c88939437f6520d9e7c120cd666cbf1
@@ -1026,12 +1037,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: ecfd04c1886a9c9a4e31a466c0fbcf6b36e92fde
   React-rncore: 3ef1d281e86300d2c8f97625f4a2fcea6602c5d5
   React-runtimeexecutor: c7b2cd6babf6cc50340398bfbb7a9da13c93093f
-  ReactCommon: fdc30b91d89bfd2ed919c2cbccb460435f1f43f4
+  ReactCommon: b3e76cb18ee28cd0e3a927f5b53f888312443b6b
+  ReactCommon-Samples: 7bf1ed1f5d659fae980b40c35c5a431d0ec49189
   ScreenshotManager: fb68e0677077569df974c9cbeaeb54f764d002ba
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 1b1a12ff3d86a10565ea7cbe057d42f5e5fb2a07
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 041d77a36c7a31e8cd4f62ad87890e1436d3e1a9
+PODFILE CHECKSUM: 4ce27549a365914ecebdb15cdbdd10e52ab4b209
 
 COCOAPODS: 1.12.0

@@ -151,7 +151,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     initProps[@"exampleFromAppetizeParams"] = [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri];
   }
 
-#ifdef RCT_NEW_ARCH_ENABLED
+#ifdef RN_FABRIC_ENABLED
   initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
 #endif
 
@@ -201,7 +201,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   std::shared_ptr<facebook::react::CallInvoker> callInvoker = bridge.jsCallInvoker;
 
-#ifdef RCT_NEW_ARCH_ENABLED
+#ifdef RN_FABRIC_ENABLED
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
@@ -230,9 +230,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
           return;
         }
         __typeof(self) strongSelf = weakSelf;
+#if RN_FABRIC_ENABLED
         if (strongSelf && strongSelf->_runtimeScheduler) {
           facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, strongSelf->_runtimeScheduler);
         }
+#endif
         if (strongSelf) {
           facebook::react::RuntimeExecutor syncRuntimeExecutor =
               [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
@@ -282,9 +284,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (void)registerPaperComponents:(NSArray<NSString *> *)components
 {
+#if RCT_NEW_ARCH_ENABLED
   for (NSString *component in components) {
     [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:component];
   }
+#endif
 }
 
 #pragma mark - Push Notifications
