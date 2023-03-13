@@ -295,6 +295,24 @@ class FlowParser implements Parser {
   functionTypeAnnotation(propertyValueType: string): boolean {
     return propertyValueType === 'FunctionTypeAnnotation';
   }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeArguments.params;
+  }
+
+  /**
+   * This FlowFixMe is supposed to refer to typeArgumentParams and
+   * funcArgumentParams of generated AST.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].id.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
 }
 
 module.exports = {
