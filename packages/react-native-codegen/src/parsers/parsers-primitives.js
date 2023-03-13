@@ -494,7 +494,8 @@ function emitPartial(
     typeAnnotation,
     types,
   );
-  const annotatedElementProperties = annotatedElement.right.properties;
+  const annotatedElementProperties =
+    parser.getAnnotatedElementProperties(annotatedElement);
 
   const partialProperties = parser.computePartialProperties(
     annotatedElementProperties,
@@ -520,10 +521,10 @@ function emitCommonTypes(
   nullable: boolean,
   parser: Parser,
 ): $FlowFixMe {
-  const typeAnnotationType =
-    const typeAnnotationType = parser.nameForGenericTypeAnnotation()
+  const genericTypeAnnotationName =
+    parser.nameForGenericTypeAnnotation(typeAnnotation);
 
-  switch (typeAnnotationType) {
+  switch (genericTypeAnnotationName) {
     case 'Stringish': {
       return emitStringish(nullable);
     }
