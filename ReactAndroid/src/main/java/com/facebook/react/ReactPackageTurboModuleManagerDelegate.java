@@ -43,13 +43,14 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
+    final ReactApplicationContext applicationContext = reactApplicationContext;
     for (ReactPackage reactPackage : packages) {
       if (reactPackage instanceof TurboReactPackage) {
         final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
             new ModuleProvider() {
               public NativeModule getModule(String moduleName) {
-                return turboPkg.getModule(moduleName, reactApplicationContext);
+                return turboPkg.getModule(moduleName, applicationContext);
               }
             };
         mModuleProviders.add(moduleProvider);
@@ -68,9 +69,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
         final ModuleProvider moduleProvider =
-            (name) -> {
-              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(name);
-              return provider != null ? provider.get() : null;
+            new ModuleProvider() {
+              public NativeModule getModule(String moduleName) {
+                Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
+                return provider != null ? provider.get() : null;
+              }
             };
 
         mModuleProviders.add(moduleProvider);
