@@ -67,11 +67,19 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
           moduleSpecProviderMap.put(moduleSpec.getName(), moduleSpec.getProvider());
         }
 
+//         final ModuleProvider moduleProvider =
+//             (name) -> {
+//               Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(name);
+//               return provider != null ? provider.get() : null;
+//             };
         final ModuleProvider moduleProvider =
-            (name) -> {
-              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(name);
+          new ModuleProvider() {
+            public NativeModule getModule(String moduleName) {
+              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
               return provider != null ? provider.get() : null;
-            };
+            }
+          };
+
 
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
