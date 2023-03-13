@@ -42,3 +42,7 @@
 @property (nonatomic, weak) UIScrollView *scrollView;
 
 @end
+
+ __attribute__ ((deprecated("Use RCTCustomRefreshControlProtocol instead")))
+@protocol RCTCustomRefreshContolProtocol <RCTCustomRefreshControlProtocol>
+@end
