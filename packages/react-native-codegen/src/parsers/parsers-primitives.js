@@ -521,9 +521,7 @@ function emitCommonTypes(
   parser: Parser,
 ): $FlowFixMe {
   const typeAnnotationType =
-    parser.language() === 'TypeScript'
-      ? typeAnnotation.type
-      : typeAnnotation.id.name;
+    const typeAnnotationType = parser.nameForGenericTypeAnnotation()
 
   switch (typeAnnotationType) {
     case 'Stringish': {
