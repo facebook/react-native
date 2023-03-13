@@ -125,7 +125,7 @@ function translateObjectTypeAnnotation(
 }
 
 function translateTypeReferenceAnnotation(
-  typeName: string,//typeAnnotation.typeName.name
+  typeName: string,
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
   hasteModuleName: string,
@@ -192,11 +192,7 @@ function translateTypeReferenceAnnotation(
         types,
       );
 
-      throwIfPartialNotAnnotatingTypeParameter(
-        typeAnnotation,
-        types,
-        parser,
-      );
+      throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
 
       const properties = parser.computePartialProperties(
         annotatedElement.typeAnnotation.members,
@@ -287,7 +283,7 @@ function translateTypeAnnotation(
         enumMap,
         tryParse,
         cxxOnly,
-        parser
+        parser,
       );
     }
     case 'TSInterfaceDeclaration': {
