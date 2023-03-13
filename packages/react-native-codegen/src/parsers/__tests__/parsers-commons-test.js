@@ -24,7 +24,7 @@ import {
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
-const {Visitor} = require('../flow/Visitor');
+const {Visitor} = require('../parsers-primitives');
 const {wrapComponentSchema} = require('../schema.js');
 const {buildComponentSchema} = require('../flow/components');
 const {buildModuleSchema} = require('../parsers-commons.js');

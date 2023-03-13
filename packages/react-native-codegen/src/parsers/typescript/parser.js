@@ -31,7 +31,7 @@ const {typeScriptTranslateTypeAnnotation} = require('./modules');
 const babelParser = require('@babel/parser');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./Visitor');
+const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('../parsers-commons.js');
