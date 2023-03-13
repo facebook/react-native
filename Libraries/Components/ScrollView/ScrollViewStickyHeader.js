@@ -11,6 +11,7 @@
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
+import {isPublicInstance as isFabricPublicInstance} from '../../Renderer/public/ReactFabricPublicInstanceUtils';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
@@ -64,10 +65,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     ref.setNextHeaderY = value => {
       setNextHeaderLayoutY(value);
     };
-    // Avoid dot notation because at Meta, private properties are obfuscated.
-    // $FlowFixMe[prop-missing]
-    const _internalInstanceHandler = ref['_internalInstanceHandle']; // eslint-disable-line dot-notation
-    setIsFabric(Boolean(_internalInstanceHandler?.stateNode?.canonical));
+    setIsFabric(isFabricPublicInstance(ref));
   };
   const ref: (React.ElementRef<typeof Animated.View> | null) => void =
     // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
