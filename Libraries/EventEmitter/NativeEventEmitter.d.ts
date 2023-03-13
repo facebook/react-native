@@ -7,9 +7,8 @@
  * @format
  */
 
-import {
+import EventEmitter, {
   EmitterSubscription,
-  EventEmitter,
 } from '../vendor/emitter/EventEmitter';
 
 /**

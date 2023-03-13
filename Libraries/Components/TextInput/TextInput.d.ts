@@ -21,7 +21,7 @@ import {
   NativeTouchEvent,
   TargetedEvent,
 } from '../../Types/CoreEventTypes';
-import {EventEmitter} from '../../vendor/emitter/EventEmitter';
+import EventEmitter from '../../vendor/emitter/EventEmitter';
 import {AccessibilityProps} from '../View/ViewAccessibility';
 import {ViewProps} from '../View/ViewPropTypes';
 
