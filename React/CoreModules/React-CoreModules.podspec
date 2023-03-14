@@ -27,7 +27,7 @@ header_search_paths = [
 ]
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"")
+  header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"")
   header_search_paths.append("\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"")
 end
 

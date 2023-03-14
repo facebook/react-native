@@ -122,10 +122,12 @@ class ReactNativePodsUtils
     end
 
     def self.apply_flags_for_fabric(installer, fabric_enabled: false)
-        return if !fabric_enabled
-
         fabric_flag = "-DRN_FABRIC_ENABLED"
-        self.add_compiler_flag_to_project(installer, fabric_flag)
+        if fabric_enabled
+            self.add_compiler_flag_to_project(installer, fabric_flag)
+        else
+            self.remove_compiler_flag_from_project(installer, fabric_flag)
+        end
     end
 
     private
@@ -193,10 +195,10 @@ class ReactNativePodsUtils
 
                 header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
 
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/samples/platform/ios")
-                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
 
                 config.build_settings["HEADER_SEARCH_PATHS"] = header_search_paths
@@ -222,7 +224,6 @@ class ReactNativePodsUtils
         return if !enable_hermes_profiler
 
         Pod::UI.puts "[Hermes Profiler] Enable Hermes Sample profiler"
-        # self.add_compiler_flag_to_project(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
         self.add_compiler_flag_to_pods(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
     end
 
@@ -248,6 +249,17 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.remove_compiler_flag_from_project(installer, flag, configuration: nil)
+        projects = self.extract_projects(installer)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                self.remove_flag_in_config(config, flag, configuration: configuration)
+            end
+            project.save()
+        end
+    end
+
     def self.add_compiler_flag_to_pods(installer, flag, configuration: nil)
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             target_installation_result.native_target.build_configurations.each do |config|
@@ -260,6 +272,13 @@ class ReactNativePodsUtils
         if configuration == nil || config.name == configuration
             self.add_flag_for_key(config, flag, "OTHER_CFLAGS")
             self.add_flag_for_key(config, flag, "OTHER_CPLUSPLUSFLAGS")
+        end
+    end
+
+    def self.remove_flag_in_config(config, flag, configuration: nil)
+        if configuration == nil || config.name == configuration
+            self.remove_flag_for_key(config, flag, "OTHER_CFLAGS")
+            self.remove_flag_for_key(config, flag, "OTHER_CPLUSPLUSFLAGS")
         end
     end
 
@@ -276,6 +295,23 @@ class ReactNativePodsUtils
 
         if !current_setting.include?(flag)
             current_setting = "#{current_setting} #{flag}"
+        end
+
+        config.build_settings[key] = current_setting
+    end
+
+    def self.remove_flag_for_key(config, flag, key)
+        current_setting = config.build_settings[key] ? config.build_settings[key] : "$(inherited)"
+
+        if current_setting.kind_of?(Array)
+            current_setting = current_setting
+            .map { |s| s.gsub('"', '') }
+            .map { |s| s.gsub('\"', '') }
+            .join(" ")
+        end
+
+        if current_setting.include?(flag)
+            current_setting.slice! flag
         end
 
         config.build_settings[key] = current_setting

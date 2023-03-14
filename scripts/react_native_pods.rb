@@ -66,6 +66,7 @@ def use_react_native! (
 
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
+  ENV['REACT_NATIVE_PATH'] = path
 
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
@@ -77,6 +78,7 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   ENV['RCT_NEW_ARCH_ENABLED'] = new_arch_enabled ? "1" : "0"
   fabric_enabled = fabric_enabled || new_arch_enabled
+  ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
 
   prefix = path
@@ -119,6 +121,7 @@ def use_react_native! (
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
+  pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"

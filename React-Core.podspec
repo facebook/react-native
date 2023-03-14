@@ -56,7 +56,7 @@ header_search_paths = [
 ] : []).concat(use_frameworks ? [
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios"
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers"
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|

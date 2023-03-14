@@ -41,7 +41,7 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     production: !ENV['PRODUCTION'].nil?,
     ios_folder: '.',
   )
-  pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
+  pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
