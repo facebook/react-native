@@ -13,8 +13,7 @@ import type {
   FocusEvent,
   LayoutEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
-import type FillRateHelper from './FillRateHelper';
-import type {RenderItemType} from './VirtualizedListProps';
+import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 
 import {View, StyleSheet} from 'react-native';
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
@@ -22,28 +21,17 @@ import invariant from 'invariant';
 import * as React from 'react';
 
 export type Props<ItemT> = {
-  CellRendererComponent?: ?React.ComponentType<any>,
+  CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?ItemT},
   >,
   ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
   cellKey: string,
-  debug?: ?boolean,
-  fillRateHelper: FillRateHelper,
-  getItemLayout?: (
-    data: any,
-    index: number,
-  ) => {
-    length: number,
-    offset: number,
-    index: number,
-    ...
-  },
   horizontal: ?boolean,
   index: number,
   inversionStyle: ViewStyleProp,
   item: ItemT,
-  onCellLayout: (event: LayoutEvent, cellKey: string, index: number) => void,
+  onCellLayout?: (event: LayoutEvent, cellKey: string, index: number) => void,
   onCellFocusCapture?: (event: FocusEvent) => void,
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (
@@ -181,14 +169,13 @@ export default class CellRenderer<ItemT> extends React.Component<
       CellRendererComponent,
       ItemSeparatorComponent,
       ListItemComponent,
-      debug,
-      fillRateHelper,
-      getItemLayout,
+      cellKey,
       horizontal,
       item,
       index,
       inversionStyle,
       onCellFocusCapture,
+      onCellLayout,
       renderItem,
     } = this.props;
     const element = this._renderElement(
@@ -198,11 +185,6 @@ export default class CellRenderer<ItemT> extends React.Component<
       index,
     );
 
-    const onLayout =
-      (getItemLayout && !debug && !fillRateHelper.enabled()) ||
-      !this.props.onCellLayout
-        ? undefined
-        : this._onLayout;
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
     const itemSeparator: React.Node = React.isValidElement(
@@ -224,21 +206,19 @@ export default class CellRenderer<ItemT> extends React.Component<
     const result = !CellRendererComponent ? (
       <View
         style={cellStyle}
-        onLayout={onLayout}
         onFocusCapture={onCellFocusCapture}
-        /* $FlowFixMe[incompatible-type-arg] (>=0.89.0 site=react_native_fb) *
-        This comment suppresses an error found when Flow v0.89 was deployed. *
-        To see the error, delete this comment and run Flow. */
-      >
+        {...(onCellLayout && {onLayout: this._onLayout})}>
         {element}
         {itemSeparator}
       </View>
     ) : (
       <CellRendererComponent
-        {...this.props}
+        cellKey={cellKey}
+        index={index}
+        item={item}
         style={cellStyle}
-        onLayout={onLayout}
-        onFocusCapture={onCellFocusCapture}>
+        onFocusCapture={onCellFocusCapture}
+        {...(onCellLayout && {onLayout: this._onLayout})}>
         {element}
         {itemSeparator}
       </CellRendererComponent>

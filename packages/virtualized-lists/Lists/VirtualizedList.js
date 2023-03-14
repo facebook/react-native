@@ -748,29 +748,31 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const end = getItemCount(data) - 1;
     let prevCellKey;
     last = Math.min(end, last);
+
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       const key = this._keyExtractor(item, ii, this.props);
+
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
       }
+
+      const shouldListenForLayout =
+        getItemLayout == null || debug || this._fillRateHelper.enabled();
+
       cells.push(
         <CellRenderer
           CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           ListItemComponent={ListItemComponent}
           cellKey={key}
-          debug={debug}
-          fillRateHelper={this._fillRateHelper}
-          getItemLayout={getItemLayout}
           horizontal={horizontal}
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
-          onCellLayout={this._onCellLayout}
           onUpdateSeparators={this._onUpdateSeparators}
           onCellFocusCapture={e => this._onCellFocusCapture(key)}
           onUnmount={this._onCellUnmount}
@@ -778,6 +780,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             this._cellRefs[key] = ref;
           }}
           renderItem={renderItem}
+          {...(shouldListenForLayout && {
+            onCellLayout: this._onCellLayout,
+          })}
         />,
       );
       prevCellKey = key;
