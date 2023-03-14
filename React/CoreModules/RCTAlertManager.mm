@@ -32,20 +32,6 @@ RCT_ENUM_CONVERTER(
 
 @end
 
-@implementation RCTConvert (UIUserInterfaceStyle)
-
-RCT_ENUM_CONVERTER(
-    UIUserInterfaceStyle,
-    (@{
-      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
-      @"light" : @(UIUserInterfaceStyleLight),
-      @"dark" : @(UIUserInterfaceStyleDark),
-    }),
-    UIUserInterfaceStyleUnspecified,
-    integerValue)
-
-@end
-
 @interface RCTAlertManager () <NativeAlertManagerSpec>
 
 @end
