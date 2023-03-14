@@ -34,7 +34,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common/mapbuffer:mapbuffer"),
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/config:config"),
-        react_native_target("res:uimanager"),
     ] + KOTLIN_STDLIB_DEPS,
     exported_deps = [
         react_native_dep("third-party/android/androidx:appcompat"),

@@ -384,7 +384,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       view.maybeSetTextFromState(update);
       view.maybeSetSelection(update.getJsEventCounter(), selectionStart, selectionEnd);
-      view.maybeSetAccessibilityError(update.getJsEventCounter(), update.getScreenreaderError());
     }
   }
 
@@ -1339,12 +1338,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
-    @Nullable
-    String accessibilityErrorMessage =
-        props.hasKey("accessibilityErrorMessage")
-            ? props.getString("accessibilityErrorMessage")
-            : null;
-
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
@@ -1352,8 +1345,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode),
-        containsMultipleFragments,
-        accessibilityErrorMessage);
+        containsMultipleFragments);
   }
 
   public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
@@ -1373,6 +1365,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     Spannable spanned =
         TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
+
     boolean containsMultipleFragments =
         attributedString.getMapBuffer(TextLayoutManagerMapBuffer.AS_KEY_FRAGMENTS).getCount() > 1;
 
@@ -1382,12 +1375,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int currentJustificationMode =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
-    @Nullable
-    String accessibilityErrorMessage =
-        props.hasKey("accessibilityErrorMessage")
-            ? props.getString("accessibilityErrorMessage")
-            : null;
-
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
@@ -1395,7 +1382,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
         TextAttributeProps.getJustificationMode(props, currentJustificationMode),
-        containsMultipleFragments,
-        accessibilityErrorMessage);
+        containsMultipleFragments);
   }
 }
