@@ -466,6 +466,23 @@ function buildSchema(
   );
 }
 
+function createComponentConfig(
+  foundConfig: $FlowFixMe,
+  commandsTypeNames: $FlowFixMe,
+): $FlowFixMe {
+  return {
+    ...foundConfig,
+    commandTypeName:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandTypeName,
+    commandOptionsExpression:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandOptionsExpression,
+  };
+}
+
 const parseModuleName = (
   hasteModuleName: string,
   moduleSpec: $FlowFixMe,
@@ -651,6 +668,7 @@ module.exports = {
   buildPropertySchema,
   buildSchemaFromConfigType,
   buildSchema,
+  createComponentConfig,
   parseModuleName,
   buildModuleSchema,
 };

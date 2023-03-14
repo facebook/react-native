@@ -20,6 +20,7 @@ import {
   buildSchemaFromConfigType,
   buildSchema,
   parseModuleName,
+  createComponentConfig,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1229,5 +1230,50 @@ describe('buildModuleSchema', () => {
     );
 
     expect(schema).toEqual(schmeaMock);
+  });
+});
+
+describe('createComponentConfig', () => {
+  const foundConfig = {
+    propsTypeName: 'testPropsTypeName',
+    componentName: 'testComponentName',
+  };
+
+  describe('when commandTypeNames contains an object as first element', () => {
+    it('returns expected config', () => {
+      const commandsTypeNames = [
+        {
+          commandTypeName: 'testTypeName',
+          commandOptionsExpression: 'testOptionsExpression',
+        },
+      ];
+
+      const expectedConfig = {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+        commandTypeName: 'testTypeName',
+        commandOptionsExpression: 'testOptionsExpression',
+      };
+
+      const configs = createComponentConfig(foundConfig, commandsTypeNames);
+      expect(configs).toEqual(expectedConfig);
+    });
+  });
+
+  describe('when commandTypeNames is an empty array', () => {
+    it('returns the foundConfig and null for the command parameters', () => {
+      // $FlowFixMe[missing-empty-array-annot]
+      const commandsTypeNames = [];
+
+      const expectedConfig = {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+        commandTypeName: null,
+        commandOptionsExpression: null,
+      };
+
+      const configs = createComponentConfig(foundConfig, commandsTypeNames);
+      expect(configs).toEqual(expectedConfig);
+    });
   });
 });
