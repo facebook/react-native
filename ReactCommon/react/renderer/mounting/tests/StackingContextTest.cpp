@@ -769,16 +769,16 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
 
   testViewTree_([](StubViewTree const &viewTree) {
     // 5 views in total.
-    EXPECT_EQ(viewTree.size(), 5);
+    EXPECT_EQ(viewTree.size(), 8);
 
-    // The root view has all 4 subviews.
-    EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
+    // The root view has all 5 subviews.
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 5);
 
-    // The root view subviews are [10, 9, 5, 3].
-    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 10);
-    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 9);
-    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 5);
-    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 3);
+    // The root view subviews are [6, 10, 9, 5].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 6);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 10);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 5);
   });
 }
 

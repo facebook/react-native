@@ -518,6 +518,17 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            externalNativeBuild {
+                cmake {
+                    // We want to build Gtest suite only for the debug variant.
+                    targets "reactnative_unittest"
+                }
+            }
+        }
+    }
+
     preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
