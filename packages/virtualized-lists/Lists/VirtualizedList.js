@@ -421,7 +421,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.checkProps(props);
+    this._checkProps(props);
 
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
@@ -454,7 +454,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   }
 
-  checkProps(props: Props) {
+  _checkProps(props: Props) {
     const {onScroll, windowSize, getItemCount, data, initialScrollIndex} =
       props;
 
@@ -478,6 +478,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     if (
       initialScrollIndex != null &&
+      !this._hasTriggeredInitialScrollToIndex &&
       (initialScrollIndex < 0 ||
         (itemCount > 0 && initialScrollIndex >= itemCount)) &&
       !this._hasWarned.initialScrollIndex
@@ -842,7 +843,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   render(): React.Node {
-    this.checkProps(this.props);
+    this._checkProps(this.props);
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
     const {data, horizontal} = this.props;
