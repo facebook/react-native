@@ -291,6 +291,10 @@ class FlowParser implements Parser {
       };
     });
   }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return propertyValueType === 'FunctionTypeAnnotation';
+  }
 }
 
 module.exports = {

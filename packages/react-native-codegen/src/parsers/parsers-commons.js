@@ -328,7 +328,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    parser.language(),
+    parser,
   );
 
   return {
