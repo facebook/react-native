@@ -60,8 +60,6 @@ const {
   throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
 
-const language = 'Flow';
-
 function translateTypeAnnotation(
   hasteModuleName: string,
   /**
@@ -295,7 +293,6 @@ function translateTypeAnnotation(
         typeResolutionStatus,
         nullable,
         hasteModuleName,
-        language,
         enumMap,
         parser,
       );
@@ -304,7 +301,7 @@ function translateTypeAnnotation(
       throw new UnsupportedTypeAnnotationParserError(
         hasteModuleName,
         typeAnnotation,
-        language,
+        parser.language(),
       );
     }
   }
