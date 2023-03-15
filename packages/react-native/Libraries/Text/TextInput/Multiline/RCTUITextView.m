@@ -298,7 +298,9 @@ static UIColor *defaultPlaceholderColor()
     return CGRectZero;
   }
 
-  return [super caretRectForPosition:position];
+   CGRect originalRect = [super caretRectForPosition:position];
+   originalRect.size.height *= 0.75;
+   return CGRectMake(originalRect.origin.x, originalRect.origin.y + 4 , originalRect.size.width, originalRect.size.height);
 }
 
 #pragma mark - Utility Methods
