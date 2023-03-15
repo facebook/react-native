@@ -377,7 +377,7 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getBoolean(PA_KEY_INCLUDE_FONT_PADDING)
             : DEFAULT_INCLUDE_FONT_PADDING;
     int hyphenationFrequency =
-        TextAttributeProps.getTextBreakStrategy(
+        TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
     if (text == null) {
