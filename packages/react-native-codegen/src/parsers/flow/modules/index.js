@@ -148,6 +148,7 @@ function translateTypeAnnotation(
         case 'Object': {
           return emitGenericObject(nullable);
         }
+        case 'Partial':
         case '$Partial': {
           throwIfPartialWithMoreParameter(typeAnnotation);
 
