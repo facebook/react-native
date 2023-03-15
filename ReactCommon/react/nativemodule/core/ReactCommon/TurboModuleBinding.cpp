@@ -44,7 +44,12 @@ void TurboModuleBinding::install(
               const jsi::Value &thisVal,
               const jsi::Value *args,
               size_t count) {
-            return binding.getModule(rt, thisVal, args, count);
+            if (count < 1) {
+              throw std::invalid_argument(
+                  "__turboModuleProxy must be called with at least 1 argument");
+            }
+            std::string moduleName = args[0].getString(rt).utf8(rt);
+            return binding.getModule(rt, moduleName);
           }));
 }
 
@@ -54,15 +59,7 @@ TurboModuleBinding::~TurboModuleBinding() {
 
 jsi::Value TurboModuleBinding::getModule(
     jsi::Runtime &runtime,
-    const jsi::Value &thisVal,
-    const jsi::Value *args,
-    size_t count) const {
-  if (count < 1) {
-    throw std::invalid_argument(
-        "__turboModuleProxy must be called with at least 1 argument");
-  }
-  std::string moduleName = args[0].getString(runtime).utf8(runtime);
-
+    const std::string &moduleName) const {
   std::shared_ptr<TurboModule> module;
   {
     SystraceSection s(

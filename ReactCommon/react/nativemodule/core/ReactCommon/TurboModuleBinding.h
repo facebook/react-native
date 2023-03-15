@@ -45,11 +45,8 @@ class TurboModuleBinding {
    * A lookup function exposed to JS to get an instance of a TurboModule
    * for the given name.
    */
-  jsi::Value getModule(
-      jsi::Runtime &runtime,
-      const jsi::Value &thisVal,
-      const jsi::Value *args,
-      size_t count) const;
+  jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName)
+      const;
 
   TurboModuleProviderFunctionType moduleProvider_;
   TurboModuleBindingMode bindingMode_;
