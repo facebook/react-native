@@ -10,13 +10,13 @@
 
 'use strict';
 
+import type {Spec as FabricUIManagerSpec} from '../ReactNative/FabricUIManager';
 import type {
   LayoutAnimationConfig as LayoutAnimationConfig_,
   LayoutAnimationProperty,
   LayoutAnimationType,
 } from '../Renderer/shims/ReactNativeTypes';
 
-import FabricUIManager from '../ReactNative/FabricUIManager';
 import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
 
@@ -77,8 +77,9 @@ function configureNext(
 
   // In Fabric, LayoutAnimations are unconditionally enabled for Android, and
   // conditionally enabled on iOS (pending fully shipping; this is a temporary state).
+  const FabricUIManager: FabricUIManagerSpec = global?.nativeFabricUIManager;
   if (FabricUIManager?.configureNextLayoutAnimation) {
-    FabricUIManager.configureNextLayoutAnimation(
+    global?.nativeFabricUIManager?.configureNextLayoutAnimation(
       config,
       onAnimationComplete,
       onAnimationDidFail ??
