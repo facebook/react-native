@@ -10,16 +10,16 @@
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
 
-#import <React/RCTSRWebSocket.h>
+#import <SocketRocket/SRWebSocket.h>
 
 #if RCT_DEV // Only supported in dev mode
 
-@interface RCTReconnectingWebSocket () <RCTSRWebSocketDelegate>
+@interface RCTReconnectingWebSocket () <SRWebSocketDelegate>
 @end
 
 @implementation RCTReconnectingWebSocket {
   NSURL *_url;
-  RCTSRWebSocket *_socket;
+  SRWebSocket *_socket;
   BOOL _stopped;
 }
 
@@ -39,14 +39,14 @@
 
 - (void)send:(id)data
 {
-  [_socket send:data];
+  [_socket sendData:data error:nil];
 }
 
 - (void)start
 {
   [self stop];
   _stopped = NO;
-  _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  _socket = [[SRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   [_socket setDelegateDispatchQueue:_delegateDispatchQueue];
   [_socket open];
@@ -60,7 +60,7 @@
   _socket = nil;
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   [_delegate reconnectingWebSocket:self didReceiveMessage:message];
 }
@@ -71,7 +71,7 @@
     return;
   }
 
-  __weak RCTSRWebSocket *socket = _socket;
+  __weak SRWebSocket *socket = _socket;
   __weak __typeof(self) weakSelf = self;
 
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -82,12 +82,12 @@
   });
 }
 
-- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+- (void)webSocketDidOpen:(SRWebSocket *)webSocket
 {
   [_delegate reconnectingWebSocketDidOpen:self];
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [_delegate reconnectingWebSocketDidClose:self];
   if ([error code] != ECONNREFUSED) {
@@ -95,7 +95,7 @@
   }
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket
+- (void)webSocket:(SRWebSocket *)webSocket
     didCloseWithCode:(NSInteger)code
               reason:(NSString *)reason
             wasClean:(BOOL)wasClean
