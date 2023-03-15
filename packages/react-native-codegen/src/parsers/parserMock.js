@@ -209,4 +209,8 @@ export class MockedParser implements Parser {
       },
     ];
   }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return propertyValueType === 'FunctionTypeAnnotation';
+  }
 }

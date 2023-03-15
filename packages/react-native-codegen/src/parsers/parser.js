@@ -204,4 +204,11 @@ export interface Parser {
     tryParse: ParserErrorCapturer,
     cxxOnly: boolean,
   ): Array<$FlowFixMe>;
+
+  /**
+   * Given a propertyValueType, it returns a boolean specifying if the property is a function type annotation.
+   * @parameter propertyValueType: the propertyValueType.
+   * @returns: a boolean specifying if the property is a function type annotation.
+   */
+  functionTypeAnnotation(propertyValueType: string): boolean;
 }

@@ -277,6 +277,13 @@ class TypeScriptParser implements Parser {
       };
     });
   }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return (
+      propertyValueType === 'TSFunctionType' ||
+      propertyValueType === 'TSMethodSignature'
+    );
+  }
 }
 
 module.exports = {

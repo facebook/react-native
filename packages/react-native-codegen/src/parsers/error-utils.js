@@ -160,27 +160,15 @@ function throwIfModuleTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyName: string,
   propertyValueType: string,
-  language: ParserType,
+  parser: Parser,
 ) {
-  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+  if (!parser.functionTypeAnnotation(propertyValueType)) {
     throw new UnsupportedModulePropertyParserError(
       nativeModuleName,
       propertyValue,
       propertyName,
       propertyValueType,
-      language,
-    );
-  } else if (
-    language === 'TypeScript' &&
-    propertyValueType !== 'TSFunctionType' &&
-    propertyValueType !== 'TSMethodSignature'
-  ) {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
+      parser.language(),
     );
   }
 }
