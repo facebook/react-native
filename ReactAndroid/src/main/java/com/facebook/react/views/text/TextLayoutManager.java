@@ -72,11 +72,12 @@ public class TextLayoutManager {
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
-    for (int i = 0; i < fragments.size(); i++) {
-      ReadableMap fragment = fragments.getMap(i);
+    if (fragments != null && fragments.size() > 0) {
+      ReadableMap fragment = fragments.getMap(0);
       ReadableMap map = fragment.getMap("textAttributes");
-      return TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
-          == LayoutDirection.RTL;
+      return map != null
+          && TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
+              == LayoutDirection.RTL;
     }
     return false;
   }
