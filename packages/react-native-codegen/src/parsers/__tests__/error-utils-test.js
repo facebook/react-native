@@ -27,6 +27,7 @@ const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -816,5 +817,35 @@ describe('throwIfPartialWithMoreParameter', () => {
     expect(() => {
       throwIfPartialWithMoreParameter(typeAnnotation);
     }).not.toThrowError();
+  });
+});
+
+describe('throwIfMoreThanOneCodegenNativecommands', () => {
+  it('throws an error if given more than one codegenNativeCommands', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).toThrowError('codegenNativeCommands may only be called once in a file');
+  });
+
+  it('does not throw an error if given exactly one codegenNativeCommand', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).not.toThrow();
   });
 });

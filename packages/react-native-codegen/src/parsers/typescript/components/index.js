@@ -22,6 +22,7 @@ const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {createComponentConfig} = require('../../parsers-commons');
+const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -110,9 +111,7 @@ function findComponentConfig(ast) {
     })
     .filter(Boolean);
 
-  if (commandsTypeNames.length > 1) {
-    throw new Error('codegenNativeCommands may only be called once in a file');
-  }
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
 
   return createComponentConfig(foundConfig, commandsTypeNames);
 }

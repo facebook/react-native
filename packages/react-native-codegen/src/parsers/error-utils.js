@@ -290,6 +290,14 @@ function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
   }
 }
 
+function throwIfMoreThanOneCodegenNativecommands(
+  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+) {
+  if (commandsTypeNames.length > 1) {
+    throw new Error('codegenNativeCommands may only be called once in a file');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -307,4 +315,5 @@ module.exports = {
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
 };
