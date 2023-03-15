@@ -76,7 +76,6 @@ public class TextLayoutManagerMapBuffer {
 
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
-  private static final Object sSpannableCacheLock = new Object();
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
   private static final LruCache<MapBuffer, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
@@ -253,8 +252,8 @@ public class TextLayoutManagerMapBuffer {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
-    TextPaint textPaint = sTextPaintInstance;
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+    float desiredWidth =
+        boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
 
     if (boring == null
         && (unconstrainedWidth
@@ -267,7 +266,7 @@ public class TextLayoutManagerMapBuffer {
         layout =
             new StaticLayout(
                 text,
-                textPaint,
+                sTextPaintInstance,
                 hintWidth,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
@@ -275,7 +274,7 @@ public class TextLayoutManagerMapBuffer {
                 includeFontPadding);
       } else {
         layout =
-            StaticLayout.Builder.obtain(text, 0, spanLength, textPaint, hintWidth)
+            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
@@ -296,7 +295,7 @@ public class TextLayoutManagerMapBuffer {
       layout =
           BoringLayout.make(
               text,
-              textPaint,
+              sTextPaintInstance,
               boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
@@ -310,7 +309,7 @@ public class TextLayoutManagerMapBuffer {
         layout =
             new StaticLayout(
                 text,
-                textPaint,
+                sTextPaintInstance,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
@@ -318,7 +317,7 @@ public class TextLayoutManagerMapBuffer {
                 includeFontPadding);
       } else {
         StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, spanLength, textPaint, (int) width)
+            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
@@ -357,7 +356,7 @@ public class TextLayoutManagerMapBuffer {
       if (sTagToSpannableCache.containsKey(cacheId)) {
         text = sTagToSpannableCache.get(cacheId);
         if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text.toString());
+          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text);
         }
       } else {
         if (ENABLE_MEASURE_LOGGING) {
@@ -385,11 +384,6 @@ public class TextLayoutManagerMapBuffer {
     }
 
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
-
-    // technically, width should never be negative, but there is currently a bug in
-    boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
-
     Layout layout =
         createLayout(
             text,
@@ -551,9 +545,8 @@ public class TextLayoutManagerMapBuffer {
       MapBuffer paragraphAttributes,
       float width) {
 
-    TextPaint textPaint = sTextPaintInstance;
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
