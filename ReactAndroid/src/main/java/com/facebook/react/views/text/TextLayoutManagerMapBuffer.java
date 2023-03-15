@@ -407,7 +407,7 @@ public class TextLayoutManagerMapBuffer {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : UNSET;
 
-      int numberOfLines =
+    int numberOfLines =
       paragraphAttributes.contains(PA_KEY_NUMBER_OF_LINES)
         ? paragraphAttributes.getInt(PA_KEY_NUMBER_OF_LINES)
         : UNSET;
@@ -450,7 +450,7 @@ public class TextLayoutManagerMapBuffer {
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
             ? layout.getLineCount()
-            : Math.min(maximumNumberOfLines, layout.getLineCount());   
+            : Math.min(maximumNumberOfLines, layout.getLineCount());
 
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
     // text that is wrapping), compute width using the longest line.

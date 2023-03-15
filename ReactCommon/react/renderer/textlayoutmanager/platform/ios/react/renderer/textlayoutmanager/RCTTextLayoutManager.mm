@@ -199,7 +199,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
       // K is added on purpose. New line seems to be not enough for NTtextContainer
       [newLines appendString:@"K\n"];
     }
-      NSDictionary<NSAttributedStringKey, id> * attributesOfFirstCharacter = [inputAttributedString attributesAtIndex:0 effectiveRange:NULL];
+    NSDictionary<NSAttributedStringKey, id> * attributesOfFirstCharacter = [inputAttributedString attributesAtIndex:0 effectiveRange:NULL];
       
 
     [attributedString insertAttributedString:[[NSAttributedString alloc] initWithString:newLines attributes:attributesOfFirstCharacter] atIndex:0];

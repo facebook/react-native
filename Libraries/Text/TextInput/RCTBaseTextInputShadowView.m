@@ -227,7 +227,7 @@
   * so they are not visible on the screen.
   */
   if (self.exactNumberOfLines) {
-    NSMutableString *newLines = [NSMutableString stringWithCapacity: self.exactNumberOfLines];
+    NSMutableString *newLines = [NSMutableString stringWithCapacity:self.exactNumberOfLines];
     for (NSUInteger i = 0UL; i < self.exactNumberOfLines; ++i) {
       [newLines appendString:@"\n"];
     }
