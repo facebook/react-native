@@ -130,19 +130,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [self initializeFlipper:application];
   return YES;
 #else // [macOS
-  NSRect frame = NSMakeRect(0,0,800,600);
-  self.window = [[NSWindow alloc] initWithContentRect:frame
+  NSRect frame = NSMakeRect(0,0,1024,768);
+  self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
                                             styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
                                               backing:NSBackingStoreBuffered
                                                 defer:NO];
+  self.window.title = @"RNTester-macOS";
+  self.window.autorecalculatesKeyViewLoop = YES;
   NSViewController *rootViewController = [NSViewController new];
   rootViewController.view = rootView;
   rootView.frame = frame;
   self.window.contentViewController = rootViewController;
-  self.window.title = @"RNTester-macOS";
-  self.window.autorecalculatesKeyViewLoop = YES;
-  [self.window center];
   [self.window makeKeyAndOrderFront:self];
+  [self.window center];
   [self initializeFlipper:[NSApplication sharedApplication]];
 #endif // macOS]
 }

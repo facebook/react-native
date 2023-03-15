@@ -32,17 +32,10 @@ steps:
         yarn build
 
   - task: CmdLine@2
-    displayName: Install Verdaccio
-    inputs:
-      script: |
-        npm install --global verdaccio
-
-  - task: ShellScript@2
     displayName: Launch test npm server (verdaccio)
     inputs:
-      scriptPath: '.ado/ado-start-verdaccio.sh'
-      disableAutoCwd: true
-      cwd: ''
+      script: |
+        npx verdaccio --config ./.ado/verdaccio/config.yaml &
 
   - script: |
       npm set registry http://localhost:4873
@@ -84,8 +77,14 @@ steps:
   - task: CmdLine@2
     displayName: Init new project
     inputs:
-      script: npx --yes react-native@0.68.2 init testcli --template react-native@0.68.2
+      script: npx --yes react-native@0.71.4 init testcli --template react-native@0.71.4 --skip-install
       workingDirectory: $(Agent.BuildDirectory)
+
+  - task: CmdLine@2
+    displayName: yarn install (local react-native-macos-init)
+    inputs:
+      script: yarn install --frozen-lockfile
+      workingDirectory: $(Agent.BuildDirectory)/testcli
 
   - task: CmdLine@2
     displayName: Apply macos template
