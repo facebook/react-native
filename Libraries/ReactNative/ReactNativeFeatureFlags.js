@@ -41,10 +41,6 @@ export type FeatureFlags = {|
    * implementation
    */
   isGlobalWebPerformanceLoggerEnabled: () => boolean,
-  /**
-   * Enables access to the host tree in Fabric using DOM-compatible APIs.
-   */
-  enableAccessToHostTreeInFabric: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -54,7 +50,6 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
   isGlobalWebPerformanceLoggerEnabled: () => false,
-  enableAccessToHostTreeInFabric: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
