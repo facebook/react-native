@@ -23,14 +23,14 @@ namespace react {
  */
 
 TurboModuleBinding::TurboModuleBinding(
-    const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode)
-    : moduleProvider_(std::move(moduleProvider)), bindingMode_(bindingMode) {}
+    TurboModuleBindingMode bindingMode,
+    TurboModuleProviderFunctionType &&moduleProvider)
+    : bindingMode_(bindingMode), moduleProvider_(std::move(moduleProvider)) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
-    const TurboModuleProviderFunctionType &&moduleProvider,
-    TurboModuleBindingMode bindingMode) {
+    TurboModuleBindingMode bindingMode,
+    TurboModuleProviderFunctionType &&moduleProvider) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -39,7 +39,7 @@ void TurboModuleBinding::install(
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
           [binding =
-               TurboModuleBinding(std::move(moduleProvider), bindingMode)](
+               TurboModuleBinding(bindingMode, std::move(moduleProvider))](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
               const jsi::Value *args,

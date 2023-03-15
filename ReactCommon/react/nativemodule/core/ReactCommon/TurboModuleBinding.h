@@ -32,13 +32,13 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode);
+      TurboModuleBindingMode bindingMode,
+      TurboModuleProviderFunctionType &&moduleProvider);
 
  private:
   TurboModuleBinding(
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode);
+      TurboModuleBindingMode bindingMode,
+      TurboModuleProviderFunctionType &&moduleProvider);
   virtual ~TurboModuleBinding();
 
   /**
@@ -48,8 +48,8 @@ class TurboModuleBinding {
   jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName)
       const;
 
-  TurboModuleProviderFunctionType moduleProvider_;
   TurboModuleBindingMode bindingMode_;
+  TurboModuleProviderFunctionType moduleProvider_;
 };
 
 } // namespace react
