@@ -418,7 +418,7 @@ function getTypeAnnotation<T>(
       );
     case 'TSFunctionType':
       throw new Error(
-        `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`
+        `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
       );
     default:
       (type: empty);
