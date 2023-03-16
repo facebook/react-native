@@ -421,7 +421,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.checkProps(props);
+    this._checkProps(props);
 
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
@@ -454,7 +454,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   }
 
-  checkProps(props: Props) {
+  _checkProps(props: Props) {
     const {onScroll, windowSize, getItemCount, data, initialScrollIndex} =
       props;
 
@@ -478,6 +478,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     if (
       initialScrollIndex != null &&
+      !this._hasTriggeredInitialScrollToIndex &&
       (initialScrollIndex < 0 ||
         (itemCount > 0 && initialScrollIndex >= itemCount)) &&
       !this._hasWarned.initialScrollIndex
@@ -747,29 +748,31 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const end = getItemCount(data) - 1;
     let prevCellKey;
     last = Math.min(end, last);
+
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       const key = this._keyExtractor(item, ii, this.props);
+
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
       }
+
+      const shouldListenForLayout =
+        getItemLayout == null || debug || this._fillRateHelper.enabled();
+
       cells.push(
         <CellRenderer
           CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
           ListItemComponent={ListItemComponent}
           cellKey={key}
-          debug={debug}
-          fillRateHelper={this._fillRateHelper}
-          getItemLayout={getItemLayout}
           horizontal={horizontal}
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
-          onCellLayout={this._onCellLayout}
           onUpdateSeparators={this._onUpdateSeparators}
           onCellFocusCapture={e => this._onCellFocusCapture(key)}
           onUnmount={this._onCellUnmount}
@@ -777,6 +780,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             this._cellRefs[key] = ref;
           }}
           renderItem={renderItem}
+          {...(shouldListenForLayout && {
+            onCellLayout: this._onCellLayout,
+          })}
         />,
       );
       prevCellKey = key;
@@ -842,7 +848,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   render(): React.Node {
-    this.checkProps(this.props);
+    this._checkProps(this.props);
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
     const {data, horizontal} = this.props;

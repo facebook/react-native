@@ -553,6 +553,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
+            'React-NativeModulesApple': [],
           }
         }
     end
@@ -564,6 +565,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'React-graphics': [],
             'React-rncore':  [],
             'React-Fabric': [],
+
         })
 
         specs[:'script_phases'] = script_phases
@@ -575,7 +577,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"")
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],

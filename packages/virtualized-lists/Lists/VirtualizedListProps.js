@@ -9,6 +9,10 @@
  */
 
 import {typeof ScrollView} from 'react-native';
+import type {
+  FocusEvent,
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
@@ -33,6 +37,16 @@ export type RenderItemProps<ItemT> = {
   separators: Separators,
   ...
 };
+
+export type CellRendererProps<ItemT> = $ReadOnly<{
+  cellKey: string,
+  children: React.Node,
+  index: number,
+  item: ItemT,
+  onFocusCapture?: (event: FocusEvent) => void,
+  onLayout?: (event: LayoutEvent) => void,
+  style: ViewStyleProp,
+}>;
 
 export type RenderItemType<ItemT> = (
   info: RenderItemProps<ItemT>,
@@ -102,10 +116,12 @@ type OptionalProps = {|
   inverted?: ?boolean,
   keyExtractor?: ?(item: Item, index: number) => string,
   /**
-   * Each cell is rendered using this element. Can be a React Component Class,
-   * or a render function. Defaults to using View.
+   * CellRendererComponent allows customizing how cells rendered by
+   * `renderItem`/`ListItemComponent` are wrapped when placed into the
+   * underlying ScrollView. This component must accept event handlers which
+   * notify VirtualizedList of changes within the cell.
    */
-  CellRendererComponent?: ?React.ComponentType<any>,
+  CellRendererComponent?: ?React.ComponentType<CellRendererProps<Item>>,
   /**
    * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
    * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`

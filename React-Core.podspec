@@ -18,6 +18,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.07.22.00'
+socket_rocket_version = '0.6.0'
 boost_compiler_flags = '-Wno-documentation'
 
 use_hermes = ENV['USE_HERMES'] == '1'
@@ -56,7 +57,7 @@ header_search_paths = [
 ] : []).concat(use_frameworks ? [
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
-  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios"
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers"
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -129,6 +130,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "SocketRocket", socket_rocket_version
   s.dependency "Yoga"
   s.dependency "glog"
 

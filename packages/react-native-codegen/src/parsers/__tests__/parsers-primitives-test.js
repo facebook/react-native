@@ -30,6 +30,7 @@ const {
   emitMixed,
   typeAliasResolution,
   typeEnumResolution,
+  Visitor,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
@@ -358,7 +359,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );
@@ -402,7 +402,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );
@@ -1152,6 +1151,105 @@ describe('emitArrayType', () => {
 
         expect(result).toEqual(expected);
       });
+    });
+  });
+});
+
+describe('Visitor', () => {
+  describe('CallExpression', () => {
+    it('sets isComponent to true if callee type is Identifier and callee name is codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: 'Identifier', name: 'codegenNativeComponent'},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(true);
+    });
+
+    it('should not set isComponent to true if callee type is not Identifier or callee name is not codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: '', name: ''},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(false);
+    });
+
+    it('sets isModule to true if isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          object: {type: 'Identifier', name: 'TurboModuleRegistry'},
+          property: {type: 'Identifier', name: 'getEnforcing'},
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if not isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {
+          type: 'Expression',
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('InterfaceExtends', () => {
+    it('sets isModule to true if module interface extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: 'TurboModule'}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if module interface does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: ''}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('TSInterfaceDeclaration', () => {
+    it('sets isModule to true if TypeScript Interface Declaration extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: 'TurboModule'}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if TypeScript Interface Declaration does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: ''}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(false);
     });
   });
 });

@@ -18,14 +18,14 @@ export type SomeObj = {|
   b?: boolean,
 |};
 
-export type PartialSomeObj = $Partial<SomeObj>;
+export type PartialSomeObj = Partial<SomeObj>;
 
 export interface Spec extends TurboModule {
   +getSomeObj: () => SomeObj;
-  +getPartialSomeObj: () => $Partial<SomeObj>;
-  +getSomeObjFromPartialSomeObj: (value: $Partial<SomeObj>) => SomeObj;
+  +getPartialSomeObj: () => Partial<SomeObj>;
+  +getSomeObjFromPartialSomeObj: (value: Partial<SomeObj>) => SomeObj;
   +getPartialPartial: (
-    value1: $Partial<SomeObj>,
+    value1: Partial<SomeObj>,
     value2: PartialSomeObj,
   ) => SomeObj;
 }

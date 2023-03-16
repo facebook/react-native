@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
   s.subspec "turbomodule" do |ss|
     ss.dependency "React-callinvoker", version
     ss.dependency "React-perflogger", version
-    ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "RCT-Folly", folly_version
@@ -68,18 +67,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "core" do |sss|
-      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
-                         "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
-      excluded_files = ENV['USE_FRAMEWORKS'] == nil ?
-        "react/nativemodule/core/ReactCommon/LongLivedObject.h" :
-        "react/nativemodule/core/ReactCommon/{LongLivedObject,CallbackWrapper}.h"
-      sss.exclude_files = excluded_files
-    end
-
-    ss.subspec "samples" do |sss|
-      sss.source_files = "react/nativemodule/samples/ReactCommon/**/*.{cpp,h}",
-      "react/nativemodule/samples/platform/ios/**/*.{mm,cpp,h}"
-      sss.dependency "ReactCommon/turbomodule/core", version
+      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
     end
   end
 

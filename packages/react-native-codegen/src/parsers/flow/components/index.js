@@ -20,42 +20,22 @@ const {getExtendsProps, removeKnownExtends} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
+const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
+const {
+  createComponentConfig,
+  findNativeComponentType,
+} = require('../../parsers-commons');
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function findComponentConfig(ast) {
-  const foundConfigs = [];
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
 
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
   defaultExports.forEach(statement => {
-    let declaration = statement.declaration;
-
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
-      declaration = declaration.expression;
-    }
-
-    try {
-      if (declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = declaration.typeArguments.params;
-        const funcArgumentParams = declaration.arguments;
-
-        const nativeComponentType: {[string]: string} = {
-          propsTypeName: typeArgumentParams[0].id.name,
-          componentName: funcArgumentParams[0].value,
-        };
-        if (funcArgumentParams.length > 1) {
-          nativeComponentType.optionsExpression = funcArgumentParams[1];
-        }
-        foundConfigs.push(nativeComponentType);
-      }
-    } catch (e) {
-      // ignore
-    }
+    findNativeComponentType(statement, foundConfigs, parser);
   });
 
   if (foundConfigs.length === 0) {
@@ -108,21 +88,9 @@ function findComponentConfig(ast) {
     })
     .filter(Boolean);
 
-  if (commandsTypeNames.length > 1) {
-    throw new Error('codegenNativeCommands may only be called once in a file');
-  }
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
 
-  return {
-    ...foundConfig,
-    commandTypeName:
-      commandsTypeNames[0] == null
-        ? null
-        : commandsTypeNames[0].commandTypeName,
-    commandOptionsExpression:
-      commandsTypeNames[0] == null
-        ? null
-        : commandsTypeNames[0].commandOptionsExpression,
-  };
+  return createComponentConfig(foundConfig, commandsTypeNames);
 }
 
 function getCommandProperties(
@@ -190,7 +158,7 @@ function buildComponentSchema(
     commandTypeName,
     commandOptionsExpression,
     optionsExpression,
-  } = findComponentConfig(ast);
+  } = findComponentConfig(ast, parser);
 
   const types = parser.getTypes(ast);
 

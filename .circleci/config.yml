@@ -1301,6 +1301,7 @@ jobs:
           command: |
             mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ./sdks/hermes/.
+            cp -r ./sdks/hermes-engine/utils ./sdks/hermes/.
       - brew_install:
           package: cmake
       - with_hermes_tarball_cache_span:

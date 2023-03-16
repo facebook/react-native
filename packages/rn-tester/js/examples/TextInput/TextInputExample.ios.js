@@ -822,6 +822,13 @@ exports.examples = ([
           <WithLabel label="name">
             <TextInput textContentType="name" style={styles.default} />
           </WithLabel>
+          <WithLabel label="postalCode, when autoComplete set">
+            <TextInput
+              textContentType="postalCode"
+              autoComplete="email"
+              style={styles.default}
+            />
+          </WithLabel>
         </View>
       );
     },

@@ -12,6 +12,9 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {Spec as FabricUIManagerSpec} from './FabricUIManager';
 import type {Spec} from './NativeUIManager';
 
+import {getFabricUIManager} from './FabricUIManager';
+import nullthrows from 'nullthrows';
+
 export interface UIManagerJSInterface extends Spec {
   +getViewManagerConfig: (viewManagerName: string) => Object;
   +hasViewManagerConfig: (viewManagerName: string) => boolean;
@@ -57,8 +60,7 @@ const UIManager = {
     ) => void,
   ): void {
     if (isFabricReactTag(reactTag)) {
-      const FabricUIManager: FabricUIManagerSpec =
-        global?.nativeFabricUIManager;
+      const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
       if (shadowNode) {
@@ -84,8 +86,7 @@ const UIManager = {
     ) => void,
   ): void {
     if (isFabricReactTag(reactTag)) {
-      const FabricUIManager: FabricUIManagerSpec =
-        global?.nativeFabricUIManager;
+      const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
       if (shadowNode) {
@@ -113,8 +114,7 @@ const UIManager = {
     ) => void,
   ): void {
     if (isFabricReactTag(reactTag)) {
-      const FabricUIManager: FabricUIManagerSpec =
-        global?.nativeFabricUIManager;
+      const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
       const ancestorShadowNode =
@@ -155,8 +155,7 @@ const UIManager = {
       console.warn(
         'RCTUIManager.measureLayoutRelativeToParent method is deprecated and it will not be implemented in newer versions of RN (Fabric) - T47686450',
       );
-      const FabricUIManager: FabricUIManagerSpec =
-        global?.nativeFabricUIManager;
+      const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
         FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
       if (shadowNode) {

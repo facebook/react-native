@@ -38,4 +38,16 @@ describe('FileReader', function () {
     });
     expect(e.target.result).toBe('data:text/plain;base64,NDI=');
   });
+
+  it('should read blob as ArrayBuffer', async () => {
+    const e = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = resolve;
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(new Blob());
+    });
+    const ab = e.target.result;
+    expect(ab.byteLength).toBe(2);
+    expect(new TextDecoder().decode(ab)).toBe('42');
+  });
 });

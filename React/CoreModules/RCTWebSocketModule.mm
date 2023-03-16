@@ -11,12 +11,12 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConvert.h>
-#import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
+#import <SocketRocket/SRWebSocket.h>
 
 #import "CoreModulesPlugins.h"
 
-@implementation RCTSRWebSocket (React)
+@implementation SRWebSocket (React)
 
 - (NSNumber *)reactTag
 {
@@ -30,12 +30,12 @@
 
 @end
 
-@interface RCTWebSocketModule () <RCTSRWebSocketDelegate, NativeWebSocketModuleSpec>
+@interface RCTWebSocketModule () <SRWebSocketDelegate, NativeWebSocketModuleSpec>
 
 @end
 
 @implementation RCTWebSocketModule {
-  NSMutableDictionary<NSNumber *, RCTSRWebSocket *> *_sockets;
+  NSMutableDictionary<NSNumber *, SRWebSocket *> *_sockets;
   NSMutableDictionary<NSNumber *, id<RCTWebSocketContentHandler>> *_contentHandlers;
 }
 
@@ -56,7 +56,7 @@ RCT_EXPORT_MODULE()
   [super invalidate];
 
   _contentHandlers = nil;
-  for (RCTSRWebSocket *socket in _sockets.allValues) {
+  for (SRWebSocket *socket in _sockets.allValues) {
     socket.delegate = nil;
     [socket close];
   }
@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(connect
     }];
   }
 
-  RCTSRWebSocket *webSocket = [[RCTSRWebSocket alloc] initWithURLRequest:request protocols:protocols];
+  SRWebSocket *webSocket = [[SRWebSocket alloc] initWithURLRequest:request protocols:protocols];
   [webSocket setDelegateDispatchQueue:[self methodQueue]];
   webSocket.delegate = self;
   webSocket.reactTag = @(socketID);
@@ -103,7 +103,7 @@ RCT_EXPORT_METHOD(connect
 
 RCT_EXPORT_METHOD(send : (NSString *)message forSocketID : (double)socketID)
 {
-  [_sockets[@(socketID)] send:message];
+  [_sockets[@(socketID)] sendString:message error:nil];
 }
 
 RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)socketID)
@@ -113,12 +113,12 @@ RCT_EXPORT_METHOD(sendBinary : (NSString *)base64String forSocketID : (double)so
 
 - (void)sendData:(NSData *)data forSocketID:(NSNumber *__nonnull)socketID
 {
-  [_sockets[socketID] send:data];
+  [_sockets[socketID] sendData:data error:nil];
 }
 
 RCT_EXPORT_METHOD(ping : (double)socketID)
 {
-  [_sockets[@(socketID)] sendPing:NULL];
+  [_sockets[@(socketID)] sendPing:nil error:nil];
 }
 
 RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (double)socketID)
@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
 
 #pragma mark - RCTSRWebSocketDelegate methods
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didReceiveMessage:(id)message
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 {
   NSString *type;
 
@@ -157,13 +157,13 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
   [self sendEventWithName:@"websocketMessage" body:@{@"data" : message, @"type" : type, @"id" : webSocket.reactTag}];
 }
 
-- (void)webSocketDidOpen:(RCTSRWebSocket *)webSocket
+- (void)webSocketDidOpen:(SRWebSocket *)webSocket
 {
   [self sendEventWithName:@"websocketOpen"
                      body:@{@"id" : webSocket.reactTag, @"protocol" : webSocket.protocol ? webSocket.protocol : @""}];
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
@@ -173,7 +173,7 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
   [self sendEventWithName:@"websocketFailed" body:body];
 }
 
-- (void)webSocket:(RCTSRWebSocket *)webSocket
+- (void)webSocket:(SRWebSocket *)webSocket
     didCloseWithCode:(NSInteger)code
               reason:(NSString *)reason
             wasClean:(BOOL)wasClean

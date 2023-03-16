@@ -12,7 +12,5 @@
 const NodeEnv = require('jest-environment-node').TestEnvironment;
 
 module.exports = class ReactNativeEnv extends NodeEnv {
-  exportConditions() {
-    return ['react-native'];
-  }
+  customExportConditions = ['require', 'react-native'];
 };

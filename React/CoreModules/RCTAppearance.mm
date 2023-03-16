@@ -69,20 +69,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   return RCTAppearanceColorSchemeLight;
 }
 
-@implementation RCTConvert (UIUserInterfaceStyle)
-
-RCT_ENUM_CONVERTER(
-    UIUserInterfaceStyle,
-    (@{
-      @"light" : @(UIUserInterfaceStyleLight),
-      @"dark" : @(UIUserInterfaceStyleDark),
-      @"unspecified" : @(UIUserInterfaceStyleUnspecified)
-    }),
-    UIUserInterfaceStyleUnspecified,
-    integerValue);
-
-@end
-
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
 

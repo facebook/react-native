@@ -502,6 +502,16 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
+      @"light" : @(UIUserInterfaceStyleLight),
+      @"dark" : @(UIUserInterfaceStyleDark),
+    }),
+    UIUserInterfaceStyleUnspecified,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
       @"scale-to-fill" : @(UIViewContentModeScaleToFill),

@@ -11,7 +11,6 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.text.Layout;
 import android.text.Spannable;
-import androidx.annotation.Nullable;
 
 /**
  * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
@@ -31,7 +30,6 @@ public class ReactTextUpdate {
   private final int mSelectionStart;
   private final int mSelectionEnd;
   private final int mJustificationMode;
-  private @Nullable String mAccessibilityErrorMessage;
 
   public boolean mContainsMultipleFragments;
 
@@ -61,8 +59,7 @@ public class ReactTextUpdate {
         Layout.BREAK_STRATEGY_HIGH_QUALITY,
         Layout.JUSTIFICATION_MODE_NONE,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -88,8 +85,7 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -111,8 +107,7 @@ public class ReactTextUpdate {
         textBreakStrategy,
         justificationMode,
         -1,
-        -1,
-        null);
+        -1);
   }
 
   public ReactTextUpdate(
@@ -142,54 +137,19 @@ public class ReactTextUpdate {
     mJustificationMode = justificationMode;
   }
 
-  public ReactTextUpdate(
-      Spannable text,
-      int jsEventCounter,
-      boolean containsImages,
-      float paddingStart,
-      float paddingTop,
-      float paddingEnd,
-      float paddingBottom,
-      int textAlign,
-      int textBreakStrategy,
-      int justificationMode,
-      int selectionStart,
-      int selectionEnd,
-      @Nullable String accessibilityErrorMessage) {
-    mText = text;
-    mJsEventCounter = jsEventCounter;
-    mContainsImages = containsImages;
-    mPaddingLeft = paddingStart;
-    mPaddingTop = paddingTop;
-    mPaddingRight = paddingEnd;
-    mPaddingBottom = paddingBottom;
-    mTextAlign = textAlign;
-    mTextBreakStrategy = textBreakStrategy;
-    mSelectionStart = selectionStart;
-    mSelectionEnd = selectionEnd;
-    mJustificationMode = justificationMode;
-    mAccessibilityErrorMessage = accessibilityErrorMessage;
-  }
-
   public static ReactTextUpdate buildReactTextUpdateFromState(
       Spannable text,
       int jsEventCounter,
       int textAlign,
       int textBreakStrategy,
       int justificationMode,
-      boolean containsMultipleFragments,
-      @Nullable String accessibilityErrorMessage) {
+      boolean containsMultipleFragments) {
 
     ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
             text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode);
     reactTextUpdate.mContainsMultipleFragments = containsMultipleFragments;
-    reactTextUpdate.mAccessibilityErrorMessage = accessibilityErrorMessage;
     return reactTextUpdate;
-  }
-
-  public @Nullable String getScreenreaderError() {
-    return mAccessibilityErrorMessage;
   }
 
   public Spannable getText() {

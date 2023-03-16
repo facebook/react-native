@@ -87,6 +87,16 @@ export type ListRenderItem<ItemT> = (
   info: ListRenderItemInfo<ItemT>,
 ) => React.ReactElement | null;
 
+export interface CellRendererProps<ItemT> {
+  cellKey: string;
+  children: React.ReactNode;
+  index: number;
+  item: ItemT;
+  onFocusCapture?: ((event: FocusEvent) => void) | undefined;
+  onLayout?: ((event: LayoutChangeEvent) => void) | undefined;
+  style: StyleProp<ViewStyle> | undefined;
+}
+
 /**
  * @see https://reactnative.dev/docs/virtualizedlist
  */
@@ -370,5 +380,14 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    */
   windowSize?: number | undefined;
 
-  CellRendererComponent?: React.ComponentType<any> | undefined;
+  /**
+   * CellRendererComponent allows customizing how cells rendered by
+   * `renderItem`/`ListItemComponent` are wrapped when placed into the
+   * underlying ScrollView. This component must accept event handlers which
+   * notify VirtualizedList of changes within the cell.
+   */
+  CellRendererComponent?:
+    | React.ComponentType<CellRendererProps<ItemT>>
+    | null
+    | undefined;
 }

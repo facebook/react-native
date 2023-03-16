@@ -328,7 +328,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    parser.language(),
+    parser,
   );
 
   return {
@@ -464,6 +464,23 @@ function buildSchema(
     resolveTypeAnnotation,
     translateTypeAnnotation,
   );
+}
+
+function createComponentConfig(
+  foundConfig: $FlowFixMe,
+  commandsTypeNames: $FlowFixMe,
+): $FlowFixMe {
+  return {
+    ...foundConfig,
+    commandTypeName:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandTypeName,
+    commandOptionsExpression:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandOptionsExpression,
+  };
 }
 
 const parseModuleName = (
@@ -640,6 +657,48 @@ const buildModuleSchema = (
     );
 };
 
+/**
+ * This function is used to find the type of a native component
+ * provided the default exports statement from generated AST.
+ * @param statement The statement to be parsed.
+ * @param foundConfigs The 'mutable' array of configs that have been found.
+ * @param parser The language parser to be used.
+ * @returns void
+ */
+function findNativeComponentType(
+  statement: $FlowFixMe,
+  foundConfigs: Array<{[string]: string}>,
+  parser: Parser,
+): void {
+  let declaration = statement.declaration;
+
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (
+    declaration.type === 'TSAsExpression' ||
+    declaration.type === 'TypeCastExpression'
+  ) {
+    declaration = declaration.expression;
+  }
+
+  try {
+    if (declaration.callee.name === 'codegenNativeComponent') {
+      const typeArgumentParams =
+        parser.getTypeArgumentParamsFromDeclaration(declaration);
+      const funcArgumentParams = declaration.arguments;
+
+      const nativeComponentType: {[string]: string} =
+        parser.getNativeComponentType(typeArgumentParams, funcArgumentParams);
+      if (funcArgumentParams.length > 1) {
+        nativeComponentType.optionsExpression = funcArgumentParams[1];
+      }
+      foundConfigs.push(nativeComponentType);
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -651,6 +710,8 @@ module.exports = {
   buildPropertySchema,
   buildSchemaFromConfigType,
   buildSchema,
+  createComponentConfig,
   parseModuleName,
   buildModuleSchema,
+  findNativeComponentType,
 };

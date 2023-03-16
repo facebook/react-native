@@ -95,7 +95,7 @@ class CodegenUtils
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
-            "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core/platform/ios\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
           ])
         end
@@ -127,6 +127,7 @@ class CodegenUtils
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
+            "React-NativeModulesApple": [],
           }
         }
 
