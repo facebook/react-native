@@ -284,6 +284,21 @@ class TypeScriptParser implements Parser {
       propertyValueType === 'TSMethodSignature'
     );
   }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeParameters.params;
+  }
+
+  // This FlowFixMe is supposed to refer to typeArgumentParams and funcArgumentParams of generated AST.
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].typeName.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
 }
 
 module.exports = {

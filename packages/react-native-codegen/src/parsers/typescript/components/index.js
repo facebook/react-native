@@ -21,45 +21,23 @@ const {categorizeProps} = require('./extends');
 const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
-const {createComponentConfig} = require('../../parsers-commons');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
+const {
+  createComponentConfig,
+  findNativeComponentType,
+} = require('../../parsers-commons');
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function findComponentConfig(ast) {
-  const foundConfigs = [];
+// $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
 
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
-  defaultExports.forEach(statement => {
-    let declaration = statement.declaration;
-
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TSAsExpression') {
-      declaration = declaration.expression;
-    }
-
-    try {
-      if (declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = declaration.typeParameters.params;
-        const funcArgumentParams = declaration.arguments;
-
-        const nativeComponentType: {[string]: string} = {
-          propsTypeName: typeArgumentParams[0].typeName.name,
-          componentName: funcArgumentParams[0].value,
-        };
-        if (funcArgumentParams.length > 1) {
-          nativeComponentType.optionsExpression = funcArgumentParams[1];
-        }
-        foundConfigs.push(nativeComponentType);
-      }
-    } catch (e) {
-      // ignore
-    }
-  });
+  defaultExports.forEach(statement =>
+    findNativeComponentType(statement, foundConfigs, parser),
+  );
 
   if (foundConfigs.length === 0) {
     throw new Error('Could not find component config for native component');
@@ -185,7 +163,7 @@ function buildComponentSchema(
     commandTypeName,
     commandOptionsExpression,
     optionsExpression,
-  } = findComponentConfig(ast);
+  } = findComponentConfig(ast, parser);
 
   const types = parser.getTypes(ast);
 
