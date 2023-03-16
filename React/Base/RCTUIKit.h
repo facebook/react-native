@@ -521,7 +521,9 @@ NS_ASSUME_NONNULL_END
 #if TARGET_OS_OSX // [macOS
 @protocol RCTUISliderDelegate <NSObject>
 @optional
+NS_ASSUME_NONNULL_BEGIN
 - (void)slider:(RCTUISlider *)slider didPress:(BOOL)press;
+NS_ASSUME_NONNULL_END
 @end
 #endif // macOS]
 

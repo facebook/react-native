@@ -50,7 +50,7 @@ jobs:
           set -eo pipefail
           cat package.json |
             jq '.devDependencies["react"] = $(react_version)' |
-            jq '.devDependencies["react-native"] = "^0.68"' |
+            jq '.devDependencies["react-native"] = "^0.71"' |
             jq '.devDependencies["react-native-macos"] = "../react-native-macos-$(package_version).tgz"' |
             jq 'del(.devDependencies["@react-native-community/cli"])' |
             jq 'del(.devDependencies["@react-native-community/cli-platform-android"])' |
@@ -67,7 +67,7 @@ jobs:
             jq '.devDependencies["@react-native-community/cli-platform-android"] = $(rncli_android_version)' |
             jq '.devDependencies["@react-native-community/cli-platform-ios"] = $(rncli_ios_version)' |
             jq '.devDependencies["react"] = $(react_version)' |
-            jq '.devDependencies["react-native"] = "^0.64"' |
+            jq '.devDependencies["react-native"] = "^0.71"' |
             jq '.devDependencies["react-native-macos"] = "../../react-native-macos-$(package_version).tgz"' |
             jq 'del(.devDependencies["react-native-windows"])' > .package.json
           mv .package.json package.json
@@ -89,7 +89,7 @@ jobs:
         workingDirectory: react-native-test-app/example
       - bash: |
           set -eo pipefail
-          ../scripts/xcodebuild.sh macos/Example.xcworkspace build
+          ../scripts/xcodebuild.sh macos/Example.xcworkspace build | xcbeautify
         displayName: Build Intel
         workingDirectory: react-native-test-app/example
         env:
@@ -97,7 +97,7 @@ jobs:
       - bash: |
           set -eo pipefail
           ../scripts/xcodebuild.sh macos/Example.xcworkspace clean
-          ../scripts/xcodebuild.sh macos/Example.xcworkspace build ARCHS=arm64
+          ../scripts/xcodebuild.sh macos/Example.xcworkspace build ARCHS=arm64 | xcbeautify
         displayName: Build ARM
         workingDirectory: react-native-test-app/example
         env:
