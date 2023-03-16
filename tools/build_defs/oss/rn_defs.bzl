@@ -41,7 +41,7 @@ def get_hermes_shared_library_preprocessor_flags():
 
 IS_OSS_BUILD = True
 
-GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
+GLOG_DEP = "///packages/react-native/ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
 
@@ -61,15 +61,15 @@ MACOSX = "macosx"
 
 APPLETVOS = "appletvos"
 
-YOGA_TARGET = "//ReactAndroid/src/main/java/com/facebook:yoga"
+YOGA_TARGET = "//packages/react-native/ReactAndroid/src/main/java/com/facebook:yoga"
 
-YOGA_CXX_TARGET = "//ReactCommon/yoga:yoga"
+YOGA_CXX_TARGET = "//packages/react-native/ReactCommon/yoga:yoga"
 
-FBGLOGINIT_TARGET = "//ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit"
+FBGLOGINIT_TARGET = "//packages/react-native/ReactAndroid/src/main/jni/first-party/fbgloginit:fbgloginit"
 
-FBJNI_TARGET = "//ReactAndroid/src/main/jni/first-party/fb:jni"
+FBJNI_TARGET = "//packages/react-native/ReactAndroid/src/main/jni/first-party/fb:jni"
 
-JNI_TARGET = "//ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack"
+JNI_TARGET = "//packages/react-native/ReactAndroid/src/main/jni/first-party/jni-hack:jni-hack"
 
 KEYSTORE_TARGET = "//keystores:debug"
 
@@ -150,11 +150,11 @@ rn_apple_xplat_cxx_library = rn_xplat_cxx_library
 
 # Example: react_native_target('java/com/facebook/react/common:common')
 def react_native_target(path):
-    return "//ReactAndroid/src/main/" + path
+    return "//packages/react-native/ReactAndroid/src/main/" + path
 
 # Example: react_native_xplat_target('bridge:bridge')
 def react_native_xplat_target(path):
-    return "//ReactCommon/" + path
+    return "//packages/react-native/ReactCommon/" + path
 
 def react_native_xplat_target_apple(path):
     return react_native_xplat_target(path) + "Apple"
@@ -166,27 +166,27 @@ def react_native_xplat_shared_library_target(path):
     return react_native_xplat_target(path)
 
 def react_native_desktop_root_target(path):
-    return "//" + path
+    return "//packages/react-native/" + path
 
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
-    return "//ReactAndroid/src/test/" + path
+    return "//packages/react-native/ReactAndroid/src/test/" + path
 
 # Example: react_native_integration_tests_target('java/com/facebook/react/testing:testing')
 def react_native_integration_tests_target(path):
-    return "//ReactAndroid/src/androidTest/" + path
+    return "//packages/react-native/ReactAndroid/src/androidTest/" + path
 
 # Helpers for referring to non-RN code from RN OSS code.
 # Example: react_native_dep('java/com/facebook/systrace:systrace')
 def react_native_dep(path):
-    return "//ReactAndroid/src/main/" + path
+    return "//packages/react-native/ReactAndroid/src/main/" + path
 
 def react_native_android_toplevel_dep(path):
     return react_native_dep(path)
 
 # Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
 def react_native_xplat_dep(path):
-    return "//ReactCommon/" + path
+    return "//packages/react-native/ReactCommon/" + path
 
 def rn_extra_build_flags():
     return []
@@ -272,8 +272,8 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
         "-XX:+CMSClassUnloadingEnabled",
         "-XX:ReservedCodeCacheSize=150M",
-        "-Drobolectric.dependency.dir=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric",
-        "-Dlibraries=buck-out/gen/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
+        "-Drobolectric.dependency.dir=buck-out/gen/packages/react-native/ReactAndroid/src/main/third-party/java/robolectric",
+        "-Dlibraries=buck-out/gen/packages/react-native/ReactAndroid/src/main/third-party/java/robolectric/*.jar",
         "-Drobolectric.logging.enabled=true",
         "-XX:MaxPermSize=620m",
         "-Drobolectric.offline=true",
@@ -289,8 +289,8 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
         name = name,
         use_cxx_libraries = True,
         cxx_library_whitelist = [
-            "//ReactCommon/yoga:yoga",
-            "//ReactAndroid/src/main/jni/first-party/yogajni:jni",
+            "//packages/react-native/ReactCommon/yoga:yoga",
+            "//packages/react-native/ReactAndroid/src/main/jni/first-party/yogajni:jni",
         ],
         fork_mode = "per_test",
         srcs = srcs,

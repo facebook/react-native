@@ -104,6 +104,11 @@ class PathUtilsTest {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
 
+    // Because react-native is now a package, it is always
+    // accessible from <root>/node_modules/react-native
+    // We need to provide location where cli.js file won't be resolved
+    extension.root.set(tempFolder.root)
+
     detectedCliFile(extension)
   }
 

@@ -14,10 +14,10 @@ import type {
   BubblingEventHandler,
   DirectEventHandler,
   WithDefault,
-} from '../../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+} from 'react-native/Libraries/Types/CodegenTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type OnChangeEvent = $ReadOnly<{|
   value: boolean,
