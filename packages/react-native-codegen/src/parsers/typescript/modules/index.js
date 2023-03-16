@@ -157,50 +157,27 @@ function translateTypeReferenceAnnotation(
         translateTypeAnnotation,
       );
     }
-    case 'Stringish': {
-      return emitStringish(nullable);
-    }
-    case 'Int32': {
-      return emitInt32(nullable);
-    }
-    case 'Double': {
-      return emitDouble(nullable);
-    }
-    case 'Float': {
-      return emitFloat(nullable);
-    }
-    case 'UnsafeObject':
-    case 'Object': {
-      return emitGenericObject(nullable);
-    }
-    case 'Partial': {
-      throwIfPartialWithMoreParameter(typeAnnotation);
-
-      const annotatedElement = parser.extractAnnotatedElement(
-        typeAnnotation,
-        types,
-      );
-
-      throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
-
-      const properties = parser.computePartialProperties(
-        annotatedElement.typeAnnotation.members,
+    default: {
+      const commonType = emitCommonTypes(
         hasteModuleName,
         types,
+        typeAnnotation,
         aliasMap,
         enumMap,
         tryParse,
         cxxOnly,
-      );
-
-      return emitObject(nullable, properties);
-    }
-    default: {
-      throw new UnsupportedGenericParserError(
-        hasteModuleName,
-        typeAnnotation,
+        nullable,
         parser,
       );
+
+      if (!commonType) {
+        throw new UnsupportedGenericParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser,
+        );
+      }
+      return commonType;
     }
   }
 }
