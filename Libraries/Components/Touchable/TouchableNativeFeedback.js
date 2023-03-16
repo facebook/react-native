@@ -8,7 +8,6 @@
  * @format
  */
 
-import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 

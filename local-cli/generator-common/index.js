@@ -379,21 +379,6 @@ function upgradeFileContentChangedCallback(
   );
 }
 
-/**
- * @param {string} srcPath
- * @param {string} relativeDestDir
- * @param {Record<string, string>} replacements
- */
-function appendToExistingFile(srcPath, relativeDestDir, replacements) {
-  walk(srcPath).forEach(absoluteSrcFilePath => {
-    const filename = path.relative(srcPath, absoluteSrcFilePath);
-    const relativeDestPath = path.join(relativeDestDir, replaceInPath(filename, replacements));
-
-    const templateFileContents = fs.readFileSync(absoluteSrcFilePath, { encoding: 'UTF8' });
-    fs.appendFileSync(relativeDestPath, templateFileContents);
-  });
-}
-
 module.exports = {
-  appendToExistingFile, createDir, copyAndReplaceWithChangedCallback, copyAndReplaceAll,
+  createDir, copyAndReplaceWithChangedCallback, copyAndReplaceAll,
 };

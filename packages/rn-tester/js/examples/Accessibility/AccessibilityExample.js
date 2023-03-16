@@ -18,7 +18,6 @@ const {
   AccessibilityInfo,
   TextInput,
   Button,
-  findNodeHandle,
   Image,
   Text,
   TouchableOpacity,
