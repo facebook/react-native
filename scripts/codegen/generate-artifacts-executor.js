@@ -16,7 +16,7 @@
  * in a codegenConfigFilename file.
  */
 
-const {execSync} = require('child_process');
+const {execSync, execFileSync} = require('child_process'); // [macOS]
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -34,8 +34,9 @@ function isReactNativeCoreLibrary(libraryName) {
   return CORE_LIBRARIES.has(libraryName);
 }
 
-function executeNodeScript(node, script) {
-  execSync(`${node} ${script}`);
+function executeNodeScript(node, scriptArgs) {
+  // [macOS] use execFileSync to help keep shell commands clean
+  execFileSync(node, scriptArgs);
 }
 
 function isAppRootValid(appRootDir) {
@@ -311,38 +312,47 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
 
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
-  executeNodeScript(
-    node,
+  // [macOS use execFileSync to help keep shell commands clean
+  executeNodeScript(node, [
     `${path.join(
       codegenCliPath,
       'lib',
       'cli',
       'combine',
       'combine-js-to-schema-cli.js',
-    )} --platform ios ${pathToSchema} ${pathToJavaScriptSources}`,
-  );
+    )}`,
+    '--platform',
+    'ios',
+    pathToSchema,
+    pathToJavaScriptSources,
+  ]);
+  // macOS]
   console.log(`[Codegen] Generated schema: ${pathToSchema}`);
   return pathToSchema;
 }
 
 function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
   // ...then generate native code artifacts.
-  const libraryTypeArg = library.config.type
-    ? `--libraryType ${library.config.type}`
-    : '';
+  const libraryTypeArg = library.config.type ? `${library.config.type}` : ''; // [macOS]
 
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  executeNodeScript(
-    node,
-    `${path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js')} \
-        --platform ios \
-        --schemaPath ${pathToSchema} \
-        --outputDir ${tmpOutputDir} \
-        --libraryName ${library.config.name} \
-        ${libraryTypeArg}`,
-  );
+  // [macOS use execFileSync to help keep shell commands clean
+  executeNodeScript(node, [
+    `${path.join(RN_ROOT, 'scripts', 'generate-specs-cli.js')}`,
+    '--platform',
+    'ios',
+    '--schemaPath',
+    pathToSchema,
+    '--outputDir',
+    tmpOutputDir,
+    '--libraryName',
+    library.config.name,
+    '--libraryType',
+    libraryTypeArg,
+  ]);
+  // macOS]
 
   // Finally, copy artifacts to the final output directory.
   fs.mkdirSync(iosOutputDir, {recursive: true});
@@ -399,14 +409,17 @@ function createComponentProvider(
 
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
-    executeNodeScript(
-      node,
-      `${path.join(
-        RN_ROOT,
-        'scripts',
-        'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
-    );
+    // [macOS use execFileSync to help keep shell commands clean
+    executeNodeScript(node, [
+      `${path.join(RN_ROOT, 'scripts', 'generate-provider-cli.js')}`,
+      '--platform',
+      'ios',
+      '--schemaListPath',
+      schemaListTmpPath,
+      '--outputDir',
+      iosOutputDir,
+    ]);
+    // macOS]
     console.log(`Generated provider in: ${iosOutputDir}`);
   }
 }

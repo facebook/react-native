@@ -41,22 +41,31 @@ describe('generateCode', () => {
     // mock used functions
     jest.spyOn(fs, 'mkdirSync').mockImplementation();
     jest.spyOn(child_process, 'execSync').mockImplementation();
+    jest.spyOn(child_process, 'execFileSync').mockImplementation(); // [macOS]
 
     underTest._generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
 
-    const expectedCommand = `${node} ${path.join(
-      rnRoot,
-      'generate-specs-cli.js',
-    )}         --platform ios         --schemaPath ${pathToSchema}         --outputDir ${tmpOutDir}         --libraryName ${
-      library.config.name
-    }         --libraryType ${libraryType}`;
-
-    expect(child_process.execSync).toHaveBeenCalledTimes(2);
-    expect(child_process.execSync).toHaveBeenNthCalledWith(1, expectedCommand);
+    // [macOS Refactor test since we call `execFileSync` on top of `execSync`
+    expect(child_process.execFileSync).toHaveBeenCalledTimes(1);
+    expect(child_process.execFileSync).toHaveBeenNthCalledWith(1, node, [
+      `${path.join(rnRoot, 'generate-specs-cli.js')}`,
+      '--platform',
+      'ios',
+      '--schemaPath',
+      pathToSchema,
+      '--outputDir',
+      tmpOutDir,
+      '--libraryName',
+      library.config.name,
+      '--libraryType',
+      libraryType,
+    ]);
+    expect(child_process.execSync).toHaveBeenCalledTimes(1);
     expect(child_process.execSync).toHaveBeenNthCalledWith(
-      2,
+      1,
       `cp -R ${tmpOutDir}/* ${iosOutputDir}`,
     );
+    // macOS]
 
     expect(fs.mkdirSync).toHaveBeenCalledTimes(2);
     expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, tmpOutDir, {
