@@ -25,6 +25,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
+import com.facebook.react.modules.network.HeaderUtil;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -502,7 +503,7 @@ public class NetworkingModuleTest {
         JavaOnlyArray.from(
             Arrays.asList(
                 JavaOnlyArray.of("content-type", "image/jpg"),
-                JavaOnlyArray.of("content-disposition", "filename=photo.jpg"))));
+                JavaOnlyArray.of("content-disposition", "filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg"))));
     formData.pushMap(imageBodyPart);
 
     mNetworkingModule.sendRequest(
@@ -538,7 +539,17 @@ public class NetworkingModuleTest {
     assertThat(bodyHeaders.get(0).get("content-disposition")).isEqualTo("user");
     assertThat(bodyRequestBody.get(0).contentType()).isNull();
     assertThat(bodyRequestBody.get(0).contentLength()).isEqualTo("locale".getBytes().length);
-    assertThat(bodyHeaders.get(1).get("content-disposition")).isEqualTo("filename=photo.jpg");
+
+    if (HeaderUtil.addUnsafeNonAsciiMethod != null) {
+      // We're on a version of OkHttp that supports non-ascii header values
+      // so we should expect the non-ascii characters to be preserved.
+      assertThat(bodyHeaders.get(1).get("content-disposition")).isEqualTo("filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg");
+    } else {
+      // We're on a version of OkHttp that doesn't support non-ascii header values
+      // so we should expect the non-ascii characters to be stripped.
+      assertThat(bodyHeaders.get(1).get("content-disposition")).isEqualTo("filename=\"photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg");
+    }
+
     assertThat(bodyRequestBody.get(1).contentType()).isEqualTo(MediaType.parse("image/jpg"));
     assertThat(bodyRequestBody.get(1).contentLength()).isEqualTo("imageUri".getBytes().length);
   }

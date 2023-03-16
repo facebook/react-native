@@ -82,7 +82,9 @@ class FormData {
       // content type (cf. web Blob interface.)
       if (typeof value === 'object' && !Array.isArray(value) && value) {
         if (typeof value.name === 'string') {
-          headers['content-disposition'] += '; filename="' + value.name + '"';
+          headers['content-disposition'] += `; filename="${
+            value.name
+          }"; filename*=utf-8''${encodeURI(value.name)}`;
         }
         if (typeof value.type === 'string') {
           headers['content-type'] = value.type;

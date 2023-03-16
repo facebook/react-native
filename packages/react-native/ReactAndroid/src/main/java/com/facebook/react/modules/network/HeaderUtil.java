@@ -7,13 +7,34 @@
 
 package com.facebook.react.modules.network;
 
+import java.lang.reflect.Method;
+import okhttp3.Headers;
+
 /**
- * The class purpose is to weaken too strict OkHttp restriction on http headers. See:
- * https://github.com/square/okhttp/issues/2016 Auth headers might have an Authentication
- * information. It is better to get 401 from the server in this case, rather than non descriptive
- * error as 401 could be handled to invalidate the wrong token in the client code.
+ * The class purpose is to provide compatibility among OkHttp versions on adding non-ascii header values.
+ *
+ * For v3.12.0 or higher, we can use the `addUnsafeAscii` method to add non-ascii header values.
+ * See: https://square.github.io/okhttp/changelogs/changelog_3x/#version-3120
+ * We need to use reflection to call this method, as it is not available in older versions.
+ * Remove reflection once the internal version of OkHttp is updated to v3.12.0 or higher.
+ *
+ * For other versions, we need to strip non-ascii header values.
+ * See: https://github.com/square/okhttp/issues/2016
+ * Auth headers might have an Authentication information. It is better to get 401 from the server
+ * in this case, rather than non descriptive error as 401 could be handled to invalidate the wrong
+ * token in the client code.
  */
 public class HeaderUtil {
+
+  public static Method addUnsafeNonAsciiMethod = null;
+
+  static {
+    try {
+      addUnsafeNonAsciiMethod = Headers.Builder.class.getMethod("addUnsafeNonAscii", String.class, String.class);
+    } catch (NoSuchMethodException e) {
+      // Ignore
+    }
+  }
 
   public static String stripHeaderName(String name) {
     StringBuilder builder = new StringBuilder(name.length());

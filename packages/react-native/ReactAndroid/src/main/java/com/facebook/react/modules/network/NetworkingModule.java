@@ -25,6 +25,7 @@ import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -760,11 +761,24 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return null;
       }
       String headerName = HeaderUtil.stripHeaderName(header.getString(0));
-      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
+      String headerValue = header.getString(1);
       if (headerName == null || headerValue == null) {
         return null;
       }
-      headersBuilder.add(headerName, headerValue);
+
+      if (HeaderUtil.addUnsafeNonAsciiMethod != null) {
+        try {
+          // Use reflection to call addUnsafeNonAscii because it's not available in
+          // older versions of OkHttp that are used internally.
+          HeaderUtil.addUnsafeNonAsciiMethod.invoke(headersBuilder, headerName, headerValue);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+          // Stripping non-ascii characters is needed for the regular `add` method.
+          headersBuilder.add(headerName, HeaderUtil.stripHeaderValue(headerValue));
+        }
+      } else {
+        // Stripping non-ascii characters is needed for the regular `add` method.
+        headersBuilder.add(headerName, HeaderUtil.stripHeaderValue(headerValue));
+      }
     }
     if (headersBuilder.get(USER_AGENT_HEADER_NAME) == null && mDefaultUserAgent != null) {
       headersBuilder.add(USER_AGENT_HEADER_NAME, mDefaultUserAgent);
