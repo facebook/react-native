@@ -10,8 +10,6 @@
 
 'use strict';
 import type {Parser} from '../../parser';
-import type {TypeDeclarationMap} from '../../utils';
-import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
@@ -115,16 +113,13 @@ function findComponentConfig(ast) {
   return createComponentConfig(foundConfig, commandsTypeNames);
 }
 
-function getCommandProperties(
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  commandTypeName,
-  types: TypeDeclarationMap,
-  commandOptions: ?CommandOptions,
-) {
+function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(ast);
+
   if (commandTypeName == null) {
     return [];
   }
+  const types = parser.getTypes(ast);
 
   const typeAlias = types[commandTypeName];
 
@@ -146,6 +141,8 @@ function getCommandProperties(
   const flowPropertyNames = properties
     .map(property => property && property.key && property.key.name)
     .filter(Boolean);
+
+  const commandOptions = getCommandOptions(commandOptionsExpression);
 
   if (commandOptions == null || commandOptions.supportedCommands == null) {
     throw new Error(
@@ -174,24 +171,14 @@ function buildComponentSchema(
   ast: $FlowFixMe,
   parser: Parser,
 ): ComponentSchemaBuilderConfig {
-  const {
-    componentName,
-    propsTypeName,
-    commandTypeName,
-    commandOptionsExpression,
-    optionsExpression,
-  } = findComponentConfig(ast);
+  const {componentName, propsTypeName, optionsExpression} =
+    findComponentConfig(ast);
 
   const types = parser.getTypes(ast);
 
   const propProperties = getProperties(propsTypeName, types);
-  const commandOptions = getCommandOptions(commandOptionsExpression);
 
-  const commandProperties = getCommandProperties(
-    commandTypeName,
-    types,
-    commandOptions,
-  );
+  const commandProperties = getCommandProperties(ast, parser);
 
   const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
