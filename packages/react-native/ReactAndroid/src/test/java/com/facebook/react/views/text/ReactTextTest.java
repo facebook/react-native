@@ -476,7 +476,7 @@ public class ReactTextTest {
 
   private ReactRootView createText(
       UIManagerModule uiManager, JavaOnlyMap textProps, JavaOnlyMap rawTextProps) {
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
     int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;

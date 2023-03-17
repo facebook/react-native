@@ -98,8 +98,7 @@ public class ShareModuleTest {
 
     mShareModule.share(content, dialogTitle, promise);
 
-    final Intent chooserIntent =
-        shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity();
+    final Intent chooserIntent = shadowOf(RuntimeEnvironment.application).getNextStartedActivity();
     assertNotNull("Dialog was not displayed", chooserIntent);
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.getAction());
     assertEquals(dialogTitle, chooserIntent.getExtras().get(Intent.EXTRA_TITLE));

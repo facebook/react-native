@@ -34,10 +34,10 @@ public class ClipboardModuleTest {
   @Before
   public void setUp() {
     mClipboardModule =
-        new ClipboardModule(new ReactApplicationContext(RuntimeEnvironment.getApplication()));
+        new ClipboardModule(new ReactApplicationContext(RuntimeEnvironment.application));
     mClipboardManager =
         (ClipboardManager)
-            RuntimeEnvironment.getApplication().getSystemService(Context.CLIPBOARD_SERVICE);
+            RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE);
   }
 
   @Test
