@@ -263,14 +263,27 @@ static void UpdatePointerEventModifierFlags(PointerEvent &event, UIKeyModifierFl
   }
 }
 
-static PointerEvent CreatePointerEventFromActivePointer(ActivePointer activePointer, RCTPointerEventType eventType)
+static PointerEvent CreatePointerEventFromActivePointer(
+    ActivePointer activePointer,
+    RCTPointerEventType eventType,
+    UIView *rootComponentView)
 {
   PointerEvent event = {};
   event.pointerId = activePointer.identifier;
   event.pointerType = PointerTypeCStringFromUITouchType(activePointer.touchType);
-  event.clientPoint = RCTPointFromCGPoint(activePointer.clientPoint);
-  event.screenPoint = RCTPointFromCGPoint(activePointer.screenPoint);
-  event.offsetPoint = RCTPointFromCGPoint(activePointer.offsetPoint);
+
+  if (eventType == RCTPointerEventTypeCancel) {
+    event.clientPoint = RCTPointFromCGPoint(CGPointZero);
+    event.screenPoint =
+        RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
+                                          toCoordinateSpace:rootComponentView.window.screen.coordinateSpace]);
+    event.offsetPoint = RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
+                                                                     toView:activePointer.componentView]);
+  } else {
+    event.clientPoint = RCTPointFromCGPoint(activePointer.clientPoint);
+    event.screenPoint = RCTPointFromCGPoint(activePointer.screenPoint);
+    event.offsetPoint = RCTPointFromCGPoint(activePointer.offsetPoint);
+  }
 
   event.pressure = activePointer.force;
   if (@available(iOS 13.4, *)) {
@@ -608,7 +621,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_dispatchActivePointers:(std::vector<ActivePointer>)activePointers eventType:(RCTPointerEventType)eventType
 {
   for (const auto &activePointer : activePointers) {
-    PointerEvent pointerEvent = CreatePointerEventFromActivePointer(activePointer, eventType);
+    PointerEvent pointerEvent = CreatePointerEventFromActivePointer(activePointer, eventType, _rootComponentView);
     NSOrderedSet<RCTReactTaggedView *> *eventPathViews = [self handleIncomingPointerEvent:pointerEvent
                                                                                    onView:activePointer.componentView];
 
