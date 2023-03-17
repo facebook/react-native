@@ -328,13 +328,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
     cell.textLabel.accessibilityIdentifier = @"redbox-error";
     cell.textLabel.textColor = [UIColor whiteColor];
-    if (@available(iOS 13.0, *)) {
-      // Prefer a monofont for formatting messages that were designed
-      // to be displayed in a terminal.
-      cell.textLabel.font = [UIFont monospacedSystemFontOfSize:14 weight:UIFontWeightBold];
-    } else {
-      cell.textLabel.font = [UIFont boldSystemFontOfSize:14];
-    }
+
+    // Prefer a monofont for formatting messages that were designed
+    // to be displayed in a terminal.
+    cell.textLabel.font = [UIFont monospacedSystemFontOfSize:14 weight:UIFontWeightBold];
+
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.textLabel.numberOfLines = 0;
     cell.detailTextLabel.textColor = [UIColor whiteColor];

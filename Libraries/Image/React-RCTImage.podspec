@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/image"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => min_ios_version_supported }
   s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
   s.source                 = source
   s.source_files           = "*.{m,mm}"

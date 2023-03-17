@@ -261,17 +261,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"password" : UITextContentTypePassword,
     };
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-    if (@available(iOS 12.0, *)) {
-      NSDictionary<NSString *, NSString *> *iOS12extras =
-          @{@"newPassword" : UITextContentTypeNewPassword, @"oneTimeCode" : UITextContentTypeOneTimeCode};
+    NSDictionary<NSString *, NSString *> *iOS12extras =
+        @{@"newPassword" : UITextContentTypeNewPassword, @"oneTimeCode" : UITextContentTypeOneTimeCode};
 
-      NSMutableDictionary<NSString *, NSString *> *iOS12baseMap = [contentTypeMap mutableCopy];
-      [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+    NSMutableDictionary<NSString *, NSString *> *iOS12baseMap = [contentTypeMap mutableCopy];
+    [iOS12baseMap addEntriesFromDictionary:iOS12extras];
 
-      contentTypeMap = [iOS12baseMap copy];
-    }
-#endif
+    contentTypeMap = [iOS12baseMap copy];
   });
 
   // Setting textContentType to an empty string will disable any
@@ -282,11 +278,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (void)setPasswordRules:(NSString *)descriptor
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
-  if (@available(iOS 12.0, *)) {
-    self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
-  }
-#endif
+  self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
 }
 
 - (UIKeyboardType)keyboardType

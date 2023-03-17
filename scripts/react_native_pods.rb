@@ -27,7 +27,7 @@ $START_TIME = Time.now.to_i
 # By using this function, you won't have to manualy change your Podfile
 # when we change the minimum version supported by the framework.
 def min_ios_version_supported
-  return '12.4'
+  return '13.4'
 end
 
 # This function prepares the project for React Native, before processing
