@@ -11,7 +11,7 @@ import type * as React from 'react';
 import type {
   ListRenderItemInfo,
   VirtualizedListWithoutRenderItemProps,
-} from './VirtualizedList';
+} from '@react-native/virtualized-lists';
 import type {
   ScrollView,
   ScrollViewProps,
@@ -75,7 +75,7 @@ export interface SectionListProps<ItemT, SectionT = DefaultSectionT>
    * If any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the `data` prop,
    * stick it here and treat it immutably.
    */
-  extraData?: any;
+  extraData?: any | undefined;
 
   /**
    * `getItemLayout` is an optional optimization that lets us skip measurement of dynamic
@@ -210,10 +210,9 @@ export interface SectionListScrollParams {
   viewPosition?: number | undefined;
 }
 
-export class SectionList<
-  ItemT = any,
-  SectionT = DefaultSectionT,
-> extends React.Component<SectionListProps<ItemT, SectionT>> {
+export abstract class SectionListComponent<
+  Props,
+> extends React.Component<Props> {
   /**
    * Scrolls to the item at the specified sectionIndex and itemIndex (within the section)
    * positioned in the viewable area such that viewPosition 0 places it at the top
@@ -245,6 +244,11 @@ export class SectionList<
    */
   getScrollableNode(): NodeHandle | undefined;
 }
+
+export class SectionList<
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends SectionListComponent<SectionListProps<ItemT, SectionT>> {}
 
 /* This definition is deprecated because it extends the wrong base type */
 export interface SectionListStatic<ItemT, SectionT = DefaultSectionT>

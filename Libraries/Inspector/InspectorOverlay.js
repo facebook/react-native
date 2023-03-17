@@ -15,7 +15,7 @@ import type {PressEvent} from '../Types/CoreEventTypes';
 
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions');
+const Dimensions = require('../Utilities/Dimensions').default;
 const ElementBox = require('./ElementBox');
 const React = require('react');
 

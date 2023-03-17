@@ -90,12 +90,6 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void setClockNow(std::function<uint64_t()> now);
 
-  void enableSkipInvalidatedKeyFrames();
-
-  void enableCrashOnMissingComponentDescriptor();
-
-  void enableSimulateImagePropsMemoryAccess();
-
  protected:
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   mutable std::optional<LayoutAnimation> currentAnimation_{};
@@ -152,21 +146,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable LayoutAnimationStatusDelegate *layoutAnimationStatusDelegate_{};
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable butter::set<SurfaceId> surfaceIdsToStop_{};
-  bool skipInvalidatedKeyFrames_{false};
   bool reduceDeleteCreateMutation_{false};
-
-  /*
-   * Feature flag that forces a crash if component descriptor for shadow view
-   * doesn't exist. This is an unexpected state and we crash to collect extra
-   * logs.
-   */
-  bool crashOnMissingComponentDescriptor_{false};
-
-  /*
-   * Feature flag that enables simulation of memory access. This is a temporary
-   * flag to diagnose where crashes are coming from in LayoutAnimations on iOS.
-   */
-  bool simulateImagePropsMemoryAccess_{false};
 
   // Function that returns current time in milliseconds
   std::function<uint64_t()> now_;

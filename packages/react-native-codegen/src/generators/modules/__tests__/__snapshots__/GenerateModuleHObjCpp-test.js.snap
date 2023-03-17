@@ -885,6 +885,7 @@ namespace JS {
 - (NSDictionary *)getValue:(double)x
                          y:(NSString *)y
                          z:(NSDictionary *)z;
+- (NSNumber *)getEnumReturn;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
 - (void)getValueWithPromise:(BOOL)error
                     resolve:(RCTPromiseResolveBlock)resolve

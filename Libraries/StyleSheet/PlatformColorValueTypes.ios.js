@@ -78,7 +78,7 @@ export const processColorObject = (
   color: NativeColorValue,
 ): ?NativeColorValue => {
   if ('dynamic' in color && color.dynamic != null) {
-    const processColor = require('./processColor');
+    const processColor = require('./processColor').default;
     const dynamic = color.dynamic;
     const dynamicColor: NativeColorValue = {
       dynamic: {

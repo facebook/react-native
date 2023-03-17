@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Float.h>
-#include <react/renderer/graphics/conversions.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>

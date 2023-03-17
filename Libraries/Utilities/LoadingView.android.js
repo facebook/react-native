@@ -8,20 +8,37 @@
  * @flow strict-local
  */
 
-import ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
-
-const TOAST_SHORT_DELAY = 2000;
-let isVisible = false;
+import processColor from '../StyleSheet/processColor';
+import Appearance from './Appearance';
+import NativeDevLoadingView from './NativeDevLoadingView';
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
-    if (!isVisible) {
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-      isVisible = true;
-      setTimeout(() => {
-        isVisible = false;
-      }, TOAST_SHORT_DELAY);
+    if (NativeDevLoadingView) {
+      let backgroundColor;
+      let textColor;
+
+      if (type === 'refresh') {
+        backgroundColor = processColor('#2584e8');
+        textColor = processColor('#ffffff');
+      } else if (type === 'load') {
+        if (Appearance.getColorScheme() === 'dark') {
+          backgroundColor = processColor('#fafafa');
+          textColor = processColor('#242526');
+        } else {
+          backgroundColor = processColor('#404040');
+          textColor = processColor('#ffffff');
+        }
+      }
+
+      NativeDevLoadingView.showMessage(
+        message,
+        typeof textColor === 'number' ? textColor : null,
+        typeof backgroundColor === 'number' ? backgroundColor : null,
+      );
     }
   },
-  hide() {},
+  hide() {
+    NativeDevLoadingView && NativeDevLoadingView.hide();
+  },
 };

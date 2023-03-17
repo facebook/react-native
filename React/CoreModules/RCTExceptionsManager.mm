@@ -12,6 +12,7 @@
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTRedBoxSetEnabled.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTRootView.h>
 
@@ -40,8 +41,10 @@ RCT_EXPORT_MODULE()
         exceptionId:(double)exceptionId
     extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
-  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  if (RCTRedBoxGetEnabled()) {
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  }
 
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message
@@ -56,8 +59,10 @@ RCT_EXPORT_MODULE()
         exceptionId:(double)exceptionId
     extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
-  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-  [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  if (RCTRedBoxGetEnabled()) {
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  }
 
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message
@@ -99,8 +104,10 @@ RCT_EXPORT_METHOD(updateExceptionMessage
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
-  [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  if (RCTRedBoxGetEnabled()) {
+    RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
+    [redbox updateErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
+  }
 
   if (_delegate && [_delegate respondsToSelector:@selector(updateJSExceptionWithMessage:stack:exceptionId:)]) {
     [_delegate updateJSExceptionWithMessage:message stack:stack exceptionId:[NSNumber numberWithDouble:exceptionId]];

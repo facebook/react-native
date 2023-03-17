@@ -33,9 +33,9 @@ rn_xplat_cxx_library(
         prefix = "react/renderer/core",
     ),
     compiler_flags_pedantic = True,
+    fbandroid_tests_override = [],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-    force_static = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
@@ -54,11 +54,14 @@ rn_xplat_cxx_library(
         "//xplat/folly:hash",
         "//xplat/folly:likely",
         "//xplat/jsi:JSIDynamic",
-        "//xplat/jsi:jsi",
         react_native_xplat_target("react/debug:debug"),
         react_native_xplat_target("react/utils:utils"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+    exported_deps = [
+        "//xplat/jsi:jsi",
     ],
 )
 
@@ -73,7 +76,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = (APPLE, CXX),
     deps = [
         ":core",
         "//xplat/hermes/API:HermesAPI",
@@ -84,6 +87,7 @@ fb_xplat_cxx_test(
         react_native_xplat_target("react/renderer/components/text:text"),
         react_native_xplat_target("react/renderer/element:element"),
         react_native_xplat_target("react/renderer/components/view:view"),
+        react_native_xplat_target("cxxreact:bridge"),
     ],
 )
 

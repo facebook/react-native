@@ -35,7 +35,6 @@ import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
@@ -45,6 +44,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -691,7 +691,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       } else if ("center".equals(textAlign)) {
         view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
       } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+        FLog.w(ReactConstants.TAG, "Invalid textAlign: " + textAlign);
+        view.setGravityHorizontal(Gravity.NO_GRAVITY);
       }
     }
   }
@@ -707,8 +708,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if ("center".equals(textAlignVertical)) {
       view.setGravityVertical(Gravity.CENTER_VERTICAL);
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textAlignVertical: " + textAlignVertical);
+      FLog.w(ReactConstants.TAG, "Invalid textAlignVertical: " + textAlignVertical);
+      view.setGravityVertical(Gravity.NO_GRAVITY);
     }
   }
 
@@ -784,7 +785,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if (REACT_PROPS_AUTOFILL_HINTS_MAP.containsKey(autoComplete)) {
       setAutofillHints(view, REACT_PROPS_AUTOFILL_HINTS_MAP.get(autoComplete));
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid autoComplete: " + autoComplete);
+      FLog.w(ReactConstants.TAG, "Invalid autoComplete: " + autoComplete);
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     }
   }
 
@@ -1313,10 +1315,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     ReadableNativeMap state = stateWrapper.getStateData();
-    if (state == null) {
-      return null;
-    }
-    if (!state.hasKey("attributedString")) {
+    if (state == null || !state.hasKey("attributedString")) {
       return null;
     }
 
@@ -1334,14 +1333,18 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         attributedString.getArray("fragments").toArrayList().size() > 1;
 
     int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
+    int currentJustificationMode =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt("mostRecentEventCount"),
-        TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
+        TextAttributeProps.getTextAlignment(
+            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props),
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
         containsMultipleFragments);
   }
 
@@ -1369,14 +1372,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+    int currentJustificationMode =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
 
     return ReactTextUpdate.buildReactTextUpdateFromState(
         spanned,
         state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
         TextAttributeProps.getTextAlignment(
-            props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
+            props, TextLayoutManagerMapBuffer.isRTL(attributedString), view.getGravityHorizontal()),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props),
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
         containsMultipleFragments);
   }
 }

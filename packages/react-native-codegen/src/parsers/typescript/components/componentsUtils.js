@@ -228,6 +228,11 @@ function getCommonTypeAnnotation<T>(
         type: 'ReservedPropTypeAnnotation',
         name: 'EdgeInsetsPrimitive',
       };
+    case 'DimensionValue':
+      return {
+        type: 'ReservedPropTypeAnnotation',
+        name: 'DimensionPrimitive',
+      };
     case 'TSUnionType':
       return getUnionOfLiterals(
         name,
@@ -410,6 +415,10 @@ function getTypeAnnotation<T>(
     case 'TSNumberKeyword':
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
+      );
+    case 'TSFunctionType':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
       );
     default:
       (type: empty);

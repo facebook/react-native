@@ -37,7 +37,7 @@ type AccessibilityAnnouncementFinishedEventHandler = (
   event: AccessibilityAnnouncementFinishedEvent,
 ) => void;
 
-type AccessibilityEventTypes = 'click' | 'focus';
+type AccessibilityEventTypes = 'click' | 'focus' | 'viewHoverEnter';
 
 /**
  * @see https://reactnative.dev/docs/accessibilityinfo
@@ -137,7 +137,7 @@ export interface AccessibilityInfoStatic {
    */
   announceForAccessibilityWithOptions(
     announcement: string,
-    options: {queue?: boolean},
+    options: {queue?: boolean | undefined},
   ): void;
 
   /**

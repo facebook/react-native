@@ -32,6 +32,7 @@ type Props = $ReadOnly<{|
 type State = {|
   inspector: ?React.Node,
   devtoolsOverlay: ?React.Node,
+  traceUpdateOverlay: ?React.Node,
   mainKey: number,
   hasError: boolean,
 |};
@@ -40,6 +41,7 @@ class AppContainer extends React.Component<Props, State> {
   state: State = {
     inspector: null,
     devtoolsOverlay: null,
+    traceUpdateOverlay: null,
     mainKey: 1,
     hasError: false,
   };
@@ -75,7 +77,10 @@ class AppContainer extends React.Component<Props, State> {
           const devtoolsOverlay = (
             <DevtoolsOverlay inspectedView={this._mainRef} />
           );
-          this.setState({devtoolsOverlay});
+          const TraceUpdateOverlay =
+            require('../Components/TraceUpdateOverlay/TraceUpdateOverlay').default;
+          const traceUpdateOverlay = <TraceUpdateOverlay />;
+          this.setState({devtoolsOverlay, traceUpdateOverlay});
         }
       }
     }
@@ -127,6 +132,7 @@ class AppContainer extends React.Component<Props, State> {
       <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
           {!this.state.hasError && innerView}
+          {this.state.traceUpdateOverlay}
           {this.state.devtoolsOverlay}
           {this.state.inspector}
           {logBox}

@@ -60,21 +60,31 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           nestedScrollEnabled: true,
           borderStyle: true,
-          borderRightColor: {process: require('../../StyleSheet/processColor')},
-          borderColor: {process: require('../../StyleSheet/processColor')},
+          borderRightColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
+          borderColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
           borderBottomColor: {
-            process: require('../../StyleSheet/processColor'),
+            process: require('../../StyleSheet/processColor').default,
           },
           persistentScrollbar: true,
-          endFillColor: {process: require('../../StyleSheet/processColor')},
+          endFillColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
           fadingEdgeLength: true,
           overScrollMode: true,
           borderTopLeftRadius: true,
           scrollPerfTag: true,
-          borderTopColor: {process: require('../../StyleSheet/processColor')},
+          borderTopColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
           removeClippedSubviews: true,
           borderTopRightRadius: true,
-          borderLeftColor: {process: require('../../StyleSheet/processColor')},
+          borderLeftColor: {
+            process: require('../../StyleSheet/processColor').default,
+          },
           pointerEvents: true,
         },
       }

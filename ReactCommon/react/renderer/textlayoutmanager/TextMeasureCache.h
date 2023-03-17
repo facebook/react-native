@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <folly/Hash.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/core/LayoutConstraints.h>

@@ -28,7 +28,10 @@ internal object DependencyUtils {
         }
         // We add the snapshot for users on nightlies.
         mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
-        repositories.mavenCentral()
+        repositories.mavenCentral { repo ->
+          // We don't want to fetch JSC from Maven Central as there are older versions there.
+          repo.content { it.excludeModule("org.webkit", "android-jsc") }
+        }
         // Android JSC is installed from npm
         mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())
         repositories.google()

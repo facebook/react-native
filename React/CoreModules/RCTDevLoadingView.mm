@@ -110,6 +110,20 @@ RCT_EXPORT_MODULE()
     return;
   }
 
+  // Input validation
+  if (message == nil || [message isEqualToString:@""]) {
+    NSLog(@"Error: message cannot be nil or empty");
+    return;
+  }
+  if (color == nil) {
+    NSLog(@"Error: color cannot be nil");
+    return;
+  }
+  if (backgroundColor == nil) {
+    NSLog(@"Error: backgroundColor cannot be nil");
+    return;
+  }
+
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {

@@ -98,6 +98,39 @@ describe('listeners', () => {
     emitter.emit('A');
     expect(listener).toHaveBeenCalledTimes(3);
   });
+
+  it('throws on non-function listeners', () => {
+    const emitter = new EventEmitter<{A: []}>();
+
+    expect(() => {
+      emitter.addListener('A', () => {});
+    }).not.toThrow();
+
+    expect(() => {
+      // $FlowExpectedError
+      emitter.addListener('A', null);
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError
+      emitter.addListener('A', undefined);
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError
+      emitter.addListener('A', 'abc');
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError
+      emitter.addListener('A', 123);
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError
+      emitter.addListener('A', 123);
+    }).toThrow();
+  });
 });
 
 describe('arguments and context', () => {
@@ -122,17 +155,15 @@ describe('arguments and context', () => {
     const emitter = new EventEmitter<{A: []}>();
 
     const context = {};
-    let result;
-    /* $FlowFixMe[missing-this-annot] The 'this' type annotation(s) required by
-     * Flow's LTI update could not be added via codemod */
-    const listener = jest.fn(function () {
-      result = this;
+    let that;
+    const listener = jest.fn(function (this: mixed) {
+      that = this;
     });
     emitter.addListener('A', listener, context);
 
     emitter.emit('A');
     expect(listener).toHaveBeenCalled();
-    expect(result).toBe(context);
+    expect(that).toBe(context);
   });
 });
 

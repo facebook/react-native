@@ -12,8 +12,8 @@
 #import <React/RCTDefines.h>
 #import <React/RCTInspector.h>
 #import <React/RCTLog.h>
-#import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
+#import <SocketRocket/SRWebSocket.h>
 
 // This is a port of the Android impl, at
 // ReactAndroid/src/main/java/com/facebook/react/devsupport/InspectorPackagerConnection.java
@@ -24,10 +24,10 @@ const int RECONNECT_DELAY_MS = 2000;
 @implementation RCTBundleStatus
 @end
 
-@interface RCTInspectorPackagerConnection () <RCTSRWebSocketDelegate> {
+@interface RCTInspectorPackagerConnection () <SRWebSocketDelegate> {
   NSURL *_url;
   NSMutableDictionary<NSString *, RCTInspectorLocalConnection *> *_inspectorConnections;
-  RCTSRWebSocket *_webSocket;
+  SRWebSocket *_webSocket;
   dispatch_queue_t _jsQueue;
   BOOL _closed;
   BOOL _suppressConnectionErrors;
@@ -188,7 +188,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onFailure(...)
-- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
+- (void)webSocket:(__unused SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   if (_webSocket) {
     [self abort:@"Websocket exception" withCause:error];
@@ -199,7 +199,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onMessage(...)
-- (void)webSocket:(__unused RCTSRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
+- (void)webSocket:(__unused SRWebSocket *)webSocket didReceiveMessage:(id)opaqueMessage
 {
   // warn but don't die on unrecognized messages
   if (![opaqueMessage isKindOfClass:[NSString class]]) {
@@ -219,7 +219,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 // analogous to InspectorPackagerConnection.Connection.onClosed(...)
-- (void)webSocket:(__unused RCTSRWebSocket *)webSocket
+- (void)webSocket:(__unused SRWebSocket *)webSocket
     didCloseWithCode:(__unused NSInteger)code
               reason:(__unused NSString *)reason
             wasClean:(__unused BOOL)wasClean
@@ -244,9 +244,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   }
 
   // The corresponding android code has a lot of custom config options for
-  // timeouts, but it appears the iOS RCTSRWebSocket API doesn't have the same
-  // implemented options.
-  _webSocket = [[RCTSRWebSocket alloc] initWithURL:_url];
+  // timeouts, but our previous class, RCTSRWebSocket didn't have the same
+  // implemented options. Might be worth reinvestigating for SRWebSocket?
+  _webSocket = [[SRWebSocket alloc] initWithURL:_url];
   [_webSocket setDelegateDispatchQueue:_jsQueue];
   _webSocket.delegate = self;
   [_webSocket open];
@@ -290,7 +290,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
       if (error) {
         RCTLogWarn(@"Couldn't send event to packager: %@", error);
       } else {
-        [strongSelf->_webSocket send:messageText];
+        [strongSelf->_webSocket sendString:messageText error:nil];
       }
     }
   });

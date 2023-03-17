@@ -25,6 +25,9 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean useTurboModules = false;
 
+  /** In Bridgeless mode, should legacy NativeModules use the TurboModule system? */
+  public static volatile boolean unstable_useTurboModuleInterop = false;
+
   /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
@@ -66,9 +69,6 @@ public class ReactFeatureFlags {
 
   /** Enables or disables calculation of Transformed Frames */
   public static boolean calculateTransformedFramesEnabled = false;
-
-  /** Feature Flag to use overflowInset values provided by Yoga */
-  public static boolean useOverflowInset = false;
 
   public static boolean dispatchPointerEvents = false;
 
@@ -115,4 +115,16 @@ public class ReactFeatureFlags {
    * state in Fabric SurfaceMountingManager.
    */
   public static boolean reduceDeleteCreateMutationLayoutAnimation = true;
+
+  /**
+   * Allow fix to drop delete...create mutations which could cause missing view state in Fabric
+   * SurfaceMountingManager.
+   */
+  public static boolean reduceDeleteCreateMutation = false;
+
+  /**
+   * Use JSI NativeState API to store references to native objects rather than the more expensive
+   * HostObject pattern
+   */
+  public static boolean useNativeState = false;
 }

@@ -54,7 +54,15 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         // Method was not found, let JS decide what to do.
         return facebook::jsi::Value::undefined();
       } else {
-        return get(runtime, propName, p->second);
+        auto moduleMethod = createHostFunction(runtime, propName, p->second);
+        // If we have a JS wrapper, cache the result of this lookup
+        // We don't cache misses, to allow for methodMap_ to dynamically be
+        // extended
+        if (jsRepresentation_) {
+          jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
+              runtime, propName, moduleMethod);
+        }
+        return moduleMethod;
       }
     }
   }
@@ -83,12 +91,32 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
 
+  using ArgFactory =
+      std::function<void(jsi::Runtime &runtime, std::vector<jsi::Value> &args)>;
+
+  /**
+   * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and
+   * an optional list of arguments.
+   * If present, argFactory is a callback used to construct extra arguments,
+   * e.g.
+   *
+   *  emitDeviceEvent(rt, "myCustomEvent",
+   *    [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+   *      args.emplace_back(jsi::Value(true));
+   *      args.emplace_back(jsi::Value(42));
+   *  });
+   */
+  void emitDeviceEvent(
+      jsi::Runtime &runtime,
+      const std::string &eventName,
+      ArgFactory argFactory = nullptr);
+
  private:
   friend class TurboCxxModule;
   friend class TurboModuleBinding;
-  std::unique_ptr<jsi::Object> jsRepresentation_;
+  std::unique_ptr<jsi::WeakObject> jsRepresentation_;
 
-  facebook::jsi::Value get(
+  facebook::jsi::Value createHostFunction(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName,
       const MethodMetadata &meta);

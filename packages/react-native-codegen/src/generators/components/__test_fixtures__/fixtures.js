@@ -526,6 +526,36 @@ const INSETS_PROP: SchemaType = {
   },
 };
 
+const DIMENSION_PROP: SchemaType = {
+  modules: {
+    CustomView: {
+      type: 'Component',
+      components: {
+        DimensionPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'marginBack',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'DimensionPrimitive',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -610,6 +640,17 @@ const ARRAY_PROPS: SchemaType = {
                 elementType: {
                   type: 'ReservedPropTypeAnnotation',
                   name: 'PointPrimitive',
+                },
+              },
+            },
+            {
+              name: 'dimensions',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'DimensionPrimitive',
                 },
               },
             },
@@ -1653,6 +1694,7 @@ module.exports = {
   IMAGE_PROP,
   POINT_PROP,
   INSETS_PROP,
+  DIMENSION_PROP,
   ARRAY_PROPS,
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,

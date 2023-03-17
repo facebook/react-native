@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
    *     view manager registered for the className received as a parameter.
    * @return the {@link ViewManager} registered to the className received as a parameter
    */
-  public ViewManager get(String className) {
+  public synchronized ViewManager get(String className) {
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager != null) {
       return viewManager;
@@ -84,7 +85,7 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
    *     there is no ViewManager associated to the className received as a parameter.
    */
   @Nullable
-  ViewManager getViewManagerIfExists(String className) {
+  /* package */ synchronized ViewManager getViewManagerIfExists(String className) {
     ViewManager viewManager = mViewManagers.get(className);
     if (viewManager != null) {
       return viewManager;
@@ -97,12 +98,16 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
 
   /** Send lifecycle signal to all ViewManagers that StopSurface has been called. */
   public void onSurfaceStopped(final int surfaceId) {
+    final List<ViewManager> viewManagers;
+    synchronized (this) {
+      viewManagers = new ArrayList<>(mViewManagers.values());
+    }
     Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
-            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
-              entry.getValue().onSurfaceStopped(surfaceId);
+            for (ViewManager viewManager : viewManagers) {
+              viewManager.onSurfaceStopped(surfaceId);
             }
           }
         };
@@ -116,12 +121,16 @@ public final class ViewManagerRegistry implements ComponentCallbacks2 {
   /** ComponentCallbacks2 method. */
   @Override
   public void onTrimMemory(int level) {
+    final List<ViewManager> viewManagers;
+    synchronized (this) {
+      viewManagers = new ArrayList<>(mViewManagers.values());
+    }
     Runnable runnable =
         new Runnable() {
           @Override
           public void run() {
-            for (Map.Entry<String, ViewManager> entry : mViewManagers.entrySet()) {
-              entry.getValue().trimMemory();
+            for (ViewManager viewManager : viewManagers) {
+              viewManager.trimMemory();
             }
           }
         };

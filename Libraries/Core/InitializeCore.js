@@ -27,6 +27,7 @@
 const start = Date.now();
 
 require('./setUpGlobals');
+require('./setUpDOM');
 require('./setUpPerformance');
 require('./setUpErrorHandling');
 require('./polyfillPromise');
@@ -40,7 +41,7 @@ require('./setUpSegmentFetcher');
 if (__DEV__) {
   require('./checkNativeVersion');
   require('./setUpDeveloperTools');
-  require('../LogBox/LogBox').install();
+  require('../LogBox/LogBox').default.install();
 }
 
 require('../ReactNative/AppRegistry');

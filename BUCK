@@ -12,14 +12,15 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
-    "CXX",
     "HERMES_BYTECODE_VERSION",
     "IOS",
     "RCT_IMAGE_DATA_DECODER_SOCKET",
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
+    "fb_xplat_cxx_test",
     "get_react_native_ios_target_sdk_version",
+    "react_cxx_module_plugin_provider",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "react_native_root_target",
@@ -28,6 +29,7 @@ load(
     "rn_apple_library",
     "rn_apple_xplat_cxx_library",
     "rn_extra_build_flags",
+    "rn_xplat_cxx_library",
     "subdir_glob",
 )
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
@@ -318,7 +320,6 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTRootShadowView.h": RCTVIEWS_PATH + "RCTRootShadowView.h",
     "React/RCTRootView.h": RCTBASE_PATH + "RCTRootView.h",
     "React/RCTRootViewDelegate.h": RCTBASE_PATH + "RCTRootViewDelegate.h",
-    "React/RCTSRWebSocket.h": RCTLIB_PATH + "WebSocket/RCTSRWebSocket.h",
     "React/RCTScrollEvent.h": RCTVIEWS_PATH + "ScrollView/RCTScrollEvent.h",
     "React/RCTScrollView.h": RCTVIEWS_PATH + "ScrollView/RCTScrollView.h",
     "React/RCTScrollableProtocol.h": RCTVIEWS_PATH + "ScrollView/RCTScrollableProtocol.h",
@@ -352,7 +353,6 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTView.h": RCTVIEWS_PATH + "RCTView.h",
     "React/RCTViewManager.h": RCTVIEWS_PATH + "RCTViewManager.h",
     "React/RCTViewUtils.h": RCTVIEWS_PATH + "RCTViewUtils.h",
-    "React/RCTWeakProxy.h": RCTBASE_PATH + "RCTWeakProxy.h",
     "React/RCTWrapperViewController.h": RCTVIEWS_PATH + "RCTWrapperViewController.h",
     "React/UIView+React.h": RCTVIEWS_PATH + "UIView+React.h",
 }
@@ -453,6 +453,7 @@ rn_apple_xplat_cxx_library(
     ],
     deps = [
         YOGA_CXX_TARGET,
+        "//fbobjc/VendorLib/SocketRocket:SocketRocket",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
@@ -522,7 +523,6 @@ rn_apple_xplat_cxx_library(
         react_fabric_component_plugin_provider("ScrollView", "RCTScrollViewCls"),
         react_fabric_component_plugin_provider("PullToRefreshView", "RCTPullToRefreshViewCls"),
         react_fabric_component_plugin_provider("ActivityIndicatorView", "RCTActivityIndicatorViewCls"),
-        react_fabric_component_plugin_provider("Slider", "RCTSliderCls"),
         react_fabric_component_plugin_provider("Switch", "RCTSwitchCls"),
         react_fabric_component_plugin_provider("UnimplementedNativeView", "RCTUnimplementedNativeViewCls"),
         react_fabric_component_plugin_provider("Paragraph", "RCTParagraphCls"),
@@ -563,7 +563,6 @@ rn_apple_xplat_cxx_library(
     exported_deps = [
         react_native_xplat_target("react/renderer/animations:animations"),
         react_native_xplat_target("react/renderer/components/scrollview:scrollview"),
-        react_native_xplat_target("react/renderer/components/slider:slider"),
         react_native_xplat_target("react/renderer/components/safeareaview:safeareaview"),
         react_native_xplat_target("react/renderer/components/modal:modal"),
         react_native_xplat_target("react/renderer/components/unimplementedview:unimplementedview"),
@@ -726,6 +725,8 @@ rn_library(
             "Libraries/**/*.js",
             "Libraries/NewAppScreen/**/*.png",
             "Libraries/LogBox/**/*.png",
+            "packages/virtualized-lists/**/*.js",
+            "packages/virtualized-lists/**/*.json",
         ],
         exclude = [
             "**/__*__/**",
@@ -744,6 +745,7 @@ rn_library(
         "//xplat/js:node_modules__base64_19js",
         "//xplat/js:node_modules__deprecated_19react_19native_19prop_19types",
         "//xplat/js:node_modules__event_19target_19shim",
+        "//xplat/js:node_modules__flow_19enums_19runtime",
         "//xplat/js:node_modules__invariant",
         "//xplat/js:node_modules__memoize_19one",
         "//xplat/js:node_modules__nullthrows",
@@ -1455,27 +1457,61 @@ rn_apple_xplat_cxx_library(
     ],
 )
 
-rn_apple_xplat_cxx_library(
+rn_xplat_cxx_library(
     name = "RCTWebPerformance",
-    srcs = glob([
-        "Libraries/WebPerformance/**/*.cpp",
-    ]),
+    srcs = glob(
+        [
+            "Libraries/WebPerformance/**/*.cpp",
+        ],
+        exclude = ["Libraries/WebPerformance/__tests__/*"],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [("Libraries/WebPerformance", "*.h")],
         prefix = "RCTWebPerformance",
     ),
-    fbandroid_compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,
     labels = [
         "depslint_never_remove",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = (ANDROID, APPLE),
+    plugins = [
+        react_cxx_module_plugin_provider(
+            name = "NativePerformanceCxx",
+            function = "NativePerformanceModuleProvider",
+        ),
+        react_cxx_module_plugin_provider(
+            name = "NativePerformanceObserverCxx",
+            function = "NativePerformanceObserverModuleProvider",
+        ),
+    ],
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",
+        react_native_xplat_target("react/renderer/core:core"),
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "RCTWebPerformance_tests",
+    srcs = glob([
+        "Libraries/WebPerformance/__tests__/*.cpp",
+    ]),
+    headers = glob(["Libraries/WebPerformance/__tests__/*.h"]),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    platforms = (ANDROID, APPLE),
+    deps = [
+        ":RCTWebPerformance",
+        "//xplat/third-party/gmock:gmock",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

@@ -554,9 +554,7 @@ public class ReactInstanceManager {
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null && currentContext.hasActiveReactInstance()) {
-      currentContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit("toggleElementInspector", null);
+      currentContext.emitDeviceEvent("toggleElementInspector");
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -923,10 +921,11 @@ public class ReactInstanceManager {
       if (mViewManagers == null) {
         synchronized (mPackages) {
           if (mViewManagers == null) {
-            mViewManagers = new ArrayList<>();
+            ArrayList<ViewManager> viewManagers = new ArrayList<>();
             for (ReactPackage reactPackage : mPackages) {
-              mViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+              viewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
             }
+            mViewManagers = viewManagers;
             return mViewManagers;
           }
         }

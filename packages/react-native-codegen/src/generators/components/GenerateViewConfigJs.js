@@ -65,7 +65,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return j.template
-            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor').default }`;
         case 'ImageSourcePrimitive':
           return j.template
             .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
@@ -77,6 +77,8 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         case 'EdgeInsetsPrimitive':
           return j.template
             .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
+        case 'DimensionPrimitive':
+          return j.literal(true);
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -90,8 +92,9 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
             return j.template
               .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
-            return j.literal(true);
           case 'PointPrimitive':
+          case 'EdgeInsetsPrimitive':
+          case 'DimensionPrimitive':
             return j.literal(true);
           default:
             throw new Error(

@@ -16,14 +16,17 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 
-new_arch_enabled_flag="RCT_NEW_ARCH_ENABLED"
-is_new_arch_enabled = ENV[new_arch_enabled_flag] == "1"
-other_cflags = "$(inherited) -DRN_FABRIC_ENABLED " + folly_flags + (is_new_arch_enabled ? " -D"+"RCT_NEW_ARCH_ENABLED" : "")
+is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
+is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
+fabric_flag = (is_fabric_enabled ? " -DRN_FABRIC_ENABLED" : "")
+other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + fabric_flag
 
 use_hermes = ENV['USE_HERMES'] == '1'
+use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
@@ -37,6 +40,13 @@ header_search_paths = [
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
+] : []).concat(use_frameworks ? [
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -69,5 +79,16 @@ Pod::Spec.new do |s|
   if is_new_arch_enabled
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
+
+    s.script_phases = {
+      :name => "Generate Legacy Components Interop",
+      :script => "
+. ${PODS_ROOT}/../.xcode.env
+${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
+      ",
+      :execution_position => :before_compile,
+      :input_files => ["#{ENV['APP_PATH']}/react-native.config.js"],
+      :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
+    }
   end
 end

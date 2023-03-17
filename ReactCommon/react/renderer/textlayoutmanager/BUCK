@@ -14,6 +14,8 @@ load(
     "subdir_glob",
 )
 
+oncall("react_native")
+
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
@@ -83,7 +85,7 @@ rn_xplat_cxx_library(
     ],
     ios_exported_headers = subdir_glob(
         [
-            ("platform/ios", "*.h"),
+            ("platform/ios/react/renderer/textlayoutmanager", "*.h"),
         ],
         prefix = "react/renderer/textlayoutmanager",
     ),
@@ -94,7 +96,7 @@ rn_xplat_cxx_library(
     ],
     ios_headers = subdir_glob(
         [
-            ("platform/ios", "**/*.h"),
+            ("platform/ios/react/renderer/textlayoutmanager", "**/*.h"),
         ],
         prefix = "",
     ),

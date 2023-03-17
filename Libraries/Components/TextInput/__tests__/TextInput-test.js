@@ -169,6 +169,42 @@ describe('TextInput tests', () => {
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
   });
 
+  it('should give precedence to `textContentType` when set', () => {
+    const instance = ReactTestRenderer.create(
+      <TextInput autoComplete="tel" textContentType="emailAddress" />,
+    );
+
+    expect(instance.toJSON()).toMatchInlineSnapshot(`
+      <RCTSinglelineTextInputView
+        accessible={true}
+        allowFontScaling={true}
+        focusable={true}
+        forwardedRef={null}
+        mostRecentEventCount={0}
+        onBlur={[Function]}
+        onChange={[Function]}
+        onChangeSync={null}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onScroll={[Function]}
+        onSelectionChange={[Function]}
+        onSelectionChangeShouldSetResponder={[Function]}
+        onStartShouldSetResponder={[Function]}
+        rejectResponderTermination={true}
+        selection={null}
+        submitBehavior="blurAndSubmit"
+        text=""
+        textContentType="emailAddress"
+        underlineColorAndroid="transparent"
+      />
+    `);
+  });
+
   it('should render as expected', () => {
     expectRendersMatchingSnapshot(
       'TextInput',
@@ -286,7 +322,7 @@ describe('TextInput compat with web', () => {
       'aria-label': 'label',
       'aria-labelledby': 'labelledby',
       'aria-level': 3,
-      'aria-live': 'polite',
+      // aria-live': 'polite', [TODO: https://github.com/facebook/react-native-deprecated-modules/pull/20]
       'aria-modal': true,
       'aria-multiline': true,
       'aria-multiselectable': true,
@@ -345,7 +381,6 @@ describe('TextInput compat with web', () => {
         aria-label="label"
         aria-labelledby="labelledby"
         aria-level={3}
-        aria-live="polite"
         aria-modal={true}
         aria-multiline={true}
         aria-multiselectable={true}

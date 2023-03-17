@@ -110,11 +110,17 @@ export default (BaseFlatListExample: React.AbstractComponent<
   FlatList<string>,
 >);
 
+const ITEM_INNER_HEIGHT = 70;
+const ITEM_MARGIN = 8;
+export const ITEM_HEIGHT: number = ITEM_INNER_HEIGHT + ITEM_MARGIN * 2;
+
 const styles = StyleSheet.create({
   item: {
     backgroundColor: 'pink',
-    padding: 20,
-    marginVertical: 8,
+    paddingHorizontal: 20,
+    height: ITEM_INNER_HEIGHT,
+    marginVertical: ITEM_MARGIN,
+    justifyContent: 'center',
   },
   header: {
     fontSize: 32,

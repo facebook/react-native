@@ -10,8 +10,8 @@
 
 'use strict';
 
-import createPerformanceLogger from '../../Utilities/createPerformanceLogger';
-
+const createPerformanceLogger =
+  require('../../Utilities/createPerformanceLogger').default;
 const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
 const Platform = require('../../Utilities/Platform');
 const XMLHttpRequest = require('../XMLHttpRequest');

@@ -22,10 +22,12 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.component.MyLegacyViewManager;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -106,7 +108,10 @@ public class RNTesterApplication extends Application implements ReactApplication
                 @Override
                 public List<ViewManager> createViewManagers(
                     @NonNull ReactApplicationContext reactContext) {
-                  return Collections.singletonList(new MyNativeViewManager());
+                  List<ViewManager> viewManagers = new ArrayList<>();
+                  viewManagers.add(new MyNativeViewManager());
+                  viewManagers.add(new MyLegacyViewManager(reactContext));
+                  return viewManagers;
                 }
               });
         }

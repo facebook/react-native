@@ -22,7 +22,6 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:appcompat"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),
-        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),

@@ -32,6 +32,7 @@
   NSUInteger _minFPS;
   NSUInteger _length;
   NSUInteger _height;
+  CGFloat _scale;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame color:(UIColor *)color
@@ -43,6 +44,7 @@
     _minFPS = 60;
     _length = (NSUInteger)floor(frame.size.width);
     _height = (NSUInteger)floor(frame.size.height);
+    _scale = 60.0 / (CGFloat)_height;
     _frames = calloc(sizeof(CGFloat), _length);
     _color = color;
 
@@ -97,11 +99,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       self->_label.text = [NSString stringWithFormat:@"%lu", (unsigned long)self->_FPS];
     });
 
-    CGFloat scale = 60.0 / (CGFloat)_height;
+    CGFloat previousScale = _scale;
+    CGFloat targetFps = MAX(_maxFPS, 60.0);
+    _scale = targetFps / (CGFloat)_height;
     for (NSUInteger i = 0; i < _length - 1; i++) {
-      _frames[i] = _frames[i + 1];
+      // Move each Frame back one position and adjust to new scale (if there is a new scale)
+      _frames[i] = _frames[i + 1] * previousScale / _scale;
     }
-    _frames[_length - 1] = (double)_FPS / scale;
+    _frames[_length - 1] = (double)_FPS / _scale;
 
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, 0, (CGFloat)_height);

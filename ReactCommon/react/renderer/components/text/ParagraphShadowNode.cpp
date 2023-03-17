@@ -13,6 +13,7 @@
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
@@ -94,7 +95,8 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
 void ParagraphShadowNode::setTextLayoutManager(
     std::shared_ptr<TextLayoutManager const> textLayoutManager) {
   ensureUnsealed();
-  textLayoutManager_ = std::move(textLayoutManager);
+  getStateData().paragraphLayoutManager.setTextLayoutManager(
+      std::move(textLayoutManager));
 }
 
 void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
@@ -102,7 +104,7 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
 
   auto &state = getStateData();
 
-  react_native_assert(textLayoutManager_);
+  react_native_assert(state.paragraphLayoutManager.getTextLayoutManager());
 
   if (state.attributedString == content.attributedString) {
     return;
@@ -111,7 +113,7 @@ void ParagraphShadowNode::updateStateIfNeeded(Content const &content) {
   setStateData(ParagraphState{
       content.attributedString,
       content.paragraphAttributes,
-      textLayoutManager_});
+      state.paragraphLayoutManager});
 }
 
 #pragma mark - LayoutableShadowNode
@@ -135,11 +137,9 @@ Size ParagraphShadowNode::measureContent(
     attributedString.appendFragment({string, textAttributes, {}});
   }
 
-  return textLayoutManager_
-      ->measure(
-          AttributedStringBox{attributedString},
-          content.paragraphAttributes,
-          layoutConstraints)
+  return getStateData()
+      .paragraphLayoutManager
+      .measure(attributedString, content.paragraphAttributes, layoutConstraints)
       .size;
 }
 
@@ -156,13 +156,11 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
   updateStateIfNeeded(content);
 
-  auto measurement = textLayoutManager_->measure(
-      AttributedStringBox{content.attributedString},
-      content.paragraphAttributes,
-      layoutConstraints);
+  auto measurement = getStateData().paragraphLayoutManager.measure(
+      content.attributedString, content.paragraphAttributes, layoutConstraints);
 
   if (getConcreteProps().onTextLayout) {
-    auto linesMeasurements = textLayoutManager_->measureLines(
+    auto linesMeasurements = getStateData().paragraphLayoutManager.measureLines(
         content.attributedString,
         content.paragraphAttributes,
         measurement.size);
@@ -205,8 +203,8 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
     paragraphShadowNode =
         static_cast<ParagraphShadowNode *>(paragraphOwningShadowNode.get());
 
-    auto &layoutableShadowNode = const_cast<LayoutableShadowNode &>(
-        traitCast<LayoutableShadowNode const &>(*clonedShadowNode));
+    auto &layoutableShadowNode =
+        traitCast<LayoutableShadowNode &>(*clonedShadowNode);
 
     auto attachmentFrame = measurement.attachments[i].frame;
     auto attachmentSize = roundToPixel<&ceil>(

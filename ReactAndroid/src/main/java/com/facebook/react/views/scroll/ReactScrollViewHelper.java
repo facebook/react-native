@@ -17,10 +17,10 @@ import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.PixelUtil;
@@ -153,7 +153,8 @@ public class ReactScrollViewHelper {
     } else if (jsOverScrollMode.equals(OVER_SCROLL_NEVER)) {
       return View.OVER_SCROLL_NEVER;
     } else {
-      throw new JSApplicationIllegalArgumentException("wrong overScrollMode: " + jsOverScrollMode);
+      FLog.w(ReactConstants.TAG, "wrong overScrollMode: " + jsOverScrollMode);
+      return View.OVER_SCROLL_IF_CONTENT_SCROLLS;
     }
   }
 
@@ -167,7 +168,8 @@ public class ReactScrollViewHelper {
     } else if ("end".equals(alignment)) {
       return SNAP_ALIGNMENT_END;
     } else {
-      throw new JSApplicationIllegalArgumentException("wrong snap alignment value: " + alignment);
+      FLog.w(ReactConstants.TAG, "wrong snap alignment value: " + alignment);
+      return SNAP_ALIGNMENT_DISABLED;
     }
   }
 
@@ -601,5 +603,9 @@ public class ReactScrollViewHelper {
 
     /** Get the scroll view dispatch time for throttling */
     long getLastScrollDispatchTime();
+  }
+
+  public interface HasSmoothScroll {
+    void reactSmoothScrollTo(int x, int y);
   }
 }

@@ -9,8 +9,9 @@ package com.facebook.react.views.image;
 
 import android.graphics.Shader;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.drawee.drawable.ScalingUtils;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.common.ReactConstants;
 
 /** Converts JS resize modes into Android-specific scale type. */
 public class ImageResizeMode {
@@ -41,12 +42,11 @@ public class ImageResizeMode {
       // Handled via a combination of ScaleType and TileMode
       return ScaleTypeStartInside.INSTANCE;
     }
-    if (resizeModeValue == null) {
-      // Use the default. Never use null.
-      return defaultValue();
+    if (resizeModeValue != null) {
+      FLog.w(ReactConstants.TAG, "Invalid resize mode: '" + resizeModeValue + "'");
     }
-    throw new JSApplicationIllegalArgumentException(
-        "Invalid resize mode: '" + resizeModeValue + "'");
+    // Use the default. Never use null.
+    return defaultValue();
   }
 
   /** Converts JS resize modes into {@code Shader.TileMode}. See {@code ImageResizeMode.js}. */
@@ -61,12 +61,11 @@ public class ImageResizeMode {
       // Handled via a combination of ScaleType and TileMode
       return Shader.TileMode.REPEAT;
     }
-    if (resizeModeValue == null) {
-      // Use the default. Never use null.
-      return defaultTileMode();
+    if (resizeModeValue != null) {
+      FLog.w(ReactConstants.TAG, "Invalid resize mode: '" + resizeModeValue + "'");
     }
-    throw new JSApplicationIllegalArgumentException(
-        "Invalid resize mode: '" + resizeModeValue + "'");
+    // Use the default. Never use null.
+    return defaultTileMode();
   }
 
   /** This is the default as per web and iOS. We want to be consistent across platforms. */

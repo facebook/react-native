@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
-
-'use strict';
 
 export type FeatureFlags = {|
   /**
@@ -39,10 +37,14 @@ export type FeatureFlags = {|
    */
   animatedShouldUseSingleOp: () => boolean,
   /**
-   * This feature flag enables an experimental rendering of react native
-   * components that are implemented in C++.
+   * Enables GlobalPerformanceLogger replacement with a WebPerformance API based
+   * implementation
    */
-  enableCppComponents: () => boolean,
+  isGlobalWebPerformanceLoggerEnabled: () => boolean,
+  /**
+   * Enables access to the host tree in Fabric using DOM-compatible APIs.
+   */
+  enableAccessToHostTreeInFabric: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -51,7 +53,8 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
-  enableCppComponents: () => false,
+  isGlobalWebPerformanceLoggerEnabled: () => false,
+  enableAccessToHostTreeInFabric: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

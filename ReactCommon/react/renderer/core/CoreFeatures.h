@@ -25,6 +25,20 @@ class CoreFeatures {
   // its ShadowNode traits must set the MapBuffer trait; and this
   // must be set to "true" globally.
   static bool enableMapBuffer;
+
+  // When enabled, Fabric will block paint to allow for state updates in
+  // useLayoutEffect hooks to be processed. This changes affects scheduling of
+  // when a transaction is mounted.
+  static bool blockPaintForUseLayoutEffect;
+
+  // Whether to use Hermes' NativeState instead of HostObject
+  // in simple data passing scenarios with JS
+  static bool useNativeState;
+
+  // Creating NSTextStorage is relatively expensive operation and we were
+  // creating it twice. Once when measuring text and once when rendering it.
+  // This flag caches it inside ParagraphState.
+  static bool cacheNSTextStorage;
 };
 
 } // namespace react

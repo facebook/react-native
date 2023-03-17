@@ -53,6 +53,26 @@ struct Bridging<ValueStruct> : NativeCxxModuleExampleCxxBaseValueStructBridging<
                                    std::string,
                                    ObjectStruct> {};
 
+#pragma mark - enums
+enum CustomEnumInt { A = 23, B = 42 };
+
+template <>
+struct Bridging<CustomEnumInt> {
+  static CustomEnumInt fromJs(jsi::Runtime &rt, int32_t value) {
+    if (value == 23) {
+      return CustomEnumInt::A;
+    } else if (value == 42) {
+      return CustomEnumInt::B;
+    } else {
+      throw jsi::JSError(rt, "Invalid enum value");
+    }
+  }
+
+  static jsi::Value toJs(jsi::Runtime &rt, CustomEnumInt value) {
+    return bridging::toJs(rt, static_cast<int32_t>(value));
+  }
+};
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -71,7 +91,15 @@ class NativeCxxModuleExample
 
   ConstantsStruct getConstants(jsi::Runtime &rt);
 
-  int32_t getEnum(jsi::Runtime &rt, int32_t arg);
+  CustomEnumInt getCustomEnum(jsi::Runtime &rt, CustomEnumInt arg);
+
+  NativeCxxModuleExampleCxxEnumFloat getNumEnum(
+      jsi::Runtime &rt,
+      NativeCxxModuleExampleCxxEnumInt arg);
+
+  NativeCxxModuleExampleCxxEnumStr getStrEnum(
+      jsi::Runtime &rt,
+      NativeCxxModuleExampleCxxEnumNone arg);
 
   std::map<std::string, std::optional<int32_t>> getMap(
       jsi::Runtime &rt,
@@ -93,6 +121,8 @@ class NativeCxxModuleExample
   AsyncPromise<std::string> getValueWithPromise(jsi::Runtime &rt, bool error);
 
   void voidFunc(jsi::Runtime &rt);
+
+  void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName);
 };
 
 } // namespace facebook::react

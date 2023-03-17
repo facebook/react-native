@@ -18,8 +18,10 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.TouchTargetHelper;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PointerEvent extends Event<PointerEvent> {
   private static final String TAG = PointerEvent.class.getSimpleName();
@@ -122,18 +124,21 @@ public class PointerEvent extends Event<PointerEvent> {
           new EventAnimationDriverMatchSpec() {
             @Override
             public boolean match(int viewTag, String eventName) {
-              if (!PointerEventHelper.isBubblingEvent(eventName)) {
+              if (!eventName.equals(mEventName)) {
                 return false;
               }
 
-              List<TouchTargetHelper.ViewTarget> viewTargets =
-                  mEventState.getHitPathForActivePointer();
-              for (TouchTargetHelper.ViewTarget viewTarget : viewTargets) {
-                if (viewTarget.getViewId() == viewTag && eventName.equals(mEventName)) {
-                  return true;
+              if (PointerEventHelper.isBubblingEvent(eventName)) {
+                for (TouchTargetHelper.ViewTarget viewTarget :
+                    mEventState.getHitPathForActivePointer()) {
+                  if (viewTarget.getViewId() == viewTag) {
+                    return true;
+                  }
                 }
+                return false;
+              } else {
+                return getViewTag() == viewTag;
               }
-              return false;
             }
           };
     }
@@ -184,9 +189,9 @@ public class PointerEvent extends Event<PointerEvent> {
     String pointerType = PointerEventHelper.getW3CPointerType(mMotionEvent.getToolType(index));
     pointerEvent.putString("pointerType", pointerType);
 
-    pointerEvent.putBoolean(
-        "isPrimary",
-        PointerEventHelper.isPrimary(pointerId, mEventState.getPrimaryPointerId(), mMotionEvent));
+    boolean isPrimary =
+        mEventState.supportsHover(pointerId) || pointerId == mEventState.mPrimaryPointerId;
+    pointerEvent.putBoolean("isPrimary", isPrimary);
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
     // Client refers to upper left edge of the content area (viewport)
@@ -310,6 +315,7 @@ public class PointerEvent extends Event<PointerEvent> {
     private Map<Integer, float[]> mOffsetByPointerId;
     private Map<Integer, List<TouchTargetHelper.ViewTarget>> mHitPathByPointerId;
     private Map<Integer, float[]> mEventCoordinatesByPointerId;
+    private Set<Integer> mHoveringPointerIds;
 
     public PointerEventState(
         int primaryPointerId,
@@ -318,7 +324,8 @@ public class PointerEvent extends Event<PointerEvent> {
         int surfaceId,
         Map<Integer, float[]> offsetByPointerId,
         Map<Integer, List<TouchTargetHelper.ViewTarget>> hitPathByPointerId,
-        Map<Integer, float[]> eventCoordinatesByPointerId) {
+        Map<Integer, float[]> eventCoordinatesByPointerId,
+        Set<Integer> hoveringPointerIds) {
       mPrimaryPointerId = primaryPointerId;
       mActivePointerId = activePointerId;
       mLastButtonState = lastButtonState;
@@ -326,6 +333,7 @@ public class PointerEvent extends Event<PointerEvent> {
       mOffsetByPointerId = offsetByPointerId;
       mHitPathByPointerId = hitPathByPointerId;
       mEventCoordinatesByPointerId = eventCoordinatesByPointerId;
+      mHoveringPointerIds = new HashSet<>(hoveringPointerIds);
     }
 
     public int getLastButtonState() {
@@ -342,6 +350,10 @@ public class PointerEvent extends Event<PointerEvent> {
 
     public int getActivePointerId() {
       return mActivePointerId;
+    }
+
+    public boolean supportsHover(int pointerId) {
+      return mHoveringPointerIds.contains(pointerId);
     }
 
     public final Map<Integer, float[]> getOffsetByPointerId() {

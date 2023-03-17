@@ -12,7 +12,7 @@ import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';
 import {Insets} from '../../types/public/Insets';
 import {NativeMethods} from '../../types/public/ReactNativeTypes';
-import {StyleProp} from '../StyleSheet/StyleSheet';
+import {ColorValue, StyleProp} from '../StyleSheet/StyleSheet';
 import {ImageStyle, ViewStyle} from '../StyleSheet/StyleSheetTypes';
 import {LayoutChangeEvent, NativeSyntheticEvent} from '../Types/CoreEventTypes';
 import {ImageResizeMode} from './ImageResizeMode';
@@ -226,6 +226,21 @@ export interface ImagePropsBase
   source: ImageSourcePropType;
 
   /**
+   * A string representing the resource identifier for the image. Similar to
+   * src from HTML.
+   *
+   * See https://reactnative.dev/docs/image#src
+   */
+  src?: string | undefined;
+
+  /**
+   * Similar to srcset from HTML.
+   *
+   * See https://reactnative.dev/docs/image#srcset
+   */
+  srcSet?: string | undefined;
+
+  /**
    * similarly to `source`, this property represents the resource used to render
    * the loading indicator for the image, displayed until image is ready to be
    * displayed, typically after when it got downloaded from network.
@@ -254,6 +269,52 @@ export interface ImagePropsBase
    * See https://reactnative.dev/docs/image#alt
    */
   alt?: string | undefined;
+
+  /**
+   * Height of the image component.
+   *
+   * See https://reactnative.dev/docs/image#height
+   */
+  height?: number | undefined;
+
+  /**
+   * Width of the image component.
+   *
+   * See https://reactnative.dev/docs/image#width
+   */
+  width?: number | undefined;
+
+  /**
+   * Adds the CORS related header to the request.
+   * Similar to crossorigin from HTML.
+   *
+   * See https://reactnative.dev/docs/image#crossorigin
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials' | undefined;
+
+  /**
+   * Changes the color of all the non-transparent pixels to the tintColor.
+   *
+   * See https://reactnative.dev/docs/image#tintcolor
+   */
+  tintColor?: ColorValue | undefined;
+
+  /**
+   * A string indicating which referrer to use when fetching the resource.
+   * Similar to referrerpolicy from HTML.
+   *
+   * See https://reactnative.dev/docs/image#referrerpolicy
+   */
+  referrerPolicy?:
+    | 'no-referrer'
+    | 'no-referrer-when-downgrade'
+    | 'origin'
+    | 'origin-when-cross-origin'
+    | 'same-origin'
+    | 'strict-origin'
+    | 'strict-origin-when-cross-origin'
+    | 'unsafe-url'
+    | undefined;
 }
 
 export interface ImageProps extends ImagePropsBase {
@@ -298,7 +359,7 @@ export class Image extends ImageBase {
 }
 
 export interface ImageBackgroundProps extends ImagePropsBase {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   imageStyle?: StyleProp<ImageStyle> | undefined;
   style?: StyleProp<ViewStyle> | undefined;
   imageRef?(image: Image): void;

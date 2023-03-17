@@ -98,6 +98,10 @@ class Blob {
           // $FlowFixMe[reassign-const]
           end = this.size + end;
         }
+        if (end > this.size) {
+          // $FlowFixMe[reassign-const]
+          end = this.size;
+        }
         size = end - start;
       }
     }

@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<d9fed8e0aacc3113ceaf7d8e266300c6>>
+ * @generated SignedSource<<265b342f0d29323bebb711ba0bc882ec>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -51,7 +51,7 @@ export type AttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style: $ReadOnly<{
     [propName: string]: AnyAttributeType,
-    ...,
+    ...
   }>,
   ...
 }>;
@@ -60,7 +60,7 @@ export type PartialAttributeConfiguration = $ReadOnly<{
   [propName: string]: AnyAttributeType,
   style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
-    ...,
+    ...
   }>,
   ...
 }>;
@@ -79,13 +79,13 @@ export type ViewConfig = $ReadOnly<{
         skipBubbling?: ?boolean,
       }>,
     }>,
-    ...,
+    ...
   }>,
   directEventTypes?: $ReadOnly<{
     [eventName: string]: $ReadOnly<{
       registrationName: string,
     }>,
-    ...,
+    ...
   }>,
   uiViewClassName: string,
   validAttributes: AttributeConfiguration,
@@ -122,7 +122,7 @@ type SecretInternalsType = {
 
 type InspectorDataProps = $ReadOnly<{
   [propName: string]: string,
-  ...,
+  ...
 }>;
 
 type InspectorDataSource = $ReadOnly<{

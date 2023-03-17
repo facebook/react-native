@@ -32,7 +32,7 @@ module.exports = {
    *   Clipboard.setString('hello world');
    * }
    * ```
-   * @param the content to be stored in the clipboard.
+   * @param {string} content the content to be stored in the clipboard.
    */
   setString(content: string) {
     NativeClipboard.setString(content);

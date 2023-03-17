@@ -58,14 +58,6 @@ react {
 }
 
 /**
- * Set this to true to create four separate APKs instead of one,
- * one for each native architecture. This is useful if you don't
- * use App Bundles (https://developer.android.com/guide/app-bundle/)
- * and want to have separate APKs to upload to the Play Store.
- */
-def enableSeparateBuildPerCPUArchitecture = true
-
-/**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
 def enableProguardInReleaseBuilds = true
@@ -78,11 +70,22 @@ def enableProguardInReleaseBuilds = true
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 /**
+ * This allows to customized the CMake version used for compiling RN Tester.
+ */
+def cmakeVersion = project(":ReactAndroid").cmake_version
+
+/**
  * Architectures to build native code for.
  */
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+repositories {
+    maven {
+        url rootProject.file("node_modules/jsc-android/dist")
+    }
 }
 
 android {
@@ -128,9 +131,14 @@ android {
             keyPassword MYAPP_RELEASE_KEY_PASSWORD
         }
     }
+    externalNativeBuild {
+        cmake {
+            version cmakeVersion
+        }
+    }
     splits {
         abi {
-            enable enableSeparateBuildPerCPUArchitecture
+            enable true
             universalApk false
             reset()
             include (*reactNativeArchitectures())
@@ -190,4 +198,12 @@ afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+
+    // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
+    // `.cxx/Release` folder where the CMake intermediates are stored.
+    // We fixing this by instructing Gradle to always mergeLibs after they've been built.
+    mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
+    mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
+    mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
+    mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
 }

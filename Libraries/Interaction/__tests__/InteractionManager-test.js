@@ -10,16 +10,15 @@
 
 'use strict';
 
-jest
-  .mock('../../vendor/core/ErrorUtils')
-  .mock('../../BatchedBridge/BatchedBridge');
+const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+
+jest.mock('../../vendor/core/ErrorUtils');
+jest.mock('../../BatchedBridge/BatchedBridge');
 
 const isWindows = process.platform === 'win32';
+const itif = condition => (condition ? it : it.skip);
+
 function expectToBeCalledOnce(fn) {
-  // todo fix this test case on windows
-  if (isWindows) {
-    return;
-  }
   expect(fn.mock.calls.length).toBe(1);
 }
 
@@ -159,7 +158,6 @@ describe('InteractionManager', () => {
 
 describe('promise tasks', () => {
   let InteractionManager;
-  let BatchedBridge;
   let sequenceId;
   function createSequenceTask(expectedSequenceId) {
     return jest.fn(() => {
@@ -168,9 +166,8 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModules();
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({legacyFakeTimers: true});
     InteractionManager = require('../InteractionManager');
-    BatchedBridge = require('../../BatchedBridge/BatchedBridge');
     sequenceId = 0;
   });
 
@@ -304,11 +301,14 @@ describe('promise tasks', () => {
     }, 100);
   };
 
-  it('resolves async tasks recursively before other queued tasks', () => {
-    return new Promise(bigAsyncTest);
-  });
+  itif(!isWindows)(
+    'resolves async tasks recursively before other queued tasks',
+    () => {
+      return new Promise(bigAsyncTest);
+    },
+  );
 
-  it('should also work with a deadline', () => {
+  itif(!isWindows)('should also work with a deadline', () => {
     InteractionManager.setDeadline(100);
     BatchedBridge.getEventLoopRunningTime.mockReturnValue(200);
     return new Promise(bigAsyncTest);

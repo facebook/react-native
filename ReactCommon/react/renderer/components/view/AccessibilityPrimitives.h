@@ -69,9 +69,9 @@ inline static bool operator!=(
 struct AccessibilityState {
   bool disabled{false};
   bool selected{false};
-  enum { Unchecked, Checked, Mixed, None } checked{None};
   bool busy{false};
   bool expanded{false};
+  enum { Unchecked, Checked, Mixed, None } checked{None};
 };
 
 constexpr bool operator==(
@@ -124,14 +124,14 @@ constexpr bool operator!=(
   return !(rhs == lhs);
 }
 
-enum class ImportantForAccessibility {
+enum class ImportantForAccessibility : uint8_t {
   Auto,
   Yes,
   No,
   NoHideDescendants,
 };
 
-enum class AccessibilityLiveRegion {
+enum class AccessibilityLiveRegion : uint8_t {
   None,
   Polite,
   Assertive,

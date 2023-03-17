@@ -26,11 +26,12 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using CompactValue = facebook::yoga::detail::CompactValue;
 
  public:
-  using UnsharedList = butter::small_vector<
-      YogaLayoutableShadowNode *,
-      kShadowNodeChildrenSmallVectorSize>;
+  using Shared = std::shared_ptr<YogaLayoutableShadowNode const>;
+  using ListOfShared =
+      butter::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
 
   static ShadowNodeTraits BaseTraits();
+  static ShadowNodeTraits::Trait IdentifierTrait();
 
 #pragma mark - Constructors
 
@@ -51,7 +52,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  void appendChild(ShadowNode::Shared const &child);
+  void appendChild(ShadowNode::Shared const &child) override;
+  void replaceChild(
+      ShadowNode const &oldChild,
+      ShadowNode::Shared const &newChild,
+      size_t suggestedIndex = -1) override;
 
   void updateYogaChildren();
 
@@ -120,7 +125,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * The method does *not* do anything besides that (no cloning or `owner` field
    * adjustment).
    */
-  void appendYogaChild(ShadowNode const &childNode);
+  void appendYogaChild(YogaLayoutableShadowNode::Shared const &childNode);
 
   /*
    * Makes the child node with a given `index` (and Yoga node associated with) a
@@ -139,6 +144,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
+  static YogaLayoutableShadowNode &shadowNodeFromContext(YGNode *yogaNode);
 
 #pragma mark - RTL Legacy Autoflip
 
@@ -185,34 +191,16 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 #pragma mark - Consistency Ensuring Helpers
 
   void ensureConsistency() const;
-  void ensureYogaChildrenAlighment() const;
+  void ensureYogaChildrenAlignment() const;
   void ensureYogaChildrenOwnersConsistency() const;
   void ensureYogaChildrenLookFine() const;
+
+#pragma mark - Private member variables
+  /*
+   * List of children which derive from YogaLayoutableShadowNode
+   */
+  ListOfShared yogaLayoutableChildren_;
 };
-
-template <>
-inline YogaLayoutableShadowNode const &
-traitCast<YogaLayoutableShadowNode const &>(ShadowNode const &shadowNode) {
-  bool castable =
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::YogaLayoutableKind);
-  react_native_assert(castable);
-  (void)castable;
-  return static_cast<YogaLayoutableShadowNode const &>(shadowNode);
-}
-
-template <>
-inline YogaLayoutableShadowNode const *
-traitCast<YogaLayoutableShadowNode const *>(ShadowNode const *shadowNode) {
-  if (!shadowNode) {
-    return nullptr;
-  }
-  bool castable = shadowNode->getTraits().check(
-      ShadowNodeTraits::Trait::YogaLayoutableKind);
-  if (!castable) {
-    return nullptr;
-  }
-  return static_cast<YogaLayoutableShadowNode const *>(shadowNode);
-}
 
 } // namespace react
 } // namespace facebook

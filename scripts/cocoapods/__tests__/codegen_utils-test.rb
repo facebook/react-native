@@ -22,8 +22,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_react_codegen_discovery_done(false)
         CodegenUtils.set_react_codegen_podspec_generated(false)
         Pod::Config.reset()
-        File.enable_testing_mode!
-        Dir.enable_testing_mode!
         @base_path = "~/app/ios"
         Pathname.pwd!(@base_path)
         Pod::Config.instance.installation_root.relative_path_from = @base_path
@@ -35,8 +33,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         Pathname.reset()
         Pod::UI.reset()
         Pod::Executable.reset()
-        File.reset()
-        Dir.reset()
+        FileMock.reset()
+        DirMock.reset()
     end
 
     # ================================== #
@@ -50,7 +48,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_react_codegen_podspec_generated(true)
 
         # Act
-        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir)
+        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
 
         # Assert
         assert_equal(Pod::UI.collected_messages, ["[Codegen] Skipping React-Codegen podspec generation."])
@@ -66,16 +64,16 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_output_dir = "build"
 
         # Act
-        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir)
+        CodegenUtils.new().generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: FileMock)
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands, [{ "command" => 'mkdir', "arguments" => ["-p", "~/app/ios/build"]}])
         assert_equal(Pod::UI.collected_messages, ["[Codegen] Generating ~/app/ios/build/React-Codegen.podspec.json"])
-        assert_equal(File.open_files_with_mode["~/app/ios/build/React-Codegen.podspec.json"], 'w')
-        assert_equal(File.open_files[0].collected_write, ['{"name":"Test Podspec"}'])
-        assert_equal(File.open_files[0].fsync_invocation_count, 1)
+        assert_equal(FileMock.open_files_with_mode["~/app/ios/build/React-Codegen.podspec.json"], 'w')
+        assert_equal(FileMock.open_files[0].collected_write, ['{"name":"Test Podspec"}'])
+        assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
 
         assert_true(CodegenUtils.react_codegen_podspec_generated)
     end
@@ -86,14 +84,15 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def testGetReactCodegenSpec_whenFabricDisabledAndNoScriptPhases_generatesAPodspec
         # Arrange
-        File.files_to_read('package.json' => '{ "version": "99.98.97"}')
+        FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
 
         # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
             :fabric_enabled => false,
             :hermes_enabled => true,
-            :script_phases => nil
+            :script_phases => nil,
+            :file_manager => FileMock
         )
 
         # Assert
@@ -103,19 +102,39 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def testGetReactCodegenSpec_whenFabricEnabledAndScriptPhases_generatesAPodspec
         # Arrange
-        File.files_to_read('package.json' => '{ "version": "99.98.97"}')
+        FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
 
         # Act
         podspec = CodegenUtils.new().get_react_codegen_spec(
             'package.json',
             :fabric_enabled => true,
             :hermes_enabled => true,
-            :script_phases => "echo Test Script Phase"
+            :script_phases => "echo Test Script Phase",
+            :file_manager => FileMock
         )
 
         # Assert
         assert_equal(podspec, get_podspec_fabric_and_script_phases("echo Test Script Phase"))
         assert_equal(Pod::UI.collected_messages, ["[Codegen] Adding script_phases to React-Codegen."])
+    end
+
+    def testGetReactCodegenSpec_whenUseFrameworksAndNewArch_generatesAPodspec
+        # Arrange
+        ENV["USE_FRAMEWORKS"] = "static"
+        FileMock.files_to_read('package.json' => '{ "version": "99.98.97"}')
+
+        # Act
+        podspec = CodegenUtils.new().get_react_codegen_spec(
+            'package.json',
+            :fabric_enabled => true,
+            :hermes_enabled => true,
+            :script_phases => nil,
+            :file_manager => FileMock
+        )
+
+        # Assert
+        assert_equal(podspec, get_podspec_when_use_frameworks())
+        assert_equal(Pod::UI.collected_messages, [])
     end
 
     # =============================== #
@@ -126,7 +145,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
 
         # Act
-        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig')
+        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig', file_manager: FileMock)
 
         # Assert
         assert_equal(codegen, {})
@@ -134,11 +153,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def testGetCodegenConfigFromFile_whenFileExistsButHasNoKey_returnEmpty
         # Arrange
-        File.mocked_existing_files(['package.json'])
-        File.files_to_read('package.json' => '{ "codegenConfig": {}}')
+        FileMock.mocked_existing_files(['package.json'])
+        FileMock.files_to_read('package.json' => '{ "codegenConfig": {}}')
 
         # Act
-        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegen')
+        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegen', file_manager: FileMock)
 
         # Assert
         assert_equal(codegen, {})
@@ -146,11 +165,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def testGetCodegenConfigFromFile_whenFileExistsAndHasKey_returnObject
         # Arrange
-        File.mocked_existing_files(['package.json'])
-        File.files_to_read('package.json' => '{ "codegenConfig": {"name": "MySpec"}}')
+        FileMock.mocked_existing_files(['package.json'])
+        FileMock.files_to_read('package.json' => '{ "codegenConfig": {"name": "MySpec"}}')
 
         # Act
-        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig')
+        codegen = CodegenUtils.new().get_codegen_config_from_file('package.json', 'codegenConfig', file_manager: FileMock )
 
         # Assert
         assert_equal(codegen, { "name" => "MySpec"})
@@ -180,7 +199,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         })
 
         # Act
-        files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path)
+        files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path, file_manager: FileMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns , ["[Deprecated] You are using the old `libraries` array to list all your codegen.\\nThis method will be removed in the future.\\nUpdate your `package.json` with a single object."])
@@ -206,7 +225,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         })
 
         # Act
-        files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path)
+        files = CodegenUtils.new().get_list_of_js_specs(app_codegen_config, app_path, file_manager: FileMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns , [])
@@ -226,7 +245,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Act
         assert_raises() {
-            CodegenUtils.new().get_react_codegen_script_phases(nil)
+            CodegenUtils.new().get_react_codegen_script_phases(nil, file_manager: FileMock)
         }
         # Assert
         assert_equal(Pod::UI.collected_warns, ["[Codegen] error: app_path is requried to use codegen discovery."])
@@ -246,7 +265,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         scripts = CodegenUtils.new().get_react_codegen_script_phases(
             app_path,
             :codegen_utils => codegen_utils_mock,
-            :script_phase_extractor => script_phase_extractor_mock
+            :script_phase_extractor => script_phase_extractor_mock,
+            :file_manager => FileMock
         )
 
         # Assert
@@ -282,7 +302,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
 
         # Act
-        CodegenUtils.new().use_react_native_codegen_discovery!(true, nil)
+        CodegenUtils.new().use_react_native_codegen_discovery!(true, nil, file_manager: FileMock)
 
         # Assert
         assert_false(CodegenUtils.react_codegen_discovery_done())
@@ -295,7 +315,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_react_codegen_discovery_done(true)
 
         # Act
-        CodegenUtils.new().use_react_native_codegen_discovery!(false, nil)
+        CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock)
 
         # Assert
         assert_true(CodegenUtils.react_codegen_discovery_done())
@@ -308,7 +328,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
         # Act
         assert_raises(){
-            CodegenUtils.new().use_react_native_codegen_discovery!(false, nil)
+            CodegenUtils.new().use_react_native_codegen_discovery!(false, nil, file_manager: FileMock)
         }
 
         # Assert
@@ -335,7 +355,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.new().use_react_native_codegen_discovery!(
             false,
             app_path,
-            :codegen_utils => codegen_utils_mock
+            :codegen_utils => codegen_utils_mock,
+            :file_manager => FileMock
         )
 
         # Assert
@@ -381,9 +402,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_cleanup_done(true)
         codegen_dir = "build/generated/ios"
         ios_folder = '.'
+        rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -396,14 +418,15 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
         ios_folder = '.'
+        rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
         assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [])
-        assert_equal(Dir.glob_invocation, [])
+        assert_equal(DirMock.glob_invocation, [])
         assert_equal(CodegenUtils.cleanup_done(), true)
     end
 
@@ -419,17 +442,23 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "#{codegen_path}/react/components/MyComponent/ShadowNode.h",
             "#{codegen_path}/react/components/MyComponent/ShadowNode.mm",
         ]
-        Dir.mocked_existing_dirs(codegen_path)
-        Dir.mocked_existing_globs(globs, "#{codegen_path}/*")
+        rn_path = '../node_modules/react-native'
+
+        DirMock.mocked_existing_dirs(codegen_path)
+        DirMock.mocked_existing_globs(globs, "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(Dir.exist_invocation_params, [codegen_path, codegen_path])
-        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 1)
-        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [globs])
+        assert_equal(DirMock.exist_invocation_params, [codegen_path, codegen_path])
+        assert_equal(DirMock.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 3)
+        assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [
+            globs,
+            "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.h",
+            "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.mm",
+        ])
         assert_equal(CodegenUtils.cleanup_done(), true)
     end
 
@@ -444,7 +473,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         ios_folder = '.'
 
         # Act
-        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns, [])
@@ -455,11 +484,11 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/./#{codegen_dir}"
         ios_folder = '.'
-        Dir.mocked_existing_dirs(codegen_path)
-        Dir.mocked_existing_globs([], "#{codegen_path}/*")
+        DirMock.mocked_existing_dirs(codegen_path)
+        DirMock.mocked_existing_globs([], "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(Pod::UI.collected_warns, [])
@@ -470,12 +499,12 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/./#{codegen_dir}"
         ios_folder = '.'
-        Dir.mocked_existing_dirs(codegen_path)
-        Dir.mocked_existing_globs(["#{codegen_path}/MyModuleSpecs/MyModule.mm",], "#{codegen_path}/*")
+        DirMock.mocked_existing_dirs(codegen_path)
+        DirMock.mocked_existing_globs(["#{codegen_path}/MyModuleSpecs/MyModule.mm",], "#{codegen_path}/*")
 
         # Act
         assert_raises() {
-            CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+            CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
         }
 
         # Assert
@@ -501,7 +530,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'ios' => '11.0',
           },
           'source_files' => "**/*.{h,mm,cpp}",
-          'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
+          'pod_target_xcconfig' => {
+            "FRAMEWORK_SEARCH_PATHS" => [],
+            "HEADER_SEARCH_PATHS" =>
             [
               "\"$(PODS_ROOT)/boost\"",
               "\"$(PODS_ROOT)/RCT-Folly\"",
@@ -512,15 +543,17 @@ class CodegenUtilsTests < Test::Unit::TestCase
           },
           'dependencies': {
             "FBReactNativeSpec":  [],
-            "React-jsiexecutor":  [],
             "RCT-Folly": [],
             "RCTRequired": [],
             "RCTTypeSafety": [],
             "React-Core": [],
             "React-jsi": [],
-            "hermes-engine": [],
+            "React-jsiexecutor": [],
+            "React-rncore": [],
             "ReactCommon/turbomodule/bridging": [],
-            "ReactCommon/turbomodule/core": []
+            "ReactCommon/turbomodule/core": [],
+            "hermes-engine": [],
+            'React-NativeModulesApple': [],
           }
         }
     end
@@ -531,9 +564,25 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-rncore':  [],
+            'React-Fabric': [],
+
         })
 
         specs[:'script_phases'] = script_phases
+
+        return specs
+    end
+
+    def get_podspec_when_use_frameworks
+        specs = get_podspec_no_fabric_no_script()
+
+        specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"")
+
+        specs[:dependencies].merge!({
+            'React-graphics': [],
+            'React-Fabric': [],
+        })
 
         return specs
     end

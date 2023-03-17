@@ -13,6 +13,7 @@
 const getDevServer = require('./getDevServer');
 
 function openFileInEditor(file: string, lineNumber: number) {
+  // $FlowFixMe[unused-promise]
   fetch(getDevServer().url + 'open-stack-frame', {
     method: 'POST',
     headers: {

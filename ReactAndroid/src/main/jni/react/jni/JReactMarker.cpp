@@ -17,9 +17,10 @@ namespace react {
 void JReactMarker::setLogPerfMarkerIfNeeded() {
   static std::once_flag flag{};
   std::call_once(flag, []() {
-    ReactMarker::logTaggedMarker = JReactMarker::logPerfMarker;
-    ReactMarker::logTaggedMarkerBridgeless =
+    ReactMarker::logTaggedMarkerImpl = JReactMarker::logPerfMarker;
+    ReactMarker::logTaggedMarkerBridgelessImpl =
         JReactMarker::logPerfMarkerBridgeless;
+    ReactMarker::getAppStartTimeImpl = JReactMarker::getAppStartTime;
   });
 }
 
@@ -101,6 +102,12 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
       // These are not used on Android.
       break;
   }
+}
+
+double JReactMarker::getAppStartTime() {
+  static auto cls = javaClassStatic();
+  static auto meth = cls->getStaticMethod<double()>("getAppStartTime");
+  return meth(cls);
 }
 
 } // namespace react

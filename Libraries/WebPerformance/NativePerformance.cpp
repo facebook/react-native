@@ -5,9 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <memory>
+
+#include <cxxreact/ReactMarker.h>
+#include <jsi/instrumentation.h>
 #include "NativePerformance.h"
-#include <glog/logging.h>
 #include "PerformanceEntryReporter.h"
+
+#include "Plugins.h"
+
+std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
+  return std::make_shared<facebook::react::NativePerformance>(
+      std::move(jsInvoker));
+}
 
 namespace facebook::react {
 
@@ -22,12 +33,6 @@ void NativePerformance::mark(
   PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
 }
 
-void NativePerformance::clearMarks(
-    jsi::Runtime &rt,
-    std::optional<std::string> markName) {
-  PerformanceEntryReporter::getInstance().clearMarks(markName);
-}
-
 void NativePerformance::measure(
     jsi::Runtime &rt,
     std::string name,
@@ -40,10 +45,30 @@ void NativePerformance::measure(
       name, startTime, endTime, duration, startMark, endMark);
 }
 
-void NativePerformance::clearMeasures(
-    jsi::Runtime &rt,
-    std::optional<std::string> measureName) {
-  PerformanceEntryReporter::getInstance().clearMeasures(measureName);
+std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
+    jsi::Runtime &rt) {
+  auto heapInfo = rt.instrumentation().getHeapInfo(false);
+  std::unordered_map<std::string, double> heapInfoToJs;
+  for (auto &entry : heapInfo) {
+    heapInfoToJs[entry.first] = static_cast<double>(entry.second);
+  }
+  return heapInfoToJs;
+}
+
+ReactNativeStartupTiming NativePerformance::getReactNativeStartupTiming(
+    jsi::Runtime &rt) {
+  ReactNativeStartupTiming result = {0, 0, 0, 0};
+
+  ReactMarker::StartupLogger &startupLogger =
+      ReactMarker::StartupLogger::getInstance();
+  result.startTime = startupLogger.getAppStartTime();
+  result.executeJavaScriptBundleEntryPointStart =
+      startupLogger.getRunJSBundleStartTime();
+  result.executeJavaScriptBundleEntryPointEnd =
+      startupLogger.getRunJSBundleEndTime();
+  result.endTime = startupLogger.getRunJSBundleEndTime();
+
+  return result;
 }
 
 } // namespace facebook::react

@@ -18,6 +18,7 @@
     "strict-export-declare-modifiers": false,
     "whitespace": false,
     "use-default-type-parameter": false,
-    "no-redundant-jsdoc": false
+    "no-redundant-jsdoc": false,
+    "no-any-union": false
   }
 }

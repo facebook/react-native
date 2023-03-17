@@ -65,6 +65,8 @@ import java.util.concurrent.TimeoutException;
  */
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
+  private ReactInstanceDevHelper mReactInstanceManagerHelper;
+  private @Nullable DevLoadingViewManager mDevLoadingViewManager;
 
   public BridgeDevSupportManager(
       Context applicationContext,
@@ -88,6 +90,9 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
         devLoadingViewManager);
+
+    mReactInstanceManagerHelper = reactInstanceManagerHelper;
+    mDevLoadingViewManager = devLoadingViewManager;
 
     if (getDevSettings().isStartSamplingProfilerOnInit()) {
       // Only start the profiler. If its already running, there is an error
@@ -126,6 +131,14 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
             }
           });
     }
+  }
+
+  public DevLoadingViewManager getDevLoadingViewManager() {
+    return mDevLoadingViewManager;
+  }
+
+  public ReactInstanceDevHelper getReactInstanceManagerHelper() {
+    return mReactInstanceManagerHelper;
   }
 
   @Override

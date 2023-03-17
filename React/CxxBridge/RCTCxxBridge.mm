@@ -170,7 +170,8 @@ static void mapReactMarkerToPerformanceLogger(
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
+                                         const ReactMarker::ReactMarkerId markerId, const char *tag) {
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
 }

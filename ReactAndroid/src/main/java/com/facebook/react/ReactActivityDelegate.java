@@ -34,7 +34,6 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
   private ReactDelegate mReactDelegate;
-  private boolean mConcurrentRootEnabled;
 
   @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
@@ -57,9 +56,9 @@ public class ReactActivityDelegate {
     return null;
   }
 
-  private @NonNull Bundle composeLaunchOptions() {
+  protected @NonNull Bundle composeLaunchOptions() {
     Bundle composedLaunchOptions = getLaunchOptions();
-    if (isConcurrentRootEnabled()) {
+    if (isFabricEnabled()) {
       if (composedLaunchOptions == null) {
         composedLaunchOptions = new Bundle();
       }
@@ -69,6 +68,10 @@ public class ReactActivityDelegate {
   }
 
   protected ReactRootView createRootView() {
+    return new ReactRootView(getContext());
+  }
+
+  protected ReactRootView createRootView(Bundle initialProps) {
     return new ReactRootView(getContext());
   }
 
@@ -93,13 +96,13 @@ public class ReactActivityDelegate {
 
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
-    Bundle launchOptions = composeLaunchOptions();
+    final Bundle launchOptions = composeLaunchOptions();
     mReactDelegate =
         new ReactDelegate(
             getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
           @Override
           protected ReactRootView createRootView() {
-            return ReactActivityDelegate.this.createRootView();
+            return ReactActivityDelegate.this.createRootView(launchOptions);
           }
         };
     if (mainComponentName != null) {
@@ -212,14 +215,12 @@ public class ReactActivityDelegate {
   }
 
   /**
-   * Override this method to enable Concurrent Root on the surface for this Activity. See:
-   * https://reactjs.org/blog/2022/03/29/react-v18.html
+   * Override this method if you wish to selectively toggle Fabric for a specific surface. This will
+   * also control if Concurrent Root (React 18) should be enabled or not.
    *
-   * <p>This requires to be rendering on Fabric (i.e. on the New Architecture).
-   *
-   * @return Wether you want to enable Concurrent Root for this surface or not.
+   * @return true if Fabric is enabled for this Activity, false otherwise.
    */
-  protected boolean isConcurrentRootEnabled() {
+  protected boolean isFabricEnabled() {
     return false;
   }
 }

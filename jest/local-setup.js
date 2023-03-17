@@ -12,29 +12,22 @@
 
 'use strict';
 
+require('./setup');
+
 const consoleError = console.error;
 const consoleWarn = console.warn;
 
-jest.spyOn(console, 'debug').mockImplementation(() => {
-  // Blackhole console output
-});
+// Blackhole verbose console output
+console.debug = jest.fn();
+console.info = jest.fn();
+console.log = jest.fn();
 
-jest.spyOn(console, 'info').mockImplementation(() => {
-  // Blackhole console output
-});
-
-jest.spyOn(console, 'log').mockImplementation(() => {
-  // Blackhole console output
-});
-
-jest.spyOn(console, 'error').mockImplementation((...args) => {
+console.error = (...args) => {
   consoleError(...args);
-  throw new Error('console.error() was called');
-});
+  throw new Error('console.error() was called (see error above)');
+};
 
-jest.spyOn(console, 'warn').mockImplementation((...args) => {
+console.warn = (...args) => {
   consoleWarn(...args);
-  throw new Error('console.warn() was called');
-});
-
-require('./setup');
+  throw new Error('console.warn() was called (see warning above)');
+};

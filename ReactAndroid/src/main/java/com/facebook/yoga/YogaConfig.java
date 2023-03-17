@@ -25,14 +25,6 @@ public abstract class YogaConfig {
    */
   public abstract void setUseLegacyStretchBehaviour(boolean useLegacyStretchBehaviour);
 
-  /**
-   * If this flag is set then yoga would diff the layout without legacy flag and would set a bool in
-   * YogaNode(mDoesLegacyStretchFlagAffectsLayout) with true if the layouts were different and false
-   * if not
-   */
-  public abstract void setShouldDiffLayoutWithoutLegacyStretchBehaviour(
-      boolean shouldDiffLayoutWithoutLegacyStretchBehaviour);
-
   public abstract void setLogger(YogaLogger logger);
 
   public abstract YogaLogger getLogger();

@@ -10,7 +10,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewPropsMapBuffer.h>
 #include <react/renderer/components/view/conversions.h>
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
@@ -28,6 +28,9 @@ constexpr MapBuffer::Key EDGE_BOTTOM = 3;
 constexpr MapBuffer::Key EDGE_START = 4;
 constexpr MapBuffer::Key EDGE_END = 5;
 constexpr MapBuffer::Key EDGE_ALL = 6;
+constexpr MapBuffer::Key EDGE_BLOCK = 7;
+constexpr MapBuffer::Key EDGE_BLOCK_START = 8;
+constexpr MapBuffer::Key EDGE_BLOCK_END = 9;
 
 constexpr MapBuffer::Key CORNER_TOP_LEFT = 0;
 constexpr MapBuffer::Key CORNER_TOP_RIGHT = 1;
@@ -38,6 +41,10 @@ constexpr MapBuffer::Key CORNER_TOP_END = 5;
 constexpr MapBuffer::Key CORNER_BOTTOM_END = 6;
 constexpr MapBuffer::Key CORNER_BOTTOM_START = 7;
 constexpr MapBuffer::Key CORNER_ALL = 8;
+constexpr MapBuffer::Key CORNER_END_END = 9;
+constexpr MapBuffer::Key CORNER_END_START = 10;
+constexpr MapBuffer::Key CORNER_START_END = 11;
+constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
     MapBufferBuilder &builder,
@@ -103,20 +110,24 @@ inline MapBuffer convertBorderColors(CascadedBorderColors const &colors) {
 
 template <typename T>
 MapBuffer convertCascadedEdges(CascadedRectangleEdges<T> const &edges) {
-  MapBufferBuilder builder(7);
+  MapBufferBuilder builder(10);
   putOptionalFloat(builder, EDGE_TOP, optionalFromValue(edges.top));
   putOptionalFloat(builder, EDGE_RIGHT, optionalFromValue(edges.right));
   putOptionalFloat(builder, EDGE_BOTTOM, optionalFromValue(edges.bottom));
   putOptionalFloat(builder, EDGE_LEFT, optionalFromValue(edges.left));
   putOptionalFloat(builder, EDGE_START, optionalFromValue(edges.start));
   putOptionalFloat(builder, EDGE_END, optionalFromValue(edges.end));
+  putOptionalFloat(builder, EDGE_BLOCK, optionalFromValue(edges.block));
+  putOptionalFloat(builder, EDGE_BLOCK_END, optionalFromValue(edges.blockEnd));
+  putOptionalFloat(
+      builder, EDGE_BLOCK_START, optionalFromValue(edges.blockStart));
   putOptionalFloat(builder, EDGE_ALL, optionalFromValue(edges.all));
   return builder.build();
 }
 
 template <typename T>
 MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
-  MapBufferBuilder builder(9);
+  MapBufferBuilder builder(13);
   putOptionalFloat(
       builder, CORNER_TOP_LEFT, optionalFromValue(corners.topLeft));
   putOptionalFloat(
@@ -132,6 +143,13 @@ MapBuffer convertCascadedCorners(CascadedRectangleCorners<T> const &corners) {
       builder, CORNER_BOTTOM_END, optionalFromValue(corners.bottomEnd));
   putOptionalFloat(
       builder, CORNER_BOTTOM_START, optionalFromValue(corners.bottomStart));
+  putOptionalFloat(builder, CORNER_END_END, optionalFromValue(corners.endEnd));
+  putOptionalFloat(
+      builder, CORNER_END_START, optionalFromValue(corners.endStart));
+  putOptionalFloat(
+      builder, CORNER_START_END, optionalFromValue(corners.startEnd));
+  putOptionalFloat(
+      builder, CORNER_START_START, optionalFromValue(corners.startStart));
   putOptionalFloat(builder, CORNER_ALL, optionalFromValue(corners.all));
   return builder.build();
 }

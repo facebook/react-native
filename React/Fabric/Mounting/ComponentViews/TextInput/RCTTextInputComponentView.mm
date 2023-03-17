@@ -245,6 +245,11 @@ using namespace facebook::react;
       UIEdgeInsetsInsetRect(self.bounds, RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.borderWidth));
   _backedTextInputView.textContainerInset =
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
+
+  if (_eventEmitter) {
+    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+    textInputEventEmitter.onContentSizeChange([self _textInputMetrics]);
+  }
 }
 
 - (void)prepareForRecycle

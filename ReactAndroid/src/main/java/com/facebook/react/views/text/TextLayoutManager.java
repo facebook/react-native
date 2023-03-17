@@ -72,11 +72,12 @@ public class TextLayoutManager {
 
   public static boolean isRTL(ReadableMap attributedString) {
     ReadableArray fragments = attributedString.getArray("fragments");
-    for (int i = 0; i < fragments.size(); i++) {
-      ReadableMap fragment = fragments.getMap(i);
+    if (fragments != null && fragments.size() > 0) {
+      ReadableMap fragment = fragments.getMap(0);
       ReadableMap map = fragment.getMap("textAttributes");
-      return TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
-          == LayoutDirection.RTL;
+      return map != null
+          && TextAttributeProps.getLayoutDirection(map.getString(ViewProps.LAYOUT_DIRECTION))
+              == LayoutDirection.RTL;
     }
     return false;
   }
@@ -237,8 +238,8 @@ public class TextLayoutManager {
     Layout layout;
     int spanLength = text.length();
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
-    TextPaint textPaint = sTextPaintInstance;
-    float desiredWidth = boring == null ? Layout.getDesiredWidth(text, textPaint) : Float.NaN;
+    float desiredWidth =
+        boring == null ? Layout.getDesiredWidth(text, sTextPaintInstance) : Float.NaN;
 
     if (boring == null
         && (unconstrainedWidth
@@ -251,7 +252,7 @@ public class TextLayoutManager {
         layout =
             new StaticLayout(
                 text,
-                textPaint,
+                sTextPaintInstance,
                 hintWidth,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
@@ -259,7 +260,7 @@ public class TextLayoutManager {
                 includeFontPadding);
       } else {
         layout =
-            StaticLayout.Builder.obtain(text, 0, spanLength, textPaint, hintWidth)
+            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, hintWidth)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
@@ -280,7 +281,7 @@ public class TextLayoutManager {
       layout =
           BoringLayout.make(
               text,
-              textPaint,
+              sTextPaintInstance,
               boringLayoutWidth,
               Layout.Alignment.ALIGN_NORMAL,
               1.f,
@@ -294,7 +295,7 @@ public class TextLayoutManager {
         layout =
             new StaticLayout(
                 text,
-                textPaint,
+                sTextPaintInstance,
                 (int) width,
                 Layout.Alignment.ALIGN_NORMAL,
                 1.f,
@@ -302,7 +303,7 @@ public class TextLayoutManager {
                 includeFontPadding);
       } else {
         StaticLayout.Builder builder =
-            StaticLayout.Builder.obtain(text, 0, spanLength, textPaint, (int) width)
+            StaticLayout.Builder.obtain(text, 0, spanLength, sTextPaintInstance, (int) width)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .setLineSpacing(0.f, 1.f)
                 .setIncludePad(includeFontPadding)
@@ -331,7 +332,6 @@ public class TextLayoutManager {
       @Nullable float[] attachmentsPositions) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-    TextPaint textPaint = sTextPaintInstance;
     Spannable text;
     if (attributedString.hasKey("cacheId")) {
       int cacheId = attributedString.getInt("cacheId");
@@ -341,7 +341,7 @@ public class TextLayoutManager {
       if (sTagToSpannableCache.containsKey(cacheId)) {
         text = sTagToSpannableCache.get(cacheId);
         if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text.toString());
+          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text);
         }
       } else {
         if (ENABLE_MEASURE_LOGGING) {
@@ -368,7 +368,7 @@ public class TextLayoutManager {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
     }
 
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
     Layout layout =
         createLayout(
@@ -526,9 +526,8 @@ public class TextLayoutManager {
       ReadableMap attributedString,
       ReadableMap paragraphAttributes,
       float width) {
-    TextPaint textPaint = sTextPaintInstance;
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(

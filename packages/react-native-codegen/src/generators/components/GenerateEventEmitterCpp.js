@@ -67,14 +67,18 @@ const ComponentTemplate = ({
   structName: string,
   dispatchEventName: string,
   implementation: string,
-}) =>
-  `
+}) => {
+  const capture = implementation.includes('event')
+    ? 'event=std::move(event)'
+    : '';
+  return `
 void ${className}EventEmitter::${eventName}(${structName} event) const {
-  dispatchEvent("${dispatchEventName}", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent("${dispatchEventName}", [${capture}](jsi::Runtime &runtime) {
     ${implementation}
   });
 }
 `.trim();
+};
 
 const BasicComponentTemplate = ({
   className,

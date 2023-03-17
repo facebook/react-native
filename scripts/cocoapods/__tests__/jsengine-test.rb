@@ -14,7 +14,6 @@ class JSEngineTests < Test::Unit::TestCase
     :react_native_path
 
     def setup
-        File.enable_testing_mode!
         @react_native_path = "../.."
         podSpy_cleanUp()
 
@@ -28,7 +27,6 @@ class JSEngineTests < Test::Unit::TestCase
         podSpy_cleanUp()
         ENV['USE_HERMES'] = '1'
         ENV['CI'] = nil
-        File.reset()
     end
 
     # =============== #

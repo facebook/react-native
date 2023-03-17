@@ -11,8 +11,12 @@ import type * as React from 'react';
 import {ScrollView} from '../Components/ScrollView/ScrollView';
 import {View} from '../Components/View/View';
 import {Image} from '../Image/Image';
-import {FlatListProps} from '../Lists/FlatList';
-import {DefaultSectionT, SectionListProps} from '../Lists/SectionList';
+import {FlatListComponent, FlatListProps} from '../Lists/FlatList';
+import {
+  DefaultSectionT,
+  SectionListComponent,
+  SectionListProps,
+} from '../Lists/SectionList';
 import {ColorValue} from '../StyleSheet/StyleSheet';
 import {Text} from '../Text/Text';
 import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
@@ -560,7 +564,9 @@ export namespace Animated {
   type NonAnimatedProps = 'key' | 'ref';
 
   type TAugmentRef<T> = T extends React.Ref<infer R>
-    ? React.Ref<R | LegacyRef<R>>
+    ? unknown extends R
+      ? never
+      : React.Ref<R | LegacyRef<R>>
     : never;
 
   export type AnimatedProps<T> = {
@@ -575,7 +581,7 @@ export namespace Animated {
     extends React.FC<AnimatedProps<React.ComponentPropsWithRef<T>>> {}
 
   export type AnimatedComponentOptions = {
-    collapsable?: boolean;
+    collapsable?: boolean | undefined;
   };
 
   /**
@@ -598,13 +604,18 @@ export namespace Animated {
   /**
    * FlatList and SectionList infer generic Type defined under their `data` and `section` props.
    */
-  export class FlatList<ItemT = any> extends React.Component<
+
+  export class FlatList<ItemT = any> extends FlatListComponent<
+    ItemT,
     AnimatedProps<FlatListProps<ItemT>>
   > {}
+
   export class SectionList<
     ItemT = any,
     SectionT = DefaultSectionT,
-  > extends React.Component<AnimatedProps<SectionListProps<ItemT, SectionT>>> {}
+  > extends SectionListComponent<
+    AnimatedProps<SectionListProps<ItemT, SectionT>>
+  > {}
 }
 
 // We need to alias these views so we can reference them in the Animated

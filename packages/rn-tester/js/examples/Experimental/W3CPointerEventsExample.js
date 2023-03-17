@@ -23,6 +23,7 @@ import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/Po
 import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
 import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
 import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
+import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
@@ -155,7 +156,7 @@ export default {
     {
       name: 'pointerevent_attributes_hoverable_pointers',
       description: '',
-      title: 'WPT: Pointer Events hoverable pointer attributes test',
+      title: 'WPT 1: Pointer Events hoverable pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesHoverablePointers />;
       },
@@ -163,7 +164,7 @@ export default {
     {
       name: 'pointerevent_attributes_nohover_pointers',
       description: '',
-      title: 'WPT: Pointer Events no-hover pointer attributes test',
+      title: 'WPT 2: Pointer Events no-hover pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesNoHoverPointers />;
       },
@@ -171,7 +172,7 @@ export default {
     {
       name: 'pointerevent_pointermove',
       description: '',
-      title: 'WPT: PointerMove test',
+      title: 'WPT 3: PointerMove test',
       render(): React.Node {
         return <PointerEventPointerMove />;
       },
@@ -179,7 +180,7 @@ export default {
     {
       name: 'pointerevent_primary_touch_pointer',
       description: '',
-      title: 'WPT: Pointer Event primary touch pointer test',
+      title: 'WPT 4: Pointer Event primary touch pointer test',
       render(): React.Node {
         return <PointerEventPrimaryTouchPointer />;
       },
@@ -187,7 +188,7 @@ export default {
     {
       name: 'pointerevent_pointermove_on_chorded_mouse_button',
       description: '',
-      title: 'WPT: PointerEvents pointermove on button state changes',
+      title: 'WPT 5: PointerEvents pointermove on button state changes',
       render(): React.Node {
         return <PointerEventPointerMoveOnChordedMouseButton />;
       },
@@ -195,7 +196,7 @@ export default {
     {
       name: 'pointerevent_pointermove_across',
       description: '',
-      title: 'WPT: Pointermove handling across elements',
+      title: 'WPT 6: Pointermove handling across elements',
       render(): React.Node {
         return <PointerEventPointerMoveAcross />;
       },
@@ -203,7 +204,7 @@ export default {
     {
       name: 'pointerevent_pointermove_event_order',
       description: '',
-      title: 'WPT: PointerEvent - pointermove event order',
+      title: 'WPT 7: PointerEvent - pointermove event order',
       render(): React.Node {
         return <PointerEventPointerMoveEventOrder />;
       },
@@ -211,7 +212,7 @@ export default {
     {
       name: 'pointerevent_pointermove_between',
       description: '',
-      title: 'WPT: Pointermove handling between elements',
+      title: 'WPT 8: Pointermove handling between elements',
       render(): React.Node {
         return <PointerEventPointerMoveBetween />;
       },
@@ -219,7 +220,7 @@ export default {
     {
       name: 'pointerevent_pointerover_out',
       description: '',
-      title: 'WPT: PointerOver/PointerOut handling',
+      title: 'WPT 9: PointerOver/PointerOut handling',
       render(): React.Node {
         return <PointerEventPointerOverOut />;
       },
@@ -227,9 +228,17 @@ export default {
     {
       name: 'pointerevent_layout_change_should_fire_pointerover',
       description: '',
-      title: 'WPT: Layout change should fire pointerover',
+      title: 'WPT 10: Layout change should fire pointerover',
       render(): React.Node {
         return <PointerEventLayoutChangeShouldFirePointerOver />;
+      },
+    },
+    {
+      name: 'pointerevent_pointercancel_touch',
+      description: '',
+      title: 'WPT 11: Pointer Events pointercancel Tests',
+      render(): React.Node {
+        return <PointerEventPointerCancelTouch />;
       },
     },
     {

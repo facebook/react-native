@@ -84,7 +84,6 @@ import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -182,9 +181,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   private volatile boolean mDestroyed = false;
 
-  // TODO T83943316: Delete this variable once StaticViewConfigs are enabled by default
-  private volatile boolean mShouldDeallocateEventDispatcher = false;
-
   private boolean mDriveCxxAnimations = false;
 
   private long mDispatchViewUpdatesTime = 0l;
@@ -209,28 +205,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         }
       };
 
-  // TODO T83943316: Deprecate and delete this constructor once StaticViewConfigs are enabled by
-  // default
-  @Deprecated
-  public FabricUIManager(
-      ReactApplicationContext reactContext,
-      ViewManagerRegistry viewManagerRegistry,
-      EventDispatcher eventDispatcher,
-      EventBeatManager eventBeatManager) {
-    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
-    mReactApplicationContext = reactContext;
-    mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
-    mMountItemDispatcher =
-        new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
-    mEventDispatcher = eventDispatcher;
-    mShouldDeallocateEventDispatcher = false;
-    mEventBeatManager = eventBeatManager;
-    mReactApplicationContext.addLifecycleEventListener(this);
-
-    mViewManagerRegistry = viewManagerRegistry;
-    mReactApplicationContext.registerComponentCallbacks(viewManagerRegistry);
-  }
-
   public FabricUIManager(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagerRegistry,
@@ -241,7 +215,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
     mEventDispatcher = new EventDispatcherImpl(reactContext);
-    mShouldDeallocateEventDispatcher = true;
     mEventBeatManager = eventBeatManager;
     mReactApplicationContext.addLifecycleEventListener(this);
 
@@ -300,13 +273,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     return mBinding.getInspectorDataForInstance(eventEmitter);
-  }
-
-  @Override
-  public void preInitializeViewManagers(List<String> viewManagerNames) {
-    for (String viewManagerName : viewManagerNames) {
-      mMountingManager.initializeViewManager(viewManagerName);
-    }
   }
 
   @Override
@@ -467,10 +433,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
     ViewManagerPropertyUpdater.clear();
 
-    // When using StaticViewConfigs is enabled, FabriUIManager is
-    // responsible for initializing and deallocating EventDispatcher.
+    // When StaticViewConfigs is enabled, FabriUIManager is
+    // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
+    // only in Bridgeless for now.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (mShouldDeallocateEventDispatcher) {
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
   }
@@ -1088,6 +1055,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       eventType = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
     } else if ("click".equals(eventTypeJS)) {
       eventType = AccessibilityEvent.TYPE_VIEW_CLICKED;
+    } else if ("viewHoverEnter".equals(eventTypeJS)) {
+      eventType = AccessibilityEvent.TYPE_VIEW_HOVER_ENTER;
     } else {
       throw new IllegalArgumentException(
           "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);

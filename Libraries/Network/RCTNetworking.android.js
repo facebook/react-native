@@ -91,4 +91,4 @@ class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   }
 }
 
-module.exports = (new RCTNetworking(): RCTNetworking);
+export default (new RCTNetworking(): RCTNetworking);

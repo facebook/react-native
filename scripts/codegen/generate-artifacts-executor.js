@@ -22,16 +22,19 @@ const os = require('os');
 const path = require('path');
 
 const RN_ROOT = path.join(__dirname, '../..');
-
+const CODEGEN_DEPENDENCY_NAME = '@react-native/codegen';
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${RN_ROOT}/../@react-native/codegen`;
-const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
+const CODEGEN_NPM_PATH = `${RN_ROOT}/../${CODEGEN_DEPENDENCY_NAME}`;
+const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
+  rncore: path.join(RN_ROOT, 'ReactCommon'),
+  FBReactNativeSpec: null,
+};
 const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 
 // HELPERS
 
 function isReactNativeCoreLibrary(libraryName) {
-  return CORE_LIBRARIES.has(libraryName);
+  return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
 function executeNodeScript(node, script) {
@@ -273,7 +276,6 @@ function handleInAppLibraries(
 }
 
 // CodeGen
-
 function getCodeGenCliPath() {
   let codegenCliPath;
   if (fs.existsSync(CODEGEN_REPO_PATH)) {
@@ -293,7 +295,7 @@ function getCodeGenCliPath() {
   } else if (fs.existsSync(CODEGEN_NPM_PATH)) {
     codegenCliPath = CODEGEN_NPM_PATH;
   } else {
-    throw "error: Could not determine react-native-codegen location. Try running 'yarn install' or 'npm install' in your project root.";
+    throw `error: Could not determine ${CODEGEN_DEPENDENCY_NAME} location. Try running 'yarn install' or 'npm install' in your project root.`;
   }
   return codegenCliPath;
 }
@@ -345,8 +347,10 @@ function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
   );
 
   // Finally, copy artifacts to the final output directory.
-  fs.mkdirSync(iosOutputDir, {recursive: true});
-  execSync(`cp -R ${tmpOutputDir}/* ${iosOutputDir}`);
+  const outputDir =
+    CORE_LIBRARIES_WITH_OUTPUT_FOLDER[library.config.name] ?? iosOutputDir;
+  fs.mkdirSync(outputDir, {recursive: true});
+  execSync(`cp -R ${tmpOutputDir}/* ${outputDir}`);
   console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 
@@ -397,6 +401,8 @@ function createComponentProvider(
     fs.closeSync(fd);
     console.log(`Generated schema list: ${schemaListTmpPath}`);
 
+    const outputDir = path.join(RN_ROOT, 'React', 'Fabric');
+
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
     executeNodeScript(
@@ -405,9 +411,9 @@ function createComponentProvider(
         RN_ROOT,
         'scripts',
         'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${iosOutputDir}`,
+      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${outputDir}`,
     );
-    console.log(`Generated provider in: ${iosOutputDir}`);
+    console.log(`Generated provider in: ${outputDir}`);
   }
 }
 

@@ -10,6 +10,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 import BasicExample from './FlatList-basic';
+import OnStartReachedExample from './FlatList-onStartReached';
 import OnEndReachedExample from './FlatList-onEndReached';
 import ContentInsetExample from './FlatList-contentInset';
 import InvertedExample from './FlatList-inverted';
@@ -28,6 +29,7 @@ export default ({
   showIndividualExamples: true,
   examples: [
     BasicExample,
+    OnStartReachedExample,
     OnEndReachedExample,
     ContentInsetExample,
     InvertedExample,

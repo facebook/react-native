@@ -33,7 +33,9 @@ export type EdgeInsetsValue = {
   right: number,
   bottom: number,
 };
-export type DimensionValue = null | number | string | AnimatedNode;
+
+export type DimensionValue = number | string | 'auto' | AnimatedNode | null;
+export type AnimatableNumericValue = number | AnimatedNode;
 
 /**
  * React Native's layout system is based on Flexbox and is powered both
@@ -141,11 +143,69 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  for more details of how `inset` affects layout.
    */
   inset?: DimensionValue,
+
+  /** `insetBlock` is a shorthand that corresponds to the `insetBlockStart` and `insetBlockEnd` properties.
+   *
+   *  It works similarly to `inset-block` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block
+   *  for more details of how `inset-block` affects layout.
+   */
   insetBlock?: DimensionValue,
+
+  /** `insetBlockEnd` is a logical property that sets the length that an
+   *  element is offset in the block direction from its ending edge.
+   *
+   *  It works similarly to `inset-block-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-end
+   *  for more details of how `inset-block-end` affects layout.
+   */
   insetBlockEnd?: DimensionValue,
+
+  /** `insetBlockStart` is a logical property that sets the length that an
+   *  element is offset in the block direction from its starting edge.
+   *
+   *  It works similarly to `inset-block-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-block-start
+   *  for more details of how `inset-block-start` affects layout.
+   */
   insetBlockStart?: DimensionValue,
+
+  /** `insetInline` is a shorthand that corresponds to the `insetInlineStart` and `insetInlineEnd` properties.
+   *
+   *  It works similarly to `inset-inline` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline
+   *  for more details of how `inset-inline` affects layout.
+   */
   insetInline?: DimensionValue,
+
+  /** `insetInlineEnd` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-end` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-end
+   *  for more details of how `inset-inline-end` affects layout.
+   */
   insetInlineEnd?: DimensionValue,
+
+  /** `insetInlineStart` is a logical property that sets the length that an
+   *  element is offset in the starting inline direction.
+   *
+   *  It works similarly to `inset-inline-start` in CSS, but in React Native you
+   *  must use points or percentages. Ems and other units are not supported.
+   *
+   *  See https://developer.mozilla.org/en-US/docs/Web/CSS/inset-inline-start
+   *  for more details of how `inset-inline-start` affects layout.
+   */
   insetInlineStart?: DimensionValue,
 
   /** `minWidth` is the minimum width for this component, in logical pixels.
@@ -613,7 +673,7 @@ export type ____ShadowStyle_InternalCore = $ReadOnly<{
    * Sets the drop shadow opacity (multiplied by the color's alpha component)
    * @platform ios
    */
-  shadowOpacity?: number | AnimatedNode,
+  shadowOpacity?: AnimatableNumericValue,
   /**
    * Sets the drop shadow blur radius
    * @platform ios
@@ -640,24 +700,31 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   borderRightColor?: ____ColorValue_Internal,
   borderStartColor?: ____ColorValue_Internal,
   borderTopColor?: ____ColorValue_Internal,
-  borderRadius?: number | AnimatedNode,
-  borderBottomEndRadius?: number | AnimatedNode,
-  borderBottomLeftRadius?: number | AnimatedNode,
-  borderBottomRightRadius?: number | AnimatedNode,
-  borderBottomStartRadius?: number | AnimatedNode,
-  borderTopEndRadius?: number | AnimatedNode,
-  borderTopLeftRadius?: number | AnimatedNode,
-  borderTopRightRadius?: number | AnimatedNode,
-  borderTopStartRadius?: number | AnimatedNode,
+  borderBlockColor?: ____ColorValue_Internal,
+  borderBlockEndColor?: ____ColorValue_Internal,
+  borderBlockStartColor?: ____ColorValue_Internal,
+  borderRadius?: AnimatableNumericValue,
+  borderBottomEndRadius?: AnimatableNumericValue,
+  borderBottomLeftRadius?: AnimatableNumericValue,
+  borderBottomRightRadius?: AnimatableNumericValue,
+  borderBottomStartRadius?: AnimatableNumericValue,
+  borderEndEndRadius?: AnimatableNumericValue,
+  borderEndStartRadius?: AnimatableNumericValue,
+  borderStartEndRadius?: AnimatableNumericValue,
+  borderStartStartRadius?: AnimatableNumericValue,
+  borderTopEndRadius?: AnimatableNumericValue,
+  borderTopLeftRadius?: AnimatableNumericValue,
+  borderTopRightRadius?: AnimatableNumericValue,
+  borderTopStartRadius?: AnimatableNumericValue,
   borderStyle?: 'solid' | 'dotted' | 'dashed',
-  borderWidth?: number | AnimatedNode,
-  borderBottomWidth?: number | AnimatedNode,
-  borderEndWidth?: number | AnimatedNode,
-  borderLeftWidth?: number | AnimatedNode,
-  borderRightWidth?: number | AnimatedNode,
-  borderStartWidth?: number | AnimatedNode,
-  borderTopWidth?: number | AnimatedNode,
-  opacity?: number | AnimatedNode,
+  borderWidth?: AnimatableNumericValue,
+  borderBottomWidth?: AnimatableNumericValue,
+  borderEndWidth?: AnimatableNumericValue,
+  borderLeftWidth?: AnimatableNumericValue,
+  borderRightWidth?: AnimatableNumericValue,
+  borderStartWidth?: AnimatableNumericValue,
+  borderTopWidth?: AnimatableNumericValue,
+  opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
 }>;

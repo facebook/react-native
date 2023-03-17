@@ -401,6 +401,38 @@ static inline CascadedRectangleCorners<T> convertRawProp(
       defaultValue.bottomEnd,
       prefix,
       suffix);
+  result.endEnd = convertRawProp(
+      context,
+      rawProps,
+      "EndEnd",
+      sourceValue.endEnd,
+      defaultValue.endEnd,
+      prefix,
+      suffix);
+  result.endStart = convertRawProp(
+      context,
+      rawProps,
+      "EndStart",
+      sourceValue.endStart,
+      defaultValue.endStart,
+      prefix,
+      suffix);
+  result.startEnd = convertRawProp(
+      context,
+      rawProps,
+      "StartEnd",
+      sourceValue.startEnd,
+      defaultValue.startEnd,
+      prefix,
+      suffix);
+  result.startStart = convertRawProp(
+      context,
+      rawProps,
+      "StartStart",
+      sourceValue.startStart,
+      defaultValue.startStart,
+      prefix,
+      suffix);
 
   result.all = convertRawProp(
       context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
@@ -481,6 +513,30 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       "Vertical",
       sourceValue.vertical,
       defaultValue.vertical,
+      prefix,
+      suffix);
+  result.block = convertRawProp(
+      context,
+      rawProps,
+      "Block",
+      sourceValue.block,
+      defaultValue.block,
+      prefix,
+      suffix);
+  result.blockEnd = convertRawProp(
+      context,
+      rawProps,
+      "BlockEnd",
+      sourceValue.blockEnd,
+      defaultValue.blockEnd,
+      prefix,
+      suffix);
+  result.blockStart = convertRawProp(
+      context,
+      rawProps,
+      "BlockStart",
+      sourceValue.blockStart,
+      defaultValue.blockStart,
       prefix,
       suffix);
 
@@ -668,19 +724,20 @@ static inline void fromRawValue(
   auto map = (butter::map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");
-  react_native_assert(
+  react_native_expect(
       typeIterator != map.end() && typeIterator->second.hasType<std::string>());
   std::string type = (std::string)typeIterator->second;
 
   if (type == "ThemeAttrAndroid") {
     auto attrIterator = map.find("attribute");
-    react_native_assert(
+    react_native_expect(
         attrIterator != map.end() &&
         attrIterator->second.hasType<std::string>());
 
     result = NativeDrawable{
-        NativeDrawable::Kind::ThemeAttr,
         (std::string)attrIterator->second,
+        {},
+        NativeDrawable::Kind::ThemeAttr,
     };
   } else if (type == "RippleAndroid") {
     auto color = map.find("color");
@@ -688,23 +745,23 @@ static inline void fromRawValue(
     auto rippleRadius = map.find("rippleRadius");
 
     result = NativeDrawable{
-        NativeDrawable::Kind::Ripple,
         std::string{},
         NativeDrawable::Ripple{
             color != map.end() && color->second.hasType<int32_t>()
                 ? (int32_t)color->second
                 : std::optional<int32_t>{},
-            borderless != map.end() && borderless->second.hasType<bool>()
-                ? (bool)borderless->second
-                : false,
             rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
                 ? (Float)rippleRadius->second
                 : std::optional<Float>{},
+            borderless != map.end() && borderless->second.hasType<bool>()
+                ? (bool)borderless->second
+                : false,
         },
+        NativeDrawable::Kind::Ripple,
     };
   } else {
     LOG(ERROR) << "Unknown native drawable type: " << type;
-    react_native_assert(false);
+    react_native_expect(false);
   }
 }
 
