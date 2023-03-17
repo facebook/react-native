@@ -8,9 +8,9 @@
 package com.facebook.react.modules.deviceinfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,7 +60,7 @@ public class DeviceInfoModuleTest extends TestCase {
     initTestData();
 
     mockStatic(DisplayMetricsHolder.class);
-    mContext = spy(new ReactApplicationContext(RuntimeEnvironment.application));
+    mContext = spy(new ReactApplicationContext(RuntimeEnvironment.getApplication()));
     CatalystInstance catalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mContext.initializeWithInstance(catalystInstanceMock);
 
@@ -80,7 +80,7 @@ public class DeviceInfoModuleTest extends TestCase {
     mDeviceInfoModule.getTypedExportedConstants();
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
-    verify(mContext, times(0)).emitDeviceEvent(anyString(), anyObject());
+    verify(mContext, times(0)).emitDeviceEvent(anyString(), any());
   }
 
   @Test

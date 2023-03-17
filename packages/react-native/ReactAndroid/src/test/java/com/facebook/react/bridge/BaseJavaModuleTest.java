@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.robolectric.RobolectricTestRunner;
 @PrepareForTest({ReadableNativeArray.class, SoLoader.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(RobolectricTestRunner.class)
+@Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class BaseJavaModuleTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();
