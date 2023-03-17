@@ -65,18 +65,9 @@ tasks.register("cleanAll", Delete::class.java) {
   delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
 }
 
-tasks.register("buildAll") {
+tasks.register("build") {
   description = "Build and test all the React Native relevant projects."
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
-  // This builds both the React Native framework for both debug and release
-  dependsOn(":packages:react-native:ReactAndroid:assemble")
-  // This creates all the Maven artifacts and makes them available in the /android folder
-  dependsOn(":packages:react-native:ReactAndroid:installArchives")
-  // This builds RN Tester for Hermes/JSC for debug and release
-  dependsOn(":packages:rn-tester:android:app:assemble")
-  // Runs Unit tests for both ReactAndroid and RN-Tester
-  dependsOn(":packages:react-native:ReactAndroid:test")
-  dependsOn(":packages:rn-tester:android:app:test")
 }
 
 tasks.register("downloadAll") {
