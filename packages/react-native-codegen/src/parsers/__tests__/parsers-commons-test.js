@@ -21,6 +21,7 @@ import {
   buildSchema,
   parseModuleName,
   createComponentConfig,
+  propertyNames,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1275,5 +1276,21 @@ describe('createComponentConfig', () => {
       const configs = createComponentConfig(foundConfig, commandsTypeNames);
       expect(configs).toEqual(expectedConfig);
     });
+  });
+});
+
+describe('propertyNames', () => {
+  it('returns propertyNames with valid properties', () => {
+    const properties = [{key: {name: 'testName'}}, {key: {name: 'testName2'}}];
+    const expected = ['testName', 'testName2'];
+    expect(propertyNames(properties)).toEqual(expected);
+  });
+
+  it('returns empty propertyNames with incorrect properties', () => {
+    const properties = [
+      {key: {invalid: 'testName'}},
+      {key: {invalid: 'testName2'}},
+    ];
+    expect(propertyNames(properties)).toEqual([]);
   });
 });
