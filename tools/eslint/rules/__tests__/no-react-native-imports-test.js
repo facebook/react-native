@@ -14,6 +14,11 @@ const {RuleTester} = require('eslint');
 const path = require('node:path');
 
 const RN_ROOT_DIRECTORY = path.resolve(__dirname, '..', '..', '..', '..');
+const RN_PACKAGE_DIRECTORY = path.resolve(
+  RN_ROOT_DIRECTORY,
+  'packages',
+  'react-native',
+);
 
 const ruleTester = new RuleTester({
   parser: require.resolve('hermes-eslint'),
@@ -25,7 +30,7 @@ const ruleTester = new RuleTester({
 
 // Use a filename inside `react-native`. This lint rule is only applicable to
 // JavaScript files inside of the `react-native` repository.
-const filename = `${RN_ROOT_DIRECTORY}/Libraries/Components/View/View.js`;
+const filename = `${RN_PACKAGE_DIRECTORY}/Libraries/Components/View/View.js`;
 
 ruleTester.run('require(...)', rule, {
   valid: [

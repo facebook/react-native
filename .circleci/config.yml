@@ -58,7 +58,7 @@ references:
   cache_keys:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
-    gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "ReactAndroid/gradle.properties" }}
+    gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
@@ -73,8 +73,8 @@ references:
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
-      - ~/react-native/sdks/hermes/build_macosx
-      - ~/react-native/sdks/hermes/destroot
+      - ~/react-native/packages/react-native/sdks/hermes/build_macosx
+      - ~/react-native/packages/react-native/sdks/hermes/destroot
     hermes_tarball_cache_paths: &hermes_tarball_cache_paths
       - *hermes_tarball_artifacts_dir
 
@@ -314,7 +314,7 @@ commands:
       - run:
           name: Get React Native version
           command: |
-            VERSION=$( grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+            VERSION=$( grep '"version"' packages/react-native/package.json | cut -d '"' -f 4 | head -1)
             # Save the react native version we are building in a file so we can use that file as part of the cache key.
             echo "$VERSION" > /tmp/react-native-version
             echo "React Native Version is $(cat /tmp/react-native-version)"
@@ -368,7 +368,7 @@ commands:
                     exit 0
                   fi
 
-                  TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+                  TARBALL_FILENAME=$(node ~/react-native/packages/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
                   TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
 
                   echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
@@ -385,7 +385,7 @@ commands:
           name: Print Hermes version
           command: |
               HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
-              TARBALL_FILENAME=$(node ~/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+              TARBALL_FILENAME=$(node ~/react-native/packages/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
               TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
               if [[ -e $TARBALL_PATH ]]; then
                 tar -xf $TARBALL_PATH
@@ -452,8 +452,8 @@ commands:
             hermesc_artifacts_path=<< parameters.artifacts_dir >>/<< parameters.flavor >>/hermesc
 
             hermesc_bin_path=bin/hermesc
-            hermes_build_dir_macos=$(pwd)/sdks/hermes/build_macosx
-            hermes_build_dir_ios=$(pwd)/sdks/hermes/build_iphoneos
+            hermes_build_dir_macos=$(pwd)/packages/react-native/sdks/hermes/build_macosx
+            hermes_build_dir_ios=$(pwd)/packages/react-native/sdks/hermes/build_iphoneos
 
             function export_hermesc_cmake_path {
               build_dir=$1
@@ -725,7 +725,7 @@ jobs:
   test_buck:
     executor: reactnativeandroid
     environment:
-      KOTLIN_HOME=third-party/kotlin
+      KOTLIN_HOME=packages/react-native/third-party/kotlin
     steps:
       - checkout
       - setup_artifacts
@@ -738,32 +738,33 @@ jobs:
       - run:
           name: Build & Test React Native using Buck
           command: |
-            buck build ReactAndroid/src/main/java/com/facebook/react
-            buck build ReactAndroid/src/main/java/com/facebook/react/shell
+            buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react
+            buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react/shell
 
       - run:
           name: Run Tests - Android Unit Tests with Buck
-          command: buck test ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
+          command: buck test packages/react-native/ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
 
       - run:
           name: Build JavaScript Bundle for instrumentation tests
+          working_directory: ~/react-native/packages/react-native
           command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
       - run:
           name: Build Tests - Android Instrumentation Tests with Buck
           # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
           command: |
-            if [[ ! -e ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
+            if [[ ! -e packages/react-native/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
-            source scripts/android-setup.sh && NO_BUCKD=1 scripts/retry3 timeout 300 buck build ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
+            source scripts/android-setup.sh && NO_BUCKD=1 scripts/retry3 timeout 300 buck build packages/react-native/ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
 
       - run:
           name: Collect Test Results
           command: |
             find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
             find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
-            find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
+            find . -type f -regex ".*/buck-out/gen/packages/react-native/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
             if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
               ~/react-native/scripts/circleci/buckToJunit/buckToJunit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
             fi
@@ -851,7 +852,7 @@ jobs:
           command: |
             REPO_ROOT=$(pwd)
             node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath $REPO_ROOT --directory "/tmp/$PROJECT_NAME"
+            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
           command: |
@@ -926,7 +927,7 @@ jobs:
                 name: Set HERMES_ENGINE_TARBALL_PATH
                 command: |
                   BUILD_TYPE="<< parameters.flavor >>"
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+                  TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
                   echo "export HERMES_ENGINE_TARBALL_PATH=$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME" >> $BASH_ENV
       - run:
           name: Create iOS template project
@@ -935,7 +936,7 @@ jobs:
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
-            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath $REPO_ROOT --directory "/tmp/$PROJECT_NAME"
+            node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
@@ -1204,9 +1205,9 @@ jobs:
       - run:
           name: Download Hermes tarball
           command: |
-            node scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
-            cp sdks/download/* $HERMES_WS_DIR/download/.
-            cp -r sdks/hermes/* $HERMES_WS_DIR/hermes/.
+            node packages/react-native/scripts/hermes/prepare-hermes-for-build $CIRCLE_PULL_REQUEST
+            cp packages/react-native/sdks/download/* $HERMES_WS_DIR/download/.
+            cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
 
             cat /tmp/hermes/hermesversion
       - save_cache:
@@ -1299,9 +1300,9 @@ jobs:
       - run:
           name: Set up workspace
           command: |
-            mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./sdks/hermes
-            cp -r $HERMES_WS_DIR/hermes/* ./sdks/hermes/.
-            cp -r ./sdks/hermes-engine/utils ./sdks/hermes/.
+            mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./packages/react-native/sdks/hermes
+            cp -r $HERMES_WS_DIR/hermes/* ./packages/react-native/sdks/hermes/.
+            cp -r ./packages/react-native/sdks/hermes-engine/utils ./packages/react-native/sdks/hermes/.
       - brew_install:
           package: cmake
       - with_hermes_tarball_cache_span:
@@ -1313,12 +1314,12 @@ jobs:
                   - run:
                       name: Build the Hermes Mac frameworks
                       command: |
-                        cd ./sdks/hermes || exit 1
+                        cd ./packages/react-native/sdks/hermes || exit 1
                         BUILD_TYPE="<< parameters.flavor >>" ./utils/build-mac-framework.sh
                   - run:
                       name: Build the Hermes iOS frameworks
                       command: |
-                        cd ./sdks/hermes || exit 1
+                        cd ./packages/react-native/sdks/hermes || exit 1
                         BUILD_TYPE="<< parameters.flavor >>" ./utils/build-ios-framework.sh
             - run:
                 name: Package the Hermes Apple frameworks
@@ -1328,12 +1329,12 @@ jobs:
 
                   TARBALL_OUTPUT_DIR=$(mktemp -d /tmp/hermes-tarball-output-XXXXXXXX)
 
-                  TARBALL_FILENAME=$(node ./scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+                  TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
 
                   echo "Packaging Hermes Apple frameworks for $BUILD_TYPE build type"
 
-                  TARBALL_OUTPUT_PATH=$(node ./scripts/hermes/create-tarball.js \
-                    --inputDir ./sdks/hermes \
+                  TARBALL_OUTPUT_PATH=$(node ./packages/react-native/scripts/hermes/create-tarball.js \
+                    --inputDir ./packages/react-native/sdks/hermes \
                     --buildType "$BUILD_TYPE" \
                     --outputDir $TARBALL_OUTPUT_DIR)
 
@@ -1495,20 +1496,20 @@ jobs:
       - run:
           name: Copy Hermes binaries
           command: |
-            mkdir -p ./sdks/hermesc ./sdks/hermesc/osx-bin ./sdks/hermesc/win64-bin ./sdks/hermesc/linux64-bin
+            mkdir -p ./packages/react-native/sdks/hermesc ./packages/react-native/sdks/hermesc/osx-bin ./packages/react-native/sdks/hermesc/win64-bin ./packages/react-native/sdks/hermesc/linux64-bin
 
             # When build_hermes_macos runs as a matrix, it outputs
             if [[ -d $HERMES_WS_DIR/osx-bin/Release ]]; then
-              cp -r $HERMES_WS_DIR/osx-bin/Release/* ./sdks/hermesc/osx-bin/.
+              cp -r $HERMES_WS_DIR/osx-bin/Release/* ./packages/react-native/sdks/hermesc/osx-bin/.
             elif [[ -d $HERMES_WS_DIR/osx-bin/Debug ]]; then
-              cp -r $HERMES_WS_DIR/osx-bin/Debug/* ./sdks/hermesc/osx-bin/.
+              cp -r $HERMES_WS_DIR/osx-bin/Debug/* ./packages/react-native/sdks/hermesc/osx-bin/.
             else
               ls $HERMES_WS_DIR/osx-bin || echo "hermesc macOS artifacts directory missing."
               echo "Could not locate macOS hermesc binary."; exit 1;
             fi
 
-            cp -r $HERMES_WS_DIR/win64-bin/* ./sdks/hermesc/win64-bin/.
-            cp -r $HERMES_WS_DIR/linux64-bin/* ./sdks/hermesc/linux64-bin/.
+            cp -r $HERMES_WS_DIR/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
+            cp -r $HERMES_WS_DIR/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
             mkdir -p ./ReactAndroid/external-artifacts/artifacts/
             cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
             cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
@@ -1530,7 +1531,7 @@ jobs:
       - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
       - run:
           name: Zip Hermes Native Symbols
-          command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
+          command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/packages/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
       - store_artifacts:
           path: /tmp/hermes-native-symbols.zip
       - run:
@@ -1553,8 +1554,10 @@ jobs:
                 name: Build release package as a job artifact
                 command: |
                   mkdir -p build
-                  FILENAME=$(npm pack)
-                  mv $FILENAME build/
+
+                  FILENAME=$(cd packages/react-native; npm pack | tail -1)
+                  mv packages/react-native/$FILENAME build/
+
                   echo $FILENAME > build/react-native-package-version
             - store_artifacts:
                 path: ~/react-native/build/

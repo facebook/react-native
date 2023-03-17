@@ -29,6 +29,7 @@ const setupVerdaccio = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
+const REACT_NATIVE_PACKAGE_DIR = path.join(ROOT, 'packages/react-native');
 const tryExecNTimes = require('./try-n-times');
 
 const REACT_NATIVE_TEMP_DIR = exec(
@@ -69,13 +70,16 @@ try {
     throw Error(exitCode);
   }
 
-  if (exec('npm pack').code) {
+  if (exec('npm pack', {cwd: REACT_NATIVE_PACKAGE_DIR}).code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
   }
 
-  const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
+  const REACT_NATIVE_PACKAGE = path.join(
+    REACT_NATIVE_PACKAGE_DIR,
+    'react-native-*.tgz',
+  );
 
   describe('Set up Verdaccio');
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
@@ -95,7 +99,9 @@ try {
   );
 
   describe('Scaffold a basic React Native app from template');
-  exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
+  exec(
+    `rsync -a ${ROOT}/packages/react-native/template ${REACT_NATIVE_TEMP_DIR}`,
+  );
   cd(REACT_NATIVE_APP_DIR);
 
   mv('_bundle', '.bundle');
