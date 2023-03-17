@@ -973,7 +973,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           public void onSuccess() {
             hideDevLoadingView();
             synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSucess = true;
+              mBundleStatus.isLastDownloadSuccess = true;
               mBundleStatus.updateTimestamp = System.currentTimeMillis();
             }
             if (mBundleDownloadListener != null) {
@@ -998,7 +998,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           public void onFailure(final Exception cause) {
             hideDevLoadingView();
             synchronized (DevSupportManagerBase.this) {
-              mBundleStatus.isLastDownloadSucess = false;
+              mBundleStatus.isLastDownloadSuccess = false;
             }
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onFailure(cause);

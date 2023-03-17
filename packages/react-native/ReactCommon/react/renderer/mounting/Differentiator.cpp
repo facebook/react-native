@@ -503,7 +503,7 @@ static void updateMatchedPairSubtrees(
  *
  * Here we have (and need) knowledge of whether a node was found during
  * in-order traversal, or out-of-order via a map lookup. Nodes are only REMOVEd
- * or INSERTed when they are encountered via in-order-traversal, to ensure
+ * or INSERTTed when they are encountered via in-order-traversal, to ensure
  * correct ordering of INSERT and REMOVE mutations.
  */
 static void updateMatchedPair(

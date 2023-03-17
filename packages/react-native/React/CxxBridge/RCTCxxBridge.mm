@@ -989,7 +989,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                                   withDispatchGroup:NULL
                                                    lazilyDiscovered:YES];
     assert(_reactInstance); // at this point you must have reactInstance as you already called
-                            // reactInstance->initialzeBridge
+                            // reactInstance->initializeBridge
     _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
   } else {
     [self registerModulesForClasses:modules];

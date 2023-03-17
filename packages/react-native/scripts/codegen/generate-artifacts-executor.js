@@ -476,7 +476,7 @@ function findCodegenEnabledLibraries(
 //
 // This function is needed since, after aligning the codegen between
 // iOS and Android, we have to create empty folders in advance and
-// we don't know wheter they will be populated up until the end of the process.
+// we don't know whether they will be populated up until the end of the process.
 //
 // @parameter filepath: the root path from which we want to remove the empty files and folders.
 function cleanupEmptyFilesAndFolders(filepath) {

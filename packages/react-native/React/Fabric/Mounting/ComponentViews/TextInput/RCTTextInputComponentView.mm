@@ -184,7 +184,7 @@ using namespace facebook::react;
     }
   }
 
-  // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentially here
+  // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
 
   // Other props:
@@ -486,16 +486,16 @@ using namespace facebook::react;
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
       _backedTextInputView.returnKeyType == UIReturnKeyDone;
 
-  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccesoryView) {
+  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
     return;
   }
 
-  if (shouldHaveInputAccesoryView) {
+  if (shouldHaveInputAccessoryView) {
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =

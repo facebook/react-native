@@ -25,7 +25,7 @@ class AttributedString;
 using SharedAttributedString = std::shared_ptr<const AttributedString>;
 
 /*
- * Simple, cross-platfrom, React-specific implementation of attributed string
+ * Simple, cross-platform, React-specific implementation of attributed string
  * (aka spanned string).
  * `AttributedString` is basically a list of `Fragments` which have `string` and
  * `textAttributes` + `shadowNode` associated with the `string`.

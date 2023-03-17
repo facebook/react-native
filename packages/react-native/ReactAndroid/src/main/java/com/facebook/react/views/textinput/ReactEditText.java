@@ -587,7 +587,7 @@ public class ReactEditText extends AppCompatEditText
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
 
     // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
-    stripAtributeEquivalentSpans(spannableStringBuilder);
+    stripAttributeEquivalentSpans(spannableStringBuilder);
 
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -662,7 +662,7 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  private void stripAtributeEquivalentSpans(SpannableStringBuilder sb) {
+  private void stripAttributeEquivalentSpans(SpannableStringBuilder sb) {
     // We have already set a font size on the EditText itself. We can safely remove sizing spans
     // which are the same as the set font size, and not otherwise overlapped.
     final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();

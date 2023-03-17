@@ -18,12 +18,12 @@
 
 #import <React/RCTImageUtils.h>
 
-static NSUInteger RCTMaxCachableDecodedImageSizeInBytes = 2 * 1024 * 1024;
+static NSUInteger RCTMaxCacheableDecodedImageSizeInBytes = 2 * 1024 * 1024;
 static NSUInteger RCTImageCacheTotalCostLimit = 20 * 1024 * 1024;
 
-void RCTSetImageCacheLimits(NSUInteger maxCachableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit)
+void RCTSetImageCacheLimits(NSUInteger maxCacheableDecodedImageSizeInBytes, NSUInteger imageCacheTotalCostLimit)
 {
-  RCTMaxCachableDecodedImageSizeInBytes = maxCachableDecodedImageSizeInBytes;
+  RCTMaxCacheableDecodedImageSizeInBytes = maxCacheableDecodedImageSizeInBytes;
   RCTImageCacheTotalCostLimit = imageCacheTotalCostLimit;
 }
 
@@ -73,7 +73,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
     return;
   }
   NSInteger bytes = image.reactDecodedImageBytes;
-  if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
+  if (bytes <= RCTMaxCacheableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image forKey:cacheKey cost:bytes];
   }
 }

@@ -36,7 +36,7 @@ class InspectorOverlay extends React.Component<Props> {
     this.props.onTouchPoint(locationX, locationY);
   };
 
-  shouldSetResponser: (e: PressEvent) => boolean = (e: PressEvent): boolean => {
+  shouldSetResponder: (e: PressEvent) => boolean = (e: PressEvent): boolean => {
     this.findViewForTouchEvent(e);
     return true;
   };
@@ -54,7 +54,7 @@ class InspectorOverlay extends React.Component<Props> {
 
     return (
       <View
-        onStartShouldSetResponder={this.shouldSetResponser}
+        onStartShouldSetResponder={this.shouldSetResponder}
         onResponderMove={this.findViewForTouchEvent}
         nativeID="inspectorOverlay" /* TODO: T68258846. */
         style={[styles.inspector, {height: Dimensions.get('window').height}]}>

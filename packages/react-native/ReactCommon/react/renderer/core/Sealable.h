@@ -26,7 +26,7 @@ namespace react {
  * even if they are explicitly marked as `const`. It means that in some special
  * cases those objects can be const-casted-away and then mutated. That comes
  * from the fact that we share some object's life-cycle responsibilities with
- * React and the immutability is guaranteed by some logic splitted between
+ * React and the immutability is guaranteed by some logic split between
  * native and JavaScript worlds (which makes it impossible to fully use
  * immutability enforcement at a language level). To detect possible errors as
  * early as possible we additionally mark objects as *sealed* after some stages

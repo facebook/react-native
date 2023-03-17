@@ -462,7 +462,7 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnSameTransformedNode) {
  * │      └────────────────┘│
  * └────────────────────────┘
  */
-TEST(LayoutableShadowNodeTest, relativeLayourMetricsOnClonedNode) {
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnClonedNode) {
   auto builder = simpleComponentBuilder();
 
   auto childShadowNode = std::shared_ptr<ViewShadowNode>{};

@@ -131,7 +131,7 @@ class PropsMultiLookup : public Props {
             "floatValue",
             sourceProps.floatValue,
             17.5)),
-        // While this specific pattern is uncommon, it's a simplication of a
+        // While this specific pattern is uncommon, it's a simplification of a
         // pattern that does occur a lot: nested structs that access props we
         // have already accessed populating Props
         derivedFloatValue(

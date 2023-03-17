@@ -138,7 +138,7 @@ class RawProps final {
       small_vector<RawPropsValueIndex, kNumberOfPropsPerComponentSoftCap>
           keyIndexToValueIndex_;
   mutable butter::
-      small_vector<RawValue, kNumberOfExplicitlySpecifedPropsSoftCap>
+      small_vector<RawValue, kNumberOfExplicitlySpecifiedPropsSoftCap>
           values_;
 };
 

@@ -151,7 +151,7 @@ jsi::Value RuntimeSchedulerBinding::get(
         });
   }
 
-  // TODO: remmove this, as it's deprecated in the JS scheduler
+  // TODO: remove this, as it's deprecated in the JS scheduler
   if (propertyName == "unstable_getCurrentPriorityLevel") {
     return jsi::Function::createFromHostFunction(
         runtime,

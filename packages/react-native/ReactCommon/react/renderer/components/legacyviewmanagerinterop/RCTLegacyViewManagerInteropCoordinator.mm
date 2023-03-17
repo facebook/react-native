@@ -51,7 +51,7 @@ using namespace facebook::react;
       //  During bridge mode, RCTBridgeModules will be decorated with these APIs by the bridge.
       RCTAssert(
           _bridge == nil,
-          @"RCTLegacyViewManagerInteropCoordinator should not be intialized with RCTBridgeModuleDecorator in bridge mode.");
+          @"RCTLegacyViewManagerInteropCoordinator should not be initialized with RCTBridgeModuleDecorator in bridge mode.");
     }
 
     _eventInterceptors = [NSMutableDictionary new];

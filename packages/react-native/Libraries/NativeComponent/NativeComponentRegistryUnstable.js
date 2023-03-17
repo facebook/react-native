@@ -14,7 +14,7 @@ let componentNameToExists: Map<string, boolean> = new Map();
  * Unstable API. Do not use!
  *
  * This method returns if the component with name received as a parameter
- * is registed in the native platform.
+ * is registered in the native platform.
  */
 export function unstable_hasComponent(name: string): boolean {
   let hasNativeComponent = componentNameToExists.get(name);
