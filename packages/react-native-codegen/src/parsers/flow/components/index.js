@@ -92,7 +92,10 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
 }
 
 function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
-  const {commandTypeName, commandOptionsExpression} = findComponentConfig(ast);
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
 
   if (commandTypeName == null) {
     return [];
@@ -149,8 +152,10 @@ function buildComponentSchema(
   ast: $FlowFixMe,
   parser: Parser,
 ): ComponentSchemaBuilderConfig {
-  const {componentName, propsTypeName, optionsExpression} =
-    findComponentConfig(ast, parser);
+  const {componentName, propsTypeName, optionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
 
   const types = parser.getTypes(ast);
 
