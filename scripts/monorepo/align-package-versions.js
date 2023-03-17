@@ -16,7 +16,6 @@ const forEachPackage = require('./for-each-package');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const TEMPLATE_LOCATION = path.join(ROOT_LOCATION, 'template');
-const REPO_CONFIG_LOCATION = path.join(ROOT_LOCATION, 'repo-config');
 
 const readJSONFile = pathToFile => JSON.parse(readFileSync(pathToFile));
 
@@ -108,12 +107,6 @@ const alignPackageVersions = () => {
 
     checkIfShouldUpdateDependencyPackageVersion(
       TEMPLATE_LOCATION,
-      packageManifest.name,
-      packageManifest.version,
-    );
-
-    checkIfShouldUpdateDependencyPackageVersion(
-      REPO_CONFIG_LOCATION,
       packageManifest.name,
       packageManifest.version,
     );

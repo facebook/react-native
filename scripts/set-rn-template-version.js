@@ -19,7 +19,10 @@ if (!version) {
   process.exit(1);
 }
 
-const jsonPath = path.join(__dirname, '../template/package.json');
+const jsonPath = path.join(
+  __dirname,
+  '../packages/react-native/template/package.json',
+);
 
 let templatePackageJson = require(jsonPath);
 templatePackageJson.dependencies['react-native'] = version;

@@ -19,11 +19,11 @@ react {
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
     root = file("../../")
     //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = rootDir
+    reactNativeDir = file("$rootDir/packages/react-native")
     //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
     codegenDir = file("$rootDir/node_modules/@react-native/codegen")
     //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    cliFile = file("$rootDir/cli.js")
+    cliFile = file("$rootDir/packages/react-native/cli.js")
 
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -53,7 +53,7 @@ react {
 
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
-    hermesCommand = "$rootDir/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+    hermesCommand = "$rootDir/packages/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
     enableHermesOnlyInVariants = ["hermesDebug", "hermesRelease"]
 }
 
@@ -72,7 +72,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 /**
  * This allows to customized the CMake version used for compiling RN Tester.
  */
-def cmakeVersion = project(":ReactAndroid").cmake_version
+def cmakeVersion = project(":packages:react-native:ReactAndroid").cmake_version
 
 /**
  * Architectures to build native code for.
@@ -160,7 +160,7 @@ android {
         java {
             // SampleTurboModule.
             srcDirs += [
-                "$rootDir/ReactCommon/react/nativemodule/samples/platform/android",
+                "$rootDir/packages/react-native/ReactCommon/react/nativemodule/samples/platform/android",
             ]
         }
     }
@@ -168,10 +168,10 @@ android {
 
 dependencies {
     // Build React Native from source
-    implementation project(':ReactAndroid')
+    implementation project(':packages:react-native:ReactAndroid')
 
     // Consume Hermes as built from source only for the Hermes variant.
-    hermesImplementation(project(":ReactAndroid:hermes-engine"))
+    hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
@@ -197,7 +197,7 @@ android {
 afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":ReactAndroid:hermes-engine:buildHermes")
+    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermes")
 
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.

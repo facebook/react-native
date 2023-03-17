@@ -1,9 +1,9 @@
 **/main.js
 **/staticBundle.js
 docs/generatedComponentApiDocs.js
-flow/
-Libraries/Renderer/*
-Libraries/vendor/**/*
+packages/react-native/flow/
+packages/react-native/Libraries/Renderer/*
+packages/react-native/Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
 packages/react-native-codegen/lib
