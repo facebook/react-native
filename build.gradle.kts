@@ -15,7 +15,7 @@ plugins {
 
 val reactAndroidProperties = java.util.Properties()
 
-File("$rootDir/ReactAndroid/gradle.properties").inputStream().use {
+File("$rootDir/packages/react-native/ReactAndroid/gradle.properties").inputStream().use {
   reactAndroidProperties.load(it)
 }
 
@@ -46,44 +46,38 @@ nexusPublishing {
 tasks.register("cleanAll", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
-  dependsOn(":ReactAndroid:clean")
-  dependsOn(":ReactAndroid:hermes-engine:clean")
+  dependsOn(":packages:react-native:ReactAndroid:clean")
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:clean")
   dependsOn(":packages:rn-tester:android:app:clean")
   delete(allprojects.map { it.buildDir })
-  delete(rootProject.file("./ReactAndroid/.cxx"))
-  delete(rootProject.file("./ReactAndroid/hermes-engine/.cxx"))
-  delete(rootProject.file("./sdks/download/"))
-  delete(rootProject.file("./sdks/hermes/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
-  delete(rootProject.file("./ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/.cxx"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/hermes-engine/.cxx"))
+  delete(rootProject.file("./packages/react-native/sdks/download/"))
+  delete(rootProject.file("./packages/react-native/sdks/hermes/"))
+  delete(
+      rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/arm64-v8a/"))
+  delete(
+      rootProject.file(
+          "./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
+  delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
   delete(rootProject.file("./packages/react-native-codegen/lib"))
   delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
 }
 
-tasks.register("buildAll") {
+tasks.register("build") {
   description = "Build and test all the React Native relevant projects."
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":build"))
-  // This builds both the React Native framework for both debug and release
-  dependsOn(":ReactAndroid:assemble")
-  // This creates all the Maven artifacts and makes them available in the /android folder
-  dependsOn(":ReactAndroid:installArchives")
-  // This builds RN Tester for Hermes/JSC for debug and release
-  dependsOn(":packages:rn-tester:android:app:assemble")
-  // This compiles the Unit Test sources (without running them as they're partially broken)
-  dependsOn(":ReactAndroid:compileDebugUnitTestSources")
-  dependsOn(":ReactAndroid:compileReleaseUnitTestSources")
 }
 
 tasks.register("downloadAll") {
   description = "Download all the depedencies needed locally so they can be cached on CI."
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":dependencies"))
-  dependsOn(":ReactAndroid:downloadNdkBuildDependencies")
-  dependsOn(":ReactAndroid:dependencies")
-  dependsOn(":ReactAndroid:androidDependencies")
-  dependsOn(":ReactAndroid:hermes-engine:dependencies")
-  dependsOn(":ReactAndroid:hermes-engine:androidDependencies")
+  dependsOn(":packages:react-native:ReactAndroid:downloadNdkBuildDependencies")
+  dependsOn(":packages:react-native:ReactAndroid:dependencies")
+  dependsOn(":packages:react-native:ReactAndroid:androidDependencies")
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:dependencies")
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:androidDependencies")
   dependsOn(":packages:rn-tester:android:app:dependencies")
   dependsOn(":packages:rn-tester:android:app:androidDependencies")
 }
@@ -93,20 +87,21 @@ tasks.register("publishAllInsideNpmPackage") {
       "Publish all the artifacts to be available inside the NPM package in the `android` folder."
   // Due to size constraints of NPM, we publish only react-native and hermes-engine inside
   // the NPM package.
-  dependsOn(":ReactAndroid:installArchives")
-  dependsOn(":ReactAndroid:hermes-engine:installArchives")
+  dependsOn(":packages:react-native:ReactAndroid:installArchives")
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:installArchives")
 }
 
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
-  dependsOn(":ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
+  dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
   // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
-  dependsOn(":ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
+  dependsOn(
+      ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
 tasks.register("publishAllToSonatype") {
   description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
-  dependsOn(":ReactAndroid:publishToSonatype")
-  dependsOn(":ReactAndroid:external-artifacts:publishToSonatype")
-  dependsOn(":ReactAndroid:hermes-engine:publishToSonatype")
+  dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
+  dependsOn(":packages:react-native:ReactAndroid:external-artifacts:publishToSonatype")
+  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }

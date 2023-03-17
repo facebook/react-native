@@ -122,6 +122,97 @@ function translateObjectTypeAnnotation(
   );
 }
 
+function translateTypeReferenceAnnotation(
+  typeName: string,
+  nullable: boolean,
+  typeAnnotation: $FlowFixMe,
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  parser: Parser,
+): Nullable<NativeModuleTypeAnnotation> {
+  switch (typeName) {
+    case 'RootTag': {
+      return emitRootTag(nullable);
+    }
+    case 'Promise': {
+      return emitPromise(
+        hasteModuleName,
+        typeAnnotation,
+        parser,
+        nullable,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        translateTypeAnnotation,
+      );
+    }
+    case 'Array':
+    case 'ReadonlyArray': {
+      return emitArrayType(
+        hasteModuleName,
+        typeAnnotation,
+        parser,
+        types,
+        aliasMap,
+        enumMap,
+        cxxOnly,
+        nullable,
+        translateTypeAnnotation,
+      );
+    }
+    case 'Stringish': {
+      return emitStringish(nullable);
+    }
+    case 'Int32': {
+      return emitInt32(nullable);
+    }
+    case 'Double': {
+      return emitDouble(nullable);
+    }
+    case 'Float': {
+      return emitFloat(nullable);
+    }
+    case 'UnsafeObject':
+    case 'Object': {
+      return emitGenericObject(nullable);
+    }
+    case 'Partial': {
+      throwIfPartialWithMoreParameter(typeAnnotation);
+
+      const annotatedElement = parser.extractAnnotatedElement(
+        typeAnnotation,
+        types,
+      );
+
+      throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
+
+      const properties = parser.computePartialProperties(
+        annotatedElement.typeAnnotation.members,
+        hasteModuleName,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+      );
+
+      return emitObject(nullable, properties);
+    }
+    default: {
+      throw new UnsupportedGenericParserError(
+        hasteModuleName,
+        typeAnnotation,
+        parser,
+      );
+    }
+  }
+}
 function translateTypeAnnotation(
   hasteModuleName: string,
   /**
@@ -179,88 +270,18 @@ function translateTypeAnnotation(
       }
     }
     case 'TSTypeReference': {
-      switch (typeAnnotation.typeName.name) {
-        case 'RootTag': {
-          return emitRootTag(nullable);
-        }
-        case 'Promise': {
-          return emitPromise(
-            hasteModuleName,
-            typeAnnotation,
-            parser,
-            nullable,
-            types,
-            aliasMap,
-            enumMap,
-            tryParse,
-            cxxOnly,
-            translateTypeAnnotation,
-          );
-        }
-        case 'Array':
-        case 'ReadonlyArray': {
-          return emitArrayType(
-            hasteModuleName,
-            typeAnnotation,
-            parser,
-            types,
-            aliasMap,
-            enumMap,
-            cxxOnly,
-            nullable,
-            translateTypeAnnotation,
-          );
-        }
-        case 'Stringish': {
-          return emitStringish(nullable);
-        }
-        case 'Int32': {
-          return emitInt32(nullable);
-        }
-        case 'Double': {
-          return emitDouble(nullable);
-        }
-        case 'Float': {
-          return emitFloat(nullable);
-        }
-        case 'UnsafeObject':
-        case 'Object': {
-          return emitGenericObject(nullable);
-        }
-        case 'Partial': {
-          throwIfPartialWithMoreParameter(typeAnnotation);
-
-          const annotatedElement = parser.extractAnnotatedElement(
-            typeAnnotation,
-            types,
-          );
-
-          throwIfPartialNotAnnotatingTypeParameter(
-            typeAnnotation,
-            types,
-            parser,
-          );
-
-          const properties = parser.computePartialProperties(
-            annotatedElement.typeAnnotation.members,
-            hasteModuleName,
-            types,
-            aliasMap,
-            enumMap,
-            tryParse,
-            cxxOnly,
-          );
-
-          return emitObject(nullable, properties);
-        }
-        default: {
-          throw new UnsupportedGenericParserError(
-            hasteModuleName,
-            typeAnnotation,
-            parser,
-          );
-        }
-      }
+      return translateTypeReferenceAnnotation(
+        typeAnnotation.typeName.name,
+        nullable,
+        typeAnnotation,
+        hasteModuleName,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
     }
     case 'TSInterfaceDeclaration': {
       const baseTypes = (typeAnnotation.extends ?? []).map(

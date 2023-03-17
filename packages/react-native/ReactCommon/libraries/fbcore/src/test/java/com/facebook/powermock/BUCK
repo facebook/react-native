@@ -1,0 +1,179 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_prebuilt_jar")
+
+rn_android_library(
+    name = "powermock2",
+    autoglob = False,
+    language = "JAVA",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":javassist-prebuilt",
+        ":powermock-api-mockito2",
+        ":powermock-api-support",
+        ":powermock-classloading-base",
+        ":powermock-classloading-xstream-prebuilt",
+        ":powermock-core",
+        ":powermock-module-junit-common-prebuilt",
+        ":powermock-module-junit-rule-prebuilt",
+        ":powermock-reflect",
+        ":xstream-prebuilt",
+    ],
+)
+
+rn_android_library(
+    name = "powermock-reflect",
+    autoglob = False,
+    language = "JAVA",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":byte-buddy",
+        ":objenesis",
+        ":powermock-reflect-prebuilt",
+    ],
+)
+
+rn_prebuilt_jar(
+    name = "byte-buddy",
+    binary_jar = ":byte-buddy-binary.jar",
+    visibility = ["//packages/react-native/ReactAndroid/..."],
+)
+
+fb_native.remote_file(
+    name = "byte-buddy-binary.jar",
+    sha1 = "211a2b4d3df1eeef2a6cacf78d74a1f725e7a840",
+    url = "mvn:net.bytebuddy:byte-buddy:jar:1.9.10",
+)
+
+rn_prebuilt_jar(
+    name = "byte-buddy-agent",
+    binary_jar = ":byte-buddy-agent-binary.jar",
+    visibility = ["//packages/react-native/ReactAndroid/..."],
+)
+
+fb_native.remote_file(
+    name = "byte-buddy-agent-binary.jar",
+    sha1 = "9674aba5ee793e54b864952b001166848da0f26b",
+    url = "mvn:net.bytebuddy:byte-buddy-agent:jar:1.9.10",
+)
+
+rn_prebuilt_jar(
+    name = "objenesis",
+    binary_jar = ":objenesis-binary.jar",
+    visibility = ["//packages/react-native/ReactAndroid/..."],
+)
+
+fb_native.remote_file(
+    name = "objenesis-binary.jar",
+    sha1 = "639033469776fd37c08358c6b92a4761feb2af4b",
+    url = "mvn:org.objenesis:objenesis:jar:2.6",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-reflect-prebuilt",
+    binary_jar = ":powermock-reflect.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-reflect.jar",
+    sha1 = "9a8b85397c5a72923962ee9e6bf774e8458803bb",
+    url = "mvn:org.powermock:powermock-reflect:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-api-mockito2",
+    binary_jar = ":powermock-api-mockito2.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-api-mockito2.jar",
+    sha1 = "9f40156d9f6f65c6459a65e34f3c7c4fef8b3c49",
+    url = "mvn:org.powermock:powermock-api-mockito2:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-api-support",
+    binary_jar = ":powermock-api-support.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-api-support.jar",
+    sha1 = "e311918de98f5d8b726031ca840664691599fd71",
+    url = "mvn:org.powermock:powermock-api-support:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-classloading-base",
+    binary_jar = ":powermock-classloading-base.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-classloading-base.jar",
+    sha1 = "58ae5d3087ddfee5a591131d337907401276f7d4",
+    url = "mvn:org.powermock:powermock-classloading-base:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-classloading-xstream-prebuilt",
+    binary_jar = ":powermock-classloading-xstream.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-classloading-xstream.jar",
+    sha1 = "2ec4d94a584f12b0aa1165279e92ef3d5fda1b93",
+    url = "mvn:org.powermock:powermock-classloading-xstream:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-core",
+    binary_jar = ":powermock-core.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-core.jar",
+    sha1 = "484c06b406c5a21a4a2ad39f6fe36a0f77834aa9",
+    url = "mvn:org.powermock:powermock-core:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-module-junit-common-prebuilt",
+    binary_jar = ":powermock-module-junit-common.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-module-junit-common.jar",
+    sha1 = "e890f92292aa525000a8fa95a8ca4015e3eb78b8",
+    url = "mvn:org.powermock:powermock-module-junit4-common:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "powermock-module-junit-rule-prebuilt",
+    binary_jar = ":powermock-module-junit-rule.jar",
+)
+
+fb_native.remote_file(
+    name = "powermock-module-junit-rule.jar",
+    sha1 = "d0d14709ffec2c3cbad0e3d6256bc8ace682398d",
+    url = "mvn:org.powermock:powermock-module-junit4-rule:jar:2.0.7",
+)
+
+rn_prebuilt_jar(
+    name = "javassist-prebuilt",
+    binary_jar = ":javassist.jar",
+)
+
+fb_native.remote_file(
+    name = "javassist.jar",
+    sha1 = "f63e6aa899e15eca8fdaa402a79af4c417252213",
+    url = "mvn:org.javassist:javassist:jar:3.27.0-GA",
+)
+
+rn_prebuilt_jar(
+    name = "xstream-prebuilt",
+    binary_jar = ":xstream.jar",
+)
+
+fb_native.remote_file(
+    name = "xstream.jar",
+    sha1 = "6c120c45a8c480bb2fea5b56502e3993ddd74fd2",
+    url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.11.1",
+)
