@@ -1148,7 +1148,7 @@ jobs:
   # Collect JavaScript test coverage
   js_coverage:
     executor: nodelts
-    environment:
+    environment: p
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
@@ -1161,9 +1161,6 @@ jobs:
           name: Collect test coverage information
           command: |
             scripts/circleci/exec_swallow_error.sh yarn test --coverage --maxWorkers=2
-            if [[ -e ./coverage/lcov.info ]]; then
-              cat ./coverage/lcov.info | scripts/circleci/exec_swallow_error.sh ./node_modules/.bin/coveralls
-            fi
       - store_artifacts:
           path: ~/react-native/coverage/
 
