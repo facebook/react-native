@@ -640,6 +640,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
         case RCTPointerEventTypeCancel: {
           eventEmitter->onPointerCancel(pointerEvent);
+          [self handleIncomingPointerEvent:pointerEvent onView:nil];
           break;
         }
       }
