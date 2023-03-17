@@ -85,7 +85,7 @@ public class ReactImagePropertyTest {
     RNLog.w(null, "");
 
     SoLoader.setInTestMode();
-    mContext = new ReactApplicationContext(RuntimeEnvironment.getApplication());
+    mContext = new ReactApplicationContext(RuntimeEnvironment.application);
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemeContext = new ThemedReactContext(mContext, mContext);

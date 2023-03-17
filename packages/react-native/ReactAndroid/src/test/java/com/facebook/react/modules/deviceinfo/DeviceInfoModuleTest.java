@@ -60,7 +60,7 @@ public class DeviceInfoModuleTest extends TestCase {
     initTestData();
 
     mockStatic(DisplayMetricsHolder.class);
-    mContext = spy(new ReactApplicationContext(RuntimeEnvironment.getApplication()));
+    mContext = spy(new ReactApplicationContext(RuntimeEnvironment.application));
     CatalystInstance catalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mContext.initializeWithInstance(catalystInstanceMock);
 

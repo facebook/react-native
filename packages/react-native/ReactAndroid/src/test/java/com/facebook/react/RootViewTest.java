@@ -91,7 +91,7 @@ public class RootViewTest {
             });
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
-    mReactContext = spy(new ReactApplicationContext(RuntimeEnvironment.getApplication()));
+    mReactContext = spy(new ReactApplicationContext(RuntimeEnvironment.application));
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mReactContext);
 

@@ -87,7 +87,7 @@ public class TextInputTest {
   public void testPropsApplied() {
     UIManagerModule uiManager = getUIManagerModule();
 
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
     rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;
@@ -115,7 +115,7 @@ public class TextInputTest {
   public void testPropsUpdate() {
     UIManagerModule uiManager = getUIManagerModule();
 
-    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.getApplication());
+    ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
     rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
     int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;

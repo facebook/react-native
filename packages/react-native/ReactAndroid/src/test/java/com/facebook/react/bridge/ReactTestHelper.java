@@ -26,8 +26,7 @@ public class ReactTestHelper {
    *     #createMockCatalystInstance}
    */
   public static ReactApplicationContext createCatalystContextForTest() {
-    ReactApplicationContext context =
-        new ReactApplicationContext(RuntimeEnvironment.getApplication());
+    ReactApplicationContext context = new ReactApplicationContext(RuntimeEnvironment.application);
     context.initializeWithInstance(createMockCatalystInstance());
     return context;
   }
