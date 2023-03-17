@@ -9,7 +9,6 @@
 
 #include <assert.h>
 #include <gtest/gtest.h>
-#include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/primitives.h>
@@ -34,21 +33,19 @@ TEST(ParagraphLocalDataTest, testSomething) {
   text.fontWeight = FontWeight::Thin;
   text.fontVariant = FontVariant::TabularNums;
   fragment.textAttributes = text;
-  attString.prependFragment(fragment);
+  attributedString.prependFragment(fragment);
 
   auto paragraphState = ParagraphState{};
-  paragraphLocalData.attributedString = attributedString;
+  paragraphState.attributedString = attributedString;
 
   auto result = toDynamic(paragraphState)["attributedString"];
 
-  react_native_assert(result["string"] == fragment.string);
+  EXPECT_EQ(result["string"], fragment.string);
   auto textAttribute = result["fragments"][0]["textAttributes"];
-  react_native_assert(
-      textAttribute["foregroundColor"] == toDynamic(text.foregroundColor));
-  react_native_assert(textAttribute["opacity"] == text.opacity);
-  react_native_assert(textAttribute["fontStyle"] == toString(*text.fontStyle));
-  react_native_assert(
-      textAttribute["fontWeight"] == toString(*text.fontWeight));
+  EXPECT_EQ(textAttribute["foregroundColor"], toDynamic(text.foregroundColor));
+  EXPECT_EQ(textAttribute["opacity"], text.opacity);
+  EXPECT_EQ(textAttribute["fontStyle"], toString(*text.fontStyle));
+  EXPECT_EQ(textAttribute["fontWeight"], toString(*text.fontWeight));
 }
 
 #endif
