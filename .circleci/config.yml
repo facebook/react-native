@@ -1058,10 +1058,12 @@ workflows:
               ignore: /.*/ # [macOS] Disable failing test
 
       # Gather coverage
-      - js_coverage:
-          filters:
-            branches:
-              ignore: gh-pages
+      # [macOS Disable test as it depends on npm package `coveralls`, which depends on deprecated `request` package
+      # - js_coverage:
+      #     filters:
+      #       branches:
+      #         ignore: gh-pages
+      # macOS]
 
   nightly:
     unless: << pipeline.parameters.run_package_release_workflow_only >>

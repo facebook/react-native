@@ -14,13 +14,12 @@ import * as prompts from 'prompts';
 import * as findUp from 'find-up';
 import * as chalk from 'chalk';
 // @ts-ignore
-import * as Registry from 'npm-registry';
+import npmFetch from 'npm-registry';
 
 const npmConfReg = execSync('npm config get registry').toString().trim();
 const NPM_REGISTRY_URL = validUrl.isUri(npmConfReg)
   ? npmConfReg
   : 'http://registry.npmjs.org';
-const npm = new Registry({registry: NPM_REGISTRY_URL});
 
 const argv = yargs.version(false).options({
   version: {
@@ -145,56 +144,36 @@ function getMatchingReactNativeSemVerForReactNativeMacOSVersion(
   return 'unknown';
 }
 
-function getLatestMatchingVersion(
+async function getLatestMatchingVersion(
   pkg: string,
   versionSemVer: string,
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (semver.validRange(versionSemVer)) {
-      // Ideally we'd be able to just use npm.packages.range(pkg, versionSemVer) here,
-      // but alas it fails to give us the right result for react-native-macos@^0.60.0-microsoft.57
-      // as it fails to return pre-release versions
-      npm.packages.releases(
-        pkg,
-        (err: any, details: {[key: string]: object}) => {
-          if (err) {
-            reject(err);
-          } else if (details) {
-            const versions = Object.keys(details);
-            if (versions.length > 0) {
-              const candidates = versions
-                .filter(v => semver.satisfies(v, versionSemVer))
-                .sort(semver.rcompare);
-              if (candidates && candidates.length > 0) {
-                resolve(candidates[0]);
-                return;
-              }
-            }
-          }
-          reject(
-            new Error(`No matching version of ${pkg}@${versionSemVer} found!`),
-          );
-        },
-      );
-    } else {
-      // Assume that versionSemVer is actually a tag
-      npm.packages.release(
-        pkg,
-        versionSemVer,
-        (err: any, details: {version: string}[]) => {
-          if (err) {
-            reject(err);
-          } else if (details && details.length > 0) {
-            resolve(details[0].version);
-            return;
-          }
-          reject(
-            new Error(`No matching version of ${pkg}@${versionSemVer} found!`),
-          );
-        },
-      );
+  const npmResponse = await npmFetch.json(pkg, {registry: NPM_REGISTRY_URL});
+
+  // Check if versionSemVer is a tag (i.e. 'canary', 'latest', 'preview', etc.)
+  if ('dist-tags' in npmResponse) {
+    const distTags = npmResponse['dist-tags'] as Record<string, string>;
+    if (versionSemVer in distTags) {
+      return distTags[versionSemVer];
     }
-  });
+  }
+
+  // Check if versionSemVer is a semver version (i.e. '^0.60.0-0', '0.63.1', etc.)
+  if ('versions' in npmResponse) {
+    const versions = Object.keys(
+      npmResponse.versions as Record<string, unknown>,
+    );
+    if (versions.length > 0) {
+      const candidates = versions
+        .filter(v => semver.satisfies(v, versionSemVer))
+        .sort(semver.rcompare);
+      if (candidates.length > 0) {
+        return candidates[0];
+      }
+    }
+  }
+
+  throw new Error(`No matching version of ${pkg}@${versionSemVer} found`);
 }
 
 async function getLatestMatchingReactNativeMacOSVersion(
