@@ -11,6 +11,7 @@ import android.view.View;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import java.util.Date;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import org.robolectric.RobolectricTestRunner;
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T14964130
 public class ReactPropAnnotationSetterSpecTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();

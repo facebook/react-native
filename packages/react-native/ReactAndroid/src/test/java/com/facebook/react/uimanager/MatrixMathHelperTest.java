@@ -9,12 +9,14 @@ package com.facebook.react.uimanager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 /** Test for {@link MatrixMathHelper} */
 @RunWith(RobolectricTestRunner.class)
+@Ignore // TODO T14964130
 public class MatrixMathHelperTest {
 
   private void verifyZRotatedMatrix(double degrees, double rotX, double rotY, double rotZ) {

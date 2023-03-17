@@ -681,6 +681,7 @@ dependencies {
     testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
     testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
+    testImplementation("com.thoughtworks.xstream:xstream:1.4.20")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
@@ -699,6 +700,26 @@ react {
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
     jsRootDir = file("../Libraries")
+}
+
+tasks.withType(Test).all {
+    // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+        jvmArgs += [
+            "-XX:+AllowRedefinitionToAddDeleteMethods",
+            "--illegal-access=permit",
+            "--add-opens=java.base/java.lang=ALL-UNNAMED",
+            "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",
+            "--add-opens=java.base/java.util=ALL-UNNAMED",
+            "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+            "--add-opens=java.base/java.net=ALL-UNNAMED",
+            "--add-opens=java.base/java.security=ALL-UNNAMED",
+            "--add-opens=java.base/java.io=ALL-UNNAMED",
+            "--add-opens=java.base/java.nio=ALL-UNNAMED",
+            "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
+            "--add-opens=java.base/jdk.xml.internal=ALL-UNNAMED",
+        ]
+    }
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

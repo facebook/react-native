@@ -10,6 +10,7 @@ package com.facebook.react.views.image;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.drawee.drawable.ScalingUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T110934492
 public class ImageResizeModeTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();

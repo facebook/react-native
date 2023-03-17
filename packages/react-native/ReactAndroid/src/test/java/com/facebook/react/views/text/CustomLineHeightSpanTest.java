@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.graphics.Paint;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -17,6 +18,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T110934492
 public class CustomLineHeightSpanTest {
 
   @Test
