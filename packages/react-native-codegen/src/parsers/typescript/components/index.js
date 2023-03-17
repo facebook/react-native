@@ -13,6 +13,8 @@ import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
+import {propertyNames} from '../../parsers-commons';
+
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
@@ -119,9 +121,7 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
     );
   }
 
-  const typeScriptPropertyNames = properties
-    .map(property => property && property.key && property.key.name)
-    .filter(Boolean);
+  const typeScriptPropertyNames = propertyNames(properties);
 
   const commandOptions = getCommandOptions(commandOptionsExpression);
   if (commandOptions == null || commandOptions.supportedCommands == null) {

@@ -699,6 +699,14 @@ function findNativeComponentType(
   }
 }
 
+function propertyNames(
+  properties: $ReadOnlyArray<$FlowFixMe>,
+): $ReadOnlyArray<$FlowFixMe> {
+  return properties
+    .map(property => property && property.key && property.key.name)
+    .filter(Boolean);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -714,4 +722,5 @@ module.exports = {
   parseModuleName,
   buildModuleSchema,
   findNativeComponentType,
+  propertyNames,
 };

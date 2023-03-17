@@ -12,6 +12,8 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
+import {propertyNames} from '../../parsers-commons';
+
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
@@ -119,9 +121,7 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
     );
   }
 
-  const flowPropertyNames = properties
-    .map(property => property && property.key && property.key.name)
-    .filter(Boolean);
+  const flowPropertyNames = propertyNames(properties);
 
   const commandOptions = getCommandOptions(commandOptionsExpression);
 
