@@ -35,7 +35,7 @@ load(
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
 
 RCTCXXBRIDGE_PUBLIC_HEADERS = {
-    "React/" + x: "React/CxxBridge/" + x
+    "React/" + x: "packages/react-native/React/CxxBridge/" + x
     for x in [
         "JSCExecutorFactory.h",
         "NSDataBigString.h",
@@ -49,8 +49,6 @@ fb_native.genrule(
     name = "codegen_rn_components_schema_rncore",
     srcs = glob(
         [
-            "Libraries/**/*NativeComponent.js",
-            "jest/**/*NativeComponent.js",
             "packages/**/*NativeComponent.js",
         ],
         exclude = [
@@ -75,12 +73,12 @@ rn_codegen_components(
 rn_apple_xplat_cxx_library(
     name = "RCTCxxBridge",
     srcs = glob([
-        "React/CxxBridge/*.mm",
+        "packages/react-native/React/CxxBridge/*.mm",
     ]),
     headers = subdir_glob(
         [
             (
-                "React/CxxBridge",
+                "packages/react-native/React/CxxBridge",
                 "*.h",
             ),
         ],
@@ -114,7 +112,7 @@ rn_apple_xplat_cxx_library(
         ":RCTCxxUtils",
         ":ReactInternal",
         "//fbobjc/Libraries/FBReactKit:RCTFBSystrace",
-        react_native_root_target("React/CoreModules:CoreModules"),
+        react_native_root_target("packages/react-native/React/CoreModules:CoreModules"),
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("jsc:JSCRuntime"),
@@ -124,7 +122,7 @@ rn_apple_xplat_cxx_library(
 )
 
 RCTCXXMODULE_PUBLIC_HEADERS = {
-    "React/" + x: "React/CxxModule/" + x
+    "React/" + x: "packages/react-native/React/CxxModule/" + x
     for x in [
         "RCTCxxMethod.h",
         "RCTCxxModule.h",
@@ -135,12 +133,12 @@ RCTCXXMODULE_PUBLIC_HEADERS = {
 rn_apple_xplat_cxx_library(
     name = "RCTCxxModule",
     srcs = glob([
-        "React/CxxModule/*.mm",
+        "packages/react-native/React/CxxModule/*.mm",
     ]),
     headers = subdir_glob(
         [
             (
-                "React/CxxModule",
+                "packages/react-native/React/CxxModule",
                 "*.h",
             ),
         ],
@@ -176,13 +174,13 @@ rn_apple_xplat_cxx_library(
 rn_apple_xplat_cxx_library(
     name = "RCTCxxUtils",
     srcs = glob([
-        "React/CxxUtils/*.mm",
+        "packages/react-native/React/CxxUtils/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "React/CxxUtils",
+                "packages/react-native/React/CxxUtils",
                 "*.h",
             ),
         ],
@@ -208,13 +206,13 @@ rn_apple_xplat_cxx_library(
 rn_apple_xplat_cxx_library(
     name = "RCTCxxLogUtils",
     srcs = glob([
-        "React/CxxLogUtils/*.mm",
+        "packages/react-native/React/CxxLogUtils/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "React/CxxLogUtils",
+                "packages/react-native/React/CxxLogUtils",
                 "*.h",
             ),
         ],
@@ -233,15 +231,15 @@ rn_apple_xplat_cxx_library(
     ],
 )
 
-RCTLIB_PATH = "Libraries/"
+RCTLIB_PATH = "packages/react-native/Libraries/"
 
-RCTBASE_PATH = "React/Base/"
+RCTBASE_PATH = "packages/react-native/React/Base/"
 
-RCTDEVSUPPORT_PATH = "React/DevSupport/"
+RCTDEVSUPPORT_PATH = "packages/react-native/React/DevSupport/"
 
-RCTMODULES_PATH = "React/Modules/"
+RCTMODULES_PATH = "packages/react-native/React/Modules/"
 
-RCTVIEWS_PATH = "React/Views/"
+RCTVIEWS_PATH = "packages/react-native/React/Views/"
 
 REACT_PUBLIC_HEADERS = {
     "React/RCTAnimationType.h": RCTVIEWS_PATH + "RCTAnimationType.h",
@@ -280,9 +278,9 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTI18nUtil.h": RCTMODULES_PATH + "RCTI18nUtil.h",
     "React/RCTImageSource.h": RCTBASE_PATH + "RCTImageSource.h",
     "React/RCTInitializing.h": RCTBASE_PATH + "RCTInitializing.h",
-    "React/RCTInspector.h": "React/Inspector/RCTInspector.h",
+    "React/RCTInspector.h": "packages/react-native/React/Inspector/RCTInspector.h",
     "React/RCTInspectorDevServerHelper.h": RCTDEVSUPPORT_PATH + "RCTInspectorDevServerHelper.h",
-    "React/RCTInspectorPackagerConnection.h": "React/Inspector/RCTInspectorPackagerConnection.h",
+    "React/RCTInspectorPackagerConnection.h": "packages/react-native/React/Inspector/RCTInspectorPackagerConnection.h",
     "React/RCTInvalidating.h": RCTBASE_PATH + "RCTInvalidating.h",
     "React/RCTJSScriptLoaderModule.h": RCTBASE_PATH + "RCTJSScriptLoaderModule.h",
     "React/RCTJSStackFrame.h": RCTBASE_PATH + "RCTJSStackFrame.h",
@@ -309,7 +307,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTPerformanceLogger.h": RCTBASE_PATH + "RCTPerformanceLogger.h",
     "React/RCTPerformanceLoggerLabels.h": RCTBASE_PATH + "RCTPerformanceLoggerLabels.h",
     "React/RCTPointerEvents.h": RCTVIEWS_PATH + "RCTPointerEvents.h",
-    "React/RCTProfile.h": "React/Profiler/RCTProfile.h",
+    "React/RCTProfile.h": "packages/react-native/React/Profiler/RCTProfile.h",
     "React/RCTPushNotificationManager.h": RCTLIB_PATH + "PushNotificationIOS/RCTPushNotificationManager.h",
     "React/RCTReconnectingWebSocket.h": RCTLIB_PATH + "WebSocket/RCTReconnectingWebSocket.h",
     "React/RCTRedBoxExtraDataViewController.h": RCTMODULES_PATH + "RCTRedBoxExtraDataViewController.h",
@@ -344,7 +342,7 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTUIManager.h": RCTMODULES_PATH + "RCTUIManager.h",
     "React/RCTUIManagerObserverCoordinator.h": RCTMODULES_PATH + "RCTUIManagerObserverCoordinator.h",
     "React/RCTUIManagerUtils.h": RCTMODULES_PATH + "RCTUIManagerUtils.h",
-    "React/RCTUIUtils.h": "React/UIUtils/RCTUIUtils.h",
+    "React/RCTUIUtils.h": "packages/react-native/React/UIUtils/RCTUIUtils.h",
     "React/RCTURLRequestDelegate.h": RCTBASE_PATH + "RCTURLRequestDelegate.h",
     "React/RCTURLRequestHandler.h": RCTBASE_PATH + "RCTURLRequestHandler.h",
     "React/RCTUtils.h": RCTBASE_PATH + "RCTUtils.h",
@@ -358,44 +356,44 @@ REACT_PUBLIC_HEADERS = {
 }
 
 REACT_COMPONENTVIEWS_BASE_FILES = [
-    "React/Fabric/Mounting/ComponentViews/Image/*.mm",
-    "React/Fabric/RCTImageResponseObserverProxy.mm",
-    "React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm",
+    "packages/react-native/React/Fabric/Mounting/ComponentViews/Image/*.mm",
+    "packages/react-native/React/Fabric/RCTImageResponseObserverProxy.mm",
+    "packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.mm",
 ]
 
 rn_apple_xplat_cxx_library(
     name = "ReactInternal",
     srcs = glob(
         [
-            "React/Base/**/*.m",
-            "React/Base/**/*.mm",
-            "React/DevSupport/**/*.m",
-            "React/DevSupport/**/*.mm",
-            "React/Inspector/**/*.m",
-            "React/Inspector/**/*.mm",
-            "React/Modules/**/*.m",
-            "React/Modules/**/*.mm",
-            "React/Profiler/**/*.m",
-            "React/Profiler/**/*.mm",
-            "React/Profiler/**/*.S",
-            "React/UIUtils/*.m",
-            "React/Views/**/*.m",
-            "React/Views/**/*.mm",
-            "Libraries/ActionSheetIOS/*.m",
-            "Libraries/WebSocket/*.m",
+            "packages/react-native/React/Base/**/*.m",
+            "packages/react-native/React/Base/**/*.mm",
+            "packages/react-native/React/DevSupport/**/*.m",
+            "packages/react-native/React/DevSupport/**/*.mm",
+            "packages/react-native/React/Inspector/**/*.m",
+            "packages/react-native/React/Inspector/**/*.mm",
+            "packages/react-native/React/Modules/**/*.m",
+            "packages/react-native/React/Modules/**/*.mm",
+            "packages/react-native/React/Profiler/**/*.m",
+            "packages/react-native/React/Profiler/**/*.mm",
+            "packages/react-native/React/Profiler/**/*.S",
+            "packages/react-native/React/UIUtils/*.m",
+            "packages/react-native/React/Views/**/*.m",
+            "packages/react-native/React/Views/**/*.mm",
+            "packages/react-native/Libraries/ActionSheetIOS/*.m",
+            "packages/react-native/Libraries/WebSocket/*.m",
         ],
     ),
     headers = glob(
         [
-            "React/Base/**/*.h",
-            "React/DevSupport/**/*.h",
-            "React/Inspector/**/*.h",
-            "React/Modules/**/*.h",
-            "React/Profiler/**/*.h",
-            "React/Views/**/*.h",
-            "React/UIUtils/**/*.h",
-            "Libraries/ActionSheetIOS/*.h",
-            "Libraries/WebSocket/*.h",
+            "packages/react-native/React/Base/**/*.h",
+            "packages/react-native/React/DevSupport/**/*.h",
+            "packages/react-native/React/Inspector/**/*.h",
+            "packages/react-native/React/Modules/**/*.h",
+            "packages/react-native/React/Profiler/**/*.h",
+            "packages/react-native/React/Views/**/*.h",
+            "packages/react-native/React/UIUtils/**/*.h",
+            "packages/react-native/Libraries/ActionSheetIOS/*.h",
+            "packages/react-native/Libraries/WebSocket/*.h",
         ],
     ),
     header_namespace = "",
@@ -445,9 +443,9 @@ rn_apple_xplat_cxx_library(
         "//fbobjc/Libraries/RCTPrerendering/...",
         "//fbobjc/VendorLib/react-native-maps:react-native-maps",
         "//xplat/js:",
-        "//xplat/js/react-native-github/React/...",
-        "//xplat/js/react-native-github/ReactCommon/react/nativemodule/core:",
-        "//xplat/js/react-native-github/ReactCommon/react/nativemodule/samples:",
+        "//xplat/js/react-native-github/packages/react-native/React/...",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/nativemodule/core:",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/nativemodule/samples:",
         "//xplat/js/react-native-github/packages/rn-tester:",
         "//xplat/rtc/manul/...",
     ],
@@ -463,41 +461,41 @@ rn_apple_xplat_cxx_library(
     name = "RCTFabric",
     srcs = glob(
         [
-            "React/Fabric/**/*.cpp",
-            "React/Fabric/**/*.m",
-            "React/Fabric/**/*.mm",
+            "packages/react-native/React/Fabric/**/*.cpp",
+            "packages/react-native/React/Fabric/**/*.m",
+            "packages/react-native/React/Fabric/**/*.mm",
         ],
         exclude = glob(REACT_COMPONENTVIEWS_BASE_FILES),
     ),
     headers = glob(
         [
-            "React/Fabric/**/*.h",
+            "packages/react-native/React/Fabric/**/*.h",
         ],
     ),
     header_namespace = "",
     exported_headers = {
-        "React/RCTComponentViewDescriptor.h": "React/Fabric/Mounting/RCTComponentViewDescriptor.h",
-        "React/RCTComponentViewFactory.h": "React/Fabric/Mounting/RCTComponentViewFactory.h",
-        "React/RCTComponentViewRegistry.h": "React/Fabric/Mounting/RCTComponentViewRegistry.h",
-        "React/RCTFabricSurface.h": "React/Fabric/Surface/RCTFabricSurface.h",
-        "React/RCTFabricSurfaceHostingProxyRootView.h": "React/Fabric/Surface/RCTFabricSurfaceHostingProxyRootView.h",
-        "React/RCTGenericDelegateSplitter.h": "React/Fabric/Utils/RCTGenericDelegateSplitter.h",
-        "React/RCTLegacyViewManagerInteropComponentView.h": "React/Fabric/Mounting/ComponentViews/LegacyViewManagerInterop/RCTLegacyViewManagerInteropComponentView.h",
-        "React/RCTLocalizationProvider.h": "React/Fabric/RCTLocalizationProvider.h",
-        "React/RCTModalHostViewComponentView.h": "React/Fabric/Mounting/ComponentViews/Modal/RCTModalHostViewComponentView.h",
-        "React/RCTMountingManager.h": "React/Fabric/Mounting/RCTMountingManager.h",
-        "React/RCTMountingManagerDelegate.h": "React/Fabric/Mounting/RCTMountingManagerDelegate.h",
-        "React/RCTMountingTransactionObserving.h": "React/Fabric/Mounting/RCTMountingTransactionObserving.h",
-        "React/RCTParagraphComponentAccessibilityProvider.h": "React/Fabric/Mounting/ComponentViews/Text/RCTParagraphComponentAccessibilityProvider.h",
-        "React/RCTParagraphComponentView.h": "React/Fabric/Mounting/ComponentViews/Text/RCTParagraphComponentView.h",
-        "React/RCTPrimitives.h": "React/Fabric/RCTPrimitives.h",
-        "React/RCTRootComponentView.h": "React/Fabric/Mounting/ComponentViews/Root/RCTRootComponentView.h",
-        "React/RCTScheduler.h": "React/Fabric/RCTScheduler.h",
-        "React/RCTScrollViewComponentView.h": "React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.h",
-        "React/RCTSurfacePresenter.h": "React/Fabric/RCTSurfacePresenter.h",
-        "React/RCTSurfacePresenterBridgeAdapter.h": "React/Fabric/RCTSurfacePresenterBridgeAdapter.h",
-        "React/RCTSurfaceRegistry.h": "React/Fabric/RCTSurfaceRegistry.h",
-        "React/RCTSurfaceTouchHandler.h": "React/Fabric/RCTSurfaceTouchHandler.h",
+        "React/RCTComponentViewDescriptor.h": "packages/react-native/React/Fabric/Mounting/RCTComponentViewDescriptor.h",
+        "React/RCTComponentViewFactory.h": "packages/react-native/React/Fabric/Mounting/RCTComponentViewFactory.h",
+        "React/RCTComponentViewRegistry.h": "packages/react-native/React/Fabric/Mounting/RCTComponentViewRegistry.h",
+        "React/RCTFabricSurface.h": "packages/react-native/React/Fabric/Surface/RCTFabricSurface.h",
+        "React/RCTFabricSurfaceHostingProxyRootView.h": "packages/react-native/React/Fabric/Surface/RCTFabricSurfaceHostingProxyRootView.h",
+        "React/RCTGenericDelegateSplitter.h": "packages/react-native/React/Fabric/Utils/RCTGenericDelegateSplitter.h",
+        "React/RCTLegacyViewManagerInteropComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/LegacyViewManagerInterop/RCTLegacyViewManagerInteropComponentView.h",
+        "React/RCTLocalizationProvider.h": "packages/react-native/React/Fabric/RCTLocalizationProvider.h",
+        "React/RCTModalHostViewComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/Modal/RCTModalHostViewComponentView.h",
+        "React/RCTMountingManager.h": "packages/react-native/React/Fabric/Mounting/RCTMountingManager.h",
+        "React/RCTMountingManagerDelegate.h": "packages/react-native/React/Fabric/Mounting/RCTMountingManagerDelegate.h",
+        "React/RCTMountingTransactionObserving.h": "packages/react-native/React/Fabric/Mounting/RCTMountingTransactionObserving.h",
+        "React/RCTParagraphComponentAccessibilityProvider.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/Text/RCTParagraphComponentAccessibilityProvider.h",
+        "React/RCTParagraphComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/Text/RCTParagraphComponentView.h",
+        "React/RCTPrimitives.h": "packages/react-native/React/Fabric/RCTPrimitives.h",
+        "React/RCTRootComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/Root/RCTRootComponentView.h",
+        "React/RCTScheduler.h": "packages/react-native/React/Fabric/RCTScheduler.h",
+        "React/RCTScrollViewComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/ScrollView/RCTScrollViewComponentView.h",
+        "React/RCTSurfacePresenter.h": "packages/react-native/React/Fabric/RCTSurfacePresenter.h",
+        "React/RCTSurfacePresenterBridgeAdapter.h": "packages/react-native/React/Fabric/RCTSurfacePresenterBridgeAdapter.h",
+        "React/RCTSurfaceRegistry.h": "packages/react-native/React/Fabric/RCTSurfaceRegistry.h",
+        "React/RCTSurfaceTouchHandler.h": "packages/react-native/React/Fabric/RCTSurfaceTouchHandler.h",
     },
     compiler_flags = [
         "-fexceptions",
@@ -581,11 +579,11 @@ rn_apple_xplat_cxx_library(
 rn_apple_library(
     name = "RCTTypeSafety",
     srcs = glob([
-        "Libraries/TypeSafety/**/*.mm",
+        "packages/react-native/Libraries/TypeSafety/**/*.mm",
     ]),
     exported_headers = glob(
         [
-            "Libraries/TypeSafety/**/*.h",
+            "packages/react-native/Libraries/TypeSafety/**/*.h",
         ],
     ),
     autoglob = False,
@@ -607,7 +605,7 @@ rn_apple_library(
     deps = [
         ":ReactInternalApple",
         "//xplat/folly:optionalApple",
-        "//xplat/js/react-native-github/Libraries/FBLazyVector:FBLazyVector",
+        "//xplat/js/react-native-github/packages/react-native/Libraries/FBLazyVector:FBLazyVector",
     ],
 )
 
@@ -621,7 +619,7 @@ yarn_workspace(
 
 fb_apple_test(
     name = "TextTestsApple",
-    srcs = ["React/Tests/Text/RCTParagraphComponentViewTests.mm"],
+    srcs = ["packages/react-native/React/Tests/Text/RCTParagraphComponentViewTests.mm"],
     frameworks = [
         "$PLATFORM_DIR/Developer/Library/Frameworks/XCTest.framework",
     ],
@@ -631,20 +629,20 @@ fb_apple_test(
         react_native_xplat_target("react/renderer/element:elementApple"),
         "//xplat/js/react-native-github:RCTFabricComponentViewsBaseApple",
         "//xplat/js/react-native-github:RCTTextApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/attributedstring:attributedstringApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/componentregistry:componentregistryApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/components/text:textApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/components/textinput/iostextinput:iostextinputApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/scheduler:schedulerApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/textlayoutmanager:textlayoutmanagerApple",
-        "//xplat/js/react-native-github/ReactCommon/runtimeexecutor:runtimeexecutorApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/attributedstring:attributedstringApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/componentregistry:componentregistryApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/text:textApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/textinput/iostextinput:iostextinputApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/scheduler:schedulerApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/textlayoutmanager:textlayoutmanagerApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/runtimeexecutor:runtimeexecutorApple",
     ],
 )
 
 fb_apple_test(
     name = "MountingTestsApple",
-    srcs = ["React/Tests/Mounting/RCTComponentViewRegistryTests.mm"],
+    srcs = ["packages/react-native/React/Tests/Mounting/RCTComponentViewRegistryTests.mm"],
     frameworks = [
         "$PLATFORM_DIR/Developer/Library/Frameworks/XCTest.framework",
     ],
@@ -654,13 +652,13 @@ fb_apple_test(
         ":RCTFabricApple",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBaseApple",
         "//xplat/js/react-native-github:RCTTextApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/attributedstring:attributedstringApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/componentregistry:componentregistryApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/components/textinput/iostextinput:iostextinputApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/scheduler:schedulerApple",
-        "//xplat/js/react-native-github/ReactCommon/react/renderer/textlayoutmanager:textlayoutmanagerApple",
-        "//xplat/js/react-native-github/ReactCommon/runtimeexecutor:runtimeexecutorApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/attributedstring:attributedstringApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/componentregistry:componentregistryApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop:legacyviewmanagerinteropApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/components/textinput/iostextinput:iostextinputApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/scheduler:schedulerApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/react/renderer/textlayoutmanager:textlayoutmanagerApple",
+        "//xplat/js/react-native-github/packages/react-native/ReactCommon/runtimeexecutor:runtimeexecutorApple",
     ],
 )
 
@@ -690,14 +688,14 @@ rn_apple_xplat_cxx_library(
     srcs = glob(REACT_COMPONENTVIEWS_BASE_FILES),
     header_namespace = "",
     exported_headers = {
-        "React/RCTComponentViewProtocol.h": "React/Fabric/Mounting/RCTComponentViewProtocol.h",
-        "React/RCTConversions.h": "React/Fabric/RCTConversions.h",
-        "React/RCTImageComponentView.h": "React/Fabric/Mounting/ComponentViews/Image/RCTImageComponentView.h",
-        "React/RCTImageResponseDelegate.h": "React/Fabric/RCTImageResponseDelegate.h",
-        "React/RCTImageResponseObserverProxy.h": "React/Fabric/RCTImageResponseObserverProxy.h",
-        "React/RCTTouchableComponentViewProtocol.h": "React/Fabric/RCTTouchableComponentViewProtocol.h",
-        "React/RCTViewComponentView.h": "React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.h",
-        "React/UIView+ComponentViewProtocol.h": "React/Fabric/Mounting/UIView+ComponentViewProtocol.h",
+        "React/RCTComponentViewProtocol.h": "packages/react-native/React/Fabric/Mounting/RCTComponentViewProtocol.h",
+        "React/RCTConversions.h": "packages/react-native/React/Fabric/RCTConversions.h",
+        "React/RCTImageComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/Image/RCTImageComponentView.h",
+        "React/RCTImageResponseDelegate.h": "packages/react-native/React/Fabric/RCTImageResponseDelegate.h",
+        "React/RCTImageResponseObserverProxy.h": "packages/react-native/React/Fabric/RCTImageResponseObserverProxy.h",
+        "React/RCTTouchableComponentViewProtocol.h": "packages/react-native/React/Fabric/RCTTouchableComponentViewProtocol.h",
+        "React/RCTViewComponentView.h": "packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.h",
+        "React/UIView+ComponentViewProtocol.h": "packages/react-native/React/Fabric/Mounting/UIView+ComponentViewProtocol.h",
     },
     compiler_flags = ["-Wall"],
     contacts = ["oncall+react_native@xmail.facebook.com"],
@@ -718,20 +716,20 @@ rn_apple_xplat_cxx_library(
 rn_library(
     name = "react-native",
     srcs = [
-        "package.json",
-        "index.js",
+        "packages/react-native/package.json",
+        "packages/react-native/index.js",
     ] + glob(
         [
-            "Libraries/**/*.js",
-            "Libraries/NewAppScreen/**/*.png",
-            "Libraries/LogBox/**/*.png",
+            "packages/react-native/Libraries/**/*.js",
+            "packages/react-native/Libraries/NewAppScreen/**/*.png",
+            "packages/react-native/Libraries/LogBox/**/*.png",
             "packages/virtualized-lists/**/*.js",
             "packages/virtualized-lists/**/*.json",
         ],
         exclude = [
             "**/__*__/**",
             "**/gulpfile.js",
-            "Libraries/Components/Switch/SwitchSchema.js",
+            "packages/react-native/Libraries/Components/Switch/SwitchSchema.js",
             "**/*._reactvr.js",
         ],
     ),
@@ -780,7 +778,7 @@ rn_codegen(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     native_module_spec_name = "FBReactNativeSpec",
-    src_prefix = "Libraries/",
+    src_prefix = "packages/react-native/Libraries/",
 )
 
 # TODO: Merge this into FBReactNativeSpec
@@ -791,26 +789,26 @@ rn_codegen(
     library_labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
-    src_prefix = "Libraries/",
+    src_prefix = "packages/react-native/Libraries/",
 )
 
 rn_apple_library(
     name = "RCTAnimationApple",
     srcs = glob([
-        "Libraries/NativeAnimation/**/*.m",
-        "Libraries/NativeAnimation/**/*.mm",
+        "packages/react-native/Libraries/NativeAnimation/**/*.m",
+        "packages/react-native/Libraries/NativeAnimation/**/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/NativeAnimation/**/*.h",
+            "packages/react-native/Libraries/NativeAnimation/**/*.h",
         ],
     ),
     header_namespace = "",
     exported_headers = glob(
         [
-            "Libraries/NativeAnimation/*.h",
-            "Libraries/NativeAnimation/Drivers/*.h",
-            "Libraries/NativeAnimation/Nodes/*.h",
+            "packages/react-native/Libraries/NativeAnimation/*.h",
+            "packages/react-native/Libraries/NativeAnimation/Drivers/*.h",
+            "packages/react-native/Libraries/NativeAnimation/Nodes/*.h",
         ],
     ),
     autoglob = False,
@@ -852,17 +850,17 @@ rn_apple_library(
 rn_apple_library(
     name = "RCTBlobApple",
     srcs = glob([
-        "Libraries/Blob/*.m",
-        "Libraries/Blob/*.mm",
+        "packages/react-native/Libraries/Blob/*.m",
+        "packages/react-native/Libraries/Blob/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/Blob/*.h",
+            "packages/react-native/Libraries/Blob/*.h",
         ],
     ),
     exported_headers = glob(
         [
-            "Libraries/Blob/*.h",
+            "packages/react-native/Libraries/Blob/*.h",
         ],
     ),
     autoglob = False,
@@ -902,7 +900,7 @@ rn_apple_library(
         "//xplat/js/react-native-github:RCTLinkingApple",
         "//xplat/js/react-native-github:RCTPushNotificationApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        "//xplat/js/react-native-github/packages/react-native/React/CoreModules:CoreModulesApple",
         "//xplat/jsi:jsiApple",
     ],
 )
@@ -910,17 +908,17 @@ rn_apple_library(
 rn_apple_library(
     name = "RCTLinkingApple",
     srcs = glob([
-        "Libraries/LinkingIOS/*.m",
-        "Libraries/LinkingIOS/*.mm",
+        "packages/react-native/Libraries/LinkingIOS/*.m",
+        "packages/react-native/Libraries/LinkingIOS/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/LinkingIOS/*.h",
+            "packages/react-native/Libraries/LinkingIOS/*.h",
         ],
     ),
     exported_headers = glob(
         [
-            "Libraries/LinkingIOS/*.h",
+            "packages/react-native/Libraries/LinkingIOS/*.h",
         ],
     ),
     autoglob = False,
@@ -959,17 +957,17 @@ rn_apple_library(
 rn_apple_library(
     name = "RCTPushNotificationApple",
     srcs = glob([
-        "Libraries/PushNotificationIOS/*.m",
-        "Libraries/PushNotificationIOS/*.mm",
+        "packages/react-native/Libraries/PushNotificationIOS/*.m",
+        "packages/react-native/Libraries/PushNotificationIOS/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/PushNotificationIOS/*.h",
+            "packages/react-native/Libraries/PushNotificationIOS/*.h",
         ],
     ),
     exported_headers = glob(
         [
-            "Libraries/PushNotificationIOS/*.h",
+            "packages/react-native/Libraries/PushNotificationIOS/*.h",
         ],
     ),
     autoglob = False,
@@ -1007,17 +1005,17 @@ rn_apple_library(
 rn_apple_library(
     name = "RCTImageApple",
     srcs = glob([
-        "Libraries/Image/*.m",
-        "Libraries/Image/*.mm",
+        "packages/react-native/Libraries/Image/*.m",
+        "packages/react-native/Libraries/Image/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/Image/*.h",
+            "packages/react-native/Libraries/Image/*.h",
         ],
     ),
     exported_headers = glob(
         [
-            "Libraries/Image/*.h",
+            "packages/react-native/Libraries/Image/*.h",
         ],
     ),
     autoglob = False,
@@ -1089,19 +1087,19 @@ rn_apple_library(
 )
 
 RCTNETWORK_PUBLIC_HEADERS = [
-    "Libraries/Network/RCTNetworkTask.h",
-    "Libraries/Network/RCTNetworking.h",
+    "packages/react-native/Libraries/Network/RCTNetworkTask.h",
+    "packages/react-native/Libraries/Network/RCTNetworking.h",
 ]
 
 rn_apple_library(
     name = "RCTNetworkApple",
     srcs = glob([
-        "Libraries/Network/*.m",
-        "Libraries/Network/*.mm",
+        "packages/react-native/Libraries/Network/*.m",
+        "packages/react-native/Libraries/Network/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/Network/*.h",
+            "packages/react-native/Libraries/Network/*.h",
         ],
         exclude = RCTNETWORK_PUBLIC_HEADERS,
     ),
@@ -1165,12 +1163,12 @@ rn_apple_library(
 rn_apple_library(
     name = "RCTSettingsApple",
     srcs = glob([
-        "Libraries/Settings/*.m",
-        "Libraries/Settings/*.mm",
+        "packages/react-native/Libraries/Settings/*.m",
+        "packages/react-native/Libraries/Settings/*.mm",
     ]),
     exported_headers = glob(
         [
-            "Libraries/Settings/*.h",
+            "packages/react-native/Libraries/Settings/*.h",
         ],
     ),
     autoglob = False,
@@ -1203,47 +1201,47 @@ rn_apple_library(
 rn_apple_xplat_cxx_library(
     name = "RCTText",
     srcs = glob([
-        "Libraries/Text/**/*.m",
-        "Libraries/Text/**/*.mm",
+        "packages/react-native/Libraries/Text/**/*.m",
+        "packages/react-native/Libraries/Text/**/*.mm",
     ]),
     headers = glob(
         [
-            "Libraries/Text/**/*.h",
+            "packages/react-native/Libraries/Text/**/*.h",
         ],
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "Libraries/Text",
+                "packages/react-native/Libraries/Text",
                 "*.h",
             ),
             (
-                "Libraries/Text/BaseText",
+                "packages/react-native/Libraries/Text/BaseText",
                 "*.h",
             ),
             (
-                "Libraries/Text/RawText",
+                "packages/react-native/Libraries/Text/RawText",
                 "*.h",
             ),
             (
-                "Libraries/Text/Text",
+                "packages/react-native/Libraries/Text/Text",
                 "*.h",
             ),
             (
-                "Libraries/Text/TextInput",
+                "packages/react-native/Libraries/Text/TextInput",
                 "*.h",
             ),
             (
-                "Libraries/Text/TextInput/Multiline",
+                "packages/react-native/Libraries/Text/TextInput/Multiline",
                 "*.h",
             ),
             (
-                "Libraries/Text/TextInput/Singleline",
+                "packages/react-native/Libraries/Text/TextInput/Singleline",
                 "*.h",
             ),
             (
-                "Libraries/Text/VirtualText",
+                "packages/react-native/Libraries/Text/VirtualText",
                 "*.h",
             ),
         ],
@@ -1269,12 +1267,12 @@ rn_apple_xplat_cxx_library(
 rn_apple_library(
     name = "RCTVibrationApple",
     srcs = glob([
-        "Libraries/Vibration/**/*.m",
-        "Libraries/Vibration/**/*.mm",
+        "packages/react-native/Libraries/Vibration/**/*.m",
+        "packages/react-native/Libraries/Vibration/**/*.mm",
     ]),
     exported_headers = glob(
         [
-            "Libraries/Vibration/*.h",
+            "packages/react-native/Libraries/Vibration/*.h",
         ],
     ),
     autoglob = False,
@@ -1309,14 +1307,14 @@ rn_apple_library(
 rn_apple_xplat_cxx_library(
     name = "RCTWrapper",
     srcs = glob([
-        "Libraries/Wrapper/*.m",
-        "Libraries/Wrapper/*.mm",
+        "packages/react-native/Libraries/Wrapper/*.m",
+        "packages/react-native/Libraries/Wrapper/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "Libraries/Wrapper",
+                "packages/react-native/Libraries/Wrapper",
                 "*.h",
             ),
         ],
@@ -1341,14 +1339,14 @@ rn_apple_xplat_cxx_library(
 rn_apple_xplat_cxx_library(
     name = "RCTWrapperExample",
     srcs = glob([
-        "Libraries/Wrapper/Example/*.m",
-        "Libraries/Wrapper/Example/*.mm",
+        "packages/react-native/Libraries/Wrapper/Example/*.m",
+        "packages/react-native/Libraries/Wrapper/Example/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "Libraries/Wrapper/Example",
+                "packages/react-native/Libraries/Wrapper/Example",
                 "*.h",
             ),
         ],
@@ -1374,14 +1372,14 @@ rn_apple_xplat_cxx_library(
 rn_apple_xplat_cxx_library(
     name = "RCTSurfaceHostingComponent",
     srcs = glob([
-        "Libraries/SurfaceHostingComponent/**/*.m",
-        "Libraries/SurfaceHostingComponent/**/*.mm",
+        "packages/react-native/Libraries/SurfaceHostingComponent/**/*.m",
+        "packages/react-native/Libraries/SurfaceHostingComponent/**/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "Libraries/SurfaceHostingComponent",
+                "packages/react-native/Libraries/SurfaceHostingComponent",
                 "*.h",
             ),
         ],
@@ -1409,14 +1407,14 @@ rn_apple_xplat_cxx_library(
 rn_apple_xplat_cxx_library(
     name = "RCTSurfaceBackedComponent",
     srcs = glob([
-        "Libraries/SurfaceBackedComponent/**/*.m",
-        "Libraries/SurfaceBackedComponent/**/*.mm",
+        "packages/react-native/Libraries/SurfaceBackedComponent/**/*.m",
+        "packages/react-native/Libraries/SurfaceBackedComponent/**/*.mm",
     ]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             (
-                "Libraries/SurfaceBackedComponent",
+                "packages/react-native/Libraries/SurfaceBackedComponent",
                 "*.h",
             ),
         ],
@@ -1461,13 +1459,13 @@ rn_xplat_cxx_library(
     name = "RCTWebPerformance",
     srcs = glob(
         [
-            "Libraries/WebPerformance/**/*.cpp",
+            "packages/react-native/Libraries/WebPerformance/**/*.cpp",
         ],
-        exclude = ["Libraries/WebPerformance/__tests__/*"],
+        exclude = ["packages/react-native/Libraries/WebPerformance/__tests__/*"],
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
-        [("Libraries/WebPerformance", "*.h")],
+        [("packages/react-native/Libraries/WebPerformance", "*.h")],
         prefix = "RCTWebPerformance",
     ),
     compiler_flags_enable_exceptions = True,

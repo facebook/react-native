@@ -186,7 +186,7 @@ fb_apple_test(
         ":RNTesterIntegrationTestsResourcesApple",
         ":RNTesterResourcesApple",
         "//xplat/js/react-native-github:RCTCxxBridgeApple",
-        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        "//xplat/js/react-native-github/packages/react-native/React/CoreModules:CoreModulesApple",
         rn_js_bundle_dep("//xplat/js/RKJSModules/EntryPoints:RNTesterTestBundle"),
     ],
 )
@@ -289,7 +289,7 @@ rn_apple_library(
         "//xplat/js/react-native-github:RCTLinkingApple",
         "//xplat/js/react-native-github:RCTPushNotificationApple",
         "//xplat/js/react-native-github:ReactInternalApple",
-        "//xplat/js/react-native-github/React/CoreModules:CoreModulesApple",
+        "//xplat/js/react-native-github/packages/react-native/React/CoreModules:CoreModulesApple",
         YOGA_APPLE_TARGET,
     ],
 )

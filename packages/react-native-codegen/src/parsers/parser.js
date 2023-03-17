@@ -211,4 +211,22 @@ export interface Parser {
    * @returns: a boolean specifying if the property is a function type annotation.
    */
   functionTypeAnnotation(propertyValueType: string): boolean;
+
+  /**
+   * Given a declaration, it returns the typeArgumentParams of the declaration.
+   * @parameter declaration: the declaration.
+   * @returns: the typeArgumentParams of the declaration.
+   */
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeArgumentParams and funcArgumentParams it returns a native component type.
+   * @parameter typeArgumentParams: the typeArgumentParams.
+   * @parameter funcArgumentParams: the funcArgumentParams.
+   * @returns: a native component type.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string};
 }

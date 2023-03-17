@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   # Enable codegen for this library
   use_react_native_codegen!(s, {
     :library_name => "MyNativeViewSpec",
-    :react_native_path => "../../../",
+    :react_native_path => "../../react-native",
     :js_srcs_dir => "./js",
     :library_type => "components"
   })

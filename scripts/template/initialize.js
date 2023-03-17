@@ -72,7 +72,7 @@ function install() {
   execSync(
     `node cli.js init ${templateName} --directory ${directory} --template ${templateConfigPath} --verbose --skip-install`,
     {
-      cwd: reactNativeRootPath,
+      cwd: `${reactNativeRootPath}/packages/react-native`,
       stdio: [process.stdin, process.stdout, process.stderr],
     },
   );

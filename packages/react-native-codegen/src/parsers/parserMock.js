@@ -213,4 +213,18 @@ export class MockedParser implements Parser {
   functionTypeAnnotation(propertyValueType: string): boolean {
     return propertyValueType === 'FunctionTypeAnnotation';
   }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeArguments.params;
+  }
+
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].id.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
 }
