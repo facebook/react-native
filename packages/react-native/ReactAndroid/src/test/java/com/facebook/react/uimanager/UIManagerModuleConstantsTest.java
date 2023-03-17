@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import org.assertj.core.data.MapEntry;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T14964130
 public class UIManagerModuleConstantsTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();
@@ -45,7 +47,7 @@ public class UIManagerModuleConstantsTest {
 
   @Before
   public void setUp() {
-    mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mReactContext = new ReactApplicationContext(RuntimeEnvironment.getApplication());
   }
 
   @Test

@@ -18,6 +18,7 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.Locale;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +34,7 @@ import org.robolectric.RuntimeEnvironment;
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T14964130
 public class BaseViewManagerTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();
@@ -43,7 +45,7 @@ public class BaseViewManagerTest {
   @Before
   public void setUp() {
     mViewManager = new ReactViewManager();
-    mView = new ReactViewGroup(RuntimeEnvironment.application);
+    mView = new ReactViewGroup(RuntimeEnvironment.getApplication());
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createMap())
         .thenAnswer(

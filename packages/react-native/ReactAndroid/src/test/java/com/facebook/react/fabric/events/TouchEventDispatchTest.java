@@ -11,8 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -27,7 +27,6 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.events.TouchEvent;
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper;
 import com.facebook.react.uimanager.events.TouchEventType;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +34,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -451,6 +451,8 @@ public class TouchEventDispatchTest {
   List<ReadableMap> mDispatchedEvents;
   FabricEventEmitter mEventEmitter;
 
+  FabricUIManager mUIManager;
+
   @Before
   public void setUp() {
     PowerMockito.mockStatic(Arguments.class);
@@ -478,26 +480,8 @@ public class TouchEventDispatchTest {
     metrics.density = 1f;
     DisplayMetricsHolder.setWindowDisplayMetrics(metrics);
 
-    FabricUIManager fabricUIManager = mock(FabricUIManager.class);
-    mDispatchedEvents = new ArrayList<>();
-    doAnswer(
-            new Answer<Void>() {
-              @Override
-              public Void answer(InvocationOnMock invocation) {
-                mDispatchedEvents.add(invocation.<ReadableMap>getArgument(5));
-                return null;
-              }
-            })
-        .when(fabricUIManager)
-        .receiveEvent(
-            anyInt(),
-            anyInt(),
-            anyString(),
-            anyBoolean(),
-            anyInt(),
-            ArgumentMatchers.<WritableMap>any(),
-            anyInt());
-    mEventEmitter = new FabricEventEmitter(fabricUIManager);
+    mUIManager = Mockito.mock(FabricUIManager.class);
+    mEventEmitter = new FabricEventEmitter(mUIManager);
   }
 
   @Test
@@ -505,8 +489,12 @@ public class TouchEventDispatchTest {
     for (TouchEvent event : mStartMoveEndSequence) {
       event.dispatchModern(mEventEmitter);
     }
+    ArgumentCaptor<WritableMap> argument = ArgumentCaptor.forClass(WritableMap.class);
+    verify(mUIManager, times(4))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt());
 
-    assertEquals(mStartMoveEndExpectedSequence, mDispatchedEvents);
+    assertEquals(mStartMoveEndExpectedSequence, argument.getAllValues());
   }
 
   @Test
@@ -514,8 +502,12 @@ public class TouchEventDispatchTest {
     for (TouchEvent event : mStartMoveCancelSequence) {
       event.dispatchModern(mEventEmitter);
     }
+    ArgumentCaptor<WritableMap> argument = ArgumentCaptor.forClass(WritableMap.class);
+    verify(mUIManager, times(6))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt());
 
-    assertEquals(mStartMoveCancelExpectedSequence, mDispatchedEvents);
+    assertEquals(mStartMoveCancelExpectedSequence, argument.getAllValues());
   }
 
   @Test
@@ -523,8 +515,12 @@ public class TouchEventDispatchTest {
     for (TouchEvent event : mStartPointerMoveUpSequence) {
       event.dispatchModern(mEventEmitter);
     }
+    ArgumentCaptor<WritableMap> argument = ArgumentCaptor.forClass(WritableMap.class);
+    verify(mUIManager, times(6))
+        .receiveEvent(
+            anyInt(), anyInt(), anyString(), anyBoolean(), anyInt(), argument.capture(), anyInt());
 
-    assertEquals(mStartPointerMoveUpExpectedSequence, mDispatchedEvents);
+    assertEquals(mStartPointerMoveUpExpectedSequence, argument.getAllValues());
   }
 
   private TouchEvent createTouchEvent(

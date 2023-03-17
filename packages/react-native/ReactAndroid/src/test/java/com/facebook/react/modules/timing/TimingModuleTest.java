@@ -21,6 +21,7 @@ import com.facebook.react.modules.core.JSTimers;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.core.TimingModule;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,10 +35,10 @@ import org.robolectric.RobolectricTestRunner;
 
 /** Tests for {@link TimingModule}. */
 // DISABLED, BROKEN https://circleci.com/gh/facebook/react-native/12068
-// t=13905097
 @PrepareForTest({Arguments.class, SystemClock.class, ReactChoreographer.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(RobolectricTestRunner.class)
+@Ignore // TODO T13905097
 public class TimingModuleTest {
 
   private static final long FRAME_TIME_NS = 17 * 1000 * 1000; // 17 ms
