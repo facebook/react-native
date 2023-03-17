@@ -1148,7 +1148,7 @@ jobs:
   # Collect JavaScript test coverage
   js_coverage:
     executor: nodelts
-    environment: p
+    environment:
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
       - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
