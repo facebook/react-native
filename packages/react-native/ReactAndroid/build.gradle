@@ -647,6 +647,17 @@ android {
             includeBuildTypeValues('debug', 'release')
         }
     }
+
+    testOptions {
+        unitTests.all {
+            // Robolectric tests are downloading JARs at runtime. This allows to specify
+            // a local file mirror with REACT_NATIVE_ROBOLECTRIC_MIRROR to go in offline more.
+            if (System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR") != null) {
+                systemProperty 'robolectric.offline', 'true'
+                systemProperty 'robolectric.dependency.dir', System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR")
+            }
+        }
+    }
 }
 
 dependencies {
