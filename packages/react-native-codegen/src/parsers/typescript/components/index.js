@@ -13,8 +13,6 @@ import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-import {propertyNames} from '../../parsers-commons';
-
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
@@ -25,6 +23,7 @@ const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 const {
   createComponentConfig,
   findNativeComponentType,
+  propertyNames,
 } = require('../../parsers-commons');
 
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
