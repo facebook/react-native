@@ -1143,31 +1143,6 @@ jobs:
                 command: ./gradlew.bat packages:rn-tester:android:app:assembleRelease
 
   # -------------------------
-  #      JOBS: Coverage
-  # -------------------------
-  # Collect JavaScript test coverage
-  js_coverage:
-    executor: nodelts
-    environment:
-      - CI_BRANCH: $CIRCLE_BRANCH
-      - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
-      - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
-      - CI_BUILD_URL: $CIRCLE_BUILD_URL
-    steps:
-      - checkout
-      - setup_artifacts
-      - run_yarn
-      - run:
-          name: Collect test coverage information
-          command: |
-            scripts/circleci/exec_swallow_error.sh yarn test --coverage --maxWorkers=2
-            if [[ -e ./coverage/lcov.info ]]; then
-              cat ./coverage/lcov.info | scripts/circleci/exec_swallow_error.sh ./node_modules/.bin/coveralls
-            fi
-      - store_artifacts:
-          path: ~/react-native/coverage/
-
-  # -------------------------
   #      JOBS: Build Hermes
   # -------------------------
   prepare_hermes_workspace:
@@ -1976,9 +1951,6 @@ workflows:
 
       # Run code checks on PRs
       - analyze_pr
-
-      # Gather coverage
-      - js_coverage
 
   nightly:
     when: << pipeline.parameters.run_nightly_workflow >>
