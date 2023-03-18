@@ -26,8 +26,6 @@ const nodeFiles = new RegExp(
 );
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
-babelRegisterOnly([]);
-
 const transformer = require('metro-react-native-babel-transformer');
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
