@@ -23,7 +23,7 @@
 
 #if RCT_DEV
 
-#import <React/RCTSRWebSocket.h>
+#import <SocketRocket/SRWebSocket.h>
 
 @interface RCTPackagerConnection () <RCTReconnectingWebSocketDelegate>
 @end

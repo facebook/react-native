@@ -22,7 +22,7 @@
   "dependencies": {
     "chalk": "^3",
     "find-up": "^4.1.0",
-    "npm-registry": "^0.1.13",
+    "npm-registry-fetch": "^14.0.0",
     "prompts": "^2.3.0",
     "semver": "^7.1.3",
     "valid-url": "^1.0.9",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
+    "@types/npm-registry-fetch": "^8.0.0",
     "@types/prompts": "^2.0.3",
     "@types/semver": "^7.1.0",
     "@types/valid-url": "^1.0.2",

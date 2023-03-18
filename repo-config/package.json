@@ -22,7 +22,6 @@
     "async": "^3.2.2",
     "clang-format": "^1.8.0",
     "connect": "^3.6.5",
-    "coveralls": "^3.1.1",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-babel": "^5.3.1",

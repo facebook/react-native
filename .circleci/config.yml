@@ -1063,9 +1063,6 @@ jobs:
           name: Collect test coverage information
           command: |
             scripts/circleci/exec_swallow_error.sh yarn test --coverage --maxWorkers=2
-            if [[ -e ./coverage/lcov.info ]]; then
-              cat ./coverage/lcov.info | scripts/circleci/exec_swallow_error.sh ./node_modules/.bin/coveralls
-            fi
       - store_artifacts:
           path: ~/react-native/coverage/
 
