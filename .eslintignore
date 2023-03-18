@@ -6,9 +6,5 @@ Libraries/Renderer/*
 Libraries/vendor/**/*
 node_modules/
 packages/*/node_modules
-packages/*/lib
-packages/*/lib-commonjs
-bots/node_modules
-android-patches/
 packages/react-native-codegen/lib
 tools/eslint/rules/sort-imports.js

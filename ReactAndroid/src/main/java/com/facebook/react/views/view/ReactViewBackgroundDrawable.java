@@ -671,22 +671,30 @@ public class ReactViewBackgroundDrawable extends Drawable {
     mCenterDrawPath.addRoundRect(
         mTempRectForCenterDrawPath,
         new float[] {
-          Math.max(topLeftRadius - borderWidth.left * 0.5f,
-            (borderWidth.left > 0.0f) ? (topLeftRadius / borderWidth.left) : 0.0f),
-          Math.max(topLeftRadius - borderWidth.top * 0.5f,
-            (borderWidth.top > 0.0f) ? (topLeftRadius / borderWidth.top) : 0.0f),
-          Math.max(topRightRadius - borderWidth.right * 0.5f,
-            (borderWidth.right > 0.0f) ? (topRightRadius / borderWidth.right) : 0.0f),
-          Math.max(topRightRadius - borderWidth.top * 0.5f,
-            (borderWidth.top > 0.0f) ? (topRightRadius / borderWidth.top) : 0.0f),
-          Math.max(bottomRightRadius - borderWidth.right * 0.5f,
-            (borderWidth.right > 0.0f) ? (bottomRightRadius / borderWidth.right) : 0.0f),
-          Math.max(bottomRightRadius - borderWidth.bottom * 0.5f,
-            (borderWidth.bottom > 0.0f) ? (bottomRightRadius / borderWidth.bottom) : 0.0f),
-          Math.max(bottomLeftRadius - borderWidth.left * 0.5f,
-            (borderWidth.left > 0.0f) ? (bottomLeftRadius / borderWidth.left) : 0.0f),
-          Math.max(bottomLeftRadius - borderWidth.bottom * 0.5f,
-            (borderWidth.bottom > 0.0f) ? (bottomLeftRadius / borderWidth.bottom) : 0.0f)
+          Math.max(
+              topLeftRadius - borderWidth.left * 0.5f,
+              (borderWidth.left > 0.0f) ? (topLeftRadius / borderWidth.left) : 0.0f),
+          Math.max(
+              topLeftRadius - borderWidth.top * 0.5f,
+              (borderWidth.top > 0.0f) ? (topLeftRadius / borderWidth.top) : 0.0f),
+          Math.max(
+              topRightRadius - borderWidth.right * 0.5f,
+              (borderWidth.right > 0.0f) ? (topRightRadius / borderWidth.right) : 0.0f),
+          Math.max(
+              topRightRadius - borderWidth.top * 0.5f,
+              (borderWidth.top > 0.0f) ? (topRightRadius / borderWidth.top) : 0.0f),
+          Math.max(
+              bottomRightRadius - borderWidth.right * 0.5f,
+              (borderWidth.right > 0.0f) ? (bottomRightRadius / borderWidth.right) : 0.0f),
+          Math.max(
+              bottomRightRadius - borderWidth.bottom * 0.5f,
+              (borderWidth.bottom > 0.0f) ? (bottomRightRadius / borderWidth.bottom) : 0.0f),
+          Math.max(
+              bottomLeftRadius - borderWidth.left * 0.5f,
+              (borderWidth.left > 0.0f) ? (bottomLeftRadius / borderWidth.left) : 0.0f),
+          Math.max(
+              bottomLeftRadius - borderWidth.bottom * 0.5f,
+              (borderWidth.bottom > 0.0f) ? (bottomLeftRadius / borderWidth.bottom) : 0.0f)
         },
         Path.Direction.CW);
 

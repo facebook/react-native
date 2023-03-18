@@ -841,7 +841,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "keyboardType")
   public void setKeyboardType(ReactEditText view, @Nullable String keyboardType) {
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
-    boolean unsettingFlagsBreaksAutocomplete = false;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
     } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {

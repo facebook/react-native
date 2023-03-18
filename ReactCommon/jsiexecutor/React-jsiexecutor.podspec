@@ -39,7 +39,6 @@ Pod::Spec.new do |s|
   s.dependency "React-jsidynamic", version
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
-  s.dependency "React-perflogger", version
   s.dependency "DoubleConversion"
   s.dependency "glog"
 end
