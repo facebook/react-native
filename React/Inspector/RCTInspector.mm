@@ -14,7 +14,6 @@
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
 #import <React/RCTLog.h>
-#import <React/RCTSRWebSocket.h>
 #import <React/RCTUtils.h>
 
 using namespace facebook::react;

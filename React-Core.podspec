@@ -18,6 +18,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.06.28.00-v2'
+socket_rocket_version = '0.6.0'
 boost_compiler_flags = '-Wno-documentation'
 
 header_subspecs = {
@@ -104,6 +105,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "SocketRocket", socket_rocket_version
   s.dependency "Yoga"
   s.dependency "glog"
 end

@@ -305,7 +305,6 @@ REACT_PUBLIC_HEADERS = {
     "React/RCTRootShadowView.h": RCTVIEWS_PATH + "RCTRootShadowView.h",
     "React/RCTRootView.h": RCTBASE_PATH + "RCTRootView.h",
     "React/RCTRootViewDelegate.h": RCTBASE_PATH + "RCTRootViewDelegate.h",
-    "React/RCTSRWebSocket.h": RCTLIB_PATH + "WebSocket/RCTSRWebSocket.h",
     "React/RCTScrollEvent.h": RCTVIEWS_PATH + "ScrollView/RCTScrollEvent.h",
     "React/RCTScrollView.h": RCTVIEWS_PATH + "ScrollView/RCTScrollView.h",
     "React/RCTScrollableProtocol.h": RCTVIEWS_PATH + "ScrollView/RCTScrollableProtocol.h",
@@ -445,6 +444,7 @@ rn_xplat_cxx_library2(
     ],
     deps = [
         YOGA_CXX_TARGET,
+        "//fbobjc/VendorLib/SocketRocket:SocketRocket",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
