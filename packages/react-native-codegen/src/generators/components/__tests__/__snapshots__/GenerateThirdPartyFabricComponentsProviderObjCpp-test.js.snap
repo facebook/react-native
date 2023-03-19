@@ -58,6 +58,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"Int32EnumPropsNativeComponent\\", Int32EnumPropsNativeComponentCls}, // INT32_ENUM_PROP
 
+    {\\"MixedPropNativeComponent\\", MixedPropNativeComponentCls}, // MIXED_PROP
+
     {\\"EventsNativeComponent\\", EventsNativeComponentCls}, // EVENT_PROPS
 
     {\\"InterfaceOnlyComponent\\", InterfaceOnlyComponentCls}, // EVENTS_WITH_PAPER_NAME

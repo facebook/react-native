@@ -676,6 +676,8 @@ function generateStruct(
         }
         generateStruct(structs, componentName, nameParts.concat([name]), props);
         return;
+      case 'MixedTypeAnnotation':
+        return;
       default:
         (property.typeAnnotation.type: empty);
         throw new Error(
