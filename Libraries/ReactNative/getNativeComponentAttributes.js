@@ -18,7 +18,6 @@ const invariant = require('invariant');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const processColor = require('../StyleSheet/processColor');
 const processColorArray = require('../StyleSheet/processColorArray');
-const processTransform = require('../StyleSheet/processTransform');
 const resolveAssetSource = require('../Image/resolveAssetSource');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
 const transformsDiffer = require('../Utilities/differ/transformsDiffer');

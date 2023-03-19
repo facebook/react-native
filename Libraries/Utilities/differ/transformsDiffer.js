@@ -10,10 +10,18 @@
 'use strict';
 
 const transformsDiffer = function(one, two) {
-  return one !== two ||
-    !one || !two ||
+  if (one === two) {
+    return false;
+  }
+  return (
+    !one ||
+    !two ||
     one.length !== two.length ||
-    JSON.stringify(one) !== JSON.stringify(two);
+    // Transform arrays are non-commutative (eg: "translate" operations 
+    // affect "scale" operations). Using JSON.stringify is the lightest 
+    // way to check both order and values, and it's pretty fast.
+    JSON.stringify(one) !== JSON.stringify(two)
+  );
 };
 
 module.exports = transformsDiffer;
