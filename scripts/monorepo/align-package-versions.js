@@ -15,7 +15,10 @@ const checkForGitChanges = require('./check-for-git-changes');
 const forEachPackage = require('./for-each-package');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
-const TEMPLATE_LOCATION = path.join(ROOT_LOCATION, 'template');
+const TEMPLATE_LOCATION = path.join(
+  ROOT_LOCATION,
+  'packages/react-native/template',
+);
 
 const readJSONFile = pathToFile => JSON.parse(readFileSync(pathToFile));
 
