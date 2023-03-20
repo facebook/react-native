@@ -137,7 +137,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     image = [image resizableImageWithCapInsets:_capInsets resizingMode:UIImageResizingModeStretch];
   }
 
-  // Apply trilinear filtering to smooth out mis-sized images
+  // Apply trilinear filtering to smooth out missized images
   _imageView.layer.minificationFilter = kCAFilterTrilinear;
   _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 

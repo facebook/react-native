@@ -190,10 +190,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
-    // Set defult layoutParams to avoid NullPointerException to be thrown by Android EditTextView
+    // Set default layoutParams to avoid NullPointerException to be thrown by Android EditTextView
     // when update props (PlaceHolder) is executed before the view is layout.
     // This change should not affect layout for TextInput components because layout will be
-    // overriden on the first RN commit.
+    // overridden on the first RN commit.
     editText.setLayoutParams(
         new ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -871,7 +871,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
-      // This will supercede secureTextEntry={false}. If it doesn't, due to the way
+      // This will supersede secureTextEntry={false}. If it doesn't, due to the way
       //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     } else if (KEYBOARD_TYPE_URI.equalsIgnoreCase(keyboardType)) {

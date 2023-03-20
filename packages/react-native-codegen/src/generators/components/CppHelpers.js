@@ -200,6 +200,8 @@ function convertDefaultTypeToString(
         prop.name,
         typeAnnotation.default,
       )}`;
+    case 'MixedTypeAnnotation':
+      return '';
     default:
       (typeAnnotation: empty);
       throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);

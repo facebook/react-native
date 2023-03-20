@@ -206,7 +206,7 @@ void JSIExecutor::registerBundle(
 // Looping on \c drainMicrotasks until it completes or hits the retries bound.
 static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
   uint8_t retries = 0;
-  // A heuristic number to guard inifinite or absurd numbers of retries.
+  // A heuristic number to guard infinite or absurd numbers of retries.
   const static unsigned int kRetriesBound = 255;
 
   while (retries < kRetriesBound) {

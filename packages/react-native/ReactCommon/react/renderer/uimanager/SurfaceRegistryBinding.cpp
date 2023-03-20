@@ -17,12 +17,12 @@ void SurfaceRegistryBinding::startSurface(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps,
+    folly::dynamic const &initialProps,
     DisplayMode displayMode) {
   SystraceSection s("SurfaceRegistryBinding::startSurface");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
-  parameters["initialProps"] = initalProps;
+  parameters["initialProps"] = initialProps;
   parameters["fabric"] = true;
 
   auto global = runtime.global();
@@ -70,12 +70,12 @@ void SurfaceRegistryBinding::setSurfaceProps(
     jsi::Runtime &runtime,
     SurfaceId surfaceId,
     std::string const &moduleName,
-    folly::dynamic const &initalProps,
+    folly::dynamic const &initialProps,
     DisplayMode displayMode) {
   SystraceSection s("UIManagerBinding::setSurfaceProps");
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
-  parameters["initialProps"] = initalProps;
+  parameters["initialProps"] = initialProps;
   parameters["fabric"] = true;
 
   auto global = runtime.global();

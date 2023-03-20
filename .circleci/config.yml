@@ -1510,9 +1510,9 @@ jobs:
 
             cp -r $HERMES_WS_DIR/win64-bin/* ./packages/react-native/sdks/hermesc/win64-bin/.
             cp -r $HERMES_WS_DIR/linux64-bin/* ./packages/react-native/sdks/hermesc/linux64-bin/.
-            mkdir -p ./ReactAndroid/external-artifacts/artifacts/
-            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
-            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
+            mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
+            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
+            cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
 
       - run_yarn
       - download_gradle_dependencies

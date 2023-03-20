@@ -20,7 +20,7 @@
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility
+              sizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility
 {
   if ((self = [super initWithFrame:frame])) {
     _bridge = bridge;

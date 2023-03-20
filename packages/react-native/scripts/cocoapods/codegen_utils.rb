@@ -233,7 +233,7 @@ class CodegenUtils
       file_manager: File
       )
       if !app_path
-        Pod::UI.warn '[Codegen] error: app_path is requried to use codegen discovery.'
+        Pod::UI.warn '[Codegen] error: app_path is required to use codegen discovery.'
         abort
       end
 

@@ -1123,6 +1123,35 @@ const INT32_ENUM_PROP: SchemaType = {
   },
 };
 
+const MIXED_PROP: SchemaType = {
+  modules: {
+    CustomView: {
+      type: 'Component',
+      components: {
+        MixedPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'mixedProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'MixedTypeAnnotation',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const EVENT_PROPS: SchemaType = {
   modules: {
     Switch: {
@@ -1701,6 +1730,7 @@ module.exports = {
   MULTI_NATIVE_PROP,
   STRING_ENUM_PROP,
   INT32_ENUM_PROP,
+  MIXED_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,

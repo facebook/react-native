@@ -53,7 +53,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   //   2) Update `onUpdateRef`.
   //   3) Update listeners for `AnimatedEvent` props.
   //
-  // Ideally, each of these would be separat "effects" so that they are not
+  // Ideally, each of these would be separate "effects" so that they are not
   // unnecessarily re-run when irrelevant dependencies change. For example, we
   // should be able to hoist all `AnimatedEvent` props and only do #3 if either
   // the `AnimatedEvent` props change or `instance` changes.

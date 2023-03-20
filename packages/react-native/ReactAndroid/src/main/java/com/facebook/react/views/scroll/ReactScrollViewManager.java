@@ -89,8 +89,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @ReactProp(name = "disableIntervalMomentum")
-  public void setDisableIntervalMomentum(ReactScrollView view, boolean disbaleIntervalMomentum) {
-    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
+  public void setDisableIntervalMomentum(ReactScrollView view, boolean disableIntervalMomentum) {
+    view.setDisableIntervalMomentum(disableIntervalMomentum);
   }
 
   @ReactProp(name = "snapToInterval")

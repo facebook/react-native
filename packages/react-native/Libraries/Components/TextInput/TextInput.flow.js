@@ -556,7 +556,7 @@ export type Props = $ReadOnly<{|
    * On Android devices manufactured by Xiaomi with Android Q,
    * when keyboardType equals 'email-address'this will be set
    * in native to 'true' to prevent a system related crash. This
-   * will cause cursor to be diabled as a side-effect.
+   * will cause cursor to be disabled as a side-effect.
    *
    */
   caretHidden?: ?boolean,

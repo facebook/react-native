@@ -13,7 +13,7 @@
 @class RCTViewRegistry;
 
 /**
- RCTBridgeModuleDecorator contains instances that can be intialized with @synthesize
+ RCTBridgeModuleDecorator contains instances that can be initialized with @synthesize
  in RCTBridgeModules. For the Fabric interop layer.
 
  In Bridgeless, @synthesize ivars are passed from RCTBridgeModuleDecorator.

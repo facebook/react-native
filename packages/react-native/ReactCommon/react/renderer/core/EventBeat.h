@@ -77,7 +77,7 @@ class EventBeat {
 
  protected:
   /*
-   * Should be used by sublasses to send a beat.
+   * Should be used by subclasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
   void beat(jsi::Runtime &runtime) const;

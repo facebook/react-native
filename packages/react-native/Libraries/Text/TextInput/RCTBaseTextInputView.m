@@ -22,7 +22,7 @@
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
   __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
-  BOOL _hasInputAccesoryView;
+  BOOL _hasInputAccessoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
 }
@@ -626,18 +626,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
       textInputView.returnKeyType == UIReturnKeyDone;
 
-  if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
+  if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
   }
 
-  _hasInputAccesoryView = shouldHaveInputAccesoryView;
+  _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
-  if (shouldHaveInputAccesoryView) {
+  if (shouldHaveInputAccessoryView) {
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =

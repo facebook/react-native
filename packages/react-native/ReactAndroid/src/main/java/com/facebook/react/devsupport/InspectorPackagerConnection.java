@@ -157,7 +157,7 @@ public class InspectorPackagerConnection {
       jsonPage.put("title", page.getTitle());
       jsonPage.put("app", mPackageName);
       jsonPage.put("vm", page.getVM());
-      jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSucess);
+      jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSuccess);
       jsonPage.put("bundleUpdateTimestamp", bundleStatus.updateTimestamp);
       array.put(jsonPage);
     }
@@ -319,11 +319,11 @@ public class InspectorPackagerConnection {
   }
 
   public static class BundleStatus {
-    public Boolean isLastDownloadSucess;
+    public Boolean isLastDownloadSuccess;
     public long updateTimestamp = -1;
 
-    public BundleStatus(Boolean isLastDownloadSucess, long updateTimestamp) {
-      this.isLastDownloadSucess = isLastDownloadSucess;
+    public BundleStatus(Boolean isLastDownloadSuccess, long updateTimestamp) {
+      this.isLastDownloadSuccess = isLastDownloadSuccess;
       this.updateTimestamp = updateTimestamp;
     }
 

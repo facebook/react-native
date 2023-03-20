@@ -31,7 +31,7 @@ import com.facebook.react.bridge.ReadableMap;
   /**
    * This method will get called when some of the configuration gets updated while the animation is
    * running. In that case animation should restart keeping its internal state to provide a smooth
-   * transision. E.g. in case of a spring animation we want to keep the current value and speed and
+   * transition. E.g. in case of a spring animation we want to keep the current value and speed and
    * start animating with the new properties (different destination or spring settings)
    */
   public void resetConfig(ReadableMap config) {

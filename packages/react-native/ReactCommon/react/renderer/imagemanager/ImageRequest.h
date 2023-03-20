@@ -86,7 +86,7 @@ class ImageRequest final {
   std::shared_ptr<const ImageTelemetry> telemetry_{};
 
   /*
-   * Event coordinator associated with the reqest.
+   * Event coordinator associated with the request.
    */
   std::shared_ptr<const ImageResponseObserverCoordinator> coordinator_{};
 

@@ -64,7 +64,7 @@ let devToolsAgent: ?Agent;
 
 export default function TraceUpdateOverlay(): React.Node {
   const [overlayDisabled, setOverlayDisabled] = useState(false);
-  // This effect is designed to be explictly shown here to avoid re-subscribe from the same
+  // This effect is designed to be explicitly shown here to avoid re-subscribe from the same
   // overlay component.
   useEffect(() => {
     if (!isNativeComponentReady) {
