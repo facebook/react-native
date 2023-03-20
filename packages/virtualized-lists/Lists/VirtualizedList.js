@@ -24,6 +24,8 @@ import type {
 } from './VirtualizedListProps';
 import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 
+import Keyboard from '../Components/Keyboard/Keyboard';
+import Platform from '../Utilities/Platform';
 import {
   I18nManager,
   Platform,
@@ -697,6 +699,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         cellKey: this.context.cellKey,
       });
     }
+
+    this._addAndroidKeyboardListener();
   }
 
   componentWillUnmount() {
@@ -708,6 +712,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
+
+    if (this._androidKeyboardListener) {
+      this._androidKeyboardListener.remove();
+    }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
@@ -1195,6 +1203,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
+  // On Android, we listen to keyboard opens and ignore layout events that
+  // shrink the height shortly after.
+  _androidKeyboardListener = null;
+  // The height the list would have if the keyboard were open. We avoid setting
+  // the `visibleLength` to this to prevent the keyboard opening causing the
+  // list to render fewer items and shifting around on Android.
+  _androidKeyboardOpenVisibleLength: ?number = null;
+  _averageCellLength = 0;
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
   _fillRateHelper: FillRateHelper;
   _listMetrics: ListMetricsAggregator = new ListMetricsAggregator();
@@ -1226,6 +1242,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     offset: 0,
     timestamp: 0,
     velocity: 0,
+    // Whenever  you're setting `visibleLength`, make sure to call
+    // `this._adjustVisibleLength` on the value you're setting it to
     visibleLength: 0,
     zoomScale: 1,
   };
@@ -1360,7 +1378,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             this._scrollMetrics.offset !== scrollMetrics.offset;
 
           if (metricsChanged) {
-            this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
+            this._scrollMetrics.visibleLength = this._adjustVisibleLength(
+              scrollMetrics.visibleLength,
+            );
             this._scrollMetrics.offset = scrollMetrics.offset;
 
             // If metrics of the scrollView changed, then we triggered remeasure for child list
@@ -1391,8 +1411,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       // VirtualizedList before we can make claims about list item viewability
       this.measureLayoutRelativeToContainingList();
     } else {
-      this._scrollMetrics.visibleLength = this._selectLength(
-        e.nativeEvent.layout,
+      this._scrollMetrics.visibleLength = this._adjustVisibleLength(
+        this._selectLength(e.nativeEvent.layout)
       );
     }
     this.props.onLayout && this.props.onLayout(e);
@@ -1712,7 +1732,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       offset,
       timestamp,
       velocity,
-      visibleLength,
+      visibleLength: this._adjustVisibleLength(visibleLength),
       zoomScale,
     };
     if (this.state.pendingScrollUpdateCount > 0) {
@@ -1980,6 +2000,37 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
     });
   }
+
+  _addAndroidKeyboardListener = () => {
+    if (Platform.OS === 'android' && !this._androidKeyboardListener) {
+      this._androidKeyboardListener = Keyboard.addListener(
+        'keyboardDidShow',
+        event => {
+          this._androidKeyboardOpenVisibleLength =
+            this._scrollMetrics.visibleLength - event.endCoordinates.height;
+        },
+      );
+    }
+  };
+
+  // When setting the `_scrollMetrics.visibleLength`, use this function to
+  // avoid setting the `visibleLength` to a shorter value when the keyboard is
+  // open on Android.
+  //
+  // This prevents the layout from shifting after closing the keyboard on
+  // for certain lists on Android, where `getItemLayout` returns heights and
+  // offsets that don't match the items' actual heights and offsets.
+  _adjustVisibleLength = visibleLength => {
+    if (this._androidKeyboardOpenVisibleLength) {
+      const isCloseToKeyboardOpenVisibleLength =
+        Math.abs(visibleLength - this._androidKeyboardOpenVisibleLength) < 10;
+      if (isCloseToKeyboardOpenVisibleLength) {
+        return this._scrollMetrics.visibleLength;
+      }
+    }
+
+    return visibleLength;
+  };
 }
 
 const styles = StyleSheet.create({
