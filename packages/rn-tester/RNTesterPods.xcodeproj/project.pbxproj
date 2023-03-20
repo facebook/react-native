@@ -101,6 +101,7 @@
 		6144DEEE56C6C17B301A90E4 /* libPods-RNTesterUnitTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTesterUnitTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FC437025B5EE3899315628B /* Pods-RNTester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.release.xcconfig"; path = "Target Support Files/Pods-RNTester/Pods-RNTester.release.xcconfig"; sourceTree = "<group>"; };
 		8145AE05241172D900A3F8DA /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNTester/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = RNTester.xctestplan; path = RNTester/RNTester.xctestplan; sourceTree = "<group>"; };
 		B8219B8DAB1CDD38543E30A4 /* Pods-RNTesterUnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		BD6F35F6C79ACF7496CBC337 /* Pods-RNTesterIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-RNTesterIntegrationTests/Pods-RNTesterIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		C4CEC47A71A2AEE236833CDF /* Pods-RNTesterUnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTesterUnitTests.debug.xcconfig"; path = "Target Support Files/Pods-RNTesterUnitTests/Pods-RNTesterUnitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -225,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				0CC3BE1A25DDB68A0033CAEB /* RNTester.entitlements */,
+				AC474BFB29BBD4A1002BDAED /* RNTester.xctestplan */,
 				E771AEEA22B44E3100EA1189 /* Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5C60EB1B226440DB0018C04F /* AppDelegate.mm */,
