@@ -3419,6 +3419,23 @@ function mountSafeCallback_NOT_REALLY_SAFE(context, callback) {
     return callback.apply(context, arguments);
   };
 }
+function warnForStyleProps(props, validAttributes) {
+  {
+    for (var key in validAttributes.style) {
+      if (!(validAttributes[key] || props[key] === undefined)) {
+        error(
+          "You are setting the style `{ %s" +
+            ": ... }` as a prop. You " +
+            "should nest it in a style object. " +
+            "E.g. `{ style: { %s" +
+            ": ... } }`",
+          key,
+          key
+        );
+      }
+    }
+  }
+}
 
 // Modules provided by RN:
 var emptyObject = {};
@@ -5100,7 +5117,8 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   FabricDefaultPriority = _nativeFabricUIManage.unstable_DefaultEventPriority,
   FabricDiscretePriority = _nativeFabricUIManage.unstable_DiscreteEventPriority,
   fabricGetCurrentEventPriority =
-    _nativeFabricUIManage.unstable_getCurrentEventPriority;
+    _nativeFabricUIManage.unstable_getCurrentEventPriority,
+  _setNativeProps = _nativeFabricUIManage.setNativeProps;
 var getViewConfigForType =
   ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get; // Counter for uniquely identifying views.
 // % 10 === 1 means it is a rootTag.
@@ -5199,10 +5217,15 @@ var ReactFabricHostComponent = /*#__PURE__*/ (function() {
 
   _proto.setNativeProps = function setNativeProps(nativeProps) {
     {
-      error("Warning: setNativeProps is not currently supported in Fabric");
+      warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }
 
-    return;
+    var updatePayload = create(nativeProps, this.viewConfig.validAttributes);
+    var stateNode = this._internalInstanceHandle.stateNode;
+
+    if (stateNode != null && updatePayload != null) {
+      _setNativeProps(stateNode.node, updatePayload);
+    }
   }; // This API (addEventListener, removeEventListener) attempts to adhere to the
   // w3 Level2 Events spec as much as possible, treating HostComponent as a DOM node.
   //
