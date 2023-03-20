@@ -24,6 +24,7 @@ fileList.forEach(file => {
     const dirFiles = glob
       .sync(`${file}/**/*.{js,ts,tsx}`, {
         nodir: true,
+        windowsPathsNoEscape: true,
       })
       .filter(element => filterJSFile(element, platform));
     allFiles.push(...dirFiles);
