@@ -13,7 +13,7 @@ module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
       '<rootDir>/packages/react-native/jest/assetFileTransformer.js',
-    '.*': './packages/react-native/jest/private/preprocessor.js',
+    '.*': './jest/preprocessor.js',
   },
   setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
