@@ -1922,6 +1922,7 @@ var _nativeFabricUIManage = nativeFabricUIManager,
   FabricDiscretePriority = _nativeFabricUIManage.unstable_DiscreteEventPriority,
   fabricGetCurrentEventPriority =
     _nativeFabricUIManage.unstable_getCurrentEventPriority,
+  _setNativeProps = _nativeFabricUIManage.setNativeProps,
   getViewConfigForType =
     ReactNativePrivateInterface.ReactNativeViewConfigRegistry.get,
   nextReactTag = 2;
@@ -1979,7 +1980,18 @@ var ReactFabricHostComponent = (function() {
         );
     }
   };
-  _proto.setNativeProps = function() {};
+  _proto.setNativeProps = function(nativeProps) {
+    nativeProps = diffProperties(
+      null,
+      emptyObject,
+      nativeProps,
+      this.viewConfig.validAttributes
+    );
+    var stateNode = this._internalInstanceHandle.stateNode;
+    null != stateNode &&
+      null != nativeProps &&
+      _setNativeProps(stateNode.node, nativeProps);
+  };
   _proto.addEventListener_unstable = function(eventType, listener, options) {
     if ("string" !== typeof eventType)
       throw Error("addEventListener_unstable eventType must be a string");
