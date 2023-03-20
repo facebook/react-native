@@ -188,7 +188,7 @@ type Props = $ReadOnly<{|
    */
   unstable_pressDelay?: ?number,
   /**
-   * Web to Native Accessibilty props
+   * Web to Native Accessibility props
    * https://github.com/facebook/react-native/issues/34424
    */
   'aria-label'?: ?string,

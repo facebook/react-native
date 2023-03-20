@@ -283,7 +283,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _contentView = [[RCTRootContentView alloc] initWithFrame:self.bounds
                                                     bridge:bridge
                                                   reactTag:self.reactTag
-                                            sizeFlexiblity:_sizeFlexibility];
+                                           sizeFlexibility:_sizeFlexibility];
   [self runApplication:bridge];
 
   _contentView.passThroughTouches = _passThroughTouches;

@@ -180,7 +180,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       return getValue(FABRIC_UPDATE_UI_MAIN_THREAD_END);
     }
 
-    // Duration calcuations
+    // Duration calculations
     public long getCommitDuration() {
       return getCommitEnd() - getCommitStart();
     }

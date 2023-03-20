@@ -48,7 +48,7 @@ declare class EventSubscriptionVendor {
    * Removes a bulk set of the subscriptions.
    *
    * @param eventType - Optional name of the event type whose
-   *   registered supscriptions to remove, if null remove all subscriptions.
+   *   registered subscriptions to remove, if null remove all subscriptions.
    */
   removeAllSubscriptions(eventType?: string): void;
 

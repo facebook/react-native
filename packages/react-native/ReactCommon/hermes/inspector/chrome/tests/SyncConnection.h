@@ -49,8 +49,8 @@ class SyncConnection {
       std::chrono::milliseconds timeout = std::chrono::milliseconds(2500));
 
  private:
-  class RemoteConnnection;
-  friend class RemoteConnnection;
+  class RemoteConnection;
+  friend class RemoteConnection;
 
   void onReply(const std::string &message);
 

@@ -90,8 +90,8 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   @ReactProp(name = "disableIntervalMomentum")
   public void setDisableIntervalMomentum(
-      ReactHorizontalScrollView view, boolean disbaleIntervalMomentum) {
-    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
+      ReactHorizontalScrollView view, boolean disableIntervalMomentum) {
+    view.setDisableIntervalMomentum(disableIntervalMomentum);
   }
 
   @ReactProp(name = "snapToInterval")

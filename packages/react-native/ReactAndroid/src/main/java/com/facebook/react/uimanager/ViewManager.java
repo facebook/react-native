@@ -234,7 +234,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   /**
-   * Called when a View is removed from the hierachy. This should be used to reset any properties.
+   * Called when a View is removed from the hierarchy. This should be used to reset any properties.
    */
   protected T prepareToRecycleView(@NonNull ThemedReactContext reactContext, @NonNull T view) {
     return view;

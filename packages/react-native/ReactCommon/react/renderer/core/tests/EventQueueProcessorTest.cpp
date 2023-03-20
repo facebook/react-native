@@ -58,7 +58,7 @@ TEST_F(EventQueueProcessorTest, singleUnspecifiedEvent) {
   EXPECT_EQ(eventPriorities_[0], ReactEventPriority::Discrete);
 }
 
-TEST_F(EventQueueProcessorTest, continiousEvent) {
+TEST_F(EventQueueProcessorTest, continuousEvent) {
   eventProcessor_->flushEvents(
       *runtime_,
       {RawEvent(

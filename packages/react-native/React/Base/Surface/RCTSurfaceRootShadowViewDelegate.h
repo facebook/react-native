@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTSurfaceRootShadowViewDelegate <NSObject>
 
-- (void)rootShadowView:(RCTSurfaceRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)instrinsicSize;
+- (void)rootShadowView:(RCTSurfaceRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize;
 - (void)rootShadowViewDidStartRendering:(RCTSurfaceRootShadowView *)rootShadowView;
 - (void)rootShadowViewDidStartLayingOut:(RCTSurfaceRootShadowView *)rootShadowView;
 

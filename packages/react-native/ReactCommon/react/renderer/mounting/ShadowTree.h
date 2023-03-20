@@ -60,7 +60,7 @@ class ShadowTree final {
 
     // Indicates if mounting will be triggered synchronously and React will
     // not get a chance to interrupt painting.
-    // This should be set to `false` when a commit is comming from React. It
+    // This should be set to `false` when a commit is coming from React. It
     // will then let React run layout effects and apply updates before paint.
     // For all other commits, should be true.
     bool mountSynchronously{true};

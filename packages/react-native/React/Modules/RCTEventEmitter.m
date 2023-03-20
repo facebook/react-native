@@ -142,7 +142,7 @@ RCT_EXPORT_METHOD(removeListeners : (double)count)
 #pragma mark - Test utilities
 
 // For testing purposes only.
-// This is supposed to be overriden by a subclass in the Tests
+// This is supposed to be overridden by a subclass in the Tests
 // to verified that the error message is actually emitted.
 // This is the less intrusive way found to mock the RCTLogError function in unit tests.
 - (void)_log:(NSString *)message

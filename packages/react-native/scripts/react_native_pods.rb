@@ -24,7 +24,7 @@ $FOLLY_VERSION = '2021.07.22.00'
 $START_TIME = Time.now.to_i
 
 # This function returns the min iOS version supported by React Native
-# By using this function, you won't have to manualy change your Podfile
+# By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
 def min_ios_version_supported
   return '12.4'

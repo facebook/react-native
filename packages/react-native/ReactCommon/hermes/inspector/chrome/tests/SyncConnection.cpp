@@ -38,9 +38,9 @@ std::string prettify(const std::string &str) {
 
 } // namespace
 
-class SyncConnection::RemoteConnnection : public IRemoteConnection {
+class SyncConnection::RemoteConnection : public IRemoteConnection {
  public:
-  RemoteConnnection(SyncConnection &conn) : conn_(conn) {}
+  RemoteConnection(SyncConnection &conn) : conn_(conn) {}
 
   void onMessage(std::string message) override {
     conn_.onReply(message);
@@ -59,7 +59,7 @@ SyncConnection::SyncConnection(
           std::make_unique<SharedRuntimeAdapter>(runtime),
           "testConn",
           waitForDebugger) {
-  connection_.connect(std::make_unique<RemoteConnnection>(*this));
+  connection_.connect(std::make_unique<RemoteConnection>(*this));
 }
 
 void SyncConnection::send(const std::string &str) {

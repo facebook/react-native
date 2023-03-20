@@ -80,7 +80,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaNode_(&initializeYogaConfig(yogaConfig_)) {
   yogaNode_.setContext(this);
 
-  // Newly created node must be `dirty` just becasue it is new.
+  // Newly created node must be `dirty` just because it is new.
   // This is not a default for `YGNode`.
   yogaNode_.setDirty(true);
 
@@ -215,7 +215,7 @@ void YogaLayoutableShadowNode::appendChild(
   ensureUnsealed();
   ensureConsistency();
 
-  // Calling the base class (`ShadowNode`) mehtod.
+  // Calling the base class (`ShadowNode`) method.
   LayoutableShadowNode::appendChild(childNode);
 
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
@@ -505,7 +505,7 @@ void YogaLayoutableShadowNode::layoutTree(
   react_native_assert(minimumSize.height >= 0);
   react_native_assert(maximumSize.width >= 0);
   react_native_assert(maximumSize.height >= 0);
-  // Mimimum size cannot be infinity.
+  // Minimum size cannot be infinity.
   react_native_assert(!std::isinf(minimumSize.width));
   react_native_assert(!std::isinf(minimumSize.height));
 
