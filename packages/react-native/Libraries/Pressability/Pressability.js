@@ -295,7 +295,7 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  *
  * - When a press has activated (e.g. highlight an element)
  * - When a press has deactivated (e.g. un-highlight an element)
- * - When a press sould trigger an action, meaning it activated and deactivated
+ * - When a press should trigger an action, meaning it activated and deactivated
  *   while within the geometry of the element without the lock being stolen.
  *
  * A high quality interaction isn't as simple as you might think. There should
