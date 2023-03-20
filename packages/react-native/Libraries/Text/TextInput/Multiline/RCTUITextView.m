@@ -303,7 +303,6 @@ static UIColor *defaultPlaceholderColor()
   rect.size.height = font.pointSize - font.descender;
   rect.origin.y -= font.descender;
   return rect;
-  return rect;
 }
 
 #pragma mark - Utility Methods
