@@ -73,7 +73,6 @@ class MultiColumnExample extends React.PureComponent<
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
-        noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
           <View style={styles.row}>
