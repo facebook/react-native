@@ -23,6 +23,17 @@ $FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
 
+# `@react-native-community/cli-platform-ios/native_modules` defines
+# use_native_modules. We use node to resolve its path to allow for
+# different packager and workspace setups. This is reliant on
+# `@react-native-community/cli-platform-ios` being a direct dependency
+# of `react-native`.
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "@react-native-community/cli-platform-ios/native_modules.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
 # This function returns the min iOS version supported by React Native
 # By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
