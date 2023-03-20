@@ -71,6 +71,9 @@
     "third-party-podspecs",
     "types"
   ],
+  "scripts": {
+    "prepack": "cp ../../README.md ."
+  },
   "peerDependencies": {
     "react": "18.2.0"
   },
