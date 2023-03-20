@@ -9,6 +9,9 @@
  */
 
 import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import Keyboard from 'react-native/Libraries/Components/Keyboard/Keyboard';
+import Platform from 'react-native/Libraries/Utilities/Platform';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   LayoutEvent,
@@ -691,6 +694,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         cellKey: this.context.cellKey,
       });
     }
+
+    this._addAndroidKeyboardListener();
   }
 
   componentWillUnmount() {
@@ -702,6 +707,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       tuple.viewabilityHelper.dispose();
     });
     this._fillRateHelper.deactivateAndFlush();
+    if (this._androidKeyboardListener) {
+      this._androidKeyboardListener.remove();
+    }
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State): State {
@@ -1123,6 +1131,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
+  // On Android, we listen to keyboard opens and ignore layout events that
+  // shrink the height shortly after.
+  _androidKeyboardListener: null | EventSubscription = null;
+  // The height the list would have if the keyboard were open. We avoid setting
+  // the `_visibleHeight` to this to prevent the keyboard opening causing the
+  // list to render fewer items and shifting around on Android.
+  _androidKeyboardOpenVisibleLength: null | number = null;
   _averageCellLength = 0;
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
   _fillRateHelper: FillRateHelper;
@@ -1157,6 +1172,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     offset: 0,
     timestamp: 0,
     velocity: 0,
+    // Whenever  you're setting `visibleLength`, make sure to call
+    // `this._adjustVisibleLength` on the value you're setting it to
     visibleLength: 0,
     zoomScale: 1,
   };
@@ -1302,7 +1319,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             this._scrollMetrics.offset !== scrollMetrics.offset;
 
           if (metricsChanged) {
-            this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
+            this._scrollMetrics.visibleLength = this._adjustVisibleLength(
+              scrollMetrics.visibleLength,
+            );
             this._scrollMetrics.offset = scrollMetrics.offset;
 
             // If metrics of the scrollView changed, then we triggered remeasure for child list
@@ -1327,14 +1346,67 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
+  _pendingAndroidOnLayoutTimeout: null | TimeoutID = null;
+  _pendingAndroidOnLayoutEvent: null | LayoutEvent = null;
+  _onLayoutHasRunOnce = false;
+
   _onLayout = (e: LayoutEvent) => {
+    if (Platform.OS === 'android' && this._onLayoutHasRunOnce) {
+      // On Android, we delay non-initial layouts slightly because we don't
+      // want to re-layout when the keyboard opens. Because the first re-layout
+      // happens before we receive the `keyboardDidOpen` event, we wait for
+      // a short amount of time for the event in the case the keyboard just
+      // opened.
+      //
+      // See https://github.com/facebook/react-native/pull/32268
+      //
+      // - If the keyboard did actually just open, the `keyboardDidOpen`
+      //   event handler calls `_runDelayedAndroidLayout`.
+      // - If the keyboard didn't just open, the `setTimeout` below calls
+      //   `_runDelayedAndroidOnLayout`.
+      this._pendingAndroidOnLayoutEvent = e;
+      e.persist(); // Preserve the event for use in the timeout
+      if (this._pendingAndroidOnLayoutTimeout) {
+        clearTimeout(this._pendingAndroidOnLayoutTimeout);
+      }
+
+      this._pendingAndroidOnLayoutTimeout = setTimeout(
+        () => this._runDelayedAndroidOnLayout(),
+        // Experimentally, even 10ms is enough for `keyboardDidShow` to fire
+        // first on a Pixel 3a running RNTesterApp, but we set it a bit higher
+        // to account for slower apps and devices.
+        50,
+      );
+    } else {
+      this._onLayoutImmediately(e);
+    }
+  };
+
+  _runDelayedAndroidOnLayout = () => {
+    // Clear the pending layout event and timeout
+    const e = this._pendingAndroidOnLayoutEvent;
+    if (!e) {
+      return;
+    }
+    this._pendingAndroidOnLayoutEvent = null;
+    if (this._pendingAndroidOnLayoutTimeout) {
+      clearTimeout(this._pendingAndroidOnLayoutTimeout);
+      this._pendingAndroidOnLayoutTimeout = null;
+    }
+
+    // Run the actual layout
+    this._onLayoutImmediately(e);
+  };
+
+  _onLayoutImmediately = (e: LayoutEvent) => {
+    this._onLayoutHasRunOnce = true;
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
       this.measureLayoutRelativeToContainingList();
     } else {
-      this._scrollMetrics.visibleLength = this._selectLength(
-        e.nativeEvent.layout,
+      this._scrollMetrics.visibleLength = this._adjustVisibleLength(
+        this._selectLength(e.nativeEvent.layout),
       );
     }
     this.props.onLayout && this.props.onLayout(e);
@@ -1573,7 +1645,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // Offset of the top of the nested list relative to the top of its parent's viewport
     const offset = metrics.offset - this._offsetFromParentVirtualizedList;
     // Child's visible length is the same as its parent's
-    const visibleLength = metrics.visibleLength;
+    const visibleLength = this._adjustVisibleLength(metrics.visibleLength);
     const dOffset = offset - this._scrollMetrics.offset;
     const contentLength = this._scrollMetrics.contentLength;
 
@@ -1640,7 +1712,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       offset,
       timestamp,
       velocity,
-      visibleLength,
+      visibleLength: this._adjustVisibleLength(visibleLength),
       zoomScale,
     };
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
@@ -1934,6 +2006,40 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       );
     });
   }
+
+  _addAndroidKeyboardListener = () => {
+    if (Platform.OS === 'android' && !this._androidKeyboardListener) {
+      this._androidKeyboardListener = Keyboard.addListener(
+        'keyboardDidShow',
+        event => {
+          this._androidKeyboardOpenVisibleLength =
+            this._scrollMetrics.visibleLength - event.endCoordinates.height;
+          this._runDelayedAndroidOnLayout();
+        },
+      );
+    }
+  };
+
+  // When setting the `_scrollMetrics.visibleLength`, use this function to
+  // avoid setting the `visibleLength` to a shorter value when the keyboard is
+  // open on Android.
+  //
+  // This prevents the layout from shifting after closing the keyboard on
+  // for certain lists on Android, where `getItemLayout` returns heights and
+  // offsets that don't match the items' actual heights and offsets.
+  //
+  // See https://github.com/facebook/react-native/pull/32268 for more
+  _adjustVisibleLength = (visibleLength: number): number => {
+    if (this._androidKeyboardOpenVisibleLength) {
+      const isCloseToKeyboardOpenVisibleLength =
+        Math.abs(visibleLength - this._androidKeyboardOpenVisibleLength) < 10;
+      if (isCloseToKeyboardOpenVisibleLength) {
+        return this._scrollMetrics.visibleLength;
+      }
+    }
+
+    return visibleLength;
+  };
 }
 
 const styles = StyleSheet.create({

@@ -43,8 +43,11 @@
         android:label="@string/app_name"
         android:screenOrientation="fullSensor"
         android:launchMode="singleTask"
+        android:windowSoftInputMode="adjustResize"
         android:configChanges="orientation|screenSize|uiMode"
         android:exported="true">
+      <!-- windowSoftInputMode: adjustResize is the default for React Native Android -->
+      <!-- See https://github.com/facebook/react-native/blob/main/template/android/app/src/main/AndroidManifest.xml#L18 -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />

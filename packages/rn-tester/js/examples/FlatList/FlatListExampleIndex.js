@@ -19,6 +19,7 @@ import WithSeparatorsExample from './FlatList-withSeparators';
 import MultiColumnExample from './FlatList-multiColumn';
 import StickyHeadersExample from './FlatList-stickyHeaders';
 import NestedExample from './FlatList-nested';
+import WithTextInputsExample from './FlatList-withTextInputs';
 
 export default ({
   framework: 'React',
@@ -38,5 +39,6 @@ export default ({
     MultiColumnExample,
     StickyHeadersExample,
     NestedExample,
+    WithTextInputsExample,
   ],
 }: RNTesterModule);
