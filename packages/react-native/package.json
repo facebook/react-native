@@ -110,7 +110,6 @@
     "regenerator-runtime": "^0.13.2",
     "scheduler": "^0.23.0",
     "stacktrace-parser": "^0.1.10",
-    "use-sync-external-store": "^1.0.0",
     "whatwg-fetch": "^3.0.0",
     "ws": "^6.2.2",
     "yargs": "^17.6.2"
