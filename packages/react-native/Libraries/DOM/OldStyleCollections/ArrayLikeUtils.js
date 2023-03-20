@@ -28,3 +28,19 @@ export function* createValueIterator<T>(arrayLike: ArrayLike<T>): Iterator<T> {
     yield arrayLike[i];
   }
 }
+
+export function* createKeyIterator<T>(
+  arrayLike: ArrayLike<T>,
+): Iterator<number> {
+  for (let i = 0; i < arrayLike.length; i++) {
+    yield i;
+  }
+}
+
+export function* createEntriesIterator<T>(
+  arrayLike: ArrayLike<T>,
+): Iterator<[number, T]> {
+  for (let i = 0; i < arrayLike.length; i++) {
+    yield [i, arrayLike[i]];
+  }
+}
