@@ -61,7 +61,10 @@ const tmpVersioningFolder = fs.mkdtempSync(
 echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 saveFiles(
-  ['package.json', 'packages/react-native/template/package.json'],
+  [
+    'packages/react-native/package.json',
+    'packages/react-native/template/package.json',
+  ],
   tmpVersioningFolder,
 );
 
