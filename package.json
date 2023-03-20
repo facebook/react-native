@@ -60,6 +60,7 @@
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
     "async": "^3.2.2",
+    "babel-plugin-transform-flow-enums":"^0.0.2",
     "clang-format": "^1.8.0",
     "connect": "^3.6.5",
     "coveralls": "^3.1.1",
