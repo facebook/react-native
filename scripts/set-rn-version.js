@@ -60,7 +60,10 @@ const tmpVersioningFolder = fs.mkdtempSync(
 );
 echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
-saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
+saveFiles(
+  ['package.json', 'packages/react-native/template/package.json'],
+  tmpVersioningFolder,
+);
 
 fs.writeFileSync(
   'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
