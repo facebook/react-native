@@ -39,6 +39,11 @@ class CoreFeatures {
   // creating it twice. Once when measuring text and once when rendering it.
   // This flag caches it inside ParagraphState.
   static bool cacheNSTextStorage;
+
+  // Yoga might measure multiple times the same Text with the same constraints
+  // This flag enables a caching mechanism to avoid subsequents measurements
+  // of the same Text with the same constrainst.
+  static bool cacheLastTextMeasurement;
 };
 
 } // namespace react

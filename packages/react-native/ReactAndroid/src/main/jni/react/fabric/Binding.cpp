@@ -429,6 +429,9 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
+  CoreFeatures::cacheLastTextMeasurement =
+      getFeatureFlagValue("enableTextMeasureCachePerShadowNode");
+
   // Props setter pattern feature
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
