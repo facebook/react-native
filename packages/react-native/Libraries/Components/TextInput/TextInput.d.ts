@@ -272,6 +272,16 @@ export interface TextInputIOSProps {
    * If false, scrolling of the text view will be disabled. The default value is true. Only works with multiline={true}
    */
   scrollEnabled?: boolean | undefined;
+
+  /**
+   * Set line break strategy on iOS.
+   */
+  lineBreakStrategyIOS?:
+    | 'none'
+    | 'standard'
+    | 'hangul-word'
+    | 'push-out'
+    | undefined;
 }
 
 /**
