@@ -12,6 +12,7 @@
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
@@ -146,7 +147,10 @@ Size measureAndroidComponentMapBuffer(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared &contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      measureCache_(
+          CoreFeatures::cacheLastTextMeasurement
+              ? 8096
+              : kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;
