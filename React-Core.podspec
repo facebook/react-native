@@ -109,7 +109,6 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly", folly_version
-  s.osx.dependency "RCT-Folly/Futures", folly_version # [macOS] Github issue ##1733: macOS needs this extra dependency
   s.dependency "React-cxxreact", version
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version

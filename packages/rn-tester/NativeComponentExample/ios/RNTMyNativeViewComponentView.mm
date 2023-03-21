@@ -20,7 +20,7 @@ using namespace facebook::react;
 @end
 
 @implementation RNTMyNativeViewComponentView {
-  UIView *_view;
+  RCTUIView *_view; // [macOS]
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -34,8 +34,8 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const RNTMyNativeViewProps>();
     _props = defaultProps;
 
-    _view = [[UIView alloc] init];
-    _view.backgroundColor = [UIColor redColor];
+    _view = [[RCTUIView alloc] init]; // [macOS]
+    _view.backgroundColor = [RCTUIColor redColor]; // [macOS]
 
     self.contentView = _view;
   }
@@ -43,17 +43,17 @@ using namespace facebook::react;
   return self;
 }
 
-- (UIColor *)UIColorFromHexString:(const std::string)hexString
+- (RCTUIColor *)RCTUIColorFromHexString:(const std::string)hexString // [macOS]
 {
   unsigned rgbValue = 0;
   NSString *colorString = [NSString stringWithCString:hexString.c_str() encoding:[NSString defaultCStringEncoding]];
   NSScanner *scanner = [NSScanner scannerWithString:colorString];
   [scanner setScanLocation:1]; // bypass '#' character
   [scanner scanHexInt:&rgbValue];
-  return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0
-                         green:((rgbValue & 0xFF00) >> 8) / 255.0
-                          blue:(rgbValue & 0xFF) / 255.0
-                         alpha:1.0];
+  return [RCTUIColor colorWithRed:((rgbValue & 0xFF0000) >> 16) / 255.0 // [macOS]
+                            green:((rgbValue & 0xFF00) >> 8) / 255.0
+                             blue:(rgbValue & 0xFF) / 255.0
+                            alpha:1.0];
 }
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
@@ -61,7 +61,7 @@ using namespace facebook::react;
   [super updateProps:props oldProps:oldProps];
 }
 
-- (void)onChange:(UIView *)sender
+- (void)onChange:(RCTUIView *)sender // [macOS]
 {
   // No-op
   //  std::dynamic_pointer_cast<const ViewEventEmitter>(_eventEmitter)
@@ -77,7 +77,7 @@ using namespace facebook::react;
 
 - (void)callNativeMethodToChangeBackgroundColor:(NSString *)colorString
 {
-  UIColor *color = [self UIColorFromHexString:std::string([colorString UTF8String])];
+  RCTUIColor *color = [self RCTUIColorFromHexString:std::string([colorString UTF8String])]; // [macOS]
   _view.backgroundColor = color;
 }
 @end

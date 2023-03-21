@@ -27,8 +27,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation RCTAppDelegate
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#else // [macOS
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    NSApplication *application = [notification object];
+    NSDictionary *launchOptions = [notification userInfo];
+#endif // macOS]
   BOOL enableTM = NO;
 #if RCT_NEW_ARCH_ENABLED
   enableTM = self.turboModuleEnabled;
@@ -67,6 +74,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  return YES;
 #else // [macOS
   self.window = [[NSWindow alloc] init];
   NSViewController *rootViewController = [self createRootViewController];
@@ -74,7 +82,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.contentViewController = rootViewController;
   [self.window makeKeyAndOrderFront:self];
 #endif // macOS]
-  return YES;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -118,7 +125,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
 }
 
-#if !TARGET_OS_OSX
+#if !TARGET_OS_OSX // [macOS]
 - (UIViewController *)createRootViewController
 {
   return [UIViewController new];

@@ -90,17 +90,16 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-#else // [macOS
-- (void)applicationDidFinishLaunching:(__unused NSNotification *)notification
-#endif // macOS]
 {
+#else // [macOS
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    NSApplication *application = [notification object];
+    NSDictionary *launchOptions = [notification userInfo];
+#endif // macOS]
   RCTEnableTurboModule(YES);
 
-#if !TARGET_OS_OSX // [macOS]
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-#else // [macOS
-  _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:nil];
-#endif // macOS]
 
   // Appetizer.io params check
   NSDictionary *initProps = [self prepareInitialProps];
@@ -144,7 +143,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.contentViewController = rootViewController;
   [self.window makeKeyAndOrderFront:self];
   [self.window center];
-  [self initializeFlipper:[NSApplication sharedApplication]];
+  [self initializeFlipper:application];
 #endif // macOS]
 }
 

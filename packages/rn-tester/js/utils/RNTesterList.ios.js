@@ -187,6 +187,12 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
+    // [macOS
+    skipTest: {
+      default:
+        'Reason: requires RCT_NEW_ARCH_ENABLED flag to be set during build',
+    },
+    // macOS]
   },
 ];
 
