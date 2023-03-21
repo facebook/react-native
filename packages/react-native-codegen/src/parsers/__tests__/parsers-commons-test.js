@@ -1424,5 +1424,5 @@ describe('propertyNames', () => {
       {key: {invalid: 'testName2'}},
     ];
     expect(propertyNames(properties)).toEqual([]);
-   });
+  });
 });
