@@ -52,11 +52,14 @@ export default function DevtoolsOverlay({
     function onAgentShowNativeHighlight(node: any) {
       clearTimeout(hideTimeoutId);
 
-      // `publicInstance` => Fabric
-      // TODO: remove this check when syncing the new version of the renderer from React to React Native.
+      // `canonical.publicInstance` => Fabric
       // `canonical` => Legacy Fabric
       // `node` => Legacy renderer
-      const component = node.publicInstance ?? node.canonical ?? node;
+      const component =
+        (node.canonical && node.canonical.publicInstance) ??
+        // TODO: remove this check when syncing the new version of the renderer from React to React Native.
+        node.canonical ??
+        node;
       if (!component || !component.measure) {
         return;
       }
