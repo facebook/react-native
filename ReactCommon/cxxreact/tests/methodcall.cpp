@@ -13,9 +13,8 @@
 #include <gtest/gtest.h>
 #pragma GCC diagnostic pop
 
-using namespace facebook;
 using namespace facebook::react;
-using namespace folly;
+using dynamic = folly::dynamic;
 
 TEST(parseMethodCalls, SingleReturnCallNoArgs) {
   auto jsText = "[[7],[3],[[]]]";

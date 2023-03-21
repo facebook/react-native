@@ -62,12 +62,14 @@
 #endif
 #endif
 
-#import <React/RCTTextAttributes.h> // [macOS]
 #import <ReactCommon/RCTTurboModuleManager.h>
-
 #import "RNTesterTurboModuleProvider.h"
 
+#if !TARGET_OS_OSX // [macOS]
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
+#else // [macOS
+@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate, NSUserNotificationCenterDelegate> { // [macOS]
+#endif // macOS]
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
@@ -75,30 +77,32 @@
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
+#if TARGET_OS_OSX // [macOS
+  // Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
+  // std::shared_ptr<winrt::Microsoft::ReactNative::TurboModulesProvider> _turboModulesProvider;
+#endif // macOS]
 }
 @end
 
+static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+
 @implementation AppDelegate
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#else // [macOS
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    NSApplication *application = [notification object];
+    NSDictionary *launchOptions = [notification userInfo];
+#endif // macOS]
   RCTEnableTurboModule(YES);
 
   _bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 
-  // [macOS
-  // Optionally set the global `fontSmoothing` setting.
-  // If not explicitly set, the default is subpixel-antialiased
-  [RCTTextAttributes setFontSmoothingDefault:RCTFontSmoothingSubpixelAntialiased];
-  // macOS]
-
   // Appetizer.io params check
-  NSDictionary *initProps = @{};
-  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
-  if (_routeUri) {
-    initProps =
-        @{@"exampleFromAppetizeParams" : [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
-  }
+  NSDictionary *initProps = [self prepareInitialProps];
 
 #ifdef RN_FABRIC_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
@@ -110,13 +114,14 @@
 
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 
-  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
-                                                                       moduleName:@"RNTesterApp"
-                                                                initialProperties:initProps];
+  RCTUIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge // [macOS]
+                                                                          moduleName:@"RNTesterApp"
+                                                                   initialProperties:initProps];
 #else
-  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+  RCTUIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps]; // [macOS]
 #endif
 
+#if !TARGET_OS_OSX // [macOS
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -124,11 +129,53 @@
   [self.window makeKeyAndVisible];
   [self initializeFlipper:application];
   return YES;
+#else // [macOS
+  NSRect frame = NSMakeRect(0,0,1024,768);
+  self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
+                                            styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
+                                              backing:NSBackingStoreBuffered
+                                                defer:NO];
+  self.window.title = @"RNTester-macOS";
+  self.window.autorecalculatesKeyViewLoop = YES;
+  NSViewController *rootViewController = [NSViewController new];
+  rootViewController.view = rootView;
+  rootView.frame = frame;
+  self.window.contentViewController = rootViewController;
+  [self.window makeKeyAndOrderFront:self];
+  [self.window center];
+  [self initializeFlipper:application];
+#endif // macOS]
+}
+
+- (BOOL)concurrentRootEnabled
+{
+  // Switch this bool to turn on and off the concurrent root
+  return true;
+}
+
+- (NSDictionary *)prepareInitialProps
+{
+  NSMutableDictionary *initProps = [NSMutableDictionary new];
+
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps[@"exampleFromAppetizeParams"] = [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri];
+  }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+  initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
+#endif
+
+  return initProps;
 }
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
+#if !TARGET_OS_OSX // [macOS]
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"];
+#else // [macOS
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.macos"];
+#endif
 }
 
 - (void)initializeFlipper:(UIApplication *)application
@@ -147,12 +194,14 @@
 #endif
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
 {
   return [RCTLinkingManager application:app openURL:url options:options];
 }
+#endif // [macOS]
 
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                  onProgress:(RCTSourceLoadProgressBlock)onProgress
@@ -207,6 +256,16 @@
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
+  // [macOS Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
+  // if (!_turboModulesProvider) {
+  //   _turboModulesProvider = std::make_shared<winrt::Microsoft::ReactNative::TurboModulesProvider>();
+  //   _turboModulesProvider->SetReactContext(winrt::Microsoft::ReactNative::CreateMacOSReactContext(jsInvoker));
+
+  //   _turboModulesProvider->AddModuleProvider(
+  //       L"ScreenshotManager", winrt::Microsoft::ReactNative::MakeModuleProvider<ScreenshotManagerCxx>());
+  // }
+  // return _turboModulesProvider->getModule(name, jsInvoker);
+  // macOS]
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
@@ -239,40 +298,61 @@
 
 #if !TARGET_OS_TV && !TARGET_OS_UIKITFORMAC
 
+#if !TARGET_OS_OSX // [macOS]
 // Required to register for notifications
 - (void)application:(__unused UIApplication *)application
     didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
 {
   [RCTPushNotificationManager didRegisterUserNotificationSettings:notificationSettings];
 }
+#endif // [macOS]
 
 // Required for the remoteNotificationsRegistered event.
-- (void)application:(__unused UIApplication *)application
+- (void)application:(__unused RCTUIApplication *)application
     didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
   [RCTPushNotificationManager didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
 // Required for the remoteNotificationRegistrationError event.
-- (void)application:(__unused UIApplication *)application
+- (void)application:(__unused RCTUIApplication *)application
     didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
   [RCTPushNotificationManager didFailToRegisterForRemoteNotificationsWithError:error];
 }
 
 // Required for the remoteNotificationReceived event.
-- (void)application:(__unused UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
+- (void)application:(__unused RCTUIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
 {
   [RCTPushNotificationManager didReceiveRemoteNotification:notification];
 }
 
+#if !TARGET_OS_OSX // [macOS]
 // Required for the localNotificationReceived event.
 - (void)application:(__unused UIApplication *)application
     didReceiveLocalNotification:(UILocalNotification *)notification
 {
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
+#endif // [macOS]
+#if TARGET_OS_OSX // [macOS
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+        didDeliverNotification:(NSUserNotification *)notification
+{
+}
 
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center
+       didActivateNotification:(NSUserNotification *)notification
+{
+  [RCTPushNotificationManager didReceiveUserNotification:notification];
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+     shouldPresentNotification:(NSUserNotification *)notification
+{
+  return YES;
+}
+#endif // macOS]
 #endif
 
 @end

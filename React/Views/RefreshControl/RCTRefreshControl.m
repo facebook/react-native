@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTRefreshControl.h"
 #import "RCTRefreshableProtocol.h"
 
@@ -197,3 +198,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
+#endif // [macOS]

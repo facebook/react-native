@@ -25,7 +25,7 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs 1`] 
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
 #import <ReactCommon/RCTTurboModule.h>
-#import <folly/Optional.h>
+#import <optional>
 #import <vector>
 
 
@@ -302,8 +302,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<double> E;
+          std::optional<bool> D;
+          std::optional<double> E;
           NSString *F;
         };
 
@@ -331,8 +331,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
+          std::optional<bool> D;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
           NSString *F;
         };
 
@@ -360,8 +360,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
+          std::optional<bool> D;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
           NSString *F;
         };
 
@@ -389,9 +389,9 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
+          std::optional<bool> D;
           id<NSObject> _Nullable  A;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
 
@@ -580,7 +580,7 @@ namespace JS {
           RCTRequired<std::vector<bool>> const1;
           RCTRequired<std::vector<double>> const2;
           RCTRequired<std::vector<NSString *>> const3;
-          folly::Optional<std::vector<folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder>>> id_;
+          std::optional<std::vector<std::optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder>>> id_;
         };
 
         /** Initialize with a set of values */
@@ -637,7 +637,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleNullable {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -670,8 +670,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          RCTRequired<folly::Optional<bool>> const1;
-          RCTRequired<folly::Optional<double>> const2;
+          RCTRequired<std::optional<bool>> const1;
+          RCTRequired<std::optional<double>> const2;
           RCTRequired<NSString *> const3;
         };
 
@@ -729,7 +729,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleNullableAndOptional {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -762,8 +762,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> const1;
-          folly::Optional<double> const2;
+          std::optional<bool> const1;
+          std::optional<double> const2;
           NSString *const3;
         };
 
@@ -821,7 +821,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleOptional {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -854,8 +854,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> const1;
-          folly::Optional<double> const2;
+          std::optional<bool> const1;
+          std::optional<double> const2;
           NSString *const3;
         };
 
@@ -1018,9 +1018,9 @@ inline JS::NativeObjectTurboModule::Constants::Builder::Builder(Constants i) : _
 inline JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? @((double)E.value()) : nil;
+  d[@\\"E\\"] = E.has_value() ? @((double)E.value()) : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -1031,9 +1031,9 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder::Builder(Const
 inline JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -1044,9 +1044,9 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder::Builder(Consta
 inline JS::NativeOptionalObjectTurboModule::ConstantsE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -1057,11 +1057,11 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsE::Builder::Builder(Constan
 inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto A = i.A;
   d[@\\"A\\"] = A;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -1111,13 +1111,13 @@ inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(const Inpu
   auto const3 = i.const3.get();
   d[@\\"const3\\"] = RCTConvertVecToArray(const3, ^id(NSString * el_) { return el_; });
   auto id_ = i.id_;
-  d[@\\"id\\"] = RCTConvertOptionalVecToArray(id_, ^id(folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.hasValue() ? el_.value().buildUnsafeRawValue() : nil; });
+  d[@\\"id\\"] = RCTConvertOptionalVecToArray(id_, ^id(std::optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.has_value() ? el_.value().buildUnsafeRawValue() : nil; });
   return d;
 }) {}
 inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleNullable::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleNullable::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -1130,9 +1130,9 @@ inline NSString *JS::NativeSampleTurboModuleNullable::Animal::name() const
 inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1.get();
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2.get();
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3.get();
   d[@\\"const3\\"] = const3;
   return d;
@@ -1140,7 +1140,7 @@ inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(const In
 inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleNullableAndOptional::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleNullableAndOptional::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -1153,9 +1153,9 @@ inline NSString *JS::NativeSampleTurboModuleNullableAndOptional::Animal::name() 
 inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1;
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2;
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3;
   d[@\\"const3\\"] = const3;
   return d;
@@ -1163,7 +1163,7 @@ inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Build
 inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleOptional::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleOptional::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -1176,9 +1176,9 @@ inline NSString *JS::NativeSampleTurboModuleOptional::Animal::name() const
 inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1;
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2;
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3;
   d[@\\"const3\\"] = const3;
   return d;
@@ -1215,7 +1215,7 @@ exports[`GenerateModuleObjCpp can generate a header file NativeModule specs with
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
 #import <ReactCommon/RCTTurboModule.h>
-#import <folly/Optional.h>
+#import <optional>
 #import <vector>
 
 
@@ -1494,8 +1494,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<double> E;
+          std::optional<bool> D;
+          std::optional<double> E;
           NSString *F;
         };
 
@@ -1523,8 +1523,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
+          std::optional<bool> D;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder> E;
           NSString *F;
         };
 
@@ -1552,8 +1552,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
+          std::optional<bool> D;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder> E;
           NSString *F;
         };
 
@@ -1581,9 +1581,9 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> D;
+          std::optional<bool> D;
           id<NSObject> _Nullable  A;
-          folly::Optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
+          std::optional<JS::NativeOptionalObjectTurboModule::ConstantsE::Builder> E;
           NSString *F;
         };
 
@@ -1772,7 +1772,7 @@ namespace JS {
           RCTRequired<std::vector<bool>> const1;
           RCTRequired<std::vector<double>> const2;
           RCTRequired<std::vector<NSString *>> const3;
-          folly::Optional<std::vector<folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder>>> id_;
+          std::optional<std::vector<std::optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder>>> id_;
         };
 
         /** Initialize with a set of values */
@@ -1829,7 +1829,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleNullable {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -1862,8 +1862,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          RCTRequired<folly::Optional<bool>> const1;
-          RCTRequired<folly::Optional<double>> const2;
+          RCTRequired<std::optional<bool>> const1;
+          RCTRequired<std::optional<double>> const2;
           RCTRequired<NSString *> const3;
         };
 
@@ -1921,7 +1921,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleNullableAndOptional {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -1954,8 +1954,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> const1;
-          folly::Optional<double> const2;
+          std::optional<bool> const1;
+          std::optional<double> const2;
           NSString *const3;
         };
 
@@ -2013,7 +2013,7 @@ namespace facebook {
 namespace JS {
   namespace NativeSampleTurboModuleOptional {
     struct SpecGetObjectShapeArg {
-      folly::Optional<double> prop() const;
+      std::optional<double> prop() const;
 
       SpecGetObjectShapeArg(NSDictionary *const v) : _v(v) {}
     private:
@@ -2046,8 +2046,8 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<bool> const1;
-          folly::Optional<double> const2;
+          std::optional<bool> const1;
+          std::optional<double> const2;
           NSString *const3;
         };
 
@@ -2210,9 +2210,9 @@ inline JS::NativeObjectTurboModule::Constants::Builder::Builder(Constants i) : _
 inline JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? @((double)E.value()) : nil;
+  d[@\\"E\\"] = E.has_value() ? @((double)E.value()) : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -2223,9 +2223,9 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsEEE::Builder::Builder(Const
 inline JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -2236,9 +2236,9 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsEE::Builder::Builder(Consta
 inline JS::NativeOptionalObjectTurboModule::ConstantsE::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -2249,11 +2249,11 @@ inline JS::NativeOptionalObjectTurboModule::ConstantsE::Builder::Builder(Constan
 inline JS::NativeOptionalObjectTurboModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto D = i.D;
-  d[@\\"D\\"] = D.hasValue() ? @((BOOL)D.value()) : nil;
+  d[@\\"D\\"] = D.has_value() ? @((BOOL)D.value()) : nil;
   auto A = i.A;
   d[@\\"A\\"] = A;
   auto E = i.E;
-  d[@\\"E\\"] = E.hasValue() ? E.value().buildUnsafeRawValue() : nil;
+  d[@\\"E\\"] = E.has_value() ? E.value().buildUnsafeRawValue() : nil;
   auto F = i.F;
   d[@\\"F\\"] = F;
   return d;
@@ -2303,13 +2303,13 @@ inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(const Inpu
   auto const3 = i.const3.get();
   d[@\\"const3\\"] = RCTConvertVecToArray(const3, ^id(NSString * el_) { return el_; });
   auto id_ = i.id_;
-  d[@\\"id\\"] = RCTConvertOptionalVecToArray(id_, ^id(folly::Optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.hasValue() ? el_.value().buildUnsafeRawValue() : nil; });
+  d[@\\"id\\"] = RCTConvertOptionalVecToArray(id_, ^id(std::optional<JS::NativeSampleTurboModuleArrays::ConstantsIdElement::Builder> el_) { return el_.has_value() ? el_.value().buildUnsafeRawValue() : nil; });
   return d;
 }) {}
 inline JS::NativeSampleTurboModuleArrays::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleNullable::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleNullable::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -2322,9 +2322,9 @@ inline NSString *JS::NativeSampleTurboModuleNullable::Animal::name() const
 inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1.get();
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2.get();
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3.get();
   d[@\\"const3\\"] = const3;
   return d;
@@ -2332,7 +2332,7 @@ inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(const In
 inline JS::NativeSampleTurboModuleNullable::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleNullableAndOptional::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleNullableAndOptional::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -2345,9 +2345,9 @@ inline NSString *JS::NativeSampleTurboModuleNullableAndOptional::Animal::name() 
 inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1;
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2;
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3;
   d[@\\"const3\\"] = const3;
   return d;
@@ -2355,7 +2355,7 @@ inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Build
 inline JS::NativeSampleTurboModuleNullableAndOptional::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeSampleTurboModuleOptional::SpecGetObjectShapeArg::prop() const
+inline std::optional<double> JS::NativeSampleTurboModuleOptional::SpecGetObjectShapeArg::prop() const
 {
   id const p = _v[@\\"prop\\"];
   return RCTBridgingToOptionalDouble(p);
@@ -2368,9 +2368,9 @@ inline NSString *JS::NativeSampleTurboModuleOptional::Animal::name() const
 inline JS::NativeSampleTurboModuleOptional::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto const1 = i.const1;
-  d[@\\"const1\\"] = const1.hasValue() ? @((BOOL)const1.value()) : nil;
+  d[@\\"const1\\"] = const1.has_value() ? @((BOOL)const1.value()) : nil;
   auto const2 = i.const2;
-  d[@\\"const2\\"] = const2.hasValue() ? @((double)const2.value()) : nil;
+  d[@\\"const2\\"] = const2.has_value() ? @((double)const2.value()) : nil;
   auto const3 = i.const3;
   d[@\\"const3\\"] = const3;
   return d;

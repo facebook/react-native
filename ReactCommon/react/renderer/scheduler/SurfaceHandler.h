@@ -67,7 +67,7 @@ class SurfaceHandler {
   /*
    * Movable-only.
    */
-  SurfaceHandler(SurfaceHandler &&SurfaceHandler) noexcept;
+  SurfaceHandler(SurfaceHandler &&other) noexcept;
   SurfaceHandler(SurfaceHandler const &SurfaceHandler) noexcept = delete;
   SurfaceHandler &operator=(SurfaceHandler &&other) noexcept;
   SurfaceHandler &operator=(SurfaceHandler const &other) noexcept = delete;

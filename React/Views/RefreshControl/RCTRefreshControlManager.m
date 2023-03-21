@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import <React/RCTUIManager.h>
 
 #import "RCTRefreshControl.h"
@@ -41,3 +42,4 @@ RCT_EXPORT_METHOD(setNativeRefreshing : (nonnull NSNumber *)viewTag toRefreshing
 }
 
 @end
+#endif // [macOS]

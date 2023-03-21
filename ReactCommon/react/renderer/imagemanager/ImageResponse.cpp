@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ImageResponse::ImageResponse(
     std::shared_ptr<void> image,
@@ -25,5 +24,4 @@ std::shared_ptr<void> ImageResponse::getMetadata() const {
   return metadata_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

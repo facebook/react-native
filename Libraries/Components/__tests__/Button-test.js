@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import Button from '../Button';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import Button from '../Button';
 
 describe('<Button />', () => {
   it('should render as expected', () => {
@@ -44,6 +44,16 @@ describe('<Button />', () => {
 
   it('should not be disabled when disabled={false} and accessibilityState={{disabled: false}}', () => {
     expect(ReactTestRenderer.create( <Button title="Test Button" disabled={false} accessibilityState={{disabled: false}} />)
+    ).toMatchSnapshot();
+  });
+
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no-hide-descendants}', () => {
+    expect(ReactTestRenderer.create( <Button title="Test Button" importantForAccessibility={'no-hide-descendants'} />)
+    ).toMatchSnapshot();
+  });
+
+  it('should be set importantForAccessibility={no-hide-descendants} when importantForAccessibility={no}', () => {
+    expect(ReactTestRenderer.create( <Button title="Test Button" importantForAccessibility={'no'} />)
     ).toMatchSnapshot();
   });
 });

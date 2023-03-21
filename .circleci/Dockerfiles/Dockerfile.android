@@ -24,7 +24,7 @@
 # Disabling this is okay because per (Github#774) this test, which is redundant to Azure Devops test,
 # fails in the fork because of Microsoft's V8 upgrade to Android
 #
-#FROM reactnativecommunity/react-native-android:5.2
+#FROM reactnativecommunity/react-native-android:6.0
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -32,7 +32,7 @@ LABEL maintainer="Héctor Ramos <hector@fb.com>"
 ARG BUCK_BUILD
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
-ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+ENV KOTLIN_HOME="third-party/kotlin"
 
 ADD .buckconfig /app/.buckconfig
 ADD .buckjavaargs /app/.buckjavaargs
@@ -44,6 +44,7 @@ ADD React /app/React
 ADD keystores /app/keystores
 ADD packages/react-native-codegen /app/packages/react-native-codegen
 ADD tools /app/tools
+add scripts /app/scripts
 
 # add third party dependencies
 ADD Folly /app/Folly
@@ -53,6 +54,8 @@ ADD jsc /app/jsc
 
 # set workdir
 WORKDIR /app
+
+RUN scripts/download-kotlin-compiler-with-buck.sh
 
 RUN buck fetch ReactAndroid/src/test/java/com/facebook/react/modules
 RUN buck fetch ReactAndroid/src/main/java/com/facebook/react
@@ -80,6 +83,4 @@ ADD . /app
 
 RUN yarn
 
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog
-
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
+RUN ./gradlew :ReactAndroid:assembleDebug

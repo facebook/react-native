@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ColorValue} from './StyleSheet';
+
 import processColor, {type ProcessedColorValue} from './processColor';
 
 const TRANSPARENT = 0; // rgba(0, 0, 0, 0)

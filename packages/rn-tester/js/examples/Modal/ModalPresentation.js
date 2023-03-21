@@ -60,6 +60,8 @@ function ModalPresentation() {
       alert('onShow');
     }
   };
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const onOrientationChange = event =>
     setCurrentOrientation(event.nativeEvent.orientation);
   const modalBackgroundStyle = {

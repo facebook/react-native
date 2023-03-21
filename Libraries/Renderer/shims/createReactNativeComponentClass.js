@@ -1,12 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<4f1549884fbe8fc2aea495692e3f665d>>
+ * @generated SignedSource<<7d3d4090dadea2daa09d92e5e66f6e5d>>
  *
  * This file was sync'd from the facebook/react repository.
  */

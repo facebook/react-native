@@ -7,8 +7,7 @@
 
 #include "WeakFamilyRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void WeakFamilyRegistry::add(
     ShadowNodeFamily::Shared const &shadowNodeFamily) const {
@@ -28,10 +27,8 @@ WeakFamilyRegistry::WeakFamilies WeakFamilyRegistry::weakFamiliesForSurfaceId(
   std::lock_guard<std::mutex> lock(familiesMutex_);
   if (families_.find(surfaceId) != families_.end()) {
     return families_[surfaceId];
-  } else {
-    return {};
   }
+  return {};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

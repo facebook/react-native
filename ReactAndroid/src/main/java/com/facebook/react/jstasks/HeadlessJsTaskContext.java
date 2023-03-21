@@ -61,9 +61,15 @@ public class HeadlessJsTaskContext {
     mReactContext = new WeakReference<ReactContext>(reactContext);
   }
 
-  /** Register a task lifecycle event listener. */
-  public void addTaskEventListener(HeadlessJsTaskEventListener listener) {
+  /**
+   * Register a task lifecycle event listener. Synchronized in order to prevent race conditions with
+   * finishTask, as the listener will be invoked for already running tasks.
+   */
+  public synchronized void addTaskEventListener(HeadlessJsTaskEventListener listener) {
     mHeadlessJsTaskEventListeners.add(listener);
+    for (Integer activeTaskId : mActiveTasks) {
+      listener.onHeadlessJsTaskStart(activeTaskId);
+    }
   }
 
   /** Unregister a task lifecycle event listener. */

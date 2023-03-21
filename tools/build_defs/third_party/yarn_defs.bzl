@@ -11,3 +11,21 @@ def yarn_workspace(name, srcs = [], transform_ignore = None, visibility = None):
         out = "{}.txt".format(name),
         visibility = visibility,
     )
+
+def yarn_workspace_binary(
+        name,
+        main,
+        deps = None,
+        root = None,
+        reuse = None,
+        args = None,
+        env = None,
+        node_args = None,
+        visibility = None):
+    # Noop for OSS vs FB build compatibility for now
+    native.genrule(
+        name = name,
+        cmd = "echo {} > $OUT".format(name),
+        out = "{}.txt".format(name),
+        visibility = visibility,
+    )

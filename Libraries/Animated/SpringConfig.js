@@ -24,7 +24,7 @@ function dampingFromOrigamiValue(oValue: number) {
   return (oValue - 8) * 3 + 25;
 }
 
-function fromOrigamiTensionAndFriction(
+export function fromOrigamiTensionAndFriction(
   tension: number,
   friction: number,
 ): SpringConfigType {
@@ -34,7 +34,7 @@ function fromOrigamiTensionAndFriction(
   };
 }
 
-function fromBouncinessAndSpeed(
+export function fromBouncinessAndSpeed(
   bounciness: number,
   speed: number,
 ): SpringConfigType {
@@ -96,8 +96,3 @@ function fromBouncinessAndSpeed(
     damping: dampingFromOrigamiValue(bouncyFriction),
   };
 }
-
-module.exports = {
-  fromOrigamiTensionAndFriction,
-  fromBouncinessAndSpeed,
-};

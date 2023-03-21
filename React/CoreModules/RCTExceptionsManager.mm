@@ -35,7 +35,10 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
-- (void)reportSoft:(NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId
+- (void)reportSoft:(NSString *)message
+              stack:(NSArray<NSDictionary *> *)stack
+        exceptionId:(double)exceptionId
+    extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
   RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
   [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
@@ -43,11 +46,15 @@ RCT_EXPORT_MODULE()
   if (_delegate) {
     [_delegate handleSoftJSExceptionWithMessage:message
                                           stack:stack
-                                    exceptionId:[NSNumber numberWithDouble:exceptionId]];
+                                    exceptionId:[NSNumber numberWithDouble:exceptionId]
+                                extraDataAsJSON:extraDataAsJSON];
   }
 }
 
-- (void)reportFatal:(NSString *)message stack:(NSArray<NSDictionary *> *)stack exceptionId:(double)exceptionId
+- (void)reportFatal:(NSString *)message
+              stack:(NSArray<NSDictionary *> *)stack
+        exceptionId:(double)exceptionId
+    extraDataAsJSON:(nullable NSString *)extraDataAsJSON
 {
   RCTRedBox *redbox = [_moduleRegistry moduleForName:"RedBox"];
   [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
@@ -55,7 +62,8 @@ RCT_EXPORT_MODULE()
   if (_delegate) {
     [_delegate handleFatalJSExceptionWithMessage:message
                                            stack:stack
-                                     exceptionId:[NSNumber numberWithDouble:exceptionId]];
+                                     exceptionId:[NSNumber numberWithDouble:exceptionId]
+                                 extraDataAsJSON:extraDataAsJSON];
   }
 
   static NSUInteger reloadRetries = 0;
@@ -64,7 +72,8 @@ RCT_EXPORT_MODULE()
     RCTTriggerReloadCommandListeners(@"JS Crash Reload");
   } else if (!RCT_DEV) {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
-    NSDictionary *errorInfo = @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack};
+    NSDictionary *errorInfo =
+        @{NSLocalizedDescriptionKey : description, RCTJSStackTraceKey : stack, RCTJSExtraDataKey : extraDataAsJSON};
     RCTFatal([NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo]);
   }
 }
@@ -74,7 +83,7 @@ RCT_EXPORT_METHOD(reportSoftException
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  [self reportSoft:message stack:stack exceptionId:exceptionId];
+  [self reportSoft:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 RCT_EXPORT_METHOD(reportFatalException
@@ -82,7 +91,7 @@ RCT_EXPORT_METHOD(reportFatalException
                   : (NSArray<NSDictionary *> *)stack exceptionId
                   : (double)exceptionId)
 {
-  [self reportFatal:message stack:stack exceptionId:exceptionId];
+  [self reportFatal:message stack:stack exceptionId:exceptionId extraDataAsJSON:nil];
 }
 
 RCT_EXPORT_METHOD(updateExceptionMessage
@@ -117,24 +126,39 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   NSMutableArray<NSDictionary *> *stackArray = [NSMutableArray<NSDictionary *> new];
   for (auto frame : data.stack()) {
     NSMutableDictionary *frameDict = [NSMutableDictionary new];
-    if (frame.column().hasValue()) {
+    if (frame.column().has_value()) {
       frameDict[@"column"] = @(frame.column().value());
     }
     frameDict[@"file"] = frame.file();
-    if (frame.lineNumber().hasValue()) {
+    if (frame.lineNumber().has_value()) {
       frameDict[@"lineNumber"] = @(frame.lineNumber().value());
     }
     frameDict[@"methodName"] = frame.methodName();
-    if (frame.collapse().hasValue()) {
+    if (frame.collapse().has_value()) {
       frameDict[@"collapse"] = @(frame.collapse().value());
     }
     [stackArray addObject:frameDict];
   }
 
+  NSDictionary *extraData = (NSDictionary *)data.extraData();
+  NSString *extraDataAsJSON = RCTJSONStringify(extraData, NULL);
+
   if (data.isFatal()) {
-    [self reportFatal:message stack:stackArray exceptionId:exceptionId];
+    [self reportFatal:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
   } else {
-    [self reportSoft:message stack:stackArray exceptionId:exceptionId];
+    [self reportSoft:message stack:stackArray exceptionId:exceptionId extraDataAsJSON:extraDataAsJSON];
+  }
+}
+
+- (void)reportJsException:(nullable NSString *)message
+                    stack:(nullable NSArray<NSDictionary *> *)stack
+              exceptionId:(double)exceptionId
+                  isFatal:(bool)isFatal
+{
+  if (isFatal) {
+    [self reportFatalException:message stack:stack exceptionId:exceptionId];
+  } else {
+    [self reportSoftException:message stack:stack exceptionId:exceptionId];
   }
 }
 

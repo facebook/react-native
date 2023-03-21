@@ -115,35 +115,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private int mBatchId = 0;
   private int mNumRootViews = 0;
 
-  @SuppressWarnings("deprecated")
   public UIManagerModule(
       ReactApplicationContext reactContext,
       ViewManagerResolver viewManagerResolver,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        viewManagerResolver,
-        new UIImplementationProvider(),
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  @SuppressWarnings("deprecated")
-  public UIManagerModule(
-      ReactApplicationContext reactContext,
-      List<ViewManager> viewManagersList,
-      int minTimeLeftInFrameForNonBatchedOperationMs) {
-    this(
-        reactContext,
-        viewManagersList,
-        new UIImplementationProvider(),
-        minTimeLeftInFrameForNonBatchedOperationMs);
-  }
-
-  @Deprecated
-  public UIManagerModule(
-      ReactApplicationContext reactContext,
-      ViewManagerResolver viewManagerResolver,
-      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -152,7 +126,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
     mUIImplementation =
-        uiImplementationProvider.createUIImplementation(
+        new UIImplementation(
             reactContext,
             mViewManagerRegistry,
             mEventDispatcher,
@@ -161,11 +135,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     reactContext.addLifecycleEventListener(this);
   }
 
-  @Deprecated
   public UIManagerModule(
       ReactApplicationContext reactContext,
       List<ViewManager> viewManagersList,
-      UIImplementationProvider uiImplementationProvider,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
@@ -174,7 +146,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
     mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
     mUIImplementation =
-        uiImplementationProvider.createUIImplementation(
+        new UIImplementation(
             reactContext,
             mViewManagerRegistry,
             mEventDispatcher,
@@ -207,6 +179,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     getReactApplicationContext().registerComponentCallbacks(mMemoryTrimCallback);
+    getReactApplicationContext().registerComponentCallbacks(mViewManagerRegistry);
     mEventDispatcher.registerEventEmitter(
         DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
@@ -234,6 +207,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
+    reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
@@ -925,7 +899,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   }
 
   /** Listener that drops the CSSNode pool on low memory when the app is backgrounded. */
-  private class MemoryTrimCallback implements ComponentCallbacks2 {
+  private static class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override
     public void onTrimMemory(int level) {

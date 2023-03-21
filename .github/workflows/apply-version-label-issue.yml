@@ -4,8 +4,13 @@ on:
   issues:
     types: [opened, edited]
 
+permissions:
+  contents: read
+
 jobs:
   add-version-label-issue:
+    permissions:
+      issues: write  # for react-native-community/actions-apply-version-label to label issues
     runs-on: ubuntu-latest
     continue-on-error: true
 

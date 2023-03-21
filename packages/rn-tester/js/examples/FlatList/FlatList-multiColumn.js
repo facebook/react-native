@@ -53,6 +53,8 @@ class MultiColumnExample extends React.PureComponent<
     numColumns: 2,
     virtualized: true,
   };
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   _onChangeFilterText = filterText => {
     this.setState(() => ({filterText}));
   };
@@ -140,7 +142,7 @@ class MultiColumnExample extends React.PureComponent<
       getItemLayout(data, index).length + 2 * (CARD_MARGIN + BORDER_WIDTH);
     return {length, offset: length * index, index};
   }
-  _renderItemComponent = ({item}: RenderItemProps<any | Item>) => {
+  _renderItemComponent = ({item}: RenderItemProps<any | Item>): $FlowFixMe => {
     return (
       <View style={styles.card}>
         <ItemComponent

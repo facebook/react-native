@@ -315,6 +315,9 @@ NS_INLINE NSEdgeInsets UIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat botto
 // These types have the same purpose but may differ semantically. Use with care!
 
 #define UIEvent NSEvent
+#define UITouchType NSTouchType
+#define UIEventButtonMask NSEventButtonMask
+#define UIKeyModifierFlags NSEventModifierFlags
 
 // UIGestureRecognizer
 #define UIGestureRecognizer NSGestureRecognizer
@@ -369,7 +372,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 #define RCTPlatformWindow NSWindow
 
-@interface RCTUIView : NSView
+@interface RCTUIView : RCTPlatformView
 
 @property (nonatomic, readonly) BOOL canBecomeFirstResponder;
 - (BOOL)becomeFirstResponder;
@@ -483,6 +486,12 @@ NS_ASSUME_NONNULL_END
 
 #endif // ] TARGET_OS_OSX
 
+#if !TARGET_OS_OSX
+typedef UIApplication RCTUIApplication;
+#else
+typedef NSApplication RCTUIApplication;
+#endif
+
 //
 // fabric component types
 //
@@ -492,8 +501,11 @@ NS_ASSUME_NONNULL_END
 #if !TARGET_OS_OSX
 typedef UISlider RCTUISlider;
 #else
+@protocol RCTUISliderDelegate;
+
 @interface RCTUISlider : NSSlider
 NS_ASSUME_NONNULL_BEGIN
+@property (nonatomic, weak) id<RCTUISliderDelegate> delegate;
 @property (nonatomic, readonly) BOOL pressed;
 @property (nonatomic, assign) float value;
 @property (nonatomic, assign) float minimumValue;
@@ -505,6 +517,15 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 @end
 #endif
+
+#if TARGET_OS_OSX // [macOS
+@protocol RCTUISliderDelegate <NSObject>
+@optional
+NS_ASSUME_NONNULL_BEGIN
+- (void)slider:(RCTUISlider *)slider didPress:(BOOL)press;
+NS_ASSUME_NONNULL_END
+@end
+#endif // macOS]
 
 // RCTUILabel
 

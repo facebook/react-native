@@ -7,6 +7,6 @@
 
 #import "RCTAnimationDriver.h"
 
-@interface RCTFrameAnimation : NSObject<RCTAnimationDriver>
+@interface RCTFrameAnimation : NSObject <RCTAnimationDriver>
 
 @end

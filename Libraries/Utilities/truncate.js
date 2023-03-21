@@ -29,7 +29,7 @@ const truncate = function (
   maxChars: number,
   options?: truncateOptions,
 ): ?string {
-  options = Object.assign({}, defaultOptions, options);
+  options = {...defaultOptions, ...options};
   if (
     str &&
     str.length &&

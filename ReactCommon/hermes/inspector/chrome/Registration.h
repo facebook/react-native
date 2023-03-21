@@ -18,20 +18,24 @@ namespace hermes {
 namespace inspector {
 namespace chrome {
 
+using DebugSessionToken = int;
+
 /*
  * enableDebugging adds this runtime to the list of debuggable JS targets
- * (called "pages" in the higher-leavel React Native API) in this process. It
- * should be called before any JS runs in the runtime.
+ * (called "pages" in the higher-level React Native API) in this process. It
+ * should be called before any JS runs in the runtime. The returned token
+ * can be used to disable debugging for this runtime.
  */
-extern void enableDebugging(
+extern DebugSessionToken enableDebugging(
     std::unique_ptr<RuntimeAdapter> adapter,
     const std::string &title);
 
 /*
  * disableDebugging removes this runtime from the list of debuggable JS targets
- * in this process.
+ * in this process. The runtime to remove is identified by the token returned
+ * from enableDebugging.
  */
-extern void disableDebugging(HermesRuntime &runtime);
+extern void disableDebugging(DebugSessionToken session);
 
 } // namespace chrome
 } // namespace inspector

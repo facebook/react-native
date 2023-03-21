@@ -38,7 +38,6 @@ class AppEventsTest extends React.Component<{...}, State> {
     NativeAppEventEmitter.addListener('testEvent', this.receiveEvent);
     const event = {data: TEST_PAYLOAD, ts: Date.now()};
     TestModule.sendAppEvent('testEvent', event);
-    // eslint-disable-next-line react/no-did-mount-set-state
     this.setState({sent: event});
   }
 

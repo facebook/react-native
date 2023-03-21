@@ -7,37 +7,33 @@
 
 #include "TurboModule.h"
 
-using namespace facebook;
-
 namespace facebook {
 namespace react {
 
 TurboModule::TurboModule(
-    const std::string &name,
+    std::string name,
     std::shared_ptr<CallInvoker> jsInvoker)
-    : name_(name), jsInvoker_(jsInvoker) {}
-
-TurboModule::~TurboModule() {}
+    : name_(std::move(name)), jsInvoker_(std::move(jsInvoker)) {}
 
 jsi::Value TurboModule::get(
     jsi::Runtime &runtime,
-    const jsi::PropNameID &propName) {
-  std::string propNameUtf8 = propName.utf8(runtime);
-  auto p = methodMap_.find(propNameUtf8);
-  if (p == methodMap_.end()) {
-    // Method was not found, let JS decide what to do.
-    return jsi::Value::undefined();
-  }
-  MethodMetadata meta = p->second;
-  return jsi::Function::createFromHostFunction(
+    const jsi::PropNameID &propName,
+    const MethodMetadata &meta) {
+  auto result = jsi::Function::createFromHostFunction(
       runtime,
       propName,
       static_cast<unsigned int>(meta.argCount),
       [this, meta](
-          facebook::jsi::Runtime &rt,
-          const facebook::jsi::Value &thisVal,
-          const facebook::jsi::Value *args,
+          jsi::Runtime &rt,
+          const jsi::Value &thisVal,
+          const jsi::Value *args,
           size_t count) { return meta.invoker(rt, *this, args, count); });
+  // If we have a JS wrapper, cache the result of this lookup
+  // We don't cache misses, to allow for methodMap_ to dynamically be extended
+  if (jsRepresentation_) {
+    jsRepresentation_->setProperty(runtime, propName, result);
+  }
+  return result;
 }
 
 } // namespace react

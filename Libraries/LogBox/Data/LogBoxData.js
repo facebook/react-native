@@ -4,25 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 ('use strict');
 
-import * as React from 'react';
-import LogBoxLog from './LogBoxLog';
-import {parseLogBoxException} from './parseLogBoxLog';
+import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
-  Message,
   Category,
   ComponentStack,
   ExtendedExceptionData,
+  Message,
 } from './parseLogBoxLog';
+
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import type {ExtendedError} from '../../Core/ExtendedError';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
+import LogBoxLog from './LogBoxLog';
+import {parseLogBoxException} from './parseLogBoxLog';
+import * as React from 'react';
 export type LogBoxLogs = Set<LogBoxLog>;
 export type LogData = $ReadOnly<{|
   level: LogLevel,
@@ -67,7 +68,7 @@ const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
 let appInfo: ?() => AppInfo = null;
 let logs: LogBoxLogs = new Set();
-let updateTimeout = null;
+let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
 
@@ -133,7 +134,7 @@ function handleUpdate(): void {
   }
 }
 
-function appendNewLog(newLog) {
+function appendNewLog(newLog: LogBoxLog) {
   // Don't want store these logs because they trigger a
   // state update when we add them to the store.
   if (isMessageIgnored(newLog.message.content)) {
@@ -156,7 +157,7 @@ function appendNewLog(newLog) {
     // sybolication for up to a second before adding the log.
     const OPTIMISTIC_WAIT_TIME = 1000;
 
-    let addPendingLog = () => {
+    let addPendingLog: ?() => void = () => {
       logs.add(newLog);
       if (_selectedIndex < 0) {
         setSelectedLog(logs.size - 1);
@@ -401,7 +402,7 @@ export function withSubscription(
   WrappedComponent: SubscribedComponent,
 ): React.AbstractComponent<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
-    static getDerivedStateFromError() {
+    static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
 
@@ -413,7 +414,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state = {
+    state: State = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

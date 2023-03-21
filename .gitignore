@@ -19,14 +19,13 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-# exclude project.xcworkspace except for xcshareddata/WorkspaceSettings.xcsettings
-project.xcworkspace/*
-**/project.xcworkspace/contents.xcworkspacedata
-**/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+project.xcworkspace
+**/.xcode.env.local
 
 # Gradle
 /build/
 /packages/react-native-gradle-plugin/build/
+/packages/rn-tester/build
 /packages/rn-tester/android/app/.cxx/
 /packages/rn-tester/android/app/build/
 /packages/rn-tester/android/app/gradle/
@@ -37,8 +36,12 @@ project.xcworkspace/*
 /ReactAndroid/gradle/
 /ReactAndroid/gradlew
 /ReactAndroid/gradlew.bat
-/build_deps/
-/ReactAndroid/packages/
+/ReactAndroid/external-artifacts/build/
+/ReactAndroid/external-artifacts/artifacts/
+/ReactAndroid/hermes-engine/build/
+/ReactAndroid/hermes-engine/.cxx/
+/template/android/app/build/
+/template/android/build/
 
 # Buck
 .buckd
@@ -68,7 +71,6 @@ local.properties
 node_modules
 *.log
 .nvm
-/bots/node_modules/
 package-lock.json
 
 # OS X
@@ -89,8 +91,6 @@ package-lock.json
 
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
-/packages/rn-tester/build
-/packages/rn-tester/android/app/build/*
 
 # Libs that shouldn't have Xcode project
 /Libraries/FBLazyVector/**/*.xcodeproj
@@ -111,14 +111,23 @@ package-lock.json
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
-!/packages/rn-tester/Pods/__offline_mirrors__
+!/packages/rn-tester/Pods/__offline_mirrors_hermes__
+!/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
 # react-native-codegen
 /React/FBReactNativeSpec/FBReactNativeSpec
 /packages/react-native-codegen/lib
+/packages/react-native-codegen/tmp/
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /packages/rn-tester/NativeModuleExample/react/renderer/components/ScreenshotManagerSpec/
+
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
+/sdks/hermes-engine/build_host_hermesc
 
 # Visual studio
 .vscode
@@ -126,3 +135,6 @@ package-lock.json
 
 # Android memory profiler files
 *.hprof
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*

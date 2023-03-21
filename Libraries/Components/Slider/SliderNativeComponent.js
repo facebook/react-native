@@ -8,19 +8,18 @@
  * @flow strict-local
  */
 
+import type {ImageSource} from '../../Image/ImageSource';
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
   BubblingEventHandler,
   DirectEventHandler,
   Double,
   WithDefault,
 } from '../../Types/CodegenTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 import codegenNativeComponent from '../../Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
-
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ImageSource} from '../../Image/ImageSource';
-import type {ViewProps} from '../View/ViewPropTypes';
 
 type Event = $ReadOnly<{|
   value: Double,

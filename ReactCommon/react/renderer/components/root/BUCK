@@ -29,9 +29,12 @@ rn_xplat_cxx_library(
         ],
         prefix = "react/renderer/components/root",
     ),
+    compiler_flags_pedantic = True,
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
@@ -43,9 +46,6 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
-        "//xplat/folly:memory",
-        "//xplat/folly:molly",
         YOGA_CXX_TARGET,
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/core:core"),
@@ -68,7 +68,6 @@ fb_xplat_cxx_test(
     platforms = (ANDROID, APPLE, CXX),
     deps = [
         ":root",
-        "//xplat/folly:molly",
         "//xplat/third-party/gmock:gtest",
         react_native_xplat_target("react/renderer/element:element"),
     ],

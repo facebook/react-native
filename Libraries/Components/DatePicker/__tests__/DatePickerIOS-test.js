@@ -4,17 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
-const DatePickerIOS = require('../DatePickerIOS');
-
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const DatePickerIOS = require('../DatePickerIOS');
+const React = require('react');
 
 describe('DatePickerIOS', () => {
   it('should render as expected', () => {

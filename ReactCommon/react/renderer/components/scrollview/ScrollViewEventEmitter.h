@@ -38,7 +38,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
 
  private:
   void dispatchScrollViewEvent(
-      const std::string &name,
+      std::string name,
       const ScrollViewMetrics &scrollViewMetrics,
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 };

@@ -42,8 +42,7 @@
 
 #endif // macOS]
 
-@implementation RCTTextView
-{
+@implementation RCTTextView {
   CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // [macOS]
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
@@ -100,10 +99,10 @@
 #if DEBUG // [macOS] description is a debug-only feature
 - (NSString *)description
 {
-  // [macOS we shouldn't make assumptions on what super's description is. Just append additional content.
-  NSString *stringToAppend = [NSString stringWithFormat:@" reactTag: %@; text: %@", self.reactTag, _textStorage.string];
-  return [[super description] stringByAppendingString:stringToAppend];
-  // macOS]
+  NSString *superDescription = super.description;
+  NSRange replacementRange = [superDescription rangeOfString:@">"];
+  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@; text: %@>", self.reactTag, _textStorage.string];
+  return [superDescription stringByReplacingCharactersInRange:replacementRange withString:replacement];
 }
 #endif // [macOS]
 
@@ -118,8 +117,7 @@
 #if !TARGET_OS_OSX // [macOS]
   if (_selectable) {
     [self enableContextMenu];
-  }
-  else {
+  } else {
     [self disableContextMenu];
   }
 #else // [macOS
@@ -220,69 +218,43 @@
   // CATextLayer disables font smoothing by default now on macOS; we follow suit.
   CGContextSetShouldSmoothFonts(context, NO);
 #endif
-  
+
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
-                                                     actualGlyphRange:NULL];
-  // [macOS
-  [_textStorage enumerateAttribute:RCTTextAttributesFontSmoothingAttributeName
-                           inRange:characterRange
-                           options:0
-                        usingBlock:
-    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
-    RCTFontSmoothing smoothing = value.integerValue;
-    if (smoothing == RCTFontSmoothingAuto) {
-      smoothing = [RCTTextAttributes fontSmoothingDefault];
-    }
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    switch (smoothing) {
-      case RCTFontSmoothingNone:
-        CGContextSetShouldAntialias(context, false);
-        break;
-      case RCTFontSmoothingAntialiased:
-        CGContextSetAllowsFontSmoothing(context, false);
-        CGContextSetShouldSmoothFonts(context, false);
-        break;
-      case RCTFontSmoothingAuto:
-      case RCTFontSmoothingSubpixelAntialiased:
-        break;
-    }
-    NSRange subGlyphRange = [layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
-    [layoutManager drawBackgroundForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
-    [layoutManager drawGlyphsForGlyphRange:subGlyphRange atPoint:_contentFrame.origin];
-    CGContextRestoreGState(context);
-  }];
-  // macOS]
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
   __block UIBezierPath *highlightPath = nil;
-  [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
-                           inRange:characterRange
-                           options:0
-                        usingBlock:
-    ^(NSNumber *value, NSRange range, __unused BOOL *stop) {
-      if (!value.boolValue) {
-        return;
-      }
+  NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  [_textStorage
+      enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
+                 inRange:characterRange
+                 options:0
+              usingBlock:^(NSNumber *value, NSRange range, __unused BOOL *stop) {
+                if (!value.boolValue) {
+                  return;
+                }
 
-      [layoutManager enumerateEnclosingRectsForGlyphRange:range
-                                 withinSelectedGlyphRange:range
-                                          inTextContainer:textContainer
-                                               usingBlock:
-        ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                [layoutManager
+                    enumerateEnclosingRectsForGlyphRange:range
+                                withinSelectedGlyphRange:range
+                                         inTextContainer:textContainer
+                                              usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                                                // [macOS
+                                                UIBezierPath *path = UIBezierPathWithRoundedRect(
+                                                  CGRectInset(enclosingRect, -2, -2), 
+                                                  2); 
+                                                // [macOS]
+                                                if (highlightPath) {
 #if !TARGET_OS_OSX // [macOS]
-        UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+                                                  [highlightPath appendPath:path];
 #else // [macOS
-        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) xRadius:2 yRadius:2];
+                                                  [highlightPath appendBezierPath:path];
 #endif // macOS]
-          if (highlightPath) {
-            UIBezierPathAppendPath(highlightPath, path); // [macOS]
-          } else {
-            highlightPath = path;
-          }
-        }
-      ];
-  }];
+                                                } else {
+                                                  highlightPath = path;
+                                                }
+                                              }];
+              }];
 
   if (highlightPath) {
     if (!_highlightLayer) {
@@ -296,12 +268,11 @@
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
   }
-  
+
 #if TARGET_OS_MACCATALYST
   CGContextRestoreGState(context);
 #endif
 }
-
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
@@ -316,7 +287,8 @@
 
   // If the point is not before (fraction == 0.0) the first character and not
   // after (fraction == 1.0) the last character, then the attribute is valid.
-  if (_textStorage.length > 0 && (fraction > 0 || characterIndex > 0) && (fraction < 1 || characterIndex < _textStorage.length - 1)) {
+  if (_textStorage.length > 0 && (fraction > 0 || characterIndex > 0) &&
+      (fraction < 1 || characterIndex < _textStorage.length - 1)) {
     reactTag = [_textStorage attribute:RCTTextAttributesTagAttributeName atIndex:characterIndex effectiveRange:NULL];
   }
 
@@ -377,7 +349,8 @@
 #if !TARGET_OS_OSX // [macOS]
 - (void)enableContextMenu
 {
-  _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+  _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                              action:@selector(handleLongPress:)];
   [self addGestureRecognizer:_longPressGestureRecognizer];
 }
 
@@ -548,7 +521,7 @@
   NSAttributedString *attributedText = _textStorage;
 
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
-                           documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
+                           documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType}
                                         error:nil];
 #if !TARGET_OS_OSX // [macOS]
   NSMutableDictionary *item = [NSMutableDictionary new]; // [macOS]
@@ -560,7 +533,7 @@
   [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-  pasteboard.items = @[item];
+  pasteboard.items = @[ item ];
 #else // [macOS
   NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
   [pasteboard clearContents];

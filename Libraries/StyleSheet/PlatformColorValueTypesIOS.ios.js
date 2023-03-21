@@ -9,6 +9,7 @@
  */
 
 import type {ColorValue} from './StyleSheet';
+
 import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
 
 export type DynamicColorIOSTuple = {

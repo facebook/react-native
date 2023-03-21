@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 import SectionListBaseExample from './SectionListBaseExample';
 import {View, StyleSheet, SectionList} from 'react-native';
 import * as React from 'react';
@@ -30,7 +31,11 @@ export function SectionList_onViewableItemsChanged(props: {
   const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
   const [output, setOutput] = React.useState('');
   const exampleProps = {
-    onViewableItemsChanged: info =>
+    onViewableItemsChanged: (info: {
+      changed: Array<ViewToken>,
+      viewableItems: Array<ViewToken>,
+      ...
+    }) =>
       setOutput(
         info.viewableItems
           .filter(viewToken => viewToken.index != null && viewToken.isViewable)

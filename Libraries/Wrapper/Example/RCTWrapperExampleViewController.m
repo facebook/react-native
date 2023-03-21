@@ -13,7 +13,8 @@
 
 @implementation RCTWrapperExampleViewController
 
-- (void)loadView {
+- (void)loadView
+{
   self.view = [RCTWrapperExampleView new];
 }
 

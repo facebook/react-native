@@ -15,7 +15,7 @@ const ReactNative = require('react-native');
 const {Button, findNodeHandle, UIManager} = ReactNative;
 
 class FocusOnMountExample extends React.Component<{}> {
-  ref = React.createRef();
+  ref: any = React.createRef();
 
   componentDidMount() {
     if (this.ref.current) {
@@ -30,7 +30,7 @@ class FocusOnMountExample extends React.Component<{}> {
     }
   }
 
-  render() {
+  render(): React.Node {
     return (
       <Button
         ref={this.ref}

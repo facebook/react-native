@@ -44,10 +44,12 @@ static inline void interpolateViewProps(
   // mounting layer. Once we can remove this, we should change `rawProps` to
   // be const again.
 #ifdef ANDROID
-  interpolatedProps->rawProps["opacity"] = interpolatedProps->opacity;
+  if (!interpolatedProps->rawProps.isNull()) {
+    interpolatedProps->rawProps["opacity"] = interpolatedProps->opacity;
 
-  interpolatedProps->rawProps["transform"] =
-      (folly::dynamic)interpolatedProps->transform;
+    interpolatedProps->rawProps["transform"] =
+        (folly::dynamic)interpolatedProps->transform;
+  }
 #endif
 }
 

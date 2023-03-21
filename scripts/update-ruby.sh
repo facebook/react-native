@@ -53,17 +53,24 @@ echo "$VERSION" > template/_ruby-version
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" Gemfile
 sed_i -e "s/^\(ruby '\)[^']*\('.*\)$/\1$VERSION\2/" template/Gemfile
 
-rm -f Gemfile.lock template/Gemfile.lock
+rm -f Gemfile.lock
 
 export BUNDLE_APP_CONFIG="$ROOT/.bundle"
 cp "$BUNDLE_APP_CONFIG/"* template/_bundle # sync!
 
 bundle lock
-(cd template && bundle lock)
 
-git add \
-    .ruby-version \
-    Gemfile \
-    template/_ruby-version \
-    template/Gemfile \
-    template/Gemfile.lock
+# Disabling getting a potential fatal exit with for crossing filesystem boundary
+export GIT_DISCOVERY_ACROSS_FILESYSTEM=1;
+IS_GIT_REPO=$(git rev-parse --is-inside-work-tree 2> /dev/null || true)
+export GIT_DISCOVERY_ACROSS_FILESYSTEM=0;
+if [ "$IS_GIT_REPO" = "true" ]; then
+    git add \
+        .ruby-version \
+        Gemfile \
+        Gemfile.lock \
+        template/_ruby-version \
+        template/Gemfile
+else
+    echo "Detected that you're not in Git. If on another SCM, don't forget to commit the edited files."
+fi

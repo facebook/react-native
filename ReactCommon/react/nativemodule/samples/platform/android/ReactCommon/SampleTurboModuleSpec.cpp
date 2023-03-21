@@ -18,8 +18,10 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
-      .invokeJavaMethod(rt, VoidKind, "voidFunc", "()V", args, count);
+      .invokeJavaMethod(
+          rt, VoidKind, "voidFunc", "()V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -28,8 +30,10 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getBool(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
-      .invokeJavaMethod(rt, BooleanKind, "getBool", "(Z)Z", args, count);
+      .invokeJavaMethod(
+          rt, BooleanKind, "getBool", "(Z)Z", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -38,8 +42,10 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
-      .invokeJavaMethod(rt, NumberKind, "getNumber", "(D)D", args, count);
+      .invokeJavaMethod(
+          rt, NumberKind, "getNumber", "(D)D", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -48,6 +54,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getString(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -55,7 +62,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getString(
           "getString",
           "(Ljava/lang/String;)Ljava/lang/String;",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -64,6 +72,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getArray(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -71,7 +80,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getArray(
           "getArray",
           "(Lcom/facebook/react/bridge/ReadableArray;)Lcom/facebook/react/bridge/WritableArray;",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -80,6 +90,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getObject(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -87,7 +98,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getObject(
           "getObject",
           "(Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/bridge/WritableMap;",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -96,8 +108,10 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
-      .invokeJavaMethod(rt, NumberKind, "getRootTag", "(D)D", args, count);
+      .invokeJavaMethod(
+          rt, NumberKind, "getRootTag", "(D)D", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -106,6 +120,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -113,7 +128,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(
           "getValue",
           "(DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/bridge/WritableMap;",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -122,6 +138,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -129,7 +146,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(
           "getValueWithCallback",
           "(Lcom/facebook/react/bridge/Callback;)V",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -138,6 +156,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
           rt,
@@ -145,7 +164,8 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise(
           "getValueWithPromise",
           "(ZLcom/facebook/react/bridge/Promise;)V",
           args,
-          count);
+          count,
+          cachedMethodId);
 }
 
 static facebook::jsi::Value
@@ -154,9 +174,16 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(
     TurboModule &turboModule,
     const facebook::jsi::Value *args,
     size_t count) {
+  static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule)
       .invokeJavaMethod(
-          rt, ObjectKind, "getConstants", "()Ljava/util/Map;", args, count);
+          rt,
+          ObjectKind,
+          "getConstants",
+          "()Ljava/util/Map;",
+          args,
+          count,
+          cachedMethodId);
 }
 
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
@@ -197,7 +224,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
 }
 
 std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
-    const std::string moduleName,
+    const std::string &moduleName,
     const JavaTurboModule::InitParams &params) {
   if (moduleName == "SampleTurboModule") {
     return std::make_shared<NativeSampleTurboModuleSpecJSI>(params);

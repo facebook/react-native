@@ -12,6 +12,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
@@ -31,6 +32,9 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -53,10 +57,12 @@ import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.JSPointerDispatcher;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingProhibitedView;
 import com.facebook.react.uimanager.ReactRoot;
+import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -97,6 +103,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private boolean mIsAttachedToInstance;
   private boolean mShouldLogContentAppeared;
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
+  private @Nullable JSPointerDispatcher mJSPointerDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper =
       new ReactAndroidHWInputDeviceHelper(this);
   private boolean mWasMeasured = false;
@@ -125,6 +132,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   private void init() {
+    setRootViewTag(ReactRootViewTagGenerator.getNextRootViewTag());
     setClipChildren(false);
   }
 
@@ -188,6 +196,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void onChildStartedNativeGesture(MotionEvent ev) {
+    onChildStartedNativeGesture(null, ev);
+  }
+
+  @Override
+  public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
     if (!isDispatcherReady()) {
       return;
     }
@@ -197,12 +210,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+      if (childView != null && mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
+      }
     }
-  }
-
-  @Override
-  public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
-    onChildStartedNativeGesture(ev);
   }
 
   @Override
@@ -216,6 +227,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
+      if (mJSPointerDispatcher != null) {
+        mJSPointerDispatcher.onChildEndedNativeGesture();
+      }
     }
   }
 
@@ -230,23 +244,51 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return false;
     }
+    if (ReactFeatureFlags.dispatchPointerEvents && mJSPointerDispatcher == null) {
+      FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
+      return false;
+    }
 
+    return true;
+  }
+
+  // By default the JS touch events are dispatched at the root view. This can be overridden in
+  // subclasses as needed.
+  public boolean shouldDispatchJSTouchEvent(MotionEvent ev) {
     return true;
   }
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    if (shouldDispatchJSTouchEvent(ev)) {
+      dispatchJSTouchEvent(ev);
+    }
+    dispatchJSPointerEvent(ev);
     return super.onInterceptTouchEvent(ev);
   }
 
   @Override
+  public boolean onInterceptHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev);
+    return super.onInterceptHoverEvent(ev);
+  }
+
+  @Override
   public boolean onTouchEvent(MotionEvent ev) {
-    dispatchJSTouchEvent(ev);
+    if (shouldDispatchJSTouchEvent(ev)) {
+      dispatchJSTouchEvent(ev);
+    }
+    dispatchJSPointerEvent(ev);
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
     return true;
+  }
+
+  @Override
+  public boolean onHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev);
+    return super.onHoverEvent(ev);
   }
 
   @Override
@@ -302,7 +344,30 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.requestChildFocus(child, focused);
   }
 
-  private void dispatchJSTouchEvent(MotionEvent event) {
+  protected void dispatchJSPointerEvent(MotionEvent event) {
+    if (mReactInstanceManager == null
+        || !mIsAttachedToInstance
+        || mReactInstanceManager.getCurrentReactContext() == null) {
+      FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
+      return;
+    }
+    if (mJSPointerDispatcher == null) {
+      if (!ReactFeatureFlags.dispatchPointerEvents) {
+        return;
+      }
+      FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
+      return;
+    }
+    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
+
+    if (uiManager != null) {
+      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher);
+    }
+  }
+
+  protected void dispatchJSTouchEvent(MotionEvent event) {
     if (mReactInstanceManager == null
         || !mIsAttachedToInstance
         || mReactInstanceManager.getCurrentReactContext() == null) {
@@ -619,6 +684,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // them. Otherwise, these events might break the states expected by JS.
     // Note that this callback was invoked from within the UI thread.
     mJSTouchDispatcher = new JSTouchDispatcher(this);
+
+    if (ReactFeatureFlags.dispatchPointerEvents) {
+      mJSPointerDispatcher = new JSPointerDispatcher(this);
+    }
+
     if (mRootViewEventListener != null) {
       mRootViewEventListener.onAttachedToReactInstance(this);
     }
@@ -699,11 +769,18 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
     mJSTouchDispatcher = new JSTouchDispatcher(this);
+    if (ReactFeatureFlags.dispatchPointerEvents) {
+      mJSPointerDispatcher = new JSPointerDispatcher(this);
+    }
   }
 
   @VisibleForTesting
   /* package */ void simulateCheckForKeyboardForTesting() {
-    getCustomGlobalLayoutListener().checkForKeyboardEvents();
+    if (Build.VERSION.SDK_INT >= 23) {
+      getCustomGlobalLayoutListener().checkForKeyboardEvents();
+    } else {
+      getCustomGlobalLayoutListener().checkForKeyboardEventsLegacy();
+    }
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -719,12 +796,22 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     // React Native requires that the RootView id be managed entirely by React Native, and will
     // crash in addRootView/startSurface if the native View id isn't set to NO_ID.
+
+    // This behavior can not be guaranteed in hybrid apps that have a native android layer over
+    // which reactRootViews are added and the native views need to have ids on them in order to
+    // work.
+    // Hence this can cause unnecessary crashes at runtime for hybrid apps.
+    // So converting this to a soft exception such that pure react-native devs can still see the
+    // warning while hybrid apps continue to run without crashes
+
     if (getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to attach a ReactRootView with an explicit id already set to ["
-              + getId()
-              + "]. React Native uses the id field to track react tags and will overwrite this"
-              + " field. If that is fine, explicitly overwrite the id field to View.NO_ID.");
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new IllegalViewOperationException(
+              "Trying to attach a ReactRootView with an explicit id already set to ["
+                  + getId()
+                  + "]. React Native uses the id field to track react tags and will overwrite this"
+                  + " field. If that is fine, explicitly overwrite the id field to View.NO_ID."));
     }
 
     try {
@@ -802,7 +889,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private final Rect mVisibleViewArea;
     private final int mMinKeyboardHeightDetected;
 
-    private int mKeyboardHeight = 0;
+    private boolean mKeyboardIsVisible = false;
+    private int mKeyboardHeight = 0; // Only used in checkForKeyboardEventsLegacy path
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
@@ -818,13 +906,62 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           || mReactInstanceManager.getCurrentReactContext() == null) {
         return;
       }
-      checkForKeyboardEvents();
+
+      // WindowInsetsCompat IME measurement is reliable for API level 23+.
+      // https://developer.android.com/jetpack/androidx/releases/core#1.5.0-alpha02
+      if (Build.VERSION.SDK_INT >= 23) {
+        checkForKeyboardEvents();
+      } else {
+        checkForKeyboardEventsLegacy();
+      }
+
       checkForDeviceOrientationChanges();
       checkForDeviceDimensionsChanges();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
+      WindowInsets rootInsets = getRootView().getRootWindowInsets();
+      WindowInsetsCompat compatRootInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets);
+
+      boolean keyboardIsVisible = compatRootInsets.isVisible(WindowInsetsCompat.Type.ime());
+      if (keyboardIsVisible != mKeyboardIsVisible) {
+        mKeyboardIsVisible = keyboardIsVisible;
+
+        if (keyboardIsVisible) {
+          Insets imeInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.ime());
+          Insets barInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+          int height = imeInsets.bottom - barInsets.bottom;
+
+          int softInputMode = ((Activity) getContext()).getWindow().getAttributes().softInputMode;
+          int screenY =
+              softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                  ? mVisibleViewArea.bottom - height
+                  : mVisibleViewArea.bottom;
+
+          sendEvent(
+              "keyboardDidShow",
+              createKeyboardEventPayload(
+                  PixelUtil.toDIPFromPixel(screenY),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.left),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                  PixelUtil.toDIPFromPixel(height)));
+        } else {
+          sendEvent(
+              "keyboardDidHide",
+              createKeyboardEventPayload(
+                  PixelUtil.toDIPFromPixel(mLastHeight),
+                  0,
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
+                  0));
+        }
+      }
+    }
+
+    private void checkForKeyboardEventsLegacy() {
+      getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
+
       int notchHeight = 0;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         WindowInsets insets = getRootView().getRootWindowInsets();
@@ -842,8 +979,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
+
       if (isKeyboardShowingOrKeyboardHeightChanged) {
         mKeyboardHeight = heightDiff;
+        mKeyboardIsVisible = true;
         sendEvent(
             "keyboardDidShow",
             createKeyboardEventPayload(
@@ -857,6 +996,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       boolean isKeyboardHidden = mKeyboardHeight != 0 && heightDiff <= mMinKeyboardHeightDetected;
       if (isKeyboardHidden) {
         mKeyboardHeight = 0;
+        mKeyboardIsVisible = false;
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(

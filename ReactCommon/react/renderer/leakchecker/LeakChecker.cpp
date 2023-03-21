@@ -12,8 +12,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 LeakChecker::LeakChecker(RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
@@ -27,14 +26,14 @@ void LeakChecker::stopSurface(SurfaceId surfaceId) {
   if (previouslyStoppedSurface_ > 0) {
     // Dispatch the check onto JavaScript thread to make sure all other
     // cleanup code has had chance to run.
-    runtimeExecutor_([previouslySoppedSurface = previouslyStoppedSurface_,
+    runtimeExecutor_([previouslyStoppedSurface = previouslyStoppedSurface_,
                       this](jsi::Runtime &runtime) {
       runtime.instrumentation().collectGarbage("LeakChecker");
       // For now check the previous surface because React uses double
       // buffering which keeps the surface that was just stopped in
       // memory. This is a documented problem in the last point of
       // https://github.com/facebook/react/issues/16087
-      checkSurfaceForLeaks(previouslySoppedSurface);
+      checkSurfaceForLeaks(previouslyStoppedSurface);
     });
   }
 
@@ -58,5 +57,4 @@ void LeakChecker::checkSurfaceForLeaks(SurfaceId surfaceId) const {
   registry_.removeFamiliesWithSurfaceId(surfaceId);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

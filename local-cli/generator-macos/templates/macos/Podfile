@@ -14,7 +14,7 @@ target 'HelloWorld-macOS' do
 end
 
 target 'HelloWorld-iOS' do
-  platform :ios, '11'
+  platform :ios, '12.4'
   use_native_modules!
   use_react_native!(:path => '../node_modules/react-native-macos')
 

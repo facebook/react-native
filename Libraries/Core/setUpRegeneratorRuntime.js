@@ -10,8 +10,8 @@
 
 'use strict';
 
-const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 const {hasNativeConstructor} = require('../Utilities/FeatureDetection');
+const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 
 /**
  * Set up regenerator.

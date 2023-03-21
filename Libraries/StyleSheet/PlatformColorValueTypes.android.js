@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
-import type {ColorValue} from './StyleSheet';
 import type {ProcessedColorValue} from './processColor';
+import type {ColorValue} from './StyleSheet';
 
 export opaque type NativeColorValue = {
   resource_paths?: Array<string>,

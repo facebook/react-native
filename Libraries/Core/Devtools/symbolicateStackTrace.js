@@ -10,9 +10,9 @@
 
 'use strict';
 
-const getDevServer = require('./getDevServer');
-
 import type {StackFrame} from '../NativeExceptionsManager';
+
+const getDevServer = require('./getDevServer');
 
 export type CodeFrame = $ReadOnly<{
   content: string,

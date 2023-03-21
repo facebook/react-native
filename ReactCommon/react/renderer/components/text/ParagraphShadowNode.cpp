@@ -18,8 +18,7 @@
 
 #include "ParagraphState.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using Content = ParagraphShadowNode::Content;
 
@@ -70,7 +69,7 @@ Content ParagraphShadowNode::getContentWithMeasuredAttachments(
     auto laytableShadowNode =
         traitCast<LayoutableShadowNode const *>(attachment.shadowNode);
 
-    if (!laytableShadowNode) {
+    if (laytableShadowNode == nullptr) {
       continue;
     }
 
@@ -189,7 +188,8 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   for (size_t i = 0; i < content.attachments.size(); i++) {
     auto &attachment = content.attachments.at(i);
 
-    if (!traitCast<LayoutableShadowNode const *>(attachment.shadowNode)) {
+    if (traitCast<LayoutableShadowNode const *>(attachment.shadowNode) ==
+        nullptr) {
       // Not a layoutable `ShadowNode`, no need to lay it out.
       continue;
     }
@@ -237,5 +237,4 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

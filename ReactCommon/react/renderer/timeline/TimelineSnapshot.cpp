@@ -11,8 +11,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TimelineSnapshot::TimelineSnapshot(
     RootShadowNode::Shared rootShadowNode,
@@ -28,5 +27,4 @@ TimelineFrame TimelineSnapshot::getFrame() const noexcept {
   return frame_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

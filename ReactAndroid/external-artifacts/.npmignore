@@ -1,0 +1,3 @@
+# Make sure we never publish the build and artifacts folders to npm.
+build/
+artifacts/

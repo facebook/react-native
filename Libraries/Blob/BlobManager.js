@@ -8,12 +8,13 @@
  * @format
  */
 
-const Blob = require('./Blob');
-const BlobRegistry = require('./BlobRegistry');
+import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
 
-import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
 import NativeBlobModule from './NativeBlobModule';
 import invariant from 'invariant';
+
+const Blob = require('./Blob');
+const BlobRegistry = require('./BlobRegistry');
 
 /*eslint-disable no-bitwise */
 /*eslint-disable eqeqeq */
@@ -110,6 +111,7 @@ class BlobManager {
    */
   static createFromOptions(options: BlobData): Blob {
     BlobRegistry.register(options.blobId);
+    // $FlowFixMe[prop-missing]
     return Object.assign(Object.create(Blob.prototype), {
       data:
         // Reuse the collector instance when creating from an existing blob.

@@ -7,8 +7,7 @@
 
 #include "ImageTelemetry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SurfaceId ImageTelemetry::getSurfaceId() const {
   return surfaceId_;
@@ -18,5 +17,4 @@ TelemetryTimePoint ImageTelemetry::getWillRequestUrlTime() const {
   return willRequestUrlTime_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

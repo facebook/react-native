@@ -10,20 +10,18 @@
 
 'use strict';
 
-const AnimatedValue = require('../nodes/AnimatedValue');
-const AnimatedValueXY = require('../nodes/AnimatedValueXY');
-const AnimatedInterpolation = require('../nodes/AnimatedInterpolation');
-const Animation = require('./Animation');
-
-const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
-import type {AnimationConfig, EndCallback} from './Animation';
 import type {RgbaValue} from '../nodes/AnimatedColor';
+import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
+import type AnimatedValue from '../nodes/AnimatedValue';
+import type AnimatedValueXY from '../nodes/AnimatedValueXY';
+import type {AnimationConfig, EndCallback} from './Animation';
 
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
+import Animation from './Animation';
 
-export type TimingAnimationConfig = {
+export type TimingAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   toValue:
     | number
@@ -36,33 +34,33 @@ export type TimingAnimationConfig = {
     | AnimatedValueXY
     | RgbaValue
     | AnimatedColor
-    | AnimatedInterpolation,
+    | AnimatedInterpolation<number>,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
-export type TimingAnimationConfigSingle = {
+export type TimingAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
-  toValue: number | AnimatedValue | AnimatedInterpolation,
+  toValue: number,
   easing?: (value: number) => number,
   duration?: number,
   delay?: number,
-};
+}>;
 
 let _easeInOut;
 function easeInOut() {
   if (!_easeInOut) {
-    const Easing = require('../Easing');
+    const Easing = require('../Easing').default;
     _easeInOut = Easing.inOut(Easing.ease);
   }
   return _easeInOut;
 }
 
-class TimingAnimation extends Animation {
+export default class TimingAnimation extends Animation {
   _startTime: number;
   _fromValue: number;
-  _toValue: any;
+  _toValue: number;
   _duration: number;
   _delay: number;
   _easing: (value: number) => number;
@@ -79,7 +77,7 @@ class TimingAnimation extends Animation {
     this._duration = config.duration ?? 500;
     this._delay = config.delay ?? 0;
     this.__iterations = config.iterations ?? 1;
-    this._useNativeDriver = shouldUseNativeDriver(config);
+    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
     this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
   }
@@ -172,5 +170,3 @@ class TimingAnimation extends Animation {
     this.__debouncedOnEnd({finished: false});
   }
 }
-
-module.exports = TimingAnimation;

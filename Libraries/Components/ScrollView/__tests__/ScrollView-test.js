@@ -4,19 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow-strict
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
-const ScrollView = require('../ScrollView');
-const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const ReactTestRenderer = require('react-test-renderer');
-const View = require('../../View/View');
 const Text = require('../../../Text/Text');
+const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
+const View = require('../../View/View');
+const ScrollView = require('../ScrollView');
+const React = require('react');
+const ReactTestRenderer = require('react-test-renderer');
 
 describe('<ScrollView />', () => {
   it('should render as expected', () => {
@@ -60,8 +60,8 @@ describe('<ScrollView />', () => {
 
     // This is checking if the ref acts like a host component. If we had an
     // `isHostComponent(ref)` method, that would be preferred.
-    // expect(innerViewRef.measure).toBeInstanceOf(jest.fn().constructor); // TODO: macOS(enable these snapshot tests) #978
-    // expect(innerViewRef.measureLayout).toBeInstanceOf(jest.fn().constructor); // TODO: macOS(enable these snapshot tests) #978
-    // expect(innerViewRef.measureInWindow).toBeInstanceOf(jest.fn().constructor); // TODO: macOS(enable these snapshot tests) #978
+    expect(innerViewRef.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(innerViewRef.measureLayout).toBeInstanceOf(jest.fn().constructor);
+    expect(innerViewRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 });

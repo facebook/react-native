@@ -7,8 +7,6 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "../" "package.json")))
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.06.28.00-v2'
 boost_version = '1.76.0'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -19,24 +17,19 @@ Pod::Spec.new do |s|
   s.description     = "my-native-view"
   s.homepage        = "https://github.com/sota000/my-native-view.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "11.0", :osx => "10.15" } # TODO(macOS GH#774)
-  s.compiler_flags  = folly_compiler_flags + ' ' + boost_compiler_flags + ' -Wno-nullability-completeness'
+  s.platforms       = { :ios => "12.4", :osx => "10.15" } # [macOS]
+  s.compiler_flags  = boost_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Facebook, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/my-native-view.git", :tag => "#{s.version}" }
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\"",
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
   }
 
   s.source_files    = "ios/**/*.{h,m,mm,cpp}"
   s.requires_arc    = true
 
-  s.dependency "React"
-  s.dependency "React-RCTFabric"
-  s.dependency "React-Codegen"
-  s.dependency "RCTRequired"
-  s.dependency "RCTTypeSafety"
-  s.dependency "ReactCommon/turbomodule/core"
+  install_modules_dependencies(s)
 
   # Enable codegen for this library
   use_react_native_codegen!(s, {

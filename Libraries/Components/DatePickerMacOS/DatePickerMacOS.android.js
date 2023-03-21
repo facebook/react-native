@@ -9,10 +9,10 @@
 
 'use strict';
 
-var React = require('react');
 var StyleSheet = require('../../StyleSheet/StyleSheet');
 var Text = require('../../Text/Text');
 var View = require('../View/View');
+var React = require('react');
 
 class DummyDatePickerMacOS extends React.Component {
   render() {

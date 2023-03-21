@@ -4,15 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
-const React = require('react');
 import Text from '../../../Text/Text';
-const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
+
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
+const React = require('react');
 
 describe('LogBoxInspectorSection', () => {
   it('should render with only heading', () => {

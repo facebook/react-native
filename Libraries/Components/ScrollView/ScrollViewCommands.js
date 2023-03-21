@@ -8,11 +8,11 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {Double} from '../../Types/CodegenTypes';
+
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';
 import * as React from 'react';
-import type {Double} from 'react-native/Libraries/Types/CodegenTypes';
-
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
 
 type ScrollViewNativeComponentType = HostComponent<mixed>;
 interface NativeCommands {

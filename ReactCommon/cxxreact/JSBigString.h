@@ -82,7 +82,7 @@ class RN_EXPORT JSBigBufferString : public JSBigString {
     m_data[m_size] = '\0';
   }
 
-  ~JSBigBufferString() {
+  ~JSBigBufferString() override {
     delete[] m_data;
   }
 
@@ -111,7 +111,7 @@ class RN_EXPORT JSBigBufferString : public JSBigString {
 class RN_EXPORT JSBigFileString : public JSBigString {
  public:
   JSBigFileString(int fd, size_t size, off_t offset = 0);
-  ~JSBigFileString();
+  ~JSBigFileString() override;
 
   bool isAscii() const override {
     return true;

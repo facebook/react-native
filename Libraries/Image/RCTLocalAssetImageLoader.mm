@@ -15,7 +15,7 @@
 
 #import "RCTImagePlugins.h"
 
-@interface RCTLocalAssetImageLoader() <RCTTurboModule>
+@interface RCTLocalAssetImageLoader () <RCTTurboModule>
 @end
 
 @implementation RCTLocalAssetImageLoader
@@ -41,13 +41,13 @@ RCT_EXPORT_MODULE()
   return NO;
 }
 
- - (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
-                                                        size:(CGSize)size
-                                                       scale:(CGFloat)scale
-                                                  resizeMode:(RCTResizeMode)resizeMode
-                                             progressHandler:(RCTImageLoaderProgressBlock)progressHandler
-                                          partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                           completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+- (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                            progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                         partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                                          completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   UIImage *image = RCTImageFromLocalAssetURL(imageURL);
   if (image) {
@@ -64,13 +64,15 @@ RCT_EXPORT_MODULE()
   return nil;
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
 {
   return nullptr;
 }
 
 @end
 
-Class RCTLocalAssetImageLoaderCls(void) {
+Class RCTLocalAssetImageLoaderCls(void)
+{
   return RCTLocalAssetImageLoader.class;
 }

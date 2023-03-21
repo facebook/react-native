@@ -9,8 +9,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
@@ -66,5 +65,4 @@ ShadowNode::Unshared ComponentBuilder::build(
   return shadowNode;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

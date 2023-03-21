@@ -11,7 +11,7 @@
 #ifdef __cplusplus
 extern "C"
 #endif
-NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView);
+NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView, RCTBridge *bridge);
 #endif // macOS]
 
 @interface RCTDeviceInfo : NSObject <RCTBridgeModule>

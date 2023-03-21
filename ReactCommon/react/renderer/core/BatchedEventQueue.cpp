@@ -7,8 +7,7 @@
 
 #include "BatchedEventQueue.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 BatchedEventQueue::BatchedEventQueue(
     EventQueueProcessor eventProcessor,
@@ -18,5 +17,4 @@ BatchedEventQueue::BatchedEventQueue(
 void BatchedEventQueue::onEnqueue() const {
   eventBeat_->request();
 }
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

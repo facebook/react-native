@@ -25,13 +25,14 @@ static NSUInteger _RCTFindIndexOfNearestValue(CGFloat value, NSArray<NSNumber *>
 /**
  * Interpolates value by remapping it linearly fromMin->fromMax to toMin->toMax
  */
-CGFloat RCTInterpolateValue(CGFloat value,
-                            CGFloat inputMin,
-                            CGFloat inputMax,
-                            CGFloat outputMin,
-                            CGFloat outputMax,
-                            NSString *extrapolateLeft,
-                            NSString *extrapolateRight)
+CGFloat RCTInterpolateValue(
+    CGFloat value,
+    CGFloat inputMin,
+    CGFloat inputMax,
+    CGFloat outputMin,
+    CGFloat outputMax,
+    NSString *extrapolateLeft,
+    NSString *extrapolateRight)
 {
   if (value < inputMin) {
     if ([extrapolateLeft isEqualToString:EXTRAPOLATE_TYPE_IDENTITY]) {
@@ -63,11 +64,12 @@ CGFloat RCTInterpolateValue(CGFloat value,
 /**
  * Interpolates value by mapping it from the inputRange to the outputRange.
  */
-CGFloat RCTInterpolateValueInRange(CGFloat value,
-                                   NSArray<NSNumber *> *inputRange,
-                                   NSArray<NSNumber *> *outputRange,
-                                   NSString *extrapolateLeft,
-                                   NSString *extrapolateRight)
+CGFloat RCTInterpolateValueInRange(
+    CGFloat value,
+    NSArray<NSNumber *> *inputRange,
+    NSArray<NSNumber *> *outputRange,
+    NSString *extrapolateLeft,
+    NSString *extrapolateRight)
 {
   NSUInteger rangeIndex = _RCTFindIndexOfNearestValue(value, inputRange);
   CGFloat inputMin = inputRange[rangeIndex].doubleValue;
@@ -75,13 +77,7 @@ CGFloat RCTInterpolateValueInRange(CGFloat value,
   CGFloat outputMin = outputRange[rangeIndex].doubleValue;
   CGFloat outputMax = outputRange[rangeIndex + 1].doubleValue;
 
-  return RCTInterpolateValue(value,
-                             inputMin,
-                             inputMax,
-                             outputMin,
-                             outputMax,
-                             extrapolateLeft,
-                             extrapolateRight);
+  return RCTInterpolateValue(value, inputMin, inputMax, outputMin, outputMax, extrapolateLeft, extrapolateRight);
 }
 
 CGFloat RCTRadiansToDegrees(CGFloat radians)

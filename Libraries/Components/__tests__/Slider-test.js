@@ -8,9 +8,9 @@
  * @format
  */
 
+import Slider from '../Slider/Slider';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import Slider from '../Slider/Slider';
 
 describe('<Slider />', () => {
   it('should render as expected', () => {

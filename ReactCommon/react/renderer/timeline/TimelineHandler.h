@@ -23,7 +23,7 @@ class TimelineHandler final {
   /*
    * Movable, not copyable.
    */
-  TimelineHandler(TimelineHandler &&timelineHandler) noexcept;
+  TimelineHandler(TimelineHandler &&other) noexcept;
   TimelineHandler(TimelineHandler const &timelineHandler) = delete;
   TimelineHandler &operator=(TimelineHandler &&other) noexcept;
   TimelineHandler &operator=(TimelineHandler const &other) = delete;
@@ -73,7 +73,7 @@ class TimelineHandler final {
 
   void ensureNotEmpty() const noexcept;
 
-  Timeline const *timeline_;
+  Timeline const *timeline_{};
 };
 
 } // namespace react

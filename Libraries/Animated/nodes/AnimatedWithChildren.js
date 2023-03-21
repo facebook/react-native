@@ -11,10 +11,11 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
-const AnimatedNode = require('./AnimatedNode');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
-class AnimatedWithChildren extends AnimatedNode {
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedNode from './AnimatedNode';
+
+export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode>;
 
   constructor() {
@@ -85,5 +86,3 @@ class AnimatedWithChildren extends AnimatedNode {
     }
   }
 }
-
-module.exports = AnimatedWithChildren;

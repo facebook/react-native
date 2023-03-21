@@ -33,7 +33,7 @@ struct Task final {
   std::optional<jsi::Function> callback;
   RuntimeSchedulerClock::time_point expirationTime;
 
-  jsi::Value execute(jsi::Runtime &runtime);
+  jsi::Value execute(jsi::Runtime &runtime, bool didUserCallbackTimeout);
 };
 
 class TaskPriorityComparer {

@@ -40,7 +40,7 @@ class MountingCoordinator final {
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.
    */
-  MountingCoordinator(ShadowTreeRevision baseRevision);
+  MountingCoordinator(const ShadowTreeRevision &baseRevision);
 
   /*
    * Returns the id of the surface that the coordinator belongs to.

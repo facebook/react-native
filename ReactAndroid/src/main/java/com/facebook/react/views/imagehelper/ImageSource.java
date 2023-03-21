@@ -9,14 +9,15 @@ package com.facebook.react.views.imagehelper;
 
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Assertions;
 import java.util.Objects;
 
 /** Class describing an image source (network URI or resource) and size. */
 public class ImageSource {
 
-  private @Nullable Uri mUri;
+  private static final String TRANSPARENT_BITMAP_URI =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+  private Uri mUri;
   private String mSource;
   private double mSize;
   private boolean isResource;
@@ -28,6 +29,10 @@ public class ImageSource {
     // Important: we compute the URI here so that we don't need to hold a reference to the context,
     // potentially causing leaks.
     mUri = computeUri(context);
+  }
+
+  public static ImageSource getTransparentBitmapImageSource(Context context) {
+    return new ImageSource(context, TRANSPARENT_BITMAP_URI);
   }
 
   @Override
@@ -57,7 +62,7 @@ public class ImageSource {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
   public Uri getUri() {
-    return Assertions.assertNotNull(mUri);
+    return mUri;
   }
 
   /** Get the area of this image. */

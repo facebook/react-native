@@ -68,24 +68,23 @@ class EventEmitter {
    * Is used by particular subclasses only.
    */
   void dispatchEvent(
-      const std::string &type,
+      std::string type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory(),
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
-      const std::string &type,
+      std::string type,
       const folly::dynamic &payload,
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
-  void dispatchUniqueEvent(
-      const std::string &type,
-      const folly::dynamic &payload) const;
+  void dispatchUniqueEvent(std::string type, const folly::dynamic &payload)
+      const;
 
   void dispatchUniqueEvent(
-      const std::string &type,
+      std::string type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory()) const;
 

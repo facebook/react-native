@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifdef __cplusplus
+
 #include <cmath>
 #include <limits>
 #include "Yoga-internal.h"
@@ -68,3 +70,5 @@ inline bool operator>=(YGFloatOptional lhs, YGFloatOptional rhs) {
 inline bool operator<=(YGFloatOptional lhs, YGFloatOptional rhs) {
   return lhs < rhs || lhs == rhs;
 }
+
+#endif

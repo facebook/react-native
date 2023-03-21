@@ -97,6 +97,15 @@ class RawProps final {
   const RawValue *at(char const *name, char const *prefix, char const *suffix)
       const noexcept;
 
+  /**
+   * Iterator functions: for when you want to iterate over values in-order
+   * instead of using `at` to access values randomly.
+   */
+  void iterateOverValues(
+      std::function<
+          void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
+      const;
+
  private:
   friend class RawPropsParser;
 
@@ -109,7 +118,7 @@ class RawProps final {
   mutable Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
-  jsi::Runtime *runtime_;
+  jsi::Runtime *runtime_{};
   jsi::Value value_;
 
   // Case 2: Source data is represented as `folly::dynamic`.

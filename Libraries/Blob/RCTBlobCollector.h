@@ -7,8 +7,6 @@
 
 #import <jsi/jsi.h>
 
-using namespace facebook;
-
 @class RCTBlobManager;
 
 namespace facebook {

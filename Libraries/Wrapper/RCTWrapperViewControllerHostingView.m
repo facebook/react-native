@@ -42,7 +42,7 @@
 
 - (void)detachChildViewController:(UIViewController *)childViewController
 {
-  [childViewController beginAppearanceTransition:false animated: false];
+  [childViewController beginAppearanceTransition:false animated:false];
   [childViewController endAppearanceTransition];
 
   [childViewController willMoveToParentViewController:nil];
@@ -66,7 +66,6 @@
 
 - (void)setContentViewController:(UIViewController *)contentViewController
 {
-
   if (_contentViewController) {
     [self detachContentViewControllerIfNeeded];
   }

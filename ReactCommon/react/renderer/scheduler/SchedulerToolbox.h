@@ -40,6 +40,13 @@ struct SchedulerToolbox final {
 
   /*
    * Represents running JavaScript VM and associated execution queue.
+   * Can execute lambdas before main bundle has loaded.
+   */
+  std::optional<RuntimeExecutor> bridgelessBindingsExecutor;
+
+  /*
+   * Represents running JavaScript VM and associated execution queue.
+   * Executes lambdas after main bundle has loaded.
    */
   RuntimeExecutor runtimeExecutor;
 

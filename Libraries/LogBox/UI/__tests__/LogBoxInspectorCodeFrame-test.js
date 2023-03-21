@@ -4,16 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @emails oncall+react_native
  * @flow strict-local
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
-const React = require('react');
-const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
 const render = require('../../../../jest/renderer');
+const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
+const React = require('react');
 
 describe('LogBoxInspectorCodeFrame', () => {
   it('should render null for no code frame', () => {

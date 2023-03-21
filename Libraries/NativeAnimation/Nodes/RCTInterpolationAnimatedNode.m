@@ -11,8 +11,7 @@
 
 static NSRegularExpression *regex;
 
-@implementation RCTInterpolationAnimatedNode
-{
+@implementation RCTInterpolationAnimatedNode {
   __weak RCTValueAnimatedNode *_parentNode;
   NSArray<NSNumber *> *_inputRange;
   NSArray<NSNumber *> *_outputRange;
@@ -23,16 +22,17 @@ static NSRegularExpression *regex;
   NSUInteger _numVals;
   bool _hasStringOutput;
   bool _shouldRound;
-  NSArray<NSTextCheckingResult*> *_matches;
+  NSArray<NSTextCheckingResult *> *_matches;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSString *fpRegex = @"[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?";
-    regex = [NSRegularExpression regularExpressionWithPattern:fpRegex options:NSRegularExpressionCaseInsensitive error:nil];
+    regex = [NSRegularExpression regularExpressionWithPattern:fpRegex
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:nil];
   });
   if ((self = [super initWithTag:tag config:config])) {
     _inputRange = [config[@"inputRange"] copy];
@@ -59,7 +59,7 @@ static NSRegularExpression *regex;
 
         _matches = [regex matchesInString:value options:0 range:NSMakeRange(0, [value length])];
         for (NSTextCheckingResult *match in _matches) {
-          NSString* strNumber = [value substringWithRange:match.range];
+          NSString *strNumber = [value substringWithRange:match.range];
           [output addObject:[NSNumber numberWithDouble:strNumber.doubleValue]];
         }
 
@@ -124,11 +124,8 @@ static NSRegularExpression *regex;
 
   CGFloat inputValue = _parentNode.value;
 
-  CGFloat interpolated = RCTInterpolateValueInRange(inputValue,
-                                                    _inputRange,
-                                                    _outputRange,
-                                                    _extrapolateLeft,
-                                                    _extrapolateRight);
+  CGFloat interpolated =
+      RCTInterpolateValueInRange(inputValue, _inputRange, _outputRange, _extrapolateLeft, _extrapolateRight);
   self.value = interpolated;
   if (_hasStringOutput) {
     // 'rgba(0, 100, 200, 0)'
@@ -139,11 +136,8 @@ static NSRegularExpression *regex;
       NSMutableString *formattedText = [NSMutableString stringWithString:text];
       NSUInteger i = _numVals;
       for (NSTextCheckingResult *match in [_matches reverseObjectEnumerator]) {
-        CGFloat val = RCTInterpolateValueInRange(inputValue,
-                                                          _inputRange,
-                                                          _outputs[--i],
-                                                          _extrapolateLeft,
-                                                          _extrapolateRight);
+        CGFloat val =
+            RCTInterpolateValueInRange(inputValue, _inputRange, _outputs[--i], _extrapolateLeft, _extrapolateRight);
         NSString *str;
         if (_shouldRound) {
           // rgba requires that the r,g,b are integers.... so we want to round them, but we *dont* want to
@@ -161,9 +155,9 @@ static NSRegularExpression *regex;
       self.animatedObject = formattedText;
     } else {
       self.animatedObject = [regex stringByReplacingMatchesInString:_soutputRange[0]
-                                                 options:0
-                                                   range:NSMakeRange(0, _soutputRange[0].length)
-                                            withTemplate:[NSString stringWithFormat:@"%1f", interpolated]];
+                                                            options:0
+                                                              range:NSMakeRange(0, _soutputRange[0].length)
+                                                       withTemplate:[NSString stringWithFormat:@"%1f", interpolated]];
     }
   }
 }

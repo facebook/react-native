@@ -24,7 +24,7 @@ exports[`RN Codegen Flow Parser Fails with error message PROP_ARRAY_MIXED_ENUM 1
 
 exports[`RN Codegen Flow Parser Fails with error message PROP_ENUM_BOOLEAN 1`] = `"Unsupported union type for \\"someProp\\", received \\"BooleanLiteralTypeAnnotation\\""`;
 
-exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")"`;
+exports[`RN Codegen Flow Parser Fails with error message PROP_MIXED_ENUM 1`] = `"Mixed types are not supported (see \\"someProp\\")."`;
 
 exports[`RN Codegen Flow Parser Fails with error message PROP_NUMBER_TYPE 1`] = `"Cannot use \\"NumberTypeAnnotation\\" type annotation for \\"someProp\\": must use a specific numeric type like Int32, Double, or Float"`;
 
@@ -1256,7 +1256,110 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
 }"
 `;
 
-exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_EXPORTED 1`] = `
+exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
+"{
+  'modules': {
+    'Module': {
+      'type': 'Component',
+      'components': {
+        'Module': {
+          'extendsProps': [
+            {
+              'type': 'ReactNativeBuiltInType',
+              'knownTypeName': 'ReactNativeCoreViewProps'
+            }
+          ],
+          'events': [],
+          'props': [],
+          'commands': [
+            {
+              'name': 'handleRootTag',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'rootTag',
+                    'typeAnnotation': {
+                      'type': 'ReservedTypeAnnotation',
+                      'name': 'RootTag'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'hotspotUpdate',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'x',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'scrollTo',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'x',
+                    'typeAnnotation': {
+                      'type': 'FloatTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'y',
+                    'typeAnnotation': {
+                      'type': 'Int32TypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'z',
+                    'typeAnnotation': {
+                      'type': 'DoubleTypeAnnotation'
+                    }
+                  },
+                  {
+                    'name': 'animated',
+                    'typeAnnotation': {
+                      'type': 'BooleanTypeAnnotation'
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture COMMANDS_EVENTS_TYPES_EXPORTED 1`] = `
 "{
   'modules': {
     'Module': {
@@ -2797,109 +2900,6 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_AND_EVENTS_TYPES_E
                     'name': 'y',
                     'typeAnnotation': {
                       'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'animated',
-                    'typeAnnotation': {
-                      'type': 'BooleanTypeAnnotation'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            }
-          ]
-        }
-      }
-    }
-  }
-}"
-`;
-
-exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_TYPES 1`] = `
-"{
-  'modules': {
-    'Module': {
-      'type': 'Component',
-      'components': {
-        'Module': {
-          'extendsProps': [
-            {
-              'type': 'ReactNativeBuiltInType',
-              'knownTypeName': 'ReactNativeCoreViewProps'
-            }
-          ],
-          'events': [],
-          'props': [],
-          'commands': [
-            {
-              'name': 'handleRootTag',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'rootTag',
-                    'typeAnnotation': {
-                      'type': 'ReservedTypeAnnotation',
-                      'name': 'RootTag'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            },
-            {
-              'name': 'hotspotUpdate',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'x',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'y',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  }
-                ],
-                'returnTypeAnnotation': {
-                  'type': 'VoidTypeAnnotation'
-                }
-              }
-            },
-            {
-              'name': 'scrollTo',
-              'optional': false,
-              'typeAnnotation': {
-                'type': 'FunctionTypeAnnotation',
-                'params': [
-                  {
-                    'name': 'x',
-                    'typeAnnotation': {
-                      'type': 'FloatTypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'y',
-                    'typeAnnotation': {
-                      'type': 'Int32TypeAnnotation'
-                    }
-                  },
-                  {
-                    'name': 'z',
-                    'typeAnnotation': {
-                      'type': 'DoubleTypeAnnotation'
                     }
                   },
                   {

@@ -17,7 +17,7 @@ const {StyleSheet, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 class SimpleSnapshotTest extends React.Component<{...}> {
-  componentDidMount() {
+  componentDidMount(): void {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }

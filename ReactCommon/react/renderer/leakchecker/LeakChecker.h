@@ -32,7 +32,7 @@ class LeakChecker final {
   RuntimeExecutor const runtimeExecutor_{};
 
   WeakFamilyRegistry registry_{};
-  SurfaceId previouslyStoppedSurface_;
+  SurfaceId previouslyStoppedSurface_{};
 };
 
 } // namespace react

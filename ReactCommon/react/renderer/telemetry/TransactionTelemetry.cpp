@@ -11,8 +11,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 thread_local TransactionTelemetry *threadLocalTransactionTelemetry = nullptr;
 
@@ -161,5 +160,4 @@ int TransactionTelemetry::getRevisionNumber() const {
   return revisionNumber_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

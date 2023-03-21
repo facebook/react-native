@@ -11,24 +11,27 @@
 
 'use strict';
 
-import * as React from 'react';
-import Platform from '../Utilities/Platform';
+import type {PressEvent} from '../Types/CoreEventTypes';
+import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
+import type {Button as ButtonType} from './Button.flow';
+import type {BlurEvent, FocusEvent} from './TextInput/TextInput'; // [macOS]
+import type {
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+  // [macOS
+  AccessibilityRole,
+  // macOS]
+  AccessibilityState,
+} from './View/ViewAccessibility';
+
 import StyleSheet, {type ColorValue} from '../StyleSheet/StyleSheet';
 import Text from '../Text/Text';
+import Platform from '../Utilities/Platform';
 import TouchableNativeFeedback from './Touchable/TouchableNativeFeedback';
 import TouchableOpacity from './Touchable/TouchableOpacity';
 import View from './View/View';
 import invariant from 'invariant';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
-import type {FocusEvent, BlurEvent} from './TextInput/TextInput'; // [macOS]
-
-import type {
-  AccessibilityState,
-  AccessibilityActionEvent,
-  AccessibilityActionInfo,
-  AccessibilityRole,
-} from './View/ViewAccessibility';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -129,18 +132,11 @@ type ButtonProps = $ReadOnly<{|
    */
   accessibilityLabel?: ?string,
 
-  // [macOS]
   /**
-   * Custom accessibility role -- otherwise we use button
+   * Alias for accessibilityLabel  https://reactnative.dev/docs/view#accessibilitylabel
+   * https://github.com/facebook/react-native/issues/34424
    */
-  accessibilityRole?: ?AccessibilityRole,
-
-  // [macOS]
-  /**
-   * Accessibility action handlers
-   */
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-
+  'aria-label'?: ?string,
   /**
     If `true`, disable all interactions for this component.
 
@@ -154,6 +150,16 @@ type ButtonProps = $ReadOnly<{|
   testID?: ?string,
 
   // [macOS
+  /**
+   * Custom accessibility role -- otherwise we use button
+   */
+  accessibilityRole?: ?AccessibilityRole,
+
+  /**
+   * Accessibility action handlers
+   */
+  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+
   /**
    * Handler to be called when the button receives key focus
    */
@@ -199,7 +205,24 @@ type ButtonProps = $ReadOnly<{|
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   accessibilityState?: ?AccessibilityState,
+
+  /**
+   * alias for accessibilityState
+   *
+   * see https://reactnative.dev/docs/accessibility#accessibilitystate
+   */
+  'aria-busy'?: ?boolean,
+  'aria-checked'?: ?boolean | 'mixed',
+  'aria-disabled'?: ?boolean,
+  'aria-expanded'?: ?boolean,
+  'aria-selected'?: ?boolean,
+
+  /**
+   * [Android] Controlling if a view fires accessibility events and if it is reported to accessibility services.
+   */
+  importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   accessibilityHint?: ?string,
+  accessibilityLanguage?: ?Stringish,
 |}>;
 
 /**
@@ -317,6 +340,14 @@ class Button extends React.Component<ButtonProps> {
   render(): React.Node {
     const {
       accessibilityLabel,
+      accessibilityState,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-label': ariaLabel,
+      'aria-selected': ariaSelected,
+      importantForAccessibility,
       color,
       onPress,
       touchSoundDisabled,
@@ -334,10 +365,11 @@ class Button extends React.Component<ButtonProps> {
       onKeyUp,
       validKeysDown,
       validKeysUp, // macOS]
-      tooltip,
+      tooltip, // [macOS]
       accessible,
       accessibilityActions,
       accessibilityHint,
+      accessibilityLanguage,
       accessibilityRole, // [macOS]
       onAccessibilityAction,
     } = this.props;
@@ -351,15 +383,23 @@ class Button extends React.Component<ButtonProps> {
       }
     }
 
+    let _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
     const disabled =
       this.props.disabled != null
         ? this.props.disabled
-        : this.props.accessibilityState?.disabled;
+        : _accessibilityState?.disabled;
 
-    const accessibilityState =
-      disabled !== this.props.accessibilityState?.disabled
-        ? {...this.props.accessibilityState, disabled}
-        : this.props.accessibilityState;
+    _accessibilityState =
+      disabled !== _accessibilityState?.disabled
+        ? {..._accessibilityState, disabled}
+        : _accessibilityState;
 
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
@@ -375,15 +415,23 @@ class Button extends React.Component<ButtonProps> {
     const Touchable =
       Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
+    // If `no` is specified for `importantForAccessibility`, it will be changed to `no-hide-descendants` because the text inside should not be focused.
+    const _importantForAccessibility =
+      importantForAccessibility === 'no'
+        ? 'no-hide-descendants'
+        : importantForAccessibility;
+
     return (
       <Touchable
         accessible={accessible}
         accessibilityActions={accessibilityActions}
         onAccessibilityAction={onAccessibilityAction}
-        accessibilityLabel={accessibilityLabel}
+        accessibilityLabel={ariaLabel || accessibilityLabel}
         accessibilityHint={accessibilityHint}
+        accessibilityLanguage={accessibilityLanguage}
         accessibilityRole={accessibilityRole || 'button'} // [macOS]
-        accessibilityState={accessibilityState}
+        accessibilityState={_accessibilityState}
+        importantForAccessibility={_importantForAccessibility}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}
         nextFocusForward={nextFocusForward}
@@ -399,7 +447,7 @@ class Button extends React.Component<ButtonProps> {
         onKeyUp={onKeyUp}
         validKeysDown={validKeysDown}
         validKeysUp={validKeysUp}
-        tooltip={tooltip}
+        tooltip={tooltip} // [macOS]
         touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>
@@ -465,4 +513,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-module.exports = Button;
+module.exports = (Button: ButtonType);

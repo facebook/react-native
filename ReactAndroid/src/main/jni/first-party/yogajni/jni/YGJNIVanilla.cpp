@@ -147,7 +147,7 @@ static int YGJNILogFunc(
     if (*jloggerPtr) {
       JNIEnv* env = getCurrentEnv();
 
-      jclass cl = env->FindClass("Lcom/facebook/yoga/YogaLogLevel;");
+      jclass cl = env->FindClass("com/facebook/yoga/YogaLogLevel");
       static const jmethodID smethodId =
           facebook::yoga::vanillajni::getStaticMethodId(
               env, cl, "fromInt", "(I)Lcom/facebook/yoga/YogaLogLevel;");
@@ -386,7 +386,7 @@ static void jni_YGNodeCalculateLayoutJNI(
     }
   } catch (const std::logic_error& ex) {
     env->ExceptionClear();
-    jclass cl = env->FindClass("Ljava/lang/IllegalStateException;");
+    jclass cl = env->FindClass("java/lang/IllegalStateException");
     static const jmethodID methodId = facebook::yoga::vanillajni::getMethodId(
         env, cl, "<init>", "(Ljava/lang/String;)V");
     auto throwable = env->NewObject(cl, methodId, env->NewStringUTF(ex.what()));
@@ -734,6 +734,27 @@ static jlong jni_YGNodeCloneJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
+static jfloat jni_YGNodeStyleGetGapJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint gutter) {
+  return (jfloat) YGNodeStyleGetGap(
+      _jlong2YGNodeRef(nativePointer), static_cast<YGGutter>(gutter));
+}
+
+static void jni_YGNodeStyleSetGapJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint gutter,
+    jfloat gapLength) {
+  YGNodeStyleSetGap(
+      _jlong2YGNodeRef(nativePointer),
+      static_cast<YGGutter>(gutter),
+      static_cast<float>(gapLength));
+}
+
 // Yoga specific properties, not compatible with flexbox specification
 YG_NODE_JNI_STYLE_PROP(jfloat, float, AspectRatio);
 
@@ -971,6 +992,8 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeSetHasMeasureFuncJNI",
      "(JZ)V",
      (void*) jni_YGNodeSetHasMeasureFuncJNI},
+    {"jni_YGNodeStyleGetGapJNI", "(JI)F", (void*) jni_YGNodeStyleGetGapJNI},
+    {"jni_YGNodeStyleSetGapJNI", "(JIF)V", (void*) jni_YGNodeStyleSetGapJNI},
     {"jni_YGNodeSetHasBaselineFuncJNI",
      "(JZ)V",
      (void*) jni_YGNodeSetHasBaselineFuncJNI},

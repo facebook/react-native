@@ -8,12 +8,11 @@
  * @format
  */
 
-import * as React from 'react';
+import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import SectionList from '../../Lists/SectionList';
-const createAnimatedComponent = require('../createAnimatedComponent');
-
-import type {AnimatedComponentType} from '../createAnimatedComponent';
+import createAnimatedComponent from '../createAnimatedComponent';
+import * as React from 'react';
 
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
@@ -22,7 +21,7 @@ const SectionListWithEventThrottle = React.forwardRef((props, ref) => (
   <SectionList scrollEventThrottle={0.0001} {...props} ref={ref} />
 ));
 
-module.exports = (createAnimatedComponent(
+export default (createAnimatedComponent(
   SectionListWithEventThrottle,
 ): AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,

@@ -10,8 +10,9 @@
 
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
-import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
+
+import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
@@ -24,22 +25,37 @@ type Options = $ReadOnly<{|
 
 export type NativeComponentType<T> = HostComponent<T>;
 
+// If this function runs then that means the view configs were not
+// generated at build time using `GenerateViewConfigJs.js`. Thus
+// we need to `requireNativeComponent` to get the view configs from view managers.
+// `requireNativeComponent` is not available in Bridgeless mode.
+// e.g. This function runs at runtime if `codegenNativeComponent` was not called
+// from a file suffixed with NativeComponent.js.
 function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {
+  if (global.RN$Bridgeless === true) {
+    const errorMessage =
+      "Native Component '" +
+      componentName +
+      "' that calls codegenNativeComponent was not code generated at build time. Please check its definition.";
+    console.error(errorMessage);
+  }
+
   let componentNameInUse =
     options && options.paperComponentName != null
       ? options.paperComponentName
       : componentName;
 
   if (options != null && options.paperComponentNameDeprecated != null) {
-    if (UIManager.getViewManagerConfig(componentName)) {
+    if (UIManager.hasViewManagerConfig(componentName)) {
       componentNameInUse = componentName;
     } else if (
       options.paperComponentNameDeprecated != null &&
-      UIManager.getViewManagerConfig(options.paperComponentNameDeprecated)
+      UIManager.hasViewManagerConfig(options.paperComponentNameDeprecated)
     ) {
+      // $FlowFixMe[incompatible-type]
       componentNameInUse = options.paperComponentNameDeprecated;
     } else {
       throw new Error(
@@ -50,11 +66,8 @@ function codegenNativeComponent<Props>(
     }
   }
 
-  // If this function is run at runtime then that means the view configs were not
-  // generated with the view config babel plugin, so we need to require the native component.
-  //
-  // This will be useful during migration, but eventually this will error.
   return (requireNativeComponent<Props>(
+    // $FlowFixMe[incompatible-call]
     componentNameInUse,
   ): HostComponent<Props>);
 }

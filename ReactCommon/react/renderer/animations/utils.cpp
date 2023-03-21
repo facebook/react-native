@@ -8,8 +8,7 @@
 #include "utils.h"
 #include <cmath>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::pair<Float, Float> calculateAnimationProgress(
     uint64_t now,
@@ -67,5 +66,4 @@ std::pair<Float, Float> calculateAnimationProgress(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

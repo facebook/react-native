@@ -11,8 +11,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 AttributedStringBox::AttributedStringBox()
     : mode_(Mode::Value),
@@ -86,5 +85,4 @@ bool operator!=(
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

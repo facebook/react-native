@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTSafeAreaViewManager.h"
 
 #import "RCTSafeAreaShadowView.h"
@@ -14,8 +15,6 @@
 @implementation RCTSafeAreaViewManager
 
 RCT_EXPORT_MODULE()
-
-RCT_EXPORT_VIEW_PROPERTY(emulateUnlessSupported, BOOL)
 
 - (UIView *)view
 {
@@ -28,3 +27,4 @@ RCT_EXPORT_VIEW_PROPERTY(emulateUnlessSupported, BOOL)
 }
 
 @end
+#endif // [macOS]

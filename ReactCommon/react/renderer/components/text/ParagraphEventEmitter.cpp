@@ -7,8 +7,7 @@
 
 #include "ParagraphEventEmitter.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value linesMeasurementsPayload(
     jsi::Runtime &runtime,
@@ -51,5 +50,4 @@ void ParagraphEventEmitter::onTextLayout(
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

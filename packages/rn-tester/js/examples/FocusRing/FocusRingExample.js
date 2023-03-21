@@ -16,7 +16,7 @@ import {Platform} from 'react-native';
 const {Text, View, StyleSheet} = ReactNative;
 
 class ViewFocusRingExample extends React.Component<{}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         {Platform.OS === 'macos' ? (

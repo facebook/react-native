@@ -93,7 +93,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private final NativeModuleRegistry mNativeModuleRegistry;
   private final JSIModuleRegistry mJSIModuleRegistry = new JSIModuleRegistry();
-  private final NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+  private final JSExceptionHandler mJSExceptionHandler;
   private final MessageQueueThread mNativeModulesQueueThread;
   private boolean mInitialized = false;
   private volatile boolean mAcceptCalls = false;
@@ -108,8 +108,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   // C++ parts
   private final HybridData mHybridData;
 
-  private static native HybridData initHybrid(
-      boolean enableRuntimeScheduler, boolean enableRuntimeSchedulerInTurboModule);
+  private static native HybridData initHybrid();
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
@@ -120,19 +119,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+      JSExceptionHandler jSExceptionHandler) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
 
-    if (ReactFeatureFlags.enableRuntimeSchedulerInTurboModule
-        && !ReactFeatureFlags.enableRuntimeScheduler) {
-      Assertions.assertUnreachable();
-    }
-
-    mHybridData =
-        initHybrid(
-            ReactFeatureFlags.enableRuntimeScheduler,
-            ReactFeatureFlags.enableRuntimeSchedulerInTurboModule);
+    mHybridData = initHybrid();
 
     mReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(
@@ -141,7 +132,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModuleRegistry = nativeModuleRegistry;
     mJSModuleRegistry = new JavaScriptModuleRegistry();
     mJSBundleLoader = jsBundleLoader;
-    mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;
+    mJSExceptionHandler = jSExceptionHandler;
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -626,7 +617,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private void onNativeException(Exception e) {
-    mNativeModuleCallExceptionHandler.handleException(e);
+    mJSExceptionHandler.handleException(e);
     mReactQueueConfiguration
         .getUIQueueThread()
         .runOnQueue(
@@ -682,7 +673,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable JSBundleLoader mJSBundleLoader;
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
-    private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+    private @Nullable JSExceptionHandler mJSExceptionHandler;
 
     public Builder setReactQueueConfigurationSpec(
         ReactQueueConfigurationSpec ReactQueueConfigurationSpec) {
@@ -705,8 +696,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
-    public Builder setNativeModuleCallExceptionHandler(NativeModuleCallExceptionHandler handler) {
-      mNativeModuleCallExceptionHandler = handler;
+    public Builder setJSExceptionHandler(JSExceptionHandler handler) {
+      mJSExceptionHandler = handler;
       return this;
     }
 
@@ -716,7 +707,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
           Assertions.assertNotNull(mJSExecutor),
           Assertions.assertNotNull(mRegistry),
           Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
+          Assertions.assertNotNull(mJSExceptionHandler));
     }
   }
 }

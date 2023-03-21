@@ -6,7 +6,6 @@
  */
 
 #import <React/RCTDefines.h>
-
 #import <React/RCTUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN

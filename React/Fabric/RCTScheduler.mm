@@ -36,15 +36,6 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     // This delegate method is not currently used on iOS.
   }
 
-  void schedulerDidCloneShadowNode(
-      SurfaceId surfaceId,
-      const ShadowNode &oldShadowNode,
-      const ShadowNode &newShadowNode) override
-  {
-    // Does nothing.
-    // This delegate method is not currently used on iOS.
-  }
-
   void schedulerDidDispatchCommand(
       const ShadowView &shadowView,
       const std::string &commandName,

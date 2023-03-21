@@ -10,8 +10,7 @@
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventQueue::EventQueue(
     EventQueueProcessor eventProcessor,
@@ -87,7 +86,7 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
-    if (eventQueue_.size() == 0) {
+    if (eventQueue_.empty()) {
       return;
     }
 
@@ -115,5 +114,4 @@ void EventQueue::flushStateUpdates() const {
   eventProcessor_.flushStateUpdates(std::move(stateUpdateQueue));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

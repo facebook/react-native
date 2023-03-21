@@ -12,6 +12,8 @@
 
 import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
 
+import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
+
 const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ActivityIndicatorExample',
@@ -25,16 +27,6 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     supportsTVOS: true,
   },
-  // [macOS
-  {
-    key: 'DarkModeExample',
-    module: require('../examples/DarkModeExample/DarkModeExample'),
-  }, // macOS]
-  // [macOS
-  {
-    key: 'DatePickerMacOSExample',
-    module: require('../examples/DatePicker/DatePickerMacOSExample'),
-  }, // macOS]
   {
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,
@@ -195,6 +187,12 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
     supportsTVOS: false,
+    // [macOS
+    skipTest: {
+      default:
+        'Reason: requires RCT_NEW_ARCH_ENABLED flag to be set during build',
+    },
+    // macOS]
   },
 ];
 
@@ -271,10 +269,17 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Dimensions/DimensionsExample'),
     supportsTVOS: true,
   },
+  // [macOS
   {
     key: 'Focus Ring',
     module: require('../examples/FocusRing/FocusRingExample'),
     supportsTVOS: false,
+  },
+  // macOS]
+  {
+    key: 'Keyboard',
+    module: require('../examples/Keyboard/KeyboardExample').default,
+    supportsTVOS: true,
   },
   {
     key: 'LayoutAnimationExample',
@@ -380,6 +385,14 @@ const APIs: Array<RNTesterModuleInfo> = [
     supportsTVOS: true,
   },
 ];
+
+if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
+  APIs.push({
+    key: 'W3C PointerEvents',
+    category: 'Experimental',
+    module: require('../examples/Experimental/W3CPointerEventsExample').default,
+  });
+}
 
 const Modules: {...} = {};
 

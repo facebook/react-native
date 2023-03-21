@@ -8,9 +8,9 @@
  * @format
  */
 
-import * as React from 'react';
-
 import type {Int32} from '../../Types/CodegenTypes';
+
+import * as React from 'react';
 
 export interface TextInputNativeCommands<T> {
   +focus: (viewRef: React.ElementRef<T>) => void;

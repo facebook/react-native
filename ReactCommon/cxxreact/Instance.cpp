@@ -26,7 +26,6 @@
 
 #include <condition_variable>
 #include <exception>
-#include <fstream>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -107,40 +106,6 @@ void Instance::loadScriptFromString(
   } else {
     loadBundle(nullptr, std::move(string), std::move(sourceURL));
   }
-}
-
-bool Instance::isHBCBundle(const char *sourcePath) {
-  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
-  BundleHeader header;
-
-  if (!bundle_stream ||
-      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
-    return false;
-  }
-
-  return parseTypeFromHeader(header) == ScriptTag::HBCBundle;
-}
-
-bool Instance::isIndexedRAMBundle(const char *sourcePath) {
-  std::ifstream bundle_stream(sourcePath, std::ios_base::in);
-  BundleHeader header;
-
-  if (!bundle_stream ||
-      !bundle_stream.read(reinterpret_cast<char *>(&header), sizeof(header))) {
-    return false;
-  }
-
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
-}
-
-bool Instance::isIndexedRAMBundle(std::unique_ptr<const JSBigString> *script) {
-  BundleHeader header;
-  strncpy(
-      reinterpret_cast<char *>(&header),
-      script->get()->c_str(),
-      sizeof(header));
-
-  return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
 void Instance::loadRAMBundleFromString(

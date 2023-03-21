@@ -10,33 +10,42 @@
 
 'use strict';
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {ImageResizeMode} from './ImageResizeMode';
-import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
+import type {
+  HostComponent,
+  PartialViewConfig,
+} from '../Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
+import type {ImageResizeMode} from './ImageResizeMode';
+
+import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 
 type NativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
-  src?: ?$ReadOnlyArray<?$ReadOnly<{uri: string, ...}>>,
+  src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   tintColor?: ?ColorValue,
   headers?: ?{[string]: string},
 }>;
 
-const TextInlineImage: HostComponent<NativeProps> =
-  NativeComponentRegistry.get<NativeProps>('RCTTextInlineImage', () => ({
-    uiViewClassName: 'RCTTextInlineImage',
-    bubblingEventTypes: {},
-    directEventTypes: {},
-    validAttributes: {
-      resizeMode: true,
-      src: true,
-      tintColor: {
-        process: require('../StyleSheet/processColor'),
-      },
-      headers: true,
+export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
+  uiViewClassName: 'RCTTextInlineImage',
+  bubblingEventTypes: {},
+  directEventTypes: {},
+  validAttributes: {
+    resizeMode: true,
+    src: true,
+    tintColor: {
+      process: require('../StyleSheet/processColor'),
     },
-  }));
+    headers: true,
+  },
+};
 
-module.exports = TextInlineImage;
+const TextInlineImage: HostComponent<NativeProps> =
+  NativeComponentRegistry.get<NativeProps>(
+    'RCTTextInlineImage',
+    () => __INTERNAL_VIEW_CONFIG,
+  );
+
+export default TextInlineImage;

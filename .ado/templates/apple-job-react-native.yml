@@ -4,17 +4,15 @@ parameters:
   xcode_configuration: ''
   xcode_scheme: ''
   xcode_actions: ''
-  xcode_destination: ''
+  # xcode_destination: ''
+  xcode_extraArgs: ''
   slice_name: ''
   xcode_version: ''
   use_fabric: ''
+  use_hermes: ''
 
 steps:
-  - script: |
-      rm -rf $(Build.Repository.LocalPath)/DerivedData
-    displayName: 'Clean DerivedData'
-
-  - template: apple-node-setup.yml
+  - template: apple-tools-setup.yml
 
   # Task Group: Xcode select proper version
   - template: apple-xcode-select.yml
@@ -32,9 +30,11 @@ steps:
     inputs:
       script: |
         cd packages/rn-tester
-        pod install
+        bundle install
+        bundle exec pod install
     env:
       USE_FABRIC: $(use_fabric)
+      USE_HERMES: $(use_hermes)
 
   - task: ShellScript@2
     displayName: 'Setup packager and WebSocket test server'
@@ -45,21 +45,31 @@ steps:
 
   - bash: |
       echo Preparing the packager for platform $PLATFORM
+      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true&minify=false" -o /dev/null
       curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
     env:
       PLATFORM: ${{ parameters.packager_platform }}
     displayName: 'curl the packager'
 
-  - template: apple-xcode-build.yml
-    parameters:
-      xcode_sdk: ${{ parameters.xcode_sdk }}
-      xcode_configuration: ${{ parameters.xcode_configuration }}
-      xcode_workspacePath: packages/rn-tester/RNTesterPods.xcworkspace
-      xcode_scheme: ${{ parameters.xcode_scheme }}
-      xcode_actions: ${{ parameters.xcode_actions }}
-      xcode_useXcpretty: true
-      xcode_destination: ${{ parameters.xcode_destination }}
-      xcode_extraArgs: -retry-tests-on-failure -test-iterations 2
+  - task: Xcode@5
+    displayName: 'Xcode ${{ parameters.xcode_actions }} ${{ parameters.xcode_configuration }} ${{ parameters.xcode_sdk }} ${{ parameters.xcode_scheme }}'
+    inputs:
+      actions: '${{ parameters.xcode_actions }}'
+      configuration: ${{ parameters.xcode_configuration }}
+      sdk: ${{ parameters.xcode_sdk }}
+      xcWorkspacePath: packages/rn-tester/RNTesterPods.xcworkspace
+      scheme: ${{ parameters.xcode_scheme }}
+      xcodeVersion: default
+      signingOption: auto
+      packageApp: false
+      teamId: '$(XCodeSigningMicrosoftTeamID)'
+      args: '-destination "${{ parameters.xcode_destination }}" -verbose -derivedDataPath DerivedData ${{ parameters.xcode_extraArgs }}'
+      exportPath: '$(agent.builddirectory)/output/${{ parameters.xcode_sdk }}/${{ parameters.xcode_configuration }}'
+      useXcpretty: true
+      publishJUnitResults: true
+      xctoolReporter: 'junit:test-results.xml'
 
   - task: ShellScript@2
     displayName: 'Cleanup packager and WebSocket test server'

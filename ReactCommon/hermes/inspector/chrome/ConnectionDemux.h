@@ -16,6 +16,7 @@
 #include <hermes/hermes.h>
 #include <hermes/inspector/RuntimeAdapter.h>
 #include <hermes/inspector/chrome/Connection.h>
+#include <hermes/inspector/chrome/Registration.h>
 #include <jsinspector/InspectorInterfaces.h>
 
 namespace facebook {
@@ -36,10 +37,10 @@ class ConnectionDemux {
   ConnectionDemux(const ConnectionDemux &) = delete;
   ConnectionDemux &operator=(const ConnectionDemux &) = delete;
 
-  int enableDebugging(
+  DebugSessionToken enableDebugging(
       std::unique_ptr<RuntimeAdapter> adapter,
       const std::string &title);
-  void disableDebugging(HermesRuntime &runtime);
+  void disableDebugging(DebugSessionToken session);
 
  private:
   int addPage(std::shared_ptr<Connection> conn);

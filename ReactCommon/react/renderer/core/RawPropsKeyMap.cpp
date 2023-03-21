@@ -14,8 +14,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool RawPropsKeyMap::hasSameName(Item const &lhs, Item const &rhs) noexcept {
   return lhs.length == rhs.length &&
@@ -104,5 +103,4 @@ RawPropsValueIndex RawPropsKeyMap::at(
   return kRawPropsValueIndexEmpty;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

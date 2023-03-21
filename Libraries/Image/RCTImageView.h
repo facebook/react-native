@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTUIKit.h> // [macOS]
-#import <React/RCTView.h>
 #import <React/RCTResizeMode.h>
+#import <React/RCTView.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 @class RCTBridge;
 @class RCTImageSource;

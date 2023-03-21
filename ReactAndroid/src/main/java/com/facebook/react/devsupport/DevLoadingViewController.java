@@ -69,9 +69,9 @@ public class DevLoadingViewController {
       return;
     }
 
+    int port = parsedURL.getPort() != -1 ? parsedURL.getPort() : parsedURL.getDefaultPort();
     showMessage(
-        context.getString(
-            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + parsedURL.getPort()));
+        context.getString(R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + port));
   }
 
   public void showForRemoteJSEnabled() {

@@ -10,16 +10,17 @@
 
 // This is a controlled component version of RCTDatePickerIOS.
 
-import * as React from 'react';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {DatePickerIOSType} from './DatePickerIOS.flow';
+
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import View from '../View/View';
 import RCTDatePickerNativeComponent, {
   Commands as DatePickerCommands,
 } from './RCTDatePickerNativeComponent';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import View from '../View/View';
 import invariant from 'invariant';
-
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
-import type {ViewProps} from '../View/ViewPropTypes';
+import * as React from 'react';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -238,4 +239,4 @@ function getHeight(
   return styles.datePickerIOS;
 }
 
-module.exports = DatePickerIOS;
+module.exports = (DatePickerIOS: DatePickerIOSType);

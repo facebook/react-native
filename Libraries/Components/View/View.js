@@ -10,8 +10,10 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
-import ViewNativeComponent from './ViewNativeComponent';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
+import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
+import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
 export type Props = ViewProps;
@@ -26,13 +28,94 @@ export type Props = ViewProps;
 const View: React.AbstractComponent<
   ViewProps,
   React.ElementRef<typeof ViewNativeComponent>,
-> = React.forwardRef((props: ViewProps, forwardedRef) => {
-  return (
-    <TextAncestor.Provider value={false}>
-      <ViewNativeComponent {...props} ref={forwardedRef} />
-    </TextAncestor.Provider>
-  );
-});
+> = React.forwardRef(
+  (
+    {
+      accessibilityElementsHidden,
+      accessibilityLabel,
+      accessibilityLabelledBy,
+      accessibilityLiveRegion,
+      accessibilityRole,
+      accessibilityState,
+      accessibilityValue,
+      'aria-busy': ariaBusy,
+      'aria-checked': ariaChecked,
+      'aria-disabled': ariaDisabled,
+      'aria-expanded': ariaExpanded,
+      'aria-hidden': ariaHidden,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-live': ariaLive,
+      'aria-selected': ariaSelected,
+      'aria-valuemax': ariaValueMax,
+      'aria-valuemin': ariaValueMin,
+      'aria-valuenow': ariaValueNow,
+      'aria-valuetext': ariaValueText,
+      focusable,
+      id,
+      importantForAccessibility,
+      nativeID,
+      pointerEvents,
+      role,
+      style,
+      tabIndex,
+      ...otherProps
+    }: ViewProps,
+    forwardedRef,
+  ) => {
+    const _accessibilityLabelledBy =
+      ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
+
+    const _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+
+    const _accessibilityValue = {
+      max: ariaValueMax ?? accessibilityValue?.max,
+      min: ariaValueMin ?? accessibilityValue?.min,
+      now: ariaValueNow ?? accessibilityValue?.now,
+      text: ariaValueText ?? accessibilityValue?.text,
+    };
+
+    const flattenedStyle = flattenStyle(style);
+    const newPointerEvents = flattenedStyle?.pointerEvents || pointerEvents;
+
+    return (
+      <TextAncestor.Provider value={false}>
+        <ViewNativeComponent
+          {...otherProps}
+          accessibilityLiveRegion={
+            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+          }
+          accessibilityLabel={ariaLabel ?? accessibilityLabel}
+          focusable={tabIndex !== undefined ? !tabIndex : focusable}
+          accessibilityState={_accessibilityState}
+          accessibilityRole={
+            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
+          }
+          accessibilityElementsHidden={
+            ariaHidden ?? accessibilityElementsHidden
+          }
+          accessibilityLabelledBy={_accessibilityLabelledBy}
+          accessibilityValue={_accessibilityValue}
+          importantForAccessibility={
+            ariaHidden === true
+              ? 'no-hide-descendants'
+              : importantForAccessibility
+          }
+          nativeID={id ?? nativeID}
+          style={style}
+          pointerEvents={newPointerEvents}
+          ref={forwardedRef}
+        />
+      </TextAncestor.Provider>
+    );
+  },
+);
 
 View.displayName = 'View';
 

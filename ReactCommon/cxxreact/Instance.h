@@ -56,9 +56,6 @@ class RN_EXPORT Instance {
       std::unique_ptr<const JSBigString> string,
       std::string sourceURL,
       bool loadSynchronously);
-  static bool isHBCBundle(const char *sourcePath);
-  static bool isIndexedRAMBundle(const char *sourcePath);
-  static bool isIndexedRAMBundle(std::unique_ptr<const JSBigString> *string);
   void loadRAMBundleFromString(
       std::unique_ptr<const JSBigString> script,
       const std::string &sourceURL);

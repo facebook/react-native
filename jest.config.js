@@ -13,17 +13,23 @@ module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
       '<rootDir>/jest/assetFileTransformer.js',
-    '.*': './jest/preprocessor.js',
+    '.*': './jest/private/preprocessor.js',
   },
   setupFiles: ['./jest/setup.js'],
-  timers: 'fake',
+  fakeTimers: {
+    enableGlobally: true,
+    legacyFakeTimers: true,
+  },
+  snapshotFormat: {
+    escapeString: true,
+    printBasicPrototype: true,
+  },
   testRegex: '/__tests__/.*-test\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',
     '<rootDir>/template',
     'Libraries/Renderer',
     'packages/rn-tester/e2e',
-    'android-patches',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -49,7 +55,5 @@ module.exports = {
     '/__tests__/',
     '/vendor/',
     '<rootDir>/Libraries/react-native/',
-    'android-patches',
   ],
-  modulePathIgnorePatterns: ['android-patches'],
 };

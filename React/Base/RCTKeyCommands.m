@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTKeyCommands.h"
 
 #import <UIKit/UIKit.h>
@@ -130,7 +131,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
     isKeyDown = [event _isKeyDown];
   }
 
-  BOOL interactionEnabled = !UIApplication.sharedApplication.isIgnoringInteractionEvents;
+  BOOL interactionEnabled = !RCTSharedApplication().isIgnoringInteractionEvents;
   BOOL hasFirstResponder = NO;
   if (isKeyDown && modifiedInput.length > 0 && interactionEnabled) {
     UIResponder *firstResponder = nil;
@@ -267,3 +268,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 @end
 
 #endif
+#endif // [macOS]

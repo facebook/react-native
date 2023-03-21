@@ -7,6 +7,7 @@
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
 #include <React/RCTBridge.h>
+#include <React/RCTBridgeModuleDecorator.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
@@ -29,9 +30,6 @@ static std::string moduleNameFromComponentName(const std::string &componentName)
     return "FBReactFDSTooltipViewManager";
   }
 
-  if (componentName == "FBRotatablePhotoPlayer") {
-    return "FBRotatablePhotoPlayerViewManager";
-  }
   std::string fbPrefix("FB");
   if (std::mismatch(fbPrefix.begin(), fbPrefix.end(), componentName.begin()).first == fbPrefix.end()) {
     // If `moduleName` has "FB" prefix.
@@ -76,11 +74,19 @@ static std::shared_ptr<void> const constructCoordinator(
     eventDispatcher = unwrapManagedObject(optionalEventDispatcher.value());
   }
 
+  auto optionalModuleDecorator = contextContainer->find<std::shared_ptr<void>>("RCTBridgeModuleDecorator");
+  RCTBridgeModuleDecorator *bridgeModuleDecorator;
+  if (optionalModuleDecorator) {
+    bridgeModuleDecorator = unwrapManagedObject(optionalModuleDecorator.value());
+  }
+
   RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:module
                                                                             bridge:bridge
                                                                    eventDispatcher:eventDispatcher];
-  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc] initWithComponentData:componentData
-                                                                                          bridge:bridge]);
+  return wrapManagedObject([[RCTLegacyViewManagerInteropCoordinator alloc]
+      initWithComponentData:componentData
+                     bridge:bridge
+      bridgelessInteropData:bridgeModuleDecorator]);
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(

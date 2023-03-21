@@ -7,8 +7,7 @@
 
 #include "ShadowNodeFragment.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
   static auto &instance = *new Props::Shared();
@@ -37,5 +36,4 @@ Value::operator ShadowNodeFragment() const {
   return ShadowNodeFragment{props, children, state};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

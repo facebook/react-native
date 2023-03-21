@@ -59,7 +59,7 @@ jobs:
         displayName: Set dist-tag to v0.x-stable
         condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
 
-      - template: templates/apple-node-setup.yml
+      - template: templates/apple-tools-setup.yml
 
       - task: CmdLine@2
         displayName: yarn install

@@ -8,14 +8,13 @@
 #import <React/RCTPropsAnimatedNode.h>
 
 #import <React/RCTAnimationUtils.h>
+#import <React/RCTColorAnimatedNode.h>
 #import <React/RCTLog.h>
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
-#import <React/RCTColorAnimatedNode.h>
 
-@implementation RCTPropsAnimatedNode
-{
+@implementation RCTPropsAnimatedNode {
   NSNumber *_connectedViewTag;
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
@@ -24,8 +23,7 @@
   BOOL _managedByFabric;
 }
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithTag:tag config:config]) {
     _propsDictionary = [NSMutableDictionary new];
@@ -41,7 +39,7 @@
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
-     surfacePresenter:(id<RCTSurfacePresenterStub> )surfacePresenter
+     surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   _bridge = bridge;
   _surfacePresenter = surfacePresenter;
@@ -63,11 +61,9 @@
 {
   if (_managedByFabric) {
     if (_bridge.surfacePresenter) {
-      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-      props:_propsDictionary];
+      [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
     } else {
-      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-      props:_propsDictionary];
+      [_surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag props:_propsDictionary];
     }
   } else {
     [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
@@ -96,12 +92,13 @@
 - (NSString *)propertyNameForParentTag:(NSNumber *)parentTag
 {
   __block NSString *propertyName;
-  [self.config[@"props"] enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull property, NSNumber *_Nonnull tag, BOOL *_Nonnull stop) {
-    if ([tag isEqualToNumber:parentTag]) {
-      propertyName = property;
-      *stop = YES;
-    }
-  }];
+  [self.config[@"props"]
+      enumerateKeysAndObjectsUsingBlock:^(NSString *_Nonnull property, NSNumber *_Nonnull tag, BOOL *_Nonnull stop) {
+        if ([tag isEqualToNumber:parentTag]) {
+          propertyName = property;
+          *stop = YES;
+        }
+      }];
   return propertyName;
 }
 

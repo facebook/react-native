@@ -42,8 +42,9 @@
   return self;
 }
 
-RCT_NOT_IMPLEMENTED(- (instancetype)init)
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
+RCT_NOT_IMPLEMENTED(-(instancetype)init)
+RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
+
 
 - (RCTUIView<RCTBackedTextInputViewProtocol> *)backedTextInputView // [macOS]
 {
@@ -71,10 +72,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   if (![self ignoresTextAttributes]) { // [macOS]
     id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-    NSDictionary<NSAttributedStringKey,id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
-    if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
-        [textAttributes setValue:[RCTUIColor blackColor] forKey:NSForegroundColorAttributeName]; // [macOS]
-    }
+  NSDictionary<NSAttributedStringKey, id> *textAttributes = [[_textAttributes effectiveTextAttributes] mutableCopy];
+  if ([textAttributes valueForKey:NSForegroundColorAttributeName] == nil) {
+    [textAttributes setValue:[RCTUIColor blackColor] forKey:NSForegroundColorAttributeName]; // [macOS]
+  }
 
     backedTextInputView.defaultTextAttributes = textAttributes;
   } // [macOS]
@@ -105,37 +106,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   return self.backedTextInputView.attributedText;
 }
 
-- (BOOL)textOf:(NSAttributedString*)newText equals:(NSAttributedString*)oldText{
+- (BOOL)textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
+{
   // When the dictation is running we can't update the attributed text on the backed up text view
   // because setting the attributed string will kill the dictation. This means that we can't impose
   // the settings on a dictation.
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
-  // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
-  // for more info.
+  // text that we should disregard. See
+  // https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc for more info.
   // Also, updating the attributed text while inputting Korean language will break input mechanism.
-  // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in NSOriginalFont.
-  // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
-  // handles showing the last character for a split second.
+  // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
+  // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
+  // text view handles showing the last character for a split second.
   __block BOOL fontHasBeenUpdatedBySystem = false;
-  [oldText enumerateAttribute:@"NSOriginalFont" inRange:NSMakeRange(0, oldText.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-    if (value){
-      fontHasBeenUpdatedBySystem = true;
-    }
-  }];
+  [oldText enumerateAttribute:@"NSOriginalFont"
+                      inRange:NSMakeRange(0, oldText.length)
+                      options:0
+                   usingBlock:^(id value, NSRange range, BOOL *stop) {
+                     if (value) {
+                       fontHasBeenUpdatedBySystem = true;
+                     }
+                   }];
 
   BOOL shouldFallbackToBareTextComparison =
 #if !TARGET_OS_OSX // [macOS]
-    [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
-    [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
-    self.backedTextInputView.markedTextRange ||
-    self.backedTextInputView.isSecureTextEntry ||
+      [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
+      self.backedTextInputView.markedTextRange || self.backedTextInputView.isSecureTextEntry ||
 #else // [macOS
     // There are multiple Korean input sources (2-Set, 3-Set, etc). Check substring instead instead
     [[[self.backedTextInputView inputContext] selectedKeyboardInputSource] containsString:@"com.apple.inputmethod.Korean"] ||
-    [self.backedTextInputView hasMarkedText] ||
-    [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
+    [self.backedTextInputView hasMarkedText] || [self.backedTextInputView isKindOfClass:[NSSecureTextField class]] ||
 #endif // macOS]
-    fontHasBeenUpdatedBySystem;
+      fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
@@ -179,15 +182,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 #if !TARGET_OS_OSX // [macOS]
     if (selection.empty) {
       // Maintaining a cursor position relative to the end of the old text.
-      NSInteger offsetStart =
-      [self.backedTextInputView offsetFromPosition:self.backedTextInputView.beginningOfDocument
-                                        toPosition:selection.start];
+      NSInteger offsetStart = [self.backedTextInputView offsetFromPosition:self.backedTextInputView.beginningOfDocument
+                                                                toPosition:selection.start];
       NSInteger offsetFromEnd = oldTextLength - offsetStart;
       NSInteger newOffset = attributedText.string.length - offsetFromEnd;
       UITextPosition *position =
-      [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
-                                              offset:newOffset];
-      [self.backedTextInputView setSelectedTextRange:[self.backedTextInputView textRangeFromPosition:position toPosition:position]
+          [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument offset:newOffset];
+      [self.backedTextInputView setSelectedTextRange:[self.backedTextInputView textRangeFromPosition:position
+                                                                                          toPosition:position]
                                       notifyDelegate:YES];
     }
 #else // [macOS
@@ -203,7 +205,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 
     [self updateLocalData];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLog(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", self.backedTextInputView.attributedText.string, (long long)eventLag);
+    RCTLog(
+        @"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.",
+        self.backedTextInputView.attributedText.string,
+        (long long)eventLag);
   }
 }
 
@@ -212,8 +217,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 #if !TARGET_OS_OSX // [macOS]
   UITextRange *selectedTextRange = backedTextInputView.selectedTextRange;
-  return [[RCTTextSelection new] initWithStart:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument toPosition:selectedTextRange.start]
-                                           end:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument toPosition:selectedTextRange.end]];
+  return [[RCTTextSelection new]
+      initWithStart:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
+                                                 toPosition:selectedTextRange.start]
+                end:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
+                                                 toPosition:selectedTextRange.end]];
 #else // [macOS
   NSRange selectedTextRange = backedTextInputView.selectedTextRange;
   return [[RCTTextSelection new] initWithStart:selectedTextRange.location
@@ -231,8 +239,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 
 #if !TARGET_OS_OSX // [macOS]
   UITextRange *previousSelectedTextRange = backedTextInputView.selectedTextRange;
-  UITextPosition *start = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument offset:selection.start];
-  UITextPosition *end = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument offset:selection.end];
+  UITextPosition *start = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
+                                                             offset:selection.start];
+  UITextPosition *end = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
+                                                           offset:selection.end];
   UITextRange *selectedTextRange = [backedTextInputView textRangeFromPosition:start toPosition:end];
 #else // [macOS
   NSRange previousSelectedTextRange = backedTextInputView.selectedTextRange;
@@ -246,18 +256,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   if (eventLag == 0 && !RCTTextSelectionEqual(previousSelectedTextRange, selectedTextRange)) { // [macOS]
     [backedTextInputView setSelectedTextRange:selectedTextRange notifyDelegate:NO];
   } else if (eventLag > RCTTextUpdateLagWarningThreshold) {
-    RCTLog(@"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.", backedTextInputView.attributedText.string, (long long)eventLag);
+    RCTLog(
+        @"Native TextInput(%@) is %lld events ahead of JS - try to make your JS faster.",
+        backedTextInputView.attributedText.string,
+        (long long)eventLag);
   }
 }
 
-- (void)setSelectionStart:(NSInteger)start
-             selectionEnd:(NSInteger)end
+- (void)setSelectionStart:(NSInteger)start selectionEnd:(NSInteger)end
 {
 #if !TARGET_OS_OSX // [macOS]
-  UITextPosition *startPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
-                                                                          offset:start];
-  UITextPosition *endPosition = [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument
-                                                                        offset:end];
+  UITextPosition *startPosition =
+      [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument offset:start];
+  UITextPosition *endPosition =
+      [self.backedTextInputView positionFromPosition:self.backedTextInputView.beginningOfDocument offset:end];
   if (startPosition && endPosition) {
     UITextRange *range = [self.backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [self.backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
@@ -271,67 +283,67 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 
 - (void)setTextContentType:(NSString *)type
 {
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    static dispatch_once_t onceToken;
-    static NSDictionary<NSString *, NSString *> *contentTypeMap;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
-    dispatch_once(&onceToken, ^{
-      contentTypeMap = @{@"none": @"",
-                          @"URL": UITextContentTypeURL,
-                          @"addressCity": UITextContentTypeAddressCity,
-                          @"addressCityAndState":UITextContentTypeAddressCityAndState,
-                          @"addressState": UITextContentTypeAddressState,
-                          @"countryName": UITextContentTypeCountryName,
-                          @"creditCardNumber": UITextContentTypeCreditCardNumber,
-                          @"emailAddress": UITextContentTypeEmailAddress,
-                          @"familyName": UITextContentTypeFamilyName,
-                          @"fullStreetAddress": UITextContentTypeFullStreetAddress,
-                          @"givenName": UITextContentTypeGivenName,
-                          @"jobTitle": UITextContentTypeJobTitle,
-                          @"location": UITextContentTypeLocation,
-                          @"middleName": UITextContentTypeMiddleName,
-                          @"name": UITextContentTypeName,
-                          @"namePrefix": UITextContentTypeNamePrefix,
-                          @"nameSuffix": UITextContentTypeNameSuffix,
-                          @"nickname": UITextContentTypeNickname,
-                          @"organizationName": UITextContentTypeOrganizationName,
-                          @"postalCode": UITextContentTypePostalCode,
-                          @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
-                          @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
-                          @"sublocality": UITextContentTypeSublocality,
-                          @"telephoneNumber": UITextContentTypeTelephoneNumber,
-                          @"username": UITextContentTypeUsername,
-                          @"password": UITextContentTypePassword,
-                          };
+  dispatch_once(&onceToken, ^{
+    contentTypeMap = @{
+      @"none" : @"",
+      @"URL" : UITextContentTypeURL,
+      @"addressCity" : UITextContentTypeAddressCity,
+      @"addressCityAndState" : UITextContentTypeAddressCityAndState,
+      @"addressState" : UITextContentTypeAddressState,
+      @"countryName" : UITextContentTypeCountryName,
+      @"creditCardNumber" : UITextContentTypeCreditCardNumber,
+      @"emailAddress" : UITextContentTypeEmailAddress,
+      @"familyName" : UITextContentTypeFamilyName,
+      @"fullStreetAddress" : UITextContentTypeFullStreetAddress,
+      @"givenName" : UITextContentTypeGivenName,
+      @"jobTitle" : UITextContentTypeJobTitle,
+      @"location" : UITextContentTypeLocation,
+      @"middleName" : UITextContentTypeMiddleName,
+      @"name" : UITextContentTypeName,
+      @"namePrefix" : UITextContentTypeNamePrefix,
+      @"nameSuffix" : UITextContentTypeNameSuffix,
+      @"nickname" : UITextContentTypeNickname,
+      @"organizationName" : UITextContentTypeOrganizationName,
+      @"postalCode" : UITextContentTypePostalCode,
+      @"streetAddressLine1" : UITextContentTypeStreetAddressLine1,
+      @"streetAddressLine2" : UITextContentTypeStreetAddressLine2,
+      @"sublocality" : UITextContentTypeSublocality,
+      @"telephoneNumber" : UITextContentTypeTelephoneNumber,
+      @"username" : UITextContentTypeUsername,
+      @"password" : UITextContentTypePassword,
+    };
 
-      #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-        if (@available(iOS 12.0, *)) {
-          NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
-                                                                  @"oneTimeCode": UITextContentTypeOneTimeCode};
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
+    if (@available(iOS 12.0, *)) {
+      NSDictionary<NSString *, NSString *> *iOS12extras =
+          @{@"newPassword" : UITextContentTypeNewPassword, @"oneTimeCode" : UITextContentTypeOneTimeCode};
 
-          NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
-          [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+      NSMutableDictionary<NSString *, NSString *> *iOS12baseMap = [contentTypeMap mutableCopy];
+      [iOS12baseMap addEntriesFromDictionary:iOS12extras];
 
-          contentTypeMap = [iOS12baseMap copy];
-        }
-      #endif
-    });
+      contentTypeMap = [iOS12baseMap copy];
+    }
+#endif
+  });
 
-    // Setting textContentType to an empty string will disable any
-    // default behaviour, like the autofill bar for password inputs
-    self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
-  #endif
+  // Setting textContentType to an empty string will disable any
+  // default behaviour, like the autofill bar for password inputs
+  self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
+#endif
 }
 
 #if !TARGET_OS_OSX // [macOS]
-
 - (void)setPasswordRules:(NSString *)descriptor
 {
-  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
-    if (@available(iOS 12.0, *)) {
-      self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
-    }
-  #endif
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0
+  if (@available(iOS 12.0, *)) {
+    self.backedTextInputView.passwordRules = [UITextInputPasswordRules passwordRulesWithDescriptor:descriptor];
+  }
+#endif
 }
 
 - (UIKeyboardType)keyboardType
@@ -344,7 +356,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   if (textInputView.keyboardType != keyboardType) {
     textInputView.keyboardType = keyboardType;
-    // Without the call to reloadInputViews, the keyboard will not change until the textview field (the first responder) loses and regains focus.
+    // Without the call to reloadInputViews, the keyboard will not change until the textview field (the first responder)
+    // loses and regains focus.
     if (textInputView.isFirstResponder) {
       [textInputView reloadInputViews];
     }
@@ -477,26 +490,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 }
 #endif // macOS]
 
+- (BOOL)textInputShouldSubmitOnReturn
+{
+  const BOOL shouldSubmit =
+      [_submitBehavior isEqualToString:@"blurAndSubmit"] || [_submitBehavior isEqualToString:@"submit"];
+  if (shouldSubmit) {
+    // We send `submit` event here, in `textInputShouldSubmit`
+    // (not in `textInputDidReturn)`, because of semantic of the event:
+    // `onSubmitEditing` is called when "Submit" button
+    // (the blue key on onscreen keyboard) did pressed
+    // (no connection to any specific "submitting" process).
+    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
+                                   reactTag:self.reactTag
+                                       text:[self.backedTextInputView.attributedText.string copy]
+                                        key:nil
+                                 eventCount:_nativeEventCount];
+  }
+  return shouldSubmit;
+}
+
 - (BOOL)textInputShouldReturn
 {
-  // We send `submit` event here, in `textInputShouldReturn`
-  // (not in `textInputDidReturn)`, because of semantic of the event:
-  // `onSubmitEditing` is called when "Submit" button
-  // (the blue key on onscreen keyboard) did pressed
-  // (no connection to any specific "submitting" process).
-#if TARGET_OS_OSX // [macOS
-  if (_blurOnSubmit) {
-#endif // macOS]
-    [_eventDispatcher sendTextEventWithType:RCTTextEventTypeSubmit
-                                  reactTag:self.reactTag
-                                      text:[self.backedTextInputView.attributedText.string copy]
-                                        key:nil
-                                eventCount:_nativeEventCount];
-#if TARGET_OS_OSX // [macOS
-  }
-#endif // macOS]
-
-  return _blurOnSubmit;
+  return [_submitBehavior isEqualToString:@"blurAndSubmit"];
 }
 
 - (void)textInputDidReturn
@@ -517,16 +532,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   }
 
   if (_maxLength) {
-    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
+    NSInteger allowedLength = MAX(
+        _maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length,
+        0);
 
     if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         if (allowedLength > 0) {
-          //make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
-          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex: allowedLength - 1];
+          // make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
+          NSRange cutOffCharacterRange = [text rangeOfComposedCharacterSequenceAtIndex:allowedLength - 1];
           if (cutOffCharacterRange.location + cutOffCharacterRange.length > allowedLength) {
-            //the character at the length limit takes more than 16bits, truncation should end at the character before
+            // the character at the length limit takes more than 16bits, truncation should end at the character before
             allowedLength = cutOffCharacterRange.location;
           }
         }
@@ -535,7 +552,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
         // Apply text attributes if original input view doesn't have text.
         if (backedTextInputView.attributedText.length == 0) {
-          newAttributedText = [[NSMutableAttributedString alloc] initWithString:[self.textAttributes applyTextAttributesToText:limitedString] attributes:self.textAttributes.effectiveTextAttributes];
+          newAttributedText = [[NSMutableAttributedString alloc]
+              initWithString:[self.textAttributes applyTextAttributesToText:limitedString]
+                  attributes:self.textAttributes.effectiveTextAttributes];
         } else {
           [newAttributedText replaceCharactersInRange:range withString:limitedString];
         }
@@ -546,7 +565,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 #if !TARGET_OS_OSX // [macOS]
         UITextPosition *insertEnd = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
                                                                        offset:(range.location + allowedLength)];
-        [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd toPosition:insertEnd]
+        [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd
+                                                                                  toPosition:insertEnd]
                                    notifyDelegate:YES];
 #else // [macOS
         [backedTextInputView setSelectedTextRange:NSMakeRange(range.location + allowedLength, 0)
@@ -565,18 +585,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
   } else if (text != nil) { // [macOS] -[NSString stringByReplacingCharactersInRange:withString:] doesn't like when the replacement string is nil
-    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
+    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range
+                                                                                        withString:text];
   }
 
   if (_onTextInput) {
     _onTextInput(@{
-      @"text": text,
-      @"previousText": previousText,
-      @"range": @{
-        @"start": @(range.location),
-        @"end": @(range.location + range.length)
-      },
-      @"eventCount": @(_nativeEventCount),
+      // We copy the string here because if it's a mutable string it may get released before we stop using it on a
+      // different thread, causing a crash.
+      @"text" : [text copy],
+      @"previousText" : previousText,
+      @"range" : @{@"start" : @(range.location), @"end" : @(range.location + range.length)},
+      @"eventCount" : @(_nativeEventCount),
     });
   }
 
@@ -607,9 +627,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 
   if (_onChange) {
     _onChange(@{
-       @"text": [self.attributedText.string copy],
-       @"target": self.reactTag,
-       @"eventCount": @(_nativeEventCount),
+      @"text" : [self.attributedText.string copy],
+      @"target" : self.reactTag,
+      @"eventCount" : @(_nativeEventCount),
     });
   }
 }
@@ -623,9 +643,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   RCTTextSelection *selection = self.selection;
 
   _onSelectionChange(@{
-    @"selection": @{
-      @"start": @(selection.start),
-      @"end": @(selection.end),
+    @"selection" : @{
+      @"start" : @(selection.start),
+      @"end" : @(selection.end),
     },
   });
 }
@@ -703,8 +723,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 {
   [self enforceTextAttributesIfNeeded];
 
-  [_bridge.uiManager setLocalData:[self.backedTextInputView.attributedText copy]
-                          forView:self];
+  [_bridge.uiManager setLocalData:[self.backedTextInputView.attributedText copy] forView:self];
 }
 
 #pragma mark - Layout (in UIKit terms, with all insets)
@@ -782,17 +801,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 {
 #if !TARGET_OS_OSX // [macOS]
   __weak RCTBaseTextInputView *weakSelf = self;
-  [_bridge.uiManager rootViewForReactTag:self.reactTag withCompletion:^(UIView *rootView) {
-    RCTBaseTextInputView *strongSelf = weakSelf;
-    if (rootView) {
-      UIView *accessoryView = [strongSelf->_bridge.uiManager viewForNativeID:nativeID
-                                                                 withRootTag:rootView.reactTag];
-      if (accessoryView && [accessoryView isKindOfClass:[RCTInputAccessoryView class]]) {
-        strongSelf.backedTextInputView.inputAccessoryView = ((RCTInputAccessoryView *)accessoryView).inputAccessoryView;
-        [strongSelf reloadInputViewsIfNecessary];
-      }
-    }
-  }];
+  [_bridge.uiManager rootViewForReactTag:self.reactTag
+                          withCompletion:^(UIView *rootView) {
+                            RCTBaseTextInputView *strongSelf = weakSelf;
+                            if (rootView) {
+                              UIView *accessoryView = [strongSelf->_bridge.uiManager viewForNativeID:nativeID
+                                                                                         withRootTag:rootView.reactTag];
+                              if (accessoryView && [accessoryView isKindOfClass:[RCTInputAccessoryView class]]) {
+                                strongSelf.backedTextInputView.inputAccessoryView =
+                                    ((RCTInputAccessoryView *)accessoryView).inputAccessoryView;
+                                [strongSelf reloadInputViewsIfNecessary];
+                              }
+                            }
+                          }];
 #endif // [macOS]
 }
 
@@ -805,12 +826,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccesoryView =
-      (
-       keyboardType == UIKeyboardTypeNumberPad ||
-       keyboardType == UIKeyboardTypePhonePad ||
-       keyboardType == UIKeyboardTypeDecimalPad ||
-       keyboardType == UIKeyboardTypeASCIICapableNumberPad
-      ) &&
+      (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
+       keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
       textInputView.returnKeyType == UIReturnKeyDone;
 
   if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
@@ -823,17 +840,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
-      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                    target:nil
-                                                    action:nil];
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     UIBarButtonItem *doneButton =
-      [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                    target:self
-                                                    action:@selector(handleInputAccessoryDoneButton)];
-    toolbarView.items = @[flexibleSpace, doneButton];
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                      target:self
+                                                      action:@selector(handleInputAccessoryDoneButton)];
+    toolbarView.items = @[ flexibleSpace, doneButton ];
     textInputView.inputAccessoryView = toolbarView;
-  }
-  else {
+  } else {
     textInputView.inputAccessoryView = nil;
   }
   [self reloadInputViewsIfNecessary];
@@ -851,6 +865,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)decoder)
 
 - (void)handleInputAccessoryDoneButton
 {
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
+  [self textInputShouldSubmitOnReturn];
   if ([self textInputShouldReturn]) {
     [self.backedTextInputView endEditing:YES];
   }

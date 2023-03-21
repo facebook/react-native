@@ -7,12 +7,11 @@
 
 #include "TouchEvent.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(TouchEvent const &touchEvent) {
+std::string getDebugName(TouchEvent const & /*touchEvent*/) {
   return "TouchEvent";
 }
 
@@ -29,5 +28,4 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

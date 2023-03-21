@@ -14,8 +14,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/conversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern char const TextInputComponentName[] = "TextInput";
 
@@ -120,5 +119,4 @@ void TextInputShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

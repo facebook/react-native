@@ -23,7 +23,7 @@ AsynchronousEventBeat::AsynchronousEventBeat(
 
 void AsynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
-    RunLoopObserver::Activity) const noexcept {
+    RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   induce();
 }

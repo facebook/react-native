@@ -9,11 +9,12 @@
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import InteractionManager from '../Interaction/InteractionManager';
 import Platform from '../Utilities/Platform';
-import NativeLinkingManager from './NativeLinkingManager';
 import NativeIntentAndroid from './NativeIntentAndroid';
+import NativeLinkingManager from './NativeLinkingManager';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
@@ -48,17 +49,6 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
     context: $FlowFixMe,
   ): EventSubscription {
     return this.addListener(eventType, listener);
-  }
-
-  /**
-   * @deprecated Use `remove` on the EventSubscription from `addEventListener`.
-   */
-  removeEventListener<K: $Keys<LinkingEventDefinitions>>(
-    eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-  ): void {
-    // NOTE: This will report a deprecation notice via `console.error`.
-    this.removeListener(eventType, listener);
   }
 
   /**
@@ -138,7 +128,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
     }
   }
 
-  _validateURL(url: string) {
+  _validateURL(url: string): void {
     invariant(
       typeof url === 'string',
       'Invalid URL: should be a string. Was: ' + url,

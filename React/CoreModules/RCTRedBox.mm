@@ -102,7 +102,7 @@
     const CGFloat buttonHeight = 60;
 
     CGRect detailsFrame = rootView.bounds;
-    detailsFrame.size.height -= buttonHeight + [self bottomSafeViewHeight];
+    detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
 
     _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
     _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -160,7 +160,7 @@
                     accessibilityIdentifier:@""
                                    selector:nil
                                       block:customButtonHandlers[i]];
-      button.frame = CGRectMake(buttonWidth * (4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
+      button.frame = CGRectMake(buttonWidth * (double)(4 + i), bottomButtonHeight, buttonWidth, buttonHeight);
       [rootView addSubview:button];
     }
 
@@ -333,7 +333,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
     cell.textLabel.accessibilityIdentifier = @"redbox-error";
     cell.textLabel.textColor = [UIColor whiteColor];
-    cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
+    if (@available(iOS 13.0, *)) {
+      // Prefer a monofont for formatting messages that were designed
+      // to be displayed in a terminal.
+      cell.textLabel.font = [UIFont monospacedSystemFontOfSize:14 weight:UIFontWeightBold];
+    } else {
+      cell.textLabel.font = [UIFont boldSystemFontOfSize:14];
+    }
     cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     cell.textLabel.numberOfLines = 0;
     cell.detailTextLabel.textColor = [UIColor whiteColor];

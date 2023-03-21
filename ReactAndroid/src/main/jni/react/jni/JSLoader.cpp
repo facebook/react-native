@@ -77,7 +77,7 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
         // script to ensure we have a terminator.
         const BundleHeader *header =
             reinterpret_cast<const BundleHeader *>(script->c_str());
-        if (parseTypeFromHeader(*header) == ScriptTag::HBCBundle) {
+        if (isHermesBytecodeBundle(*header)) {
           return script;
         }
       }

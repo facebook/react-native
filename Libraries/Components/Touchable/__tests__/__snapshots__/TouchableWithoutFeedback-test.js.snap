@@ -3,6 +3,15 @@
 exports[`TouchableWithoutFeedback renders correctly 1`] = `
 <Text
   acceptsFirstMouse={true}
+  accessibilityState={
+    Object {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
   accessible={true}
   enableFocusRing={true}
   focusable={false}
@@ -25,7 +34,11 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
   acceptsFirstMouse={false}
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -48,7 +61,11 @@ exports[`TouchableWithoutFeedback with disabled state should be disabled when di
   acceptsFirstMouse={false}
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -71,7 +88,11 @@ exports[`TouchableWithoutFeedback with disabled state should disable button when
   acceptsFirstMouse={true}
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -94,8 +115,11 @@ exports[`TouchableWithoutFeedback with disabled state should keep accessibilityS
   acceptsFirstMouse={false}
   accessibilityState={
     Object {
+      "busy": undefined,
       "checked": true,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}
@@ -118,7 +142,11 @@ exports[`TouchableWithoutFeedback with disabled state should overwrite accessibi
   acceptsFirstMouse={false}
   accessibilityState={
     Object {
+      "busy": undefined,
+      "checked": undefined,
       "disabled": true,
+      "expanded": undefined,
+      "selected": undefined,
     }
   }
   accessible={true}

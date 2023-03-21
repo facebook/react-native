@@ -11,6 +11,9 @@
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
 
+@class RCTModuleRegistry;
+@class RCTCallableJSModules;
+
 #ifndef RCTLOG_ENABLED
 #define RCTLOG_ENABLED 1
 #endif
@@ -120,6 +123,20 @@ RCT_EXTERN void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFuncti
  * messages. The block will be performed synchronously on the current thread.
  */
 RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
+
+/**
+ * These methods allows static methods in RCTLog to call NativeModules and TurboModules.
+ * TODO(T112035275) After Bridgeless mixed mode is removed, we can merge these methods
+ */
+RCT_EXTERN void RCTLogSetBridgeModuleRegistry(RCTModuleRegistry *moduleRegistry);
+RCT_EXTERN void RCTLogSetBridgelessModuleRegistry(RCTModuleRegistry *moduleRegistry);
+
+/**
+ * This methods allows static methods in RCTLog to call JS methods.
+ * TODO(T112035275) After Bridgeless mixed mode is removed, we can merge these methods
+ */
+RCT_EXTERN void RCTLogSetBridgeCallableJSModules(RCTCallableJSModules *callableJSModules);
+RCT_EXTERN void RCTLogSetBridgelessCallableJSModules(RCTCallableJSModules *callableJSModules);
 
 /**
  * Private logging function - ignore this.

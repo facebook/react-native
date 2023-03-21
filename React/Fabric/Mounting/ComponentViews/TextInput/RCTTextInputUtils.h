@@ -10,6 +10,8 @@
 #import <React/RCTUITextField.h> // [macOS]
 #import <React/RCTUITextView.h> // [macOS]
 
+#import <optional>
+
 #import <React/RCTBackedTextInputViewProtocol.h>
 #import <react/renderer/components/iostextinput/primitives.h>
 

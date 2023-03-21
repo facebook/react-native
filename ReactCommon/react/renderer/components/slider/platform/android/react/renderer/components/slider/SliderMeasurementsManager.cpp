@@ -13,8 +13,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Size SliderMeasurementsManager::measure(
     SurfaceId surfaceId,
@@ -70,5 +69,4 @@ Size SliderMeasurementsManager::measure(
   return measurement;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

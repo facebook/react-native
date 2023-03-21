@@ -160,7 +160,7 @@ function ComposingExampleItem({
         {boxIndexes.map(boxIndex => {
           const translateX = xTranslations.current[boxIndex].interpolate({
             inputRange: [0, 1],
-            outputRange: ([0, maxXTranslation]: [number, number]),
+            outputRange: [0, maxXTranslation],
           });
 
           return (

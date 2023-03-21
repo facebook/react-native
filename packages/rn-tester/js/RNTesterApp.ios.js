@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {Node} from 'react';
+
 import {AppRegistry, NativeModules, Platform, View} from 'react-native'; // [macOS] everything but AppRegistry
 import React from 'react';
 
@@ -33,7 +35,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
     const ExampleModule = Example.module;
     if (ExampleModule.displayName) {
       class Snapshotter extends React.Component<{...}> {
-        render() {
+        render(): Node {
           return (
             <SnapshotViewIOS>
               <RNTesterModuleContainer
@@ -59,7 +61,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
         });
       }
 
-      render() {
+      render(): Node {
         return <RNTesterModuleContainer module={ExampleModule} />;
       }
     }
@@ -74,7 +76,7 @@ RNTesterList.Components.concat(RNTesterList.APIs).forEach(
 
 // [macOS
 class EnumerateExamplePages extends React.Component<{}> {
-  render() {
+  render(): Node {
     RNTesterList.Components.concat(RNTesterList.APIs).forEach(
       (Example: RNTesterModuleInfo) => {
         let skipTest = false;

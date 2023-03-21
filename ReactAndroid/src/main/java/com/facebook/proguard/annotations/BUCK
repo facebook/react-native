@@ -17,6 +17,7 @@ rn_android_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     autoglob = False,
+    language = "JAVA",
     proguard_config = "proguard_annotations.pro",
     visibility = [
         "PUBLIC",

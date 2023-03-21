@@ -56,9 +56,7 @@ SyncConnection::SyncConnection(
     std::shared_ptr<HermesRuntime> runtime,
     bool waitForDebugger)
     : connection_(
-          std::make_unique<SharedRuntimeAdapter>(
-              runtime,
-              runtime->getDebugger()),
+          std::make_unique<SharedRuntimeAdapter>(runtime),
           "testConn",
           waitForDebugger) {
   connection_.connect(std::make_unique<RemoteConnnection>(*this));

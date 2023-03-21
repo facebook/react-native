@@ -95,15 +95,15 @@ class ShadowTree final {
    * The `transaction` function can cancel commit returning `nullptr`.
    */
   CommitStatus tryCommit(
-      ShadowTreeCommitTransaction transaction,
-      CommitOptions commitOptions = {false}) const;
+      const ShadowTreeCommitTransaction &transaction,
+      const CommitOptions &commitOptions = {false}) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
   CommitStatus commit(
-      ShadowTreeCommitTransaction transaction,
-      CommitOptions commitOptions = {false}) const;
+      const ShadowTreeCommitTransaction &transaction,
+      const CommitOptions &commitOptions = {false}) const;
 
   /*
    * Returns a `ShadowTreeRevision` representing the momentary state of

@@ -115,9 +115,7 @@ public class NativeModuleRegistry {
   /* package */ void notifyJSInstanceInitialized() {
     mReactApplicationContext.assertOnNativeModulesQueueThread(
         "From version React Native v0.44, "
-            + "native modules are explicitly not initialized on the UI thread. See "
-            + "https://github.com/facebook/react-native/wiki/Breaking-Changes#d4611211-reactnativeandroidbreaking-move-nativemodule-initialization-off-ui-thread---aaachiuuu "
-            + " for more details.");
+            + "native modules are explicitly not initialized on the UI thread.");
     ReactMarker.logMarker(ReactMarkerConstants.NATIVE_MODULE_INITIALIZE_START);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "NativeModuleRegistry_notifyJSInstanceInitialized");

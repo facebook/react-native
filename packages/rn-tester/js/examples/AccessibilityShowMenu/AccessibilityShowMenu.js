@@ -28,7 +28,7 @@ class AccessibilityShowMenu extends React.Component<{}> {
     }
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text>

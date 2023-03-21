@@ -7,10 +7,10 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
-#import <React/RCTUIManager.h>
+#import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTPlatformDisplayLink.h> // [macOS]
 #import <React/RCTSurfacePresenterStub.h>
-#import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTUIManager.h>
 
 @protocol RCTValueAnimatedNodeObserver;
 
@@ -27,19 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isNodeManagedByFabric:(NSNumber *)tag;
 
-- (void)getValue:(NSNumber *)nodeTag
-        saveCallback:(RCTResponseSenderBlock)saveCallback;
+- (void)getValue:(NSNumber *)nodeTag saveCallback:(RCTResponseSenderBlock)saveCallback;
 
 // graph
 
-- (void)createAnimatedNode:(NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *)config;
+- (void)createAnimatedNode:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config;
 
-- (void)connectAnimatedNodes:(NSNumber *)parentTag
-                    childTag:(NSNumber *)childTag;
+- (void)connectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag;
 
-- (void)disconnectAnimatedNodes:(NSNumber *)parentTag
-                       childTag:(NSNumber *)childTag;
+- (void)disconnectAnimatedNodes:(NSNumber *)parentTag childTag:(NSNumber *)childTag;
 
 - (void)connectAnimatedNodeToView:(NSNumber *)nodeTag
                           viewTag:(NSNumber *)viewTag
@@ -47,25 +43,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)restoreDefaultValues:(NSNumber *)nodeTag;
 
-- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag
-                               viewTag:(NSNumber *)viewTag;
+- (void)disconnectAnimatedNodeFromView:(NSNumber *)nodeTag viewTag:(NSNumber *)viewTag;
 
 - (void)dropAnimatedNode:(NSNumber *)tag;
 
 // mutations
 
-- (void)setAnimatedNodeValue:(NSNumber *)nodeTag
-                       value:(NSNumber *)value;
+- (void)setAnimatedNodeValue:(NSNumber *)nodeTag value:(NSNumber *)value;
 
-- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag
-                       offset:(NSNumber *)offset;
+- (void)setAnimatedNodeOffset:(NSNumber *)nodeTag offset:(NSNumber *)offset;
 
 - (void)flattenAnimatedNodeOffset:(NSNumber *)nodeTag;
 
 - (void)extractAnimatedNodeOffset:(NSNumber *)nodeTag;
 
-- (void)updateAnimatedNodeConfig:(NSNumber *)tag
-                    config:(NSDictionary<NSString *, id> *)config;
+- (void)updateAnimatedNodeConfig:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config;
 
 // drivers
 
@@ -92,8 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // listeners
 
-- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag
-                            valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver;
+- (void)startListeningToAnimatedNodeValue:(NSNumber *)tag valueObserver:(id<RCTValueAnimatedNodeObserver>)valueObserver;
 
 - (void)stopListeningToAnimatedNodeValue:(NSNumber *)tag;
 

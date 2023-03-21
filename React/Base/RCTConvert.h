@@ -9,12 +9,12 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTAnimationType.h>
+#import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
-#import <React/RCTFontSmoothing.h> // [macOS]
 #import <yoga/Yoga.h>
 #if TARGET_OS_IPHONE
 #import <WebKit/WebKit.h>
@@ -65,6 +65,7 @@ typedef NSURL RCTFileURL;
 + (NSTextAlignment)NSTextAlignment:(id)json;
 + (NSUnderlineStyle)NSUnderlineStyle:(id)json;
 + (NSWritingDirection)NSWritingDirection:(id)json;
++ (NSLineBreakStrategy)NSLineBreakStrategy:(id)json;
 #if !TARGET_OS_OSX // [macOS]
 + (UITextAutocapitalizationType)UITextAutocapitalizationType:(id)json;
 + (UITextFieldViewMode)UITextFieldViewMode:(id)json;
@@ -141,8 +142,8 @@ typedef BOOL css_backface_visibility_t;
 + (RCTPointerEvents)RCTPointerEvents:(id)json;
 + (RCTAnimationType)RCTAnimationType:(id)json;
 + (RCTBorderStyle)RCTBorderStyle:(id)json;
++ (RCTBorderCurve)RCTBorderCurve:(id)json;
 + (RCTTextDecorationLineType)RCTTextDecorationLineType:(id)json;
-+ (RCTFontSmoothing)RCTFontSmoothing:(id)json; // [macOS]
 
 #if TARGET_OS_OSX // [macOS
 + (NSString *)accessibilityRoleFromTraits:(id)json;

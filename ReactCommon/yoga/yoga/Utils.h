@@ -6,6 +6,9 @@
  */
 
 #pragma once
+
+#ifdef __cplusplus
+
 #include "YGNode.h"
 #include "Yoga-internal.h"
 #include "CompactValue.h"
@@ -145,3 +148,5 @@ inline YGFloatOptional YGResolveValueMargin(
 }
 
 void throwLogicalErrorWithMessage(const char* message);
+
+#endif

@@ -22,6 +22,7 @@ using namespace facebook::react;
 {
   [super setUp];
   _componentViewRegistry = [RCTComponentViewRegistry new];
+  [_componentViewRegistry.componentViewFactory registerComponentViewClass:[RCTViewComponentView class]];
 }
 
 - (void)testComponentViewDescriptorWithTag

@@ -13,6 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -109,7 +110,21 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_, context);
 
-    return ShadowNodeT::Props(context, rawProps, props);
+    // Call old-style constructor
+    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+
+    // Use the new-style iterator
+    // Note that we just check if `Props` has this flag set, no matter
+    // the type of ShadowNode; it acts as the single global flag.
+    if (CoreFeatures::enablePropIteratorSetter) {
+      rawProps.iterateOverValues([&](RawPropsPropNameHash hash,
+                                     const char *propName,
+                                     RawValue const &fn) {
+        shadowNodeProps.get()->setProp(context, hash, propName, fn);
+      });
+    }
+
+    return shadowNodeProps;
   };
 
   Props::Shared interpolateProps(

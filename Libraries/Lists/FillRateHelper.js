@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {FrameMetricProps} from './VirtualizedListProps';
+
 export type FillRateInfo = Info;
 
 class Info {
@@ -47,12 +49,12 @@ let _sampleRate = DEBUG ? 1 : null;
  * `SceneTracker.getActiveScene` to determine the context of the events.
  */
 class FillRateHelper {
-  _anyBlankStartTime = (null: ?number);
+  _anyBlankStartTime: ?number = null;
   _enabled = false;
-  _getFrameMetrics: (index: number) => ?FrameMetrics;
-  _info = new Info();
-  _mostlyBlankStartTime = (null: ?number);
-  _samplesStartTime = (null: ?number);
+  _getFrameMetrics: (index: number, props: FrameMetricProps) => ?FrameMetrics;
+  _info: Info = new Info();
+  _mostlyBlankStartTime: ?number = null;
+  _samplesStartTime: ?number = null;
 
   static addListener(callback: FillRateInfo => void): {
     remove: () => void,
@@ -77,7 +79,9 @@ class FillRateHelper {
     _minSampleCount = minSampleCount;
   }
 
-  constructor(getFrameMetrics: (index: number) => ?FrameMetrics) {
+  constructor(
+    getFrameMetrics: (index: number, props: FrameMetricProps) => ?FrameMetrics,
+  ) {
     this._getFrameMetrics = getFrameMetrics;
     this._enabled = (_sampleRate || 0) > Math.random();
     this._resetData();
@@ -124,6 +128,7 @@ class FillRateHelper {
         mostly_blank_time_frac: this._info.mostly_blank_ms / total_time_spent,
       };
       for (const key in derived) {
+        // $FlowFixMe[prop-missing]
         derived[key] = Math.round(1000 * derived[key]) / 1000;
       }
       console.debug('FillRateHelper deactivateAndFlush: ', {derived, info});
@@ -134,12 +139,11 @@ class FillRateHelper {
 
   computeBlankness(
     props: {
-      data: any,
-      getItemCount: (data: any) => number,
+      ...FrameMetricProps,
       initialNumToRender?: ?number,
       ...
     },
-    state: {
+    cellsAroundViewport: {
       first: number,
       last: number,
       ...
@@ -155,6 +159,7 @@ class FillRateHelper {
     if (
       !this._enabled ||
       props.getItemCount(props.data) === 0 ||
+      cellsAroundViewport.last < cellsAroundViewport.first ||
       this._samplesStartTime == null
     ) {
       return 0;
@@ -180,10 +185,13 @@ class FillRateHelper {
     this._mostlyBlankStartTime = null;
 
     let blankTop = 0;
-    let first = state.first;
-    let firstFrame = this._getFrameMetrics(first);
-    while (first <= state.last && (!firstFrame || !firstFrame.inLayout)) {
-      firstFrame = this._getFrameMetrics(first);
+    let first = cellsAroundViewport.first;
+    let firstFrame = this._getFrameMetrics(first, props);
+    while (
+      first <= cellsAroundViewport.last &&
+      (!firstFrame || !firstFrame.inLayout)
+    ) {
+      firstFrame = this._getFrameMetrics(first, props);
       first++;
     }
     // Only count blankTop if we aren't rendering the first item, otherwise we will count the header
@@ -195,10 +203,13 @@ class FillRateHelper {
       );
     }
     let blankBottom = 0;
-    let last = state.last;
-    let lastFrame = this._getFrameMetrics(last);
-    while (last >= state.first && (!lastFrame || !lastFrame.inLayout)) {
-      lastFrame = this._getFrameMetrics(last);
+    let last = cellsAroundViewport.last;
+    let lastFrame = this._getFrameMetrics(last, props);
+    while (
+      last >= cellsAroundViewport.first &&
+      (!lastFrame || !lastFrame.inLayout)
+    ) {
+      lastFrame = this._getFrameMetrics(last, props);
       last--;
     }
     // Only count blankBottom if we aren't rendering the last item, otherwise we will count the

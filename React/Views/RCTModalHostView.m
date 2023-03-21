@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#if !TARGET_OS_OSX // [macOS]
 #import "RCTModalHostView.h"
 
 #import <UIKit/UIKit.h>
@@ -233,3 +234,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 }
 
 @end
+#endif // [macOS]

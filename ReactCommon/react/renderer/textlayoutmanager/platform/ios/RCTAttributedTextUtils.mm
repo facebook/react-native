@@ -71,7 +71,8 @@ inline static UIFont *RCTEffectiveFontFromTextAttributes(const TextAttributes &t
   fontProperties.weight = textAttributes.fontWeight.has_value()
       ? RCTUIFontWeightFromInteger((NSInteger)textAttributes.fontWeight.value())
       : NAN;
-  fontProperties.sizeMultiplier = textAttributes.fontSizeMultiplier;
+  fontProperties.sizeMultiplier =
+      textAttributes.allowFontScaling.value_or(true) ? textAttributes.fontSizeMultiplier : 1;
 
   return RCTFontWithFontProperties(fontProperties);
 }
@@ -85,7 +86,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
 
 inline static RCTUIColor *RCTEffectiveForegroundColorFromTextAttributes(const TextAttributes &textAttributes) // [macOS]
 {
-  RCTUIColor *effectiveForegroundColor = RCTUIColorFromSharedColor(textAttributes.foregroundColor) ?: [RCTUIColor blackColor]; // [macOS]
+  RCTUIColor *effectiveForegroundColor = RCTUIColorFromSharedColor(textAttributes.foregroundColor) ? RCTUIColorFromSharedColor(textAttributes.foregroundColor) : [RCTUIColor blackColor]; // [macOS]
 
   if (!isnan(textAttributes.opacity)) {
     effectiveForegroundColor = [effectiveForegroundColor
@@ -104,7 +105,7 @@ inline static RCTUIColor *RCTEffectiveBackgroundColorFromTextAttributes(const Te
         colorWithAlphaComponent:CGColorGetAlpha(effectiveBackgroundColor.CGColor) * textAttributes.opacity];
   }
 
-  return effectiveBackgroundColor ?: [RCTUIColor clearColor]; // [macOS]
+  return effectiveBackgroundColor ? effectiveBackgroundColor : [RCTUIColor clearColor]; // [macOS]
 }
 
 NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(TextAttributes const &textAttributes)
@@ -153,6 +154,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   if (textAttributes.baseWritingDirection.has_value()) {
     paragraphStyle.baseWritingDirection =
         RCTNSWritingDirectionFromWritingDirection(textAttributes.baseWritingDirection.value());
+    isParagraphStyleUsed = YES;
+  }
+
+  if (textAttributes.lineBreakStrategy.has_value()) {
+    paragraphStyle.lineBreakStrategy =
+        RCTNSLineBreakStrategyFromLineBreakStrategy(textAttributes.lineBreakStrategy.value());
     isParagraphStyleUsed = YES;
   }
 
@@ -305,6 +312,51 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
   return [attributes copy];
 }
 
+static void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+{
+  __block CGFloat maximumLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
+                            if (!paragraphStyle) {
+                              return;
+                            }
+
+                            maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
+                          }];
+
+  if (maximumLineHeight == 0) {
+    // `lineHeight` was not specified, nothing to do.
+    return;
+  }
+
+  __block CGFloat maximumFontLineHeight = 0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
+                            if (!font) {
+                              return;
+                            }
+#if !TARGET_OS_OSX // [macOS]
+                            maximumFontLineHeight = MAX(font.lineHeight, maximumFontLineHeight);
+#endif // [macOS]
+                          }];
+
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
+
+  CGFloat baseLineOffset = (maximumLineHeight - maximumFontLineHeight) / 2.0;
+
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
+}
+
 NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedString &attributedString)
 {
   static UIImage *placeholderImage;
@@ -357,7 +409,7 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(const AttributedSt
 
     [nsAttributedString appendAttributedString:nsAttributedStringFragment];
   }
-
+  RCTApplyBaselineOffset(nsAttributedString);
   [nsAttributedString endEditing];
 
   return nsAttributedString;
@@ -378,6 +430,23 @@ AttributedStringBox RCTAttributedStringBoxFromNSAttributedString(NSAttributedStr
   return nsAttributedString.length ? AttributedStringBox{wrapManagedObject(nsAttributedString)} : AttributedStringBox{};
 }
 
+static NSString *capitalizeText(NSString *text)
+{
+  NSArray *words = [text componentsSeparatedByString:@" "];
+  NSMutableArray *newWords = [NSMutableArray new];
+  NSNumberFormatter *num = [NSNumberFormatter new];
+  for (NSString *item in words) {
+    NSString *word;
+    if ([item length] > 0 && [num numberFromString:[item substringWithRange:NSMakeRange(0, 1)]] == nil) {
+      word = [item capitalizedString];
+    } else {
+      word = [item lowercaseString];
+    }
+    [newWords addObject:word];
+  }
+  return [newWords componentsJoinedByString:@" "];
+}
+
 NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTransform textTransform)
 {
   switch (textTransform) {
@@ -386,7 +455,7 @@ NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, TextTrans
     case TextTransform::Lowercase:
       return [string lowercaseString];
     case TextTransform::Capitalize:
-      return [string capitalizedString];
+      return capitalizeText(string);
     default:
       return string;
   }

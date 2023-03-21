@@ -165,7 +165,7 @@ function copyWithSetImpl(
   path: Array<string | number>,
   idx: number,
   value: any,
-) {
+): any {
   if (idx >= path.length) {
     return value;
   }

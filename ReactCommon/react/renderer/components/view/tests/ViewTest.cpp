@@ -20,8 +20,7 @@
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class YogaDirtyFlagTest : public ::testing::Test {
  protected:
@@ -49,7 +48,7 @@ class YogaDirtyFlagTest : public ::testing::Test {
                     /*
                      * Some non-default props.
                      */
-                    auto mutableViewProps = std::make_shared<ViewProps>();
+                    auto mutableViewProps = std::make_shared<ViewShadowNodeProps>();
                     auto &props = *mutableViewProps;
                     props.nativeId = "native Id";
                     props.opacity = 0.5;
@@ -111,7 +110,7 @@ TEST_F(YogaDirtyFlagTest, changingNonLayoutSubPropsMustNotDirtyYogaNode) {
    */
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       innerShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
-        auto viewProps = std::make_shared<ViewProps>();
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto &props = *viewProps;
 
         props.nativeId = "some new native Id";
@@ -135,7 +134,7 @@ TEST_F(YogaDirtyFlagTest, changingLayoutSubPropsMustDirtyYogaNode) {
    */
   auto newRootShadowNode = rootShadowNode_->cloneTree(
       innerShadowNode_->getFamily(), [](ShadowNode const &oldShadowNode) {
-        auto viewProps = std::make_shared<ViewProps>();
+        auto viewProps = std::make_shared<ViewShadowNodeProps>();
         auto &props = *viewProps;
 
         props.yogaStyle.alignContent() = YGAlignBaseline;
@@ -227,5 +226,4 @@ TEST_F(YogaDirtyFlagTest, updatingStateForScrollViewMistNotDirtyYogaNode) {
       static_cast<RootShadowNode &>(*newRootShadowNode).layoutIfNeeded());
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

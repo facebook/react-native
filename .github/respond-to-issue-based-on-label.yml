@@ -46,7 +46,7 @@
     <table><tbody><tr><th width="50">:warning:</th><th width="100%">
     Missing Reproducible Example
     </th></tr><tr><td>:information_source:</td><td>
-    It looks like your issue is missing a reproducible example. Please provide a <a href="https://snack.expo.io">Snack</a> or a repository that demonstrates the issue you are reporting in a <a href="https://stackoverflow.com/help/minimal-reproducible-example">minimal, complete, and reproducible</a> manner.
+    It looks like your issue is missing a reproducible example. Please provide a <a href="https://snack.expo.dev">Snack</a> or a repository that demonstrates the issue you are reporting in a <a href="https://stackoverflow.com/help/minimal-reproducible-example">minimal, complete, and reproducible</a> manner.
     </td></tr></tbody></table>
   labels:
     - "Needs: Author Feedback"

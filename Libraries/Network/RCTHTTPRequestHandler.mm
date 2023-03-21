@@ -20,12 +20,12 @@
 
 static NSURLSessionConfigurationProvider urlSessionConfigurationProvider;
 
-void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider provider) {
+void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfigurationProvider provider)
+{
   urlSessionConfigurationProvider = provider;
 }
 
-@implementation RCTHTTPRequestHandler
-{
+@implementation RCTHTTPRequestHandler {
   NSMapTable *_delegates;
   NSURLSession *_session;
   std::mutex _mutex;
@@ -64,8 +64,7 @@ RCT_EXPORT_MODULE()
   return [schemes containsObject:request.URL.scheme.lowercaseString];
 }
 
-- (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request
-                         withDelegate:(id<RCTURLRequestDelegate>)delegate
+- (NSURLSessionDataTask *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   std::lock_guard<std::mutex> lock(_mutex);
   // Lazy setup
@@ -95,9 +94,7 @@ RCT_EXPORT_MODULE()
       [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
     }
     assert(configuration != nil);
-    _session = [NSURLSession sessionWithConfiguration:configuration
-                                             delegate:self
-                                        delegateQueue:callbackQueue];
+    _session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:callbackQueue];
 
     _delegates = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                            valueOptions:NSPointerFunctionsStrongMemory
@@ -121,10 +118,10 @@ RCT_EXPORT_MODULE()
 #pragma mark - NSURLSession delegate
 
 - (void)URLSession:(NSURLSession *)session
-              task:(NSURLSessionTask *)task
-   didSendBodyData:(int64_t)bytesSent
-    totalBytesSent:(int64_t)totalBytesSent
-totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+                        task:(NSURLSessionTask *)task
+             didSendBodyData:(int64_t)bytesSent
+              totalBytesSent:(int64_t)totalBytesSent
+    totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
   id<RCTURLRequestDelegate> delegate;
   {
@@ -135,10 +132,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 - (void)URLSession:(NSURLSession *)session
-              task:(NSURLSessionTask *)task
-willPerformHTTPRedirection:(NSHTTPURLResponse *)response
-        newRequest:(NSURLRequest *)request
- completionHandler:(void (^)(NSURLRequest *))completionHandler
+                          task:(NSURLSessionTask *)task
+    willPerformHTTPRedirection:(NSHTTPURLResponse *)response
+                    newRequest:(NSURLRequest *)request
+             completionHandler:(void (^)(NSURLRequest *))completionHandler
 {
   // Reset the cookies on redirect.
   // This is necessary because we're not letting iOS handle cookies by itself
@@ -150,9 +147,9 @@ willPerformHTTPRedirection:(NSHTTPURLResponse *)response
 }
 
 - (void)URLSession:(NSURLSession *)session
-          dataTask:(NSURLSessionDataTask *)task
-didReceiveResponse:(NSURLResponse *)response
- completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
+              dataTask:(NSURLSessionDataTask *)task
+    didReceiveResponse:(NSURLResponse *)response
+     completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler
 {
   id<RCTURLRequestDelegate> delegate;
   {
@@ -163,9 +160,7 @@ didReceiveResponse:(NSURLResponse *)response
   completionHandler(NSURLSessionResponseAllow);
 }
 
-- (void)URLSession:(NSURLSession *)session
-          dataTask:(NSURLSessionDataTask *)task
-    didReceiveData:(NSData *)data
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)task didReceiveData:(NSData *)data
 {
   id<RCTURLRequestDelegate> delegate;
   {
@@ -194,6 +189,7 @@ didReceiveResponse:(NSURLResponse *)response
 
 @end
 
-Class RCTHTTPRequestHandlerCls(void) {
+Class RCTHTTPRequestHandlerCls(void)
+{
   return RCTHTTPRequestHandler.class;
 }

@@ -8,12 +8,11 @@
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponent.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponentOptions.h>
 
-@class RCTSurface;
 @class RCTSurfaceHostingComponentState;
 
 @interface RCTSurfaceHostingComponent ()
 
-@property (nonatomic, strong, readonly) RCTSurface *surface;
+@property (nonatomic, strong, readonly) id<RCTSurfaceProtocol> surface;
 @property (nonatomic, retain, readonly) RCTSurfaceHostingComponentState *state;
 @property (nonatomic, assign, readonly) RCTSurfaceHostingComponentOptions options;
 

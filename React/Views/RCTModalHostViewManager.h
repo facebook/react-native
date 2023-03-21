@@ -9,6 +9,7 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTViewManager.h>
 
+#if !TARGET_OS_OSX // [macOS]
 @interface RCTConvert (RCTModalHostView)
 
 + (UIModalPresentationStyle)UIModalPresentationStyle:(id)json;
@@ -32,3 +33,4 @@ typedef void (^RCTModalViewInteractionBlock)(
 @property (nonatomic, strong) RCTModalViewInteractionBlock dismissalBlock;
 
 @end
+#endif // [macOS]

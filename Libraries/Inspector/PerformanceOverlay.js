@@ -10,11 +10,11 @@
 
 'use strict';
 
-const PerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
-const React = require('react');
+const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const View = require('../Components/View/View');
+const PerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+const React = require('react');
 
 class PerformanceOverlay extends React.Component<{...}> {
   render(): React.Node {

@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
-import Platform from '../Utilities/Platform';
-import RCTLog from '../Utilities/RCTLog';
-
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
+
+import Platform from '../Utilities/Platform';
+import RCTLog from '../Utilities/RCTLog';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -39,7 +39,7 @@ if (__DEV__) {
   let originalConsoleError;
   let originalConsoleWarn;
   let consoleErrorImpl;
-  let consoleWarnImpl;
+  let consoleWarnImpl: (...args: Array<mixed>) => void;
 
   let isLogBoxInstalled: boolean = false;
 
@@ -75,24 +75,6 @@ if (__DEV__) {
       consoleErrorImpl = registerError;
       consoleWarnImpl = registerWarning;
 
-      if ((console: any).disableYellowBox === true) {
-        LogBoxData.setDisabled(true);
-        console.warn(
-          'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-        );
-      }
-
-      (Object.defineProperty: any)(console, 'disableYellowBox', {
-        configurable: true,
-        get: () => LogBoxData.isDisabled(),
-        set: value => {
-          LogBoxData.setDisabled(value);
-          console.warn(
-            'console.disableYellowBox has been deprecated and will be removed in a future release. Please use LogBox.ignoreAllLogs(value) instead.',
-          );
-        },
-      });
-
       if (Platform.isTesting) {
         LogBoxData.setDisabled(true);
       }
@@ -115,7 +97,6 @@ if (__DEV__) {
       // After uninstalling:  original > LogBox (noop) > OtherErrorHandler
       consoleErrorImpl = originalConsoleError;
       consoleWarnImpl = originalConsoleWarn;
-      delete (console: any).disableLogBox;
     },
 
     isInstalled(): boolean {
@@ -153,7 +134,7 @@ if (__DEV__) {
     return typeof args[0] === 'string' && args[0].startsWith('(ADVICE)');
   };
 
-  const isWarningModuleWarning = (...args: any) => {
+  const isWarningModuleWarning = (...args: Array<mixed>) => {
     return typeof args[0] === 'string' && args[0].startsWith('Warning: ');
   };
 
@@ -162,6 +143,9 @@ if (__DEV__) {
     if (LogBoxData.isLogBoxErrorMessage(String(args[0]))) {
       originalConsoleError(...args);
       return;
+    } else {
+      // Be sure to pass LogBox warnings through.
+      originalConsoleWarn(...args);
     }
 
     try {
@@ -169,9 +153,6 @@ if (__DEV__) {
         const {category, message, componentStack} = parseLogBoxLog(args);
 
         if (!LogBoxData.isMessageIgnored(message.content)) {
-          // Be sure to pass LogBox warnings through.
-          originalConsoleWarn(...args);
-
           LogBoxData.addLog({
             level: 'warn',
             category,
@@ -185,6 +166,8 @@ if (__DEV__) {
     }
   };
 
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
   const registerError = (...args): void => {
     // Let errors within LogBox itself fall through.
     if (LogBoxData.isLogBoxErrorMessage(args[0])) {
@@ -222,12 +205,12 @@ if (__DEV__) {
       args[0] = `Warning: ${filterResult.finalFormat}`;
       const {category, message, componentStack} = parseLogBoxLog(args);
 
-      if (!LogBoxData.isMessageIgnored(message.content)) {
-        // Interpolate the message so they are formatted for adb and other CLIs.
-        // This is different than the message.content above because it includes component stacks.
-        const interpolated = parseInterpolation(args);
-        originalConsoleError(interpolated.message.content);
+      // Interpolate the message so they are formatted for adb and other CLIs.
+      // This is different than the message.content above because it includes component stacks.
+      const interpolated = parseInterpolation(args);
+      originalConsoleError(interpolated.message.content);
 
+      if (!LogBoxData.isMessageIgnored(message.content)) {
         LogBoxData.addLog({
           level,
           category,

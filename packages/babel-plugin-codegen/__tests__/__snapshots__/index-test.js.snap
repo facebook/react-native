@@ -27,7 +27,7 @@ const {
 } = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 const {
   dispatchCommand
-} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
@@ -90,7 +90,7 @@ const {
 } = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 const {
   dispatchCommand
-} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',

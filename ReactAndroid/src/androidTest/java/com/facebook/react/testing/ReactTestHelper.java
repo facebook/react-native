@@ -24,9 +24,9 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
+import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -90,8 +90,8 @@ public class ReactTestHelper {
             .setJSBundleLoader(
                 JSBundleLoader.createAssetLoader(
                     mContext, "assets://AndroidTestBundle.js", false /* Asynchronous */))
-            .setNativeModuleCallExceptionHandler(
-                new NativeModuleCallExceptionHandler() {
+            .setJSExceptionHandler(
+                new JSExceptionHandler() {
                   @Override
                   public void handleException(Exception e) {
                     throw new RuntimeException(e);

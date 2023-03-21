@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
 // TODO: Use proper enum types.
@@ -32,15 +33,21 @@ export type PermissionType =
   | 'android.permission.READ_CALL_LOG'
   | 'android.permission.WRITE_CALL_LOG'
   | 'com.android.voicemail.permission.ADD_VOICEMAIL'
+  | 'com.android.voicemail.permission.READ_VOICEMAIL'
+  | 'com.android.voicemail.permission.WRITE_VOICEMAIL'
   | 'android.permission.USE_SIP'
   | 'android.permission.PROCESS_OUTGOING_CALLS'
   | 'android.permission.BODY_SENSORS'
+  | 'android.permission.BODY_SENSORS_BACKGROUND'
   | 'android.permission.SEND_SMS'
   | 'android.permission.RECEIVE_SMS'
   | 'android.permission.READ_SMS'
   | 'android.permission.RECEIVE_WAP_PUSH'
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
+  | 'android.permission.READ_MEDIA_IMAGES',
+  | 'android.permission.READ_MEDIA_VIDEO',
+  | 'android.permission.READ_MEDIA_AUDIO',
   | 'android.permission.WRITE_EXTERNAL_STORAGE'
   | 'android.permission.BLUETOOTH_CONNECT'
   | 'android.permission.BLUETOOTH_SCAN'
@@ -50,7 +57,9 @@ export type PermissionType =
   | 'android.permission.ACTIVITY_RECOGNITION'
   | 'android.permission.ANSWER_PHONE_CALLS'
   | 'android.permission.READ_PHONE_NUMBERS'
-  | 'android.permission.UWB_RANGING';
+  | 'android.permission.UWB_RANGING'
+  | 'android.permission.POST_NOTIFICATIONS'
+  | 'android.permission.NEARBY_WIFI_DEVICES';
 */
 
 export interface Spec extends TurboModule {

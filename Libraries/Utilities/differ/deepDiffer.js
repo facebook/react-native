@@ -97,5 +97,5 @@ const deepDiffer = function (
   return false;
 };
 
+deepDiffer.unstable_setLogListeners = unstable_setLogListeners;
 module.exports = deepDiffer;
-module.exports.unstable_setLogListeners = unstable_setLogListeners;

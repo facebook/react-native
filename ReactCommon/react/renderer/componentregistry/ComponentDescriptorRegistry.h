@@ -62,14 +62,15 @@ class ComponentDescriptorRegistry {
       folly::dynamic const &props,
       SharedEventTarget const &eventTarget) const;
 
-  void setFallbackComponentDescriptor(SharedComponentDescriptor descriptor);
+  void setFallbackComponentDescriptor(
+      const SharedComponentDescriptor &descriptor);
   ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
 
  private:
   friend class ComponentDescriptorProviderRegistry;
 
   void registerComponentDescriptor(
-      SharedComponentDescriptor componentDescriptor) const;
+      const SharedComponentDescriptor &componentDescriptor) const;
 
   /*
    * Creates a `ComponentDescriptor` using specified

@@ -58,6 +58,20 @@ RCT_EXTERN void RCTProfileInit(RCTBridge *);
 RCT_EXTERN void RCTProfileEnd(RCTBridge *, void (^)(NSString *));
 
 /**
+ * Route the RCT_PROFILE_BEGIN_EVENT hooks to our loom tracing.
+ */
+#ifdef WITH_LOOM_TRACE
+RCT_EXTERN BOOL _RCTLoomIsProfiling(void);
+RCT_EXTERN void
+_RCTLoomBeginEvent(NSString *name, const char *file, size_t line, NSDictionary<NSString *, NSString *> *args);
+RCT_EXTERN void _RCTLoomEndEvent();
+#else
+#define _RCTLoomIsProfiling(...) NO
+#define _RCTLoomBeginEvent(...)
+#define _RCTLoomEndEvent(...)
+#endif
+
+/**
  * Collects the initial event information for the event and returns a reference ID
  */
 RCT_EXTERN void _RCTProfileBeginEvent(
@@ -68,6 +82,9 @@ RCT_EXTERN void _RCTProfileBeginEvent(
     NSDictionary<NSString *, NSString *> *args);
 #define RCT_PROFILE_BEGIN_EVENT(tag, name, args)                      \
   do {                                                                \
+    if (_RCTLoomIsProfiling()) {                                      \
+      _RCTLoomBeginEvent(name, __FILE__, __LINE__, args);             \
+    }                                                                 \
     if (RCTProfileIsProfiling()) {                                    \
       NSThread *__calleeThread = [NSThread currentThread];            \
       NSTimeInterval __time = CACurrentMediaTime();                   \
@@ -89,6 +106,9 @@ RCT_EXTERN void _RCTProfileEndEvent(
 
 #define RCT_PROFILE_END_EVENT(tag, category)                                    \
   do {                                                                          \
+    if (_RCTLoomIsProfiling()) {                                                \
+      _RCTLoomEndEvent();                                                       \
+    }                                                                           \
     if (RCTProfileIsProfiling()) {                                              \
       NSThread *__calleeThread = [NSThread currentThread];                      \
       NSString *__threadName = RCTCurrentThreadName();                          \

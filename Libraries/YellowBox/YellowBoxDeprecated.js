@@ -10,11 +10,10 @@
 
 'use strict';
 
-const React = require('react');
+import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
 
 const LogBox = require('../LogBox/LogBox');
-
-import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
+const React = require('react');
 
 type Props = $ReadOnly<{||}>;
 

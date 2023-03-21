@@ -8,17 +8,18 @@
  * @flow
  */
 
-const Platform = require('../../Utilities/Platform');
-const React = require('react');
-
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
+
 import AndroidSwipeRefreshLayoutNativeComponent, {
   Commands as AndroidSwipeRefreshLayoutCommands,
 } from './AndroidSwipeRefreshLayoutNativeComponent';
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
+
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 
 type IOSProps = $ReadOnly<{|
   /**

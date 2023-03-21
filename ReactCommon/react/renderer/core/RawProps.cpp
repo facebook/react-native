@@ -11,8 +11,7 @@
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RawProps::RawProps() {
   mode_ = Mode::Empty;
@@ -48,8 +47,9 @@ RawProps::RawProps(folly::dynamic const &dynamic) noexcept {
   dynamic_ = dynamic;
 }
 
-void RawProps::parse(RawPropsParser const &parser, const PropsParserContext &)
-    const noexcept {
+void RawProps::parse(
+    RawPropsParser const &parser,
+    const PropsParserContext & /*unused*/) const noexcept {
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
@@ -93,5 +93,11 @@ const RawValue *RawProps::at(
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
 }
 
-} // namespace react
-} // namespace facebook
+void RawProps::iterateOverValues(
+    std::function<
+        void(RawPropsPropNameHash, const char *, RawValue const &)> const &fn)
+    const {
+  return parser_->iterateOverValues(*this, fn);
+}
+
+} // namespace facebook::react

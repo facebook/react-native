@@ -8,14 +8,15 @@
  * @format
  */
 
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
-import View from '../../Components/View/View';
-import * as LogBoxStyle from './LogBoxStyle';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';
+
+import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
+import View from '../../Components/View/View';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   backgroundColor: $ReadOnly<{|

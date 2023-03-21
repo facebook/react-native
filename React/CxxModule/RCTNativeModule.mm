@@ -73,6 +73,15 @@ folly::dynamic RCTNativeModule::getConstants()
 
 void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int callId)
 {
+  id<RCTBridgeMethod> method = m_moduleData.methods[methodId];
+  if (method) {
+    RCT_PROFILE_BEGIN_EVENT(
+        RCTProfileTagAlways,
+        @"[RCTNativeModule invoke]",
+        @{@"method" : [NSString stringWithUTF8String:method.JSMethodName]});
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
+  }
+
   const char *moduleName = [m_moduleData.name UTF8String];
   const char *methodName = m_moduleData.methods[methodId].JSMethodName;
 
@@ -173,6 +182,10 @@ static MethodCallResult invokeInner(
     BridgeNativeModulePerfLogger::syncMethodCallArgConversionEnd(moduleName, methodName);
   }
 
+  RCT_PROFILE_BEGIN_EVENT(
+      RCTProfileTagAlways,
+      @"[RCTNativeModule invokeInner]",
+      @{@"method" : [NSString stringWithUTF8String:method.JSMethodName]});
   @try {
     if (context == Sync) {
       BridgeNativeModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
@@ -214,6 +227,8 @@ static MethodCallResult invokeInner(
 #else
     RCTFatalException(exception);
 #endif
+  } @finally {
+    RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 
   return folly::none;

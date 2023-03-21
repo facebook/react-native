@@ -8,16 +8,17 @@
  * @format
  */
 
-import * as React from 'react';
-import StyleSheet from '../../StyleSheet/StyleSheet';
-import Platform from '../../Utilities/Platform';
-import Text from '../../Text/Text';
-import View from '../../Components/View/View';
-import LogBoxButton from './LogBoxButton';
-import * as LogBoxStyle from './LogBoxStyle';
-import LogBoxInspectorSection from './LogBoxInspectorSection';
-import openFileInEditor from '../../Core/Devtools/openFileInEditor';
 import type LogBoxLog from '../Data/LogBoxLog';
+
+import View from '../../Components/View/View';
+import openFileInEditor from '../../Core/Devtools/openFileInEditor';
+import StyleSheet from '../../StyleSheet/StyleSheet';
+import Text from '../../Text/Text';
+import Platform from '../../Utilities/Platform';
+import LogBoxButton from './LogBoxButton';
+import LogBoxInspectorSection from './LogBoxInspectorSection';
+import * as LogBoxStyle from './LogBoxStyle';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   log: LogBoxLog,

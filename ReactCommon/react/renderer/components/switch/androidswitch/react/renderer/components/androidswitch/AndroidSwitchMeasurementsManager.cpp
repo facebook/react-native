@@ -13,8 +13,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Size AndroidSwitchMeasurementsManager::measure(
     SurfaceId surfaceId,
@@ -64,5 +63,4 @@ Size AndroidSwitchMeasurementsManager::measure(
   return measurement;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

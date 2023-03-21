@@ -7,8 +7,10 @@ rn_android_library(
         "ReactNativeVersion.java",
     ],
     autoglob = False,
-    is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],
@@ -33,8 +35,10 @@ rn_android_library(
         "AndroidInfoHelpers.java",
     ],
     autoglob = False,
-    is_androidx = True,
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    language = "JAVA",
     visibility = [
         "PUBLIC",
     ],

@@ -17,19 +17,22 @@ const getPolyfills = require('./rn-get-polyfills');
  * integration tests during local development or on CI services.
  */
 const config = {
-  serializer: {
-    getPolyfills,
-  },
+  // [macOS] Move object to variable so we can modify it below
   resolver: {
-    platforms: ['ios', 'macos', 'android'],
+    // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
+    blockList: [/buck-out/, /sdks\/hermes/],
     extraNodeModules: {
       'react-native': __dirname,
     },
-    blockList: [/android-patches\/.*/],
+    platforms: ['ios', 'macos', 'android'],
+  },
+  serializer: {
+    getPolyfills,
   },
   transformer: {},
 };
 
+// [macOS Github#1728: Investigate removing this diff
 // In scripts/run-ci-e2e-tests.js this file gets copied to a new app, in which
 // case these settings do not apply.
 if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
@@ -40,3 +43,4 @@ if (!process.env.REACT_NATIVE_RUNNING_E2E_TESTS) {
 }
 
 module.exports = config;
+// macOS]

@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('react');
+const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const View = require('../Components/View/View');
+const React = require('react');
 
 class StyleInspector extends React.Component<$FlowFixMeProps> {
   render(): React.Node {

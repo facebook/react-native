@@ -33,7 +33,7 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
   RCTUIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #else // [macOS
-  RCTUITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+  RCTPlatformView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #endif // macOS]
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
@@ -71,11 +71,7 @@ using namespace facebook::react;
     _props = defaultProps;
     auto &props = *defaultProps;
 
-#if !TARGET_OS_OSX // [macOS]
     _backedTextInputView = props.traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
-#else // [macOS
-    _backedTextInputView = [RCTUITextView new];
-#endif // macOS]
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
@@ -321,20 +317,25 @@ using namespace facebook::react;
   }
 }
 
-- (BOOL)textInputShouldReturn
+- (BOOL)textInputShouldSubmitOnReturn
 {
-  // We send `submit` event here, in `textInputShouldReturn`
+  const SubmitBehavior submitBehavior = [self getSubmitBehavior];
+  const BOOL shouldSubmit = submitBehavior == SubmitBehavior::Submit || submitBehavior == SubmitBehavior::BlurAndSubmit;
+  // We send `submit` event here, in `textInputShouldSubmitOnReturn`
   // (not in `textInputDidReturn)`, because of semantic of the event:
   // `onSubmitEditing` is called when "Submit" button
   // (the blue key on onscreen keyboard) did pressed
   // (no connection to any specific "submitting" process).
 
-  if (_eventEmitter) {
+  if (_eventEmitter && shouldSubmit) {
     std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSubmitEditing([self _textInputMetrics]);
   }
+  return shouldSubmit;
+}
 
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
-  return props.traits.blurOnSubmit;
+- (BOOL)textInputShouldReturn
+{
+  return [self getSubmitBehavior] == SubmitBehavior::BlurAndSubmit;
 }
 
 - (void)textInputDidReturn
@@ -427,6 +428,54 @@ using namespace facebook::react;
     std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSelectionChange([self _textInputMetrics]);
   }
 }
+
+#if TARGET_OS_OSX // [macOS
+- (void)automaticSpellingCorrectionDidChange:(BOOL)enabled {}
+
+
+- (void)continuousSpellCheckingDidChange:(BOOL)enabled {}
+
+
+- (void)grammarCheckingDidChange:(BOOL)enabled {}
+
+
+- (BOOL)hasValidKeyDownOrValidKeyUp:(nonnull NSString *)key {
+  return YES;
+}
+
+- (void)submitOnKeyDownIfNeeded:(nonnull NSEvent *)event {}
+
+- (void)textInputDidCancel {}
+
+- (NSDragOperation)textInputDraggingEntered:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return NSDragOperationNone;
+}
+
+- (void)textInputDraggingExited:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return;
+}
+
+- (BOOL)textInputShouldHandleDeleteBackward:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleDeleteForward:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleDragOperation:(nonnull id<NSDraggingInfo>)draggingInfo {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandleKeyEvent:(nonnull NSEvent *)event {
+  return YES;
+}
+
+- (BOOL)textInputShouldHandlePaste:(nonnull id<RCTBackedTextInputViewProtocol>)sender {
+  return YES;
+}
+
+#endif // macOS]
 
 #pragma mark - RCTBackedTextInputDelegate (UIScrollViewDelegate)
 
@@ -549,11 +598,13 @@ using namespace facebook::react;
   metrics.selectionRange = [self _selectionRange];
   metrics.eventCount = _mostRecentEventCount;
 
+#if !TARGET_OS_OSX // [macOS]
   CGPoint contentOffset = _backedTextInputView.contentOffset;
   metrics.contentOffset = {contentOffset.x, contentOffset.y};
 
   UIEdgeInsets contentInset = _backedTextInputView.contentInset;
   metrics.contentInset = {contentInset.left, contentInset.top, contentInset.right, contentInset.bottom};
+#endif // [macOS]
 
   CGSize contentSize = _backedTextInputView.contentSize;
   metrics.contentSize = {contentSize.width, contentSize.height};
@@ -561,8 +612,10 @@ using namespace facebook::react;
   CGSize layoutMeasurement = _backedTextInputView.bounds.size;
   metrics.layoutMeasurement = {layoutMeasurement.width, layoutMeasurement.height};
 
+#if !TARGET_OS_OSX // [macOS]
   CGFloat zoomScale = _backedTextInputView.zoomScale;
   metrics.zoomScale = zoomScale;
+#endif // [macOS]
 
   return metrics;
 }
@@ -691,6 +744,19 @@ using namespace facebook::react;
   } else {
     return ([newText isEqualToAttributedString:oldText]);
   }
+}
+
+- (SubmitBehavior)getSubmitBehavior
+{
+  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
+
+  // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.
+  if (submitBehaviorDefaultable == SubmitBehavior::Default) {
+    return props.traits.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
+  }
+
+  return submitBehaviorDefaultable;
 }
 
 @end

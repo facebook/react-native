@@ -11,8 +11,7 @@
 #include <glog/logging.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 StubView::operator ShadowView() const {
   auto shadowView = ShadowView{};
@@ -67,7 +66,7 @@ bool operator!=(StubView const &lhs, StubView const &rhs) {
 std::string getDebugName(StubView const &stubView) {
   return std::string{"Stub"} +
       std::string{
-          stubView.componentHandle ? stubView.componentName : "[invalid]"};
+          stubView.componentHandle != 0 ? stubView.componentName : "[invalid]"};
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
@@ -85,7 +84,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 std::vector<StubView> getDebugChildren(
     StubView const &stubView,
-    DebugStringConvertibleOptions options) {
+    DebugStringConvertibleOptions /*options*/) {
   std::vector<StubView> result;
   for (auto const &child : stubView.children) {
     result.push_back(*child);
@@ -95,5 +94,4 @@ std::vector<StubView> getDebugChildren(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

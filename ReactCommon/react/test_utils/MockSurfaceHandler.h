@@ -18,8 +18,8 @@ class MockSurfaceHandler : public SurfaceHandler {
  public:
   MockSurfaceHandler() : SurfaceHandler("moduleName", 0){};
 
-  MOCK_QUALIFIED_METHOD1(setDisplayMode, const noexcept, void(DisplayMode));
-  MOCK_QUALIFIED_METHOD0(getSurfaceId, const noexcept, SurfaceId());
+  MOCK_METHOD(void, setDisplayMode, (DisplayMode), (const, noexcept));
+  MOCK_METHOD(SurfaceId, getSurfaceId, (), (const, noexcept));
 };
 
 } // namespace react

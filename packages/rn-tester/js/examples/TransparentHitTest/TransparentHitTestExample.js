@@ -14,7 +14,7 @@ const React = require('react');
 const {Text, View, TouchableOpacity, Alert} = require('react-native');
 
 class TransparentHitTestExample extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     return (
       <View style={{flex: 1}}>
         <TouchableOpacity onPress={() => Alert.alert('Alert', 'Hi!')}>

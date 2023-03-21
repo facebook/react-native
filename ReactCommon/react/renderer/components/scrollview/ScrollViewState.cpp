@@ -7,12 +7,10 @@
 
 #include "ScrollViewState.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Size ScrollViewState::getContentSize() const {
   return contentBoundingRect.size;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

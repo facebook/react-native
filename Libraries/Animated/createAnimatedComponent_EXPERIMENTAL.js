@@ -8,9 +8,9 @@
  * @format
  */
 
-import useAnimatedProps from './useAnimatedProps';
-import useMergeRefs from '../Utilities/useMergeRefs';
 import StyleSheet from '../StyleSheet/StyleSheet';
+import useMergeRefs from '../Utilities/useMergeRefs';
+import useAnimatedProps from './useAnimatedProps';
 import * as React from 'react';
 
 /**

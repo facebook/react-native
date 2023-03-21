@@ -10,8 +10,7 @@
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventQueueProcessor::EventQueueProcessor(
     EventPipe eventPipe,
@@ -78,5 +77,4 @@ void EventQueueProcessor::flushStateUpdates(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

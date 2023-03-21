@@ -27,19 +27,41 @@ UIActionSheetDelegate
 NSSharingServicePickerDelegate
 #endif // macOS]
 , NativeActionSheetManagerSpec>
+
+#if !TARGET_OS_OSX // [macOS]
+@property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
+#endif // [macOS]
+
 @end
 
-@implementation RCTActionSheetManager {
+@implementation RCTActionSheetManager
+#if TARGET_OS_OSX // [macOS
+{
   // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
   // which is required for NSDictionary keys
   NSMapTable *_callbacks;
-#if TARGET_OS_OSX // [macOS
   NSArray<NSSharingService*> *_excludedActivities;
   NSString *_sharingSubject;
   RCTResponseSenderBlock _failureCallback;
   RCTResponseSenderBlock _successCallback;
-#endif // macOS]
 }
+#endif // macOS]
+
+#if !TARGET_OS_OSX // [macOS]
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _alertControllers = [NSMutableArray new];
+  }
+  return self;
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+#endif // [macOS]
 
 RCT_EXPORT_MODULE()
 
@@ -83,10 +105,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     return;
   }
 #endif // [macOS]
-
-  if (!_callbacks) {
-    _callbacks = [NSMapTable strongToStrongObjectsMapTable];
-  }
 
   NSString *title = options.title();
 #if !TARGET_OS_OSX // [macOS]
@@ -153,6 +171,10 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 
   NSInteger index = 0;
   bool isCancelButtonIndex = false;
+  // The handler for a button might get called more than once when tapping outside
+  // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
+  // keep track of callback invocation here.
+  __block bool callbackInvoked = false;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
@@ -166,7 +188,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     UIAlertAction *actionButton = [UIAlertAction actionWithTitle:option
                                                            style:style
                                                          handler:^(__unused UIAlertAction *action) {
-                                                           callback(@[ @(localIndex) ]);
+                                                           if (!callbackInvoked) {
+                                                             callbackInvoked = true;
+                                                             [self->_alertControllers removeObject:alertController];
+                                                             callback(@[ @(localIndex) ]);
+                                                           }
                                                          }];
     if (isCancelButtonIndex) {
       [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
@@ -206,6 +232,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
 #endif
 
+  [_alertControllers addObject:alertController];
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
 
 #else // [macOS
@@ -241,6 +268,19 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   }
   [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:view];
 #endif // macOS]
+}
+
+RCT_EXPORT_METHOD(dismissActionSheet)
+{
+#if !TARGET_OS_OSX // [macOS]
+  if (_alertControllers.count == 0) {
+    RCTLogWarn(@"Unable to dismiss action sheet");
+  }
+
+  id _alertController = [_alertControllers lastObject];
+  [_alertController dismissViewControllerAnimated:YES completion:nil];
+  [_alertControllers removeLastObject];
+#endif // [macOS]
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions

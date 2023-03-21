@@ -9,6 +9,7 @@
  */
 
 import type {TurboModule} from '../../TurboModule/RCTExport';
+
 import * as TurboModuleRegistry from '../../TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
@@ -27,11 +28,6 @@ export interface Spec extends TurboModule {
 
   // iOS only.
   +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
-
-  // [macOS
-  // macOS only.
-  +setIsSecondaryClickToShowDevMenuEnabled: (enabled: boolean) => void;
-  // macOS]
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>('DevSettings'): Spec);

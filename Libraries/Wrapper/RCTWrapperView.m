@@ -29,10 +29,7 @@
 
       CGSize size = [strongSelf sizeThatFits:maximumSize];
 
-      return CGSizeMake(
-        MAX(size.width, minimumSize.width),
-        MAX(size.height, minimumSize.height)
-      );
+      return CGSizeMake(MAX(size.width, minimumSize.width), MAX(size.height, minimumSize.height));
     };
   }
 

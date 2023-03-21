@@ -12,6 +12,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTConstants.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <React/RCTSurfacePresenter.h>
@@ -89,7 +90,8 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   if (self = [super init]) {
     contextContainer->update(*RCTContextContainerFromBridge(bridge));
     _surfacePresenter = [[RCTSurfacePresenter alloc] initWithContextContainer:contextContainer
-                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)];
+                                                              runtimeExecutor:RCTRuntimeExecutorFromBridge(bridge)
+                                                   bridgelessBindingsExecutor:std::nullopt];
 
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;

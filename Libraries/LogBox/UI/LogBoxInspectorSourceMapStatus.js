@@ -8,15 +8,15 @@
  * @format
  */
 
+import type {PressEvent} from '../../Types/CoreEventTypes';
+
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
-import * as React from 'react';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
-
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import * as React from 'react';
 
 type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => void,
@@ -45,9 +45,6 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
           animation,
           rotate: animated.interpolate({
             inputRange: [0, 1],
-            /* $FlowFixMe[speculation-ambiguous] (>=0.38.0) - Flow error
-             * detected during the deployment of v0.38.0. To see the error,
-             * remove this comment and run flow */
             outputRange: ['0deg', '360deg'],
           }),
         });

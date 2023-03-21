@@ -17,8 +17,7 @@
 
 @synthesize value = _value;
 
-- (instancetype)initWithTag:(NSNumber *)tag
-                     config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
   if (self = [super initWithTag:tag config:config]) {
     _offset = [self.config[@"offset"] floatValue];

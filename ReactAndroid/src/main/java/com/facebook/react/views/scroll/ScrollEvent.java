@@ -23,10 +23,10 @@ public class ScrollEvent extends Event<ScrollEvent> {
   private static final Pools.SynchronizedPool<ScrollEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(3);
 
-  private int mScrollX;
-  private int mScrollY;
-  private double mXVelocity;
-  private double mYVelocity;
+  private float mScrollX;
+  private float mScrollY;
+  private float mXVelocity;
+  private float mYVelocity;
   private int mContentWidth;
   private int mContentHeight;
   private int mScrollViewWidth;
@@ -37,8 +37,8 @@ public class ScrollEvent extends Event<ScrollEvent> {
   public static ScrollEvent obtain(
       int viewTag,
       ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
+      float scrollX,
+      float scrollY,
       float xVelocity,
       float yVelocity,
       int contentWidth,
@@ -63,8 +63,8 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int surfaceId,
       int viewTag,
       ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
+      float scrollX,
+      float scrollY,
       float xVelocity,
       float yVelocity,
       int contentWidth,
@@ -107,8 +107,8 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int surfaceId,
       int viewTag,
       ScrollEventType scrollEventType,
-      int scrollX,
-      int scrollY,
+      float scrollX,
+      float scrollY,
       float xVelocity,
       float yVelocity,
       int contentWidth,

@@ -17,12 +17,14 @@ cxx_library(
     ],
     fbandroid_deps = [
         "//third-party/glog:glog",
-        "//xplat/folly:molly",
+        "//xplat/folly:json",
         "//xplat/third-party/linker_lib:atomic",
     ],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",

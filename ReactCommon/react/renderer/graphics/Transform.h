@@ -78,6 +78,18 @@ struct Transform {
   static Transform Identity();
 
   /*
+   * Returns the vertival inversion transform (`[1 0 0 0; 0 -1 0 0; 0 0 1 0; 0 0
+   * 0 1]`).
+   */
+  static Transform VerticalInversion();
+
+  /*
+   * Returns the horizontal inversion transform (`[-1 0 0 0; 0 1 0 0; 0 0 1 0; 0
+   * 0 0 1]`).
+   */
+  static Transform HorizontalInversion();
+
+  /*
    * Returns a Perspective transform.
    */
   static Transform Perspective(Float perspective);
@@ -100,9 +112,9 @@ struct Transform {
   /*
    * Returns a transform that rotates by `angle` radians along the given axis.
    */
-  static Transform RotateX(Float angle);
-  static Transform RotateY(Float angle);
-  static Transform RotateZ(Float angle);
+  static Transform RotateX(Float radians);
+  static Transform RotateY(Float radians);
+  static Transform RotateZ(Float radians);
   static Transform Rotate(Float angleX, Float angleY, Float angleZ);
 
   /**
@@ -121,6 +133,9 @@ struct Transform {
       Transform const &lhs,
       Transform const &rhs);
 
+  static bool isVerticalInversion(Transform const &transform);
+  static bool isHorizontalInversion(Transform const &transform);
+
   /*
    * Equality operators.
    */
@@ -130,8 +145,8 @@ struct Transform {
   /*
    * Matrix subscript.
    */
-  Float &at(int x, int y);
-  Float const &at(int x, int y) const;
+  Float &at(int i, int j);
+  Float const &at(int i, int j) const;
 
   /*
    * Concatenates (multiplies) transform matrices.
@@ -165,20 +180,26 @@ struct Transform {
 };
 
 /*
- * Applies tranformation to the given point.
+ * Applies transformation to the given point.
  */
 Point operator*(Point const &point, Transform const &transform);
 
 /*
- * Applies tranformation to the given size.
+ * Applies transformation to the given size.
  */
 Size operator*(Size const &size, Transform const &transform);
 
 /*
- * Applies tranformation to the given rect.
+ * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
 Rect operator*(Rect const &rect, Transform const &transform);
+
+/*
+ * Applies tranformation to the given EdgeInsets.
+ * ONLY SUPPORTS scale transformation.
+ */
+EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
 
 Vector operator*(Transform const &transform, Vector const &vector);
 

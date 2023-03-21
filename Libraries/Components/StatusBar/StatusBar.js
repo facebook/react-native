@@ -8,14 +8,14 @@
  * @flow
  */
 
-import * as React from 'react';
-import Platform from '../../Utilities/Platform';
-import invariant from 'invariant';
-import processColor from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
+import processColor from '../../StyleSheet/processColor';
+import Platform from '../../Utilities/Platform';
 import NativeStatusBarManagerAndroid from './NativeStatusBarManagerAndroid';
 import NativeStatusBarManagerIOS from './NativeStatusBarManagerIOS';
+import invariant from 'invariant';
+import * as React from 'react';
 
 /**
  * Status bar style
@@ -112,14 +112,17 @@ function mergePropsStack(
   propsStack: Array<Object>,
   defaultValues: Object,
 ): Object {
-  return propsStack.reduce((prev, cur) => {
-    for (const prop in cur) {
-      if (cur[prop] != null) {
-        prev[prop] = cur[prop];
+  return propsStack.reduce(
+    (prev, cur) => {
+      for (const prop in cur) {
+        if (cur[prop] != null) {
+          prev[prop] = cur[prop];
+        }
       }
-    }
-    return prev;
-  }, Object.assign({}, defaultValues));
+      return prev;
+    },
+    {...defaultValues},
+  );
 }
 
 /**
@@ -220,9 +223,9 @@ function createStackEntry(props: any): any {
  * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component<Props> {
-  static _propsStack = [];
+  static _propsStack: Array<any> = [];
 
-  static _defaultProps = createStackEntry({
+  static _defaultProps: any = createStackEntry({
     backgroundColor:
       Platform.OS === 'android'
         ? NativeStatusBarManagerAndroid.getConstants()
@@ -306,7 +309,7 @@ class StatusBar extends React.Component<Props> {
    * @param color Background color.
    * @param animated Animate the style change.
    */
-  static setBackgroundColor(color: string, animated?: boolean) {
+  static setBackgroundColor(color: string, animated?: boolean): void {
     if (Platform.OS !== 'android') {
       console.warn('`setBackgroundColor` is only available on Android');
       return;
@@ -471,7 +474,12 @@ class StatusBar extends React.Component<Props> {
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
-        if (!oldProps || oldProps.translucent !== mergedProps.translucent) {
+        // Activities are not translucent by default, so always set if true.
+        if (
+          !oldProps ||
+          oldProps.translucent !== mergedProps.translucent ||
+          mergedProps.translucent
+        ) {
           NativeStatusBarManagerAndroid.setTranslucent(mergedProps.translucent);
         }
       }

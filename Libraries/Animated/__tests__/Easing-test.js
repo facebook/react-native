@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
-const Easing = require('../Easing');
+import Easing from '../Easing';
 describe('Easing', () => {
   it('should work with linear', () => {
     const easing = Easing.linear;

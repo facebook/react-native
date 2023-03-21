@@ -32,6 +32,11 @@
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
+  if (@available(iOS 13.0, *)) {
+    UIUserInterfaceStyle style =
+        RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
+    self.overrideUserInterfaceStyle = style;
+  }
   // [macOS
   // Call self.alertWindow to ensure that it gets populated
   UIWindow *alertWindow = self.alertWindow;

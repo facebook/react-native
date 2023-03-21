@@ -15,6 +15,8 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   private static final String TAG = "Hermes";
 
   private final RuntimeConfig mConfig;
+  private boolean mEnableDebugger = true;
+  private String mDebuggerName = "";
 
   public HermesExecutorFactory() {
     this(null);
@@ -24,9 +26,17 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
     mConfig = config;
   }
 
+  public void setEnableDebugger(boolean enableDebugger) {
+    mEnableDebugger = enableDebugger;
+  }
+
+  public void setDebuggerName(String debuggerName) {
+    mDebuggerName = debuggerName;
+  }
+
   @Override
   public JavaScriptExecutor create() {
-    return new HermesExecutor(mConfig);
+    return new HermesExecutor(mConfig, mEnableDebugger, mDebuggerName);
   }
 
   @Override

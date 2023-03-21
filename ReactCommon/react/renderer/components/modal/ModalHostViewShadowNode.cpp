@@ -10,10 +10,8 @@
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ModalHostViewComponentName[] = "ModalHostView";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

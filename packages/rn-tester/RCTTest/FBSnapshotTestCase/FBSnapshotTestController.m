@@ -249,11 +249,6 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   if (scale > 1.0) { // macOS]
     fileName = [fileName stringByAppendingFormat:@"@%.fx", scale];
   }
-#if TARGET_OS_TV
-  fileName = [fileName stringByAppendingString:@"_tvOS"];
-#elif TARGET_OS_OSX // [macOS]
-  fileName = [fileName stringByAppendingString:@"_macOS"]; // [macOS]
-#endif
   fileName = [fileName stringByAppendingPathExtension:@"png"];
   return fileName;
 }
@@ -340,21 +335,14 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   NSAssert1(CGRectGetHeight(bounds), @"Zero height for view %@", view);
 
 #if !TARGET_OS_OSX // [macOS]
-  UIGraphicsBeginImageContextWithOptions(bounds.size, NO, 0);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  NSAssert1(context, @"Could not generate context for view %@", view);
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:bounds.size
+                                                                                   format:rendererFormat];
 
-  UIGraphicsPushContext(context);
-  CGContextSaveGState(context);
-  {
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull context) {
     BOOL success = [view drawViewHierarchyInRect:bounds afterScreenUpdates:YES];
     NSAssert1(success, @"Could not create snapshot for view %@", view);
-  }
-  CGContextRestoreGState(context);
-  UIGraphicsPopContext();
-
-  UIImage *snapshot = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
+  }];
 #else // [macOS
   // The macOS snapshot bitmap will *not* be scaled to the machine's current screen.
   // The snapshot image is used for integration testing so the consistent scale makes the test results machine
@@ -363,9 +351,9 @@ typedef NS_ENUM(NSInteger, FBTestSnapshotFileNameType) {
   [view cacheDisplayInRect:bounds toBitmapImageRep:rep];
   UIImage *snapshot = [[NSImage alloc] initWithSize:bounds.size];
   [snapshot addRepresentation:rep];
-#endif // macOS]
 
   return snapshot;
+#endif // macOS]
 }
 
 @end

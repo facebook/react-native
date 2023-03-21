@@ -4,17 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
- * @emails oncall+react_native
+ * @format
+ * @oncall react_native
  */
 
 'use strict';
 
+const VirtualizedSectionList = require('../VirtualizedSectionList');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
-
-const VirtualizedSectionList = require('../VirtualizedSectionList');
 
 describe('VirtualizedSectionList', () => {
   it('renders simple list', () => {

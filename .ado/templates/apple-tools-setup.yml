@@ -1,0 +1,12 @@
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSource: 'fromFile' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
+      versionFilePath: '.node-version'
+
+  - task: UseRubyVersion@0
+    inputs:
+      versionSpec: '>= 2.7'
+
+  - script: 'brew bundle --file .ado/Brewfile'
+    displayName: 'brew bundle'

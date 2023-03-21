@@ -51,7 +51,11 @@ using namespace facebook::react;
   return _props;
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)setContentView:(RCTUIView *)contentView // [macOS]
+#else // [macOS
+- (void)setContentView:(RCTPlatformView *)contentView // [macOS]
+#endif // macOS]
 {
   if (_contentView) {
     [_contentView removeFromSuperview];
@@ -60,8 +64,11 @@ using namespace facebook::react;
   _contentView = contentView;
 
   if (_contentView) {
-    [self addSubview:_contentView];
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+#if TARGET_OS_OSX // [macOS
+    _contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+#endif // macOS]
+    [self addSubview:_contentView];
   }
 }
 
@@ -303,6 +310,12 @@ using namespace facebook::react;
   // `accessibilityLabel`
   if (oldViewProps.accessibilityLabel != newViewProps.accessibilityLabel) {
     self.accessibilityElement.accessibilityLabel = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLabel);
+  }
+
+  // `accessibilityLanguage`
+  if (oldViewProps.accessibilityLanguage != newViewProps.accessibilityLanguage) {
+    self.accessibilityElement.accessibilityLanguage =
+        RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityLanguage);
   }
 
   // `accessibilityHint`
@@ -579,6 +592,18 @@ static void RCTReleaseRCTBorderColors(RCTBorderColors borderColors)
   CGColorRelease(borderColors.right);
 }
 
+static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
+{
+  // The constants are available only starting from iOS 13
+  // CALayerCornerCurve is a typealias on NSString *
+  switch (borderCurve) {
+    case BorderCurve::Continuous:
+      return @"continuous"; // kCACornerCurveContinuous;
+    case BorderCurve::Circular:
+      return @"circular"; // kCACornerCurveCircular;
+  }
+}
+
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
@@ -643,6 +668,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
+    if (@available(iOS 13.0, *)) {
+      layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
+    }
     layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {

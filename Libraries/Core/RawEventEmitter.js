@@ -8,8 +8,9 @@
  * @format
  */
 
-import EventEmitter from '../vendor/emitter/EventEmitter';
 import type {IEventEmitter} from '../vendor/emitter/EventEmitter';
+
+import EventEmitter from '../vendor/emitter/EventEmitter';
 
 export type RawEventEmitterEvent = $ReadOnly<{|
   eventName: string,

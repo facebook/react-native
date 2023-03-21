@@ -21,8 +21,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
@@ -141,17 +140,17 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
   defaultTextAttributes.apply(getConcreteProps().textAttributes);
 
-  auto newEventCount =
-      (state.reactTreeAttributedString == reactTreeAttributedString
-           ? 0
-           : getConcreteProps().mostRecentEventCount);
-  auto newAttributedString = getMostRecentAttributedString();
-
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
+  auto newEventCount =
+      state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
+      ? 0
+      : getConcreteProps().mostRecentEventCount;
+  auto newAttributedString = getMostRecentAttributedString();
+
   setStateData(AndroidTextInputState{
       newEventCount,
       newAttributedString,
@@ -168,7 +167,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size AndroidTextInputShadowNode::measureContent(
-    LayoutContext const &layoutContext,
+    LayoutContext const & /*layoutContext*/,
     LayoutConstraints const &layoutConstraints) const {
   if (getStateData().cachedAttributedStringId != 0) {
     return textLayoutManager_
@@ -207,5 +206,4 @@ void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

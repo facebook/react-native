@@ -26,6 +26,7 @@ export default function getCachedComponentWithDisplayName(
     ComponentWithDisplayName = ({
       children,
     }: $TEMPORARY$object<{children: Node}>) => children;
+    // $FlowFixMe[prop-missing]
     ComponentWithDisplayName.displayName = displayName;
     cache.set(displayName, ComponentWithDisplayName);
   }

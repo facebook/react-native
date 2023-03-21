@@ -21,8 +21,8 @@ Class RCTCoreModulesClassProvider(const char *name) {
   static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
 #if !TARGET_OS_OSX // [macOS] Do we need these?
     {"AccessibilityManager", RCTAccessibilityManagerCls},
-    {"Appearance", RCTAppearanceCls},
 #endif // [macOS]
+    {"Appearance", RCTAppearanceCls},
     {"DeviceInfo", RCTDeviceInfoCls},
     {"ExceptionsManager", RCTExceptionsManagerCls},
     {"PlatformConstants", RCTPlatformCls},
@@ -31,7 +31,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"SourceCode", RCTSourceCodeCls},
     {"ActionSheetManager", RCTActionSheetManagerCls},
     {"AlertManager", RCTAlertManagerCls},
-    {"AsyncLocalStorage", RCTAsyncLocalStorageCls},
     {"Timing", RCTTimingCls},
     {"StatusBarManager", RCTStatusBarManagerCls},
     {"KeyboardObserver", RCTKeyboardObserverCls},
@@ -41,10 +40,9 @@ Class RCTCoreModulesClassProvider(const char *name) {
 #endif // [macOS]
     {"DevMenu", RCTDevMenuCls},
     {"DevSettings", RCTDevSettingsCls},
+    {"BlobModule", RCTBlobManagerCls},
     {"RedBox", RCTRedBoxCls},
-#if !TARGET_OS_OSX // [macOS] Do we need these?
     {"LogBox", RCTLogBoxCls},
-#endif // [macOS]
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"DevLoadingView", RCTDevLoadingViewCls},

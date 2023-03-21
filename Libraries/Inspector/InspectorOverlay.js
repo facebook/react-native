@@ -10,14 +10,14 @@
 
 'use strict';
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {PressEvent} from '../Types/CoreEventTypes';
+
+const View = require('../Components/View/View');
+const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions');
 const ElementBox = require('./ElementBox');
 const React = require('react');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const View = require('../Components/View/View');
-
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {PressEvent} from '../Types/CoreEventTypes';
 
 type Inspected = $ReadOnly<{|
   frame?: Object,

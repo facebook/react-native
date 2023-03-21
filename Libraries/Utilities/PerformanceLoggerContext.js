@@ -8,10 +8,11 @@
  * @format
  */
 
+import type {IPerformanceLogger} from './createPerformanceLogger';
+
+import GlobalPerformanceLogger from './GlobalPerformanceLogger';
 import * as React from 'react';
 import {useContext} from 'react';
-import GlobalPerformanceLogger from './GlobalPerformanceLogger';
-import type {IPerformanceLogger} from './createPerformanceLogger';
 
 /**
  * This is a React Context that provides a scoped instance of IPerformanceLogger.

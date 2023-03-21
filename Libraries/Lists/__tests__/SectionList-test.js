@@ -5,15 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
+import SectionList from '../SectionList';
 import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-
-import SectionList from '../SectionList';
 
 describe('SectionList', () => {
   it('renders empty list', () => {

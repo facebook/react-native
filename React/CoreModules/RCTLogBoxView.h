@@ -18,9 +18,8 @@
 
 - (void)createRootViewController:(UIView *)view;
 
-- (instancetype)initWithFrame:(CGRect)frame surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
+- (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)show;
 
@@ -31,7 +30,6 @@
 @interface RCTLogBoxView : NSWindow
 
 - (instancetype)initWithSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
-
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 - (void)setHidden:(BOOL)hidden;

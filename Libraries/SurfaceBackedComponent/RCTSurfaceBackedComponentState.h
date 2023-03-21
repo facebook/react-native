@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
-@class RCTSurface;
+@protocol RCTSurfaceProtocol;
 
-@interface RCTSurfaceBackedComponentState: NSObject
+@interface RCTSurfaceBackedComponentState : NSObject
 
-@property (atomic, readonly, strong) RCTSurface *surface;
+@property (atomic, readonly, strong) id<RCTSurfaceProtocol> surface;
 
-+ (instancetype)newWithSurface:(RCTSurface *)surface;
++ (instancetype)newWithSurface:(id<RCTSurfaceProtocol>)surface;
 
 @end

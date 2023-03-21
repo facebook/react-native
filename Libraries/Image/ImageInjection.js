@@ -8,10 +8,11 @@
  * @flow
  */
 
-import * as React from 'react';
 import type {ImageProps as ImagePropsType} from './ImageProps';
+
 import ImageViewNativeComponent from './ImageViewNativeComponent';
 import TextInlineImageNativeComponent from './TextInlineImageNativeComponent';
+import * as React from 'react';
 
 export default {
   unstable_createImageComponent: (null: ?(

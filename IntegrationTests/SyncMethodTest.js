@@ -17,7 +17,7 @@ const {View} = ReactNative;
 const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
 
 class SyncMethodTest extends React.Component<{...}> {
-  componentDidMount() {
+  componentDidMount(): void {
     if (
       RNTesterTestModule.echoString('test string value') !== 'test string value'
     ) {

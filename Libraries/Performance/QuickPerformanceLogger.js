@@ -13,11 +13,18 @@
 const AUTO_SET_TIMESTAMP = -1;
 const DUMMY_INSTANCE_KEY = 0;
 
-// Defines map of annotations for markEvent
+// Defines map of annotations
 // Use as following:
 // {string: {key1: value1, key2: value2}}
 export type AnnotationsMap = $Shape<{
   string: ?{[string]: string, ...},
+  int: ?{[string]: number, ...},
+  double: ?{[string]: number, ...},
+  bool: ?{[string]: boolean, ...},
+  string_array: ?{[string]: $ReadOnlyArray<string>, ...},
+  int_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  double_array: ?{[string]: $ReadOnlyArray<number>, ...},
+  bool_array: ?{[string]: $ReadOnlyArray<boolean>, ...},
 }>;
 
 const QuickPerformanceLogger = {
@@ -54,17 +61,34 @@ const QuickPerformanceLogger = {
 
   markerAnnotate(
     markerId: number,
-    annotationKey: string,
-    annotationValue: string,
+    annotations: AnnotationsMap,
     instanceKey: number = DUMMY_INSTANCE_KEY,
   ): void {
-    if (global.nativeQPLMarkerAnnotate) {
-      global.nativeQPLMarkerAnnotate(
-        markerId,
-        instanceKey,
-        annotationKey,
-        annotationValue,
-      );
+    if (global.nativeQPLMarkerAnnotateWithMap) {
+      global.nativeQPLMarkerAnnotateWithMap(markerId, annotations, instanceKey);
+    } else if (global.nativeQPLMarkerAnnotate) {
+      for (const type of [
+        'string',
+        'int',
+        'double',
+        'bool',
+        'string_array',
+        'int_array',
+        'double_array',
+        'bool_array',
+      ]) {
+        const keyValsOfType = annotations[type];
+        if (keyValsOfType != null) {
+          for (const annotationKey of Object.keys(keyValsOfType)) {
+            global.nativeQPLMarkerAnnotate(
+              markerId,
+              instanceKey,
+              annotationKey,
+              keyValsOfType[annotationKey].toString(),
+            );
+          }
+        }
+      }
     }
   },
 

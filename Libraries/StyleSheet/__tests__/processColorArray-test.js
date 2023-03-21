@@ -5,20 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @emails oncall+react_native
+ * @oncall react_native
  */
 
 'use strict';
 
 const {OS} = require('../../Utilities/Platform');
-const processColorArray = require('../processColorArray');
-
+const PlatformColorAndroid =
+  require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =
   require('../PlatformColorValueTypes.ios').PlatformColor;
 const DynamicColorIOS =
   require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
-const PlatformColorAndroid =
-  require('../PlatformColorValueTypes.android').PlatformColor;
+const processColorArray = require('../processColorArray');
 
 const platformSpecific =
   OS === 'android'

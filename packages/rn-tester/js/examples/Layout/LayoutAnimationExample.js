@@ -49,7 +49,7 @@ function shuffleArray(array: Array<ExampleViewSpec>) {
 }
 
 class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
-  state = {
+  state: AddRemoveExampleState = {
     views: [],
     nextKey: 1,
   };
@@ -96,7 +96,7 @@ class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
     this.setState(state => ({views: shuffleArray(state.views)}));
   };
 
-  render() {
+  render(): React.Node {
     const views = this.state.views.map(({key}) => (
       <View
         key={key}
@@ -151,7 +151,7 @@ class ReparentingExample extends React.Component<
   {...},
   ReparentingExampleState,
 > {
-  state = {
+  state: ReparentingExampleState = {
     hasBorder: false,
   };
 
@@ -172,7 +172,7 @@ class ReparentingExample extends React.Component<
     this.setState(state => ({hasBorder: !state.hasBorder}));
   };
 
-  render() {
+  render(): React.Node {
     const parentStyle = this.state.hasBorder
       ? {borderWidth: 5, borderColor: 'red'}
       : {};
@@ -214,7 +214,7 @@ type CrossFadeExampleState = {|
 |};
 
 class CrossFadeExample extends React.Component<{...}, CrossFadeExampleState> {
-  state = {
+  state: CrossFadeExampleState = {
     toggled: false,
   };
 
@@ -225,7 +225,7 @@ class CrossFadeExample extends React.Component<{...}, CrossFadeExampleState> {
     this.setState(state => ({toggled: !state.toggled}));
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={this._onPressToggle}>
@@ -250,7 +250,7 @@ class LayoutUpdateExample extends React.Component<
   {...},
   LayoutUpdateExampleState,
 > {
-  state = {
+  state: LayoutUpdateExampleState = {
     width: 200,
     height: 100,
   };
@@ -285,7 +285,7 @@ class LayoutUpdateExample extends React.Component<
     this.timeout = setTimeout(() => this.setState({width: 100}), 500);
   };
 
-  render() {
+  render(): React.Node {
     const {width, height} = this.state;
 
     return (

@@ -13,8 +13,7 @@
 #include <react/renderer/components/text/TextShadowNode.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline ShadowView shadowViewFromShadowNode(ShadowNode const &shadowNode) {
   auto shadowView = ShadowView{shadowNode};
@@ -34,7 +33,7 @@ void BaseTextShadowNode::buildAttributedString(
     // RawShadowNode
     auto rawTextShadowNode =
         traitCast<RawTextShadowNode const *>(childNode.get());
-    if (rawTextShadowNode) {
+    if (rawTextShadowNode != nullptr) {
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getConcreteProps().text;
       fragment.textAttributes = baseTextAttributes;
@@ -50,7 +49,7 @@ void BaseTextShadowNode::buildAttributedString(
 
     // TextShadowNode
     auto textShadowNode = traitCast<TextShadowNode const *>(childNode.get());
-    if (textShadowNode) {
+    if (textShadowNode != nullptr) {
       auto localTextAttributes = baseTextAttributes;
       localTextAttributes.apply(
           textShadowNode->getConcreteProps().textAttributes);
@@ -73,5 +72,4 @@ void BaseTextShadowNode::buildAttributedString(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -7,10 +7,8 @@ const path = require('path');
 const childProcess = require('child_process');
 const fs = require('fs');
 const {
-  appendToExistingFile,
   createDir,
   copyAndReplaceAll,
-  copyAndReplaceWithChangedCallback,
 } = require('../generator-common');
 
 const macOSDir = 'macos';

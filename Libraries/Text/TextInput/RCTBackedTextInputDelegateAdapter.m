@@ -40,8 +40,12 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
     backedTextInputView.delegate = self;
 
 #if !TARGET_OS_OSX // [macOS]
-    [_backedTextInputView addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
-    [_backedTextInputView addTarget:self action:@selector(textFieldDidEndEditingOnExit) forControlEvents:UIControlEventEditingDidEndOnExit];
+    [_backedTextInputView addTarget:self
+                             action:@selector(textFieldDidChange)
+                   forControlEvents:UIControlEventEditingChanged];
+    [_backedTextInputView addTarget:self
+                             action:@selector(textFieldDidEndEditingOnExit)
+                   forControlEvents:UIControlEventEditingDidEndOnExit];
 #endif // [macOS]
   }
 
@@ -85,10 +89,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidEndEditing];
 }
 
-- (BOOL)textField:(__unused UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+- (BOOL)textField:(__unused UITextField *)textField
+    shouldChangeCharactersInRange:(NSRange)range
+                replacementString:(NSString *)string
 {
-  NSString *newText =
-    [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
+  NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:string inRange:range];
 
   if (newText == nil) {
     return NO;
@@ -105,9 +110,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #if !TARGET_OS_OSX // [macOS]
   // Setting selection to the end of the replaced text.
-  UITextPosition *position =
-    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                        offset:(range.location + newText.length)];
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                 offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 
@@ -119,6 +123,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (BOOL)textFieldShouldReturn:(__unused UITextField *)textField
 {
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
+  [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
   return [_backedTextInputView.textInputDelegate textInputShouldReturn];
 }
 
@@ -318,16 +324,19 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 #if !TARGET_OS_OSX // [macOS]
   // Custom implementation of `textInputShouldReturn` and `textInputDidReturn` pair for `UITextView`.
   if (!_backedTextInputView.textWasPasted && [text isEqualToString:@"\n"]) {
-    if ([_backedTextInputView.textInputDelegate textInputShouldReturn]) {
+    const BOOL shouldSubmit = [_backedTextInputView.textInputDelegate textInputShouldSubmitOnReturn];
+    const BOOL shouldReturn = [_backedTextInputView.textInputDelegate textInputShouldReturn];
+    if (shouldReturn) {
       [_backedTextInputView.textInputDelegate textInputDidReturn];
       [_backedTextInputView endEditing:NO];
+      return NO;
+    } else if (shouldSubmit) {
       return NO;
     }
   }
 #endif // [macOS]
 
-  NSString *newText =
-    [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
+  NSString *newText = [_backedTextInputView.textInputDelegate textInputShouldChangeText:text inRange:range];
 
   if (newText == nil) {
     return NO;
@@ -344,9 +353,8 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #if !TARGET_OS_OSX // [macOS]
   // Setting selection to the end of the replaced text.
-  UITextPosition *position =
-    [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                        offset:(range.location + newText.length)];
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                 offset:(range.location + newText.length)];
   [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
                               notifyDelegate:YES];
 #endif // [macOS]

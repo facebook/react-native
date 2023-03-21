@@ -392,8 +392,11 @@ inline void fromRawValue(
             YGUnitPercent};
         return;
       } else {
-        result = YGValue{folly::to<float>(stringValue), YGUnitPoint};
-        return;
+        auto tryValue = folly::tryTo<float>(stringValue);
+        if (tryValue.hasValue()) {
+          result = YGValue{tryValue.value(), YGUnitPoint};
+          return;
+        }
       }
     }
   }
@@ -557,6 +560,24 @@ inline void fromRawValue(
     return;
   }
   LOG(FATAL) << "Could not parse BackfaceVisibility:" << stringValue;
+  react_native_assert(false);
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    BorderCurve &result) {
+  react_native_assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "circular") {
+    result = BorderCurve::Circular;
+    return;
+  }
+  if (stringValue == "continuous") {
+    result = BorderCurve::Continuous;
+    return;
+  }
+  LOG(FATAL) << "Could not parse BorderCurve:" << stringValue;
   react_native_assert(false);
 }
 

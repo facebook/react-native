@@ -8,17 +8,13 @@
 package com.facebook.react.utils
 
 internal fun windowsAwareCommandLine(vararg args: Any): List<Any> =
+    windowsAwareCommandLine(args.toList())
+
+internal fun windowsAwareCommandLine(args: List<Any>): List<Any> =
     if (Os.isWindows()) {
       listOf("cmd", "/c") + args
     } else {
-      args.toList()
-    }
-
-internal fun windowsAwareYarn(vararg args: Any): List<Any> =
-    if (Os.isWindows()) {
-      listOf("yarn.cmd") + args
-    } else {
-      listOf("yarn") + args
+      args
     }
 
 internal fun windowsAwareBashCommandLine(

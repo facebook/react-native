@@ -11,8 +11,7 @@
 
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SynchronousEventBeat::SynchronousEventBeat(
     RunLoopObserver::Unique uiRunLoopObserver,
@@ -28,7 +27,7 @@ SynchronousEventBeat::SynchronousEventBeat(
 
 void SynchronousEventBeat::activityDidChange(
     RunLoopObserver::Delegate const *delegate,
-    RunLoopObserver::Activity activity) const noexcept {
+    RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   lockExecutorAndBeat();
 }
@@ -57,5 +56,4 @@ void SynchronousEventBeat::lockExecutorAndBeat() const {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

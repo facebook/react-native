@@ -50,6 +50,8 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
         return "desk";
       case Configuration.UI_MODE_TYPE_WATCH:
         return "watch";
+      case Configuration.UI_MODE_TYPE_VR_HEADSET:
+        return "vrheadset";
       case Configuration.UI_MODE_TYPE_NORMAL:
         return "normal";
       default:

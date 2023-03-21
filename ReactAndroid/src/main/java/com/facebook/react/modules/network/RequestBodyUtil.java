@@ -8,10 +8,14 @@
 package com.facebook.react.modules.network;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,6 +62,16 @@ import okio.Source;
       if (fileContentUri.getScheme().startsWith("http")) {
         return getDownloadFileInputStream(context, fileContentUri);
       }
+
+      if (fileContentUriStr.startsWith("data:")) {
+        byte[] decodedDataUrString = Base64.decode(fileContentUriStr.split(",")[1], Base64.DEFAULT);
+        Bitmap bitMap =
+            BitmapFactory.decodeByteArray(decodedDataUrString, 0, decodedDataUrString.length);
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitMap.compress(Bitmap.CompressFormat.PNG, 0, bytes);
+        return new ByteArrayInputStream(bytes.toByteArray());
+      }
+
       return context.getContentResolver().openInputStream(fileContentUri);
     } catch (Exception e) {
       FLog.e(ReactConstants.TAG, "Could not retrieve file for contentUri " + fileContentUriStr, e);

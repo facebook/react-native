@@ -12,6 +12,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTConstants.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
@@ -23,7 +24,6 @@
 
 #import "CoreModulesPlugins.h"
 
-static NSString *const kRCTDevSettingDevModeEnabled = @"devModeEnabled"; // [macOS]
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 static NSString *const kRCTDevSettingIsInspectorShown = @"showInspector";
@@ -31,7 +31,6 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-static NSString *const kRCTDevSettingSecondClickToShowDevMenu = @"secondClickToShow"; // [macOS]
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
@@ -156,12 +155,8 @@ RCT_EXPORT_MODULE()
 {
   // Default behavior is to use NSUserDefaults with shake and hot loading enabled.
   NSDictionary *defaultValues = @{
-#if DEBUG // [macOS
-    kRCTDevSettingDevModeEnabled: @YES,
-#endif // macOS]
     kRCTDevSettingShakeToShowDevMenu : @YES,
     kRCTDevSettingHotLoadingEnabled : @YES,
-    kRCTDevSettingSecondClickToShowDevMenu: @YES, // [macOS]
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
@@ -336,18 +331,6 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 {
   return [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
-
-// [macOS
-RCT_EXPORT_METHOD(setIsSecondaryClickToShowDevMenuEnabled:(BOOL)enabled)
-{
-  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingSecondClickToShowDevMenu];
-}
-
-- (BOOL)isSecondaryClickToShowDevMenuEnabled
-{
-  return [[self settingForKey:kRCTDevSettingSecondClickToShowDevMenu] boolValue];
-}
-// macOS]
 
 RCT_EXPORT_METHOD(setIsDebuggingRemotely:(BOOL)enabled)
 {

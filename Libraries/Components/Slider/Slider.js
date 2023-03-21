@@ -8,18 +8,18 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import Platform from '../../Utilities/Platform';
-import SliderNativeComponent from './SliderNativeComponent';
-import StyleSheet, {
-  type ViewStyleProp,
-  type ColorValue,
-} from '../../StyleSheet/StyleSheet';
-
 import type {ImageSource} from '../../Image/ImageSource';
-import type {ViewProps} from '../View/ViewPropTypes';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {AccessibilityState} from '../View/ViewAccessibility';
+import type {ViewProps} from '../View/ViewPropTypes';
+
+import StyleSheet, {
+  type ColorValue,
+  type ViewStyleProp,
+} from '../../StyleSheet/StyleSheet';
+import Platform from '../../Utilities/Platform';
+import SliderNativeComponent from './SliderNativeComponent';
+import * as React from 'react';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

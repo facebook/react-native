@@ -7,6 +7,8 @@
 
 // [macOS]
 
+#if TARGET_OS_OSX
+
 #import <React/RCTUIKit.h>
 
 #import <React/RCTAssert.h>
@@ -70,7 +72,9 @@ NSImage *UIGraphicsGetImageFromCurrentImageContext(void)
 		CGImageRef cgImage = CGBitmapContextCreateImage([graphicsContext CGContext]);
 
 		if (cgImage != NULL) {
-			image = [[NSImage alloc] initWithCGImage:cgImage size:[sizeValue sizeValue]];
+			NSBitmapImageRep *imageRep = [[NSBitmapImageRep alloc] initWithCGImage:cgImage];
+			image = [[NSImage alloc] initWithSize:[sizeValue sizeValue]];
+			[image addRepresentation:imageRep];
 			CFRelease(cgImage);
 		}
 	}
@@ -766,3 +770,5 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 }
 
 @end
+
+#endif

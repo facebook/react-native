@@ -139,6 +139,27 @@ std::string AsyncHermesRuntime::getLastThrownExceptionMessage() {
   return thrownExceptions_.back();
 }
 
+void AsyncHermesRuntime::registerForProfilingInExecutor() {
+  // Sampling profiler registration needs to happen in the thread where JS runs.
+  folly::via(executor_.get(), [runtime = runtime_]() {
+    runtime->registerForProfiling();
+  });
+
+  // Wait until the executor is registered for profiling.
+  wait();
+}
+
+void AsyncHermesRuntime::unregisterForProfilingInExecutor() {
+  // Sampling profiler deregistration needs to happen in the thread where JS
+  // runs.
+  folly::via(executor_.get(), [runtime = runtime_]() {
+    runtime->unregisterForProfiling();
+  });
+
+  // Wait until the executor is unregistered for profiling.
+  wait();
+}
+
 } // namespace chrome
 } // namespace inspector
 } // namespace hermes

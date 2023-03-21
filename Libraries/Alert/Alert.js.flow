@@ -1,0 +1,65 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+export type AlertType =
+  | 'default'
+  | 'plain-text'
+  | 'secure-text'
+  | 'login-password';
+export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
+export type Buttons = Array<{
+  text?: string,
+  onPress?: ?Function,
+  isPreferred?: boolean,
+  style?: AlertButtonStyle,
+  ...
+}>;
+// [macOS
+export type DefaultInputsArray = Array<{
+  default?: string,
+  placeholder?: string,
+  style?: AlertButtonStyle,
+}>;
+// macOS]
+type Options = {
+  cancelable?: ?boolean,
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
+  onDismiss?: ?() => void,
+  ...
+};
+
+declare class Alert {
+  static alert(
+    title: ?string,
+    message?: ?string,
+    buttons?: Buttons,
+    options?: Options,
+  ): void;
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    type?: ?AlertType,
+    defaultValue?: string,
+    keyboardType?: string,
+    options?: Options,
+  ): void;
+  static promptMacOS(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?((text: string) => void) | Buttons,
+    type?: ?AlertType,
+    defaultInputs?: DefaultInputsArray,
+    modal?: ?boolean,
+    critical?: ?boolean,
+  ): void;
+}
+
+module.exports = Alert;

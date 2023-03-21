@@ -188,7 +188,7 @@ TEST(RawPropsTest, handleRawPropsSingleFloat) {
   parser.prepare<PropsSingleFloat>();
   raw.parse(parser, parserContext);
 
-  float value = (float)*raw.at("floatValue", nullptr, nullptr);
+  auto value = (float)*raw.at("floatValue", nullptr, nullptr);
 
   EXPECT_NEAR(value, 42.42, 0.00001);
 }
@@ -203,7 +203,7 @@ TEST(RawPropsTest, handleRawPropsSingleDouble) {
   parser.prepare<PropsSingleDouble>();
   raw.parse(parser, parserContext);
 
-  double value = (double)*raw.at("doubleValue", nullptr, nullptr);
+  auto value = (double)*raw.at("doubleValue", nullptr, nullptr);
 
   EXPECT_NEAR(value, 42.42, 0.00001);
 }

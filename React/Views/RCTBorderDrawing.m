@@ -180,19 +180,27 @@ static CGPathRef RCTPathCreateOuterOutline(BOOL drawToEdge, CGRect rect, RCTCorn
   return RCTPathCreateWithRoundedRect(rect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
 }
 
-static CGContextRef
-RCTUIGraphicsBeginImageContext(
-  CGSize size,
-  CGColorRef backgroundColor,
-  BOOL hasCornerRadii,
-  BOOL drawToEdge,
-  CGFloat scaleFactor // [macOS]
-) {
+#if !TARGET_OS_OSX // [macOS]
+static UIGraphicsImageRenderer *
+RCTUIGraphicsImageRenderer(CGSize size, CGColorRef backgroundColor, BOOL hasCornerRadii, BOOL drawToEdge)
+{
   const CGFloat alpha = CGColorGetAlpha(backgroundColor);
   const BOOL opaque = (drawToEdge || !hasCornerRadii) && alpha == 1.0;
-  UIGraphicsBeginImageContextWithOptions(size, opaque, scaleFactor); // [macOS]
+  UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
+  rendererFormat.opaque = opaque;
+  UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:rendererFormat];
+  return renderer;
+}
+#else // [macOS
+static CGContextRef
+RCTUIGraphicsBeginImageContext(CGSize size, CGColorRef backgroundColor, BOOL hasCornerRadii, BOOL drawToEdge, CGFloat scaleFactor)
+{
+  const CGFloat alpha = CGColorGetAlpha(backgroundColor);
+  const BOOL opaque = (drawToEdge || !hasCornerRadii) && alpha == 1.0;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, scaleFactor);
   return UIGraphicsGetCurrentContext();
 }
+#endif // macOS]
 
 static UIImage *RCTGetSolidBorderImage(
     RCTCornerRadii cornerRadii,
@@ -248,164 +256,178 @@ static UIImage *RCTGetSolidBorderImage(
     return nil;
   } // macOS]
 
-  CGContextRef ctx = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // [macOS]
-  const CGRect rect = {.size = size};
-  CGPathRef path = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
+#if !TARGET_OS_OSX // [macOS]
+  UIGraphicsImageRenderer *const imageRenderer =
+      RCTUIGraphicsImageRenderer(size, backgroundColor, hasCornerRadii, drawToEdge);
+  UIImage *image = [imageRenderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+    const CGContextRef context = rendererContext.CGContext;
+#else // [macOS
+  CGContextRef context = RCTUIGraphicsBeginImageContext(size, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor);
+  // Add extra braces for scope to match the indentation level of the iOS block
+  {
+#endif // macOS]
+    const CGRect rect = {.size = size};
+    CGPathRef path = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
 
-  if (backgroundColor) {
-    CGContextSetFillColorWithColor(ctx, backgroundColor);
-    CGContextAddPath(ctx, path);
-    CGContextFillPath(ctx);
+    if (backgroundColor) {
+      CGContextSetFillColorWithColor(context, backgroundColor);
+      CGContextAddPath(context, path);
+      CGContextFillPath(context);
+    }
+
+    CGContextAddPath(context, path);
+    CGPathRelease(path);
+
+    CGPathRef insetPath = RCTPathCreateWithRoundedRect(UIEdgeInsetsInsetRect(rect, borderInsets), cornerInsets, NULL);
+
+    CGContextAddPath(context, insetPath);
+    CGContextEOClip(context);
+
+    BOOL hasEqualColors = RCTBorderColorsAreEqual(borderColors);
+    if ((drawToEdge || !hasCornerRadii) && hasEqualColors) {
+      CGContextSetFillColorWithColor(context, borderColors.left);
+      CGContextAddRect(context, rect);
+      CGContextAddPath(context, insetPath);
+      CGContextEOFillPath(context);
+
+    } else {
+      CGPoint topLeft = (CGPoint){borderInsets.left, borderInsets.top};
+      if (cornerInsets.topLeft.width > 0 && cornerInsets.topLeft.height > 0) {
+        CGPoint points[2];
+        RCTEllipseGetIntersectionsWithLine(
+            (CGRect){topLeft, {2 * cornerInsets.topLeft.width, 2 * cornerInsets.topLeft.height}},
+            CGPointZero,
+            topLeft,
+            points);
+        if (!isnan(points[1].x) && !isnan(points[1].y)) {
+          topLeft = points[1];
+        }
+      }
+
+      CGPoint bottomLeft = (CGPoint){borderInsets.left, size.height - borderInsets.bottom};
+      if (cornerInsets.bottomLeft.width > 0 && cornerInsets.bottomLeft.height > 0) {
+        CGPoint points[2];
+        RCTEllipseGetIntersectionsWithLine(
+            (CGRect){
+                {bottomLeft.x, bottomLeft.y - 2 * cornerInsets.bottomLeft.height},
+                {2 * cornerInsets.bottomLeft.width, 2 * cornerInsets.bottomLeft.height}},
+            (CGPoint){0, size.height},
+            bottomLeft,
+            points);
+        if (!isnan(points[1].x) && !isnan(points[1].y)) {
+          bottomLeft = points[1];
+        }
+      }
+
+      CGPoint topRight = (CGPoint){size.width - borderInsets.right, borderInsets.top};
+      if (cornerInsets.topRight.width > 0 && cornerInsets.topRight.height > 0) {
+        CGPoint points[2];
+        RCTEllipseGetIntersectionsWithLine(
+            (CGRect){
+                {topRight.x - 2 * cornerInsets.topRight.width, topRight.y},
+                {2 * cornerInsets.topRight.width, 2 * cornerInsets.topRight.height}},
+            (CGPoint){size.width, 0},
+            topRight,
+            points);
+        if (!isnan(points[0].x) && !isnan(points[0].y)) {
+          topRight = points[0];
+        }
+      }
+
+      CGPoint bottomRight = (CGPoint){size.width - borderInsets.right, size.height - borderInsets.bottom};
+      if (cornerInsets.bottomRight.width > 0 && cornerInsets.bottomRight.height > 0) {
+        CGPoint points[2];
+        RCTEllipseGetIntersectionsWithLine(
+            (CGRect){
+                {bottomRight.x - 2 * cornerInsets.bottomRight.width,
+                 bottomRight.y - 2 * cornerInsets.bottomRight.height},
+                {2 * cornerInsets.bottomRight.width, 2 * cornerInsets.bottomRight.height}},
+            (CGPoint){size.width, size.height},
+            bottomRight,
+            points);
+        if (!isnan(points[0].x) && !isnan(points[0].y)) {
+          bottomRight = points[0];
+        }
+      }
+
+      CGColorRef currentColor = NULL;
+
+      // RIGHT
+      if (borderInsets.right > 0) {
+        const CGPoint points[] = {
+            (CGPoint){size.width, 0},
+            topRight,
+            bottomRight,
+            (CGPoint){size.width, size.height},
+        };
+
+        currentColor = borderColors.right;
+        CGContextAddLines(context, points, sizeof(points) / sizeof(*points));
+      }
+
+      // BOTTOM
+      if (borderInsets.bottom > 0) {
+        const CGPoint points[] = {
+            (CGPoint){0, size.height},
+            bottomLeft,
+            bottomRight,
+            (CGPoint){size.width, size.height},
+        };
+
+        if (!CGColorEqualToColor(currentColor, borderColors.bottom)) {
+          CGContextSetFillColorWithColor(context, currentColor);
+          CGContextFillPath(context);
+          currentColor = borderColors.bottom;
+        }
+        CGContextAddLines(context, points, sizeof(points) / sizeof(*points));
+      }
+
+      // LEFT
+      if (borderInsets.left > 0) {
+        const CGPoint points[] = {
+            CGPointZero,
+            topLeft,
+            bottomLeft,
+            (CGPoint){0, size.height},
+        };
+
+        if (!CGColorEqualToColor(currentColor, borderColors.left)) {
+          CGContextSetFillColorWithColor(context, currentColor);
+          CGContextFillPath(context);
+          currentColor = borderColors.left;
+        }
+        CGContextAddLines(context, points, sizeof(points) / sizeof(*points));
+      }
+
+      // TOP
+      if (borderInsets.top > 0) {
+        const CGPoint points[] = {
+            CGPointZero,
+            topLeft,
+            topRight,
+            (CGPoint){size.width, 0},
+        };
+
+        if (!CGColorEqualToColor(currentColor, borderColors.top)) {
+          CGContextSetFillColorWithColor(context, currentColor);
+          CGContextFillPath(context);
+          currentColor = borderColors.top;
+        }
+        CGContextAddLines(context, points, sizeof(points) / sizeof(*points));
+      }
+
+      CGContextSetFillColorWithColor(context, currentColor);
+      CGContextFillPath(context);
+    }
+
+    CGPathRelease(insetPath);
+#if !TARGET_OS_OSX // [macOS]
+  }];
+#else // [macOS
   }
-
-  CGContextAddPath(ctx, path);
-  CGPathRelease(path);
-
-  CGPathRef insetPath = RCTPathCreateWithRoundedRect(UIEdgeInsetsInsetRect(rect, borderInsets), cornerInsets, NULL);
-
-  CGContextAddPath(ctx, insetPath);
-  CGContextEOClip(ctx);
-
-  BOOL hasEqualColors = RCTBorderColorsAreEqual(borderColors);
-  if ((drawToEdge || !hasCornerRadii) && hasEqualColors) {
-    CGContextSetFillColorWithColor(ctx, borderColors.left);
-    CGContextAddRect(ctx, rect);
-    CGContextAddPath(ctx, insetPath);
-    CGContextEOFillPath(ctx);
-
-  } else {
-    CGPoint topLeft = (CGPoint){borderInsets.left, borderInsets.top};
-    if (cornerInsets.topLeft.width > 0 && cornerInsets.topLeft.height > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(
-          (CGRect){topLeft, {2 * cornerInsets.topLeft.width, 2 * cornerInsets.topLeft.height}},
-          CGPointZero,
-          topLeft,
-          points);
-      if (!isnan(points[1].x) && !isnan(points[1].y)) {
-        topLeft = points[1];
-      }
-    }
-
-    CGPoint bottomLeft = (CGPoint){borderInsets.left, size.height - borderInsets.bottom};
-    if (cornerInsets.bottomLeft.width > 0 && cornerInsets.bottomLeft.height > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(
-          (CGRect){
-              {bottomLeft.x, bottomLeft.y - 2 * cornerInsets.bottomLeft.height},
-              {2 * cornerInsets.bottomLeft.width, 2 * cornerInsets.bottomLeft.height}},
-          (CGPoint){0, size.height},
-          bottomLeft,
-          points);
-      if (!isnan(points[1].x) && !isnan(points[1].y)) {
-        bottomLeft = points[1];
-      }
-    }
-
-    CGPoint topRight = (CGPoint){size.width - borderInsets.right, borderInsets.top};
-    if (cornerInsets.topRight.width > 0 && cornerInsets.topRight.height > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(
-          (CGRect){
-              {topRight.x - 2 * cornerInsets.topRight.width, topRight.y},
-              {2 * cornerInsets.topRight.width, 2 * cornerInsets.topRight.height}},
-          (CGPoint){size.width, 0},
-          topRight,
-          points);
-      if (!isnan(points[0].x) && !isnan(points[0].y)) {
-        topRight = points[0];
-      }
-    }
-
-    CGPoint bottomRight = (CGPoint){size.width - borderInsets.right, size.height - borderInsets.bottom};
-    if (cornerInsets.bottomRight.width > 0 && cornerInsets.bottomRight.height > 0) {
-      CGPoint points[2];
-      RCTEllipseGetIntersectionsWithLine(
-          (CGRect){
-              {bottomRight.x - 2 * cornerInsets.bottomRight.width, bottomRight.y - 2 * cornerInsets.bottomRight.height},
-              {2 * cornerInsets.bottomRight.width, 2 * cornerInsets.bottomRight.height}},
-          (CGPoint){size.width, size.height},
-          bottomRight,
-          points);
-      if (!isnan(points[0].x) && !isnan(points[0].y)) {
-        bottomRight = points[0];
-      }
-    }
-
-    CGColorRef currentColor = NULL;
-
-    // RIGHT
-    if (borderInsets.right > 0) {
-      const CGPoint points[] = {
-          (CGPoint){size.width, 0},
-          topRight,
-          bottomRight,
-          (CGPoint){size.width, size.height},
-      };
-
-      currentColor = borderColors.right;
-      CGContextAddLines(ctx, points, sizeof(points) / sizeof(*points));
-    }
-
-    // BOTTOM
-    if (borderInsets.bottom > 0) {
-      const CGPoint points[] = {
-          (CGPoint){0, size.height},
-          bottomLeft,
-          bottomRight,
-          (CGPoint){size.width, size.height},
-      };
-
-      if (!CGColorEqualToColor(currentColor, borderColors.bottom)) {
-        CGContextSetFillColorWithColor(ctx, currentColor);
-        CGContextFillPath(ctx);
-        currentColor = borderColors.bottom;
-      }
-      CGContextAddLines(ctx, points, sizeof(points) / sizeof(*points));
-    }
-
-    // LEFT
-    if (borderInsets.left > 0) {
-      const CGPoint points[] = {
-          CGPointZero,
-          topLeft,
-          bottomLeft,
-          (CGPoint){0, size.height},
-      };
-
-      if (!CGColorEqualToColor(currentColor, borderColors.left)) {
-        CGContextSetFillColorWithColor(ctx, currentColor);
-        CGContextFillPath(ctx);
-        currentColor = borderColors.left;
-      }
-      CGContextAddLines(ctx, points, sizeof(points) / sizeof(*points));
-    }
-
-    // TOP
-    if (borderInsets.top > 0) {
-      const CGPoint points[] = {
-          CGPointZero,
-          topLeft,
-          topRight,
-          (CGPoint){size.width, 0},
-      };
-
-      if (!CGColorEqualToColor(currentColor, borderColors.top)) {
-        CGContextSetFillColorWithColor(ctx, currentColor);
-        CGContextFillPath(ctx);
-        currentColor = borderColors.top;
-      }
-      CGContextAddLines(ctx, points, sizeof(points) / sizeof(*points));
-    }
-
-    CGContextSetFillColorWithColor(ctx, currentColor);
-    CGContextFillPath(ctx);
-  }
-
-  CGPathRelease(insetPath);
-
   UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
+#endif // macOS]
 
   if (makeStretchable) {
 #if !TARGET_OS_OSX // [macOS]
@@ -506,42 +528,54 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
   } // macOS]
 
   const BOOL hasCornerRadii = RCTCornerRadiiAreAboveThreshold(cornerRadii);
-  CGContextRef ctx = RCTUIGraphicsBeginImageContext(viewSize, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor); // [macOS]
-  const CGRect rect = {.size = viewSize};
+#if !TARGET_OS_OSX // [macOS]
+  UIGraphicsImageRenderer *const imageRenderer =
+      RCTUIGraphicsImageRenderer(viewSize, backgroundColor, hasCornerRadii, drawToEdge);
+  return [imageRenderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
+    const CGContextRef context = rendererContext.CGContext;
+#else // [macOS
+  CGContextRef context = RCTUIGraphicsBeginImageContext(viewSize, backgroundColor, hasCornerRadii, drawToEdge, scaleFactor);
+  // Add extra braces for scope to match the indentation level of the iOS block
+  {
+#endif // macOS]
+    const CGRect rect = {.size = viewSize};
 
-  if (backgroundColor) {
-    CGPathRef outerPath = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
-    CGContextAddPath(ctx, outerPath);
-    CGPathRelease(outerPath);
+    if (backgroundColor) {
+      CGPathRef outerPath = RCTPathCreateOuterOutline(drawToEdge, rect, cornerRadii);
+      CGContextAddPath(context, outerPath);
+      CGPathRelease(outerPath);
 
-    CGContextSetFillColorWithColor(ctx, backgroundColor);
-    CGContextFillPath(ctx);
+      CGContextSetFillColorWithColor(context, backgroundColor);
+      CGContextFillPath(context);
+    }
+
+    // Stroking means that the width is divided in half and grows in both directions
+    // perpendicular to the path, that's why we inset by half the width, so that it
+    // reaches the edge of the rect.
+    CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
+    CGPathRef path = RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+
+    CGFloat dashLengths[2];
+    dashLengths[0] = dashLengths[1] = (borderStyle == RCTBorderStyleDashed ? 3 : 1) * lineWidth;
+
+    CGContextSetLineWidth(context, lineWidth);
+    CGContextSetLineDash(context, 0, dashLengths, sizeof(dashLengths) / sizeof(*dashLengths));
+
+    CGContextSetStrokeColorWithColor(context, [RCTUIColor yellowColor].CGColor); // [macOS]
+
+    CGContextAddPath(context, path);
+    CGContextSetStrokeColorWithColor(context, borderColors.top);
+    CGContextStrokePath(context);
+
+    CGPathRelease(path);
+#if !TARGET_OS_OSX // [macOS]
+  }];
+#else // [macOS
   }
-
-  // Stroking means that the width is divided in half and grows in both directions
-  // perpendicular to the path, that's why we inset by half the width, so that it
-  // reaches the edge of the rect.
-  CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
-  CGPathRef path = RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
-
-  CGFloat dashLengths[2];
-  dashLengths[0] = dashLengths[1] = (borderStyle == RCTBorderStyleDashed ? 3 : 1) * lineWidth;
-
-  CGContextSetLineWidth(ctx, lineWidth);
-  CGContextSetLineDash(ctx, 0, dashLengths, sizeof(dashLengths) / sizeof(*dashLengths));
-
-  CGContextSetStrokeColorWithColor(ctx, [RCTUIColor yellowColor].CGColor); // [macOS]
-
-  CGContextAddPath(ctx, path);
-  CGContextSetStrokeColorWithColor(ctx, borderColors.top);
-  CGContextStrokePath(ctx);
-
-  CGPathRelease(path);
-
   UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
-
   return image;
+#endif // macOS]
 }
 
 UIImage *RCTGetBorderImage(

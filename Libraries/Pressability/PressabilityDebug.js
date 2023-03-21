@@ -8,11 +8,11 @@
  * @format
  */
 
-import normalizeColor from '../StyleSheet/normalizeColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
-import {normalizeRect, type RectOrSize} from '../StyleSheet/Rect';
 
 import View from '../Components/View/View';
+import normalizeColor from '../StyleSheet/normalizeColor';
+import {type RectOrSize, normalizeRect} from '../StyleSheet/Rect';
 import * as React from 'react';
 
 type Props = $ReadOnly<{|

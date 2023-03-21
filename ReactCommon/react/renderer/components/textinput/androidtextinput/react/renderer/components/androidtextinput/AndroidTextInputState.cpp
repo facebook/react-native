@@ -10,10 +10,14 @@
 #include <react/renderer/components/text/conversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
+#ifdef ANDROID
+#include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#endif
+
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 AndroidTextInputState::AndroidTextInputState(
     int64_t mostRecentEventCount,
@@ -89,7 +93,23 @@ folly::dynamic AndroidTextInputState::getDynamic() const {
   }
   return newState;
 }
+
+MapBuffer AndroidTextInputState::getMapBuffer() const {
+  auto builder = MapBufferBuilder();
+  // See comment in getDynamic block.
+  if (cachedAttributedStringId == 0) {
+    builder.putInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT, mostRecentEventCount);
+
+    auto attStringMapBuffer = toMapBuffer(attributedString);
+    builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);
+    auto paMapBuffer = toMapBuffer(paragraphAttributes);
+    builder.putMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES, paMapBuffer);
+
+    builder.putInt(TX_STATE_KEY_HASH, attStringMapBuffer.getInt(AS_KEY_HASH));
+  }
+  return builder.build();
+}
+
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

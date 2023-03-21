@@ -10,15 +10,19 @@
 
 'use strict';
 
-const AnimatedInterpolation = require('./AnimatedInterpolation');
-const AnimatedWithChildren = require('./AnimatedWithChildren');
-const InteractionManager = require('../../Interaction/InteractionManager');
-const NativeAnimatedHelper = require('../NativeAnimatedHelper');
-
-import type AnimatedNode from './AnimatedNode';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
+import type AnimatedNode from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
+
+import InteractionManager from '../../Interaction/InteractionManager';
+import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedInterpolation from './AnimatedInterpolation';
+import AnimatedWithChildren from './AnimatedWithChildren';
+
+export type AnimatedValueConfig = $ReadOnly<{
+  useNativeDriver: boolean,
+}>;
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
@@ -45,7 +49,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 function _flush(rootNode: AnimatedValue): void {
-  const animatedStyles = new Set();
+  const animatedStyles = new Set<AnimatedValue | AnimatedNode>();
   function findAnimatedStyles(node: AnimatedValue | AnimatedNode) {
     /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
      * suppresses an error found when Flow v0.68 was deployed. To see the error
@@ -80,14 +84,15 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  *
  * See https://reactnative.dev/docs/animatedvalue
  */
-class AnimatedValue extends AnimatedWithChildren {
+export default class AnimatedValue extends AnimatedWithChildren {
   _value: number;
   _startingValue: number;
   _offset: number;
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
 
-  constructor(value: number) {
+  // $FlowFixMe[missing-local-annot]
+  constructor(value: number, config?: ?AnimatedValueConfig) {
     super();
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
@@ -95,6 +100,9 @@ class AnimatedValue extends AnimatedWithChildren {
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
+    }
   }
 
   __detach() {
@@ -127,9 +135,9 @@ class AnimatedValue extends AnimatedWithChildren {
       !this.__isNative /* don't perform a flush for natively driven values */,
     );
     if (this.__isNative) {
-      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () => {
-        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value);
-      });
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () =>
+        NativeAnimatedAPI.setAnimatedNodeValue(this.__getNativeTag(), value),
+      );
     }
   }
 
@@ -219,7 +227,9 @@ class AnimatedValue extends AnimatedWithChildren {
    * Interpolates the value before updating the property, e.g. mapping 0-1 to
    * 0-10.
    */
-  interpolate(config: InterpolationConfigType): AnimatedInterpolation {
+  interpolate<OutputT: number | string>(
+    config: InterpolationConfigType<OutputT>,
+  ): AnimatedInterpolation<OutputT> {
     return new AnimatedInterpolation(this, config);
   }
 
@@ -294,5 +304,3 @@ class AnimatedValue extends AnimatedWithChildren {
     };
   }
 }
-
-module.exports = AnimatedValue;

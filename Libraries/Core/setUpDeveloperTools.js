@@ -17,13 +17,11 @@ declare var console: typeof console & {_isPolyfilled: boolean, ...};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  if (!global.__RCTProfileIsProfiling) {
-    require('./setUpReactDevTools');
+  require('./setUpReactDevTools');
 
-    // Set up inspector
-    const JSInspector = require('../JSInspector/JSInspector');
-    JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
-  }
+  // Set up inspector
+  const JSInspector = require('../JSInspector/JSInspector');
+  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
 
   // Note we can't check if console is "native" because it would appear "native" in JSC and Hermes.
   // We also can't check any properties that don't exist in the Chrome worker environment.

@@ -11,7 +11,7 @@ case $1 in
     GITHUB_PR_NUMBER="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}" \
     GITHUB_REF=${CIRCLE_BRANCH} \
     GITHUB_SHA=${CIRCLE_SHA1} \
-    exec node bots/report-bundle-size.js "$1"
+    exec node packages/react-native-bots/report-bundle-size.js "$1"
     ;;
   *)
     echo "Syntax: $0 [android | ios]"

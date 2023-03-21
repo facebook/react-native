@@ -14,7 +14,7 @@ bool RCTBridgingToBool(id value)
   return [RCTConvert BOOL:value] ? true : false;
 }
 
-folly::Optional<bool> RCTBridgingToOptionalBool(id value)
+std::optional<bool> RCTBridgingToOptionalBool(id value)
 {
   if (!RCTNilIfNull(value)) {
     return {};
@@ -32,8 +32,7 @@ NSString *RCTBridgingToOptionalString(id value)
   return RCTBridgingToString(value);
 }
 
-
-folly::Optional<double> RCTBridgingToOptionalDouble(id value)
+std::optional<double> RCTBridgingToOptionalDouble(id value)
 {
   if (!RCTNilIfNull(value)) {
     return {};
@@ -46,6 +45,7 @@ double RCTBridgingToDouble(id value)
   return [RCTConvert double:value];
 }
 
-NSArray *RCTBridgingToArray(id value) {
+NSArray *RCTBridgingToArray(id value)
+{
   return [RCTConvert NSArray:value];
 }

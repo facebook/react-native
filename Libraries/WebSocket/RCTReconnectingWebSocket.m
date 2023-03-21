@@ -68,7 +68,7 @@
 - (void)reconnect
 {
   if (_stopped) {
-   return;
+    return;
   }
 
   __weak SRWebSocket *socket = _socket;

@@ -9,8 +9,7 @@
 
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void SurfaceTelemetry::incorporate(
     TransactionTelemetry const &telemetry,
@@ -81,5 +80,4 @@ SurfaceTelemetry::getRecentTransactionTelemetries() const {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

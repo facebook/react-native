@@ -10,8 +10,7 @@
 #include <react/renderer/components/text/conversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 folly::dynamic ParagraphState::getDynamic() const {
@@ -23,5 +22,4 @@ MapBuffer ParagraphState::getMapBuffer() const {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

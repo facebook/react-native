@@ -7,13 +7,11 @@
 
 #import <React/RCTEventAnimation.h>
 
-@implementation RCTEventAnimation
-{
+@implementation RCTEventAnimation {
   NSArray<NSString *> *_eventPath;
 }
 
-- (instancetype)initWithEventPath:(NSArray<NSString *> *)eventPath
-                        valueNode:(RCTValueAnimatedNode *)valueNode
+- (instancetype)initWithEventPath:(NSArray<NSString *> *)eventPath valueNode:(RCTValueAnimatedNode *)valueNode
 {
   if ((self = [super init])) {
     _eventPath = eventPath;

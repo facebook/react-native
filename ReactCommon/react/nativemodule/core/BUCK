@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "FBJNI_TARGET", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_target", "react_native_xplat_shared_library_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "core",
@@ -15,6 +15,7 @@ rn_xplat_cxx_library(
     compiler_flags = [
         "-Wno-global-constructors",
     ],
+    compiler_flags_pedantic = True,
     fbandroid_deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
@@ -55,8 +56,10 @@ rn_xplat_cxx_library(
             "platform/ios/**/*.mm",
         ],
     ),
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
-    platforms = (ANDROID, APPLE),
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+    ],
+    platforms = (ANDROID, APPLE, CXX),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
@@ -67,9 +70,7 @@ rn_xplat_cxx_library(
     deps = [
         "//third-party/glog:glog",
         "//xplat/fbsystrace:fbsystrace",
-        "//xplat/folly:headers_only",
         "//xplat/folly:memory",
-        "//xplat/folly:molly",
         "//xplat/jsi:JSIDynamic",
         react_native_xplat_target("cxxreact:bridge"),
         react_native_xplat_target("cxxreact:module"),
@@ -78,6 +79,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("reactperflogger:reactperflogger"),
     ],
     exported_deps = [
+        react_native_xplat_target("react/bridging:bridging"),
         react_native_xplat_shared_library_target("jsi:jsi"),
     ],
 )

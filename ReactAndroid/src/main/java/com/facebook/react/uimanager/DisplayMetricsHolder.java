@@ -18,21 +18,13 @@ import com.facebook.react.bridge.WritableNativeMap;
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
- * classes that need it. Note: windowDisplayMetrics are deprecated in favor of ScreenDisplayMetrics:
- * window metrics are supposed to return the drawable area but there's no guarantee that they
- * correspond to the actual size of the {@link ReactRootView}. Moreover, they are not consistent
- * with what iOS returns. Screen metrics returns the metrics of the entire screen, is consistent
- * with iOS and should be used instead.
+ * classes that need it.
  */
 public class DisplayMetricsHolder {
 
   private static @Nullable DisplayMetrics sWindowDisplayMetrics;
   private static @Nullable DisplayMetrics sScreenDisplayMetrics;
 
-  /**
-   * @deprecated Use {@link #setScreenDisplayMetrics(DisplayMetrics)} instead. See comment above as
-   *     to why this is not correct to use.
-   */
   public static void setWindowDisplayMetrics(DisplayMetrics displayMetrics) {
     sWindowDisplayMetrics = displayMetrics;
   }
@@ -63,11 +55,7 @@ public class DisplayMetricsHolder {
     DisplayMetricsHolder.setScreenDisplayMetrics(screenDisplayMetrics);
   }
 
-  /**
-   * @deprecated Use {@link #getScreenDisplayMetrics()} instead. See comment above as to why this is
-   *     not correct to use.
-   */
-  @Deprecated
+  /** Returns the metrics of the window associated to the Context used to initialize ReactNative */
   public static DisplayMetrics getWindowDisplayMetrics() {
     return sWindowDisplayMetrics;
   }
@@ -76,6 +64,7 @@ public class DisplayMetricsHolder {
     sScreenDisplayMetrics = screenDisplayMetrics;
   }
 
+  /** Screen metrics returns the metrics of the default screen on the device. */
   public static DisplayMetrics getScreenDisplayMetrics() {
     return sScreenDisplayMetrics;
   }

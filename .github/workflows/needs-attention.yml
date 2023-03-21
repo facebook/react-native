@@ -4,12 +4,18 @@ on:
   issue_comment:
     types: created
 
+permissions:
+  contents: read
+
 jobs:
   applyNeedsAttentionLabel:
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+      issues: write  # for hramos/needs-attention to label issues
     name: Apply Needs Attention Label
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Apply Needs Attention Label
         uses: hramos/needs-attention@v1
         with:

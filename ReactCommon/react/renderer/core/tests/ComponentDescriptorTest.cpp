@@ -37,7 +37,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
       },
       nullptr);
 
-  SharedShadowNode node = descriptor->createShadowNode(
+  ShadowNode::Shared node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -69,12 +69,12 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
           /* .eventEmitter = */ nullptr,
       },
       nullptr);
-  SharedShadowNode node = descriptor->createShadowNode(
+  ShadowNode::Shared node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
       family);
-  SharedShadowNode cloned = descriptor->cloneShadowNode(*node, {});
+  ShadowNode::Shared cloned = descriptor->cloneShadowNode(*node, {});
 
   EXPECT_STREQ(cloned->getComponentName(), "Test");
   EXPECT_EQ(cloned->getTag(), 9);
@@ -104,7 +104,7 @@ TEST(ComponentDescriptorTest, appendChild) {
           /* .eventEmitter = */ nullptr,
       },
       nullptr);
-  SharedShadowNode node1 = descriptor->createShadowNode(
+  ShadowNode::Shared node1 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -116,7 +116,7 @@ TEST(ComponentDescriptorTest, appendChild) {
           /* .eventEmitter = */ nullptr,
       },
       nullptr);
-  SharedShadowNode node2 = descriptor->createShadowNode(
+  ShadowNode::Shared node2 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -128,7 +128,7 @@ TEST(ComponentDescriptorTest, appendChild) {
           /* .eventEmitter = */ nullptr,
       },
       nullptr);
-  SharedShadowNode node3 = descriptor->createShadowNode(
+  ShadowNode::Shared node3 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },

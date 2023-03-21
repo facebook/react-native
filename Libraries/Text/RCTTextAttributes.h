@@ -6,9 +6,10 @@
  */
 
 #import <React/RCTUIKit.h> // [macOS]
-#import <React/RCTTextDecorationLineType.h>
+
 #import <React/RCTDynamicTypeRamp.h> // [macOS]
-#import <React/RCTFontSmoothing.h> // [macOS]
+#import <React/RCTTextDecorationLineType.h>
+
 #import "RCTTextTransform.h"
 
 #if TARGET_OS_OSX // [macOS
@@ -18,7 +19,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
-extern NSString *const RCTTextAttributesFontSmoothingAttributeName;  // [macOS]
 extern NSString *const RCTTextAttributesTagAttributeName;
 
 /**
@@ -43,12 +43,11 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, assign) BOOL allowFontScaling;
 @property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp; // [macOS]
 @property (nonatomic, assign) CGFloat letterSpacing;
-@property (nonatomic, assign) RCTFontSmoothing fontSmoothing; // [macOS]
-@property (class, nonatomic, assign) RCTFontSmoothing fontSmoothingDefault; // [macOS]
 // Paragraph Styles
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, assign) NSTextAlignment alignment;
 @property (nonatomic, assign) NSWritingDirection baseWritingDirection;
+@property (nonatomic, assign) NSLineBreakStrategy lineBreakStrategy;
 // Decoration
 @property (nonatomic, strong, nullable) RCTUIColor *textDecorationColor; // [macOS]
 @property (nonatomic, assign) NSUnderlineStyle textDecorationStyle;
