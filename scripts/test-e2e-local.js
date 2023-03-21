@@ -34,7 +34,7 @@ const {
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
-} = require('./hermes/hermes-utils');
+} = require('../packages/react-native/scripts/hermes/hermes-utils.js');
 
 const argv = yargs
   .option('t', {
