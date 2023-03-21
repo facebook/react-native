@@ -10,7 +10,7 @@
   "license": "MIT",
   "exports": "./index.js",
   "dependencies": {
-    "@react-native/js-polyfills": "^0.72.1",
+    "@react-native/js-polyfills": "^0.73.0",
     "metro-config": "0.75.1"
   }
 }
