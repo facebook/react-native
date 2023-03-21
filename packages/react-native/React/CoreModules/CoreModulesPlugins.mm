@@ -41,7 +41,6 @@ Class RCTCoreModulesClassProvider(const char *name) {
     {"WebSocketExecutor", RCTWebSocketExecutorCls},
     {"WebSocketModule", RCTWebSocketModuleCls},
     {"DevLoadingView", RCTDevLoadingViewCls},
-    {"DevSplitBundleLoader", RCTDevSplitBundleLoaderCls},
     {"EventDispatcher", RCTEventDispatcherCls},
     {"BlobModule", RCTBlobManagerCls},
   };
