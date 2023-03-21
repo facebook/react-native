@@ -47,13 +47,15 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
   pod 'Yoga', :path => "#{@prefix_path}/ReactCommon/yoga", :modular_headers => true
-  # pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" # [macOS]
-  # pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec" # [macOS]
   # Additional Pods which are classed as unstable
 
+  # [macOS Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
+  # pod 'React-TurboModuleCxx-WinRTPort', :path => "#{@prefix_path}/ReactTurboModuleCxx" 
+  # pod 'React-TurboModuleCxx-RNW', :podspec => "#{@prefix_path}/ReactTurboModuleCxx/React-TurboModuleCxx-RNW.podspec"
+  # macOS]
+
   # RNTester native modules and components
-  # [macOS] Github#1734: Disable ScreenshotManager once reconcile the codegen strategy for it
-  # pod 'ScreenshotManager', :path => "NativeModuleExample"
+  pod 'ScreenshotManager', :path => "NativeModuleExample"
   if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
     pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
   end 

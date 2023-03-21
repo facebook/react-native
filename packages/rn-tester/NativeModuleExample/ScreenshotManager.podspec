@@ -22,21 +22,12 @@ Pod::Spec.new do |s|
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
 
   s.source_files    = "**/*.{h,m,mm,swift}"
-# [macOS
-  s.ios.exclude_files = "ScreenshotMacOS.{h,mm}"
-  s.osx.exclude_files = "Screenshot.{h,m}"
-# macOS]
+  # [macOS Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
+  s.exclude_files   = "ScreenshotMacOS.{h,mm}"
+  # macOS]
   s.requires_arc    = true
 
   install_modules_dependencies(s)
-
-# [macOS
-  s.osx.dependency "React-TurboModuleCxx-RNW"
-  s.osx.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
-                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                               }
-# macOS]
 
   # s.dependency "..."
 
