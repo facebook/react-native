@@ -109,7 +109,7 @@ WIN_EXPORT void YGNodeMarkDirty(YGNodeRef node);
 //
 // Intended to be used for Yoga benchmarks. Don't use in production, as calling
 // `YGCalculateLayout` will cause the recalculation of each and every node.
-WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(YGNodeRef node);
+WIN_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(YGNodeRef node, YGPrintOptions options);
 

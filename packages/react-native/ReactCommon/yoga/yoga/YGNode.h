@@ -327,7 +327,7 @@ public:
       const float mainSize,
       const float crossSize,
       const float ownerWidth);
-  void markDirtyAndPropogateDownwards();
+  void markDirtyAndPropagateDownwards();
 
   // Other methods
   YGValue marginLeadingValue(const YGFlexDirection axis) const;
@@ -345,7 +345,7 @@ public:
   void removeChild(uint32_t index);
 
   void cloneChildrenIfNeeded(void*);
-  void markDirtyAndPropogate();
+  void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
   bool isNodeFlexible();

@@ -232,7 +232,7 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   public void dirtyAllDescendants() {
-    YogaNative.jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(mNativePointer);
+    YogaNative.jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(mNativePointer);
   }
 
   public boolean isDirty() {

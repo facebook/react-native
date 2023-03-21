@@ -448,20 +448,20 @@ void YGNode::cloneChildrenIfNeeded(void* cloneContext) {
   iterChildrenAfterCloningIfNeeded([](YGNodeRef, void*) {}, cloneContext);
 }
 
-void YGNode::markDirtyAndPropogate() {
+void YGNode::markDirtyAndPropagate() {
   if (!facebook::yoga::detail::getBooleanData(flags, isDirty_)) {
     setDirty(true);
     setLayoutComputedFlexBasis(YGFloatOptional());
     if (owner_) {
-      owner_->markDirtyAndPropogate();
+      owner_->markDirtyAndPropagate();
     }
   }
 }
 
-void YGNode::markDirtyAndPropogateDownwards() {
+void YGNode::markDirtyAndPropagateDownwards() {
   facebook::yoga::detail::setBooleanData(flags, isDirty_, true);
   for_each(children_.begin(), children_.end(), [](YGNodeRef childNode) {
-    childNode->markDirtyAndPropogateDownwards();
+    childNode->markDirtyAndPropagateDownwards();
   });
 }
 

@@ -28,7 +28,7 @@ static bool areFourValuesEqual(const YGStyle::Edges& four) {
       YGValueEqual(four[0], four[3]);
 }
 
-static void appendFormatedString(string& str, const char* fmt, ...) {
+static void appendFormattedString(string& str, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
   va_list argsCopy;
@@ -46,7 +46,7 @@ static void appendFloatOptionalIfDefined(
     const string key,
     const YGFloatOptional num) {
   if (!num.isUndefined()) {
-    appendFormatedString(base, "%s: %g; ", key.c_str(), num.unwrap());
+    appendFormattedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
 }
 
@@ -59,7 +59,7 @@ static void appendNumberIfNotUndefined(
       base.append(key + ": auto; ");
     } else {
       string unit = number.unit == YGUnitPoint ? "px" : "%%";
-      appendFormatedString(
+      appendFormattedString(
           base, "%s: %g%s; ", key.c_str(), number.value, unit.c_str());
     }
   }
@@ -121,46 +121,46 @@ void YGNodeToString(
     YGPrintOptions options,
     uint32_t level) {
   indent(str, level);
-  appendFormatedString(str, "<div ");
+  appendFormattedString(str, "<div ");
 
   if (options & YGPrintOptionsLayout) {
-    appendFormatedString(str, "layout=\"");
-    appendFormatedString(
+    appendFormattedString(str, "layout=\"");
+    appendFormattedString(
         str, "width: %g; ", node->getLayout().dimensions[YGDimensionWidth]);
-    appendFormatedString(
+    appendFormattedString(
         str, "height: %g; ", node->getLayout().dimensions[YGDimensionHeight]);
-    appendFormatedString(
+    appendFormattedString(
         str, "top: %g; ", node->getLayout().position[YGEdgeTop]);
-    appendFormatedString(
+    appendFormattedString(
         str, "left: %g;", node->getLayout().position[YGEdgeLeft]);
-    appendFormatedString(str, "\" ");
+    appendFormattedString(str, "\" ");
   }
 
   if (options & YGPrintOptionsStyle) {
-    appendFormatedString(str, "style=\"");
+    appendFormattedString(str, "style=\"");
     const auto& style = node->getStyle();
     if (style.flexDirection() != YGNode().getStyle().flexDirection()) {
-      appendFormatedString(
+      appendFormattedString(
           str,
           "flex-direction: %s; ",
           YGFlexDirectionToString(style.flexDirection()));
     }
     if (style.justifyContent() != YGNode().getStyle().justifyContent()) {
-      appendFormatedString(
+      appendFormattedString(
           str,
           "justify-content: %s; ",
           YGJustifyToString(style.justifyContent()));
     }
     if (style.alignItems() != YGNode().getStyle().alignItems()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "align-items: %s; ", YGAlignToString(style.alignItems()));
     }
     if (style.alignContent() != YGNode().getStyle().alignContent()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "align-content: %s; ", YGAlignToString(style.alignContent()));
     }
     if (style.alignSelf() != YGNode().getStyle().alignSelf()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "align-self: %s; ", YGAlignToString(style.alignSelf()));
     }
     appendFloatOptionalIfDefined(str, "flex-grow", style.flexGrow());
@@ -169,17 +169,17 @@ void YGNodeToString(
     appendFloatOptionalIfDefined(str, "flex", style.flex());
 
     if (style.flexWrap() != YGNode().getStyle().flexWrap()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "flex-wrap: %s; ", YGWrapToString(style.flexWrap()));
     }
 
     if (style.overflow() != YGNode().getStyle().overflow()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "overflow: %s; ", YGOverflowToString(style.overflow()));
     }
 
     if (style.display() != YGNode().getStyle().display()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "display: %s; ", YGDisplayToString(style.display()));
     }
     appendEdges(str, "margin", style.margin());
@@ -212,7 +212,7 @@ void YGNodeToString(
         str, "min-height", style.minDimensions()[YGDimensionHeight]);
 
     if (style.positionType() != YGNode().getStyle().positionType()) {
-      appendFormatedString(
+      appendFormattedString(
           str, "position: %s; ", YGPositionTypeToString(style.positionType()));
     }
 
@@ -220,24 +220,24 @@ void YGNodeToString(
     appendEdgeIfNotUndefined(str, "right", style.position(), YGEdgeRight);
     appendEdgeIfNotUndefined(str, "top", style.position(), YGEdgeTop);
     appendEdgeIfNotUndefined(str, "bottom", style.position(), YGEdgeBottom);
-    appendFormatedString(str, "\" ");
+    appendFormattedString(str, "\" ");
 
     if (node->hasMeasureFunc()) {
-      appendFormatedString(str, "has-custom-measure=\"true\"");
+      appendFormattedString(str, "has-custom-measure=\"true\"");
     }
   }
-  appendFormatedString(str, ">");
+  appendFormattedString(str, ">");
 
   const uint32_t childCount = static_cast<uint32_t>(node->getChildren().size());
   if (options & YGPrintOptionsChildren && childCount > 0) {
     for (uint32_t i = 0; i < childCount; i++) {
-      appendFormatedString(str, "\n");
+      appendFormattedString(str, "\n");
       YGNodeToString(str, YGNodeGetChild(node, i), options, level + 1);
     }
-    appendFormatedString(str, "\n");
+    appendFormattedString(str, "\n");
     indent(str, level);
   }
-  appendFormatedString(str, "</div>");
+  appendFormattedString(str, "</div>");
 }
 } // namespace yoga
 } // namespace facebook

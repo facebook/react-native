@@ -40,7 +40,7 @@ public class YogaNative {
   static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
   static native void jni_YGNodeCalculateLayoutJNI(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
-  static native void jni_YGNodeMarkDirtyAndPropogateToDescendantsJNI(long nativePointer);
+  static native void jni_YGNodeMarkDirtyAndPropagateToDescendantsJNI(long nativePointer);
   static native boolean jni_YGNodeIsDirtyJNI(long nativePointer);
   static native void jni_YGNodeCopyStyleJNI(long dstNativePointer, long srcNativePointer);
   static native int jni_YGNodeStyleGetDirectionJNI(long nativePointer);
