@@ -62,6 +62,7 @@ const View: React.AbstractComponent<
     }: ViewProps,
     forwardedRef,
   ) => {
+    const hasTextAncestor = React.useContext(TextAncestor);
     const _accessibilityLabelledBy =
       ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
@@ -103,36 +104,42 @@ const View: React.AbstractComponent<
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
 
-    return (
-      <TextAncestor.Provider value={false}>
-        <ViewNativeComponent
-          {...otherProps}
-          accessibilityLiveRegion={
-            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
-          }
-          accessibilityLabel={ariaLabel ?? accessibilityLabel}
-          focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          accessibilityState={_accessibilityState}
-          accessibilityRole={
-            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-          }
-          accessibilityElementsHidden={
-            ariaHidden ?? accessibilityElementsHidden
-          }
-          accessibilityLabelledBy={_accessibilityLabelledBy}
-          accessibilityValue={_accessibilityValue}
-          importantForAccessibility={
-            ariaHidden === true
-              ? 'no-hide-descendants'
-              : importantForAccessibility
-          }
-          nativeID={id ?? nativeID}
-          style={style}
-          pointerEvents={newPointerEvents}
-          ref={forwardedRef}
-        />
-      </TextAncestor.Provider>
+    const actualView = (
+      <ViewNativeComponent
+        {...otherProps}
+        accessibilityLiveRegion={
+          ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+        }
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
+        accessibilityState={_accessibilityState}
+        accessibilityRole={
+          role ? getAccessibilityRoleFromRole(role) : accessibilityRole
+        }
+        accessibilityElementsHidden={ariaHidden ?? accessibilityElementsHidden}
+        accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessibilityValue={_accessibilityValue}
+        importantForAccessibility={
+          ariaHidden === true
+            ? 'no-hide-descendants'
+            : importantForAccessibility
+        }
+        nativeID={id ?? nativeID}
+        style={style}
+        pointerEvents={newPointerEvents}
+        ref={forwardedRef}
+      />
     );
+
+    if (hasTextAncestor) {
+      return (
+        <TextAncestor.Provider value={false}>
+          {actualView}
+        </TextAncestor.Provider>
+      );
+    }
+
+    return actualView;
   },
 );
 
