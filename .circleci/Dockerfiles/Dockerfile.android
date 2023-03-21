@@ -24,7 +24,7 @@
 # Disabling this is okay because per (Github#774) this test, which is redundant to Azure Devops test,
 # fails in the fork because of Microsoft's V8 upgrade to Android
 #
-#FROM reactnativecommunity/react-native-android:6.0
+#FROM reactnativecommunity/react-native-android:6.2
 
 LABEL Description="React Native Android Test Image"
 LABEL maintainer="Héctor Ramos <hector@fb.com>"

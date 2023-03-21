@@ -9,22 +9,41 @@
 
 'use strict';
 
-const {exec} = require('shelljs');
-const spawn = require('child_process').spawn;
+const {execSync, spawn} = require('child_process');
 
-function setupVerdaccio() {
-  const verdaccioProcess = spawn('npx', [
-    'verdaccio@5.15.3',
-    '--config',
-    '.circleci/verdaccio.yml',
-  ]);
+function setupVerdaccio(
+  reactNativeRootPath, // Path to React Native root folder
+  verdaccioConfigPath, // Path to Verdaccio config file, which you want to use for bootstrapping Verdaccio
+  verdaccioStoragePath, // Path to Verdaccio storage, where it should keep packages. Optional. Default value will be decided by your Verdaccio config
+) {
+  if (!reactNativeRootPath) {
+    throw new Error(
+      'Path to React Native repo root is not specified. You should provide it as a first argument',
+    );
+  }
+
+  if (!verdaccioConfigPath) {
+    throw new Error(
+      'Path to Verdaccio config is not specified. You should provide it as a second argument',
+    );
+  }
+
+  execSync('echo "//localhost:4873/:_authToken=secretToken" > .npmrc', {
+    cwd: reactNativeRootPath,
+  });
+
+  const verdaccioProcess = spawn(
+    'npx',
+    ['verdaccio@5.16.3', '--config', verdaccioConfigPath],
+    {env: {...process.env, VERDACCIO_STORAGE_PATH: verdaccioStoragePath}},
+  );
+
   const VERDACCIO_PID = verdaccioProcess.pid;
-  exec('npx wait-on@6.0.1 http://localhost:4873');
-  exec('npm set registry http://localhost:4873');
-  exec('echo "//localhost:4873/:_authToken=secretToken" > .npmrc');
+
+  execSync('npx wait-on@6.0.1 http://localhost:4873');
+  execSync('npm set registry http://localhost:4873');
+
   return VERDACCIO_PID;
 }
 
-module.exports = {
-  setupVerdaccio: setupVerdaccio,
-};
+module.exports = setupVerdaccio;

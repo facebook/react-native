@@ -35,6 +35,7 @@ buildscript {
   dependencies {
     classpath("com.android.tools.build:gradle:7.3.1")
     classpath("de.undercouch:gradle-download-task:5.0.1")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
   }
 }
 

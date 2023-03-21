@@ -29,8 +29,13 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
 
   static std::function<std::shared_ptr<TurboModule>(
       const std::string &,
+      const std::shared_ptr<CallInvoker> &)>
+      cxxModuleProvider;
+
+  static std::function<std::shared_ptr<TurboModule>(
+      const std::string &,
       const JavaTurboModule::InitParams &)>
-      moduleProvidersFromEntryPoint;
+      javaModuleProvider;
 
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string &name,

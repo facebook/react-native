@@ -442,11 +442,11 @@ afterEvaluate {
 
                     if (cleanup) {
                         // Reduce size by deleting the debugger/inspector
-                        include '**/libhermes-executor-debug.so'
+                        include '**/libhermes_executor_debug.so'
                     } else {
                         // Release libs take precedence and must be removed
                         // to allow debugging
-                        include '**/libhermes-executor-release.so'
+                        include '**/libhermes_executor_release.so'
                     }
                 } else {
                     // For JSC, delete all the libhermes* files

@@ -13,6 +13,7 @@ require_relative "./test_utils/SysctlCheckerMock.rb"
 require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
+require_relative "./test_utils/TargetDefinitionMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -30,6 +31,7 @@ class UtilsTests < Test::Unit::TestCase
         Environment.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
+        ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
     end
 
@@ -328,60 +330,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(pods_projects_mock.save_invocation_count, 1)
     end
 
-    # ============================================= #
-    # Test - Fix React-bridging Header Search Paths #
-    # ============================================= #
-
-    def test_fixReactBridgingHeaderSearchPaths_correctlySetsTheHeaderSearchPathsForAllTargets
-        # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = TargetMock.new("ThirdTarget", [
-            BuildConfigurationMock.new("Debug", {
-              "HEADER_SEARCH_PATHS" => '$(inherited) "${PODS_ROOT}/Headers/Public" '
-            }),
-            BuildConfigurationMock.new("Release", {
-              "HEADER_SEARCH_PATHS" => '$(inherited) "${PODS_ROOT}/Headers/Public" '
-            }),
-        ], nil)
-
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            third_target
-        ])
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        ReactNativePodsUtils.fix_react_bridging_header_search_paths(installer)
-
-        # Assert
-        first_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["HEADER_SEARCH_PATHS"].strip,
-                '$(inherited) "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"'
-            )
-        end
-        second_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["HEADER_SEARCH_PATHS"].strip,
-                '$(inherited) "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"'
-            )
-        end
-        third_target.build_configurations.each do |config|
-            assert_equal(config.build_settings["HEADER_SEARCH_PATHS"].strip,
-                '$(inherited) "${PODS_ROOT}/Headers/Public" "$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"'
-            )
-        end
-    end
-
     # ===================================== #
     # Test - Apply Xcode14 React-Core patch #
     # ===================================== #
@@ -534,6 +482,57 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         assert_equal(File.exist_invocation_params, ["/.xcode.env"])
         assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
+    end
+
+    # ============================ #
+    # Test - Detect Use Frameworks #
+    # ============================ #
+    def test_detectUseFrameworks_whenEnvAlreadySet_DoesNothing
+        # Arrange
+        ENV['USE_FRAMEWORKS'] = 'static'
+        target_definition = TargetDefinitionMock.new('something')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, [])
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndNotUsed_setEnvVarToNil
+        # Arrange
+        target_definition = TargetDefinitionMock.new('static library')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is static library"])
+        assert_nil(ENV['USE_FRAMEWORKS'])
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndStaticFrameworks_setEnvVarToStatic
+        # Arrange
+        target_definition = TargetDefinitionMock.new('static framework')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is static framework"])
+        assert_equal(ENV['USE_FRAMEWORKS'], 'static')
+    end
+
+    def test_detectUseFrameworks_whenEnvNotSetAndDynamicFrameworks_setEnvVarToDynamic
+        # Arrange
+        target_definition = TargetDefinitionMock.new('dynamic framework')
+
+        # Act
+        ReactNativePodsUtils.detect_use_frameworks(target_definition)
+
+        # Assert
+        assert_equal(Pod::UI.collected_messages, ["Framework build type is dynamic framework"])
+        assert_equal(ENV['USE_FRAMEWORKS'], 'dynamic')
     end
 end
 

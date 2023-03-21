@@ -16,18 +16,19 @@ plugins {
 
 group = "com.facebook.react"
 version = parent.publishing_version
+def cmakeVersion = parent.cmake_version
 
-def cmakeVersion = "3.18.1"
 /**
  * We use the bundled version of CMake in the Android SDK if available, to don't force Android
  * users to install CMake externally.
  */
 def findCmakePath(cmakeVersion) {
-    if (System.getenv("ANDROID_SDK_ROOT")) {
-        return "${System.getenv("ANDROID_SDK_ROOT")}/cmake/${cmakeVersion}/bin/cmake"
+    def cmakeRelativePath = "/cmake/${cmakeVersion}/bin/cmake"
+    if (System.getenv("ANDROID_SDK_ROOT") && new File("${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}").exists()) {
+        return "${System.getenv("ANDROID_SDK_ROOT")}/${cmakeRelativePath}"
     }
-    if (System.getenv("ANDROID_HOME")) {
-        return "${System.getenv("ANDROID_HOME")}/cmake/${cmakeVersion}/bin/cmake"
+    if (System.getenv("ANDROID_HOME") && new File("${System.getenv("ANDROID_HOME")}/${cmakeRelativePath}").exists()) {
+        return "${System.getenv("ANDROID_HOME")}/${cmakeRelativePath}"
     }
     return "cmake"
 }
@@ -234,4 +235,17 @@ afterEvaluate {
     prepareHeadersForPrefab.dependsOn(buildHermes)
 }
 
+/* Publishing Configuration */
 apply from: "../publish.gradle"
+
+// We need to override the artifact ID as this project is called `hermes-engine` but
+// the maven coordinates are on `hermes-android`.
+// Please note that the original coordinates, `hermes-engine`, have been voided
+// as they caused https://github.com/facebook/react-native/issues/35210
+publishing {
+    publications {
+        getByName("release") {
+            artifactId 'hermes-android'
+        }
+    }
+}

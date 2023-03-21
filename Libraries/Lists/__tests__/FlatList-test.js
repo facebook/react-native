@@ -182,4 +182,29 @@ describe('FlatList', () => {
 
     expect(renderItemInThreeColumns).toHaveBeenCalledTimes(7);
   });
+  it('renders array-like data', () => {
+    const arrayLike = {
+      length: 3,
+      0: {key: 'i1'},
+      1: {key: 'i2'},
+      2: {key: 'i3'},
+    };
+
+    const component = ReactTestRenderer.create(
+      <FlatList
+        data={arrayLike}
+        renderItem={({item}) => <item value={item.key} />}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+  it('ignores invalid data', () => {
+    const component = ReactTestRenderer.create(
+      <FlatList
+        data={123456}
+        renderItem={({item}) => <item value={item.key} />}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
 });

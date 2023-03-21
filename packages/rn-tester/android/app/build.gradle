@@ -86,8 +86,8 @@ def reactNativeArchitectures() {
 }
 
 android {
-    buildToolsVersion = "31.0.0"
-    compileSdkVersion 31
+    buildToolsVersion = "33.0.0"
+    compileSdkVersion 33
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -114,7 +114,7 @@ android {
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type

@@ -1,3 +1,4 @@
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
 load("@fbsource//xplat/hermes/defs:hermes.bzl", "HERMES_BYTECODE_VERSION")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs:fb_xplat_platform_specific_rule.bzl", "fb_xplat_platform_specific_rule")
@@ -10,6 +11,7 @@ load("//tools/build_defs/apple:flag_defs.bzl", "get_objc_arc_preprocessor_flags"
 load("//tools/build_defs/oss:metro_defs.bzl", "rn_library")
 load(
     "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
     "APPLE",
     "YOGA_APPLE_TARGET",
     "js_library_glob",
@@ -49,6 +51,7 @@ rn_library(
     srcs = js_library_glob(
         [
             "js",
+            "NativeCxxModuleExample",
             "NativeModuleExample",
             "NativeComponentExample",
             "RCTTest",
@@ -61,10 +64,13 @@ rn_library(
         ],
     ),
     codegen_components = True,
+    codegen_modules = True,
     labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     native_component_spec_name = "AppSpecs",
+    native_module_android_package_name = "com.facebook.fbreact.specs",
+    native_module_spec_name = "AppSpecs",
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
@@ -317,5 +323,26 @@ rn_xplat_cxx_library2(
     deps = [
         ":generated_components-AppSpecs",
         "//xplat/js/react-native-github:RCTFabricComponentViewsBase",
+    ],
+)
+
+rn_xplat_cxx_library2(
+    name = "NativeCxxModuleExample",
+    srcs = glob(["NativeCxxModuleExample/*.cpp"]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("NativeCxxModuleExample", "*.h"),
+        ],
+        prefix = "NativeCxxModuleExample",
+    ),
+    fbandroid_compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    platforms = (ANDROID, APPLE),
+    visibility = ["PUBLIC"],
+    deps = [
+        ":AppSpecsJSI",
     ],
 )

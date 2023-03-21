@@ -96,7 +96,7 @@ if (argv.target === 'RNTester') {
     exec(
       `cd packages/rn-tester && USE_HERMES=${
         argv.hermes ? 1 : 0
-      } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      } REACT_NATIVE_CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app
@@ -105,7 +105,7 @@ if (argv.target === 'RNTester') {
 
     // launch the app on iOS simulator
     pushd('packages/rn-tester');
-    exec('npx react-native run-ios --scheme RNTester');
+    exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
     popd();
   } else {
     // we do the android path here
@@ -155,6 +155,10 @@ if (argv.target === 'RNTester') {
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
   const baseVersion = require('../package.json').version;
 
+  // in local testing, 1000.0.0 mean we are on main, every other case means we are
+  // working on a release version
+  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
+
   const dateIdentifier = new Date()
     .toISOString()
     .slice(0, -8)
@@ -164,7 +168,16 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
+  const exitCode = exec(
+    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+  ).code;
+
+  if (exitCode !== 0) {
+    console.error(
+      `Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`,
+    );
+    process.exit(exitCode);
+  }
 
   // Generate native files for Android
   generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
@@ -189,7 +202,7 @@ if (argv.target === 'RNTester') {
 
   // for this scenario, we only need to create the debug build
   // (env variable PRODUCTION defines that podspec side)
-  const buildType = 'Debug';
+  const buildTypeiOSArtifacts = 'Debug';
 
   // the android ones get set into /private/tmp/maven-local
   const localMavenPath = '/private/tmp/maven-local';
@@ -198,8 +211,7 @@ if (argv.target === 'RNTester') {
   const tarballOutputPath = generateiOSArtifacts(
     jsiFolder,
     hermesCoreSourceFolder,
-    buildType,
-    releaseVersion,
+    buildTypeiOSArtifacts,
     localMavenPath,
   );
 

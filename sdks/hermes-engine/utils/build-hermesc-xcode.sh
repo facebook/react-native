@@ -8,7 +8,7 @@ set -x
 
 hermesc_dir_path="$1"
 
-CMAKE_BINARY=${CMAKE_BINARY:-cmake}
+CMAKE_BINARY=${CMAKE_BINARY:-$(command -v cmake | tr -d '\n')}
 
 if ! "$CMAKE_BINARY" -S . -B "$hermesc_dir_path"
 then

@@ -21,18 +21,14 @@ const os = require('os');
 const path = require('path');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion} = require('./version-utils');
+const {parseVersion, validateBuildType} = require('./version-utils');
 const {saveFiles} = require('./scm-utils');
-
-const tmpVersioningFolder = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'rn-set-version'),
-);
-echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 let argv = yargs
   .option('v', {
     alias: 'to-version',
     type: 'string',
+<<<<<<< HEAD
     // [macOS Extra options used during RNM's publish pipelines
   })
   .option('p', {
@@ -112,6 +108,23 @@ if (!nightlyBuild) {
     );
     exit(1);
   }
+=======
+    required: true,
+  })
+  .option('b', {
+    alias: 'build-type',
+    type: 'string',
+    required: true,
+  }).argv;
+
+const buildType = argv.buildType;
+const version = argv.toVersion;
+
+try {
+  validateBuildType(buildType);
+} catch (e) {
+  throw e;
+>>>>>>> facebook/0.71-stable
 }
 
 let major,
@@ -119,11 +132,15 @@ let major,
   patch,
   prerelease = -1;
 try {
-  ({major, minor, patch, prerelease} = parseVersion(version));
+  ({major, minor, patch, prerelease} = parseVersion(version, buildType));
 } catch (e) {
-  echo(e.message);
-  exit(1);
+  throw e;
 }
+
+const tmpVersioningFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-set-version'),
+);
+echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
 
@@ -249,6 +266,7 @@ const numberOfChangedLinesWithNewVersion = exec(
   {silent: true},
 ).stdout.trim();
 
+<<<<<<< HEAD
 // Release builds should commit the version bumps, and create tags.
 // Nightly builds do not need to do that.
 if (!nightlyBuild) {
@@ -315,6 +333,20 @@ if (!nightlyBuild) {
   }
 
   exec(`git push ${remote} ${branch} --follow-tags`);
+=======
+if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
+  // TODO: the logic that checks whether all the changes have been applied
+  // is missing several files. For example, it is not checking Ruby version nor that
+  // the Objecive-C files, the codegen and other files are properly updated.
+  // We are going to work on this in another PR.
+  echo('WARNING:');
+  echo(
+    `Failed to update all the files: [${filesToValidate.join(
+      ', ',
+    )}] must have versions in them`,
+  );
+  echo(`These files already had version ${version} set.`);
+>>>>>>> facebook/0.71-stable
 }
 
 exit(0);

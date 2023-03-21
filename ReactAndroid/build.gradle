@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : KOTLIN_VERSION}"
-    }
-}
-
 plugins {
     id("com.android.library")
     id("com.facebook.react")
     id("de.undercouch.download")
     id("maven-publish")
+    id("org.jetbrains.kotlin.android")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -38,6 +33,16 @@ def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 def reactNativeRootDir = projectDir.parent
+
+// We put the publishing version from gradle.properties inside ext. so other
+// subprojects can access it as well.
+ext.publishing_version = VERSION_NAME
+
+// This is the version of CMake we're requesting to the Android SDK to use.
+// If missing it will be downloaded automatically. Only CMake versions shipped with the
+// Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
+def cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+ext.cmake_version = cmakeVersion
 
 // You need to have following folders in this directory:
 //   - boost_1_76_0
@@ -93,6 +98,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 new Pair("src/main/jni/react/newarchdefaults", "")
             ),
             new PrefabPreprocessingEntry(
+                "react_render_animations",
+                new Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_core",
                 new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/")
             ),
@@ -102,6 +111,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                     new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
                 ]
+            ),
+            new PrefabPreprocessingEntry(
+                "rrc_root",
+                new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/")
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
@@ -117,7 +130,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "fabricjni",
-                new Pair("src/main/jni/react/fabric", "")
+                [
+                    new Pair("src/main/jni/react/fabric", "react/fabric/"),
+                    new Pair("src/main/jni/react/cxxcomponents", "react/cxxcomponents/")
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "react_render_mapbuffer",
@@ -144,6 +160,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair(new File(buildDir, "third-party-ndk/boost/boost_1_76_0/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
                     new Pair(new File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                    new Pair(new File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                     new Pair("../ReactCommon/butter/", "butter/"),
                     new Pair("../ReactCommon/callinvoker/", ""),
                     new Pair("../ReactCommon/react/bridging/", "react/bridging/"),
@@ -152,6 +169,8 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                     new Pair("../ReactCommon/react/renderer/componentregistry/", "react/renderer/componentregistry/"),
                     new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/"),
+                    new Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                    new Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
                     new Pair("../ReactCommon/react/renderer/leakchecker/", "react/renderer/leakchecker/"),
                     new Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/"),
                     new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
@@ -159,6 +178,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
                     new Pair("../ReactCommon/react/renderer/telemetry/", "react/renderer/telemetry/"),
                     new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                    new Pair("../ReactCommon/react/debug/", "react/debug/"),
                     new Pair("../ReactCommon/react/utils/", "react/utils/"),
                     new Pair("src/main/jni/react/jni", "react/jni/"),
                 ]
@@ -174,14 +194,46 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "rrc_image",
                 new Pair("../ReactCommon/react/renderer/components/image/", "react/renderer/components/image/")
             ),
+            // These prefab targets are used by Expo & Reanimated
+            new PrefabPreprocessingEntry(
+                "hermes_executor",
+                // "hermes_executor" is statically linking against "hermes_executor_common"
+                // and "hermes_inspector". Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/hermes/inspector/", "hermes/inspector/")
+            ),
+            new PrefabPreprocessingEntry(
+                "jscexecutor",
+                // "jscexecutor" is statically linking against "jscruntime"
+                // Here we expose only the headers that we know are needed.
+                new Pair("../ReactCommon/jsc/", "jsc/")
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_uimanager",
+                new Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_scheduler",
+                new Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "react_render_mounting",
+                new Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+            ),
+            new PrefabPreprocessingEntry(
+                "reactnativejni",
+                [
+                    new Pair("src/main/jni/react/jni", "react/jni/"),
+                    new Pair("../ReactCommon/cxxreact/", "cxxreact/"),
+                ]
+            ),
+            new PrefabPreprocessingEntry(
+                "jsinspector",
+                new Pair("../ReactCommon/jsinspector/", "jsinspector/"),
+            ),
         ]
     )
     it.outputDir.set(prefabHeadersDir)
 }
-
-// We put the publishing version from gradle.properties inside ext. so other
-// subprojects can access it as well.
-ext.publishing_version = VERSION_NAME
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -363,8 +415,8 @@ task installArchives {
 }
 
 android {
-    buildToolsVersion = "31.0.0"
-    compileSdkVersion 31
+    buildToolsVersion = "33.0.0"
+    compileSdkVersion 33
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -377,7 +429,7 @@ android {
 
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(31)
+        targetSdkVersion(33)
         versionCode(1)
         versionName("1.0")
 
@@ -402,12 +454,11 @@ android {
                     "-DANDROID_TOOLCHAIN=clang",
                     "-DANDROID_PLATFORM=android-21"
 
-                targets "reactnativejni",
-                    "jscexecutor",
-                    "jsijniprofiler",
+                targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
                     // prefab targets
+                    "reactnativejni",
                     "react_render_debug",
                     "turbomodulejsijni",
                     "runtimeexecutor",
@@ -415,9 +466,11 @@ android {
                     "react_debug",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
+                    "react_render_animations",
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
+                    "rrc_root",
                     "rrc_view",
                     "jsi",
                     "glog",
@@ -426,7 +479,13 @@ android {
                     "yoga",
                     "folly_runtime",
                     "react_nativemodule_core",
-                    "react_render_imagemanager"
+                    "react_render_imagemanager",
+                    "react_render_uimanager",
+                    "react_render_scheduler",
+                    "react_render_mounting",
+                    "hermes_executor",
+                    "jscexecutor",
+                    "jsinspector"
             }
         }
         ndk {
@@ -434,26 +493,9 @@ android {
         }
     }
 
-    buildTypes {
-        debug {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-debug"
-                }
-            }
-        }
-
-        release {
-            externalNativeBuild {
-                cmake {
-                    targets "hermes-executor-release"
-                }
-            }
-        }
-    }
-
     externalNativeBuild {
         cmake {
+            version cmakeVersion
             path "src/main/jni/CMakeLists.txt"
         }
     }
@@ -513,6 +555,9 @@ android {
         react_newarchdefaults {
             headers(new File(prefabHeadersDir, "react_newarchdefaults").absolutePath)
         }
+        react_render_animations {
+            headers(new File(prefabHeadersDir, "react_render_animations").absolutePath)
+        }
         react_render_core {
             headers(new File(prefabHeadersDir, "react_render_core").absolutePath)
         }
@@ -521,6 +566,9 @@ android {
         }
         rrc_image {
             headers(new File(prefabHeadersDir, "rrc_image").absolutePath)
+        }
+        rrc_root {
+            headers(new File(prefabHeadersDir, "rrc_root").absolutePath)
         }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
@@ -548,6 +596,27 @@ android {
         }
         react_render_imagemanager {
             headers(new File(prefabHeadersDir, "react_render_imagemanager").absolutePath)
+        }
+        react_render_uimanager {
+            headers(new File(prefabHeadersDir, "react_render_uimanager").absolutePath)
+        }
+        react_render_scheduler {
+            headers(new File(prefabHeadersDir, "react_render_scheduler").absolutePath)
+        }
+        react_render_mounting {
+            headers(new File(prefabHeadersDir, "react_render_mounting").absolutePath)
+        }
+        reactnativejni {
+            headers(new File(prefabHeadersDir, "reactnativejni").absolutePath)
+        }
+        hermes_executor {
+            headers(new File(prefabHeadersDir, "hermes_executor").absolutePath)
+        }
+        jscexecutor {
+            headers(new File(prefabHeadersDir, "jscexecutor").absolutePath)
+        }
+        jsinspector {
+            headers(new File(prefabHeadersDir, "jsinspector").absolutePath)
         }
     }
 
@@ -602,12 +671,7 @@ react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
-    root = file("..")
     jsRootDir = file("../Libraries")
-    reactNativeDir = file("$projectDir/..")
-    // We search for the codegen in either one of the `node_modules` folder or in the
-    // root packages folder (that's for when we build from source without calling `yarn install`).
-    codegenDir = file(findNodeModulePath(projectDir, "react-native-codegen") ?: "../packages/react-native-codegen/")
 }
 
 apply plugin: "org.jetbrains.kotlin.android"
@@ -616,11 +680,13 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply from: "./publish.gradle"
 
 // We need to override the artifact ID as this project is called `ReactAndroid` but
-// the maven coordinates are on `react-native`.
+// the maven coordinates are on `react-android`.
+// Please note that the original coordinates, `react-native`, have been voided
+// as they caused https://github.com/facebook/react-native/issues/35210
 publishing {
     publications {
         getByName("release") {
-            artifactId 'react-native'
+            artifactId 'react-android'
         }
     }
 }

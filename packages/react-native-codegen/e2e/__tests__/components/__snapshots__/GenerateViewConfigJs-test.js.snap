@@ -38,6 +38,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     points: true,
     sizes: true,
     object: true,
+    arrayOfObjects: true,
   },
 };
 

@@ -585,6 +585,10 @@ public class ReactEditText extends AppCompatEditText
         new SpannableStringBuilder(reactTextUpdate.getText());
 
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
+
+    // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
+    stripAbsoluteSizeSpans(spannableStringBuilder);
+
     mContainsImages = reactTextUpdate.containsImages();
 
     // When we update text, we trigger onChangeText code that will
@@ -655,6 +659,27 @@ public class ReactEditText extends AppCompatEditText
     // impact the whole Spannable, because that would override "local" styles per-fragment
     if (!skipAddSpansForMeasurements) {
       addSpansForMeasurement(getText());
+    }
+  }
+
+  private void stripAbsoluteSizeSpans(SpannableStringBuilder sb) {
+    // We have already set a font size on the EditText itself. We can safely remove sizing spans
+    // which are the same as the set font size, and not otherwise overlapped.
+    final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();
+    ReactAbsoluteSizeSpan[] spans = sb.getSpans(0, sb.length(), ReactAbsoluteSizeSpan.class);
+
+    outerLoop:
+    for (ReactAbsoluteSizeSpan span : spans) {
+      ReactAbsoluteSizeSpan[] overlappingSpans =
+          sb.getSpans(sb.getSpanStart(span), sb.getSpanEnd(span), ReactAbsoluteSizeSpan.class);
+
+      for (ReactAbsoluteSizeSpan overlappingSpan : overlappingSpans) {
+        if (span.getSize() != effectiveFontSize) {
+          continue outerLoop;
+        }
+      }
+
+      sb.removeSpan(span);
     }
   }
 

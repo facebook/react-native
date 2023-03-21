@@ -62,48 +62,6 @@ export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
 export interface SectionListProps<ItemT, SectionT = DefaultSectionT>
   extends VirtualizedListWithoutRenderItemProps<ItemT> {
   /**
-   * Rendered in between adjacent Items within each section.
-   */
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
-
-  /**
-   * Rendered when the list is empty.
-   */
-  ListEmptyComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Rendered at the very end of the list.
-   */
-  ListFooterComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: StyleProp<ViewStyle> | undefined | null;
-
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: StyleProp<ViewStyle> | undefined | null;
-
-  /**
    * Rendered in between each section.
    */
   SectionSeparatorComponent?:

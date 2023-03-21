@@ -27,6 +27,7 @@ public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> {
   void setPoints(T view, @Nullable ReadableArray value);
   void setSizes(T view, @Nullable ReadableArray value);
   void setObject(T view, @Nullable ReadableArray value);
+  void setArrayOfObjects(T view, @Nullable ReadableArray value);
 }
 ",
 }

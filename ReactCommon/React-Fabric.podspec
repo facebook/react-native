@@ -78,7 +78,6 @@ Pod::Spec.new do |s|
 
   s.subspec "core" do |ss|
     ss.dependency             folly_dep_name, folly_version
-    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/core/tests"
@@ -303,7 +302,6 @@ Pod::Spec.new do |s|
 
   s.subspec "uimanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
-    ss.dependency             "React-jsidynamic", version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "react/renderer/uimanager/tests"

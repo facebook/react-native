@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -63,6 +64,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   }
 
   internal fun setupCommandLine() {
+    val workingDir = project.projectDir
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
@@ -70,11 +72,11 @@ abstract class GenerateCodegenSchemaTask : Exec() {
                 .file("lib/cli/combine/combine-js-to-schema-cli.js")
                 .get()
                 .asFile
-                .absolutePath,
+                .cliPath(workingDir),
             "--platform",
             "android",
-            generatedSchemaFile.get().asFile.absolutePath,
-            jsRootDir.asFile.get().absolutePath,
+            generatedSchemaFile.get().asFile.cliPath(workingDir),
+            jsRootDir.asFile.get().cliPath(workingDir),
         ))
   }
 }
