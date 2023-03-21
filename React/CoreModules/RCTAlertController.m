@@ -78,7 +78,6 @@
 
   _alertWindow = nil;
 }
-#endif // [macOS]
 
 - (UIWindow *)getUIWindowFromScene
 {
@@ -92,5 +91,6 @@
   }
   return nil;
 }
+#endif // [macOS]
 
 @end

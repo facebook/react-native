@@ -71,6 +71,9 @@ Pod::Spec.new do |s|
         "react/nativemodule/core/ReactCommon/LongLivedObject.h" :
         "react/nativemodule/core/ReactCommon/{LongLivedObject,CallbackWrapper}.h"
       sss.exclude_files = excluded_files
+      # [macOS] For whatever reason, excluding the files above AND including RNTester-macOS causes a build error in RNTester.
+      sss.exclude_files = ""
+
     end
 
     s.subspec "react_debug_core" do |sss|

@@ -55,6 +55,7 @@ inline static UIFontWeight RCTUIFontWeightFromInteger(NSInteger fontWeight)
   return weights[(fontWeight + 50) / 100 - 1];
 }
 
+#if !TARGET_OS_OSX // [macOS]
 inline static UIFontTextStyle RCTUIFontTextStyleForDynamicTypeRamp(const DynamicTypeRamp &dynamicTypeRamp)
 {
   switch (dynamicTypeRamp) {
@@ -82,6 +83,7 @@ inline static UIFontTextStyle RCTUIFontTextStyleForDynamicTypeRamp(const Dynamic
       return UIFontTextStyleLargeTitle;
   }
 }
+#endif // [macOS]
 
 inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynamicTypeRamp)
 {
@@ -116,6 +118,7 @@ inline static CGFloat RCTBaseSizeForDynamicTypeRamp(const DynamicTypeRamp &dynam
 inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const TextAttributes &textAttributes)
 {
   if (textAttributes.allowFontScaling.value_or(true)) {
+#if !TARGET_OS_OSX // [macOS]
     if (textAttributes.dynamicTypeRamp.has_value()) {
       DynamicTypeRamp dynamicTypeRamp = textAttributes.dynamicTypeRamp.value();
       UIFontMetrics *fontMetrics =
@@ -127,6 +130,9 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
     } else {
       return textAttributes.fontSizeMultiplier;
     }
+#else // [macOS
+    return textAttributes.fontSizeMultiplier;
+#endif // macOS]
   } else {
     return 1.0;
   }
