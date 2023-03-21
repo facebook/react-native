@@ -112,10 +112,8 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
     );
   }
 
-  let properties;
-  try {
-    properties = typeAlias.body.properties;
-  } catch (e) {
+  const properties = parser.bodyProperties(typeAlias);
+  if (!properties) {
     throw new Error(
       `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
     );

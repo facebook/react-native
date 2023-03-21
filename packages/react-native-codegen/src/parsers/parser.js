@@ -236,4 +236,11 @@ export interface Parser {
    * @returns: the properties of annotated element.
    */
   getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns an array of properties.
+   * @parameter typeAlias: the type alias.
+   * @returns: an array of properties.
+   */
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe>;
 }
