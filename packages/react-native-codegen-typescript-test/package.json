@@ -28,6 +28,8 @@
     "@babel/plugin-transform-destructuring": "^7.0.0",
     "@babel/plugin-transform-flow-strip-types": "^7.0.0",
     "@babel/preset-env": "^7.14.0",
+    "@types/jest": "^24.0.17",
+    "jest": "^24.0.17",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {

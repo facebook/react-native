@@ -5,4 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// empty file, will be removed
+// a failed test, will be removed
+
+import * as assert from 'assert';
+
+test(`a failed test`, () => {
+    assert.fail('should fail');
+});
