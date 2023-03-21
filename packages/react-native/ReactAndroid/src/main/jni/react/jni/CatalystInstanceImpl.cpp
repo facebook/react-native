@@ -290,30 +290,6 @@ void CatalystInstanceImpl::jniLoadScriptFromFile(
   }
 
   switch (getScriptTagFromFile(fileName.c_str())) {
-    case ScriptTag::MetroHBCBundle: {
-      std::unique_ptr<const JSBigFileString> script;
-      RecoverableError::runRethrowingAsRecoverable<std::system_error>(
-          [&fileName, &script]() {
-            script = JSBigFileString::fromPath(fileName);
-          });
-      const char *buffer = script->c_str();
-      uint32_t bufferLength = (uint32_t)script->size();
-      uint32_t offset = 8;
-      while (offset < bufferLength) {
-        uint32_t segment = offset + 4;
-        uint32_t moduleLength =
-            bufferLength < segment ? 0 : *(((uint32_t *)buffer) + offset / 4);
-
-        reactInstance->loadScriptFromString(
-            std::make_unique<const JSBigStdString>(
-                std::string(buffer + segment, buffer + moduleLength + segment)),
-            sourceURL,
-            false);
-
-        offset += ((moduleLength + 3) & ~3) + 4;
-      }
-      break;
-    }
     case ScriptTag::RAMBundle:
       instance_->loadRAMBundleFromFile(fileName, sourceURL, loadSynchronously);
       break;

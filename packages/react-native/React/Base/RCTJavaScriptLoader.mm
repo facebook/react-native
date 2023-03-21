@@ -19,8 +19,6 @@
 
 NSString *const RCTJavaScriptLoaderErrorDomain = @"RCTJavaScriptLoaderErrorDomain";
 
-const uint32_t RCT_BYTECODE_ALIGNMENT = 4;
-
 @interface RCTSource () {
  @public
   NSURL *_url;
@@ -41,12 +39,7 @@ static RCTSource *RCTSourceCreate(NSURL *url, NSData *data, int64_t length) NS_R
 
   RCTSource *source = [RCTSource new];
   source->_url = url;
-  // Multipart responses may give us an unaligned view into the buffer. This ensures memory is aligned.
-  if (parseTypeFromHeader(header) == ScriptTag::MetroHBCBundle && ((long)[data bytes] % RCT_BYTECODE_ALIGNMENT)) {
-    source->_data = [[NSData alloc] initWithData:data];
-  } else {
-    source->_data = data;
-  }
+  source->_data = data;
   source->_length = length;
   source->_filesChangedCount = RCTSourceFilesChangedCountNotBuiltByBundler;
   return source;
@@ -171,7 +164,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   facebook::react::ScriptTag tag = facebook::react::parseTypeFromHeader(header);
   switch (tag) {
-    case facebook::react::ScriptTag::MetroHBCBundle:
     case facebook::react::ScriptTag::RAMBundle:
       break;
 
@@ -285,8 +277,7 @@ static void attemptAsynchronousLoadOfBundleAtURL(
         // Validate that the packager actually returned javascript.
         NSString *contentType = headers[@"Content-Type"];
         NSString *mimeType = [[contentType componentsSeparatedByString:@";"] firstObject];
-        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"] &&
-            ![mimeType isEqualToString:@"application/x-metro-bytecode-bundle"]) {
+        if (![mimeType isEqualToString:@"application/javascript"] && ![mimeType isEqualToString:@"text/javascript"]) {
           NSString *description;
           if ([mimeType isEqualToString:@"application/json"]) {
             NSError *parseError;
