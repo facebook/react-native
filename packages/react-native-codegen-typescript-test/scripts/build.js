@@ -16,7 +16,11 @@ const snapshotOutputPath = path.join(__dirname, '../__generated__');
 
 function genereateSnapshotTestCases(name, fixturePath, snapshotPath, outputPath) {
     const fixtures = require(fixturePath);
+    const snapshots = require(snapshotPath);
     for (const key of Object.keys(fixtures)) {
+        const snapshotName = `RN Codegen TypeScript Parser can generate fixture ${key} 1`;
+        const snapshotString = snapshots[snapshotName];
+        const snapshot = snapshotString.substring(2, snapshotString.length - 2);
         const tsSourceCode = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -27,7 +31,7 @@ function genereateSnapshotTestCases(name, fixturePath, snapshotPath, outputPath)
  */
 
 import type { SchemaType } from '@react-native/codegen/lib/CodegenSchema';
-const snapshot : SchemaType = { modules: {} };
+const snapshot : SchemaType = ${snapshot};
 export default snapshot;
 `;
         fs.writeFileSync(path.join(outputPath, `${name}_${key}.ts`), tsSourceCode, { encoding: 'utf-8' });
