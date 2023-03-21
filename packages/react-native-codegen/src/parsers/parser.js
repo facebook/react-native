@@ -229,4 +229,11 @@ export interface Parser {
     typeArgumentParams: $FlowFixMe,
     funcArgumentParams: $FlowFixMe,
   ): {[string]: string};
+
+  /**
+   * Given a annotatedElement, it returns the properties of annotated element.
+   * @parameter annotatedElement: the annotated element.
+   * @returns: the properties of annotated element.
+   */
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe;
 }

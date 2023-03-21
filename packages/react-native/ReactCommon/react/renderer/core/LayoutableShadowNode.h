@@ -152,7 +152,7 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Float lastBaseline(Size size) const;
 
   /*
-   * Returns layoutable children to interate on.
+   * Returns layoutable children to iterate on.
    */
   LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const;
 

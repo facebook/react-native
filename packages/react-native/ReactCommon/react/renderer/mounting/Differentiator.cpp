@@ -487,9 +487,10 @@ static void updateMatchedPairSubtrees(
         sliceChildShadowNodeViewPairsFromViewNodePair(oldPair, innerScope);
     auto newGrandChildPairs =
         sliceChildShadowNodeViewPairsFromViewNodePair(newPair, innerScope);
+    const size_t newGrandChildPairsSize = newGrandChildPairs.size();
     calculateShadowViewMutationsV2(
         innerScope,
-        *(newGrandChildPairs.size()
+        *(newGrandChildPairsSize != 0u
               ? &mutationContainer.downwardMutations
               : &mutationContainer.destructiveDownwardMutations),
         oldPair.shadowView,
@@ -503,7 +504,7 @@ static void updateMatchedPairSubtrees(
  *
  * Here we have (and need) knowledge of whether a node was found during
  * in-order traversal, or out-of-order via a map lookup. Nodes are only REMOVEd
- * or INSERTed when they are encountered via in-order-traversal, to ensure
+ * or INSERTTed when they are encountered via in-order-traversal, to ensure
  * correct ordering of INSERT and REMOVE mutations.
  */
 static void updateMatchedPair(
@@ -674,7 +675,8 @@ static void calculateShadowViewMutationsFlattener(
              ? subVisitedNewMap->find(treeChildPair.shadowView.tag)
              : subVisitedNewMap->end());
     auto subVisitedOtherOldIt =
-        (unvisitedIt == unvisitedOtherNodes.end() && subVisitedNewMap->end()
+        (unvisitedIt == unvisitedOtherNodes.end() &&
+                 (subVisitedNewMap->end() != nullptr)
              ? subVisitedOldMap->find(treeChildPair.shadowView.tag)
              : subVisitedOldMap->end());
 
@@ -1123,9 +1125,10 @@ static void calculateShadowViewMutationsV2(
           oldChildPair, innerScope);
       auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
           newChildPair, innerScope);
+      const size_t newGrandChildPairsSize = newGrandChildPairs.size();
       calculateShadowViewMutationsV2(
           innerScope,
-          *(newGrandChildPairs.size()
+          *(newGrandChildPairsSize != 0u
                 ? &mutationContainer.downwardMutations
                 : &mutationContainer.destructiveDownwardMutations),
           oldChildPair.shadowView,

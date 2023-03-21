@@ -22,7 +22,7 @@ class ReactActivityDelegateTest {
         object : ReactActivityDelegate(null, "test-delegate") {
           override fun isFabricEnabled() = true
           public val inspectLaunchOptions: Bundle?
-            get() = getLaunchOptions()
+            get() = composeLaunchOptions()
         }
 
     assertNotNull(delegate.inspectLaunchOptions)
@@ -36,7 +36,7 @@ class ReactActivityDelegateTest {
         object : ReactActivityDelegate(null, "test-delegate") {
           override fun isFabricEnabled() = false
           public val inspectLaunchOptions: Bundle?
-            get() = getLaunchOptions()
+            get() = composeLaunchOptions()
         }
 
     assertNull(delegate.inspectLaunchOptions)
@@ -50,7 +50,7 @@ class ReactActivityDelegateTest {
           override fun getLaunchOptions(): Bundle =
               Bundle().apply { putString("test-property", "test-value") }
           public val inspectLaunchOptions: Bundle?
-            get() = getLaunchOptions()
+            get() = composeLaunchOptions()
         }
 
     assertNotNull(delegate.inspectLaunchOptions)

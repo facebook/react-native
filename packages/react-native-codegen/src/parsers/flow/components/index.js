@@ -15,7 +15,6 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
@@ -23,6 +22,8 @@ const {
   createComponentConfig,
   findNativeComponentType,
   propertyNames,
+  getCommandOptions,
+  getOptions,
 } = require('../../parsers-commons');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST

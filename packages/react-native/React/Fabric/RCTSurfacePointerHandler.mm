@@ -263,14 +263,27 @@ static void UpdatePointerEventModifierFlags(PointerEvent &event, UIKeyModifierFl
   }
 }
 
-static PointerEvent CreatePointerEventFromActivePointer(ActivePointer activePointer, RCTPointerEventType eventType)
+static PointerEvent CreatePointerEventFromActivePointer(
+    ActivePointer activePointer,
+    RCTPointerEventType eventType,
+    UIView *rootComponentView)
 {
   PointerEvent event = {};
   event.pointerId = activePointer.identifier;
   event.pointerType = PointerTypeCStringFromUITouchType(activePointer.touchType);
-  event.clientPoint = RCTPointFromCGPoint(activePointer.clientPoint);
-  event.screenPoint = RCTPointFromCGPoint(activePointer.screenPoint);
-  event.offsetPoint = RCTPointFromCGPoint(activePointer.offsetPoint);
+
+  if (eventType == RCTPointerEventTypeCancel) {
+    event.clientPoint = RCTPointFromCGPoint(CGPointZero);
+    event.screenPoint =
+        RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
+                                          toCoordinateSpace:rootComponentView.window.screen.coordinateSpace]);
+    event.offsetPoint = RCTPointFromCGPoint([rootComponentView convertPoint:CGPointZero
+                                                                     toView:activePointer.componentView]);
+  } else {
+    event.clientPoint = RCTPointFromCGPoint(activePointer.clientPoint);
+    event.screenPoint = RCTPointFromCGPoint(activePointer.screenPoint);
+    event.offsetPoint = RCTPointFromCGPoint(activePointer.offsetPoint);
+  }
 
   event.pressure = activePointer.force;
   if (@available(iOS 13.4, *)) {
@@ -608,7 +621,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 - (void)_dispatchActivePointers:(std::vector<ActivePointer>)activePointers eventType:(RCTPointerEventType)eventType
 {
   for (const auto &activePointer : activePointers) {
-    PointerEvent pointerEvent = CreatePointerEventFromActivePointer(activePointer, eventType);
+    PointerEvent pointerEvent = CreatePointerEventFromActivePointer(activePointer, eventType, _rootComponentView);
     NSOrderedSet<RCTReactTaggedView *> *eventPathViews = [self handleIncomingPointerEvent:pointerEvent
                                                                                    onView:activePointer.componentView];
 
@@ -640,6 +653,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
         case RCTPointerEventTypeCancel: {
           eventEmitter->onPointerCancel(pointerEvent);
+          [self handleIncomingPointerEvent:pointerEvent onView:nil];
           break;
         }
       }
@@ -759,7 +773,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
  * Private method which is used for tracking the location of pointer events to manage the entering/leaving events.
  * The primary idea is that a pointer's presence & movement is dicated by a variety of underlying events such as down,
  * move, and up — and they should all be treated the same when it comes to tracking the entering & leaving of pointers
- * to views. This method accomplishes that by recieving the pointer event, the target view (can be null in cases when
+ * to views. This method accomplishes that by receiving the pointer event, the target view (can be null in cases when
  * the event indicates that the pointer has left the screen entirely), and a block/callback where the underlying event
  * should be fired.
  */
@@ -793,7 +807,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   // Leaving
 
-  // pointerleave events need to be emited from the deepest target to the root but
+  // pointerleave events need to be emitted from the deepest target to the root but
   // we also need to efficiently keep track of if a view has a parent which is listening to the leave events,
   // so we first iterate from the root to the target, collecting the views which need events fired for, of which
   // we reverse iterate (now from target to root), actually emitting the events.
@@ -838,7 +852,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   // We only want to emit events to JS if there is a view that is currently listening to said event
   // so we only send those event to the JS side if the element which has been entered is itself listening,
   // or if one of its parents is listening in case those listeners care about the capturing phase. Adding the ability
-  // for native to distingusih between capturing listeners and not could be an optimization to futher reduce the number
+  // for native to distinguish between capturing listeners and not could be an optimization to further reduce the number
   // of events we send to JS
   BOOL hasParentEnterListener = NO;
   for (RCTReactTaggedView *taggedView in [eventPathViews reverseObjectEnumerator]) {

@@ -16,7 +16,6 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
-const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
@@ -24,6 +23,8 @@ const {
   createComponentConfig,
   findNativeComponentType,
   propertyNames,
+  getCommandOptions,
+  getOptions,
 } = require('../../parsers-commons');
 
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser

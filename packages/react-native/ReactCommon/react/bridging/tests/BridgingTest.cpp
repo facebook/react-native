@@ -420,7 +420,7 @@ TEST_F(BridgingTest, pointerTest) {
   auto str = "hi"s;
   auto unique = std::make_unique<std::string>(str);
   auto shared = std::make_shared<std::string>(str);
-  auto weak = std::weak_ptr(shared);
+  auto weak = std::weak_ptr<std::string>(shared);
 
   EXPECT_EQ(str, bridging::toJs(rt, unique, invoker).asString(rt).utf8(rt));
   EXPECT_EQ(str, bridging::toJs(rt, shared, invoker).asString(rt).utf8(rt));

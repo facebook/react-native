@@ -15,6 +15,19 @@ TextMeasurement ParagraphLayoutManager::measure(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
+  bool cacheLastTextMeasurement = CoreFeatures::cacheLastTextMeasurement;
+  if (cacheLastTextMeasurement &&
+      (layoutConstraints.maximumSize.width == availableWidth_ ||
+       layoutConstraints.maximumSize.width ==
+           cachedTextMeasurement_.size.width)) {
+    /* Yoga has requested measurement for this size before. Let's use cached
+     * value. `TextLayoutManager` might not have cached this because it could be
+     * using different width to generate cache key. This happens because Yoga
+     * switches between available width and exact width but since we already
+     * know exact width, it is wasteful to calculate it again.
+     */
+    return cachedTextMeasurement_;
+  }
   if (CoreFeatures::cacheNSTextStorage) {
     size_t newHash = folly::hash::hash_combine(
         0,
@@ -28,11 +41,23 @@ TextMeasurement ParagraphLayoutManager::measure(
     }
   }
 
-  return textLayoutManager_->measure(
-      AttributedStringBox(attributedString),
-      paragraphAttributes,
-      layoutConstraints,
-      hostTextStorage_);
+  if (cacheLastTextMeasurement) {
+    cachedTextMeasurement_ = textLayoutManager_->measure(
+        AttributedStringBox(attributedString),
+        paragraphAttributes,
+        layoutConstraints,
+        hostTextStorage_);
+
+    availableWidth_ = layoutConstraints.maximumSize.width;
+
+    return cachedTextMeasurement_;
+  } else {
+    return textLayoutManager_->measure(
+        AttributedStringBox(attributedString),
+        paragraphAttributes,
+        layoutConstraints,
+        hostTextStorage_);
+  }
 }
 
 LinesMeasurements ParagraphLayoutManager::measureLines(

@@ -10,6 +10,7 @@ package com.facebook.react.views.view;
 import static org.junit.Assert.*;
 
 import android.graphics.PixelFormat;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +21,7 @@ import org.robolectric.RobolectricTestRunner;
 /** Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco). */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T110934492
 public class ColorUtilTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();

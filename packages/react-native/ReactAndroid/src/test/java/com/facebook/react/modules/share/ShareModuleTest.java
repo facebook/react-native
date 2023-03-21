@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,7 @@ import org.robolectric.RuntimeEnvironment;
   "org.springframework.context.*",
   "org.apache.log4j.*"
 })
+@Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class ShareModuleTest {
 
   private Activity mActivity;

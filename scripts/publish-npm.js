@@ -49,6 +49,8 @@ const yargs = require('yargs');
 const buildTag = process.env.CIRCLE_TAG;
 const otp = process.env.NPM_CONFIG_OTP;
 
+const RN_PACKAGE_DIR = path.join(__dirname, '..', 'packages', 'react-native');
+
 const argv = yargs
   .option('n', {
     alias: 'nightly',
@@ -167,7 +169,7 @@ const tagFlag = nightlyBuild
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
 
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+if (exec(`npm publish ${tagFlag} ${otpFlag}`, {cwd: RN_PACKAGE_DIR}).code) {
   echo('Failed to publish package to npm');
   exit(1);
 } else {

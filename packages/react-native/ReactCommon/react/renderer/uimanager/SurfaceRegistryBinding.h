@@ -24,7 +24,7 @@ class SurfaceRegistryBinding final {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps,
+      folly::dynamic const &initialProps,
       DisplayMode displayMode);
 
   /*
@@ -36,7 +36,7 @@ class SurfaceRegistryBinding final {
       jsi::Runtime &runtime,
       SurfaceId surfaceId,
       std::string const &moduleName,
-      folly::dynamic const &initalProps,
+      folly::dynamic const &initialProps,
       DisplayMode displayMode);
 
   /*

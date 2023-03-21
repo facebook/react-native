@@ -299,6 +299,10 @@ class TypeScriptParser implements Parser {
       componentName: funcArgumentParams[0].value,
     };
   }
+
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe {
+    return annotatedElement.typeAnnotation.members;
+  }
 }
 
 module.exports = {

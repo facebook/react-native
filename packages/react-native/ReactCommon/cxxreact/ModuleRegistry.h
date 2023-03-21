@@ -83,7 +83,7 @@ class RN_EXPORT ModuleRegistry {
 
   // Function will be called if a module was requested but was not found.
   // If the function returns true, ModuleRegistry will try to find the module
-  // again (assuming it's registered) If the functon returns false,
+  // again (assuming it's registered) If the function returns false,
   // ModuleRegistry will not try to find the module and return nullptr instead.
   ModuleNotFoundCallback moduleNotFoundCallback_;
 };

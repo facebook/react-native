@@ -54,6 +54,18 @@ class ParagraphLayoutManager {
   std::shared_ptr<TextLayoutManager const> mutable textLayoutManager_{};
   std::shared_ptr<void> mutable hostTextStorage_{};
 
+  /* The width Yoga set as maximum width.
+   * Yoga sometimes calls measure twice with two
+   * different maximum width. One if available space.
+   * The other one is exact space needed for the string.
+   * This happens when node is dirtied but its size is not affected.
+   * To deal with this inefficiency, we cache `TextMeasurement` for each
+   * `ParagraphShadowNode`. If Yoga tries to re-measure with available width
+   * or exact width, we provide it with the cached value.
+   */
+  Float mutable availableWidth_{};
+  TextMeasurement mutable cachedTextMeasurement_{};
+
   size_t mutable hash_{};
 };
 } // namespace facebook::react

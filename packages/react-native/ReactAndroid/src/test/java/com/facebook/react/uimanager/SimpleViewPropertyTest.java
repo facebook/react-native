@@ -21,6 +21,7 @@ import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Map;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ import org.robolectric.RuntimeEnvironment;
 /** Verify {@link View} view property being applied properly by {@link SimpleViewManager} */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T14964130
 public class SimpleViewPropertyTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();

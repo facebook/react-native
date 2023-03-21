@@ -32,7 +32,7 @@
 
 /**
  * Removing support for setting padding from any outside code
- * to prevent interferring this with local data.
+ * to prevent interfering this with local data.
  */
 - (void)setPadding:(__unused YGValue)value
 {
