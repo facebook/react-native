@@ -9,7 +9,7 @@ trigger:
   branches:
     include:
       - main
-      - '*-stable'
+      - 0.68-stable
   paths:
     exclude:
       - package.json
