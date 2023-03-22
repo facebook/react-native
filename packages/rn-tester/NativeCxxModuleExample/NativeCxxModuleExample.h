@@ -120,6 +120,10 @@ class NativeCxxModuleExample
 
   AsyncPromise<std::string> getValueWithPromise(jsi::Runtime &rt, bool error);
 
+  bool getWithWithOptionalArgs(
+      jsi::Runtime &rt,
+      std::optional<bool> optionalArg);
+
   void voidFunc(jsi::Runtime &rt);
 
   void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName);
