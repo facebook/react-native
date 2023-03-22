@@ -12,7 +12,7 @@ FBSOURCE=$(hg root)
 CLANG_FORMAT="${FBSOURCE}/tools/third-party/clang-format/clang-format"
 SIGNEDSOURCE="${FBSOURCE}/tools/signedsource"
 
-pushd "../../../../packages/hermes-inspector-msggen"
+pushd "../../../../../hermes-inspector-msggen"
 
 yarn install
 yarn build
