@@ -6,8 +6,8 @@
  */
 
 import * as assert from 'assert';
-import type { SchemaType } from '@react-native/codegen/src/CodegenSchema';
-import { TypeScriptParser } from '@react-native/codegen/src/parsers/typescript/parser';
+import type { SchemaType } from '@react-native/codegen/lib/CodegenSchema';
+import { TypeScriptParser } from '@react-native/codegen/lib/parsers/typescript/parser';
 
 test(`@rn/codegen should parse an empty TypeScript module`, () => {
     const tsInput = `
@@ -19,7 +19,20 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
     const parser = new TypeScriptParser();
     const actual = parser.parseString(tsInput, 'SampleTurboModule.ts');
-    const expected: SchemaType = { modules: {} };
+    const expected: SchemaType = {
+        modules: {
+            "SampleTurboModule": {
+                "aliasMap": {},
+                "enumMap": {},
+                "excludedPlatforms": undefined,
+                "moduleName": "SampleTurboModule",
+                "spec": {
+                    "properties": [],
+                },
+                "type": "NativeModule",
+            }
+        }
+    };
     assert.deepStrictEqual(actual, expected);
 });
 
@@ -38,6 +51,27 @@ export default codegenNativeComponent<ModuleProps>('Module', {
 `;
     const parser = new TypeScriptParser();
     const actual = parser.parseString(tsInput, 'SampleNativeComponent.ts');
-    const expected: SchemaType = { modules: {} };
+    const expected: SchemaType = {
+        modules: {
+            "Module": {
+                "components": {
+                    "Module": {
+                        "commands": [],
+                        "events": [],
+                        "extendsProps": [
+                            {
+                                "knownTypeName": "ReactNativeCoreViewProps",
+                                "type": "ReactNativeBuiltInType",
+                            },
+                        ],
+                        "interfaceOnly": true,
+                        "paperComponentName": "RCTModule",
+                        "props": [],
+                    },
+                },
+                "type": "Component",
+            },
+        }
+    };
     assert.deepStrictEqual(actual, expected);
 });

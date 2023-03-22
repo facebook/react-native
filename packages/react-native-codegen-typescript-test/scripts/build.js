@@ -30,7 +30,7 @@ function genereateSnapshotTestCases(name, fixturePath, snapshotPath, outputPath)
  * From snapshot: ${name} - ${key}
  */
 
-import type { SchemaType } from '@react-native/codegen/src/CodegenSchema';
+import type { SchemaType } from '@react-native/codegen/lib/CodegenSchema';
 const snapshot : SchemaType = ${snapshot};
 export default snapshot;
 `;
