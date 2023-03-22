@@ -28,9 +28,14 @@ let argv = yargs
   .option('v', {
     alias: 'to-version',
     type: 'string',
-<<<<<<< HEAD
-    // [macOS Extra options used during RNM's publish pipelines
+    required: true,
   })
+  .option('b', {
+    alias: 'build-type',
+    type: 'string',
+    required: true,
+  })
+  // [macOS Extra options used during RNM's publish pipelines
   .option('p', {
     alias: 'rnmpublish',
     type: 'boolean',
@@ -54,12 +59,17 @@ let argv = yargs
     // macOS]
   }).argv;
 
+const buildType = argv.buildType;
+let version = argv.toVersion; // [macOS] const -> let
+// [macOS
 const autogenerateVersionNumber = argv.autogenerateVersionNumber;
 const nightlyBuild = argv.nightly;
 // Nightly builds don't need an update as main will already be up-to-date.
 const updatePodfileLock = !nightlyBuild;
-let version = argv.toVersion;
+// macOS]
 
+// [macOS TODO SAAD: Revisit, this got refactored out
+// https://github.com/facebook/react-native/commit/0ad1c5344378295b04ac3447df33de2f25da258e#diff-49c29fdd7c890f238adcf5cae03b9209c6605d7654458b12b811c23b3e5ed8c6
 if (!version) {
   if (nightlyBuild && autogenerateVersionNumber) {
     // [macOS Some of our calls to set-rn-version.js still depend on an automatically generated version number
@@ -78,7 +88,6 @@ if (!version) {
   }
 }
 
-// [macOS
 let branch;
 if (!nightlyBuild) {
   // Check we are in release branch, e.g. 0.33-stable
@@ -108,23 +117,13 @@ if (!nightlyBuild) {
     );
     exit(1);
   }
-=======
-    required: true,
-  })
-  .option('b', {
-    alias: 'build-type',
-    type: 'string',
-    required: true,
-  }).argv;
-
-const buildType = argv.buildType;
-const version = argv.toVersion;
+}
+// macOS]
 
 try {
   validateBuildType(buildType);
 } catch (e) {
   throw e;
->>>>>>> facebook/0.71-stable
 }
 
 let major,
@@ -198,25 +197,23 @@ fs.writeFileSync(
 
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
-
-// [macOS We do this separately in a non-destructive way as part of our publish steps
-// delete packageJson.workspaces;
-// delete packageJson.private;
+/* [macOS We do this separately in a non-destructive way as part of our publish steps
+delete packageJson.workspaces;
+delete packageJson.private;
 
 // Copy repo-config/package.json dependencies as devDependencies
-// const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
-// packageJson.devDependencies = {
-//   ...packageJson.devDependencies,
-//   ...repoConfigJson.dependencies,
-// };
+const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
+packageJson.devDependencies = {
+  ...packageJson.devDependencies,
+  ...repoConfigJson.dependencies,
+};
 // Make react-native-codegen a direct dependency of react-native
-// delete packageJson.devDependencies['react-native-codegen'];
-// packageJson.dependencies = {
-//   ...packageJson.dependencies,
-//   'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
-// };
-// macOS]
-
+delete packageJson.devDependencies['react-native-codegen'];
+packageJson.dependencies = {
+  ...packageJson.dependencies,
+  'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
+};
+macOS] */
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
@@ -266,22 +263,25 @@ const numberOfChangedLinesWithNewVersion = exec(
   {silent: true},
 ).stdout.trim();
 
-<<<<<<< HEAD
+// [macOS
 // Release builds should commit the version bumps, and create tags.
 // Nightly builds do not need to do that.
 if (!nightlyBuild) {
+  // macOS]
   if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
+    // TODO: the logic that checks whether all the changes have been applied
+    // is missing several files. For example, it is not checking Ruby version nor that
+    // the Objecive-C files, the codegen and other files are properly updated.
+    // We are going to work on this in another PR.
+    echo('WARNING:');
     echo(
       `Failed to update all the files: [${filesToValidate.join(
         ', ',
       )}] must have versions in them`,
     );
-    echo('Fix the issue and try again');
-    exec('git diff');
-    exit(1);
+    echo(`These files already had version ${version} set.`);
   }
-
-  // [macOS we run this script when publishing react-native-macos and when publishing react-native microsoft fork
+  // [macOS We run this script when publishing react-native-macos and when publishing react-native microsoft fork
   // The react-native publish build runs on an agent without cocopods - so we cannot update the podfile.lock
   if (require('../package.json').name !== 'react-native-macos') {
     exit(0);
@@ -333,20 +333,6 @@ if (!nightlyBuild) {
   }
 
   exec(`git push ${remote} ${branch} --follow-tags`);
-=======
-if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
-  // TODO: the logic that checks whether all the changes have been applied
-  // is missing several files. For example, it is not checking Ruby version nor that
-  // the Objecive-C files, the codegen and other files are properly updated.
-  // We are going to work on this in another PR.
-  echo('WARNING:');
-  echo(
-    `Failed to update all the files: [${filesToValidate.join(
-      ', ',
-    )}] must have versions in them`,
-  );
-  echo(`These files already had version ${version} set.`);
->>>>>>> facebook/0.71-stable
 }
-
+// macOS]
 exit(0);
