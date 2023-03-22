@@ -15,14 +15,13 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+  Node,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../Types/RootTagTypes';
 
-// TODO: type these properly.
-export opaque type Node = {...};
-type NodeSet = Array<Node>;
-type NodeProps = {...};
-type InstanceHandle = {...};
+export type NodeSet = Array<Node>;
+export type NodeProps = {...};
+export type InstanceHandle = {...};
 export type Spec = {|
   +createNode: (
     reactTag: number,
