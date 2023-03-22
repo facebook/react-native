@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose && tsc",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib && rimraf __generated__/*.ts",
     "prepare": "yarn run build"
   },
   "license": "MIT",
