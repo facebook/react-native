@@ -294,8 +294,9 @@ static UIColor *defaultPlaceholderColor()
 
   CGRect rect = [super caretRectForPosition:position];
   UIFont *font = self.font;
+  float prevHeight = rect.size.height;
   rect.size.height = font.pointSize - font.descender;
-  rect.origin.y -= font.descender;
+  rect.origin.y +=  (prevHeight - rect.size.height);
   return rect;
 }
 
