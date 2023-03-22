@@ -22,6 +22,7 @@ class PromiseTest extends React.Component<{...}> {
   shouldThrowAsync: boolean = false;
 
   componentDidMount() {
+    // $FlowFixMe[unused-promise]
     Promise.all([
       this.testShouldResolve(),
       this.testShouldReject(),
