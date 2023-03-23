@@ -17,8 +17,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -41,8 +39,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -67,8 +63,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -91,8 +85,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -117,8 +109,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -141,8 +131,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -167,8 +155,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -191,8 +177,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -217,23 +201,21 @@ Map {
 namespace facebook {
 namespace react {
 
-void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange event) const {
-  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
+void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange $event) const {
+  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
     {
-              auto location = jsi::Object(runtime);
-              {
-              auto source = jsi::Object(runtime);
-              source.setProperty(runtime, \\"url\\", event.location.source.url);
-
-              location.setProperty(runtime, \\"source\\", source);
-            }
-location.setProperty(runtime, \\"x\\", event.location.x);
-location.setProperty(runtime, \\"y\\", event.location.y);
-
-              payload.setProperty(runtime, \\"location\\", location);
-            }
-    return payload;
+  auto location = jsi::Object(runtime);
+  {
+  auto source = jsi::Object(runtime);
+  source.setProperty(runtime, \\"url\\", $event.location.source.url);
+  location.setProperty(runtime, \\"source\\", source);
+}
+location.setProperty(runtime, \\"x\\", $event.location.x);
+location.setProperty(runtime, \\"y\\", $event.location.y);
+  $payload.setProperty(runtime, \\"location\\", location);
+}
+    return $payload;
   });
 }
 
@@ -260,34 +242,38 @@ Map {
 namespace facebook {
 namespace react {
 
-void EventsNativeComponentEventEmitter::onChange(OnChange event) const {
-  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"value\\", event.value);
-payload.setProperty(runtime, \\"source\\", event.source);
-payload.setProperty(runtime, \\"progress\\", event.progress);
-payload.setProperty(runtime, \\"scale\\", event.scale);
-    return payload;
+void EventsNativeComponentEventEmitter::onChange(OnChange $event) const {
+  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", $event.value);
+$payload.setProperty(runtime, \\"source\\", $event.source);
+$payload.setProperty(runtime, \\"progress\\", $event.progress);
+$payload.setProperty(runtime, \\"scale\\", $event.scale);
+    return $payload;
   });
 }
-void EventsNativeComponentEventEmitter::onEventDirect(OnEventDirect event) const {
-  dispatchEvent(\\"eventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"value\\", event.value);
-    return payload;
+
+
+void EventsNativeComponentEventEmitter::onEventDirect(OnEventDirect $event) const {
+  dispatchEvent(\\"eventDirect\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", $event.value);
+    return $payload;
   });
 }
-void EventsNativeComponentEventEmitter::onOrientationChange(OnOrientationChange event) const {
-  dispatchEvent(\\"orientationChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"orientation\\", toString(event.orientation));
-    return payload;
+
+
+void EventsNativeComponentEventEmitter::onOrientationChange(OnOrientationChange $event) const {
+  dispatchEvent(\\"orientationChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"orientation\\", toString($event.orientation));
+    return $payload;
   });
 }
+
 void EventsNativeComponentEventEmitter::onEnd() const {
   dispatchEvent(\\"end\\");
 }
-
 } // namespace react
 } // namespace facebook
 ",
@@ -311,18 +297,20 @@ Map {
 namespace facebook {
 namespace react {
 
-void InterfaceOnlyComponentEventEmitter::onChange(OnChange event) const {
-  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"value\\", event.value);
-    return payload;
+void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
+  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", $event.value);
+    return $payload;
   });
 }
-void InterfaceOnlyComponentEventEmitter::onDire tChange(OnDire tChange event) const {
-  dispatchEvent(\\"dire tChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"value\\", event.value);
-    return payload;
+
+
+void InterfaceOnlyComponentEventEmitter::onDire tChange(OnDire tChange $event) const {
+  dispatchEvent(\\"dire tChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", $event.value);
+    return $payload;
   });
 }
 
@@ -349,8 +337,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -373,8 +359,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -400,8 +384,6 @@ namespace facebook {
 namespace react {
 
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -424,8 +406,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -450,8 +430,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -474,8 +452,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -500,8 +476,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -524,8 +498,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -550,11 +522,11 @@ Map {
 namespace facebook {
 namespace react {
 
-void InterfaceOnlyComponentEventEmitter::onChange(OnChange event) const {
-  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, \\"value\\", event.value);
-    return payload;
+void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
+  dispatchEvent(\\"change\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", $event.value);
+    return $payload;
   });
 }
 
@@ -581,8 +553,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -605,8 +575,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -631,8 +599,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -655,8 +621,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -681,8 +645,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -706,8 +668,6 @@ Map {
 namespace facebook {
 namespace react {
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -730,8 +690,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 } // namespace react
 } // namespace facebook
@@ -757,8 +715,6 @@ namespace facebook {
 namespace react {
 
 
-
-
 } // namespace react
 } // namespace facebook
 ",
@@ -781,8 +737,6 @@ Map {
 
 namespace facebook {
 namespace react {
-
-
 
 
 } // namespace react
