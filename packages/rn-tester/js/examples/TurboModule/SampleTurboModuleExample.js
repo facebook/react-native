@@ -186,12 +186,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         'Cannot load this example because TurboModule is not configured.',
       );
     }
-    if (Platform.OS === 'ios') {
-      // iOS is fully implemented, so show all results immediately.
-      Object.keys(this._tests).forEach(item =>
-        this._setResult(item, this._tests[item]()),
-      );
-    }
   }
 
   render(): React.Node {
