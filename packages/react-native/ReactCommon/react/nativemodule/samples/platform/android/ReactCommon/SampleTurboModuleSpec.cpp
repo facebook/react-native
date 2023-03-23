@@ -181,6 +181,102 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise(
 }
 
 static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt, VoidKind, "voidFuncThrows", "()V", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getObjectThrows(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          ObjectKind,
+          "getObjectThrows",
+          "(Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/bridge/WritableMap;",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          PromiseKind,
+          "promiseThrows",
+          "(Lcom/facebook/react/bridge/Promise;)V",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt, VoidKind, "voidFuncAssert", "()V", args, count, cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          ObjectKind,
+          "getObjectAssert",
+          "(Lcom/facebook/react/bridge/ReadableMap;)Lcom/facebook/react/bridge/WritableMap;",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
+__hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert(
+    facebook::jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const facebook::jsi::Value *args,
+    size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule)
+      .invokeJavaMethod(
+          rt,
+          PromiseKind,
+          "promiseAssert",
+          "(Lcom/facebook/react/bridge/Promise;)V",
+          args,
+          count,
+          cachedMethodId);
+}
+
+static facebook::jsi::Value
 __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants(
     facebook::jsi::Runtime &rt,
     TurboModule &turboModule,
@@ -233,6 +329,24 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
 
   methodMap_["getValueWithPromise"] = MethodMetadata{
       1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+
+  methodMap_["voidFuncThrows"] = MethodMetadata{
+      0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows};
+
+  methodMap_["getObjectThrows"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectThrows};
+
+  methodMap_["promiseThrows"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows};
+
+  methodMap_["voidFuncAssert"] = MethodMetadata{
+      0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert};
+
+  methodMap_["getObjectAssert"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
+
+  methodMap_["promiseAssert"] = MethodMetadata{
+      1, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
 
   methodMap_["getConstants"] = MethodMetadata{
       0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
