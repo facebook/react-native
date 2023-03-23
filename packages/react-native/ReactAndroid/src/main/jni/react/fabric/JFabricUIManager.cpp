@@ -7,6 +7,8 @@
 
 #include "JFabricUIManager.h"
 
+#include "Binding.h"
+
 namespace facebook::react {
 
 Binding *JFabricUIManager::getBinding() {
