@@ -18,6 +18,7 @@ import type {
   NamedShape,
   EventTypeAnnotation,
   SchemaType,
+  ObjectTypeAnnotation,
 } from '../../CodegenSchema';
 
 // File path -> contents
@@ -48,9 +49,7 @@ const FileTemplate = ({
 
 namespace facebook {
 namespace react {
-
 ${events}
-
 } // namespace react
 } // namespace facebook
 `;
@@ -68,16 +67,16 @@ const ComponentTemplate = ({
   dispatchEventName: string,
   implementation: string,
 }) => {
-  const capture = implementation.includes('event')
-    ? 'event=std::move(event)'
+  const capture = implementation.includes('$event')
+    ? '$event=std::move($event)'
     : '';
   return `
-void ${className}EventEmitter::${eventName}(${structName} event) const {
+void ${className}EventEmitter::${eventName}(${structName} $event) const {
   dispatchEvent("${dispatchEventName}", [${capture}](jsi::Runtime &runtime) {
     ${implementation}
   });
 }
-`.trim();
+`;
 };
 
 const BasicComponentTemplate = ({
@@ -101,7 +100,7 @@ function generateSetter(
   propertyParts: $ReadOnlyArray<string>,
 ) {
   const trailingPeriod = propertyParts.length === 0 ? '' : '.';
-  const eventChain = `event.${propertyParts.join(
+  const eventChain = `$event.${propertyParts.join(
     '.',
   )}${trailingPeriod}${propertyName});`;
 
@@ -114,11 +113,30 @@ function generateEnumSetter(
   propertyParts: $ReadOnlyArray<string>,
 ) {
   const trailingPeriod = propertyParts.length === 0 ? '' : '.';
-  const eventChain = `event.${propertyParts.join(
+  const eventChain = `$event.${propertyParts.join(
     '.',
   )}${trailingPeriod}${propertyName})`;
 
   return `${variableName}.setProperty(runtime, "${propertyName}", toString(${eventChain});`;
+}
+
+function generateObjectSetter(
+  variableName: string,
+  propertyName: string,
+  propertyParts: $ReadOnlyArray<string>,
+  typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
+) {
+  return `
+{
+  auto ${propertyName} = jsi::Object(runtime);
+  ${generateSetters(
+    propertyName,
+    typeAnnotation.properties,
+    propertyParts.concat([propertyName]),
+  )}
+  ${variableName}.setProperty(runtime, "${propertyName}", ${propertyName});
+}
+`.trim();
 }
 
 function generateSetters(
@@ -131,29 +149,9 @@ function generateSetters(
       const {typeAnnotation} = eventProperty;
       switch (typeAnnotation.type) {
         case 'BooleanTypeAnnotation':
-          return generateSetter(
-            parentPropertyName,
-            eventProperty.name,
-            propertyParts,
-          );
         case 'StringTypeAnnotation':
-          return generateSetter(
-            parentPropertyName,
-            eventProperty.name,
-            propertyParts,
-          );
         case 'Int32TypeAnnotation':
-          return generateSetter(
-            parentPropertyName,
-            eventProperty.name,
-            propertyParts,
-          );
         case 'DoubleTypeAnnotation':
-          return generateSetter(
-            parentPropertyName,
-            eventProperty.name,
-            propertyParts,
-          );
         case 'FloatTypeAnnotation':
           return generateSetter(
             parentPropertyName,
@@ -167,19 +165,12 @@ function generateSetters(
             propertyParts,
           );
         case 'ObjectTypeAnnotation':
-          const propertyName = eventProperty.name;
-          return `
-            {
-              auto ${propertyName} = jsi::Object(runtime);
-              ${generateSetters(
-                propertyName,
-                typeAnnotation.properties,
-                propertyParts.concat([propertyName]),
-              )}
-
-              ${parentPropertyName}.setProperty(runtime, "${propertyName}", ${propertyName});
-            }
-          `.trim();
+          return generateObjectSetter(
+            parentPropertyName,
+            eventProperty.name,
+            propertyParts,
+            typeAnnotation,
+          );
         default:
           (typeAnnotation.type: empty);
           throw new Error('Received invalid event property type');
@@ -203,9 +194,9 @@ function generateEvent(componentName: string, event: EventTypeShape): string {
 
   if (event.typeAnnotation.argument) {
     const implementation = `
-    auto payload = jsi::Object(runtime);
-    ${generateSetters('payload', event.typeAnnotation.argument.properties, [])}
-    return payload;
+    auto $payload = jsi::Object(runtime);
+    ${generateSetters('$payload', event.typeAnnotation.argument.properties, [])}
+    return $payload;
   `.trim();
 
     if (!event.name.startsWith('on')) {

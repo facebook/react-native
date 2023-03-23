@@ -18,7 +18,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT ArrayPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -27,7 +26,6 @@ class JSI_EXPORT ArrayPropsNativeComponentViewEventEmitter : public ViewEventEmi
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -52,7 +50,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT BooleanPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -61,7 +58,6 @@ class JSI_EXPORT BooleanPropNativeComponentViewEventEmitter : public ViewEventEm
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -86,7 +82,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT ColorPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -95,7 +90,6 @@ class JSI_EXPORT ColorPropNativeComponentViewEventEmitter : public ViewEventEmit
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -120,7 +114,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT DimensionPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -129,7 +122,6 @@ class JSI_EXPORT DimensionPropNativeComponentViewEventEmitter : public ViewEvent
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -154,7 +146,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT EdgeInsetsPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -163,7 +154,6 @@ class JSI_EXPORT EdgeInsetsPropNativeComponentViewEventEmitter : public ViewEven
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -188,7 +178,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT EnumPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -197,7 +186,6 @@ class JSI_EXPORT EnumPropNativeComponentViewEventEmitter : public ViewEventEmitt
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -222,7 +210,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT EventNestedObjectPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -243,7 +230,6 @@ class JSI_EXPORT EventNestedObjectPropsNativeComponentViewEventEmitter : public 
 
   void onChange(OnChange value) const;
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -268,7 +254,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT EventPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -324,7 +309,6 @@ class JSI_EXPORT EventPropsNativeComponentViewEventEmitter : public ViewEventEmi
 
   void onEventBubblingWithPaperName(OnEventBubblingWithPaperName value) const;
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -349,7 +333,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT FloatPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -358,7 +341,6 @@ class JSI_EXPORT FloatPropsNativeComponentViewEventEmitter : public ViewEventEmi
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -383,7 +365,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT ImagePropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -392,7 +373,6 @@ class JSI_EXPORT ImagePropNativeComponentViewEventEmitter : public ViewEventEmit
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -417,7 +397,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT IntegerPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -426,7 +405,6 @@ class JSI_EXPORT IntegerPropNativeComponentViewEventEmitter : public ViewEventEm
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -451,7 +429,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT InterfaceOnlyNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -462,7 +439,6 @@ class JSI_EXPORT InterfaceOnlyNativeComponentViewEventEmitter : public ViewEvent
 
   void onChange(OnChange value) const;
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -487,7 +463,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT MixedPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -496,7 +471,6 @@ class JSI_EXPORT MixedPropNativeComponentViewEventEmitter : public ViewEventEmit
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -521,7 +495,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT MultiNativePropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -530,7 +503,6 @@ class JSI_EXPORT MultiNativePropNativeComponentViewEventEmitter : public ViewEve
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -555,7 +527,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT NoPropsNoEventsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -564,7 +535,6 @@ class JSI_EXPORT NoPropsNoEventsNativeComponentViewEventEmitter : public ViewEve
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -589,7 +559,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT ObjectPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -598,7 +567,6 @@ class JSI_EXPORT ObjectPropsNativeComponentEventEmitter : public ViewEventEmitte
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -623,7 +591,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT PointPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -632,7 +599,6 @@ class JSI_EXPORT PointPropNativeComponentViewEventEmitter : public ViewEventEmit
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
@@ -657,7 +623,6 @@ Object {
 
 namespace facebook {
 namespace react {
-
 class JSI_EXPORT StringPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
@@ -666,7 +631,6 @@ class JSI_EXPORT StringPropNativeComponentViewEventEmitter : public ViewEventEmi
 
   
 };
-
 } // namespace react
 } // namespace facebook
 ",
