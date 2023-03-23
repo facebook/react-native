@@ -1368,8 +1368,6 @@ jobs:
             if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
               choco install --no-progress cmake --version 3.14.7
               if (-not $?) { throw "Failed to install CMake" }
-              choco install --no-progress python3
-              if (-not $?) { throw "Failed to install Python" }
 
               cd $Env:HERMES_WS_DIR\icu
               # If Invoke-WebRequest shows a progress bar, it will fail with
