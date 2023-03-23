@@ -70,7 +70,7 @@ export interface Spec extends TurboModule {
   +getValue: (x: number, y: string, z: ObjectStruct) => ValueStruct;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
-  +getWithWithOptionalArgs: (optionalArg?: boolean) => boolean;
+  +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
 }

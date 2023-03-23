@@ -117,10 +117,10 @@ AsyncPromise<std::string> NativeCxxModuleExample::getValueWithPromise(
   return promise;
 }
 
-bool NativeCxxModuleExample::getWithWithOptionalArgs(
+std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
     jsi::Runtime &rt,
     std::optional<bool> optionalArg) {
-  return optionalArg.value_or(false);
+  return optionalArg;
 }
 
 void NativeCxxModuleExample::voidFunc(jsi::Runtime &rt) {

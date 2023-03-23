@@ -120,7 +120,7 @@ class NativeCxxModuleExample
 
   AsyncPromise<std::string> getValueWithPromise(jsi::Runtime &rt, bool error);
 
-  bool getWithWithOptionalArgs(
+  std::optional<bool> getWithWithOptionalArgs(
       jsi::Runtime &rt,
       std::optional<bool> optionalArg);
 
