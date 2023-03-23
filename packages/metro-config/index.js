@@ -42,7 +42,7 @@ function getDefaultConfig(
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
-      unstable_conditionNames: ['import', 'require', 'react-native'],
+      unstable_conditionNames: ['require', 'react-native'],
     },
     serializer: {
       getPolyfills: () => require('@react-native/js-polyfills')(),
