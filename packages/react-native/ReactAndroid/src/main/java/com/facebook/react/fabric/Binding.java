@@ -40,7 +40,7 @@ public class Binding {
   private native void installFabricUIManager(
       RuntimeExecutor runtimeExecutor,
       RuntimeScheduler runtimeScheduler,
-      Object uiManager,
+      FabricUIManager uiManager,
       EventBeatManager eventBeatManager,
       ComponentFactory componentsRegistry,
       Object reactNativeConfig);

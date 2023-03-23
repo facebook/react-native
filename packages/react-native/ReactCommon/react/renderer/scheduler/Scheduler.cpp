@@ -320,15 +320,13 @@ void Scheduler::uiManagerDidFinishTransaction(
             [delegate = delegate_,
              mountingCoordinator =
                  std::move(mountingCoordinator)](jsi::Runtime &) {
-              delegate->schedulerDidFinishTransaction(
-                  std::move(mountingCoordinator));
+              delegate->schedulerDidFinishTransaction(mountingCoordinator);
             });
       } else {
-        delegate_->schedulerDidFinishTransaction(
-            std::move(mountingCoordinator));
+        delegate_->schedulerDidFinishTransaction(mountingCoordinator);
       }
     } else {
-      delegate_->schedulerDidFinishTransaction(std::move(mountingCoordinator));
+      delegate_->schedulerDidFinishTransaction(mountingCoordinator);
     }
   }
 }
