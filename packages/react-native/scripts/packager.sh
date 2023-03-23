@@ -14,11 +14,6 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$THIS_DIR/../../.."}
 # shellcheck disable=SC1090
 source "${THIS_DIR}/node-binary.sh"
 
-# When running react-native tests, react-native doesn't live in node_modules but in the PROJECT_ROOT
-if [ ! -d "$THIS_DIR/../../../node_modules/react-native" ];
-then
-  PROJECT_ROOT="$THIS_DIR/../../.."
-fi
 # Start packager from PROJECT_ROOT
 cd "$PROJECT_ROOT" || exit
 "$NODE_BINARY" "$REACT_NATIVE_ROOT/cli.js" start --custom-log-reporter-path "$THIS_DIR/packager-reporter.js" "$@"
