@@ -585,9 +585,7 @@ public class ReactEditText extends AppCompatEditText
         new SpannableStringBuilder(reactTextUpdate.getText());
 
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
-
-    // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
-    stripAttributeEquivalentSpans(spannableStringBuilder);
+    stripStyleEquivalentSpans(spannableStringBuilder);
 
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -662,28 +660,44 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  private void stripAttributeEquivalentSpans(SpannableStringBuilder sb) {
-    // We have already set a font size on the EditText itself. We can safely remove sizing spans
-    // which are the same as the set font size, and not otherwise overlapped.
-    final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();
-    ReactAbsoluteSizeSpan[] spans = sb.getSpans(0, sb.length(), ReactAbsoluteSizeSpan.class);
+  // TODO: Replace with Predicate<T> and lambdas once Java 8 builds in OSS
+  interface SpanPredicate<T> {
+    boolean test(T span);
+  }
 
-    outerLoop:
-    for (ReactAbsoluteSizeSpan span : spans) {
-      ReactAbsoluteSizeSpan[] overlappingSpans =
-          sb.getSpans(sb.getSpanStart(span), sb.getSpanEnd(span), ReactAbsoluteSizeSpan.class);
+  /**
+   * Remove spans from the SpannableStringBuilder which can be represented by TextAppearance
+   * attributes on the underlying EditText. This works around instability on Samsung devices with
+   * the presence of spans https://github.com/facebook/react-native/issues/35936 (S318090)
+   */
+  private void stripStyleEquivalentSpans(SpannableStringBuilder sb) {
+    stripSpansOfKind(
+        sb,
+        ReactAbsoluteSizeSpan.class,
+        new SpanPredicate<ReactAbsoluteSizeSpan>() {
+          @Override
+          public boolean test(ReactAbsoluteSizeSpan span) {
+            return span.getSize() == mTextAttributes.getEffectiveFontSize();
+          }
+        });
+  }
 
-      for (ReactAbsoluteSizeSpan overlappingSpan : overlappingSpans) {
-        if (span.getSize() != effectiveFontSize) {
-          continue outerLoop;
-        }
+  private <T> void stripSpansOfKind(
+      SpannableStringBuilder sb, Class<T> clazz, SpanPredicate<T> shouldStrip) {
+    T[] spans = sb.getSpans(0, sb.length(), clazz);
+
+    for (T span : spans) {
+      if (shouldStrip.test(span)) {
+        sb.removeSpan(span);
       }
-
-      sb.removeSpan(span);
     }
   }
 
-  private void unstripAttributeEquivalentSpans(SpannableStringBuilder workingText) {
+  /**
+   * Copy back styles represented as attributes to the underlying span, for later measurement
+   * outside the ReactEditText.
+   */
+  private void restoreStyleEquivalentSpans(SpannableStringBuilder workingText) {
     int spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
 
     // Set all bits for SPAN_PRIORITY so that this span has the highest possible priority
@@ -1122,7 +1136,7 @@ public class ReactEditText extends AppCompatEditText
       // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
-        unstripAttributeEquivalentSpans(sb);
+        restoreStyleEquivalentSpans(sb);
       } catch (IndexOutOfBoundsException e) {
         ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
