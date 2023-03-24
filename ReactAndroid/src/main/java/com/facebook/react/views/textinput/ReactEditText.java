@@ -12,6 +12,7 @@ import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -54,8 +55,10 @@ import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.ReactForegroundColorSpan;
 import com.facebook.react.views.text.ReactSpan;
+import com.facebook.react.views.text.ReactStrikethroughSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
+import com.facebook.react.views.text.ReactUnderlineSpan;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -703,6 +706,26 @@ public class ReactEditText extends AppCompatEditText
             return span.getForegroundColor() == getCurrentTextColor();
           }
         });
+
+    stripSpansOfKind(
+        sb,
+        ReactStrikethroughSpan.class,
+        new SpanPredicate<ReactStrikethroughSpan>() {
+          @Override
+          public boolean test(ReactStrikethroughSpan span) {
+            return (getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0;
+          }
+        });
+
+    stripSpansOfKind(
+        sb,
+        ReactUnderlineSpan.class,
+        new SpanPredicate<ReactUnderlineSpan>() {
+          @Override
+          public boolean test(ReactUnderlineSpan span) {
+            return (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0;
+          }
+        });
   }
 
   private <T> void stripSpansOfKind(
@@ -734,6 +757,14 @@ public class ReactEditText extends AppCompatEditText
     int backgroundColor = mReactBackgroundManager.getBackgroundColor();
     if (backgroundColor != Color.TRANSPARENT) {
       spans.add(new ReactBackgroundColorSpan(backgroundColor));
+    }
+
+    if ((getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0) {
+      spans.add(new ReactStrikethroughSpan());
+    }
+
+    if ((getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0) {
+      spans.add(new ReactUnderlineSpan());
     }
 
     for (Object span : spans) {
