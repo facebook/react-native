@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -933,6 +934,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "autoFocus", defaultBoolean = false)
   public void setAutoFocus(ReactEditText view, boolean autoFocus) {
     view.setAutoFocus(autoFocus);
+  }
+
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(ReactEditText view, @Nullable String textDecorationLineString) {
+    view.setPaintFlags(
+        view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
+
+    for (String token : textDecorationLineString.split(" ")) {
+      if (token.equals("underline")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+      } else if (token.equals("line-through")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+      }
+    }
   }
 
   @ReactPropGroup(
