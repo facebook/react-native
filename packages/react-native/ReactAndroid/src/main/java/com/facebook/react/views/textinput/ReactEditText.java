@@ -11,6 +11,7 @@ import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -50,6 +51,7 @@ import com.facebook.react.views.text.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.CustomLineHeightSpan;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
@@ -680,6 +682,16 @@ public class ReactEditText extends AppCompatEditText
             return span.getSize() == mTextAttributes.getEffectiveFontSize();
           }
         });
+
+    stripSpansOfKind(
+        sb,
+        ReactBackgroundColorSpan.class,
+        new SpanPredicate<ReactBackgroundColorSpan>() {
+          @Override
+          public boolean test(ReactBackgroundColorSpan span) {
+            return span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor();
+          }
+        });
   }
 
   private <T> void stripSpansOfKind(
@@ -704,11 +716,17 @@ public class ReactEditText extends AppCompatEditText
     // (least precedence). This ensures the span is behind any overlapping spans.
     spanFlags |= Spannable.SPAN_PRIORITY;
 
-    workingText.setSpan(
-        new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
-        0,
-        workingText.length(),
-        spanFlags);
+    List<Object> spans = new ArrayList<>();
+    spans.add(new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()));
+
+    int backgroundColor = mReactBackgroundManager.getBackgroundColor();
+    if (backgroundColor != Color.TRANSPARENT) {
+      spans.add(new ReactBackgroundColorSpan(backgroundColor));
+    }
+
+    for (Object span : spans) {
+      workingText.setSpan(span, 0, workingText.length(), spanFlags);
+    }
   }
 
   private static boolean sameTextForSpan(
