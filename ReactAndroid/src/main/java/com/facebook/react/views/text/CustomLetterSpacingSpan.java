@@ -37,6 +37,10 @@ public class CustomLetterSpacingSpan extends MetricAffectingSpan implements Reac
     apply(paint);
   }
 
+  public float getSpacing() {
+    return mLetterSpacing;
+  }
+
   private void apply(TextPaint paint) {
     if (!Float.isNaN(mLetterSpacing)) {
       paint.setLetterSpacing(mLetterSpacing);
