@@ -52,6 +52,7 @@ import com.facebook.react.views.text.CustomLineHeightSpan;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.ReactForegroundColorSpan;
 import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
@@ -692,6 +693,16 @@ public class ReactEditText extends AppCompatEditText
             return span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor();
           }
         });
+
+    stripSpansOfKind(
+        sb,
+        ReactForegroundColorSpan.class,
+        new SpanPredicate<ReactForegroundColorSpan>() {
+          @Override
+          public boolean test(ReactForegroundColorSpan span) {
+            return span.getForegroundColor() == getCurrentTextColor();
+          }
+        });
   }
 
   private <T> void stripSpansOfKind(
@@ -718,6 +729,7 @@ public class ReactEditText extends AppCompatEditText
 
     List<Object> spans = new ArrayList<>();
     spans.add(new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()));
+    spans.add(new ReactForegroundColorSpan(getCurrentTextColor()));
 
     int backgroundColor = mReactBackgroundManager.getBackgroundColor();
     if (backgroundColor != Color.TRANSPARENT) {
