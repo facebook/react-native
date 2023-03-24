@@ -762,32 +762,38 @@ public class ReactEditText extends AppCompatEditText
     // (least precedence). This ensures the span is behind any overlapping spans.
     spanFlags |= Spannable.SPAN_PRIORITY;
 
-    List<Object> spans = new ArrayList<>();
-    spans.add(new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()));
-    spans.add(new ReactForegroundColorSpan(getCurrentTextColor()));
+    workingText.setSpan(
+        new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
+        0,
+        workingText.length(),
+        spanFlags);
+
+    workingText.setSpan(
+        new ReactForegroundColorSpan(getCurrentTextColor()), 0, workingText.length(), spanFlags);
 
     int backgroundColor = mReactBackgroundManager.getBackgroundColor();
     if (backgroundColor != Color.TRANSPARENT) {
-      spans.add(new ReactBackgroundColorSpan(backgroundColor));
+      workingText.setSpan(
+          new ReactBackgroundColorSpan(backgroundColor), 0, workingText.length(), spanFlags);
     }
 
     if ((getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0) {
-      spans.add(new ReactStrikethroughSpan());
+      workingText.setSpan(new ReactStrikethroughSpan(), 0, workingText.length(), spanFlags);
     }
 
     if ((getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0) {
-      spans.add(new ReactUnderlineSpan());
+      workingText.setSpan(new ReactUnderlineSpan(), 0, workingText.length(), spanFlags);
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)) {
-        spans.add(new CustomLetterSpacingSpan(effectiveLetterSpacing));
+        workingText.setSpan(
+            new CustomLetterSpacingSpan(effectiveLetterSpacing),
+            0,
+            workingText.length(),
+            spanFlags);
       }
-    }
-
-    for (Object span : spans) {
-      workingText.setSpan(span, 0, workingText.length(), spanFlags);
     }
   }
 
