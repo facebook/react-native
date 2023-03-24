@@ -696,6 +696,18 @@ public class ReactEditText extends AppCompatEditText
             return (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0;
           }
         });
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      stripSpansOfKind(
+          sb,
+          CustomLetterSpacingSpan.class,
+          new SpanPredicate<CustomLetterSpacingSpan>() {
+            @Override
+            public boolean test(CustomLetterSpacingSpan span) {
+              return span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing();
+            }
+          });
+    }
   }
 
   private <T> void stripSpansOfKind(
@@ -735,6 +747,13 @@ public class ReactEditText extends AppCompatEditText
 
     if ((getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0) {
       spans.add(new ReactUnderlineSpan());
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        spans.add(new CustomLetterSpacingSpan(effectiveLetterSpacing));
+      }
     }
 
     for (Object span : spans) {
@@ -1089,7 +1108,9 @@ public class ReactEditText extends AppCompatEditText
 
     float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
     if (!Float.isNaN(effectiveLetterSpacing)) {
-      setLetterSpacing(effectiveLetterSpacing);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        setLetterSpacing(effectiveLetterSpacing);
+      }
     }
   }
 
