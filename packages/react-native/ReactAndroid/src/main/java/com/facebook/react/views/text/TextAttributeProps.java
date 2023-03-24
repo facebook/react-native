@@ -96,7 +96,7 @@ public class TextAttributeProps {
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
-  protected float mTextShadowRadius = 1;
+  protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
   protected boolean mIsUnderlineTextDecorationSet = false;
