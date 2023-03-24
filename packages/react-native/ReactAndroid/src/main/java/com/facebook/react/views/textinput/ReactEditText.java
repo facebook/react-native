@@ -683,29 +683,18 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  private void unstripAttributeEquivalentSpans(
-      SpannableStringBuilder workingText, Spannable originalText) {
-    // We must add spans back for Fabric to be able to measure, at lower precedence than any
-    // existing spans. Remove all spans, add the attributes, then re-add the spans over
-    workingText.append(originalText);
+  private void unstripAttributeEquivalentSpans(SpannableStringBuilder workingText) {
+    int spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
 
-    for (Object span : workingText.getSpans(0, workingText.length(), Object.class)) {
-      workingText.removeSpan(span);
-    }
+    // Set all bits for SPAN_PRIORITY so that this span has the highest possible priority
+    // (least precedence). This ensures the span is behind any overlapping spans.
+    spanFlags |= Spannable.SPAN_PRIORITY;
 
     workingText.setSpan(
         new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
         0,
         workingText.length(),
-        Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-    for (Object span : originalText.getSpans(0, originalText.length(), Object.class)) {
-      workingText.setSpan(
-          span,
-          originalText.getSpanStart(span),
-          originalText.getSpanEnd(span),
-          originalText.getSpanFlags(span));
-    }
+        spanFlags);
   }
 
   private static boolean sameTextForSpan(
@@ -1132,8 +1121,8 @@ public class ReactEditText extends AppCompatEditText
       // ...
       // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
       try {
-        Spannable text = (Spannable) currentText.subSequence(0, currentText.length());
-        unstripAttributeEquivalentSpans(sb, text);
+        sb.append(currentText.subSequence(0, currentText.length()));
+        unstripAttributeEquivalentSpans(sb);
       } catch (IndexOutOfBoundsException e) {
         ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
