@@ -298,12 +298,7 @@ static UIColor *defaultPlaceholderColor()
     return CGRectZero;
   }
 
-  CGRect rect = [super caretRectForPosition:position];
-  UIFont *font = self.font;
-  float prevHeight = rect.size.height;
-  rect.size.height = font.pointSize - font.descender;
-  rect.origin.y += (prevHeight - rect.size.height);
-  return rect;
+  return [super caretRectForPosition:position];
 }
 
 #pragma mark - Utility Methods
