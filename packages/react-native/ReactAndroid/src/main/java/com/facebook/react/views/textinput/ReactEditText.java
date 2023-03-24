@@ -65,6 +65,7 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -518,6 +519,14 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
+  @Override
+  public void setFontFeatureSettings(String fontFeatureSettings) {
+    if (!Objects.equals(fontFeatureSettings, getFontFeatureSettings())) {
+      super.setFontFeatureSettings(fontFeatureSettings);
+      mTypefaceDirty = true;
+    }
+  }
+
   public void maybeUpdateTypeface() {
     if (!mTypefaceDirty) {
       return;
@@ -529,6 +538,17 @@ public class ReactEditText extends AppCompatEditText
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
     setTypeface(newTypeface);
+
+    // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
+    // nonstandard
+    if (mFontStyle != UNSET
+        || mFontWeight != UNSET
+        || mFontFamily != null
+        || getFontFeatureSettings() != null) {
+      setPaintFlags(getPaintFlags() | Paint.SUBPIXEL_TEXT_FLAG);
+    } else {
+      setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
+    }
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
@@ -738,6 +758,19 @@ public class ReactEditText extends AppCompatEditText
             }
           });
     }
+
+    stripSpansOfKind(
+        sb,
+        CustomStyleSpan.class,
+        new SpanPredicate<CustomStyleSpan>() {
+          @Override
+          public boolean test(CustomStyleSpan span) {
+            return span.getStyle() == mFontStyle
+                && Objects.equals(span.getFontFamily(), mFontFamily)
+                && span.getWeight() == mFontWeight
+                && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
+          }
+        });
   }
 
   private <T> void stripSpansOfKind(
@@ -794,6 +827,22 @@ public class ReactEditText extends AppCompatEditText
             workingText.length(),
             spanFlags);
       }
+    }
+
+    if (mFontStyle != UNSET
+        || mFontWeight != UNSET
+        || mFontFamily != null
+        || getFontFeatureSettings() != null) {
+      workingText.setSpan(
+          new CustomStyleSpan(
+              mFontStyle,
+              mFontWeight,
+              getFontFeatureSettings(),
+              mFontFamily,
+              getContext().getAssets()),
+          0,
+          workingText.length(),
+          spanFlags);
     }
   }
 

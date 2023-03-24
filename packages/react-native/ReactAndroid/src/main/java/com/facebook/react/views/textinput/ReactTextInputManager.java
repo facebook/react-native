@@ -69,6 +69,7 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
@@ -411,6 +412,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(ReactEditText view, @Nullable String fontStyle) {
     view.setFontStyle(fontStyle);
+  }
+
+  @ReactProp(name = ViewProps.FONT_VARIANT)
+  public void setFontVariant(ReactEditText view, @Nullable ReadableArray fontVariant) {
+    view.setFontFeatureSettings(ReactTypefaceUtils.parseFontVariant(fontVariant));
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
