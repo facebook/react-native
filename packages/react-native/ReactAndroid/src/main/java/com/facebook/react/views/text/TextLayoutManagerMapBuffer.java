@@ -10,6 +10,7 @@ package com.facebook.react.views.text;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -179,7 +180,10 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mIsLineThroughTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
         }
-        if (textAttributes.mTextShadowOffsetDx != 0 || textAttributes.mTextShadowOffsetDy != 0) {
+        if ((textAttributes.mTextShadowOffsetDx != 0
+                || textAttributes.mTextShadowOffsetDy != 0
+                || textAttributes.mTextShadowRadius != 0)
+            && Color.alpha(textAttributes.mTextShadowColor) != 0) {
           ops.add(
               new SetSpanOperation(
                   start,

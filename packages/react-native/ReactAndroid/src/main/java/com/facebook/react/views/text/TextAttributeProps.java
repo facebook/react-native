@@ -51,9 +51,11 @@ public class TextAttributeProps {
   public static final short TA_KEY_TEXT_DECORATION_STYLE = 16;
   public static final short TA_KEY_TEXT_SHADOW_RADIUS = 18;
   public static final short TA_KEY_TEXT_SHADOW_COLOR = 19;
-  public static final short TA_KEY_IS_HIGHLIGHTED = 20;
-  public static final short TA_KEY_LAYOUT_DIRECTION = 21;
-  public static final short TA_KEY_ACCESSIBILITY_ROLE = 22;
+  public static final short TA_KEY_TEXT_SHADOW_OFFSET_DX = 20;
+  public static final short TA_KEY_TEXT_SHADOW_OFFSET_DY = 21;
+  public static final short TA_KEY_IS_HIGHLIGHTED = 22;
+  public static final short TA_KEY_LAYOUT_DIRECTION = 23;
+  public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
 
   public static final int UNSET = -1;
 
@@ -198,6 +200,12 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_SHADOW_COLOR:
           result.setTextShadowColor(entry.getIntValue());
           break;
+        case TA_KEY_TEXT_SHADOW_OFFSET_DX:
+          result.setTextShadowOffsetDx((float) entry.getDoubleValue());
+          break;
+        case TA_KEY_TEXT_SHADOW_OFFSET_DY:
+          result.setTextShadowOffsetDy((float) entry.getDoubleValue());
+          break;
         case TA_KEY_IS_HIGHLIGHTED:
           break;
         case TA_KEY_LAYOUT_DIRECTION:
@@ -213,7 +221,6 @@ public class TextAttributeProps {
     // setNumberOfLines
     // setColor
     // setIncludeFontPadding
-    // setTextShadowOffset
     // setTextTransform
     return result;
   }
@@ -554,6 +561,14 @@ public class TextAttributeProps {
             PixelUtil.toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT));
       }
     }
+  }
+
+  private void setTextShadowOffsetDx(float dx) {
+    mTextShadowOffsetDx = PixelUtil.toPixelFromDIP(dx);
+  }
+
+  private void setTextShadowOffsetDy(float dy) {
+    mTextShadowOffsetDy = PixelUtil.toPixelFromDIP(dy);
   }
 
   public static int getLayoutDirection(@Nullable String layoutDirection) {

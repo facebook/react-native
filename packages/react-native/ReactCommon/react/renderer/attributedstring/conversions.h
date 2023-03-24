@@ -1106,10 +1106,12 @@ constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_LINE = 15;
 constexpr static MapBuffer::Key TA_KEY_TEXT_DECORATION_STYLE = 16;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_RADIUS = 18;
 constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_COLOR = 19;
-constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 20;
-constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 21;
-constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 22;
-constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 23;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DX = 20;
+constexpr static MapBuffer::Key TA_KEY_TEXT_SHADOW_OFFSET_DY = 21;
+constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 22;
+constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 23;
+constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
+constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1243,6 +1245,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putInt(
         TA_KEY_TEXT_SHADOW_COLOR,
         toAndroidRepr(textAttributes.textShadowColor));
+  }
+  if (textAttributes.textShadowOffset) {
+    builder.putDouble(
+        TA_KEY_TEXT_SHADOW_OFFSET_DX, textAttributes.textShadowOffset->width);
+    builder.putDouble(
+        TA_KEY_TEXT_SHADOW_OFFSET_DY, textAttributes.textShadowOffset->height);
   }
   // Special
   if (textAttributes.isHighlighted.has_value()) {
