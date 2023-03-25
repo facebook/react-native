@@ -68,7 +68,6 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
         return;
       }
 
-      // const statement.declaration.declarations[0].init
       if (callExpression.arguments.length !== 1) {
         throw new Error(
           'codegenNativeCommands must be passed options including the supported commands',
