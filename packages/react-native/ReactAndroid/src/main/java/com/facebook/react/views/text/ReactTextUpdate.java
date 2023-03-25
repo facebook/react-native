@@ -31,8 +31,6 @@ public class ReactTextUpdate {
   private final int mSelectionEnd;
   private final int mJustificationMode;
 
-  public boolean mContainsMultipleFragments;
-
   /**
    * @deprecated Use a non-deprecated constructor for ReactTextUpdate instead. This one remains
    *     because it's being used by a unit test that isn't currently open source.
@@ -142,13 +140,11 @@ public class ReactTextUpdate {
       int jsEventCounter,
       int textAlign,
       int textBreakStrategy,
-      int justificationMode,
-      boolean containsMultipleFragments) {
+      int justificationMode) {
 
     ReactTextUpdate reactTextUpdate =
         new ReactTextUpdate(
             text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode);
-    reactTextUpdate.mContainsMultipleFragments = containsMultipleFragments;
     return reactTextUpdate;
   }
 
