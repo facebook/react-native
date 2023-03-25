@@ -18,7 +18,7 @@ import {useContext} from 'react';
  * This is a React Context that provides a scoped instance of IPerformanceLogger.
  * We wrap every <AppContainer /> with a Provider for this context so the logger
  * should be available in every component.
- * See React docs about using Context: https://reactjs.org/docs/context.html
+ * See React docs about using Context: https://react.dev/docs/context.html
  */
 const PerformanceLoggerContext: React.Context<IPerformanceLogger> =
   React.createContext(GlobalPerformanceLogger);
