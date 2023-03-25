@@ -73,7 +73,8 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
         );
       }
 
-      const typeArgumentParam = callExpression.typeArguments.params[0];
+      const typeArgumentParam =
+        parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
 
       if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
         throw new Error(

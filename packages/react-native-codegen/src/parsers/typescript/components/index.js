@@ -74,7 +74,8 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
         );
       }
 
-      const typeArgumentParam = callExpression.typeParameters.params[0];
+      const typeArgumentParam =
+        parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
 
       if (typeArgumentParam.type !== 'TSTypeReference') {
         throw new Error(
