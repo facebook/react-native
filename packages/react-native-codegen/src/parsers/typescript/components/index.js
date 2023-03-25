@@ -84,7 +84,7 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
       }
 
       return {
-        commandTypeName: typeArgumentParam.typeName.name,
+        commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
         commandOptionsExpression: callExpression.arguments[0],
       };
     })
