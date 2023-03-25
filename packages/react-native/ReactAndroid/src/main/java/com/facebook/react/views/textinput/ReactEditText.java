@@ -64,7 +64,6 @@ import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -89,7 +88,6 @@ public class ReactEditText extends AppCompatEditText
   // *TextChanged events should be triggered. This is less expensive than removing the text
   // listeners and adding them back again after the text change is completed.
   protected boolean mIsSettingTextFromJS;
-  protected boolean mIsSettingTextFromCacheUpdate = false;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
 
@@ -369,7 +367,7 @@ public class ReactEditText extends AppCompatEditText
     }
 
     super.onSelectionChanged(selStart, selEnd);
-    if (!mIsSettingTextFromCacheUpdate && mSelectionWatcher != null && hasFocus()) {
+    if (mSelectionWatcher != null && hasFocus()) {
       mSelectionWatcher.onSelectionChanged(selStart, selEnd);
     }
   }
@@ -610,7 +608,7 @@ public class ReactEditText extends AppCompatEditText
     SpannableStringBuilder spannableStringBuilder =
         new SpannableStringBuilder(reactTextUpdate.getText());
 
-    manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
+    manageSpans(spannableStringBuilder);
     stripStyleEquivalentSpans(spannableStringBuilder);
 
     mContainsImages = reactTextUpdate.containsImages();
@@ -639,7 +637,7 @@ public class ReactEditText extends AppCompatEditText
     }
 
     // Update cached spans (in Fabric only).
-    updateCachedSpannable(false);
+    updateCachedSpannable();
   }
 
   /**
@@ -648,8 +646,7 @@ public class ReactEditText extends AppCompatEditText
    * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
    * them.
    */
-  private void manageSpans(
-      SpannableStringBuilder spannableStringBuilder, boolean skipAddSpansForMeasurements) {
+  private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       Object span = spans[spanIdx];
@@ -676,13 +673,6 @@ public class ReactEditText extends AppCompatEditText
       if (sameTextForSpan(getText(), spannableStringBuilder, spanStart, spanEnd)) {
         spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
       }
-    }
-
-    // In Fabric only, apply necessary styles to entire span
-    // If the Spannable was constructed from multiple fragments, we don't apply any spans that could
-    // impact the whole Spannable, because that would override "local" styles per-fragment
-    if (!skipAddSpansForMeasurements) {
-      addSpansForMeasurement(getText());
     }
   }
 
@@ -785,10 +775,10 @@ public class ReactEditText extends AppCompatEditText
   }
 
   /**
-   * Copy back styles represented as attributes to the underlying span, for later measurement
-   * outside the ReactEditText.
+   * Copy styles represented as attributes to the underlying span, for later measurement or other
+   * usage outside the ReactEditText.
    */
-  private void restoreStyleEquivalentSpans(SpannableStringBuilder workingText) {
+  private void addSpansFromStyleAttributes(SpannableStringBuilder workingText) {
     int spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
 
     // Set all bits for SPAN_PRIORITY so that this span has the highest possible priority
@@ -844,6 +834,11 @@ public class ReactEditText extends AppCompatEditText
           workingText.length(),
           spanFlags);
     }
+
+    float lineHeight = mTextAttributes.getEffectiveLineHeight();
+    if (!Float.isNaN(lineHeight)) {
+      workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+    }
   }
 
   private static boolean sameTextForSpan(
@@ -860,73 +855,6 @@ public class ReactEditText extends AppCompatEditText
       }
     }
     return true;
-  }
-
-  // This is hacked in for Fabric. When we delete non-Fabric code, we might be able to simplify or
-  // clean this up a bit.
-  private void addSpansForMeasurement(Spannable spannable) {
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      return;
-    }
-
-    boolean originalDisableTextDiffing = mDisableTextDiffing;
-    mDisableTextDiffing = true;
-
-    int start = 0;
-    int end = spannable.length();
-
-    // Remove duplicate spans we might add here
-    Object[] spans = spannable.getSpans(0, length(), Object.class);
-    for (Object span : spans) {
-      int spanFlags = spannable.getSpanFlags(span);
-      boolean isInclusive =
-          (spanFlags & Spanned.SPAN_INCLUSIVE_INCLUSIVE) == Spanned.SPAN_INCLUSIVE_INCLUSIVE
-              || (spanFlags & Spanned.SPAN_INCLUSIVE_EXCLUSIVE) == Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
-      if (isInclusive
-          && span instanceof ReactSpan
-          && spannable.getSpanStart(span) == start
-          && spannable.getSpanEnd(span) == end) {
-        spannable.removeSpan(span);
-      }
-    }
-
-    List<TextLayoutManager.SetSpanOperation> ops = new ArrayList<>();
-
-    if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
-      ops.add(
-          new TextLayoutManager.SetSpanOperation(
-              start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
-    }
-    ops.add(
-        new TextLayoutManager.SetSpanOperation(
-            start, end, new ReactAbsoluteSizeSpan((int) mTextAttributes.getEffectiveFontSize())));
-    if (mFontStyle != UNSET || mFontWeight != UNSET || mFontFamily != null) {
-      ops.add(
-          new TextLayoutManager.SetSpanOperation(
-              start,
-              end,
-              new CustomStyleSpan(
-                  mFontStyle,
-                  mFontWeight,
-                  null, // TODO: do we need to support FontFeatureSettings / fontVariant?
-                  mFontFamily,
-                  getReactContext(ReactEditText.this).getAssets())));
-    }
-    if (!Float.isNaN(mTextAttributes.getEffectiveLineHeight())) {
-      ops.add(
-          new TextLayoutManager.SetSpanOperation(
-              start, end, new CustomLineHeightSpan(mTextAttributes.getEffectiveLineHeight())));
-    }
-
-    int priority = 0;
-    for (TextLayoutManager.SetSpanOperation op : ops) {
-      // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priority} DOES matter.
-      op.execute(spannable, priority);
-      priority++;
-    }
-
-    mDisableTextDiffing = originalDisableTextDiffing;
   }
 
   protected boolean showSoftKeyboard() {
@@ -1215,7 +1143,7 @@ public class ReactEditText extends AppCompatEditText
    * TextLayoutManager.java with some very minor modifications. There's some duplication between
    * here and TextLayoutManager, so there might be an opportunity for refactor.
    */
-  private void updateCachedSpannable(boolean resetStyles) {
+  private void updateCachedSpannable() {
     // Noops in non-Fabric
     if (mFabricViewStateManager == null || !mFabricViewStateManager.hasStateWrapper()) {
       return;
@@ -1223,12 +1151,6 @@ public class ReactEditText extends AppCompatEditText
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
     if (getId() == -1) {
       return;
-    }
-
-    if (resetStyles) {
-      mIsSettingTextFromCacheUpdate = true;
-      addSpansForMeasurement(getText());
-      mIsSettingTextFromCacheUpdate = false;
     }
 
     Editable currentText = getText();
@@ -1273,7 +1195,6 @@ public class ReactEditText extends AppCompatEditText
       // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
-        restoreStyleEquivalentSpans(sb);
       } catch (IndexOutOfBoundsException e) {
         ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
@@ -1289,11 +1210,9 @@ public class ReactEditText extends AppCompatEditText
         // Measure something so we have correct height, even if there's no string.
         sb.append("I");
       }
-
-      // Make sure that all text styles are applied when we're measurable the hint or "blank" text
-      addSpansForMeasurement(sb);
     }
 
+    addSpansFromStyleAttributes(sb);
     TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
   }
 
@@ -1308,7 +1227,7 @@ public class ReactEditText extends AppCompatEditText
   private class TextWatcherDelegator implements TextWatcher {
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-      if (!mIsSettingTextFromCacheUpdate && !mIsSettingTextFromJS && mListeners != null) {
+      if (!mIsSettingTextFromJS && mListeners != null) {
         for (TextWatcher listener : mListeners) {
           listener.beforeTextChanged(s, start, count, after);
         }
@@ -1322,23 +1241,20 @@ public class ReactEditText extends AppCompatEditText
             TAG, "onTextChanged[" + getId() + "]: " + s + " " + start + " " + before + " " + count);
       }
 
-      if (!mIsSettingTextFromCacheUpdate) {
-        if (!mIsSettingTextFromJS && mListeners != null) {
-          for (TextWatcher listener : mListeners) {
-            listener.onTextChanged(s, start, before, count);
-          }
+      if (!mIsSettingTextFromJS && mListeners != null) {
+        for (TextWatcher listener : mListeners) {
+          listener.onTextChanged(s, start, before, count);
         }
-
-        updateCachedSpannable(
-            !mIsSettingTextFromJS && !mIsSettingTextFromState && start == 0 && before == 0);
       }
+
+      updateCachedSpannable();
 
       onContentSizeChange();
     }
 
     @Override
     public void afterTextChanged(Editable s) {
-      if (!mIsSettingTextFromCacheUpdate && !mIsSettingTextFromJS && mListeners != null) {
+      if (!mIsSettingTextFromJS && mListeners != null) {
         for (TextWatcher listener : mListeners) {
           listener.afterTextChanged(s);
         }
