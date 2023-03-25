@@ -25,6 +25,7 @@ const {
   findNativeComponentType,
   getCommandOptions,
   getOptions,
+  getCommandTypeNameAndOptionsExpression,
 } = require('../../parsers-commons');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
@@ -53,40 +54,7 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
   );
 
   const commandsTypeNames = namedExports
-    .map(statement => {
-      let callExpression;
-      let calleeName;
-      try {
-        callExpression = statement.declaration.declarations[0].init;
-        calleeName = callExpression.callee.name;
-      } catch (e) {
-        return;
-      }
-
-      if (calleeName !== 'codegenNativeCommands') {
-        return;
-      }
-
-      if (callExpression.arguments.length !== 1) {
-        throw new Error(
-          'codegenNativeCommands must be passed options including the supported commands',
-        );
-      }
-
-      const typeArgumentParam =
-        parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
-
-      if (!parser.isGenericTypeAnnotation(typeArgumentParam.type)) {
-        throw new Error(
-          "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
-        );
-      }
-
-      return {
-        commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
-        commandOptionsExpression: callExpression.arguments[0],
-      };
-    })
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
     .filter(Boolean);
 
   throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);

@@ -769,6 +769,47 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
   return foundOptions;
 }
 
+function getCommandTypeNameAndOptionsExpression(
+  namedExport: $FlowFixMe,
+  parser: Parser,
+): {
+  commandOptionsExpression: OptionsAST,
+  commandTypeName: string,
+} | void {
+  let callExpression;
+  let calleeName;
+  try {
+    callExpression = namedExport.declaration.declarations[0].init;
+    calleeName = callExpression.callee.name;
+  } catch (e) {
+    return;
+  }
+
+  if (calleeName !== 'codegenNativeCommands') {
+    return;
+  }
+
+  if (callExpression.arguments.length !== 1) {
+    throw new Error(
+      'codegenNativeCommands must be passed options including the supported commands',
+    );
+  }
+
+  const typeArgumentParam =
+    parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
+
+  if (!parser.isGenericTypeAnnotation(typeArgumentParam.type)) {
+    throw new Error(
+      "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
+    );
+  }
+
+  return {
+    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandOptionsExpression: callExpression.arguments[0],
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -786,4 +827,5 @@ module.exports = {
   findNativeComponentType,
   getCommandOptions,
   getOptions,
+  getCommandTypeNameAndOptionsExpression,
 };
