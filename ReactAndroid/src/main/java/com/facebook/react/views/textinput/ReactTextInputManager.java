@@ -1343,9 +1343,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    boolean containsMultipleFragments =
-        attributedString.getArray("fragments").toArrayList().size() > 1;
-
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1354,8 +1351,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         state.getInt("mostRecentEventCount"),
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props),
-        containsMultipleFragments);
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 
   public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
@@ -1376,9 +1372,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    boolean containsMultipleFragments =
-        attributedString.getMapBuffer(TextLayoutManagerMapBuffer.AS_KEY_FRAGMENTS).getCount() > 1;
-
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
@@ -1389,7 +1382,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextAttributeProps.getTextAlignment(
             props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props),
-        containsMultipleFragments);
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 }
