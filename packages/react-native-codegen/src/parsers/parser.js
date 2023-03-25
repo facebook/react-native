@@ -162,6 +162,11 @@ export interface Parser {
   isModuleInterface(node: $FlowFixMe): boolean;
 
   /**
+   * Given a type name, it returns true if it is a generic type annotation
+   */
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean;
+
+  /**
    * Given a typeAnnotation, it returns the annotated element.
    * @parameter typeAnnotation: the annotation for a type.
    * @parameter types: a map of type declarations.
