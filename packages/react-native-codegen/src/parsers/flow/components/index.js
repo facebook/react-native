@@ -76,7 +76,7 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
       const typeArgumentParam =
         parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
 
-      if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
+      if (!parser.isGenericTypeAnnotation(typeArgumentParam.type)) {
         throw new Error(
           "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
         );
