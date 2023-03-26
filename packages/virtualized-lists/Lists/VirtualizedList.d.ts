@@ -153,7 +153,11 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    * Rendered in between each item, but not at the top or bottom
    */
   ItemSeparatorComponent?:
-    | React.ComponentType<any | {highlighted: boolean; leadingItem: ItemT}>
+    | React.ComponentType<{
+        highlighted: boolean;
+        leadingItem: ItemT;
+        [customProp: string]: any;
+      }>
     | null
     | undefined;
 
