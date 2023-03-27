@@ -23,7 +23,7 @@ type PlatformConstants = {
     major: number;
     minor: number;
     patch: number;
-    prerelease?: number | null | undefined;
+    prerelease?: number | string | null | undefined;
   };
 };
 interface PlatformStatic {
