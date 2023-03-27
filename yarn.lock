@@ -2414,6 +2414,11 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
 
+"@rnx-kit/rn-changelog-generator@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@rnx-kit/rn-changelog-generator/-/rn-changelog-generator-0.4.0.tgz#637d87bcf8de6e87599930ed88d9375010277660"
+  integrity sha512-Igq/5lA6/bYSAdxfk43nbMXIt4yKIspds2fsv5eqgeg4elLeWfzHSEM3tU0wPDnOk4m3qzVEyO9fbtu616Dyhw==
+
 "@seadub/danger-plugin-eslint@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@seadub/danger-plugin-eslint/-/danger-plugin-eslint-3.0.2.tgz#9a51d9f1a103a274264c30212234001de0b417c1"
