@@ -19,7 +19,7 @@ export interface Spec extends TurboModule {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?number,
+      prerelease: ?string,
     |},
     Version: number,
     Release: string,
