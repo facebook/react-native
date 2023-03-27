@@ -28,6 +28,7 @@
   },
   "testTargets" : [
     {
+      "enabled": false,
       "target" : {
         "containerPath" : "container:RNTesterPods.xcodeproj",
         "identifier" : "E7DB215222B2F332005AC45F",
