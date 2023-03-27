@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
+    "@rnx-kit/rn-changelog-generator": "^0.4.0",
     "@seadub/danger-plugin-eslint": "^3.0.2",
     "danger": "^11.2.1",
     "eslint": "^8.19.0",
