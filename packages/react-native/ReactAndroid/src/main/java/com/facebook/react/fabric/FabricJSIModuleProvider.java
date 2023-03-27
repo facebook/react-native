@@ -41,7 +41,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
 
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
-    final Binding binding = new Binding();
+    final Binding binding = new BindingImpl();
 
     binding.register(
         mReactApplicationContext.getCatalystInstance().getRuntimeExecutor(),
