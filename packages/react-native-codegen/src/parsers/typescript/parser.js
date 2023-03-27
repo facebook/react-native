@@ -210,6 +210,10 @@ class TypeScriptParser implements Parser {
     );
   }
 
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean {
+    return type === 'TSTypeReference';
+  }
+
   extractAnnotatedElement(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
