@@ -10,8 +10,11 @@
 
 'use strict';
 
-const {flattenProperties} = require('./componentsUtils.js');
-
+const {
+  flattenProperties,
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./componentsUtils.js');
 const {buildPropSchema} = require('../../parsers-commons.js');
 
 import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
@@ -25,7 +28,9 @@ function getProps(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
   return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types, 'Flow'))
+    .map(property =>
+      buildPropSchema(property, types, getSchemaInfo, getTypeAnnotation),
+    )
     .filter(Boolean);
 }
 

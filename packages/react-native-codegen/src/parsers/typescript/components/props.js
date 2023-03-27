@@ -10,6 +10,7 @@
 
 'use strict';
 
+const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 const {buildPropSchema} = require('../../parsers-commons');
 
 import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
@@ -23,7 +24,7 @@ function getProps(
   types: TypeDeclarationMap,
 ): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
   return typeDefinition.map(property =>
-    buildPropSchema(property, types, 'Typescript'),
+    buildPropSchema(property, types, getSchemaInfo, getTypeAnnotation),
   );
 }
 

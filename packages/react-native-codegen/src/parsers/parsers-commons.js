@@ -48,16 +48,6 @@ const {
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
-const {
-  getSchemaInfo: getTsSchemaInfo,
-  getTypeAnnotation: getTsTypeAnnotation,
-} = require('./typescript/components/componentsUtils');
-
-const {
-  getSchemaInfo: getFlowSchemaInfo,
-  getTypeAnnotation: getFlowTypeAnnotation,
-} = require('./flow/components/componentsUtils');
-
 const invariant = require('invariant');
 import type {NativeModuleEnumMap} from '../CodegenSchema';
 
@@ -446,12 +436,24 @@ function buildSchema(
 function buildPropSchema(
   property: Object,
   types: TypeDeclarationMap,
-  language: string,
+  getLanguageSchemaInfo: (
+    property: Object,
+    types: TypeDeclarationMap,
+  ) => $FlowFixMe,
+  getLanguageTypeAnnotation: (
+    name: string,
+    annotation: $FlowFixMe | Object,
+    defaultValue: $FlowFixMe | null,
+    withNullDefault: boolean,
+    types: TypeDeclarationMap,
+    buildSchema: (
+      property: Object,
+      types: TypeDeclarationMap,
+    ) => ?NamedShape<T>,
+  ) => $FlowFixMe,
 ): ?NamedShape<PropTypeAnnotation> {
-  const info =
-    language === 'Typescript'
-      ? getTsSchemaInfo(property, types)
-      : getFlowSchemaInfo(property, types);
+  const info = getLanguageSchemaInfo(property, types);
+
   if (info == null) {
     return null;
   }
@@ -460,24 +462,14 @@ function buildPropSchema(
   return {
     name,
     optional,
-    typeAnnotation:
-      language === 'Typescript'
-        ? getTsTypeAnnotation(
-            name,
-            typeAnnotation,
-            defaultValue,
-            withNullDefault,
-            types,
-            buildPropSchema,
-          )
-        : getFlowTypeAnnotation(
-            name,
-            typeAnnotation,
-            defaultValue,
-            withNullDefault,
-            types,
-            buildPropSchema,
-          ),
+    typeAnnotation: getLanguageTypeAnnotation(
+      name,
+      typeAnnotation,
+      defaultValue,
+      withNullDefault,
+      types,
+      buildPropSchema,
+    ),
   };
 }
 

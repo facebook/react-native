@@ -111,11 +111,7 @@ function detectArrayType<T>(
   typeAnnotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // Covers: readonly T[]
   if (
@@ -173,15 +169,11 @@ function detectArrayType<T>(
 function buildObjectType<T>(
   rawProperties: Array<$FlowFixMe>,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   const flattenedProperties = flattenProperties(rawProperties, types);
   const properties = flattenedProperties
-    .map(prop => buildSchema(prop, types, 'Typescript'))
+    .map(prop => buildSchema(prop, types, getSchemaInfo, getTypeAnnotation))
     .filter(Boolean);
 
   return {
@@ -197,11 +189,7 @@ function getCommonTypeAnnotation<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   switch (type) {
     case 'TSTypeLiteral':
@@ -284,11 +272,7 @@ function getTypeAnnotationForArray<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation, types);
@@ -383,11 +367,7 @@ function getTypeAnnotation<T>(
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(annotation, types);

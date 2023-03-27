@@ -34,11 +34,7 @@ function getTypeAnnotationForArray<+T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
@@ -67,7 +63,9 @@ function getTypeAnnotationForArray<+T>(
           objectType.typeParameters.params[0].properties,
           types,
         )
-          .map(prop => buildSchema(prop, types, 'Flow'))
+          .map(prop =>
+            buildSchema(prop, types, getSchemaInfo, getTypeAnnotation),
+          )
           .filter(Boolean),
       };
     }
@@ -88,7 +86,9 @@ function getTypeAnnotationForArray<+T>(
             nestedObjectType.typeParameters.params[0].properties,
             types,
           )
-            .map(prop => buildSchema(prop, types, 'Flow'))
+            .map(prop =>
+              buildSchema(prop, types, getSchemaInfo, getTypeAnnotation),
+            )
             .filter(Boolean),
         },
       };
@@ -237,11 +237,7 @@ function getTypeAnnotation<+T>(
   defaultValue: $FlowFixMe | null,
   withNullDefault: boolean,
   types: TypeDeclarationMap,
-  buildSchema: (
-    property: PropAST,
-    types: TypeDeclarationMap,
-    language: $FlowFixMe,
-  ) => ?NamedShape<T>,
+  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
@@ -271,7 +267,7 @@ function getTypeAnnotation<+T>(
         typeAnnotation.typeParameters.params[0].properties,
         types,
       )
-        .map(prop => buildSchema(prop, types, 'Flow'))
+        .map(prop => buildSchema(prop, types, getSchemaInfo, getTypeAnnotation))
         .filter(Boolean),
     };
   }
