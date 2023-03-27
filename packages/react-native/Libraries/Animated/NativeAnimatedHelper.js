@@ -562,10 +562,13 @@ function transformDataType(value: number | string): number | string {
   if (typeof value !== 'string') {
     return value;
   }
-  if (/deg$/.test(value)) {
+
+  // Normalize degrees and radians to a number expressed in radians
+  if (value.endsWith('deg')) {
     const degrees = parseFloat(value) || 0;
-    const radians = (degrees * Math.PI) / 180.0;
-    return radians;
+    return (degrees * Math.PI) / 180.0;
+  } else if (value.endsWith('rad')) {
+    return parseFloat(value) || 0;
   } else {
     return value;
   }
