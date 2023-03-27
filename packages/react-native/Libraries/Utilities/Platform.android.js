@@ -32,7 +32,7 @@ const Platform = {
       major: number,
       minor: number,
       patch: number,
-      prerelease: ?string,
+      prerelease: ?number,
     |},
     Version: number,
     Release: string,
