@@ -39,8 +39,12 @@ exports.checkVersions = function checkVersions(): void {
   }
 };
 
+// Note: in OSS, the prerelease version is usually 0.Y.0-rc.W, so it is a string and not a number
+// Then we need to keep supporting that object shape.
 function _formatVersion(
-  version: (typeof Platform)['constants']['reactNativeVersion'],
+  version:
+    | (typeof Platform)['constants']['reactNativeVersion']
+    | {major: number, minor: number, patch: number, prerelease: ?string},
 ): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
