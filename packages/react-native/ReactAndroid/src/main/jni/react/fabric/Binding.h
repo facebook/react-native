@@ -39,7 +39,7 @@ class Binding : public jni::HybridClass<Binding>,
                 public LayoutAnimationStatusDelegate {
  public:
   constexpr static const char *const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/Binding;";
+      "Lcom/facebook/react/fabric/BindingImpl;";
 
   static void registerNatives();
 
