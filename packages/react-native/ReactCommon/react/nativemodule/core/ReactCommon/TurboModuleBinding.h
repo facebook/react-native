@@ -21,6 +21,8 @@ enum class TurboModuleBindingMode : uint8_t {
   Eager = 2,
 };
 
+class BridgelessNativeModuleProxy;
+
 /**
  * Represents the JavaScript binding for the TurboModule system.
  */
@@ -33,13 +35,16 @@ class TurboModuleBinding {
   static void install(
       jsi::Runtime &runtime,
       TurboModuleBindingMode bindingMode,
-      TurboModuleProviderFunctionType &&moduleProvider);
+      TurboModuleProviderFunctionType &&moduleProvider,
+      TurboModuleProviderFunctionType &&legacyModuleProvider = nullptr);
 
- private:
   TurboModuleBinding(
       TurboModuleBindingMode bindingMode,
       TurboModuleProviderFunctionType &&moduleProvider);
   virtual ~TurboModuleBinding();
+
+ private:
+  friend BridgelessNativeModuleProxy;
 
   /**
    * A lookup function exposed to JS to get an instance of a TurboModule

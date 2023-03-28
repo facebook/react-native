@@ -6,11 +6,13 @@
  */
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
+#include <ReactCommon/JavaInteropTurboModule.h>
 #include <ReactCommon/TurboCxxModule.h>
 #include <ReactCommon/TurboModuleBinding.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
@@ -19,6 +21,76 @@
 
 namespace facebook {
 namespace react {
+
+namespace {
+
+class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
+ public:
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/turbomodule/core/TurboModuleInteropUtils$MethodDescriptor;";
+
+  JavaInteropTurboModule::MethodDescriptor toMethodDescriptor() {
+    return JavaInteropTurboModule::MethodDescriptor{
+        .methodName = getMethodName(),
+        .jniSignature = getJNISignature(),
+        .jsiReturnKind = getJSIReturnKind(),
+        .jsArgCount = getJSArgCount(),
+    };
+  }
+
+ private:
+  std::string getMethodName() {
+    static const auto field =
+        javaClassStatic()->getField<jstring>("methodName");
+    return getFieldValue(field)->toStdString();
+  }
+
+  std::string getJNISignature() {
+    static const auto field =
+        javaClassStatic()->getField<jstring>("jniSignature");
+    return getFieldValue(field)->toStdString();
+  }
+
+  TurboModuleMethodValueKind getJSIReturnKind() {
+    static const auto field =
+        javaClassStatic()->getField<jstring>("jsiReturnKind");
+    const std::string jsiReturnKind = getFieldValue(field)->toStdString();
+    if (jsiReturnKind == "VoidKind") {
+      return VoidKind;
+    }
+    if (jsiReturnKind == "BooleanKind") {
+      return BooleanKind;
+    }
+    if (jsiReturnKind == "NumberKind") {
+      return NumberKind;
+    }
+    if (jsiReturnKind == "StringKind") {
+      return StringKind;
+    }
+    if (jsiReturnKind == "ObjectKind") {
+      return ObjectKind;
+    }
+    if (jsiReturnKind == "ArrayKind") {
+      return ArrayKind;
+    }
+    if (jsiReturnKind == "FunctionKind") {
+      return FunctionKind;
+    }
+    if (jsiReturnKind == "PromiseKind") {
+      return PromiseKind;
+    }
+
+    throw new std::runtime_error(
+        std::string("Failed to convert jsiReturnKind \"") + jsiReturnKind +
+        "\" to TurboModuleMethodValueKind");
+  }
+
+  int getJSArgCount() {
+    static const auto field = javaClassStatic()->getField<int>("jsArgCount");
+    return getFieldValue(field);
+  }
+};
+} // namespace
 
 constexpr static auto ReactFeatureFlagsJavaDescriptor =
     "com/facebook/react/config/ReactFeatureFlags";
@@ -66,93 +138,200 @@ void TurboModuleManager::registerNatives() {
   });
 }
 
-void TurboModuleManager::installJSIBindings() {
+TurboModuleProviderFunctionType
+TurboModuleManager::createTurboModuleProvider() {
+  return
+      [turboModuleCache_ = std::weak_ptr<TurboModuleCache>(turboModuleCache_),
+       jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
+       nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
+       delegate_ = jni::make_weak(delegate_),
+       javaPart_ = jni::make_weak(javaPart_)](
+          const std::string &name) -> std::shared_ptr<TurboModule> {
+        auto turboModuleCache = turboModuleCache_.lock();
+        auto jsCallInvoker = jsCallInvoker_.lock();
+        auto nativeCallInvoker = nativeCallInvoker_.lock();
+        auto delegate = delegate_.lockLocal();
+        auto javaPart = javaPart_.lockLocal();
+
+        if (!turboModuleCache || !jsCallInvoker || !nativeCallInvoker ||
+            !delegate || !javaPart) {
+          return nullptr;
+        }
+
+        const char *moduleName = name.c_str();
+
+        TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
+
+        auto turboModuleLookup = turboModuleCache->find(name);
+        if (turboModuleLookup != turboModuleCache->end()) {
+          TurboModulePerfLogger::moduleJSRequireBeginningCacheHit(moduleName);
+          TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
+          return turboModuleLookup->second;
+        }
+
+        TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
+
+        auto cxxModule = delegate->cthis()->getTurboModule(name, jsCallInvoker);
+        if (cxxModule) {
+          turboModuleCache->insert({name, cxxModule});
+          return cxxModule;
+        }
+
+        static auto getTurboLegacyCxxModule =
+            javaPart->getClass()
+                ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
+                    const std::string &)>("getTurboLegacyCxxModule");
+        auto legacyCxxModule = getTurboLegacyCxxModule(javaPart.get(), name);
+
+        if (legacyCxxModule) {
+          TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+
+          auto turboModule = std::make_shared<react::TurboCxxModule>(
+              legacyCxxModule->cthis()->getModule(), jsCallInvoker);
+          turboModuleCache->insert({name, turboModule});
+
+          TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+          return turboModule;
+        }
+
+        static auto getTurboJavaModule =
+            javaPart->getClass()
+                ->getMethod<jni::alias_ref<JTurboModule>(const std::string &)>(
+                    "getTurboJavaModule");
+        auto moduleInstance = getTurboJavaModule(javaPart.get(), name);
+
+        if (moduleInstance) {
+          TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+          JavaTurboModule::InitParams params = {
+              .moduleName = name,
+              .instance = moduleInstance,
+              .jsInvoker = jsCallInvoker,
+              .nativeInvoker = nativeCallInvoker};
+
+          auto turboModule = delegate->cthis()->getTurboModule(name, params);
+          turboModuleCache->insert({name, turboModule});
+          TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+          return turboModule;
+        }
+
+        return nullptr;
+      };
+}
+
+TurboModuleProviderFunctionType
+TurboModuleManager::createLegacyModuleProvider() {
+  return [turboModuleCache_ =
+              std::weak_ptr<TurboModuleCache>(turboModuleCache_),
+          jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
+          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
+          delegate_ = jni::make_weak(delegate_),
+          javaPart_ = jni::make_weak(javaPart_)](
+             const std::string &name) -> std::shared_ptr<TurboModule> {
+    auto turboModuleCache = turboModuleCache_.lock();
+    auto jsCallInvoker = jsCallInvoker_.lock();
+    auto nativeCallInvoker = nativeCallInvoker_.lock();
+    auto delegate = delegate_.lockLocal();
+    auto javaPart = javaPart_.lockLocal();
+
+    if (!turboModuleCache || !jsCallInvoker || !nativeCallInvoker ||
+        !delegate || !javaPart) {
+      return nullptr;
+    }
+
+    const char *moduleName = name.c_str();
+
+    TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
+
+    auto turboModuleLookup = turboModuleCache->find(name);
+    if (turboModuleLookup != turboModuleCache->end()) {
+      TurboModulePerfLogger::moduleJSRequireBeginningCacheHit(moduleName);
+      TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
+      return turboModuleLookup->second;
+    }
+
+    TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
+
+    static auto getLegacyCxxModule =
+        javaPart->getClass()
+            ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
+                const std::string &)>("getLegacyCxxModule");
+    auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
+
+    if (legacyCxxModule) {
+      TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+
+      auto turboModule = std::make_shared<react::TurboCxxModule>(
+          legacyCxxModule->cthis()->getModule(), jsCallInvoker);
+      turboModuleCache->insert({name, turboModule});
+
+      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+      return turboModule;
+    }
+
+    static auto getLegacyJavaModule =
+        javaPart->getClass()
+            ->getMethod<jni::alias_ref<JNativeModule>(const std::string &)>(
+                "getLegacyJavaModule");
+    auto moduleInstance = getLegacyJavaModule(javaPart.get(), name);
+
+    if (moduleInstance) {
+      TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+      JavaTurboModule::InitParams params = {
+          .moduleName = name,
+          .instance = moduleInstance,
+          .jsInvoker = jsCallInvoker,
+          .nativeInvoker = nativeCallInvoker};
+
+      static auto getMethodDescriptorsFromModule =
+          javaPart->getClass()
+              ->getStaticMethod<jni::alias_ref<
+                  jni::JList<JMethodDescriptor::javaobject>::javaobject>(
+                  jni::alias_ref<JNativeModule>)>(
+                  "getMethodDescriptorsFromModule");
+
+      auto javaMethodDescriptors =
+          getMethodDescriptorsFromModule(javaPart->getClass(), moduleInstance);
+
+      std::vector<JavaInteropTurboModule::MethodDescriptor> methodDescriptors;
+      for (jni::alias_ref<JMethodDescriptor> javaMethodDescriptor :
+           *javaMethodDescriptors) {
+        methodDescriptors.push_back(javaMethodDescriptor->toMethodDescriptor());
+      }
+
+      auto turboModule =
+          std::make_shared<JavaInteropTurboModule>(params, methodDescriptors);
+
+      turboModuleCache->insert({name, turboModule});
+      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+      return turboModule;
+    }
+
+    return nullptr;
+  };
+}
+
+void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
   if (!jsCallInvoker_) {
     return; // Runtime doesn't exist when attached to Chrome debugger.
   }
 
-  runtimeExecutor_([this](jsi::Runtime &runtime) {
-    auto turboModuleProvider =
-        [turboModuleCache_ = std::weak_ptr<TurboModuleCache>(turboModuleCache_),
-         jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
-         nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
-         delegate_ = jni::make_weak(delegate_),
-         javaPart_ = jni::make_weak(javaPart_)](
-            const std::string &name) -> std::shared_ptr<TurboModule> {
-      auto turboModuleCache = turboModuleCache_.lock();
-      auto jsCallInvoker = jsCallInvoker_.lock();
-      auto nativeCallInvoker = nativeCallInvoker_.lock();
-      auto delegate = delegate_.lockLocal();
-      auto javaPart = javaPart_.lockLocal();
+  bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
-      if (!turboModuleCache || !jsCallInvoker || !nativeCallInvoker ||
-          !delegate || !javaPart) {
-        return nullptr;
-      }
-
-      const char *moduleName = name.c_str();
-
-      TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-
-      auto turboModuleLookup = turboModuleCache->find(name);
-      if (turboModuleLookup != turboModuleCache->end()) {
-        TurboModulePerfLogger::moduleJSRequireBeginningCacheHit(moduleName);
-        TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
-        return turboModuleLookup->second;
-      }
-
-      TurboModulePerfLogger::moduleJSRequireBeginningEnd(moduleName);
-
-      auto cxxModule = delegate->cthis()->getTurboModule(name, jsCallInvoker);
-      if (cxxModule) {
-        turboModuleCache->insert({name, cxxModule});
-        return cxxModule;
-      }
-
-      static auto getLegacyCxxModule =
-          javaPart->getClass()
-              ->getMethod<jni::alias_ref<CxxModuleWrapper::javaobject>(
-                  const std::string &)>("getLegacyCxxModule");
-      auto legacyCxxModule = getLegacyCxxModule(javaPart.get(), name);
-
-      if (legacyCxxModule) {
-        TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-
-        auto turboModule = std::make_shared<react::TurboCxxModule>(
-            legacyCxxModule->cthis()->getModule(), jsCallInvoker);
-        turboModuleCache->insert({name, turboModule});
-
-        TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-        return turboModule;
-      }
-
-      static auto getJavaModule =
-          javaPart->getClass()
-              ->getMethod<jni::alias_ref<JTurboModule>(const std::string &)>(
-                  "getJavaModule");
-      auto moduleInstance = getJavaModule(javaPart.get(), name);
-
-      if (moduleInstance) {
-        TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
-        JavaTurboModule::InitParams params = {
-            .moduleName = name,
-            .instance = moduleInstance,
-            .jsInvoker = jsCallInvoker,
-            .nativeInvoker = nativeCallInvoker};
-
-        auto turboModule = delegate->cthis()->getTurboModule(name, params);
-        turboModuleCache->insert({name, turboModule});
-        TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-        return turboModule;
-      }
-
-      return nullptr;
-    };
-
+  runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime &runtime) {
     TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
         getFeatureFlagValue("turboModuleBindingMode"));
+
+    if (isInteropLayerDisabled) {
+      TurboModuleBinding::install(
+          runtime, bindingMode, createTurboModuleProvider());
+      return;
+    }
+
     TurboModuleBinding::install(
-        runtime, bindingMode, std::move(turboModuleProvider));
+        runtime,
+        bindingMode,
+        createTurboModuleProvider(),
+        createLegacyModuleProvider());
   });
 }
 

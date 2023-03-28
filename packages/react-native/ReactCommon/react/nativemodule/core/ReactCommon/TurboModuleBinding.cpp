@@ -18,9 +18,13 @@ using namespace facebook;
 namespace facebook {
 namespace react {
 
-namespace {
 class BridgelessNativeModuleProxy : public jsi::HostObject {
+  std::unique_ptr<TurboModuleBinding> binding_;
+
  public:
+  BridgelessNativeModuleProxy(std::unique_ptr<TurboModuleBinding> binding)
+      : binding_(std::move(binding)) {}
+
   jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
     /**
      * BatchedBridge/NativeModules.js contains this line:
@@ -35,9 +39,15 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
      * We return false from this property access, so that we can fail on the
      * actual NativeModule require that happens later, which is more actionable.
      */
-    if (name.utf8(runtime) == "__esModule") {
+    std::string moduleName = name.utf8(runtime);
+    if (moduleName == "__esModule") {
       return jsi::Value(false);
     }
+
+    if (binding_) {
+      return binding_->getModule(runtime, moduleName);
+    }
+
     throw jsi::JSError(
         runtime,
         "Tried to access NativeModule \"" + name.utf8(runtime) +
@@ -53,7 +63,6 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
         "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
   }
 };
-} // namespace
 
 // TODO(148359183): Merge this with the Bridgeless defineReadOnlyGlobal util
 static void defineReadOnlyGlobal(
@@ -88,7 +97,8 @@ TurboModuleBinding::TurboModuleBinding(
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
     TurboModuleBindingMode bindingMode,
-    TurboModuleProviderFunctionType &&moduleProvider) {
+    TurboModuleProviderFunctionType &&moduleProvider,
+    TurboModuleProviderFunctionType &&legacyModuleProvider) {
   runtime.global().setProperty(
       runtime,
       "__turboModuleProxy",
@@ -111,11 +121,23 @@ void TurboModuleBinding::install(
           }));
 
   if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
-    defineReadOnlyGlobal(
-        runtime,
-        "nativeModuleProxy",
-        jsi::Object::createFromHostObject(
-            runtime, std::make_shared<BridgelessNativeModuleProxy>()));
+    if (legacyModuleProvider != nullptr) {
+      defineReadOnlyGlobal(runtime, "RN$TurboInterop", jsi::Value(true));
+      defineReadOnlyGlobal(
+          runtime,
+          "nativeModuleProxy",
+          jsi::Object::createFromHostObject(
+              runtime,
+              std::make_shared<BridgelessNativeModuleProxy>(
+                  std::make_unique<TurboModuleBinding>(
+                      bindingMode, std::move(legacyModuleProvider)))));
+    } else {
+      defineReadOnlyGlobal(
+          runtime,
+          "nativeModuleProxy",
+          jsi::Object::createFromHostObject(
+              runtime, std::make_shared<BridgelessNativeModuleProxy>(nullptr)));
+    }
   }
 }
 
