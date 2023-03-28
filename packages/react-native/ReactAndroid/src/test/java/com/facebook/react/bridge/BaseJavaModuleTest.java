@@ -9,28 +9,36 @@ package com.facebook.react.bridge;
 
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+
+@Implements(SoLoader.class)
+class ShadowSoLoader {
+  @Implementation
+  public static void init(Context context, int flags) {}
+
+  @Implementation
+  public static boolean loadLibrary(String shortName) {
+    return true;
+  }
+}
 
 /** Tests for {@link BaseJavaModule} and {@link JavaModuleWrapper} */
-@PrepareForTest({ReadableNativeArray.class, SoLoader.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Config(
+    shadows = {
+      ShadowSoLoader.class,
+    })
 @RunWith(RobolectricTestRunner.class)
-@Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class BaseJavaModuleTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
-
   private List<JavaModuleWrapper.MethodDescriptor> mMethods;
   private JavaModuleWrapper mWrapper;
   private ReadableNativeArray mArguments;
@@ -40,8 +48,7 @@ public class BaseJavaModuleTest {
     ModuleHolder moduleHolder = new ModuleHolder(new MethodsModule());
     mWrapper = new JavaModuleWrapper(null, moduleHolder);
     mMethods = mWrapper.getMethodDescriptors();
-    PowerMockito.mockStatic(SoLoader.class);
-    mArguments = PowerMockito.mock(ReadableNativeArray.class);
+    mArguments = Mockito.mock(ReadableNativeArray.class);
   }
 
   private int findMethod(String mname, List<JavaModuleWrapper.MethodDescriptor> methods) {
