@@ -39,9 +39,12 @@ public abstract class TurboModuleManagerDelegate {
   public abstract TurboModule getModule(String moduleName);
 
   /**
-   * Create an return a CxxModuleWrapper NativeModule with name `moduleName`. If `moduleName` isn't
-   * a CxxModule, return null.
+   * Create and return a CxxModuleWrapper NativeModule with name `moduleName`. If `moduleName` isn't
+   * a CxxModule, return null. CxxModuleWrapper must implement TurboModule.
+   *
+   * <p>Deprecated. Please just return your CxxModuleWrappers from getModule.
    */
+  @Deprecated
   @Nullable
   public abstract CxxModuleWrapper getLegacyCxxModule(String moduleName);
 
