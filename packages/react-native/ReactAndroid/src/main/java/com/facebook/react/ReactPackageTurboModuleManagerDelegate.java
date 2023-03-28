@@ -44,6 +44,12 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         && ReactFeatureFlags.unstable_useTurboModuleInterop;
   }
 
+  private static boolean shouldRouteTurboModulesThroughInteropLayer() {
+    return ReactFeatureFlags.enableBridgelessArchitecture
+        && ReactFeatureFlags.unstable_useTurboModuleInterop
+        && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+  }
+
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
@@ -146,22 +152,25 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public TurboModule getModule(String moduleName) {
+    if (shouldRouteTurboModulesThroughInteropLayer()) {
+      return null;
+    }
+
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       try {
         final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
-        if (moduleInfo == null
-            // Skip TurboModule-incompatible modules
-            || !moduleInfo.isTurboModule()
-            || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
-          continue;
+        if (moduleInfo != null
+            && moduleInfo.isTurboModule()
+            && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
+
+          final NativeModule module = moduleProvider.getModule(moduleName);
+          if (module != null) {
+            resolvedModule = module;
+          }
         }
 
-        final NativeModule module = moduleProvider.getModule(moduleName);
-        if (module != null) {
-          resolvedModule = module;
-        }
       } catch (IllegalArgumentException ex) {
         /**
          * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
@@ -191,17 +200,16 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       try {
         final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
-        if (moduleInfo == null
-            // Skip TurboModule-compatible modules
-            || moduleInfo.isTurboModule()
-            || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
-          continue;
+        if (moduleInfo != null
+            && (!moduleInfo.isTurboModule() || shouldRouteTurboModulesThroughInteropLayer())
+            && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
+
+          final NativeModule module = moduleProvider.getModule(moduleName);
+          if (module != null) {
+            resolvedModule = module;
+          }
         }
 
-        final NativeModule module = moduleProvider.getModule(moduleName);
-        if (module != null) {
-          resolvedModule = module;
-        }
       } catch (IllegalArgumentException ex) {
         /**
          * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
@@ -212,7 +220,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     // Skip TurboModule-compatible modules
-    if (resolvedModule instanceof TurboModule) {
+    boolean isLegacyModule = !(resolvedModule instanceof TurboModule);
+    if (!(isLegacyModule || shouldRouteTurboModulesThroughInteropLayer())) {
       return null;
     }
 
