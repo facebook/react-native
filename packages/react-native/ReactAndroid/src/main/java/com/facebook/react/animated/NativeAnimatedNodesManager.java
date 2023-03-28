@@ -25,6 +25,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
@@ -570,7 +571,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
         return;
       }
       UIManager uiManager =
-          UIManagerHelper.getUIManager(mReactApplicationContext, event.getUIManagerType());
+          UIManagerHelper.getUIManager(
+              mReactApplicationContext,
+              ViewUtil.getUIManagerType(event.getViewTag(), event.getSurfaceId()));
       if (uiManager == null) {
         return;
       }

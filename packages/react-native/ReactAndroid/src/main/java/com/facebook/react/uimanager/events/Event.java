@@ -11,8 +11,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.common.UIManagerType;
-import com.facebook.react.uimanager.common.ViewUtil;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -35,7 +33,6 @@ public abstract class Event<T extends Event> {
   private static int sUniqueID = 0;
 
   private boolean mInitialized;
-  private @UIManagerType int mUIManagerType;
   private int mSurfaceId;
   private int mViewTag;
   private long mTimestampMs;
@@ -70,7 +67,6 @@ public abstract class Event<T extends Event> {
   protected void init(int surfaceId, int viewTag, long timestampMs) {
     mSurfaceId = surfaceId;
     mViewTag = viewTag;
-    mUIManagerType = ViewUtil.getUIManagerType(viewTag, surfaceId);
     mTimestampMs = timestampMs;
     mInitialized = true;
   }
@@ -137,10 +133,6 @@ public abstract class Event<T extends Event> {
   /*package*/ final void dispose() {
     mInitialized = false;
     onDispose();
-  }
-
-  public final @UIManagerType int getUIManagerType() {
-    return mUIManagerType;
   }
 
   /** @return the name of this event as registered in JS */
