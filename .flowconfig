@@ -63,6 +63,7 @@ nonstrict-import=warn
 deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
+unused-promise=error
 
 [strict]
 deprecated-type
