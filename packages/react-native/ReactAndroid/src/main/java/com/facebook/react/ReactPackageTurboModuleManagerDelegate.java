@@ -39,6 +39,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         && ReactFeatureFlags.unstable_useTurboModuleInterop;
   }
 
+  private static boolean shouldCreateLegacyModules() {
+    return ReactFeatureFlags.enableBridgelessArchitecture
+        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  }
+
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
@@ -147,6 +152,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       try {
         final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
         if (moduleInfo == null
+            // Skip TurboModule-incompatible modules
             || !moduleInfo.isTurboModule()
             || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
           continue;
@@ -165,11 +171,52 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       }
     }
 
-    if (resolvedModule instanceof TurboModule) {
-      return (TurboModule) resolvedModule;
+    // Skip TurboModule-incompatible modules
+    if (!(resolvedModule instanceof TurboModule)) {
+      return null;
     }
 
-    return null;
+    return (TurboModule) resolvedModule;
+  }
+
+  @Nullable
+  @Override
+  public NativeModule getLegacyModule(String moduleName) {
+    if (!shouldCreateLegacyModules()) {
+      return null;
+    }
+
+    NativeModule resolvedModule = null;
+
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      try {
+        final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+        if (moduleInfo == null
+            // Skip TurboModule-compatible modules
+            || moduleInfo.isTurboModule()
+            || resolvedModule != null && !moduleInfo.canOverrideExistingModule()) {
+          continue;
+        }
+
+        final NativeModule module = moduleProvider.getModule(moduleName);
+        if (module != null) {
+          resolvedModule = module;
+        }
+      } catch (IllegalArgumentException ex) {
+        /**
+         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
+         * provide the module.
+         */
+      }
+    }
+
+    // Skip TurboModule-compatible modules
+    if (resolvedModule instanceof TurboModule) {
+      return null;
+    }
+
+    return resolvedModule;
   }
 
   @Deprecated
