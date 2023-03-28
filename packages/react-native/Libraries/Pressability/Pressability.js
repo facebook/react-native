@@ -547,6 +547,12 @@ export default class Pressability {
       },
 
       onClick: (event: PressEvent): void => {
+        // If event has `pointerType`, it was emitted from a PointerEvent and
+        // we should ignore it to avoid triggering `onPress` twice.
+        if (event?.nativeEvent?.hasOwnProperty?.('pointerType')) {
+          return;
+        }
+
         const {onPress, disabled} = this._config;
         if (onPress != null && disabled !== true) {
           onPress(event);
