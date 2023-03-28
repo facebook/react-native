@@ -7,33 +7,25 @@
 
 #pragma once
 
-#include "FabricMountItem.h"
-
-#include <react/config/ReactNativeConfig.h>
-#include <react/renderer/animations/LayoutAnimationDriver.h>
-#include <react/renderer/mounting/MountingCoordinator.h>
-#include <react/renderer/mounting/ShadowView.h>
-#include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
-#include <react/utils/ContextContainer.h>
-
-#include <fbjni/fbjni.h>
-
 #include <mutex>
+
+#include <butter/set.h>
+#include <fbjni/fbjni.h>
+#include <react/fabric/JFabricUIManager.h>
+#include <react/renderer/mounting/MountingCoordinator.h>
+#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
+class ReactNativeConfig;
+struct ShadowView;
+
 class FabricMountingManager final {
  public:
-  constexpr static auto UIManagerJavaDescriptor =
-      "com/facebook/react/fabric/FabricUIManager";
-
-  constexpr static auto ReactFeatureFlagsJavaDescriptor =
-      "com/facebook/react/config/ReactFeatureFlags";
-
   FabricMountingManager(
       std::shared_ptr<const ReactNativeConfig> &config,
-      jni::global_ref<jobject> &javaUIManager);
+      jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
 
   void onSurfaceStart(SurfaceId surfaceId);
 
@@ -41,7 +33,7 @@ class FabricMountingManager final {
 
   void preallocateShadowView(SurfaceId surfaceId, ShadowView const &shadowView);
 
-  void executeMount(MountingCoordinator::Shared mountingCoordinator);
+  void executeMount(const MountingCoordinator::Shared &mountingCoordinator);
 
   void dispatchCommand(
       ShadowView const &shadowView,
@@ -62,7 +54,7 @@ class FabricMountingManager final {
   void onAllAnimationsComplete();
 
  private:
-  jni::global_ref<jobject> javaUIManager_;
+  jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
 
   std::recursive_mutex commitMutex_;
 

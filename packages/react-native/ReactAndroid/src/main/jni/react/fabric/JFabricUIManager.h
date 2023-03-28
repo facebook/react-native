@@ -9,9 +9,9 @@
 
 #include <fbjni/fbjni.h>
 
-#include "Binding.h"
-
 namespace facebook::react {
+
+class Binding;
 
 class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
  public:

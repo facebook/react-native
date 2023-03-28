@@ -428,8 +428,6 @@ def react_fabric_component_plugin_provider(name, native_class_func):
 def react_cxx_module_plugin_provider(name, function):
     return None
 
-HERMES_BYTECODE_VERSION = -1
-
 RCT_IMAGE_DATA_DECODER_SOCKET = None
 RCT_IMAGE_URL_LOADER_SOCKET = None
 RCT_URL_REQUEST_HANDLER_SOCKET = None

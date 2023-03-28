@@ -117,6 +117,12 @@ AsyncPromise<std::string> NativeCxxModuleExample::getValueWithPromise(
   return promise;
 }
 
+std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
+    jsi::Runtime &rt,
+    std::optional<bool> optionalArg) {
+  return optionalArg;
+}
+
 void NativeCxxModuleExample::voidFunc(jsi::Runtime &rt) {
   // Nothing to do
 }

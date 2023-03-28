@@ -24,6 +24,7 @@ import {
   propertyNames,
   getCommandOptions,
   getOptions,
+  getCommandTypeNameAndOptionsExpression,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1411,18 +1412,148 @@ describe('getOptions', () => {
   });
 });
 
-describe('propertyNames', () => {
-  it('returns propertyNames with valid properties', () => {
-    const properties = [{key: {name: 'testName'}}, {key: {name: 'testName2'}}];
-    const expected = ['testName', 'testName2'];
-    expect(propertyNames(properties)).toEqual(expected);
+describe('getCommandTypeNameAndOptionsExpression', () => {
+  it("returns undefined when namedExport isn't well formatted", () => {
+    expect(
+      getCommandTypeNameAndOptionsExpression(null, flowParser),
+    ).toBeUndefined();
+
+    expect(
+      getCommandTypeNameAndOptionsExpression(undefined, flowParser),
+    ).toBeUndefined();
+
+    expect(
+      getCommandTypeNameAndOptionsExpression({}, flowParser),
+    ).toBeUndefined();
   });
 
-  it('returns empty propertyNames with incorrect properties', () => {
-    const properties = [
-      {key: {invalid: 'testName'}},
-      {key: {invalid: 'testName2'}},
-    ];
-    expect(propertyNames(properties)).toEqual([]);
+  it('returns undefined when the called expression name is not codegenNativeCommands', () => {
+    const namedExportMock = {
+      declaration: {
+        declarations: [
+          {
+            init: {
+              callee: {
+                name: 'notCodegenNativeCommands',
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    expect(
+      getCommandTypeNameAndOptionsExpression(namedExportMock, flowParser),
+    ).toBeUndefined();
+  });
+
+  it("throws when the called expression doesn't have 1 argument", () => {
+    const namedExportMock = {
+      declaration: {
+        declarations: [
+          {
+            init: {
+              callee: {
+                name: 'codegenNativeCommands',
+              },
+              arguments: [],
+            },
+          },
+        ],
+      },
+    };
+
+    expect(() =>
+      getCommandTypeNameAndOptionsExpression(namedExportMock, flowParser),
+    ).toThrow(
+      new Error(
+        'codegenNativeCommands must be passed options including the supported commands',
+      ),
+    );
+  });
+
+  it('throws when the type of the argument is not a generic type annotation', () => {
+    const namedExportMock = {
+      declaration: {
+        declarations: [
+          {
+            init: {
+              callee: {
+                name: 'codegenNativeCommands',
+              },
+              arguments: [{}],
+              typeArguments: {params: [{type: 'StringTypeAnnotation'}]},
+            },
+          },
+        ],
+      },
+    };
+
+    expect(() =>
+      getCommandTypeNameAndOptionsExpression(namedExportMock, flowParser),
+    ).toThrow(
+      new Error(
+        "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
+      ),
+    );
+  });
+
+  it('returns the command TypeName and options expression when the named export is valid', () => {
+    const commandTypeName = 'MyCommandType';
+    const commandOptionsExpression = {
+      type: 'ObjectExpression',
+      properties: [],
+    };
+
+    const namedExportMock = {
+      declaration: {
+        declarations: [
+          {
+            init: {
+              callee: {
+                name: 'codegenNativeCommands',
+              },
+              arguments: [commandOptionsExpression],
+              typeArguments: {
+                params: [
+                  {
+                    type: 'GenericTypeAnnotation',
+                    id: {
+                      name: commandTypeName,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    expect(
+      getCommandTypeNameAndOptionsExpression(namedExportMock, flowParser),
+    ).toStrictEqual({
+      commandTypeName,
+      commandOptionsExpression,
+    });
+  });
+
+  describe('propertyNames', () => {
+    it('returns propertyNames with valid properties', () => {
+      const properties = [
+        {key: {name: 'testName'}},
+        {key: {name: 'testName2'}},
+      ];
+      const expected = ['testName', 'testName2'];
+      expect(propertyNames(properties)).toEqual(expected);
+    });
+
+    it('returns empty propertyNames with incorrect properties', () => {
+      const properties = [
+        {key: {invalid: 'testName'}},
+        {key: {invalid: 'testName2'}},
+      ];
+      expect(propertyNames(properties)).toEqual([]);
+    });
   });
 });

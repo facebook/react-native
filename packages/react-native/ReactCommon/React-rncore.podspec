@@ -16,7 +16,15 @@ else
   source[:tag] = "v#{version}"
 end
 
-react_native_path = ".."
+# We are using two different paths for react native because of the way how js_srcs_dir and output_dir options are used
+# output_dir option usage was introduced in https://github.com/facebook/react-native/pull/36210
+# React-rncore.podspec is the only podspec in the project that uses this option
+# We should rethink this approach in T148704916
+
+# Relative path to react native from iOS project root (e.g. <ios-project-root>/../node_modules/react-native)
+react_native_dependency_path = ENV['REACT_NATIVE_PATH']
+# Relative path to react native from current podspec
+react_native_sources_path = '..'
 
 Pod::Spec.new do |s|
   s.name                   = "React-rncore"
@@ -33,10 +41,10 @@ Pod::Spec.new do |s|
 
 
   use_react_native_codegen!(s, {
-    :react_native_path => react_native_path,
-    :js_srcs_dir => "#{react_native_path}/Libraries",
+    :react_native_path => react_native_sources_path,
+    :js_srcs_dir => "#{react_native_sources_path}/Libraries",
     :library_name => "rncore",
     :library_type => "components",
-    :output_dir => "#{react_native_path}/react-native/ReactCommon"
+    :output_dir => "#{react_native_dependency_path}/ReactCommon"
   })
 end

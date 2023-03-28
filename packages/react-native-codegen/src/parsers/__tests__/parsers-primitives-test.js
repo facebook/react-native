@@ -1263,6 +1263,7 @@ describe('emitPartial', () => {
     nullable: boolean,
   ): $FlowFixMe {
     return emitPartial(
+      nullable,
       hasteModuleName,
       typeAnnotation,
       /* types: TypeDeclarationMap */
@@ -1278,7 +1279,6 @@ describe('emitPartial', () => {
       },
       /* cxxOnly: boolean */
       false,
-      nullable,
       parser,
     );
   }
@@ -1492,6 +1492,17 @@ describe('emitCommonTypes', () => {
 
     it("returns 'GenericObjectTypeAnnotation'", () => {
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when typeAnnotation is invalid', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'InvalidName',
+      },
+    };
+    it('returns null', () => {
+      expect(emitCommonTypesForUnitTest(typeAnnotation, false)).toBeNull();
     });
   });
 });

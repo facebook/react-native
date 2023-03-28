@@ -75,9 +75,9 @@ waitForWebSocketServer() {
 
 runTests() {
   # shellcheck disable=SC1091
-  source "./scripts/.tests.env"
+  source "$ROOT/scripts/.tests.env"
   xcodebuild build test \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
@@ -86,7 +86,7 @@ runTests() {
 
 buildProject() {
   xcodebuild build \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator
 }
@@ -105,16 +105,21 @@ xcbeautifyFormat() {
   xcbeautify --report junit --report-path "$REPORTS_DIR/ios/results.xml"
 }
 
-preloadBundles() {
-  # Preload the RNTesterApp bundle for better performance in integration tests
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+preloadBundlesRNIntegrationTests() {
+  # Preload IntegrationTests bundles (/)
+  # TODO(T149119847): These need to be relocated into a dir with a Metro config
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
+preloadBundlesRNTester() {
+  # Preload RNTesterApp bundles (packages/rn-tester/)
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+}
+
 main() {
-  cd "$ROOT" || exit
+  cd "$ROOT/packages/rn-tester" || exit
 
   # If first argument is "test", actually start the packager and run tests.
   # Otherwise, just build RNTester and exit
@@ -122,13 +127,15 @@ main() {
 
     # Start the WebSocket test server
     echo "Launch WebSocket Server"
-    sh "./IntegrationTests/launchWebSocketServer.sh" &
+    sh "$ROOT/IntegrationTests/launchWebSocketServer.sh" &
     waitForWebSocketServer
 
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
     waitForPackager
-    preloadBundles
+    preloadBundlesRNTester
+    # TODO(T149119847)
+    # preloadBundlesRNIntegrationTests
 
     # Build and run tests.
     if [ -x "$(command -v xcbeautify)" ]; then

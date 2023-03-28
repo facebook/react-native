@@ -158,6 +158,10 @@ public class JSPointerDispatcher {
           motionEvent,
           enterViewTargets,
           eventDispatcher);
+    } else {
+      // There are cases when the pointer may have moved in the same frame as the down event.
+      // Dispatch the move event before the down event.
+      onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
     }
 
     boolean listeningForDown =

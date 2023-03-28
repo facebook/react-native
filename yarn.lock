@@ -2414,6 +2414,11 @@
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
 
+"@rnx-kit/rn-changelog-generator@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@rnx-kit/rn-changelog-generator/-/rn-changelog-generator-0.4.0.tgz#637d87bcf8de6e87599930ed88d9375010277660"
+  integrity sha512-Igq/5lA6/bYSAdxfk43nbMXIt4yKIspds2fsv5eqgeg4elLeWfzHSEM3tU0wPDnOk4m3qzVEyO9fbtu616Dyhw==
+
 "@seadub/danger-plugin-eslint@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@seadub/danger-plugin-eslint/-/danger-plugin-eslint-3.0.2.tgz#9a51d9f1a103a274264c30212234001de0b417c1"
@@ -3698,17 +3703,6 @@ cosmiconfig@^5.0.5, cosmiconfig@^5.1.0:
     js-yaml "^3.13.0"
     parse-json "^4.0.0"
 
-coveralls@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/coveralls/-/coveralls-3.1.1.tgz#f5d4431d8b5ae69c5079c8f8ca00d64ac77cf081"
-  integrity sha512-+dxnG2NHncSD1NrqbSM3dn/lE57O6Qf/koe9+I7c+wzkqRmEvcp0kgJdxKInzYzkICKkFMZsX3Vct3++tsF9ww==
-  dependencies:
-    js-yaml "^3.13.1"
-    lcov-parse "^1.0.0"
-    log-driver "^1.2.7"
-    minimist "^1.2.5"
-    request "^2.88.2"
-
 cross-spawn@^6.0.0:
   version "6.0.5"
   resolved "https://registry.yarnpkg.com/cross-spawn/-/cross-spawn-6.0.5.tgz#4a5ec7c64dfae22c3a14124dbacdee846d80cbc4"
@@ -4610,10 +4604,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.202.0:
-  version "0.202.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.202.0.tgz#1e2eb221252c2ab55c997e5eb921902f3181cc4e"
-  integrity sha512-Yz+yNapJMWWV6Z6pZnBR+naMhFbFJbmMS8ZBQCFUHRqN1TTw7uwitYxRj8DyzLyTpcPReSAjWbWawWPsXJot3w==
+flow-bin@^0.202.1:
+  version "0.202.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.202.1.tgz#3ae3c7449e4ff4a3510b0bbdc55fba44b1c41b8b"
+  integrity sha512-bXMnyu+ktp3j0Ryl2YHu7hR/VoCt8/+naXksMBWUIUpyKVCri8eFBpb0IE2y5u3hcSRVCsZYNPAYgFJ250hMhg==
 
 flow-enums-runtime@^0.0.5:
   version "0.0.5"
@@ -6136,11 +6130,6 @@ language-tags@^1.0.5:
   dependencies:
     language-subtag-registry "~0.3.2"
 
-lcov-parse@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/lcov-parse/-/lcov-parse-1.0.0.tgz#eb0d46b54111ebc561acb4c408ef9363bdc8f7e0"
-  integrity sha1-6w1GtUER68VhrLTECO+TY73I9+A=
-
 leven@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/leven/-/leven-3.1.0.tgz#77891de834064cccba82ae7842bb6b14a13ed7f2"
@@ -6247,11 +6236,6 @@ lodash@^4.17.19, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
-
-log-driver@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/log-driver/-/log-driver-1.2.7.tgz#63b95021f0702fedfa2c9bb0a24e7797d71871d8"
-  integrity sha512-U7KCmLdqsGHBLeWqYlFA0V0Sl6P08EE1ZrmA9cxjUE0WVqT9qnyVDPz1kzpFEP0jdJuFnasWIfSd7fsaNXkpbg==
 
 log-symbols@^4.1.0:
   version "4.1.0"
@@ -6696,7 +6680,7 @@ minimatch@^3.0.2, minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6:
+minimist@^1.2.0, minimist@^1.2.6:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.6.tgz#8637a5b759ea0d6e98702cfb3a9283323c93af44"
   integrity sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q==

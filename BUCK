@@ -12,7 +12,6 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
-    "HERMES_BYTECODE_VERSION",
     "IOS",
     "RCT_IMAGE_DATA_DECODER_SOCKET",
     "RCT_IMAGE_URL_LOADER_SOCKET",
@@ -429,9 +428,7 @@ rn_apple_xplat_cxx_library(
         "linux",
         ["-D PIC_MODIFIER=@PLT"],
     )],
-    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + [
-        "-DHERMES_BYTECODE_VERSION={}".format(HERMES_BYTECODE_VERSION),
-    ] + rn_extra_build_flags(),
+    preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode() + rn_extra_build_flags(),
     visibility = [
         "//fbobjc/Apps/Internal/SparkLabs/...",
         "//fbobjc/Apps/Internal/Venice/...",

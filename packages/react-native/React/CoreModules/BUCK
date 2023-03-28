@@ -111,9 +111,6 @@ rn_apple_library(
             name = "DevLoadingView",
             native_class_func = "RCTDevLoadingViewCls",
         ) + react_module_plugin_providers(
-            name = "DevSplitBundleLoader",
-            native_class_func = "RCTDevSplitBundleLoaderCls",
-        ) + react_module_plugin_providers(
             name = "EventDispatcher",
             native_class_func = "RCTEventDispatcherCls",
         ),

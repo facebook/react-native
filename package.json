@@ -41,7 +41,7 @@
     "test-typescript": "dtslint packages/react-native/types",
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib  packages/react-native/types",
     "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
-    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js"
+    "align-package-versions": "node -e \"require('./scripts/monorepo/align-package-versions')()\""
   },
   "workspaces": [
     "packages/*"
@@ -60,10 +60,9 @@
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
     "async": "^3.2.2",
-    "babel-plugin-transform-flow-enums":"^0.0.2",
+    "babel-plugin-transform-flow-enums": "^0.0.2",
     "clang-format": "^1.8.0",
     "connect": "^3.6.5",
-    "coveralls": "^3.1.1",
     "eslint": "^8.19.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-babel": "^5.3.1",
@@ -78,7 +77,7 @@
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
-    "flow-bin": "^0.202.0",
+    "flow-bin": "^0.202.1",
     "hermes-eslint": "0.8.0",
     "inquirer": "^7.1.0",
     "jest": "^29.2.1",

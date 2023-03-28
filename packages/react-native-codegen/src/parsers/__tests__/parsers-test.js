@@ -90,6 +90,20 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('isGenericTypeAnnotation', () => {
+    it('returns true if it is a generic type annotation', () => {
+      expect(parser.isGenericTypeAnnotation('GenericTypeAnnotation')).toBe(
+        true,
+      );
+    });
+
+    it('returns false if it is not a generic type annotation', () => {
+      expect(parser.isGenericTypeAnnotation('StringTypeAnnotation')).toBe(
+        false,
+      );
+    });
+  });
+
   describe('callExpressionTypeParameters', () => {
     it('returns type arguments if it is a valid node', () => {
       const node = {
@@ -325,6 +339,18 @@ describe('TypeScriptParser', () => {
     it('returns false if it is a invalid node', () => {
       const node = {};
       expect(parser.isModuleInterface(node)).toBe(false);
+    });
+  });
+
+  describe('isGenericTypeAnnotation', () => {
+    it('returns true if it is a generic type annotation', () => {
+      expect(parser.isGenericTypeAnnotation('TSTypeReference')).toBe(true);
+    });
+
+    it('returns false if it is not a generic type annotation', () => {
+      expect(parser.isGenericTypeAnnotation('StringTypeAnnotation')).toBe(
+        false,
+      );
     });
   });
 

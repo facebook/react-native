@@ -51,9 +51,7 @@ const FileTemplate = ({componentEmitters}: {componentEmitters: string}) => `
 
 namespace facebook {
 namespace react {
-
 ${componentEmitters}
-
 } // namespace react
 } // namespace facebook
 `;

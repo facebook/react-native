@@ -476,6 +476,7 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
 }
 
 function emitPartial(
+  nullable: boolean,
   hasteModuleName: string,
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
@@ -483,7 +484,6 @@ function emitPartial(
   enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  nullable: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   throwIfPartialWithMoreParameter(typeAnnotation);
@@ -524,41 +524,33 @@ function emitCommonTypes(
   const genericTypeAnnotationName =
     parser.nameForGenericTypeAnnotation(typeAnnotation);
 
-  switch (genericTypeAnnotationName) {
-    case 'Stringish': {
-      return emitStringish(nullable);
-    }
-    case 'Int32': {
-      return emitInt32(nullable);
-    }
-    case 'Double': {
-      return emitDouble(nullable);
-    }
-    case 'Float': {
-      return emitFloat(nullable);
-    }
-    case 'UnsafeObject':
-    case 'Object': {
-      return emitGenericObject(nullable);
-    }
-    case '$Partial':
-    case 'Partial': {
-      return emitPartial(
-        hasteModuleName,
-        typeAnnotation,
-        types,
-        aliasMap,
-        enumMap,
-        tryParse,
-        cxxOnly,
-        nullable,
-        parser,
-      );
-    }
-    default: {
-      return null;
-    }
+  const typeMap = {
+    Stringish: emitStringish,
+    Int32: emitInt32,
+    Double: emitDouble,
+    Float: emitFloat,
+    UnsafeObject: emitGenericObject,
+    Object: emitGenericObject,
+    $Partial: emitPartial,
+    Partial: emitPartial,
+  };
+
+  const emitter = typeMap[genericTypeAnnotationName];
+  if (!emitter) {
+    return null;
   }
+
+  return emitter(
+    nullable,
+    hasteModuleName,
+    typeAnnotation,
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+    parser,
+  );
 }
 
 module.exports = {

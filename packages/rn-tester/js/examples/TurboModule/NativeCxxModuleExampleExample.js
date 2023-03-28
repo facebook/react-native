@@ -55,6 +55,7 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
+  | 'optionalArgs'
   | 'emitDeviceEvent';
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
@@ -99,6 +100,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    optionalArgs: () => NativeCxxModuleExample?.getWithWithOptionalArgs(),
     emitDeviceEvent: () => {
       const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
       DeviceEventEmitter.removeAllListeners(CUSTOM_EVENT_TYPE);

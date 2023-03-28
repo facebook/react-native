@@ -741,6 +741,7 @@ const RefreshControlExample = () => {
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    // $FlowFixMe[unused-promise]
     wait(2000).then(() => setRefreshing(false));
   }, []);
 

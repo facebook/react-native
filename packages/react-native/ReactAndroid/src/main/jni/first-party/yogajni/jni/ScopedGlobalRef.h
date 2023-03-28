@@ -37,7 +37,7 @@ namespace vanillajni {
  * unexpected conversions or unexpected ownership transfer. In practice, this
  * class acts as a unique pointer where the underying JNI reference can have one
  * and just one owner. Transferring ownership is allowed but it is an explicit
- * operation (implemneted via move semantics and also via explicity API calls).
+ * operation (implemented via move semantics and also via explicitly API calls).
  *
  * Note that this class doesn't receive an explicit JNIEnv at construction time.
  * At destruction time it uses vanillajni::getCurrentEnv() to retrieve the
