@@ -16,12 +16,12 @@ import type {
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
   ViewConfig,
-} from '../shims/ReactNativeTypes';
+} from '../../Renderer/shims/ReactNativeTypes';
 import type {ElementRef} from 'react';
 
 import TextInputState from '../../Components/TextInput/TextInputState';
-import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
-import {getNodeFromInternalInstanceHandle} from '../shims/ReactFabric';
+import {getNodeFromInternalInstanceHandle} from '../../Renderer/shims/ReactFabric';
+import {getFabricUIManager} from '../FabricUIManager';
 import {create} from './ReactNativeAttributePayload';
 import nullthrows from 'nullthrows';
 

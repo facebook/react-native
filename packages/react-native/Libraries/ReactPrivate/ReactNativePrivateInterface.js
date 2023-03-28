@@ -16,16 +16,16 @@ import typeof RawEventEmitter from '../Core/RawEventEmitter';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
-import typeof UIManager from '../ReactNative/UIManager';
 import typeof {
   createPublicInstance,
   getNativeTagFromPublicInstance,
   getNodeFromPublicInstance,
-} from '../Renderer/public/ReactFabricPublicInstance';
+} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
 import typeof {
   create as createAttributePayload,
   diff as diffAttributePayloads,
-} from '../Renderer/public/ReactNativeAttributePayload';
+} from '../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
+import typeof UIManager from '../ReactNative/UIManager';
 import typeof ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
 import typeof flattenStyle from '../StyleSheet/flattenStyle';
 import type {DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
@@ -83,21 +83,23 @@ module.exports = {
     return require('../Events/CustomEvent').default;
   },
   get createAttributePayload(): createAttributePayload {
-    return require('../Renderer/public/ReactNativeAttributePayload').create;
+    return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
+      .create;
   },
   get diffAttributePayloads(): diffAttributePayloads {
-    return require('../Renderer/public/ReactNativeAttributePayload').diff;
+    return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
+      .diff;
   },
   get createPublicInstance(): createPublicInstance {
-    return require('../Renderer/public/ReactFabricPublicInstance')
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .createPublicInstance;
   },
   get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance {
-    return require('../Renderer/public/ReactFabricPublicInstance')
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getNativeTagFromPublicInstance;
   },
   get getNodeFromPublicInstance(): getNodeFromPublicInstance {
-    return require('../Renderer/public/ReactFabricPublicInstance')
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .getNodeFromPublicInstance;
   },
 };

@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {AttributeConfiguration} from '../shims/ReactNativeTypes';
+import type {AttributeConfiguration} from '../../Renderer/shims/ReactNativeTypes';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import deepDiffer from '../../Utilities/differ/deepDiffer';

@@ -11,7 +11,7 @@
 import type {LayoutEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
-import {isPublicInstance as isFabricPublicInstance} from '../../Renderer/public/ReactFabricPublicInstanceUtils';
+import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';

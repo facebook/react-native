@@ -9,15 +9,15 @@
  * @oncall react_native
  */
 
-import type {HostComponent} from '../../shims/ReactNativeTypes';
+import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 
 import * as React from 'react';
 import {act} from 'react-test-renderer';
 
 const TextInputState = require('../../../Components/TextInput/TextInputState');
 const FabricUIManager = require('../../../ReactNative/FabricUIManager');
-const ReactFabric = require('../../shims/ReactFabric');
-const ReactNativeViewConfigRegistry = require('../../shims/ReactNativeViewConfigRegistry');
+const ReactFabric = require('../../../Renderer/shims/ReactFabric');
+const ReactNativeViewConfigRegistry = require('../../../Renderer/shims/ReactNativeViewConfigRegistry');
 const nullthrows = require('nullthrows');
 
 jest.mock('../../../ReactNative/FabricUIManager', () =>

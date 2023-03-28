@@ -10,7 +10,7 @@
 
 'use strict';
 
-import {isPublicInstance as isFabricPublicInstance} from '../Renderer/public/ReactFabricPublicInstanceUtils';
+import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
