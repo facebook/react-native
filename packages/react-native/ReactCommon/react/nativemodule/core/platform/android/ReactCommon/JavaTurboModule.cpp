@@ -285,6 +285,24 @@ JNIArgs convertJSIArgsToJNIArgs(
       continue;
     }
 
+    if (type == "F") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->f = (float)arg->getNumber();
+      continue;
+    }
+
+    if (type == "I") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->i = (int)arg->getNumber();
+      continue;
+    }
+
     if (type == "Z") {
       if (!arg->isBool()) {
         throw JavaTurboModuleArgumentConversionException(
@@ -303,6 +321,20 @@ JNIArgs convertJSIArgsToJNIArgs(
       }
       jarg->l = makeGlobalIfNecessary(
           jni::JDouble::valueOf(arg->getNumber()).release());
+    } else if (type == "Ljava/lang/Float;") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->l = makeGlobalIfNecessary(
+          jni::JFloat::valueOf(arg->getNumber()).release());
+    } else if (type == "Ljava/lang/Integer;") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->l = makeGlobalIfNecessary(
+          jni::JInteger::valueOf(arg->getNumber()).release());
     } else if (type == "Ljava/lang/Boolean;") {
       if (!arg->isBool()) {
         throw JavaTurboModuleArgumentConversionException(
@@ -531,7 +563,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case NumberKind: {
       std::string returnType =
           methodSignature.substr(methodSignature.find_last_of(')') + 1);
-      if (returnType == "Ljava/lang/Double;") {
+      if (returnType == "Ljava/lang/Double;" ||
+          returnType == "Ljava/lang/Float;" ||
+          returnType == "Ljava/lang/Integer;") {
         auto returnObject =
             env->CallObjectMethodA(instance, methodID, jargs.data());
         checkJNIErrorForMethodCall();
@@ -541,23 +575,54 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
         auto returnValue = jsi::Value::null();
         if (returnObject) {
-          auto doubleObj = jni::adopt_local(
-              static_cast<jni::JDouble::javaobject>(returnObject));
-          returnValue = jsi::Value(doubleObj->value());
+          if (returnType == "Ljava/lang/Double;") {
+            auto doubleObj = jni::adopt_local(
+                static_cast<jni::JDouble::javaobject>(returnObject));
+            returnValue = jsi::Value(doubleObj->value());
+          } else if (returnType == "Ljava/lang/Float;") {
+            auto floatObj = jni::adopt_local(
+                static_cast<jni::JFloat::javaobject>(returnObject));
+            returnValue = jsi::Value((double)floatObj->value());
+          } else if (returnType == "Ljava/lang/Integer;") {
+            auto intObj = jni::adopt_local(
+                static_cast<jni::JInteger::javaobject>(returnObject));
+            returnValue = jsi::Value(intObj->value());
+          }
         }
 
         TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
         TMPL::syncMethodCallEnd(moduleName, methodName);
         return returnValue;
-      } else {
-        double returnDouble =
-            (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
-        checkJNIErrorForMethodCall();
+      } else if (returnType == "D" || returnType == "F" || returnType == "I") {
+        jsi::Value returnValue = jsi::Value::undefined();
+        if (returnType == "D") {
+          double returnDouble =
+              (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
 
-        TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
-        TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
 
-        jsi::Value returnValue = jsi::Value(returnDouble);
+          returnValue = jsi::Value(returnDouble);
+        } else if (returnType == "F") {
+          float returnFloat =
+              (float)env->CallFloatMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
+
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+          returnValue = jsi::Value((double)returnFloat);
+        } else if (returnType == "I") {
+          int returnInt =
+              (int)env->CallIntMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
+
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+          returnValue = jsi::Value(returnInt);
+        }
 
         TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
         TMPL::syncMethodCallEnd(moduleName, methodName);
