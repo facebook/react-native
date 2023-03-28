@@ -10,6 +10,7 @@ package com.facebook.react.bridge;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 import org.junit.Before;
@@ -127,7 +128,7 @@ public class BaseJavaModuleTest {
   }
 
   private abstract class NativeTestGeneratedModuleSpec extends BaseJavaModule
-      implements ReactModuleWithSpec {
+      implements TurboModule {
     @ReactMethod
     public abstract void generatedMethod(String a, int b);
   }

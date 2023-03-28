@@ -40,6 +40,7 @@ rn_robolectric_test(
         react_native_dep("third-party/java/junit:junit"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/com/facebook/common/logging:logging"),
     ],
