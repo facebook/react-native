@@ -135,7 +135,7 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
       int customCoalesceKey,
       @Nullable WritableMap event,
       @EventCategoryDef int category) {
-    @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag);
+    @UIManagerType int uiManagerType = ViewUtil.getUIManagerType(targetReactTag, surfaceId);
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
       mFabricEventEmitter.receiveEvent(
           surfaceId,
