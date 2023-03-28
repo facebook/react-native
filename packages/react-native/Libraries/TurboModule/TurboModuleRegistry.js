@@ -16,9 +16,12 @@ const NativeModules = require('../BatchedBridge/NativeModules');
 
 const turboModuleProxy = global.__turboModuleProxy;
 
+// TODO(148943970): Consider reversing the lookup here:
+// Lookup on __turboModuleProxy, then lookup on nativeModuleProxy
 function requireModule<T: TurboModule>(name: string): ?T {
-  // Bridgeless mode requires TurboModules
-  if (global.RN$Bridgeless !== true) {
+  const isBridgeless = global.RN$Bridgeless === true;
+  const isTurboModuleInteropEnabled = global.RN$TurboInterop === true;
+  if (!isBridgeless || isTurboModuleInteropEnabled) {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {

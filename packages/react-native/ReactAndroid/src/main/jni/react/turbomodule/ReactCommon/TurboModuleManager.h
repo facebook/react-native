@@ -54,13 +54,16 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    */
   std::shared_ptr<TurboModuleCache> turboModuleCache_;
 
-  void installJSIBindings();
+  void installJSIBindings(bool shouldCreateLegacyModules);
   explicit TurboModuleManager(
       jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<CallInvoker> nativeCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
+
+  TurboModuleProviderFunctionType createTurboModuleProvider();
+  TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 
 } // namespace react
