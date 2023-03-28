@@ -18,6 +18,64 @@ using namespace facebook;
 namespace facebook {
 namespace react {
 
+namespace {
+class BridgelessNativeModuleProxy : public jsi::HostObject {
+ public:
+  jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
+    /**
+     * BatchedBridge/NativeModules.js contains this line:
+     *
+     * module.exports = global.nativeModuleProxy
+     *
+     * This means that NativeModuleProxy is exported as a module from
+     * 'NativeModules.js'. Whenever some JavaScript requires 'NativeModule.js',
+     * Metro checks this module's __esModule property to see if the module is an
+     * ES6 module.
+     *
+     * We return false from this property access, so that we can fail on the
+     * actual NativeModule require that happens later, which is more actionable.
+     */
+    if (name.utf8(runtime) == "__esModule") {
+      return jsi::Value(false);
+    }
+    throw jsi::JSError(
+        runtime,
+        "Tried to access NativeModule \"" + name.utf8(runtime) +
+            "\" from the bridge. This isn't allowed in Bridgeless mode.");
+  }
+
+  void set(
+      jsi::Runtime &runtime,
+      const jsi::PropNameID & /*name*/,
+      const jsi::Value & /*value*/) override {
+    throw jsi::JSError(
+        runtime,
+        "Tried to insert a NativeModule into the bridge's NativeModule proxy.");
+  }
+};
+} // namespace
+
+// TODO(148359183): Merge this with the Bridgeless defineReadOnlyGlobal util
+static void defineReadOnlyGlobal(
+    jsi::Runtime &runtime,
+    std::string propName,
+    jsi::Value &&value) {
+  jsi::Object jsObject =
+      runtime.global().getProperty(runtime, "Object").asObject(runtime);
+  jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
+                                     .asObject(runtime)
+                                     .asFunction(runtime);
+
+  jsi::Object descriptor = jsi::Object(runtime);
+  descriptor.setProperty(runtime, "value", std::move(value));
+  defineProperty.callWithThis(
+      runtime,
+      jsObject,
+      runtime.global(),
+      jsi::String::createFromUtf8(runtime, propName),
+      descriptor);
+}
+
 /**
  * Public API to install the TurboModule system.
  */
@@ -51,6 +109,14 @@ void TurboModuleBinding::install(
             std::string moduleName = args[0].getString(rt).utf8(rt);
             return binding.getModule(rt, moduleName);
           }));
+
+  if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
+    defineReadOnlyGlobal(
+        runtime,
+        "nativeModuleProxy",
+        jsi::Object::createFromHostObject(
+            runtime, std::make_shared<BridgelessNativeModuleProxy>()));
+  }
 }
 
 TurboModuleBinding::~TurboModuleBinding() {
