@@ -1492,9 +1492,9 @@ rn_xplat_cxx_library(
 fb_xplat_cxx_test(
     name = "RCTWebPerformance_tests",
     srcs = glob([
-        "Libraries/WebPerformance/__tests__/*.cpp",
+        "packages/react-native/Libraries/WebPerformance/__tests__/*.cpp",
     ]),
-    headers = glob(["Libraries/WebPerformance/__tests__/*.h"]),
+    headers = glob(["packages/react-native/Libraries/WebPerformance/__tests__/*.h"]),
     header_namespace = "",
     compiler_flags = [
         "-fexceptions",
