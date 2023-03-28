@@ -112,7 +112,7 @@ public class PointerEvent extends Event<PointerEvent> {
     boolean shouldCopy = mPointersEventData.size() > 1;
     for (WritableMap pointerEventData : mPointersEventData) {
       WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
-      rctEventEmitter.receiveEvent(this.getViewTag(), mEventName, eventData);
+      rctEventEmitter.receiveEvent(getViewTag(), mEventName, eventData);
     }
     return;
   }
@@ -173,7 +173,7 @@ public class PointerEvent extends Event<PointerEvent> {
 
     ArrayList<WritableMap> w3cPointerEvents = new ArrayList<>();
     for (int index = 0; index < mMotionEvent.getPointerCount(); index++) {
-      w3cPointerEvents.add(this.createW3CPointerEvent(index));
+      w3cPointerEvents.add(createW3CPointerEvent(index));
     }
 
     return w3cPointerEvents;
@@ -215,8 +215,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(offsetCoords[0]));
     pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(offsetCoords[1]));
 
-    pointerEvent.putInt("target", this.getViewTag());
-    pointerEvent.putDouble("timestamp", this.getTimestampMs());
+    pointerEvent.putInt("target", getViewTag());
+    pointerEvent.putDouble("timestamp", getTimestampMs());
 
     pointerEvent.putInt("detail", 0);
     pointerEvent.putDouble("tiltX", 0);
@@ -252,7 +252,7 @@ public class PointerEvent extends Event<PointerEvent> {
         // Cases where all pointer info is relevant
       case PointerEventHelper.POINTER_MOVE:
       case PointerEventHelper.POINTER_CANCEL:
-        pointersEventData = this.createW3CPointerEvents();
+        pointersEventData = createW3CPointerEvents();
         break;
         // Cases where only the "active" pointer info is relevant
       case PointerEventHelper.POINTER_ENTER:
@@ -296,8 +296,8 @@ public class PointerEvent extends Event<PointerEvent> {
     for (WritableMap pointerEventData : mPointersEventData) {
       WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
       rctEventEmitter.receiveEvent(
-          this.getSurfaceId(),
-          this.getViewTag(),
+          getSurfaceId(),
+          getViewTag(),
           mEventName,
           mCoalescingKey != UNSET_COALESCING_KEY,
           mCoalescingKey,

@@ -86,7 +86,8 @@ public class ReactEventEmitter implements RCTModernEventEmitter {
   @Override
   public void receiveTouches(TouchEvent event) {
     int reactTag = event.getViewTag();
-    @UIManagerType int uiManagerType = event.getUIManagerType();
+    @UIManagerType
+    int uiManagerType = ViewUtil.getUIManagerType(event.getViewTag(), event.getSurfaceId());
     if (uiManagerType == UIManagerType.FABRIC && mFabricEventEmitter != null) {
       mFabricEventEmitter.receiveTouches(event);
     } else if (uiManagerType == UIManagerType.DEFAULT && getEventEmitter(reactTag) != null) {
