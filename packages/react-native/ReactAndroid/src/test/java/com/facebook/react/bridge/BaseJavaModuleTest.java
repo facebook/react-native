@@ -40,14 +40,23 @@ class ShadowSoLoader {
 @RunWith(RobolectricTestRunner.class)
 public class BaseJavaModuleTest {
   private List<JavaModuleWrapper.MethodDescriptor> mMethods;
-  private JavaModuleWrapper mWrapper;
+  private JavaModuleWrapper mModuleWrapper;
+
+  private List<JavaModuleWrapper.MethodDescriptor> mGeneratedMethods;
+  private JavaModuleWrapper mGeneratedModuleWrapper;
+
   private ReadableNativeArray mArguments;
 
   @Before
   public void setup() {
     ModuleHolder moduleHolder = new ModuleHolder(new MethodsModule());
-    mWrapper = new JavaModuleWrapper(null, moduleHolder);
-    mMethods = mWrapper.getMethodDescriptors();
+    mModuleWrapper = new JavaModuleWrapper(null, moduleHolder);
+    mMethods = mModuleWrapper.getMethodDescriptors();
+
+    ModuleHolder generatedModuleHolder = new ModuleHolder(new GeneratedMethodsModule());
+    mGeneratedModuleWrapper = new JavaModuleWrapper(null, generatedModuleHolder);
+    mGeneratedMethods = mGeneratedModuleWrapper.getMethodDescriptors();
+
     mArguments = Mockito.mock(ReadableNativeArray.class);
   }
 
@@ -67,14 +76,14 @@ public class BaseJavaModuleTest {
   public void testCallMethodWithoutEnoughArgs() throws Exception {
     int methodId = findMethod("regularMethod", mMethods);
     when(mArguments.size()).thenReturn(1);
-    mWrapper.invoke(methodId, mArguments);
+    mModuleWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallMethodWithEnoughArgs() {
     int methodId = findMethod("regularMethod", mMethods);
     when(mArguments.size()).thenReturn(2);
-    mWrapper.invoke(methodId, mArguments);
+    mModuleWrapper.invoke(methodId, mArguments);
   }
 
   @Test
@@ -82,14 +91,21 @@ public class BaseJavaModuleTest {
     // Promise block evaluates to 2 args needing to be passed from JS
     int methodId = findMethod("asyncMethod", mMethods);
     when(mArguments.size()).thenReturn(3);
-    mWrapper.invoke(methodId, mArguments);
+    mModuleWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallSyncMethod() {
     int methodId = findMethod("syncMethod", mMethods);
     when(mArguments.size()).thenReturn(2);
-    mWrapper.invoke(methodId, mArguments);
+    mModuleWrapper.invoke(methodId, mArguments);
+  }
+
+  @Test
+  public void testCallGeneratedMethod() {
+    int methodId = findMethod("generatedMethod", mGeneratedMethods);
+    when(mArguments.size()).thenReturn(2);
+    mGeneratedModuleWrapper.invoke(methodId, mArguments);
   }
 
   private static class MethodsModule extends BaseJavaModule {
@@ -108,5 +124,21 @@ public class BaseJavaModuleTest {
     public int syncMethod(int a, int b) {
       return a + b;
     }
+  }
+
+  private abstract class NativeTestGeneratedModuleSpec extends BaseJavaModule
+      implements ReactModuleWithSpec {
+    @ReactMethod
+    public abstract void generatedMethod(String a, int b);
+  }
+
+  private class GeneratedMethodsModule extends NativeTestGeneratedModuleSpec {
+    @Override
+    public String getName() {
+      return "GeneratedMethods";
+    }
+
+    @Override
+    public void generatedMethod(String a, int b) {}
   }
 }
