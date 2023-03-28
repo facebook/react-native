@@ -105,39 +105,39 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    final TurboModule turboModule = getModule(moduleName);
-    if (!(turboModule instanceof CxxModuleWrapper)) {
-      return null;
-    }
-
-    return (CxxModuleWrapper) turboModule;
+    final NativeModule module = getNativeModule(moduleName);
+    return module instanceof CxxModuleWrapper ? (CxxModuleWrapper) module : null;
   }
 
   @DoNotStrip
   @Nullable
   private TurboModule getJavaModule(String moduleName) {
-    final TurboModule turboModule = getModule(moduleName);
-    if (turboModule instanceof CxxModuleWrapper) {
-      return null;
-    }
+    final NativeModule module = getNativeModule(moduleName);
+    return !(module instanceof CxxModuleWrapper) && module instanceof TurboModule
+        ? (TurboModule) module
+        : null;
+  }
 
-    return turboModule;
+  @Deprecated
+  public TurboModule getModule(String moduleName) {
+    NativeModule module = getNativeModule(moduleName);
+    return module instanceof TurboModule ? (TurboModule) module : null;
   }
 
   /**
-   * Return the TurboModule instance that corresponds to the provided moduleName.
+   * Return the NativeModule instance that corresponds to the provided moduleName.
    *
    * <p>This method: - Creates and initializes the module if it doesn't already exist. - Returns
    * null after TurboModuleManager has been torn down.
    */
   @Nullable
-  public TurboModule getModule(String moduleName) {
+  public NativeModule getNativeModule(String moduleName) {
     ModuleHolder moduleHolder;
 
     synchronized (mModuleCleanupLock) {
       if (mModuleCleanupStarted) {
         /*
-         * Always return null after cleanup has started, so that getModule(moduleName) returns null.
+         * Always return null after cleanup has started, so that getNativeModule(moduleName) returns null.
          */
         return null;
       }
@@ -154,7 +154,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
 
     TurboModulePerfLogger.moduleCreateStart(moduleName, moduleHolder.getModuleId());
-    TurboModule module = (TurboModule) getOrCreateModule(moduleName, moduleHolder, true);
+    NativeModule module = getOrCreateNativeModule(moduleName, moduleHolder, true);
 
     if (module != null) {
       TurboModulePerfLogger.moduleCreateEnd(moduleName, moduleHolder.getModuleId());
@@ -172,7 +172,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
    * first thread creates x. All n - 1 other threads wait until the x is created and initialized.
    */
   @Nullable
-  private NativeModule getOrCreateModule(
+  private NativeModule getOrCreateNativeModule(
       String moduleName, @NonNull ModuleHolder moduleHolder, boolean shouldPerfLog) {
     boolean shouldCreateModule = false;
 
@@ -249,27 +249,58 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
   }
 
-  /** Which TurboModules have been created? */
+  @Deprecated
   public Collection<TurboModule> getModules() {
+    final Collection<TurboModule> modules = new ArrayList<>();
+
+    for (final NativeModule module : getNativeModules()) {
+      if (module instanceof TurboModule) {
+        modules.add((TurboModule) module);
+      }
+    }
+
+    return modules;
+  }
+
+  /** Which NativeModules have been created? */
+  public Collection<NativeModule> getNativeModules() {
     final List<ModuleHolder> moduleHolders = new ArrayList<>();
     synchronized (mModuleCleanupLock) {
       moduleHolders.addAll(mModuleHolders.values());
     }
 
-    final List<TurboModule> turboModules = new ArrayList<>();
+    final List<NativeModule> modules = new ArrayList<>();
     for (final ModuleHolder moduleHolder : moduleHolders) {
       synchronized (moduleHolder) {
         // No need to wait for the TurboModule to finish being created and initialized
         if (moduleHolder.getModule() != null) {
-          turboModules.add((TurboModule) moduleHolder.getModule());
+          modules.add(moduleHolder.getModule());
         }
       }
     }
 
-    return turboModules;
+    return modules;
   }
 
+  @Deprecated
   public boolean hasModule(String moduleName) {
+    ModuleHolder moduleHolder;
+    synchronized (mModuleCleanupLock) {
+      moduleHolder = mModuleHolders.get(moduleName);
+    }
+
+    if (moduleHolder != null) {
+      synchronized (moduleHolder) {
+        if (moduleHolder.getModule() instanceof TurboModule) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  public boolean hasNativeModule(String moduleName) {
     ModuleHolder moduleHolder;
     synchronized (mModuleCleanupLock) {
       moduleHolder = mModuleHolders.get(moduleName);
@@ -321,7 +352,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
        * initialized. In this case, we should wait for initialization to complete, before destroying
        * the TurboModule.
        */
-      final NativeModule nativeModule = getOrCreateModule(moduleName, moduleHolder, false);
+      final NativeModule nativeModule = getOrCreateNativeModule(moduleName, moduleHolder, false);
 
       if (nativeModule != null) {
         nativeModule.invalidate();
