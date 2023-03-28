@@ -35,6 +35,8 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, build
 
     if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
         use_tarball(source)
+    elsif ENV.has_key?('HERMES_COMMIT')
+        build_hermes_from_commit(source, git, ENV['HERMES_COMMIT'])
     elsif build_from_source
         if File.exist?(hermestag_file)
             build_from_tagfile(source, git, hermestag_file)
@@ -129,6 +131,12 @@ def build_hermes_from_source(source, git)
     putsIfPodPresent('[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...')
     source[:git] = git
     source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
+end
+
+def build_hermes_from_commit(source, git, commit)
+    putsIfPodPresent("[Hermes] Installing hermes-engine from commit #{commit}. It may take a while.")
+    source[:git] = git
+    source[:commit] = commit
 end
 
 # This function checks that Hermes artifact exists.
