@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
+import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
@@ -47,6 +48,15 @@ public abstract class TurboModuleManagerDelegate {
   @Deprecated
   @Nullable
   public abstract CxxModuleWrapper getLegacyCxxModule(String moduleName);
+
+  /**
+   * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
+   * TurboModule, return null.
+   */
+  @Nullable
+  public NativeModule getLegacyModule(String moduleName) {
+    return null;
+  }
 
   public List<String> getEagerInitModuleNames() {
     return new ArrayList<>();
