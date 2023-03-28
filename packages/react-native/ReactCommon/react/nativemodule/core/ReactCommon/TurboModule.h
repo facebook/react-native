@@ -48,22 +48,15 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName) override {
     {
-      std::string propNameUtf8 = propName.utf8(runtime);
-      auto p = methodMap_.find(propNameUtf8);
-      if (p == methodMap_.end()) {
-        // Method was not found, let JS decide what to do.
-        return facebook::jsi::Value::undefined();
-      } else {
-        auto moduleMethod = createHostFunction(runtime, propName, p->second);
-        // If we have a JS wrapper, cache the result of this lookup
-        // We don't cache misses, to allow for methodMap_ to dynamically be
-        // extended
-        if (jsRepresentation_) {
-          jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
-              runtime, propName, moduleMethod);
-        }
-        return moduleMethod;
+      auto prop = create(runtime, propName);
+      // If we have a JS wrapper, cache the result of this lookup
+      // We don't cache misses, to allow for methodMap_ to dynamically be
+      // extended
+      if (jsRepresentation_ && !prop.isUndefined()) {
+        jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
+            runtime, propName, prop);
       }
+      return prop;
     }
   }
 
@@ -111,15 +104,32 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
       const std::string &eventName,
       ArgFactory argFactory = nullptr);
 
+  virtual jsi::Value create(
+      jsi::Runtime &runtime,
+      const jsi::PropNameID &propName) {
+    std::string propNameUtf8 = propName.utf8(runtime);
+    auto p = methodMap_.find(propNameUtf8);
+    if (p == methodMap_.end()) {
+      // Method was not found, let JS decide what to do.
+      return facebook::jsi::Value::undefined();
+    } else {
+      const MethodMetadata &meta = p->second;
+      return jsi::Function::createFromHostFunction(
+          runtime,
+          propName,
+          static_cast<unsigned int>(meta.argCount),
+          [this, meta](
+              jsi::Runtime &rt,
+              const jsi::Value &thisVal,
+              const jsi::Value *args,
+              size_t count) { return meta.invoker(rt, *this, args, count); });
+    }
+  }
+
  private:
   friend class TurboCxxModule;
   friend class TurboModuleBinding;
   std::unique_ptr<jsi::WeakObject> jsRepresentation_;
-
-  facebook::jsi::Value createHostFunction(
-      facebook::jsi::Runtime &runtime,
-      const facebook::jsi::PropNameID &propName,
-      const MethodMetadata &meta);
 };
 
 /**

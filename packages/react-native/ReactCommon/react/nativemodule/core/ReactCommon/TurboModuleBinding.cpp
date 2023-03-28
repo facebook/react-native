@@ -138,6 +138,13 @@ jsi::Value TurboModuleBinding::getModule(
       return jsi::Object::createFromHostObject(runtime, std::move(module));
     }
 
+    // What is jsRepresentation? A cache for the TurboModule's properties
+    // Henceforth, always return the cache (i.e: jsRepresentation) to JavaScript
+    //
+    // If a jsRepresentation is found on the TurboModule, return it.
+    //
+    // Note: TurboModules are cached by name in TurboModuleManagers. Hence,
+    // jsRepresentation is also cached by by name by the TurboModuleManager
     auto &weakJsRepresentation = module->jsRepresentation_;
     if (weakJsRepresentation) {
       auto jsRepresentation = weakJsRepresentation->lock(runtime);
@@ -146,20 +153,28 @@ jsi::Value TurboModuleBinding::getModule(
       }
     }
 
-    // No JS representation found, or object has been collected
+    // Status: No jsRepresentation found on TurboModule
+    // Create a brand new jsRepresentation, and attach it to TurboModule
     jsi::Object jsRepresentation(runtime);
     weakJsRepresentation =
         std::make_unique<jsi::WeakObject>(runtime, jsRepresentation);
 
     if (bindingMode_ == TurboModuleBindingMode::Prototype) {
-      // Option 1: create plain object, with it's prototype mapped back to the
-      // hostobject. Any properties accessed are stored on the plain object
+      // Option 1: Lazily populate the jsRepresentation, on property access.
+      //
+      // How does this work?
+      //   1. Initially jsRepresentation is empty: {}
+      //   2. If property lookup on jsRepresentation fails, the JS runtime will
+      //   search jsRepresentation's prototype: jsi::Object(TurboModule).
+      //   3. TurboModule::get(runtime, propKey) executes. This creates the
+      //   property, caches it on jsRepresentation, then returns it to
+      //   JavaScript.
       auto hostObject =
           jsi::Object::createFromHostObject(runtime, std::move(module));
       jsRepresentation.setProperty(runtime, "__proto__", std::move(hostObject));
     } else {
-      // Option 2: eagerly install all hostfunctions at this point, avoids
-      // prototype
+      // Option 2: Eagerly populate the jsRepresentation, on create.
+      // Object.assign(jsRepresentation, jsi::Object(TurboModule))
       for (auto &propName : module->getPropertyNames(runtime)) {
         module->get(runtime, propName);
       }
