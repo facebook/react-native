@@ -60,7 +60,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
     }
   }
 
-  std::vector<facebook::jsi::PropNameID> getPropertyNames(
+  virtual std::vector<facebook::jsi::PropNameID> getPropertyNames(
       facebook::jsi::Runtime &runtime) override {
     std::vector<jsi::PropNameID> result;
     result.reserve(methodMap_.size());

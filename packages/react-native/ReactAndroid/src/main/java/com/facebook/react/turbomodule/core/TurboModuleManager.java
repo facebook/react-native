@@ -22,7 +22,11 @@ import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is the main class and entry point for TurboModules. Note that this is a hybrid class, and
@@ -61,7 +65,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (CallInvokerHolderImpl) nativeCallInvokerHolder,
             delegate);
-    installJSIBindings();
+    installJSIBindings(shouldCreateLegacyModules());
 
     mEagerInitModuleNames =
         delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
@@ -121,15 +125,41 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   }
 
   @DoNotStrip
-  @Nullable
-  private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    final NativeModule module = getNativeModule(moduleName);
-    return module instanceof CxxModuleWrapper ? (CxxModuleWrapper) module : null;
+  private static List<TurboModuleInteropUtils.MethodDescriptor> getMethodDescriptorsFromModule(
+      NativeModule module) {
+    return TurboModuleInteropUtils.getMethodDescriptorsFromModule(module);
   }
 
   @DoNotStrip
   @Nullable
-  private TurboModule getJavaModule(String moduleName) {
+  private NativeModule getLegacyJavaModule(String moduleName) {
+    final NativeModule module = getNativeModule(moduleName);
+    return !(module instanceof CxxModuleWrapper) && !(module instanceof TurboModule)
+        ? module
+        : null;
+  }
+
+  @DoNotStrip
+  @Nullable
+  private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
+    final NativeModule module = getNativeModule(moduleName);
+    return module instanceof CxxModuleWrapper && !(module instanceof TurboModule)
+        ? (CxxModuleWrapper) module
+        : null;
+  }
+
+  @DoNotStrip
+  @Nullable
+  private CxxModuleWrapper getTurboLegacyCxxModule(String moduleName) {
+    final NativeModule module = getNativeModule(moduleName);
+    return module instanceof CxxModuleWrapper && module instanceof TurboModule
+        ? (CxxModuleWrapper) module
+        : null;
+  }
+
+  @DoNotStrip
+  @Nullable
+  private TurboModule getTurboJavaModule(String moduleName) {
     final NativeModule module = getNativeModule(moduleName);
     return !(module instanceof CxxModuleWrapper) && module instanceof TurboModule
         ? (TurboModule) module
@@ -341,7 +371,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       CallInvokerHolderImpl nativeCallInvokerHolder,
       TurboModuleManagerDelegate tmmDelegate);
 
-  private native void installJSIBindings();
+  private native void installJSIBindings(boolean shouldCreateLegacyModules);
 
   @Override
   public void initialize() {}
