@@ -31,15 +31,7 @@ static std::once_flag flag;
 
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
   namespace vm = ::hermes::vm;
-  auto gcConfigBuilder =
-      vm::GCConfig::Builder()
-          .withName("RN")
-          // For the next two arguments: avoid GC before TTI by initializing the
-          // runtime to allocate directly in the old generation, but revert to
-          // normal operation when we reach the (first) TTI point.
-          .withAllocInYoung(false)
-          .withRevertToYGAtTTI(true);
-
+  auto gcConfigBuilder = vm::GCConfig::Builder().withName("RN");
   if (heapSizeMB > 0) {
     gcConfigBuilder.withMaxHeapSize(heapSizeMB << 20);
   }
