@@ -9,7 +9,6 @@ package com.facebook.react;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -142,36 +141,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public TurboModule getModule(String moduleName) {
-    TurboModule module = resolveModule(moduleName);
-    if (module == null) {
-      return null;
-    }
-
-    if (module instanceof CxxModuleWrapper) {
-      return null;
-    }
-
-    return module;
-  }
-
-  @Nullable
-  @Override
-  @DoNotStrip
-  public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    TurboModule module = resolveModule(moduleName);
-    if (module == null) {
-      return null;
-    }
-
-    if (!(module instanceof CxxModuleWrapper)) {
-      return null;
-    }
-
-    return (CxxModuleWrapper) module;
-  }
-
-  @Nullable
-  private TurboModule resolveModule(String moduleName) {
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
@@ -200,6 +169,13 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       return (TurboModule) resolvedModule;
     }
 
+    return null;
+  }
+
+  @Deprecated
+  @Nullable
+  @Override
+  public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
     return null;
   }
 
