@@ -17,6 +17,7 @@ import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.RuntimeExecutor;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
@@ -32,6 +33,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private static volatile boolean sIsSoLibraryLoaded;
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider<TurboModule> mModuleProvider;
+  private final ModuleProvider<NativeModule> mLegacyModuleProvider;
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
   private final Object mModuleCleanupLock = new Object();
@@ -87,6 +89,31 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             return module;
           }
         };
+
+    mLegacyModuleProvider =
+        new ModuleProvider<NativeModule>() {
+          @Nullable
+          public NativeModule getModule(String moduleName) {
+            if (delegate == null || !shouldCreateLegacyModules()) {
+              return null;
+            }
+
+            NativeModule nativeModule = delegate.getLegacyModule(moduleName);
+            if (nativeModule != null) {
+              // TurboModuleManagerDelegate.getLegacyModule must never return a TurboModule
+              Assertions.assertCondition(
+                  !(nativeModule instanceof TurboModule),
+                  "NativeModule \"" + moduleName + "\" is a TurboModule");
+              return nativeModule;
+            }
+            return nativeModule;
+          }
+        };
+  }
+
+  private static boolean shouldCreateLegacyModules() {
+    return ReactFeatureFlags.enableBridgelessArchitecture
+        && ReactFeatureFlags.unstable_useTurboModuleInterop;
   }
 
   public List<String> getEagerInitModuleNames() {
@@ -186,6 +213,10 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     if (shouldCreateModule) {
       TurboModulePerfLogger.moduleCreateConstructStart(moduleName, moduleHolder.getModuleId());
       NativeModule nativeModule = (NativeModule) mModuleProvider.getModule(moduleName);
+
+      if (nativeModule == null) {
+        nativeModule = mLegacyModuleProvider.getModule(moduleName);
+      }
 
       TurboModulePerfLogger.moduleCreateConstructEnd(moduleName, moduleHolder.getModuleId());
       TurboModulePerfLogger.moduleCreateSetUpStart(moduleName, moduleHolder.getModuleId());
