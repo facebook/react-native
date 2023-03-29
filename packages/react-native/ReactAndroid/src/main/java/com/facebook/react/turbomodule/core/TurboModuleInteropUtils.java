@@ -14,11 +14,11 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReactModuleWithSpec;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -112,7 +112,7 @@ public class TurboModuleInteropUtils {
     Class<? extends NativeModule> classForMethods = module.getClass();
     Class<? extends NativeModule> superClass =
         (Class<? extends NativeModule>) classForMethods.getSuperclass();
-    if (ReactModuleWithSpec.class.isAssignableFrom(superClass)) {
+    if (TurboModule.class.isAssignableFrom(superClass)) {
       // For java module that is based on generated flow-type spec, inspect the
       // spec abstract class instead, which is the super class of the given java
       // module.
