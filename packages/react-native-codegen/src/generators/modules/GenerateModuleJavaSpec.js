@@ -52,7 +52,7 @@ package ${packageName};
 
 ${imports}
 
-public abstract class ${className} extends ReactContextBaseJavaModule implements ReactModuleWithSpec, TurboModule {
+public abstract class ${className} extends ReactContextBaseJavaModule implements TurboModule {
   public static final String NAME = "${jsName}";
 
   public ${className}(ReactApplicationContext reactContext) {
@@ -463,7 +463,6 @@ module.exports = {
         'com.facebook.react.bridge.ReactApplicationContext',
         'com.facebook.react.bridge.ReactContextBaseJavaModule',
         'com.facebook.react.bridge.ReactMethod',
-        'com.facebook.react.bridge.ReactModuleWithSpec',
         'com.facebook.react.turbomodule.core.interfaces.TurboModule',
         'com.facebook.proguard.annotations.DoNotStrip',
         'javax.annotation.Nonnull',
