@@ -10,13 +10,12 @@
 
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {View, Button, Text} from 'react-native';
+import {View, Button, Text, UIManager} from 'react-native';
 import RNTMyNativeView, {
   Commands as RNTMyNativeViewCommands,
 } from './MyNativeViewNativeComponent';
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
-import {UIManager} from 'react-native';
 
 const colors = [
   '#0000FF',
@@ -76,8 +75,8 @@ export default function MyNativeView(props: {}): React.Node {
           )
         }
       />
-      <Text>HSBA: {hsba.toString()}</Text>
-      <Text>
+      <Text style={{color: 'green'}}>HSBA: {hsba.toString()}</Text>
+      <Text style={{color: 'green'}}>
         Constants From Interop Layer:{' '}
         {UIManager.RNTMyLegacyNativeView.Constants.PI}
       </Text>
