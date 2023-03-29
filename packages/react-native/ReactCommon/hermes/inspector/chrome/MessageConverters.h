@@ -93,6 +93,7 @@ OkResponse makeOkResponse(int id);
 namespace debugger {
 
 Location makeLocation(const facebook::hermes::debugger::SourceLocation &loc);
+facebook::hermes::debugger::SourceLocation makeLocation(const Location &loc);
 
 CallFrame makeCallFrame(
     uint32_t callFrameIndex,

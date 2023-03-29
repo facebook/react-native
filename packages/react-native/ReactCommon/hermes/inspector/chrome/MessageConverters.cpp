@@ -54,6 +54,16 @@ m::debugger::Location m::debugger::makeLocation(
   return result;
 }
 
+h::debugger::SourceLocation m::debugger::makeLocation(
+    const m::debugger::Location &loc) {
+  h::debugger::SourceLocation result;
+  result.fileId = folly::to<h::debugger::ScriptID>(loc.scriptId);
+  result.line = loc.lineNumber + 1;
+  result.column = loc.columnNumber ? loc.columnNumber.value() + 1
+                                   : h::debugger::kInvalidLocation;
+  return result;
+}
+
 m::debugger::CallFrame m::debugger::makeCallFrame(
     uint32_t callFrameIndex,
     const h::debugger::CallFrameInfo &callFrameInfo,

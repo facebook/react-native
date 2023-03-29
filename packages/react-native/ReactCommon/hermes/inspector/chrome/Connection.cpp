@@ -83,6 +83,7 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::PauseRequest &req) override;
   void handle(const m::debugger::RemoveBreakpointRequest &req) override;
   void handle(const m::debugger::ResumeRequest &req) override;
+  void handle(const m::debugger::GetPossibleBreakpointsRequest &req) override;
   void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
   void handle(const m::debugger::SetBreakpointsActiveRequest &req) override;
@@ -1178,6 +1179,29 @@ void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
 
 void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
   sendResponseToClientViaExecutor(inspector_->resume(), req.id);
+}
+
+void Connection::Impl::handle(
+    const m::debugger::GetPossibleBreakpointsRequest &req) {
+  debugger::SourceLocation start = m::debugger::makeLocation(req.start);
+  folly::Optional<debugger::SourceLocation> end;
+  if (req.end) {
+    end = m::debugger::makeLocation(req.end.value());
+  }
+
+  inspector_->getPossibleBreakpoints(start, end, {})
+      .via(executor_.get())
+      .thenValue([this, id = req.id](
+                     const std::vector<debugger::SourceLocation> &locations) {
+        m::debugger::GetPossibleBreakpointsResponse resp;
+        resp.id = id;
+        std::vector<m::debugger::Location> respLocations;
+        for (const auto &location : locations) {
+          respLocations.emplace_back(m::debugger::makeLocation(location));
+        }
+        resp.locations = std::move(respLocations);
+        sendResponseToClient(resp);
+      });
 }
 
 void Connection::Impl::handle(const m::debugger::SetBreakpointRequest &req) {

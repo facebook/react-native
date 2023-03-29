@@ -346,6 +346,20 @@ folly::Future<Unit> Inspector::executeIfEnabled(
   return promise->getFuture();
 }
 
+folly::Future<std::vector<debugger::SourceLocation>>
+Inspector::getPossibleBreakpoints(
+    facebook::hermes::debugger::SourceLocation start,
+    folly::Optional<facebook::hermes::debugger::SourceLocation> end,
+    folly::Optional<bool> restrictToFunction) {
+  auto promise =
+      std::make_shared<folly::Promise<std::vector<debugger::SourceLocation>>>();
+
+  executor_->add([this, start, end, restrictToFunction, promise] {
+    getPossibleBreakpointsOnExecutor(start, end, restrictToFunction, promise);
+  });
+  return promise->getFuture();
+}
+
 folly::Future<debugger::BreakpointInfo> Inspector::setBreakpoint(
     debugger::SourceLocation loc,
     std::optional<std::string> condition) {
@@ -595,6 +609,37 @@ void Inspector::executeIfEnabledOnExecutor(
           promise->setValue();
         }
       });
+}
+
+void Inspector::getPossibleBreakpointsOnExecutor(
+    facebook::hermes::debugger::SourceLocation start,
+    folly::Optional<facebook::hermes::debugger::SourceLocation> end,
+    folly::Optional<bool> restrictToFunction,
+    std::shared_ptr<
+        folly::Promise<std::vector<facebook::hermes::debugger::SourceLocation>>>
+        promise) {
+  std::lock_guard<std::mutex> lock(mutex_);
+
+  bool pushed = state_->pushPendingFunc([this, start, end, promise] {
+    std::vector<facebook::hermes::debugger::SourceLocation> locations;
+    auto breakpointIds = debugger_.getBreakpoints();
+    for (const auto &breakpointId : breakpointIds) {
+      auto breakpointInfo = debugger_.getBreakpointInfo(breakpointId);
+      auto location = breakpointInfo.resolvedLocation;
+      if ((location.fileId == start.fileId && location.line >= start.line &&
+           location.column >= start.column) &&
+          (!end ||
+           (location.fileId == end->fileId && location.line <= end->line &&
+            location.column <= end->column))) {
+        locations.push_back(breakpointInfo.resolvedLocation);
+      }
+    }
+    promise->setValue(std::move(locations));
+  });
+
+  if (!pushed) {
+    promise->setException(NotEnabledException("getPossibleBreakpoints"));
+  }
 }
 
 void Inspector::setBreakpointOnExecutor(

@@ -153,6 +153,11 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       folly::Function<void(const facebook::hermes::debugger::ProgramState &)>
           func);
 
+  folly::Future<std::vector<debugger::SourceLocation>> getPossibleBreakpoints(
+      facebook::hermes::debugger::SourceLocation start,
+      folly::Optional<facebook::hermes::debugger::SourceLocation> end,
+      folly::Optional<bool> restrictToFunction);
+
   /**
    * setBreakpoint can be called at any time after the debugger is enabled to
    * set a breakpoint in the VM. The future is fulfilled with the resolved
@@ -278,6 +283,13 @@ class Inspector : public facebook::hermes::debugger::EventObserver,
       folly::Function<void(const facebook::hermes::debugger::ProgramState &)>
           func,
       std::shared_ptr<folly::Promise<folly::Unit>> promise);
+
+  void getPossibleBreakpointsOnExecutor(
+      facebook::hermes::debugger::SourceLocation start,
+      folly::Optional<facebook::hermes::debugger::SourceLocation> end,
+      folly::Optional<bool> restrictToFunction,
+      std::shared_ptr<folly::Promise<
+          std::vector<facebook::hermes::debugger::SourceLocation>>> promise);
 
   void setBreakpointOnExecutor(
       debugger::SourceLocation loc,

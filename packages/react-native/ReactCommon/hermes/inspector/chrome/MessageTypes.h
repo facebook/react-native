@@ -26,6 +26,8 @@ struct EnableRequest;
 struct EvaluateOnCallFrameRequest;
 struct EvaluateOnCallFrameResponse;
 struct Location;
+struct GetPossibleBreakpointsRequest;
+struct GetPossibleBreakpointsResponse;
 struct PauseRequest;
 struct PausedNotification;
 struct RemoveBreakpointRequest;
@@ -119,6 +121,7 @@ struct RequestHandler {
   virtual void handle(const debugger::PauseRequest &req) = 0;
   virtual void handle(const debugger::RemoveBreakpointRequest &req) = 0;
   virtual void handle(const debugger::ResumeRequest &req) = 0;
+  virtual void handle(const debugger::GetPossibleBreakpointsRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointByUrlRequest &req) = 0;
   virtual void handle(const debugger::SetBreakpointsActiveRequest &req) = 0;
@@ -159,6 +162,7 @@ struct NoopRequestHandler : public RequestHandler {
   void handle(const debugger::PauseRequest &req) override {}
   void handle(const debugger::RemoveBreakpointRequest &req) override {}
   void handle(const debugger::ResumeRequest &req) override {}
+  void handle(const debugger::GetPossibleBreakpointsRequest &req) override {}
   void handle(const debugger::SetBreakpointRequest &req) override {}
   void handle(const debugger::SetBreakpointByUrlRequest &req) override {}
   void handle(const debugger::SetBreakpointsActiveRequest &req) override {}
@@ -462,6 +466,18 @@ struct debugger::ResumeRequest : public Request {
   std::optional<bool> terminateOnResume;
 };
 
+struct debugger::GetPossibleBreakpointsRequest : public Request {
+  GetPossibleBreakpointsRequest();
+  explicit GetPossibleBreakpointsRequest(const folly::dynamic &obj);
+
+  folly::dynamic toDynamic() const override;
+  void accept(RequestHandler &handler) const override;
+
+  debugger::Location start{};
+  folly::Optional<debugger::Location> end;
+  folly::Optional<bool> restrictToFunction;
+};
+
 struct debugger::SetBreakpointRequest : public Request {
   SetBreakpointRequest();
   explicit SetBreakpointRequest(const folly::dynamic &obj);
@@ -748,6 +764,14 @@ struct debugger::EvaluateOnCallFrameResponse : public Response {
 
   runtime::RemoteObject result{};
   std::optional<runtime::ExceptionDetails> exceptionDetails;
+};
+
+struct debugger::GetPossibleBreakpointsResponse : public Response {
+  GetPossibleBreakpointsResponse() = default;
+  explicit GetPossibleBreakpointsResponse(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+
+  std::vector<debugger::Location> locations;
 };
 
 struct debugger::SetBreakpointResponse : public Response {

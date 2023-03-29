@@ -32,6 +32,8 @@ std::unique_ptr<Request> Request::fromJsonThrowOnError(const std::string &str) {
       {"Debugger.removeBreakpoint",
        makeUnique<debugger::RemoveBreakpointRequest>},
       {"Debugger.resume", makeUnique<debugger::ResumeRequest>},
+      {"Debugger.getPossibleBreakpoints",
+       makeUnique<debugger::GetPossibleBreakpointsRequest>},
       {"Debugger.setBreakpoint", makeUnique<debugger::SetBreakpointRequest>},
       {"Debugger.setBreakpointByUrl",
        makeUnique<debugger::SetBreakpointByUrlRequest>},
@@ -582,6 +584,39 @@ dynamic debugger::ResumeRequest::toDynamic() const {
 }
 
 void debugger::ResumeRequest::accept(RequestHandler &handler) const {
+  handler.handle(*this);
+}
+
+debugger::GetPossibleBreakpointsRequest::GetPossibleBreakpointsRequest()
+    : Request("Debugger.GetPossibleBreakpoints") {}
+
+debugger::GetPossibleBreakpointsRequest::GetPossibleBreakpointsRequest(
+    const dynamic &obj)
+    : Request("Debugger.GetPossibleBreakpoints") {
+  assign(id, obj, "id");
+  assign(method, obj, "method");
+
+  dynamic params = obj.at("params");
+  assign(start, params, "start");
+  assign(end, params, "end");
+  assign(restrictToFunction, params, "restrictToFunction");
+}
+
+dynamic debugger::GetPossibleBreakpointsRequest::toDynamic() const {
+  dynamic params = dynamic::object;
+  put(params, "start", start);
+  put(params, "end", end);
+  put(params, "restrictToFunction", restrictToFunction);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "method", method);
+  put(obj, "params", std::move(params));
+  return obj;
+}
+
+void debugger::GetPossibleBreakpointsRequest::accept(
+    RequestHandler &handler) const {
   handler.handle(*this);
 }
 
@@ -1337,6 +1372,24 @@ dynamic debugger::EvaluateOnCallFrameResponse::toDynamic() const {
   dynamic res = dynamic::object;
   put(res, "result", result);
   put(res, "exceptionDetails", exceptionDetails);
+
+  dynamic obj = dynamic::object;
+  put(obj, "id", id);
+  put(obj, "result", std::move(res));
+  return obj;
+}
+
+debugger::GetPossibleBreakpointsResponse::GetPossibleBreakpointsResponse(
+    const dynamic &obj) {
+  assign(id, obj, "id");
+
+  dynamic res = obj.at("result");
+  assign(locations, res, "locations");
+}
+
+dynamic debugger::GetPossibleBreakpointsResponse::toDynamic() const {
+  dynamic res = dynamic::object;
+  put(res, "locations", locations);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
