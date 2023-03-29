@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.71.5
+
+### Changed
+
+- Bump CLI to 10.2.2 and Metro to 0.73.9 ([4c3bc24893](https://github.com/facebook/react-native/commit/4c3bc24893b2dc7495a2e65ee8f1c6408cc31ad5) by [@kelset](https://github.com/kelset)), contains:
+  - CLI fix: correctly list ios devices and simulators ([relevant PR](https://github.com/react-native-community/cli/pull/1863))
+  - Metro fix: fix watching contents of new directories in NodeWatcher ([ab86982](https://github.com/facebook/metro/commit/ab86982fad83da457d949f01a301c589fabcb12e) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- Bump RNGP to 0.71.17 ([bf490d379f](https://github.com/facebook/react-native/commit/bf490d379f8727aa18ded97f0f86465a00e3bef0) by [@kelset](https://github.com/kelset)), contains:
+  - Fix patch for codegen for 0.71 ([ec3681143e](https://github.com/facebook/react-native/commit/ec3681143e041a19cdee36d9f1ce63d7d0663091) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Remove ruby-version from 0.71 ([1d22e29146](https://github.com/facebook/react-native/commit/1d22e291462ac452f2bb6b1b6af11986944ec54a) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### Android specific
+
+- Fix race condition in ReadableNativeMap ([9aac13d](https://github.com/facebook/react-native/commit/9aac13d4dc95925b57f03e7964fc7add6834e518) by [@rshest](https://github.com/rshest))
+
+#### iOS specific
+
+- Give precedence to `textContentType` property for backwards compat as mentioned in https://github.com/facebook/react-native/issues/36229#issuecomment-1470468374 ([c0abff11b6](https://github.com/facebook/react-native/commit/c0abff11b66d9ec3a8e1d09333a3fb6c05678bed) by [@lunaleaps](https://github.com/lunaleaps))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
+
 ## v0.71.4
 
 ### Changed
