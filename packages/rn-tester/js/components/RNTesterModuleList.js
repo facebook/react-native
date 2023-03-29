@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 12,
-    marginVertical: Platform.select({ios: 4, android: 8}),
+    marginVertical: Platform.select({ios: 4, android: 8, macos: 4}), // [macOS]
     marginHorizontal: 15,
     overflow: 'hidden',
     elevation: 5,

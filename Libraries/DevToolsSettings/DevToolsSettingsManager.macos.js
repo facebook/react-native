@@ -10,4 +10,5 @@
 
 // [macOS]
 
+// $FlowFixMe[cannot-resolve-module] Share the iOS file
 export {DevToolsSettingsManager} from './DevToolsSettingsManager.ios';

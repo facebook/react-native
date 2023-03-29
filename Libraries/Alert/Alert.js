@@ -255,7 +255,7 @@ class Alert {
     modal?: ?boolean,
     critical?: ?boolean,
   ): void {
-    let callbacks = [];
+    let callbacks: Array<?any> = [];
     const buttons = [];
     if (typeof callbackOrButtons === 'function') {
       callbacks = [callbackOrButtons];

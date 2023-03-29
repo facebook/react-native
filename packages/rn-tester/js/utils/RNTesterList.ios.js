@@ -219,11 +219,7 @@ const APIs: Array<RNTesterModuleInfo> = [
     key: 'CrashExample',
     module: require('../examples/Crash/CrashExample'),
   },
-  {
-    key: 'ASANCrashExample',
-    module: require('../examples/ASAN/ASANCrashExample'),
-    supportsTVOS: false,
-  },
+
   {
     key: 'DevSettings',
     module: require('../examples/DevSettings/DevSettingsExample'),
@@ -234,9 +230,12 @@ const APIs: Array<RNTesterModuleInfo> = [
   },
   // [macOS
   {
+    key: 'ASANCrashExample',
+    module: require('../examples/ASAN/ASANCrashExample'),
+  },
+  {
     key: 'Focus Ring',
     module: require('../examples/FocusRing/FocusRingExample'),
-    supportsTVOS: false,
   },
   // macOS]
   {

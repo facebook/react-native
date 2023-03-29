@@ -332,6 +332,13 @@ const styles = StyleSheet.create({
       margin: -10,
       transform: [{scale: 0.5}],
     },
+    // [macOS
+    macos: {
+      top: 4,
+      margin: -10,
+      transform: [{scale: 0.5}],
+    },
+    // macOS]
   }),
   stacked: {
     alignItems: 'center',
