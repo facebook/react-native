@@ -33,7 +33,10 @@ typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 
 - (NSString *)componentViewName;
 
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args reactTag:(NSInteger)tag;
+- (void)handleCommand:(NSString *)commandName
+                 args:(NSArray *)args
+             reactTag:(NSInteger)tag
+            paperView:(UIView *)paperView;
 
 @end
 
