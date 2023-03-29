@@ -521,36 +521,63 @@ function emitCommonTypes(
   nullable: boolean,
   parser: Parser,
 ): $FlowFixMe {
-  const genericTypeAnnotationName =
-    parser.nameForGenericTypeAnnotation(typeAnnotation);
-
-  const typeMap = {
-    Stringish: emitStringish,
-    Int32: emitInt32,
-    Double: emitDouble,
-    Float: emitFloat,
-    UnsafeObject: emitGenericObject,
-    Object: emitGenericObject,
-    $Partial: emitPartial,
-    Partial: emitPartial,
-  };
-
-  const emitter = typeMap[genericTypeAnnotationName];
-  if (!emitter) {
-    return null;
-  }
-
-  return emitter(
-    nullable,
-    hasteModuleName,
-    typeAnnotation,
-    types,
-    aliasMap,
-    enumMap,
-    tryParse,
-    cxxOnly,
-    parser,
+  const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
+    typeAnnotation.type,
   );
+
+  switch (typeAnnotationName) {
+    case 'BooleanTypeAnnotation': {
+      return emitBoolean(nullable);
+    }
+    case 'NumberTypeAnnotation': {
+      return emitNumber(nullable);
+    }
+    case 'VoidTypeAnnotation': {
+      return emitVoid(nullable);
+    }
+    case 'StringTypeAnnotation': {
+      return emitString(nullable);
+    }
+    case 'MixedTypeAnnotation': {
+      if (cxxOnly) {
+        return emitMixed(nullable);
+      } else {
+        return emitGenericObject(nullable);
+      }
+    }
+    default: {
+      const genericTypeAnnotationName =
+        parser.nameForGenericTypeAnnotation(typeAnnotation);
+
+      const typeMap = {
+        Stringish: emitStringish,
+        Int32: emitInt32,
+        Double: emitDouble,
+        Float: emitFloat,
+        UnsafeObject: emitGenericObject,
+        Object: emitGenericObject,
+        $Partial: emitPartial,
+        Partial: emitPartial,
+      };
+
+      const emitter = typeMap[genericTypeAnnotationName];
+      if (!emitter) {
+        return null;
+      }
+
+      return emitter(
+        nullable,
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
+    }
+  }
 }
 
 module.exports = {
