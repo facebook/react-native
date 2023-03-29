@@ -9,7 +9,6 @@
  */
 
 import type {RootTag} from '../Types/RootTagTypes';
-import type {Spec as FabricUIManagerSpec} from './FabricUIManager';
 import type {Spec} from './NativeUIManager';
 
 import {getFabricUIManager} from './FabricUIManager';
