@@ -207,16 +207,16 @@ if (argv.target === 'RNTester') {
     localMavenPath,
   );
 
-  // create locally the node module
-  exec('npm pack', {cwd: reactNativePackagePath});
-
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
   exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
+
+  // create locally the node module
+  exec('npm pack', {cwd: reactNativePackagePath});
 
   pushd('/tmp/');
   // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${localNodeTGZPath} --skip-install`,
   );
 
   cd('RNTestProject');
