@@ -398,6 +398,7 @@ rn_apple_xplat_cxx_library(
     header_namespace = "",
     exported_headers = REACT_PUBLIC_HEADERS,
     compiler_flags = [
+        "-Wno-error=strict-prototypes",
         "-Wno-error=unguarded-availability-new",
         "-Wno-unknown-warning-option",
         "-Wno-global-constructors",
@@ -808,6 +809,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    compiler_flags = ["-Wno-error=strict-prototypes"],
     frameworks = [
         "Foundation",
         "QuartzCore",
@@ -1015,6 +1017,7 @@ rn_apple_library(
         ],
     ),
     autoglob = False,
+    compiler_flags = ["-Wno-error=strict-prototypes"],
     frameworks = [
         "AVFoundation",
         "Accelerate",
@@ -1243,6 +1246,7 @@ rn_apple_xplat_cxx_library(
         ],
         prefix = "React",
     ),
+    compiler_flags = ["-Wno-error=strict-prototypes"],
     frameworks = [
         "$SDKROOT/System/Library/Frameworks/UIKit.framework",
     ],
