@@ -475,6 +475,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
+  
+  if (scrollView.refreshControl.refreshing) {
+    baseInset.top += scrollView.refreshControl.frame.size.height;
+  }
+
   scrollView.contentInset = baseInset;
   scrollView.scrollIndicatorInsets = baseInset;
 
