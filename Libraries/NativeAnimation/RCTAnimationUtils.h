@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 RCT_EXTERN NSString *const EXTRAPOLATE_TYPE_IDENTITY;
 RCT_EXTERN NSString *const EXTRAPOLATE_TYPE_CLAMP;
@@ -32,11 +33,11 @@ RCT_EXTERN CGFloat RCTInterpolateValueInRange(
     NSString *extrapolateLeft,
     NSString *extrapolateRight);
 
-RCT_EXTERN int32_t
-RCTInterpolateColorInRange(CGFloat value, NSArray<NSNumber *> *inputRange, NSArray<UIColor *> *outputRange);
+RCT_EXTERN uint32_t
+RCTInterpolateColorInRange(CGFloat value, NSArray<NSNumber *> *inputRange, NSArray<RCTUIColor *> *outputRange); // [macOS]
 
 // Represents a color as a int32_t. RGB components are assumed to be in [0-255] range and alpha in [0-1] range
-RCT_EXTERN int32_t RCTColorFromComponents(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
+RCT_EXTERN uint32_t RCTColorFromComponents(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
 
 /**
  * Coefficient to slow down animations, respects the ios

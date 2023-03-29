@@ -105,8 +105,8 @@ NSString *RCTInterpolateString(
     for (id value in outputRangeConfig) {
       switch (_outputType) {
         case RCTInterpolationOutputColor: {
-          UIColor *color = [RCTConvert UIColor:value];
-          [outputRange addObject:color ? color : [UIColor whiteColor]];
+          RCTUIColor *color = [RCTConvert UIColor:value]; // [macOS]
+          [outputRange addObject:color ? color : [RCTUIColor whiteColor]]; // [macOS]
           break;
         }
         case RCTInterpolationOutputString:

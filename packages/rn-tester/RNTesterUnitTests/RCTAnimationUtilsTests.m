@@ -98,15 +98,15 @@ static CGFloat RCTSimpleInterpolation(CGFloat value, NSArray<NSNumber *> *inputR
 - (void)testColorInterpolation
 {
   NSArray<NSNumber *> *input = @[ @0, @1 ];
-  NSArray<UIColor *> *output = @[ [UIColor redColor], [UIColor blueColor] ];
+  NSArray<RCTUIColor *> *output = @[ [RCTUIColor redColor], [RCTUIColor blueColor] ]; // [macOS]
   uint32_t value;
   value = RCTInterpolateColorInRange(0, input, output);
-  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [UIColor redColor]);
+  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [RCTUIColor redColor]); // [macOS]
   value = RCTInterpolateColorInRange(0.5, input, output);
   XCTAssertEqualObjects(
-      [RCTConvert UIColor:@(value)], [UIColor colorWithRed:128. / 255 green:0 blue:128. / 255 alpha:1]);
+      [RCTConvert UIColor:@(value)], [RCTUIColor colorWithRed:128. / 255 green:0 blue:128. / 255 alpha:1]); // [macOS]
   value = RCTInterpolateColorInRange(1, input, output);
-  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [UIColor blueColor]);
+  XCTAssertEqualObjects([RCTConvert UIColor:@(value)], [RCTUIColor blueColor]); // [macOS]
 }
 
 - (void)testStringInterpolation
