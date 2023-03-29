@@ -87,11 +87,11 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   const char *methodSignature = "doFooWithBar:(nonnull NSString *)bar";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
   XCTAssertFalse(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[ @"Hello World" ]];
+    [method invokeWithBridge:nil bridgeModule:self arguments:@[ @"Hello World" ]];
   }));
 
   XCTAssertTrue(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
+    [method invokeWithBridge:nil bridgeModule:self arguments:@[ [NSNull null] ]];
   }));
 }
 
@@ -121,7 +121,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
       const char *methodSignature = "doFooWithNumber:(NSNumber *)n";
       RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
       // Invoke method to trigger parsing
-      [method invokeWithBridge:nil module:self arguments:@[ @1 ]];
+      [method invokeWithBridge:nil bridgeModule:self arguments:@[ @1 ]];
     }));
   }
 
@@ -129,7 +129,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithNumber:(nonnull NSNumber *)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
+      [method invokeWithBridge:nil bridgeModule:self arguments:@[ [NSNull null] ]];
     }));
   }
 
@@ -137,7 +137,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithDouble:(double)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
+      [method invokeWithBridge:nil bridgeModule:self arguments:@[ [NSNull null] ]];
     }));
   }
 
@@ -145,7 +145,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithInteger:(NSInteger)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
+      [method invokeWithBridge:nil bridgeModule:self arguments:@[ [NSNull null] ]];
     }));
   }
 }
@@ -156,7 +156,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
 
   CGRect r = CGRectMake(10, 20, 30, 40);
-  [method invokeWithBridge:nil module:self arguments:@[ @[ @10, @20, @30, @40 ] ]];
+  [method invokeWithBridge:nil bridgeModule:self arguments:@[ @[ @10, @20, @30, @40 ] ]];
   XCTAssertTrue(CGRectEqualToRect(r, _s));
 }
 
@@ -172,7 +172,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   XCTAssertEqualObjects(@(method.JSMethodName), @"doFoo");
 
   XCTAssertFalse(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[ @"bar" ]];
+    [method invokeWithBridge:nil bridgeModule:self arguments:@[ @"bar" ]];
   }));
 }
 
@@ -246,14 +246,14 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   {
     const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
-    id result = [method invokeWithBridge:nil module:self arguments:@[ @"Test String Value" ]];
+    id result = [method invokeWithBridge:nil bridgeModule:self arguments:@[ @"Test String Value" ]];
     XCTAssertEqualObjects(result, @"Test String Value");
   }
 
   {
     const char *methodSignature = "methodThatReturnsNil";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
-    id result = [method invokeWithBridge:nil module:self arguments:@[]];
+    id result = [method invokeWithBridge:nil bridgeModule:self arguments:@[]];
     XCTAssertNil(result);
   }
 }
@@ -262,7 +262,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
 {
   const char *methodSignature = "doFoo";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
-  id result = [method invokeWithBridge:nil module:self arguments:@[]];
+  id result = [method invokeWithBridge:nil bridgeModule:self arguments:@[]];
   XCTAssertNil(result);
 }
 

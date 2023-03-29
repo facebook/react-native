@@ -49,9 +49,9 @@ using namespace facebook::react;
   }
 }
 
-- (id)invokeWithBridge:(RCTBridge *)bridge module:(id)module arguments:(NSArray *)arguments
+- (id)invokeWithBridge:(RCTBridge *)bridge bridgeModule:(id)bridgeModule arguments:(NSArray *)arguments
 {
-  // module is unused except for printing errors. The C++ object it represents
+  // bridgeModule is unused except for printing errors. The C++ object it represents
   // is also baked into _method.
 
   // the last N arguments are callbacks, according to the Method data.  The
@@ -64,7 +64,7 @@ using namespace facebook::react;
   if (arguments.count < _method->callbacks) {
     RCTLogError(
         @"Method %@.%s expects at least %zu arguments, but got %tu",
-        RCTBridgeModuleNameForClass([module class]),
+        RCTBridgeModuleNameForClass([bridgeModule class]),
         _method->name.c_str(),
         _method->callbacks,
         arguments.count);
@@ -77,7 +77,7 @@ using namespace facebook::react;
           @"Argument %tu (%@) of %@.%s should be a function",
           arguments.count - 1,
           arguments[arguments.count - 1],
-          RCTBridgeModuleNameForClass([module class]),
+          RCTBridgeModuleNameForClass([bridgeModule class]),
           _method->name.c_str());
       return nil;
     }
@@ -89,7 +89,7 @@ using namespace facebook::react;
             @"Argument %tu (%@) of %@.%s should be a function",
             arguments.count - 2,
             arguments[arguments.count - 2],
-            RCTBridgeModuleNameForClass([module class]),
+            RCTBridgeModuleNameForClass([bridgeModule class]),
             _method->name.c_str());
         return nil;
       }
@@ -124,7 +124,7 @@ using namespace facebook::react;
   } catch (const facebook::xplat::JsArgumentException &ex) {
     RCTLogError(
         @"Method %@.%s argument error: %s",
-        RCTBridgeModuleNameForClass([module class]),
+        RCTBridgeModuleNameForClass([bridgeModule class]),
         _method->name.c_str(),
         ex.what());
     return nil;

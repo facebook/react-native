@@ -32,6 +32,6 @@ static inline const char *RCTFunctionDescriptorFromType(RCTFunctionType type)
 @property (nonatomic, readonly) const char *JSMethodName;
 @property (nonatomic, readonly) RCTFunctionType functionType;
 
-- (id)invokeWithBridge:(RCTBridge *)bridge module:(id)module arguments:(NSArray *)arguments;
+- (id)invokeWithBridge:(RCTBridge *)bridge bridgeModule:(id)bridgeModule arguments:(NSArray *)arguments;
 
 @end

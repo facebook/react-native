@@ -123,13 +123,13 @@ using namespace facebook::react;
   if (_bridge) {
     [_bridge.batchedBridge
         dispatchBlock:^{
-          [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
+          [method invokeWithBridge:self->_bridge bridgeModule:self->_componentData.manager arguments:newArgs];
           [self->_bridge.uiManager setNeedsLayout];
         }
                 queue:RCTGetUIManagerQueue()];
   } else {
     // TODO T86826778 - Figure out which queue this should be dispatched to.
-    [method invokeWithBridge:nil module:self->_componentData.manager arguments:newArgs];
+    [method invokeWithBridge:nil bridgeModule:self->_componentData.manager arguments:newArgs];
   }
 }
 

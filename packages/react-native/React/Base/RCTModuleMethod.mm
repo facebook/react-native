@@ -516,7 +516,7 @@ RCT_EXTERN_C_END
   }
 }
 
-- (id)invokeWithBridge:(RCTBridge *)bridge module:(id)module arguments:(NSArray *)arguments
+- (id)invokeWithBridge:(RCTBridge *)bridge bridgeModule:(id)bridgeModule arguments:(NSArray *)arguments
 {
   if (_argumentBlocks == nil) {
     [self processMethodSignature];
@@ -524,8 +524,8 @@ RCT_EXTERN_C_END
 
 #if RCT_DEBUG
   // Sanity check
-  RCTAssert([module class] == _moduleClass, @"Attempted to invoke method \
-            %@ on a module of class %@", [self methodName], [module class]);
+  RCTAssert([bridgeModule class] == _moduleClass, @"Attempted to invoke method \
+            %@ on a module of class %@", [self methodName], [bridgeModule class]);
 
   // Safety check
   if (arguments.count != _argumentBlocks.count) {
@@ -567,7 +567,7 @@ RCT_EXTERN_C_END
 #ifdef RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD
   if (RCTIsMainQueue()) {
     CFTimeInterval start = CACurrentMediaTime();
-    [_invocation invokeWithTarget:module];
+    [_invocation invokeWithTarget:bridgeModule];
     CFTimeInterval duration = CACurrentMediaTime() - start;
     if (duration > RCT_MAIN_THREAD_WATCH_DOG_THRESHOLD) {
       RCTLogWarn(
@@ -578,10 +578,10 @@ RCT_EXTERN_C_END
           (int)(duration * 1000));
     }
   } else {
-    [_invocation invokeWithTarget:module];
+    [_invocation invokeWithTarget:bridgeModule];
   }
 #else
-  [_invocation invokeWithTarget:module];
+  [_invocation invokeWithTarget:bridgeModule];
 #endif
 
   [_retainedObjects removeAllObjects];

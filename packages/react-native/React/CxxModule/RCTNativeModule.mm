@@ -194,7 +194,7 @@ static MethodCallResult invokeInner(
       BridgeNativeModulePerfLogger::asyncMethodCallExecutionArgConversionEnd(moduleName, methodName, (int32_t)callId);
     }
 
-    id result = [method invokeWithBridge:bridge module:moduleData.instance arguments:objcParams];
+    id result = [method invokeWithBridge:bridge bridgeModule:moduleData.instance arguments:objcParams];
 
     if (context == Sync) {
       BridgeNativeModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
