@@ -8,9 +8,11 @@
  * @format
  */
 
+import * as React from 'react';
 import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import {requireNativeComponent} from 'react-native';
+import {requireNativeComponent, UIManager} from 'react-native';
+import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
 
 type ColorChangedEvent = {
   nativeEvent: {
@@ -31,6 +33,22 @@ type NativeProps = $ReadOnly<{|
 |}>;
 
 export type MyLegacyViewType = HostComponent<NativeProps>;
+
+export function callNativeMethodToChangeBackgroundColor(
+  viewRef: React.ElementRef<MyLegacyViewType> | null,
+  color: string,
+) {
+  if (!viewRef) {
+    console.log('viewRef is null');
+    return;
+  }
+  UIManager.dispatchViewManagerCommand(
+    ReactNative.findNodeHandle(viewRef),
+    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
+      .changeBackgroundColor,
+    [color],
+  );
+}
 
 export default (requireNativeComponent(
   'RNTMyLegacyNativeView',
