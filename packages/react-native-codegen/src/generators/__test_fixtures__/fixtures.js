@@ -72,7 +72,7 @@ const SCHEMA_WITH_TM_AND_FC: SchemaType = {
           },
         ],
       },
-      moduleNames: ['Calculator'],
+      moduleName: 'Calculator',
     },
   },
 };

@@ -107,18 +107,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.fix_react_bridging_header_search_paths(installer)
-        installer.target_installation_results.pod_target_installation_results
-            .each do |pod_name, target_installation_result|
-                target_installation_result.native_target.build_configurations.each do |config|
-                    # For third party modules who have React-bridging dependency to search correct headers
-                    config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited) '
-                    config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" '
-                    config.build_settings['HEADER_SEARCH_PATHS'] << '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers" '
-            end
-        end
-    end
-
     def self.apply_mac_catalyst_patches(installer)
         # Fix bundle signing issues
         installer.pods_project.targets.each do |target|
@@ -166,13 +154,35 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.create_xcode_env_if_missing
+    def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
-        file_path = File.join(relative_path, '.xcode.env')
-        if File.exist?(file_path)
+        file_path = file_manager.join(relative_path, '.xcode.env')
+        if file_manager.exist?(file_path)
             return
         end
 
         system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+    end
+
+    # It examines the target_definition property and sets the appropriate value for
+    # ENV['USE_FRAMEWORKS'] variable.
+    #
+    # - parameter target_definition: The current target definition
+    def self.detect_use_frameworks(target_definition)
+        if ENV['USE_FRAMEWORKS'] != nil
+            return
+        end
+
+        framework_build_type = target_definition.build_type.to_s
+
+        Pod::UI.puts("Framework build type is #{framework_build_type}")
+
+        if framework_build_type === "static framework"
+            ENV['USE_FRAMEWORKS'] = 'static'
+        elsif framework_build_type === "dynamic framework"
+            ENV['USE_FRAMEWORKS'] = 'dynamic'
+        else
+            ENV['USE_FRAMEWORKS'] = nil
+        end
     end
 end

@@ -57,6 +57,7 @@ module.exports = {
     return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
   },
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     return require('../StyleSheet/flattenStyle');
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {

@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict-local
- * @generated SignedSource<<bda490a01513d4526005c1e029d5ce93>>
+ * @generated SignedSource<<7b69bfde64e35b7f706c2f6b9ef91e7c>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -37,8 +37,8 @@ const customDirectEventTypes: {
 exports.customBubblingEventTypes = customBubblingEventTypes;
 exports.customDirectEventTypes = customDirectEventTypes;
 
-const viewConfigCallbacks = new Map();
-const viewConfigs = new Map();
+const viewConfigCallbacks = new Map<string, ?() => ViewConfig>();
+const viewConfigs = new Map<string, ViewConfig>();
 
 function processEventTypes(viewConfig: ViewConfig): void {
   const {bubblingEventTypes, directEventTypes} = viewConfig;

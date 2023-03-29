@@ -93,7 +93,7 @@ class CodegenUtilsMock
         codegen_output_dir: 'build/generated/ios',
         config_key: 'codegenConfig',
         folly_version: "2021.07.22.00",
-        codegen_utils: CodegenUtils.new()
+        codegen_utils: CodegenUtilsMock.new()
     )
         @use_react_native_codegen_discovery_params.push({
             codegen_disabled: codegen_disabled,

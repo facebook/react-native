@@ -22,7 +22,7 @@ type Header = [string, string];
 // Convert FormData headers to arrays, which are easier to consume in
 // native on Android.
 function convertHeadersMapToArray(headers: Object): Array<Header> {
-  const headerArray = [];
+  const headerArray: Array<Header> = [];
   for (const name in headers) {
     headerArray.push([name, headers[name]]);
   }
@@ -91,4 +91,4 @@ class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
   }
 }
 
-module.exports = (new RCTNetworking(): RCTNetworking);
+export default (new RCTNetworking(): RCTNetworking);

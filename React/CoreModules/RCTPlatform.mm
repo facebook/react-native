@@ -15,7 +15,7 @@
 
 #import "CoreModulesPlugins.h"
 
-#import <folly/Optional.h>
+#import <optional>
 
 using namespace facebook::react;
 
@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
              .major = [versions[@"major"] doubleValue],
              .patch = [versions[@"patch"] doubleValue],
              .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
-                 ? folly::Optional<double>{}
+                 ? std::optional<double>{}
                  : [versions[@"prerelease"] doubleValue]}),
     });
   });

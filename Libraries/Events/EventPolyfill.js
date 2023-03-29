@@ -159,7 +159,7 @@ class EventPolyfill implements IEvent {
   // data with the other in sync.
   _syntheticEvent: mixed;
 
-  constructor(type: string, eventInitDict?: Event$Init): void {
+  constructor(type: string, eventInitDict?: Event$Init) {
     this.type = type;
     this.bubbles = !!(eventInitDict?.bubbles || false);
     this.cancelable = !!(eventInitDict?.cancelable || false);

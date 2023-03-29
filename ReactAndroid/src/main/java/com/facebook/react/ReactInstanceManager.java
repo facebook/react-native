@@ -82,6 +82,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
@@ -233,7 +234,8 @@ public class ReactInstanceManager {
       @Nullable JSIModulePackage jsiModulePackage,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
       @Nullable ReactPackageTurboModuleManagerDelegate.Builder tmmDelegateBuilder,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager) {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
@@ -261,7 +263,8 @@ public class ReactInstanceManager {
             devBundleDownloadListener,
             minNumShakes,
             customPackagerCommandHandlers,
-            surfaceDelegateFactory);
+            surfaceDelegateFactory,
+            devLoadingViewManager);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
@@ -920,10 +923,11 @@ public class ReactInstanceManager {
       if (mViewManagers == null) {
         synchronized (mPackages) {
           if (mViewManagers == null) {
-            mViewManagers = new ArrayList<>();
+            ArrayList<ViewManager> viewManagers = new ArrayList<>();
             for (ReactPackage reactPackage : mPackages) {
-              mViewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
+              viewManagers.addAll(reactPackage.createViewManagers(catalystApplicationContext));
             }
+            mViewManagers = viewManagers;
             return mViewManagers;
           }
         }

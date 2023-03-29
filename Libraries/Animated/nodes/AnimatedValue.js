@@ -48,21 +48,18 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * this two-phases process is to deal with composite props such as
  * transform which can receive values from multiple parents.
  */
-function _flush(rootNode: AnimatedValue): void {
-  const animatedStyles = new Set<AnimatedValue | AnimatedNode>();
-  function findAnimatedStyles(node: AnimatedValue | AnimatedNode) {
-    /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
-     * suppresses an error found when Flow v0.68 was deployed. To see the error
-     * delete this comment and run Flow. */
+export function flushValue(rootNode: AnimatedNode): void {
+  const leaves = new Set<{update: () => void, ...}>();
+  function findAnimatedStyles(node: AnimatedNode) {
+    // $FlowFixMe[prop-missing]
     if (typeof node.update === 'function') {
-      animatedStyles.add(node);
+      leaves.add((node: any));
     } else {
       node.__getChildren().forEach(findAnimatedStyles);
     }
   }
   findAnimatedStyles(rootNode);
-  // $FlowFixMe[prop-missing]
-  animatedStyles.forEach(animatedStyle => animatedStyle.update());
+  leaves.forEach(leaf => leaf.update());
 }
 
 /**
@@ -91,7 +88,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
 
-  // $FlowFixMe[missing-local-annot]
   constructor(value: number, config?: ?AnimatedValueConfig) {
     super();
     if (typeof value !== 'number') {
@@ -291,9 +287,9 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
     this._value = value;
     if (flush) {
-      _flush(this);
+      flushValue(this);
     }
-    super.__callListeners(this.__getValue());
+    this.__callListeners(this.__getValue());
   }
 
   __getNativeConfig(): Object {

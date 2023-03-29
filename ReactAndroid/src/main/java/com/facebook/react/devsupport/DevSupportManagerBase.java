@@ -46,6 +46,7 @@ import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.devsupport.DevServerHelper.PackagerCommandListener;
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
+import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
@@ -95,7 +96,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   private final File mJSBundleDownloadedFile;
   private final File mJSSplitBundlesDir;
   private final DefaultJSExceptionHandler mDefaultJSExceptionHandler;
-  private final DevLoadingViewController mDevLoadingViewController;
+  private final DevLoadingViewManager mDevLoadingViewManager;
 
   private @Nullable SurfaceDelegate mRedBoxSurfaceDelegate;
   private @Nullable AlertDialog mDevOptionsDialog;
@@ -132,7 +133,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       @Nullable DevBundleDownloadListener devBundleDownloadListener,
       int minNumShakes,
       @Nullable Map<String, RequestHandler> customPackagerCommandHandlers,
-      @Nullable SurfaceDelegateFactory surfaceDelegateFactory) {
+      @Nullable SurfaceDelegateFactory surfaceDelegateFactory,
+      @Nullable DevLoadingViewManager devLoadingViewManager) {
     mReactInstanceDevHelper = reactInstanceDevHelper;
     mApplicationContext = applicationContext;
     mJSAppBundleName = packagerPathForJSBundleName;
@@ -206,7 +208,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     setDevSupportEnabled(enableOnCreate);
 
     mRedBoxHandler = redBoxHandler;
-    mDevLoadingViewController = new DevLoadingViewController(reactInstanceDevHelper);
+    mDevLoadingViewManager =
+        devLoadingViewManager != null
+            ? devLoadingViewManager
+            : new DefaultDevLoadingViewImplementation(reactInstanceDevHelper);
     mSurfaceDelegateFactory = surfaceDelegateFactory;
   };
 
@@ -752,19 +757,40 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @UiThread
   private void showDevLoadingViewForUrl(String bundleUrl) {
-    mDevLoadingViewController.showForUrl(bundleUrl);
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    URL parsedURL;
+
+    try {
+      parsedURL = new URL(bundleUrl);
+    } catch (MalformedURLException e) {
+      FLog.e(ReactConstants.TAG, "Bundle url format is invalid. \n\n" + e.toString());
+      return;
+    }
+
+    int port = parsedURL.getPort() != -1 ? parsedURL.getPort() : parsedURL.getDefaultPort();
+    mDevLoadingViewManager.showMessage(
+        mApplicationContext.getString(
+            R.string.catalyst_loading_from_url, parsedURL.getHost() + ":" + port));
     mDevLoadingViewVisible = true;
   }
 
   @UiThread
   protected void showDevLoadingViewForRemoteJSEnabled() {
-    mDevLoadingViewController.showForRemoteJSEnabled();
+    if (mApplicationContext == null) {
+      return;
+    }
+
+    mDevLoadingViewManager.showMessage(
+        mApplicationContext.getString(R.string.catalyst_debug_connecting));
     mDevLoadingViewVisible = true;
   }
 
   @UiThread
   protected void hideDevLoadingView() {
-    mDevLoadingViewController.hide();
+    mDevLoadingViewManager.hide();
     mDevLoadingViewVisible = false;
   }
 
@@ -806,7 +832,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
                   @Override
                   public void onProgress(
                       @Nullable String status, @Nullable Integer done, @Nullable Integer total) {
-                    mDevLoadingViewController.updateProgress(status, done, total);
+                    mDevLoadingViewManager.updateProgress(status, done, total);
                   }
 
                   @Override
@@ -962,7 +988,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
               @Nullable final String status,
               @Nullable final Integer done,
               @Nullable final Integer total) {
-            mDevLoadingViewController.updateProgress(status, done, total);
+            mDevLoadingViewManager.updateProgress(status, done, total);
             if (mBundleDownloadListener != null) {
               mBundleDownloadListener.onProgress(status, done, total);
             }
@@ -1104,7 +1130,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
       // show the dev loading if it should be
       if (mDevLoadingViewVisible) {
-        mDevLoadingViewController.showMessage("Reloading...");
+        mDevLoadingViewManager.showMessage("Reloading...");
       }
 
       mDevServerHelper.openPackagerConnection(
@@ -1185,7 +1211,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       hideDevOptionsDialog();
 
       // hide loading view
-      mDevLoadingViewController.hide();
+      mDevLoadingViewManager.hide();
       mDevServerHelper.closePackagerConnection();
     }
   }

@@ -50,6 +50,11 @@ export interface PushNotification {
   getData(): Object;
 
   /**
+   * Gets the thread ID on the notif
+   */
+  getThreadId(): string;
+
+  /**
    * iOS Only
    * Signifies remote notification handling is complete
    */
@@ -134,6 +139,21 @@ export interface PushNotificationIOSStatic {
    * Cancels all scheduled localNotifications
    */
   cancelAllLocalNotifications(): void;
+
+  /**
+   * Remove all delivered notifications from Notification Center.
+   */
+  removeAllDeliveredNotifications(): void;
+
+  /**
+   * Provides you with a list of the app’s notifications that are still displayed in Notification Center.
+   */
+  getDeliveredNotifications(callback: (notifications: Object[]) => void): void;
+
+  /**
+   * Removes the specified notifications from Notification Center
+   */
+  removeDeliveredNotifications(identifiers: string[]): void;
 
   /**
    * Cancel local notifications.

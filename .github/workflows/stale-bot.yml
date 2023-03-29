@@ -17,3 +17,18 @@ jobs:
           stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 7 days with no activity.'
+  stale-needs-author-feedback:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          any-of-labels: 'Needs: Author Feedback'
+          days-before-stale: 24
+          stale-issue-message: "This issue is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days."
+          stale-pr-message: "This PR is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days"
+          close-issue-message: "This issue was closed because the author hasn't provided the requested feedback after 7 days."
+          close-pr-message: "This PR was closed because the author hasn't provided the requested feedback after 7 days."

@@ -138,6 +138,8 @@ class RN_EXPORT JSExecutor {
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,
       const std::string &bundlePath);
+
+  static double performanceNow();
 };
 
 } // namespace react

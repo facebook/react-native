@@ -16,5 +16,5 @@ public interface IViewManagerWithChildren {
    * of automatically laying out children without going through the ViewGroup's onLayout method. In
    * that case, onLayout for this View type must *not* call layout on its children.
    */
-  public boolean needsCustomLayoutForChildren();
+  boolean needsCustomLayoutForChildren();
 }

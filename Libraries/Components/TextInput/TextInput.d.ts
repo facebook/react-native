@@ -27,15 +27,15 @@ import {ViewProps} from '../View/ViewPropTypes';
 
 export type KeyboardType =
   | 'default'
-  | 'email-address'
-  | 'numeric'
-  | 'phone-pad'
   | 'number-pad'
-  | 'decimal-pad';
+  | 'decimal-pad'
+  | 'numeric'
+  | 'email-address'
+  | 'phone-pad'
+  | 'url';
 export type KeyboardTypeIOS =
   | 'ascii-capable'
   | 'numbers-and-punctuation'
-  | 'url'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search';

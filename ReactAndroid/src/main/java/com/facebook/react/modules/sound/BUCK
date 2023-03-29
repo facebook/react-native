@@ -8,8 +8,6 @@ rn_android_library(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     language = "JAVA",
-    provided_deps = [
-    ],
     visibility = [
         "PUBLIC",
     ],

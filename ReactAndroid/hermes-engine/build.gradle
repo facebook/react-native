@@ -59,8 +59,9 @@ def jsiDir = new File(reactNativeRootDir, "ReactCommon/jsi")
 
 task downloadHermes(type: Download) {
     src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
-    onlyIfNewer(true)
-    overwrite(false)
+    onlyIfModified(true)
+    overwrite(true)
+    useETag(true)
     dest(new File(downloadsDir, "hermes.tar.gz"))
 }
 
@@ -173,7 +174,6 @@ android {
         release {
             externalNativeBuild {
                 cmake {
-                    arguments "-DHERMES_ENABLE_DEBUGGER=False"
                     arguments "-DCMAKE_BUILD_TYPE=MinSizeRel"
                 }
             }
@@ -234,4 +234,17 @@ afterEvaluate {
     prepareHeadersForPrefab.dependsOn(buildHermes)
 }
 
+/* Publishing Configuration */
 apply from: "../publish.gradle"
+
+// We need to override the artifact ID as this project is called `hermes-engine` but
+// the maven coordinates are on `hermes-android`.
+// Please note that the original coordinates, `hermes-engine`, have been voided
+// as they caused https://github.com/facebook/react-native/issues/35210
+publishing {
+    publications {
+        getByName("release") {
+            artifactId 'hermes-android'
+        }
+    }
+}

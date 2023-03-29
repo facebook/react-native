@@ -40,6 +40,7 @@ function setImmediate(callback: Function, ...args: any): number {
     clearedImmediates.delete(id);
   }
 
+  // $FlowFixMe[incompatible-call]
   global.queueMicrotask(() => {
     if (!clearedImmediates.has(id)) {
       callback.apply(undefined, args);

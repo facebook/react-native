@@ -41,6 +41,7 @@ function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
             useNativeDriver: true,
           }),
         );
+        // $FlowFixMe[incompatible-call]
         setState({
           animation,
           rotate: animated.interpolate({

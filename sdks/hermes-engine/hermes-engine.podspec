@@ -17,36 +17,13 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-isInCI = ENV['CI'] === 'true'
+build_from_source = ENV['BUILD_FROM_SOURCE'] === 'true'
 
-source = {}
 git = "https://github.com/facebook/hermes.git"
 
-isInMain = version.include?('1000.0.0')
-isNightly = version.start_with?('0.0.0-')
+abort_if_invalid_tarball_provided!
 
-if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
-  source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
-elsif isInMain
-  Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
-  source[:git] = git
-  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
-elsif isNightly
-  Pod::UI.puts '[Hermes] Nightly version, download pre-built for Hermes'.yellow if Object.const_defined?("Pod::UI")
-  destination_path = download_nightly_hermes(react_native_path, version)
-  # set tarball as hermes engine
-  source[:http] = "file://#{destination_path}"
-elsif File.exists?(hermestag_file) && isInCI
-  Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source but fetched from tag...'.yellow if Object.const_defined?("Pod::UI")
-  hermestag = File.read(hermestag_file).strip
-  source[:git] = git
-  source[:tag] = hermestag
-else
-  # Sample url from Maven:
-  # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-  source[:http] = "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
-end
+source = compute_hermes_source(build_from_source, hermestag_file, git, version, build_type, react_native_path)
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
@@ -67,6 +44,9 @@ Pod::Spec.new do |spec|
                     "CLANG_CXX_LIBRARY" => "compiler-default"
                   }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
 
+  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
+  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+
   if source[:http] then
 
     spec.subspec 'Pre-built' do |ss|
@@ -79,8 +59,6 @@ Pod::Spec.new do |spec|
     end
 
   elsif source[:git] then
-
-    ENV['HERMES_BUILD_FROM_SOURCE'] = "1"
 
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
@@ -100,38 +78,36 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/Public'
     end
 
-    hermesc_path = ""
+    hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
 
     if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
       hermesc_path = ENV['HERMES_OVERRIDE_HERMESC_PATH']
-    else
-      # Keep hermesc_path synchronized with .gitignore entry.
-      ENV['REACT_NATIVE_PATH'] = react_native_path
-      hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
-      spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
     end
 
     spec.user_target_xcconfig = {
-      'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphoneos" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/iphonesimulator" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/macosx" ' +
-                                  '"$(PODS_ROOT)/hermes-engine/destroot/Library/Frameworks/catalyst"',
-      'OTHER_LDFLAGS' => '-framework "hermes"',
       'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
     }
 
+    spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
+
+    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
+    # NOTE: Script phases are sorted alphabetically inside Xcode project
     spec.script_phases = [
       {
-        :name => 'Build Hermes',
+        :name => '[RN] [1] Build Hermesc',
         :script => <<-EOS
         . ${PODS_ROOT}/../.xcode.env
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{%x(command -v cmake | tr -d '\n')}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
         EOS
       },
       {
-        :name => 'Copy Hermes Framework',
-        :script => ". ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/copy-hermes-xcode.sh"
+        :name => '[RN] [2] Build Hermes',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        EOS
       }
     ]
   end

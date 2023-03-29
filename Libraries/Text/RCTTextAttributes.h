@@ -7,7 +7,7 @@
 
 #import <React/RCTUIKit.h> // [macOS]
 
-#import <React/RCTDynamicTypeRamp.h> // [macOS]
+#import <React/RCTDynamicTypeRamp.h>
 #import <React/RCTTextDecorationLineType.h>
 
 #import "RCTTextTransform.h"
@@ -41,7 +41,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSString *fontStyle;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
 @property (nonatomic, assign) BOOL allowFontScaling;
-@property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp; // [macOS]
+@property (nonatomic, assign) RCTDynamicTypeRamp dynamicTypeRamp;
 @property (nonatomic, assign) CGFloat letterSpacing;
 // Paragraph Styles
 @property (nonatomic, assign) CGFloat lineHeight;

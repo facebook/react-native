@@ -20,7 +20,7 @@ import com.facebook.react.ReactRootView
  *
  * @param fabricEnabled Whether Fabric should be enabled for the RootView of this Activity.
  * @param concurrentRootEnabled Whether ConcurrentRoot (aka React 18) should be enabled for the
- * RootView of this Activity.
+ *   RootView of this Activity.
  */
 open class DefaultReactActivityDelegate(
     activity: ReactActivity,

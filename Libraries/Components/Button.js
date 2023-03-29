@@ -11,6 +11,7 @@
 
 'use strict';
 
+import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
 import type {Button as ButtonType} from './Button.flow';
@@ -373,8 +374,8 @@ class Button extends React.Component<ButtonProps> {
       accessibilityRole, // [macOS]
       onAccessibilityAction,
     } = this.props;
-    const buttonStyles = [styles.button];
-    const textStyles = [styles.text];
+    const buttonStyles: Array<ViewStyleProp> = [styles.button];
+    const textStyles: Array<TextStyleProp> = [styles.text];
     if (color) {
       if (Platform.OS === 'ios' || Platform.OS === 'macos' /* [macOS] */) {
         textStyles.push({color: color});

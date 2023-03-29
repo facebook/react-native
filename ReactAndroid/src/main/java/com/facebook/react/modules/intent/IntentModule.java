@@ -17,6 +17,7 @@ import android.provider.Settings;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.NativeIntentAndroidSpec;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -25,10 +26,10 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
-@ReactModule(name = IntentModule.NAME)
+@ReactModule(name = NativeIntentAndroidSpec.NAME)
 public class IntentModule extends NativeIntentAndroidSpec {
 
-  public static final String NAME = "IntentAndroid";
+  private @Nullable LifecycleEventListener mInitialURLListener = null;
 
   private static final String EXTRA_MAP_KEY_FOR_VALUE = "value";
 
@@ -37,8 +38,12 @@ public class IntentModule extends NativeIntentAndroidSpec {
   }
 
   @Override
-  public String getName() {
-    return NAME;
+  public void invalidate() {
+    if (mInitialURLListener != null) {
+      getReactApplicationContext().removeLifecycleEventListener(mInitialURLListener);
+      mInitialURLListener = null;
+    }
+    super.invalidate();
   }
 
   /**
@@ -50,18 +55,20 @@ public class IntentModule extends NativeIntentAndroidSpec {
   public void getInitialURL(Promise promise) {
     try {
       Activity currentActivity = getCurrentActivity();
+      if (currentActivity == null) {
+        waitForActivityAndGetInitialURL(promise);
+        return;
+      }
+
+      Intent intent = currentActivity.getIntent();
+      String action = intent.getAction();
+      Uri uri = intent.getData();
+
       String initialURL = null;
-
-      if (currentActivity != null) {
-        Intent intent = currentActivity.getIntent();
-        String action = intent.getAction();
-        Uri uri = intent.getData();
-
-        if (uri != null
-            && (Intent.ACTION_VIEW.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
-          initialURL = uri.toString();
-        }
+      if (uri != null
+          && (Intent.ACTION_VIEW.equals(action)
+              || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+        initialURL = uri.toString();
       }
 
       promise.resolve(initialURL);
@@ -70,6 +77,33 @@ public class IntentModule extends NativeIntentAndroidSpec {
           new JSApplicationIllegalArgumentException(
               "Could not get the initial URL : " + e.getMessage()));
     }
+  }
+
+  private void waitForActivityAndGetInitialURL(final Promise promise) {
+    if (mInitialURLListener != null) {
+      promise.reject(
+          new IllegalStateException(
+              "Cannot await activity from more than one call to getInitialURL"));
+      return;
+    }
+
+    mInitialURLListener =
+        new LifecycleEventListener() {
+          @Override
+          public void onHostResume() {
+            getInitialURL(promise);
+
+            getReactApplicationContext().removeLifecycleEventListener(this);
+            mInitialURLListener = null;
+          }
+
+          @Override
+          public void onHostPause() {}
+
+          @Override
+          public void onHostDestroy() {}
+        };
+    getReactApplicationContext().addLifecycleEventListener(mInitialURLListener);
   }
 
   /**

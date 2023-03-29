@@ -9,8 +9,8 @@
  */
 
 import SectionListBaseExample from './SectionListBaseExample';
-import {View, Text, StyleSheet} from 'react-native';
 import * as React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
 const Separator =
   (defaultColor: string, highlightColor: string, isSectionSeparator: boolean) =>
@@ -37,7 +37,7 @@ export function SectionList_withSeparators(): React.Node {
     ItemSeparatorComponent: Separator('lightgreen', 'green', false),
     SectionSeparatorComponent: Separator('lightblue', 'blue', true),
   };
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
 
   return <SectionListBaseExample ref={ref} exampleProps={exampleProps} />;
 }

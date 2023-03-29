@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTDefines.h>
 
-#if RCT_DEV
+#if RCT_DEV || RCT_REMOTE_PROFILE
 
 @class RCTInspectorRemoteConnection;
 

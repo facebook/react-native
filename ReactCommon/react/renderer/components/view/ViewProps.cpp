@@ -265,17 +265,19 @@ ViewProps::ViewProps(
                     {}))
 
 #endif
-          {};
+{
+}
 
-#define VIEW_EVENT_CASE(eventType, eventString)     \
-  case CONSTEXPR_RAW_PROPS_KEY_HASH(eventString): { \
-    ViewEvents defaultViewEvents{};                 \
-    bool res = defaultViewEvents[eventType];        \
-    if (value.hasValue()) {                         \
-      fromRawValue(context, value, res);            \
-    }                                               \
-    events[eventType] = res;                        \
-    return;                                         \
+#define VIEW_EVENT_CASE(eventType)                      \
+  case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
+    const auto offset = ViewEvents::Offset::eventType;  \
+    ViewEvents defaultViewEvents{};                     \
+    bool res = defaultViewEvents[offset];               \
+    if (value.hasValue()) {                             \
+      fromRawValue(context, value, res);                \
+    }                                                   \
+    events[offset] = res;                               \
+    return;                                             \
   }
 
 void ViewProps::setProp(
@@ -307,46 +309,31 @@ void ViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable, true);
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews, false);
     // events field
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerEnter, "onPointerEnter");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerEnterCapture, "onPointerEnterCapture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerMove, "onPointerMove");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerMoveCapture, "onPointerMoveCapture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerLeave, "onPointerLeave");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::PointerLeaveCapture, "onPointerLeaveCapture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerOver, "onPointerOver");
-    VIEW_EVENT_CASE(ViewEvents::Offset::PointerOut, "onPointerOut");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::MoveShouldSetResponder, "onMoveShouldSetResponder");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::MoveShouldSetResponderCapture,
-        "onMoveShouldSetResponderCapture");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::StartShouldSetResponder,
-        "onStartShouldSetResponder");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::StartShouldSetResponderCapture,
-        "onStartShouldSetResponderCapture");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderGrant, "onResponderGrant");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderReject, "onResponderReject");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderStart, "onResponderStart");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderEnd, "onResponderEnd");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderRelease, "onResponderRelease");
-    VIEW_EVENT_CASE(ViewEvents::Offset::ResponderMove, "ResponderMove");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::ResponderTerminate, "onResponderTerminate");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::ResponderTerminationRequest,
-        "onResponderTerminationRequest");
-    VIEW_EVENT_CASE(
-        ViewEvents::Offset::ShouldBlockNativeResponder,
-        "onShouldBlockNativeResponder");
-    VIEW_EVENT_CASE(ViewEvents::Offset::TouchStart, "onTouchStart");
-    VIEW_EVENT_CASE(ViewEvents::Offset::TouchMove, "onTouchMove");
-    VIEW_EVENT_CASE(ViewEvents::Offset::TouchEnd, "onTouchEnd");
-    VIEW_EVENT_CASE(ViewEvents::Offset::TouchCancel, "onTouchCancel");
+    VIEW_EVENT_CASE(PointerEnter);
+    VIEW_EVENT_CASE(PointerEnterCapture);
+    VIEW_EVENT_CASE(PointerMove);
+    VIEW_EVENT_CASE(PointerMoveCapture);
+    VIEW_EVENT_CASE(PointerLeave);
+    VIEW_EVENT_CASE(PointerLeaveCapture);
+    VIEW_EVENT_CASE(PointerOver);
+    VIEW_EVENT_CASE(PointerOut);
+    VIEW_EVENT_CASE(MoveShouldSetResponder);
+    VIEW_EVENT_CASE(MoveShouldSetResponderCapture);
+    VIEW_EVENT_CASE(StartShouldSetResponder);
+    VIEW_EVENT_CASE(StartShouldSetResponderCapture);
+    VIEW_EVENT_CASE(ResponderGrant);
+    VIEW_EVENT_CASE(ResponderReject);
+    VIEW_EVENT_CASE(ResponderStart);
+    VIEW_EVENT_CASE(ResponderEnd);
+    VIEW_EVENT_CASE(ResponderRelease);
+    VIEW_EVENT_CASE(ResponderMove);
+    VIEW_EVENT_CASE(ResponderTerminate);
+    VIEW_EVENT_CASE(ResponderTerminationRequest);
+    VIEW_EVENT_CASE(ShouldBlockNativeResponder);
+    VIEW_EVENT_CASE(TouchStart);
+    VIEW_EVENT_CASE(TouchMove);
+    VIEW_EVENT_CASE(TouchEnd);
+    VIEW_EVENT_CASE(TouchCancel);
 #ifdef ANDROID
     RAW_SET_PROP_SWITCH_CASE_BASIC(elevation, {});
     RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid", {});

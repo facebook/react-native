@@ -10,16 +10,18 @@
 
 'use strict';
 
+import Dimensions from '../Utilities/Dimensions';
+
 const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions');
 const BorderBox = require('./BorderBox');
 const resolveBoxStyle = require('./resolveBoxStyle');
 const React = require('react');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
+    // $FlowFixMe[underconstrained-implicit-instantiation]
     const style = flattenStyle(this.props.style) || {};
     let margin = resolveBoxStyle('margin', style);
     let padding = resolveBoxStyle('padding', style);
@@ -123,12 +125,14 @@ function resolveSizeInPlace(
 ) {
   if (style[direction] !== null && typeof style[direction] === 'string') {
     if (style[direction].indexOf('%') !== -1) {
+      // $FlowFixMe[prop-missing]
       style[direction] =
         (parseFloat(style[direction]) / 100.0) *
         Dimensions.get('window')[dimension];
     }
     if (style[direction] === 'auto') {
       // Ignore auto sizing in frame drawing due to complexity of correctly rendering this
+      // $FlowFixMe[prop-missing]
       style[direction] = 0;
     }
   }

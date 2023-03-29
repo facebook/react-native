@@ -15,21 +15,13 @@ uplinks:
       maxSockets: 40
       maxFreeSockets: 10
 packages:
+  # Get @react-native/normalize-color from npm registry, since its used in deprecated-react-native-prop-types package
+  '@react-native/normalize-color':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
   # Group and isolate all local packages, avoid being proxy from outside
   '@react-native/*':
-    access: $all
-    publish: $all
-  # The below specific entries can be removed once they are renamed and have the @react-native prefix
-  '@react-native-community/eslint-config':
-    access: $all
-    publish: $all
-  '@react-native-community/eslint-plugin':
-    access: $all
-    publish: $all
-  'react-native-codegen':
-    access: $all
-    publish: $all
-  'react-native-gradle-plugin':
     access: $all
     publish: $all
   '@*/*':

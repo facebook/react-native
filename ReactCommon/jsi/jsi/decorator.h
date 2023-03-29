@@ -264,11 +264,13 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   bool hasProperty(const Object& o, const String& name) override {
     return plain_.hasProperty(o, name);
   };
-  void setPropertyValue(Object& o, const PropNameID& name, const Value& value)
-      override {
+  void setPropertyValue(
+      const Object& o,
+      const PropNameID& name,
+      const Value& value) override {
     plain_.setPropertyValue(o, name, value);
   };
-  void setPropertyValue(Object& o, const String& name, const Value& value)
+  void setPropertyValue(const Object& o, const String& name, const Value& value)
       override {
     plain_.setPropertyValue(o, name, value);
   };
@@ -295,7 +297,7 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   WeakObject createWeakObject(const Object& o) override {
     return plain_.createWeakObject(o);
   };
-  Value lockWeakObject(WeakObject& wo) override {
+  Value lockWeakObject(const WeakObject& wo) override {
     return plain_.lockWeakObject(wo);
   };
 
@@ -318,7 +320,8 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Value getValueAtIndex(const Array& a, size_t i) override {
     return plain_.getValueAtIndex(a, i);
   };
-  void setValueAtIndexImpl(Array& a, size_t i, const Value& value) override {
+  void setValueAtIndexImpl(const Array& a, size_t i, const Value& value)
+      override {
     plain_.setValueAtIndexImpl(a, i, value);
   };
 
@@ -656,12 +659,14 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::hasProperty(o, name);
   };
-  void setPropertyValue(Object& o, const PropNameID& name, const Value& value)
-      override {
+  void setPropertyValue(
+      const Object& o,
+      const PropNameID& name,
+      const Value& value) override {
     Around around{with_};
     RD::setPropertyValue(o, name, value);
   };
-  void setPropertyValue(Object& o, const String& name, const Value& value)
+  void setPropertyValue(const Object& o, const String& name, const Value& value)
       override {
     Around around{with_};
     RD::setPropertyValue(o, name, value);
@@ -696,7 +701,7 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createWeakObject(o);
   };
-  Value lockWeakObject(WeakObject& wo) override {
+  Value lockWeakObject(const WeakObject& wo) override {
     Around around{with_};
     return RD::lockWeakObject(wo);
   };
@@ -725,7 +730,8 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::getValueAtIndex(a, i);
   };
-  void setValueAtIndexImpl(Array& a, size_t i, const Value& value) override {
+  void setValueAtIndexImpl(const Array& a, size_t i, const Value& value)
+      override {
     Around around{with_};
     RD::setValueAtIndexImpl(a, i, value);
   };

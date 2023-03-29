@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.Spacing;
@@ -86,6 +87,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private @Nullable BorderStyle mBorderStyle;
 
   private @Nullable Path mInnerClipPathForBorderRadius;
+  private @Nullable Path mBackgroundColorRenderPath;
   private @Nullable Path mOuterClipPathForBorderRadius;
   private @Nullable Path mPathForBorderRadiusOutline;
   private @Nullable Path mPathForBorder;
@@ -107,6 +109,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
   private int mColor = Color.TRANSPARENT;
   private int mAlpha = 255;
 
+  // There is a small gap between the edges of adjacent paths
+  // such as between the mBackgroundColorRenderPath and its border.
+  // The smallest amount (found to be 0.8f) is used to extend
+  // the paths, overlapping them and closing the visible gap.
+  private final float mGapBetweenPaths =
+      ReactFeatureFlags.enableCloseVisibleGapBetweenPaths ? 0.8f : 0.0f;
+
   private @Nullable float[] mBorderCornerRadii;
   private final Context mContext;
   private int mLayoutDirection;
@@ -119,7 +128,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     TOP_START,
     TOP_END,
     BOTTOM_START,
-    BOTTOM_END
+    BOTTOM_END,
+    END_END,
+    END_START,
+    START_END,
+    START_START
   }
 
   public ReactViewBackgroundDrawable(Context context) {
@@ -262,7 +275,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
   public void setRadius(float radius, int position) {
     if (mBorderCornerRadii == null) {
-      mBorderCornerRadii = new float[8];
+      mBorderCornerRadii = new float[12];
       Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED);
     }
 
@@ -329,11 +342,15 @@ public class ReactViewBackgroundDrawable extends Drawable {
     updatePath();
     canvas.save();
 
+    // Clip outer border
+    canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
+
+    // Draws the View without its border first (with background color fill)
     int useColor = ColorUtil.multiplyColorAlpha(mColor, mAlpha);
     if (Color.alpha(useColor) != 0) { // color is not transparent
       mPaint.setColor(useColor);
       mPaint.setStyle(Paint.Style.FILL);
-      canvas.drawPath(mInnerClipPathForBorderRadius, mPaint);
+      canvas.drawPath(mBackgroundColorRenderPath, mPaint);
     }
 
     final RectF borderWidth = getDirectionAwareBorderInsets();
@@ -369,8 +386,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
       else {
         mPaint.setStyle(Paint.Style.FILL);
 
-        // Draw border
-        canvas.clipPath(mOuterClipPathForBorderRadius, Region.Op.INTERSECT);
+        // Clip inner border
         canvas.clipPath(mInnerClipPathForBorderRadius, Region.Op.DIFFERENCE);
 
         final boolean isRTL = getResolvedLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
@@ -416,27 +432,29 @@ public class ReactViewBackgroundDrawable extends Drawable {
         final float top = mOuterClipTempRectForBorderRadius.top;
         final float bottom = mOuterClipTempRectForBorderRadius.bottom;
 
+        // mGapBetweenPaths is used to close the gap between the diagonal
+        // edges of the quadrilaterals on adjacent sides of the rectangle
         if (borderWidth.left > 0) {
           final float x1 = left;
-          final float y1 = top;
+          final float y1 = top - mGapBetweenPaths;
           final float x2 = mInnerTopLeftCorner.x;
-          final float y2 = mInnerTopLeftCorner.y;
+          final float y2 = mInnerTopLeftCorner.y - mGapBetweenPaths;
           final float x3 = mInnerBottomLeftCorner.x;
-          final float y3 = mInnerBottomLeftCorner.y;
+          final float y3 = mInnerBottomLeftCorner.y + mGapBetweenPaths;
           final float x4 = left;
-          final float y4 = bottom;
+          final float y4 = bottom + mGapBetweenPaths;
 
           drawQuadrilateral(canvas, colorLeft, x1, y1, x2, y2, x3, y3, x4, y4);
         }
 
         if (borderWidth.top > 0) {
-          final float x1 = left;
+          final float x1 = left - mGapBetweenPaths;
           final float y1 = top;
-          final float x2 = mInnerTopLeftCorner.x;
+          final float x2 = mInnerTopLeftCorner.x - mGapBetweenPaths;
           final float y2 = mInnerTopLeftCorner.y;
-          final float x3 = mInnerTopRightCorner.x;
+          final float x3 = mInnerTopRightCorner.x + mGapBetweenPaths;
           final float y3 = mInnerTopRightCorner.y;
-          final float x4 = right;
+          final float x4 = right + mGapBetweenPaths;
           final float y4 = top;
 
           drawQuadrilateral(canvas, colorTop, x1, y1, x2, y2, x3, y3, x4, y4);
@@ -444,25 +462,25 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
         if (borderWidth.right > 0) {
           final float x1 = right;
-          final float y1 = top;
+          final float y1 = top - mGapBetweenPaths;
           final float x2 = mInnerTopRightCorner.x;
-          final float y2 = mInnerTopRightCorner.y;
+          final float y2 = mInnerTopRightCorner.y - mGapBetweenPaths;
           final float x3 = mInnerBottomRightCorner.x;
-          final float y3 = mInnerBottomRightCorner.y;
+          final float y3 = mInnerBottomRightCorner.y + mGapBetweenPaths;
           final float x4 = right;
-          final float y4 = bottom;
+          final float y4 = bottom + mGapBetweenPaths;
 
           drawQuadrilateral(canvas, colorRight, x1, y1, x2, y2, x3, y3, x4, y4);
         }
 
         if (borderWidth.bottom > 0) {
-          final float x1 = left;
+          final float x1 = left - mGapBetweenPaths;
           final float y1 = bottom;
-          final float x2 = mInnerBottomLeftCorner.x;
+          final float x2 = mInnerBottomLeftCorner.x - mGapBetweenPaths;
           final float y2 = mInnerBottomLeftCorner.y;
-          final float x3 = mInnerBottomRightCorner.x;
+          final float x3 = mInnerBottomRightCorner.x + mGapBetweenPaths;
           final float y3 = mInnerBottomRightCorner.y;
-          final float x4 = right;
+          final float x4 = right + mGapBetweenPaths;
           final float y4 = bottom;
 
           drawQuadrilateral(canvas, colorBottom, x1, y1, x2, y2, x3, y3, x4, y4);
@@ -482,6 +500,10 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
     if (mInnerClipPathForBorderRadius == null) {
       mInnerClipPathForBorderRadius = new Path();
+    }
+
+    if (mBackgroundColorRenderPath == null) {
+      mBackgroundColorRenderPath = new Path();
     }
 
     if (mOuterClipPathForBorderRadius == null) {
@@ -513,6 +535,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
     }
 
     mInnerClipPathForBorderRadius.reset();
+    mBackgroundColorRenderPath.reset();
     mOuterClipPathForBorderRadius.reset();
     mPathForBorderRadiusOutline.reset();
     mCenterDrawPath.reset();
@@ -562,6 +585,11 @@ public class ReactViewBackgroundDrawable extends Drawable {
     float bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START);
     float bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END);
 
+    float endEndRadius = getBorderRadius(BorderRadiusLocation.END_END);
+    float endStartRadius = getBorderRadius(BorderRadiusLocation.END_START);
+    float startEndRadius = getBorderRadius(BorderRadiusLocation.START_END);
+    float startStartRadius = getBorderRadius(BorderRadiusLocation.START_START);
+
     if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
       if (YogaConstants.isUndefined(topStartRadius)) {
         topStartRadius = topLeftRadius;
@@ -579,20 +607,44 @@ public class ReactViewBackgroundDrawable extends Drawable {
         bottomEndRadius = bottomRightRadius;
       }
 
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       topLeftRadius = directionAwareTopLeftRadius;
       topRightRadius = directionAwareTopRightRadius;
       bottomLeftRadius = directionAwareBottomLeftRadius;
       bottomRightRadius = directionAwareBottomRightRadius;
     } else {
-      final float directionAwareTopLeftRadius = isRTL ? topEndRadius : topStartRadius;
-      final float directionAwareTopRightRadius = isRTL ? topStartRadius : topEndRadius;
-      final float directionAwareBottomLeftRadius = isRTL ? bottomEndRadius : bottomStartRadius;
-      final float directionAwareBottomRightRadius = isRTL ? bottomStartRadius : bottomEndRadius;
+      final float logicalTopStartRadius =
+          YogaConstants.isUndefined(topStartRadius) ? startStartRadius : topStartRadius;
+      final float logicalTopEndRadius =
+          YogaConstants.isUndefined(topEndRadius) ? startEndRadius : topEndRadius;
+      final float logicalBottomStartRadius =
+          YogaConstants.isUndefined(bottomStartRadius) ? endStartRadius : bottomStartRadius;
+      final float logicalBottomEndRadius =
+          YogaConstants.isUndefined(bottomEndRadius) ? endEndRadius : bottomEndRadius;
+
+      final float directionAwareTopLeftRadius = isRTL ? logicalTopEndRadius : logicalTopStartRadius;
+      final float directionAwareTopRightRadius =
+          isRTL ? logicalTopStartRadius : logicalTopEndRadius;
+      final float directionAwareBottomLeftRadius =
+          isRTL ? logicalBottomEndRadius : logicalBottomStartRadius;
+      final float directionAwareBottomRightRadius =
+          isRTL ? logicalBottomStartRadius : logicalBottomEndRadius;
 
       if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
         topLeftRadius = directionAwareTopLeftRadius;
@@ -622,6 +674,27 @@ public class ReactViewBackgroundDrawable extends Drawable {
 
     mInnerClipPathForBorderRadius.addRoundRect(
         mInnerClipTempRectForBorderRadius,
+        new float[] {
+          innerTopLeftRadiusX,
+          innerTopLeftRadiusY,
+          innerTopRightRadiusX,
+          innerTopRightRadiusY,
+          innerBottomRightRadiusX,
+          innerBottomRightRadiusY,
+          innerBottomLeftRadiusX,
+          innerBottomLeftRadiusY,
+        },
+        Path.Direction.CW);
+
+    // There is a small gap between mBackgroundColorRenderPath and its
+    // border. mGapBetweenPaths is used to slightly enlarge the rectangle
+    // (mInnerClipTempRectForBorderRadius), ensuring the border can be
+    // drawn on top without the gap.
+    mBackgroundColorRenderPath.addRoundRect(
+        mInnerClipTempRectForBorderRadius.left - mGapBetweenPaths,
+        mInnerClipTempRectForBorderRadius.top - mGapBetweenPaths,
+        mInnerClipTempRectForBorderRadius.right + mGapBetweenPaths,
+        mInnerClipTempRectForBorderRadius.bottom + mGapBetweenPaths,
         new float[] {
           innerTopLeftRadiusX,
           innerTopLeftRadiusY,

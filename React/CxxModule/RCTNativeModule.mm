@@ -7,6 +7,7 @@
 
 #import "RCTNativeModule.h"
 
+#import <Foundation/Foundation.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
@@ -160,7 +161,7 @@ static MethodCallResult invokeInner(
        */
       BridgeNativeModulePerfLogger::syncMethodCallFail("N/A", "N/A");
     }
-    return folly::none;
+    return std::nullopt;
   }
 
   id<RCTBridgeMethod> method = moduleData.methods[methodId];
@@ -231,7 +232,7 @@ static MethodCallResult invokeInner(
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
 
-  return folly::none;
+  return std::nullopt;
 }
 
 }

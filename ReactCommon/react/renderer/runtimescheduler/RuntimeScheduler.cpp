@@ -6,6 +6,7 @@
  */
 
 #include "RuntimeScheduler.h"
+#include "SchedulerPriorityUtils.h"
 
 #include <utility>
 #include "ErrorUtils.h"
@@ -19,8 +20,7 @@ RuntimeScheduler::RuntimeScheduler(
     std::function<RuntimeSchedulerTimePoint()> now)
     : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
 
-void RuntimeScheduler::scheduleWork(
-    std::function<void(jsi::Runtime &)> callback) const {
+void RuntimeScheduler::scheduleWork(RawCallback callback) const {
   runtimeAccessRequests_ += 1;
 
   runtimeExecutor_(
@@ -34,6 +34,19 @@ void RuntimeScheduler::scheduleWork(
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
     jsi::Function callback) {
+  auto expirationTime = now() + timeoutForSchedulerPriority(priority);
+  auto task =
+      std::make_shared<Task>(priority, std::move(callback), expirationTime);
+  taskQueue_.push(task);
+
+  scheduleWorkLoopIfNecessary();
+
+  return task;
+}
+
+std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
+    SchedulerPriority priority,
+    RawCallback callback) {
   auto expirationTime = now() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -64,8 +77,7 @@ RuntimeSchedulerTimePoint RuntimeScheduler::now() const noexcept {
   return now_();
 }
 
-void RuntimeScheduler::executeNowOnTheSameThread(
-    std::function<void(jsi::Runtime &runtime)> callback) {
+void RuntimeScheduler::executeNowOnTheSameThread(RawCallback callback) {
   runtimeAccessRequests_ += 1;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,

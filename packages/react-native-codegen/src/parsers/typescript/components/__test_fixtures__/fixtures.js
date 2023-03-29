@@ -452,6 +452,13 @@ export interface ModuleProps extends ViewProps {
   array_of_array_of_object_required_in_file: ReadonlyArray<
     ReadonlyArray<ObjectType>
   >;
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: ReadonlyArray<
+    ReadonlyArray<
+      Readonly<ObjectType & {}>,
+    >,
+  >,
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -584,6 +591,9 @@ export interface ModuleProps extends ViewProps {
 
   // Nested array of array of object types (in file)
   array_of_array_of_object_required_in_file: readonly ObjectType[][];
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: readonly Readonly<ObjectType & {}>[][];
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -971,13 +981,13 @@ type NativeType = HostComponent<ModuleProps>;
  interface NativeCommands {
    readonly handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
    readonly hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
-   readonly scrollTo: (
+   scrollTo(
      viewRef: React.ElementRef<NativeType>,
      x: Float,
      y: Int32,
      z: Double,
      animated: boolean,
-   ) => void;
+   ): void;
  }
 
  export const Commands = codegenNativeCommands<NativeCommands>({

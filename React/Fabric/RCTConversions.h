@@ -11,7 +11,6 @@
 #import <react/renderer/components/view/primitives.h>
 #import <react/renderer/core/LayoutPrimitives.h>
 #import <react/renderer/graphics/Color.h>
-#import <react/renderer/graphics/Geometry.h>
 #import <react/renderer/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN

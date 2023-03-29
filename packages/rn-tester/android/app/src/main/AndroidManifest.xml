@@ -18,6 +18,7 @@
   <!--Just to show permissions example-->
   <uses-permission android:name="android.permission.CAMERA"/>
   <uses-permission android:name="android.permission.READ_CALENDAR"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
   <!--
   android:icon is used to display launcher icon on mobile devices.

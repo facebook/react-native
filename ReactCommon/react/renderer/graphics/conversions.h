@@ -13,8 +13,12 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
+#include <react/renderer/graphics/Point.h>
+#include <react/renderer/graphics/Rect.h>
+#include <react/renderer/graphics/RectangleCorners.h>
+#include <react/renderer/graphics/RectangleEdges.h>
+#include <react/renderer/graphics/Size.h>
 
 namespace facebook {
 namespace react {
@@ -50,17 +54,9 @@ inline void fromRawValue(
 }
 
 #ifdef ANDROID
-
 inline int toAndroidRepr(const SharedColor &color) {
-  ColorComponents components = colorComponentsFromColor(color);
-  auto ratio = 255.f;
-  return (
-      ((int)round(components.alpha * ratio) & 0xff) << 24 |
-      ((int)round(components.red * ratio) & 0xff) << 16 |
-      ((int)round(components.green * ratio) & 0xff) << 8 |
-      ((int)round(components.blue * ratio) & 0xff));
+  return *color;
 }
-
 #endif
 
 inline std::string toString(const SharedColor &value) {

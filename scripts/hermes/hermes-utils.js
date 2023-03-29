@@ -212,14 +212,11 @@ set_target_properties(native-hermesc PROPERTIES
   }
 }
 
-function getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion) {
+function getHermesPrebuiltArtifactsTarballName(buildType) {
   if (!buildType) {
     throw Error('Did not specify build type.');
   }
-  if (!releaseVersion) {
-    throw Error('Did not specify release version.');
-  }
-  return `hermes-runtime-darwin-${buildType.toLowerCase()}-v${releaseVersion}.tar.gz`;
+  return `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }
 
 /**
@@ -233,7 +230,6 @@ function createTarballFromDirectory(directory, filename) {
 function createHermesPrebuiltArtifactsTarball(
   hermesDir,
   buildType,
-  releaseVersion,
   tarballOutputDir,
   excludeDebugSymbols,
 ) {
@@ -268,7 +264,7 @@ function createHermesPrebuiltArtifactsTarball(
 
   const tarballFilename = path.join(
     tarballOutputDir,
-    getHermesPrebuiltArtifactsTarballName(buildType, releaseVersion),
+    getHermesPrebuiltArtifactsTarballName(buildType),
   );
 
   try {

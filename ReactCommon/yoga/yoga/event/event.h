@@ -89,12 +89,7 @@ struct YOGA_EXPORT Event {
 
   template <Type E>
   static void publish(const YGNode& node, const TypedData<E>& eventData = {}) {
-#ifdef YG_ENABLE_EVENTS
     publish(node, E, Data{eventData});
-#else
-    (void) node;
-    (void) eventData;
-#endif
   }
 
   template <Type E>

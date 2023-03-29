@@ -20,10 +20,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Native module that handles device hardware events like hardware back presses. */
-@ReactModule(name = DeviceEventManagerModule.NAME)
+@ReactModule(name = NativeDeviceEventManagerSpec.NAME)
 public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
-  public static final String NAME = "DeviceEventManager";
-
   @DoNotStrip
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(@NonNull String eventName, @Nullable Object data);
@@ -76,10 +74,5 @@ public class DeviceEventManagerModule extends NativeDeviceEventManagerSpec {
     // the thread instances cannot be null, and scheduling on a thread after ReactApplicationContext
     // teardown is a noop.
     getReactApplicationContext().runOnUiQueueThread(mInvokeDefaultBackPressRunnable);
-  }
-
-  @Override
-  public String getName() {
-    return "DeviceEventManager";
   }
 }

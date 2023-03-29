@@ -51,7 +51,9 @@ export type Registry = {
   runnables: Runnables,
   ...
 };
-export type WrapperComponentProvider = any => React$ComponentType<any>;
+export type WrapperComponentProvider = (
+  appParameters: any,
+) => React$ComponentType<any>;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -338,19 +340,15 @@ const AppRegistry = {
 if (!(global.RN$Bridgeless === true)) {
   BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 
-  if (__DEV__) {
-    const LogBoxInspector =
-      require('../LogBox/LogBoxInspectorContainer').default;
-    AppRegistry.registerComponent('LogBox', () => LogBoxInspector);
-  } else {
-    AppRegistry.registerComponent(
-      'LogBox',
-      () =>
-        function NoOp() {
-          return null;
-        },
-    );
-  }
+  AppRegistry.registerComponent('LogBox', () => {
+    if (__DEV__) {
+      return require('../LogBox/LogBoxInspectorContainer').default;
+    } else {
+      return function NoOp() {
+        return null;
+      };
+    }
+  });
 }
 
 module.exports = AppRegistry;

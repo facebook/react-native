@@ -11,9 +11,10 @@
 
 'use strict';
 
+import * as React from 'react';
+
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const ActivityIndicator = require('../ActivityIndicator');
-const React = require('react');
+const ActivityIndicator = require('../ActivityIndicator').default;
 
 describe('<ActivityIndicator />', () => {
   it('should set displayName to prevent <Component /> regressions', () => {

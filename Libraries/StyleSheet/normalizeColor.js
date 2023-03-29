@@ -13,7 +13,7 @@
 import type {ProcessedColorValue} from './processColor';
 import type {ColorValue} from './StyleSheet';
 
-import _normalizeColor from '@react-native/normalize-color';
+import _normalizeColor from '@react-native/normalize-colors';
 
 function normalizeColor(
   color: ?(ColorValue | ProcessedColorValue),

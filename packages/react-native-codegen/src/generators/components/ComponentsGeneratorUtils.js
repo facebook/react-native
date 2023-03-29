@@ -234,10 +234,10 @@ function getLocalImports(
         imports.add('#include <react/renderer/imagemanager/ImageRequest.h>');
         return;
       case 'PointPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
+        imports.add('#include <react/renderer/graphics/Point.h>');
         return;
       case 'EdgeInsetsPrimitive':
-        imports.add('#include <react/renderer/graphics/Geometry.h>');
+        imports.add('#include <react/renderer/graphics/RectangleEdges.h>');
         return;
       default:
         (name: empty);

@@ -16,6 +16,7 @@ import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 export type AccessibilityRole =
   | 'none'
   | 'button'
+  | 'dropdownlist'
   | 'togglebutton'
   | 'link'
   | 'search'
@@ -45,6 +46,14 @@ export type AccessibilityRole =
   | 'list'
   | 'toolbar'
   | 'grid'
+  | 'pager'
+  | 'scrollview'
+  | 'horizontalscrollview'
+  | 'viewgroup'
+  | 'webview'
+  | 'drawerlayout'
+  | 'slidingdrawer'
+  | 'iconmenu'
   | 'menubutton'; // [macOS]
 
 // Role types for web

@@ -9,13 +9,38 @@
  */
 
 import ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
+import processColor from '../StyleSheet/processColor';
+import Appearance from './Appearance';
+import NativeDevLoadingView from './NativeDevLoadingView';
 
 const TOAST_SHORT_DELAY = 2000;
 let isVisible = false;
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
-    if (!isVisible) {
+    if (NativeDevLoadingView) {
+      let backgroundColor;
+      let textColor;
+
+      if (type === 'refresh') {
+        backgroundColor = processColor('#2584e8');
+        textColor = processColor('#ffffff');
+      } else if (type === 'load') {
+        if (Appearance.getColorScheme() === 'dark') {
+          backgroundColor = processColor('#fafafa');
+          textColor = processColor('#242526');
+        } else {
+          backgroundColor = processColor('#404040');
+          textColor = processColor('#ffffff');
+        }
+      }
+
+      NativeDevLoadingView.showMessage(
+        message,
+        typeof textColor === 'number' ? textColor : null,
+        typeof backgroundColor === 'number' ? backgroundColor : null,
+      );
+    } else if (!isVisible) {
       ToastAndroid.show(message, ToastAndroid.SHORT);
       isVisible = true;
       setTimeout(() => {
@@ -23,5 +48,7 @@ module.exports = {
       }, TOAST_SHORT_DELAY);
     }
   },
-  hide() {},
+  hide() {
+    NativeDevLoadingView && NativeDevLoadingView.hide();
+  },
 };

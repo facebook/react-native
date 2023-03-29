@@ -21,6 +21,10 @@ public class CustomLineHeightSpan implements LineHeightSpan, ReactSpan {
     this.mHeight = (int) Math.ceil(height);
   }
 
+  public int getLineHeight() {
+    return mHeight;
+  }
+
   @Override
   public void chooseHeight(
       CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {

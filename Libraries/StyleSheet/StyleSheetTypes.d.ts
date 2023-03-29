@@ -59,6 +59,13 @@ export interface FlexStyle {
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   height?: number | string | undefined;
+  inset?: number | string | undefined;
+  insetBlock?: number | string | undefined;
+  insetBlockEnd?: number | string | undefined;
+  insetBlockStart?: number | string | undefined;
+  insetInline?: number | string | undefined;
+  insetInlineEnd?: number | string | undefined;
+  insetInlineStart?: number | string | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -69,9 +76,15 @@ export interface FlexStyle {
     | undefined;
   left?: number | string | undefined;
   margin?: number | string | undefined;
+  marginBlock?: number | string | undefined;
+  marginBlockEnd?: number | string | undefined;
+  marginBlockStart?: number | string | undefined;
   marginBottom?: number | string | undefined;
   marginEnd?: number | string | undefined;
   marginHorizontal?: number | string | undefined;
+  marginInline?: number | string | undefined;
+  marginInlineEnd?: number | string | undefined;
+  marginInlineStart?: number | string | undefined;
   marginLeft?: number | string | undefined;
   marginRight?: number | string | undefined;
   marginStart?: number | string | undefined;
@@ -84,8 +97,14 @@ export interface FlexStyle {
   overflow?: 'visible' | 'hidden' | 'scroll' | undefined;
   padding?: number | string | undefined;
   paddingBottom?: number | string | undefined;
+  paddingBlock?: number | string | undefined;
+  paddingBlockEnd?: number | string | undefined;
+  paddingBlockStart?: number | string | undefined;
   paddingEnd?: number | string | undefined;
   paddingHorizontal?: number | string | undefined;
+  paddingInline?: number | string | undefined;
+  paddingInlineEnd?: number | string | undefined;
+  paddingInlineStart?: number | string | undefined;
   paddingLeft?: number | string | undefined;
   paddingRight?: number | string | undefined;
   paddingStart?: number | string | undefined;
@@ -221,12 +240,16 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderBottomWidth?: number | undefined;
   borderColor?: ColorValue | undefined;
   borderEndColor?: ColorValue | undefined;
+  borderEndEndRadius?: number | undefined;
+  borderEndStartRadius?: number | undefined;
   borderLeftColor?: ColorValue | undefined;
   borderLeftWidth?: number | undefined;
   borderRadius?: number | undefined;
   borderRightColor?: ColorValue | undefined;
   borderRightWidth?: number | undefined;
   borderStartColor?: ColorValue | undefined;
+  borderStartEndRadius?: number | undefined;
+  borderStartStartRadius?: number | undefined;
   borderStyle?: 'solid' | 'dotted' | 'dashed' | undefined;
   borderTopColor?: ColorValue | undefined;
   borderTopEndRadius?: number | undefined;
@@ -236,7 +259,6 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderTopWidth?: number | undefined;
   borderWidth?: number | undefined;
   opacity?: number | undefined;
-  testID?: string | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).

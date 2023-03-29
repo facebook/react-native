@@ -23,7 +23,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   validAttributes: {
     decelerationRate: true,
     disableIntervalMomentum: true,
-    endFillColor: {process: require('../../StyleSheet/processColor')},
+    endFillColor: {process: require('../../StyleSheet/processColor').default},
     fadingEdgeLength: true,
     nestedScrollEnabled: true,
     overScrollMode: true,
@@ -43,14 +43,20 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     borderBottomRightRadius: true,
     borderRadius: true,
     borderStyle: true,
-    borderRightColor: {process: require('../../StyleSheet/processColor')},
-    borderColor: {process: require('../../StyleSheet/processColor')},
-    borderBottomColor: {process: require('../../StyleSheet/processColor')},
+    borderRightColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
+    borderColor: {process: require('../../StyleSheet/processColor').default},
+    borderBottomColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
     borderTopLeftRadius: true,
-    borderTopColor: {process: require('../../StyleSheet/processColor')},
+    borderTopColor: {process: require('../../StyleSheet/processColor').default},
     removeClippedSubviews: true,
     borderTopRightRadius: true,
-    borderLeftColor: {process: require('../../StyleSheet/processColor')},
+    borderLeftColor: {
+      process: require('../../StyleSheet/processColor').default,
+    },
     pointerEvents: true,
   },
 };

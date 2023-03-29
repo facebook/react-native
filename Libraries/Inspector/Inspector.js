@@ -13,12 +13,13 @@
 import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
 
+import Dimensions from '../Utilities/Dimensions';
+
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions');
 const Platform = require('../Utilities/Platform');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 const InspectorOverlay = require('./InspectorOverlay');
@@ -142,12 +143,11 @@ class Inspector extends React.Component<
       // Sync the touched view with React DevTools.
       // Note: This is Paper only. To support Fabric,
       // DevTools needs to be updated to not rely on view tags.
-      if (this.state.devtoolsAgent) {
+      const agent = this.state.devtoolsAgent;
+      if (agent) {
+        agent.selectNode(findNodeHandle(touchedViewTag));
         if (closestInstance != null) {
-          // Fabric
-          this.state.devtoolsAgent.selectNode(closestInstance);
-        } else if (touchedViewTag != null) {
-          this.state.devtoolsAgent.selectNode(findNodeHandle(touchedViewTag));
+          agent.selectNode(closestInstance);
         }
       }
 

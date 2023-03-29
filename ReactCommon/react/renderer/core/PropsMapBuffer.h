@@ -10,6 +10,7 @@
 #ifdef ANDROID
 
 #include <react/renderer/mapbuffer/MapBuffer.h>
+#include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
 namespace facebook {
 namespace react {

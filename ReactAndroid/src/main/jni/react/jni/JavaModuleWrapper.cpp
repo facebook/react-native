@@ -62,7 +62,7 @@ std::string JavaNativeModule::getSyncMethodName(unsigned int reactMethodId) {
 
   auto &methodInvoker = syncMethods_[reactMethodId];
 
-  if (!methodInvoker.hasValue()) {
+  if (!methodInvoker.has_value()) {
     throw std::invalid_argument(folly::to<std::string>(
         "methodId ", reactMethodId, " is not a recognized sync method"));
   }
@@ -147,7 +147,7 @@ MethodCallResult JavaNativeModule::callSerializableNativeHook(
   }
 
   auto &method = syncMethods_[reactMethodId];
-  CHECK(method.hasValue() && method->isSyncHook())
+  CHECK(method.has_value() && method->isSyncHook())
       << "Trying to invoke a asynchronous method as synchronous hook";
   return method->invoke(instance_, wrapper_->getModule(), params);
 }

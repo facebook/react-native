@@ -21,7 +21,7 @@ function indent(nice: string, spaces: number): string {
       if (line.length === 0 || index === 0) {
         return line;
       }
-      const emptySpaces = new Array(spaces + 1).join(' ');
+      const emptySpaces = new Array<mixed>(spaces + 1).join(' ');
       return emptySpaces + line;
     })
     .join('\n');

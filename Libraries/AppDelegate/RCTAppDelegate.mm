@@ -11,13 +11,16 @@
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface RCTAppDelegate () {
+@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
@@ -100,7 +103,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSDictionary *)prepareInitialProps
 {
-  NSMutableDictionary *initProps = [NSMutableDictionary new];
+  NSMutableDictionary *initProps = self.initialProps ? [self.initialProps mutableCopy] : [NSMutableDictionary new];
 
 #ifdef RCT_NEW_ARCH_ENABLED
   initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);

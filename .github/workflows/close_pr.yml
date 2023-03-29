@@ -1,0 +1,62 @@
+name: Label closed PR as merged and leave a comment
+on:
+  push
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  comment-and-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            if(!context.payload.commits || !context.payload.commits.length) return;
+            const sha = context.payload.commits[0].id;
+
+            const {commit, author} = (await github.rest.repos.getCommit({
+              ref: sha,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })).data;
+
+            // Looking at the commit message, checks which PR number, if any, was closed by this commit
+            const getClosedPrIfExists = (commit) => {
+              if(!commit || !commit.message) return;
+              const prClosingRegex = /Closes https:\/\/github.com\/facebook\/react-native\/pull\/([0-9]+)|Pull Request resolved: https:\/\/github.com\/facebook\/react-native\/pull\/([0-9]+)/;
+              const prClosingMatch = commit.message.match(prClosingRegex);
+              if(!prClosingMatch || (!prClosingMatch[1] && ! prClosingMatch[2])) return;
+              return prClosingMatch[1] ?? prClosingMatch[2];
+            };
+
+            const closedPrNumber = getClosedPrIfExists(commit);
+            if(!closedPrNumber) return;
+
+            const pr = (await github.rest.pulls.get({
+              pull_number: closedPrNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })).data;
+
+            // If the PR has already been processed (labeled as Merged), skip it
+            const mergedLabel = "Merged";
+            if(pr.labels && pr.labels.some(label => label.name === mergedLabel)) return;
+
+            const authorName = author?.login ? `@${author.login}` : commit.author.name;
+
+            github.rest.issues.createComment({
+              issue_number: closedPrNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `This pull request was successfully merged by ${authorName} in **${sha}**.\n\n<sup>[When will my fix make it into a release?](https://github.com/facebook/react-native/wiki/Release-FAQ#when-will-my-fix-make-it-into-a-release) | [Upcoming Releases](https://github.com/reactwg/react-native-releases/discussions/categories/releases)</sup>`
+            });
+
+            github.rest.issues.addLabels({
+              issue_number: closedPrNumber,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: [mergedLabel]
+            });

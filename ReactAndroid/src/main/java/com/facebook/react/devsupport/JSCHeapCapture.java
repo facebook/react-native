@@ -16,10 +16,8 @@ import java.io.File;
 
 // This module is being called only by Java via the static method "captureHeap" that
 // requires it to already be initialized, thus we eagerly initialize this module
-@ReactModule(name = JSCHeapCapture.TAG, needsEagerInit = true)
+@ReactModule(name = NativeJSCHeapCaptureSpec.NAME, needsEagerInit = true)
 public class JSCHeapCapture extends NativeJSCHeapCaptureSpec {
-  public static final String TAG = "JSCHeapCapture";
-
   public interface HeapCapture extends JavaScriptModule {
     void captureHeap(String path);
   }
@@ -78,10 +76,5 @@ public class JSCHeapCapture extends NativeJSCHeapCaptureSpec {
       }
       mCaptureInProgress = null;
     }
-  }
-
-  @Override
-  public String getName() {
-    return "JSCHeapCapture";
   }
 }

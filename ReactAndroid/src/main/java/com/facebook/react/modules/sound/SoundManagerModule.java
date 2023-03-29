@@ -15,18 +15,11 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** {@link NativeModule} that allows Playing device sounds from JS. */
-@ReactModule(name = SoundManagerModule.NAME)
+@ReactModule(name = NativeSoundManagerSpec.NAME)
 public class SoundManagerModule extends NativeSoundManagerSpec {
-
-  public static final String NAME = "SoundManager";
 
   public SoundManagerModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

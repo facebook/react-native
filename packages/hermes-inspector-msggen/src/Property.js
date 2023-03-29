@@ -80,7 +80,7 @@ function maybeWrapOptional(
   recursive: ?boolean,
 ) {
   if (optional) {
-    return recursive ? `std::unique_ptr<${type}>` : `folly::Optional<${type}>`;
+    return recursive ? `std::unique_ptr<${type}>` : `std::optional<${type}>`;
   }
   return type;
 }
@@ -130,7 +130,7 @@ class PrimitiveProperty extends Property {
   }
 
   getInitializer(): string {
-    // folly::Optional doesn't need to be explicitly zero-init
+    // std::optional doesn't need to be explicitly zero-init
     if (this.optional) {
       return '';
     }

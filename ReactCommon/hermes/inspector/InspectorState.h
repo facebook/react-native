@@ -184,7 +184,7 @@ class InspectorState::RunningDetached : public InspectorState {
   }
 
   RunningDetached(Inspector &inspector) : InspectorState(inspector) {}
-  ~RunningDetached() {}
+  ~RunningDetached() override {}
 
   std::pair<NextStatePtr, CommandPtr> didPause(MonitorLock &lock) override;
   std::pair<NextStatePtr, bool> enable() override;
@@ -211,7 +211,7 @@ class InspectorState::RunningWaitEnable : public InspectorState {
   }
 
   RunningWaitEnable(Inspector &inspector) : InspectorState(inspector) {}
-  ~RunningWaitEnable() {}
+  ~RunningWaitEnable() override {}
 
   std::pair<NextStatePtr, CommandPtr> didPause(MonitorLock &lock) override;
   std::pair<NextStatePtr, bool> enable() override;
@@ -260,7 +260,7 @@ class InspectorState::PausedWaitEnable : public InspectorState {
   }
 
   PausedWaitEnable(Inspector &inspector) : InspectorState(inspector) {}
-  ~PausedWaitEnable() {}
+  ~PausedWaitEnable() override {}
 
   std::pair<NextStatePtr, CommandPtr> didPause(MonitorLock &lock) override;
   std::pair<NextStatePtr, bool> enable() override;
@@ -306,7 +306,7 @@ class InspectorState::Running : public InspectorState {
   }
 
   Running(Inspector &inspector) : InspectorState(inspector) {}
-  ~Running() {}
+  ~Running() override {}
 
   void onEnter(InspectorState *prevState) override;
 
@@ -366,7 +366,7 @@ class InspectorState::Paused : public InspectorState {
   }
 
   Paused(Inspector &inspector) : InspectorState(inspector) {}
-  ~Paused() {}
+  ~Paused() override {}
 
   void onEnter(InspectorState *prevState) override;
 

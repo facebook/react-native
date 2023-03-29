@@ -12,8 +12,8 @@
 #include <vector>
 
 #include <cxxreact/JSExecutor.h>
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
+#include <optional>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -47,7 +47,7 @@ class RN_EXPORT ModuleRegistry {
 
   std::vector<std::string> moduleNames();
 
-  folly::Optional<ModuleConfig> getConfig(const std::string &name);
+  std::optional<ModuleConfig> getConfig(const std::string &name);
 
   void callNativeMethod(
       unsigned int moduleId,

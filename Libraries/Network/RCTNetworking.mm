@@ -111,7 +111,7 @@ static NSString *RCTGenerateFormBoundary()
   // Print headers.
   NSMutableDictionary<NSString *, NSString *> *headers = [_parts[0][@"headers"] mutableCopy];
   NSString *partContentType = result[@"contentType"];
-  if (partContentType != nil) {
+  if (partContentType != nil && ![partContentType isEqual:[NSNull null]]) {
     headers[@"content-type"] = partContentType;
   }
   [headers enumerateKeysAndObjectsUsingBlock:^(NSString *parameterKey, NSString *parameterValue, BOOL *stop) {
@@ -331,7 +331,8 @@ RCT_EXPORT_MODULE()
                                 request.HTTPBody = result[@"body"];
                                 NSString *dataContentType = result[@"contentType"];
                                 NSString *requestContentType = [request valueForHTTPHeaderField:@"Content-Type"];
-                                BOOL isMultipart = [dataContentType hasPrefix:@"multipart"];
+                                BOOL isMultipart = ![dataContentType isEqual:[NSNull null]] &&
+                                    [dataContentType hasPrefix:@"multipart"];
 
                                 // For multipart requests we need to override caller-specified content type with one
                                 // from the data object, because it contains the boundary string

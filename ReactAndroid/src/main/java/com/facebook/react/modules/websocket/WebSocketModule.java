@@ -36,12 +36,8 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-@ReactModule(name = WebSocketModule.NAME, hasConstants = false)
+@ReactModule(name = NativeWebSocketModuleSpec.NAME, hasConstants = false)
 public final class WebSocketModule extends NativeWebSocketModuleSpec {
-  public static final String TAG = WebSocketModule.class.getSimpleName();
-
-  public static final String NAME = "WebSocketModule";
-
   public interface ContentHandler {
     void onMessage(String text, WritableMap params);
 
@@ -74,11 +70,6 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
     }
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   public void setContentHandler(final int id, final ContentHandler contentHandler) {

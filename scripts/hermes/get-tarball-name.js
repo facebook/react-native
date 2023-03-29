@@ -16,25 +16,15 @@
 const yargs = require('yargs');
 const {getHermesPrebuiltArtifactsTarballName} = require('./hermes-utils');
 
-let argv = yargs
-  .option('b', {
-    alias: 'buildType',
-    type: 'string',
-    describe: 'Specifies whether Hermes was built for Debug or Release.',
-    default: 'Debug',
-  })
-  .option('v', {
-    alias: 'releaseVersion',
-    type: 'string',
-    describe: 'The version of React Native that will use this tarball.',
-    default: '1000.0.0',
-  }).argv;
+let argv = yargs.option('b', {
+  alias: 'buildType',
+  type: 'string',
+  describe: 'Specifies whether Hermes was built for Debug or Release.',
+  default: 'Debug',
+}).argv;
 
 async function main() {
-  const tarballName = getHermesPrebuiltArtifactsTarballName(
-    argv.buildType,
-    argv.releaseVersion,
-  );
+  const tarballName = getHermesPrebuiltArtifactsTarballName(argv.buildType);
   console.log(tarballName);
   return tarballName;
 }

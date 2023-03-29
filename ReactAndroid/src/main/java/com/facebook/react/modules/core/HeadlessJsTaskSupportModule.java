@@ -18,18 +18,11 @@ import com.facebook.react.module.annotations.ReactModule;
  * Simple native module that allows JS to notify native of having completed some task work, so that
  * it can e.g. release any resources, stop timers etc.
  */
-@ReactModule(name = HeadlessJsTaskSupportModule.NAME)
+@ReactModule(name = NativeHeadlessJsTaskSupportSpec.NAME)
 public class HeadlessJsTaskSupportModule extends NativeHeadlessJsTaskSupportSpec {
-
-  public static final String NAME = "HeadlessJsTaskSupport";
 
   public HeadlessJsTaskSupportModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

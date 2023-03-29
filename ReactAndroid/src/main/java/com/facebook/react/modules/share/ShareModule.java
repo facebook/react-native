@@ -18,21 +18,15 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
 /** Intent module. Launch other activities or open URLs. */
-@ReactModule(name = ShareModule.NAME)
+@ReactModule(name = NativeShareModuleSpec.NAME)
 public class ShareModule extends NativeShareModuleSpec {
 
-  public static final String NAME = "ShareModule";
   /* package */ static final String ACTION_SHARED = "sharedAction";
   /* package */ static final String ERROR_INVALID_CONTENT = "E_INVALID_CONTENT";
   /* package */ static final String ERROR_UNABLE_TO_OPEN_DIALOG = "E_UNABLE_TO_OPEN_DIALOG";
 
   public ShareModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   /**

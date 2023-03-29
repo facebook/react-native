@@ -258,4 +258,4 @@ if (__DEV__) {
   };
 }
 
-module.exports = (LogBox: ILogBox);
+export default (LogBox: ILogBox);

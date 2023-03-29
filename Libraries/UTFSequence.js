@@ -51,4 +51,4 @@ const UTFSequence: {|
   TRIANGLE_RIGHT: '\u25b6', // black right-pointing triangle
 });
 
-module.exports = UTFSequence;
+export default UTFSequence;

@@ -23,6 +23,7 @@
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
 #include <jsi/instrumentation.h>
+#include <optional>
 
 namespace facebook {
 namespace hermes {
@@ -667,7 +668,7 @@ void Connection::Impl::handle(
 void Connection::Impl::handle(
     const m::heapProfiler::GetObjectByHeapObjectIdRequest &req) {
   uint64_t objID = atoi(req.objectId.c_str());
-  folly::Optional<std::string> group = req.objectGroup;
+  std::optional<std::string> group = req.objectGroup;
   auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
 
   inspector_
@@ -782,7 +783,7 @@ namespace {
 class CallFunctionOnArgument {
  public:
   explicit CallFunctionOnArgument(
-      folly::Optional<m::runtime::RemoteObjectId> maybeObjectId)
+      std::optional<m::runtime::RemoteObjectId> maybeObjectId)
       : maybeObjectId_(std::move(maybeObjectId)) {}
 
   /// Computes the real value for this argument, which can be an object
@@ -814,7 +815,7 @@ class CallFunctionOnArgument {
     throw std::runtime_error("unknown object id " + objId);
   }
 
-  folly::Optional<m::runtime::RemoteObjectId> maybeObjectId_;
+  std::optional<m::runtime::RemoteObjectId> maybeObjectId_;
 };
 
 /// Functor that should be used to run the result of eval-ing a CallFunctionOn
@@ -876,7 +877,7 @@ class CallFunctionOnRunner {
 
   CallFunctionOnRunner(
       std::vector<CallFunctionOnArgument> thisAndArguments,
-      folly::Optional<m::runtime::ExecutionContextId> executionContextId)
+      std::optional<m::runtime::ExecutionContextId> executionContextId)
       : thisAndArguments_(std::move(thisAndArguments)),
         executionContextId_(std::move(executionContextId)) {}
 
@@ -909,7 +910,7 @@ class CallFunctionOnRunner {
   }
 
   std::vector<CallFunctionOnArgument> thisAndArguments_;
-  folly::Optional<m::runtime::ExecutionContextId> executionContextId_;
+  std::optional<m::runtime::ExecutionContextId> executionContextId_;
 };
 
 /*static*/ const char *CallFunctionOnRunner::kJsThisArgPlaceholder =
@@ -966,7 +967,7 @@ class CallFunctionOnBuilder {
   }
 
  private:
-  void addParams(const folly::Optional<std::vector<m::runtime::CallArgument>>
+  void addParams(const std::optional<std::vector<m::runtime::CallArgument>>
                      &maybeArguments) {
     if (maybeArguments) {
       for (const auto &ca : *maybeArguments) {
@@ -998,7 +999,7 @@ class CallFunctionOnBuilder {
   std::ostringstream out_;
 
   std::vector<CallFunctionOnArgument> thisAndArguments_;
-  folly::Optional<m::runtime::ExecutionContextId> executionContextId_;
+  std::optional<m::runtime::ExecutionContextId> executionContextId_;
 };
 
 } // namespace
@@ -1009,8 +1010,8 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
 
   auto validateAndParseRequest =
       [&expression, &runner](const m::runtime::CallFunctionOnRequest &req)
-      -> folly::Optional<std::string> {
-    if (req.objectId.hasValue() == req.executionContextId.hasValue()) {
+      -> std::optional<std::string> {
+    if (req.objectId.has_value() == req.executionContextId.has_value()) {
       return std::string(
           "The request must specify either object id or execution context id.");
     }
@@ -1049,7 +1050,6 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
            remoteObjPtr,
            objectGroup = req.objectGroup,
            jsThisId = req.objectId,
-           executionContextId = req.executionContextId,
            byValue = req.returnByValue.value_or(false),
            runner =
                std::move(runner)](const facebook::hermes::debugger::EvalResult
@@ -1091,7 +1091,7 @@ void Connection::Impl::handle(const m::runtime::CompileScriptRequest &req) {
       ->executeIfEnabled(
           "Runtime.compileScriptRequest",
           [this, req, resp](const debugger::ProgramState &state) {
-            if (req.executionContextId.hasValue() &&
+            if (req.executionContextId.has_value() &&
                 req.executionContextId.value() != kHermesExecutionContextId) {
               throw std::invalid_argument("Invalid execution context");
             }
@@ -1482,7 +1482,7 @@ void Connection::Impl::handle(
       ->executeIfEnabled(
           "Runtime.globalLexicalScopeNames",
           [req, resp](const debugger::ProgramState &state) {
-            if (req.executionContextId.hasValue() &&
+            if (req.executionContextId.has_value() &&
                 req.executionContextId.value() != kHermesExecutionContextId) {
               throw std::invalid_argument("Invalid execution context");
             }

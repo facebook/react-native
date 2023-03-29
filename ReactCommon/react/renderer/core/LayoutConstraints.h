@@ -11,7 +11,7 @@
 
 #include <folly/Hash.h>
 #include <react/renderer/core/LayoutPrimitives.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Size.h>
 
 namespace facebook {
 namespace react {

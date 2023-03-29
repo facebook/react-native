@@ -1,11 +1,11 @@
-# eslint-plugin-react-native-community
+# @react-native/eslint-plugin
 
-This plugin is intended to be used in [`@react-native-community/eslint-config`](https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community). You probably want to install that package instead.
+This plugin is intended to be used in [`@react-native/eslint-config`](https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community). You probably want to install that package instead.
 
 ## Installation
 
 ```
-yarn add --dev eslint @react-native-community/eslint-plugin
+yarn add --dev eslint @react-native/eslint-plugin
 ```
 
 *Note: We're using `yarn` to install deps. Feel free to change commands to use `npm` 3+ and `npx` if you like*
@@ -16,7 +16,7 @@ Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json
 
 ```json
 {
-    "plugins": ["@react-native-community"]
+    "plugins": ["@react-native"]
 }
 ```
 

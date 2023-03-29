@@ -8,9 +8,9 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <folly/Optional.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <optional>
 
 #include "NativeCommon.h"
 #include "NativeMap.h"
@@ -38,7 +38,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   jni::local_ref<jni::JArrayClass<jstring>> importKeys();
   jni::local_ref<jni::JArrayClass<jobject>> importValues();
   jni::local_ref<jni::JArrayClass<jobject>> importTypes();
-  folly::Optional<folly::dynamic> keys_;
+  std::optional<folly::dynamic> keys_;
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic &&map);
 
   static void mapException(const std::exception &ex);

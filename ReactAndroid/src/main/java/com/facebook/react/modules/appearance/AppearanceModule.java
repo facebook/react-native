@@ -19,10 +19,8 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /** Module that exposes the user's preferred color scheme. */
-@ReactModule(name = AppearanceModule.NAME)
+@ReactModule(name = NativeAppearanceSpec.NAME)
 public class AppearanceModule extends NativeAppearanceSpec {
-
-  public static final String NAME = "Appearance";
 
   private static final String APPEARANCE_CHANGED_EVENT_NAME = "appearanceChanged";
 
@@ -66,11 +64,6 @@ public class AppearanceModule extends NativeAppearanceSpec {
     }
 
     return "light";
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

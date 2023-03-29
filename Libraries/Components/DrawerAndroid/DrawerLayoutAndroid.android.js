@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -36,6 +37,8 @@ type DrawerSlideEvent = $ReadOnly<{|
 |}>;
 
 type Props = $ReadOnly<{|
+  accessibilityRole?: ?AccessibilityRole,
+
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
    *   - 'none' (the default), drags do not dismiss the keyboard.

@@ -16,14 +16,17 @@ class JSEngineTests < Test::Unit::TestCase
     def setup
         @react_native_path = "../.."
         podSpy_cleanUp()
+
     end
 
     def teardown
+        ENV['HERMES_ENGINE_TARBALL_PATH'] = nil
         Open3.reset()
         Pod::Config.reset()
         Pod::UI.reset()
         podSpy_cleanUp()
         ENV['USE_HERMES'] = '1'
+        ENV['CI'] = nil
     end
 
     # =============== #
@@ -39,7 +42,7 @@ class JSEngineTests < Test::Unit::TestCase
         # Assert
         assert_equal($podInvocationCount, 2)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsi")
+        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsc")
     end
 
     def test_setupJsc_installsPods_installsFabricSubspecWhenFabricEnabled
@@ -52,8 +55,8 @@ class JSEngineTests < Test::Unit::TestCase
         # Assert
         assert_equal($podInvocationCount, 3)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsi")
-        assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsi")
+        assert_equal($podInvocation["React-jsc"][:path], "../../ReactCommon/jsc")
+        assert_equal($podInvocation["React-jsc/Fabric"][:path], "../../ReactCommon/jsc")
     end
 
     # ================== #
@@ -119,4 +122,5 @@ class JSEngineTests < Test::Unit::TestCase
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
     end
+
 end

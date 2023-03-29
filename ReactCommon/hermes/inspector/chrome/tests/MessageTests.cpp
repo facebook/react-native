@@ -56,10 +56,10 @@ TEST(MessageTests, testDeserializeSomeFieldsInRequest) {
   EXPECT_EQ(req.id, 10);
   EXPECT_EQ(req.method, "Debugger.setBreakpointByUrl");
   EXPECT_EQ(req.lineNumber, 42);
-  EXPECT_FALSE(req.columnNumber.hasValue());
-  EXPECT_FALSE(req.condition.hasValue());
+  EXPECT_FALSE(req.columnNumber.has_value());
+  EXPECT_FALSE(req.condition.has_value());
   EXPECT_EQ(req.url, "http://example.com");
-  EXPECT_FALSE(req.urlRegex.hasValue());
+  EXPECT_FALSE(req.urlRegex.has_value());
 }
 
 TEST(MessageTests, testSerializeAllFieldsInRequest) {
@@ -329,12 +329,12 @@ TEST(MessageTests, testDeserializeNotification) {
 
   debugger::Location &startLocation = scope.startLocation.value();
   EXPECT_EQ(startLocation.lineNumber, 1);
-  EXPECT_FALSE(startLocation.columnNumber.hasValue());
+  EXPECT_FALSE(startLocation.columnNumber.has_value());
   EXPECT_EQ(startLocation.scriptId, "script1");
 
   debugger::Location &endLocation = scope.endLocation.value();
   EXPECT_EQ(endLocation.lineNumber, 2);
-  EXPECT_FALSE(endLocation.columnNumber.hasValue());
+  EXPECT_FALSE(endLocation.columnNumber.has_value());
   EXPECT_EQ(endLocation.scriptId, "script2");
 }
 
@@ -550,11 +550,11 @@ TEST(MessageTests, testEvaluateOnCallFrameRequestMinimal) {
   EXPECT_EQ(resolvedReq->callFrameId, deserializedReq.callFrameId);
   EXPECT_EQ(resolvedReq->expression, deserializedReq.expression);
 
-  EXPECT_FALSE(resolvedReq->objectGroup.hasValue());
-  EXPECT_FALSE(resolvedReq->includeCommandLineAPI.hasValue());
-  EXPECT_FALSE(resolvedReq->silent.hasValue());
-  EXPECT_FALSE(resolvedReq->returnByValue.hasValue());
-  EXPECT_FALSE(resolvedReq->throwOnSideEffect.hasValue());
+  EXPECT_FALSE(resolvedReq->objectGroup.has_value());
+  EXPECT_FALSE(resolvedReq->includeCommandLineAPI.has_value());
+  EXPECT_FALSE(resolvedReq->silent.has_value());
+  EXPECT_FALSE(resolvedReq->returnByValue.has_value());
+  EXPECT_FALSE(resolvedReq->throwOnSideEffect.has_value());
 }
 
 TEST(MessageTests, testEvaluateOnCallFrameRequestFull) {
@@ -593,11 +593,11 @@ TEST(MessageTests, testEvaluateOnCallFrameRequestFull) {
   EXPECT_EQ(resolvedReq->callFrameId, "42");
   EXPECT_EQ(resolvedReq->expression, "Foo Bar");
 
-  EXPECT_TRUE(resolvedReq->objectGroup.hasValue());
-  EXPECT_TRUE(resolvedReq->includeCommandLineAPI.hasValue());
-  EXPECT_TRUE(resolvedReq->silent.hasValue());
-  EXPECT_TRUE(resolvedReq->returnByValue.hasValue());
-  EXPECT_TRUE(resolvedReq->throwOnSideEffect.hasValue());
+  EXPECT_TRUE(resolvedReq->objectGroup.has_value());
+  EXPECT_TRUE(resolvedReq->includeCommandLineAPI.has_value());
+  EXPECT_TRUE(resolvedReq->silent.has_value());
+  EXPECT_TRUE(resolvedReq->returnByValue.has_value());
+  EXPECT_TRUE(resolvedReq->throwOnSideEffect.has_value());
 
   EXPECT_TRUE(resolvedReq->objectGroup.value() == "FooBarGroup");
   EXPECT_TRUE(resolvedReq->includeCommandLineAPI.value() == false);
@@ -761,7 +761,7 @@ TEST(MessageTests, testSetBreakpointRequestMinimal) {
   EXPECT_EQ(resolvedReq->location.lineNumber, 2);
   EXPECT_EQ(resolvedReq->location.columnNumber, 3);
 
-  EXPECT_FALSE(resolvedReq->condition.hasValue());
+  EXPECT_FALSE(resolvedReq->condition.has_value());
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
   EXPECT_EQ(resolvedReq->method, deserializedReq.method);
@@ -810,7 +810,7 @@ TEST(MessageTests, testSetBreakpointRequestFull) {
   EXPECT_EQ(resolvedReq->location.lineNumber, 2);
   EXPECT_EQ(resolvedReq->location.columnNumber, 3);
 
-  EXPECT_TRUE(resolvedReq->condition.hasValue());
+  EXPECT_TRUE(resolvedReq->condition.has_value());
   EXPECT_EQ(resolvedReq->condition.value(), "FooBarCondition");
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
@@ -853,10 +853,10 @@ TEST(MessageTests, testSetBreakpointByUrlRequestMinimal) {
   EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpointByUrl");
   EXPECT_EQ(resolvedReq->lineNumber, 2);
 
-  EXPECT_FALSE(resolvedReq->condition.hasValue());
-  EXPECT_FALSE(resolvedReq->columnNumber.hasValue());
-  EXPECT_FALSE(resolvedReq->url.hasValue());
-  EXPECT_FALSE(resolvedReq->urlRegex.hasValue());
+  EXPECT_FALSE(resolvedReq->condition.has_value());
+  EXPECT_FALSE(resolvedReq->columnNumber.has_value());
+  EXPECT_FALSE(resolvedReq->url.has_value());
+  EXPECT_FALSE(resolvedReq->urlRegex.has_value());
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
   EXPECT_EQ(resolvedReq->method, deserializedReq.method);
@@ -896,13 +896,13 @@ TEST(MessageTests, testSetBreakpointByUrlRequestFull) {
   EXPECT_EQ(resolvedReq->method, "Debugger.setBreakpointByUrl");
   EXPECT_EQ(resolvedReq->lineNumber, 2);
 
-  EXPECT_TRUE(resolvedReq->condition.hasValue());
+  EXPECT_TRUE(resolvedReq->condition.has_value());
   EXPECT_EQ(resolvedReq->condition.value(), "foo == 42");
-  EXPECT_TRUE(resolvedReq->columnNumber.hasValue());
+  EXPECT_TRUE(resolvedReq->columnNumber.has_value());
   EXPECT_EQ(resolvedReq->columnNumber.value(), 3);
-  EXPECT_TRUE(resolvedReq->url.hasValue());
+  EXPECT_TRUE(resolvedReq->url.has_value());
   EXPECT_EQ(resolvedReq->url.value(), "http://example.com/example.js");
-  EXPECT_TRUE(resolvedReq->urlRegex.hasValue());
+  EXPECT_TRUE(resolvedReq->urlRegex.has_value());
   EXPECT_EQ(resolvedReq->urlRegex.value(), "http://example.com/.*");
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
@@ -1123,11 +1123,11 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseMinimal) {
   debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
   EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
 
-  EXPECT_FALSE(deserializedReq.result.subtype.hasValue());
-  EXPECT_FALSE(deserializedReq.result.value.hasValue());
-  EXPECT_FALSE(deserializedReq.result.unserializableValue.hasValue());
-  EXPECT_FALSE(deserializedReq.result.description.hasValue());
-  EXPECT_FALSE(deserializedReq.result.objectId.hasValue());
+  EXPECT_FALSE(deserializedReq.result.subtype.has_value());
+  EXPECT_FALSE(deserializedReq.result.value.has_value());
+  EXPECT_FALSE(deserializedReq.result.unserializableValue.has_value());
+  EXPECT_FALSE(deserializedReq.result.description.has_value());
+  EXPECT_FALSE(deserializedReq.result.objectId.has_value());
 
   // Specifics
   EXPECT_EQ(deserializedReq.id, 2);
@@ -1157,11 +1157,11 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
   debugger::EvaluateOnCallFrameResponse deserializedReq(messageJSON);
   EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
 
-  EXPECT_TRUE(deserializedReq.result.subtype.hasValue());
-  EXPECT_TRUE(deserializedReq.result.value.hasValue());
-  EXPECT_TRUE(deserializedReq.result.unserializableValue.hasValue());
-  EXPECT_TRUE(deserializedReq.result.description.hasValue());
-  EXPECT_TRUE(deserializedReq.result.objectId.hasValue());
+  EXPECT_TRUE(deserializedReq.result.subtype.has_value());
+  EXPECT_TRUE(deserializedReq.result.value.has_value());
+  EXPECT_TRUE(deserializedReq.result.unserializableValue.has_value());
+  EXPECT_TRUE(deserializedReq.result.description.has_value());
+  EXPECT_TRUE(deserializedReq.result.objectId.has_value());
 
   EXPECT_EQ(deserializedReq.result.subtype.value(), "SuperString");
   EXPECT_EQ(
@@ -1319,11 +1319,11 @@ TEST(MessageTests, testPauseNotificationMinimal) {
   debugger::PausedNotification deserializedReq(messageJSON);
   EXPECT_EQ(deserializedReq.toDynamic(), messageJSON);
 
-  EXPECT_FALSE(deserializedReq.callFrames[0].functionLocation.hasValue());
-  EXPECT_FALSE(deserializedReq.callFrames[0].returnValue.hasValue());
-  EXPECT_FALSE(deserializedReq.asyncStackTrace.hasValue());
-  EXPECT_FALSE(deserializedReq.hitBreakpoints.hasValue());
-  EXPECT_FALSE(deserializedReq.data.hasValue());
+  EXPECT_FALSE(deserializedReq.callFrames[0].functionLocation.has_value());
+  EXPECT_FALSE(deserializedReq.callFrames[0].returnValue.has_value());
+  EXPECT_FALSE(deserializedReq.asyncStackTrace.has_value());
+  EXPECT_FALSE(deserializedReq.hitBreakpoints.has_value());
+  EXPECT_FALSE(deserializedReq.data.has_value());
 
   // Specifics
   EXPECT_EQ(deserializedReq.method, "Debugger.paused");
@@ -1404,8 +1404,8 @@ TEST(MessageTests, testPauseNotificationFull) {
     }
   )";
 
-  folly::Optional<debugger::Location> functionLocation;
-  folly::Optional<runtime::RemoteObject> returnValue;
+  std::optional<debugger::Location> functionLocation;
+  std::optional<runtime::RemoteObject> returnValue;
   // Serialize and Deserialize are inverse functions
   dynamic messageJSON = folly::parseJson(message);
   debugger::PausedNotification deserializedReq(messageJSON);
@@ -1413,25 +1413,26 @@ TEST(MessageTests, testPauseNotificationFull) {
 
   // Check optionnals
   // ----------------
-  EXPECT_TRUE(deserializedReq.callFrames[0].functionLocation.hasValue());
-  EXPECT_TRUE(deserializedReq.callFrames[0].returnValue.hasValue());
-  EXPECT_TRUE(deserializedReq.asyncStackTrace.hasValue());
-  EXPECT_TRUE(deserializedReq.hitBreakpoints.hasValue());
-  EXPECT_TRUE(deserializedReq.data.hasValue());
+  EXPECT_TRUE(deserializedReq.callFrames[0].functionLocation.has_value());
+  EXPECT_TRUE(deserializedReq.callFrames[0].returnValue.has_value());
+  EXPECT_TRUE(deserializedReq.asyncStackTrace.has_value());
+  EXPECT_TRUE(deserializedReq.hitBreakpoints.has_value());
+  EXPECT_TRUE(deserializedReq.data.has_value());
 
   EXPECT_TRUE(
-      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue());
+      deserializedReq.callFrames[0].returnValue.value().subtype.has_value());
   EXPECT_TRUE(
-      deserializedReq.callFrames[0].returnValue.value().className.hasValue());
+      deserializedReq.callFrames[0].returnValue.value().className.has_value());
   EXPECT_TRUE(deserializedReq.callFrames[0]
                   .returnValue.value()
-                  .unserializableValue.hasValue());
+                  .unserializableValue.has_value());
   EXPECT_TRUE(
-      deserializedReq.callFrames[0].returnValue.value().value.hasValue());
+      deserializedReq.callFrames[0].returnValue.value().value.has_value());
+  EXPECT_TRUE(deserializedReq.callFrames[0]
+                  .returnValue.value()
+                  .description.has_value());
   EXPECT_TRUE(
-      deserializedReq.callFrames[0].returnValue.value().description.hasValue());
-  EXPECT_TRUE(
-      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue());
+      deserializedReq.callFrames[0].returnValue.value().objectId.has_value());
 
   // Check optionnals Values
   // -----------------------
@@ -1447,25 +1448,26 @@ TEST(MessageTests, testPauseNotificationFull) {
       deserializedReq.callFrames[0].returnValue.value().type,
       "aRemoteObjectType");
   EXPECT_EQ(
-      deserializedReq.callFrames[0].returnValue.value().subtype.hasValue(),
+      deserializedReq.callFrames[0].returnValue.value().subtype.has_value(),
       true);
   EXPECT_EQ(
       deserializedReq.callFrames[0].returnValue.value().subtype.value(),
       "subtype");
   EXPECT_EQ(
-      deserializedReq.callFrames[0].returnValue.value().className.hasValue(),
+      deserializedReq.callFrames[0].returnValue.value().className.has_value(),
       true);
   EXPECT_EQ(
       deserializedReq.callFrames[0].returnValue.value().className.value(),
       "className");
   EXPECT_EQ(
-      deserializedReq.callFrames[0].returnValue.value().value.hasValue(), true);
+      deserializedReq.callFrames[0].returnValue.value().value.has_value(),
+      true);
   EXPECT_EQ(
       deserializedReq.callFrames[0].returnValue.value().value.value(), "value");
   EXPECT_EQ(
       deserializedReq.callFrames[0]
           .returnValue.value()
-          .unserializableValue.hasValue(),
+          .unserializableValue.has_value(),
       true);
   EXPECT_EQ(
       deserializedReq.callFrames[0]
@@ -1473,13 +1475,13 @@ TEST(MessageTests, testPauseNotificationFull) {
           .unserializableValue.value(),
       "unserializableValue");
   EXPECT_EQ(
-      deserializedReq.callFrames[0].returnValue.value().description.hasValue(),
+      deserializedReq.callFrames[0].returnValue.value().description.has_value(),
       true);
   EXPECT_EQ(
       deserializedReq.callFrames[0].returnValue.value().description.value(),
       "description");
   EXPECT_EQ(
-      deserializedReq.callFrames[0].returnValue.value().objectId.hasValue(),
+      deserializedReq.callFrames[0].returnValue.value().objectId.has_value(),
       true);
   EXPECT_EQ(
       deserializedReq.callFrames[0].returnValue.value().objectId.value(),

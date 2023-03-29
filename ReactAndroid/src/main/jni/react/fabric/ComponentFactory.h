@@ -8,14 +8,8 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
+#include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
-#include <react/renderer/scheduler/Scheduler.h>
-#include <react/utils/ContextContainer.h>
-#include <mutex>
-#include <unordered_set>
-
-using namespace facebook::jsi;
 
 namespace facebook {
 namespace react {

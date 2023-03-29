@@ -18,6 +18,8 @@
 namespace facebook {
 namespace react {
 
+using namespace jni;
+
 namespace {
 
 struct JavaJSException : jni::JavaClass<JavaJSException, JThrowable> {

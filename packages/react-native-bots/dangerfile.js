@@ -59,7 +59,7 @@ if (!includesTestPlan && !isFromPhabricator) {
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
 const changelogRegex =
-  /\[\s?(ANDROID|GENERAL|MACOS|IOS|JS|JAVASCRIPT|INTERNAL)\s?\]\s?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi;
+  /\[\s?(ANDROID|GENERAL|IOS|MACOS|INTERNAL)\s?\]\s?\[\s?(BREAKING|ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?-?\s*?(.*)/gi; // [macOS]
 const internalChangelogRegex = /\[\s?(INTERNAL)\s?\].*/gi;
 const includesChangelog =
   danger.github.pr.body &&

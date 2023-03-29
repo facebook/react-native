@@ -143,7 +143,7 @@ using namespace facebook::react;
   }
 
 #if !TARGET_OS_OSX // [macOS]
-  if (@available(macOS 13.0, *)) {
+  if (@available(macCatalyst 13.1, *)) {
     _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
   }
 #endif // [macOS]
@@ -159,7 +159,7 @@ using namespace facebook::react;
 #if !TARGET_OS_OSX // [macOS]
   [_refreshControl endRefreshing];
 
-  if (@available(macOS 13.0, *)) {
+  if (@available(macCatalyst 13.1, *)) {
     _scrollViewComponentView.scrollView.refreshControl = nil;
   }
 #endif // [macOS]

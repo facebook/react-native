@@ -6,14 +6,13 @@
 # Default versions of Flipper and related dependencies.
 # Update this map to bump the dependencies.
 $flipper_default_versions = {
-    'Flipper' => '0.125.0',
+    'Flipper' => '0.174.0',
     'Flipper-Boost-iOSX' => '1.76.0.1.11',
     'Flipper-DoubleConversion' => '3.2.0.1',
     'Flipper-Fmt' => '7.1.7',
     'Flipper-Folly' => '2.6.10',
     'Flipper-Glog' => '0.5.0.5',
     'Flipper-PeerTalk' => '0.0.4',
-    'Flipper-RSocket' => '1.4.3',
     'OpenSSL-Universal' => '1.1.1100',
 }
 
@@ -39,7 +38,6 @@ def use_flipper_pods(versions = {}, configurations: ['Debug'])
     versions['Flipper-Folly'] ||= $flipper_default_versions['Flipper-Folly']
     versions['Flipper-Glog'] ||= $flipper_default_versions['Flipper-Glog']
     versions['Flipper-PeerTalk'] ||= $flipper_default_versions['Flipper-PeerTalk']
-    versions['Flipper-RSocket'] ||= $flipper_default_versions['Flipper-RSocket']
     versions['OpenSSL-Universal'] ||= $flipper_default_versions['OpenSSL-Universal']
     pod 'FlipperKit', versions['Flipper'], :configurations => configurations
     pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configurations => configurations
@@ -55,7 +53,6 @@ def use_flipper_pods(versions = {}, configurations: ['Debug'])
     pod 'Flipper-Folly', versions['Flipper-Folly'], :configurations => configurations
     pod 'Flipper-Glog', versions['Flipper-Glog'], :configurations => configurations
     pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configurations => configurations
-    pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configurations => configurations
     pod 'FlipperKit/Core', versions['Flipper'], :configurations => configurations
     pod 'FlipperKit/CppBridge', versions['Flipper'], :configurations => configurations
     pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configurations => configurations

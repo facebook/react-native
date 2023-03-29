@@ -111,19 +111,21 @@ inline bool Object::hasProperty(Runtime& runtime, const PropNameID& name)
 }
 
 template <typename T>
-void Object::setProperty(Runtime& runtime, const char* name, T&& value) {
+void Object::setProperty(Runtime& runtime, const char* name, T&& value) const {
   setProperty(
       runtime, String::createFromAscii(runtime, name), std::forward<T>(value));
 }
 
 template <typename T>
-void Object::setProperty(Runtime& runtime, const String& name, T&& value) {
+void Object::setProperty(Runtime& runtime, const String& name, T&& value)
+    const {
   setPropertyValue(
       runtime, name, detail::toValue(runtime, std::forward<T>(value)));
 }
 
 template <typename T>
-void Object::setProperty(Runtime& runtime, const PropNameID& name, T&& value) {
+void Object::setProperty(Runtime& runtime, const PropNameID& name, T&& value)
+    const {
   setPropertyValue(
       runtime, name, detail::toValue(runtime, std::forward<T>(value)));
 }
@@ -229,12 +231,12 @@ inline Array Object::getPropertyNames(Runtime& runtime) const {
   return runtime.getPropertyNames(*this);
 }
 
-inline Value WeakObject::lock(Runtime& runtime) {
+inline Value WeakObject::lock(Runtime& runtime) const {
   return runtime.lockWeakObject(*this);
 }
 
 template <typename T>
-void Array::setValueAtIndex(Runtime& runtime, size_t i, T&& value) {
+void Array::setValueAtIndex(Runtime& runtime, size_t i, T&& value) const {
   setValueAtIndexImpl(
       runtime, i, detail::toValue(runtime, std::forward<T>(value)));
 }

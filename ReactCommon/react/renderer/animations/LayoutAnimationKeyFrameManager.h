@@ -56,6 +56,8 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   void setComponentDescriptorRegistry(SharedComponentDescriptorRegistry const &
                                           componentDescriptorRegistry) override;
 
+  void setReduceDeleteCreateMutation(bool reduceDeleteCreateMutation) override;
+
   // TODO: add SurfaceId to this API as well
   bool shouldAnimateFrame() const override;
 
@@ -151,6 +153,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
   mutable std::mutex surfaceIdsToStopMutex_;
   mutable butter::set<SurfaceId> surfaceIdsToStop_{};
   bool skipInvalidatedKeyFrames_{false};
+  bool reduceDeleteCreateMutation_{false};
 
   /*
    * Feature flag that forces a crash if component descriptor for shadow view

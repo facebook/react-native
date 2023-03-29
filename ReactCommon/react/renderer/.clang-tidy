@@ -185,4 +185,11 @@ clang-analyzer-valist.Uninitialized,
 clang-analyzer-valist.Unterminated,
 google-build-using-namespace,
 '
+
+CheckOptions:
+- key: performance-unnecessary-value-param.AllowedTypes
+  value: '[Pp]ointer$;[Pp]tr$;[Rr]ef(erence)?$;'
+- key: performance-unnecessary-copy-initialization.AllowedTypes
+  value: '[Pp]ointer$;[Pp]tr$;[Rr]ef(erence)?$'
+
 ...

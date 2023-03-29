@@ -29,28 +29,16 @@ class GenerateCodegenArtifactsTaskTest {
     val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
-    val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.codegenDir.set(codegenDir)
-          it.generatedSrcDir.set(outputDir)
-        }
+    val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
-    assertEquals(
-        File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js"),
-        task.combineJsToSchemaCli.get().asFile)
     assertEquals(File(outputDir, "schema.json"), task.generatedSchemaFile.get().asFile)
   }
 
   @Test
   fun generateCodegenSchema_outputFile_isSetCorrectly() {
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
-    val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.codegenDir.set(codegenDir)
-          it.generatedSrcDir.set(outputDir)
-        }
+    val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
     assertEquals(File(outputDir, "java"), task.generatedJavaFiles.get().asFile)
     assertEquals(File(outputDir, "jni"), task.generatedJniFiles.get().asFile)
@@ -80,13 +68,11 @@ class GenerateCodegenArtifactsTaskTest {
   @WithOs(OS.LINUX)
   fun setupCommandLine_willSetupCorrectly() {
     val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
           it.reactNativeDir.set(reactNativeDir)
-          it.codegenDir.set(codegenDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
         }
