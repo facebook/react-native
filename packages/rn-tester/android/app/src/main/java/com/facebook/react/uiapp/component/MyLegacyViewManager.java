@@ -11,12 +11,14 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Legacy View manager (non Fabric compatible) for {@link MyNativeView} components. */
@@ -58,5 +60,20 @@ public class MyLegacyViewManager extends SimpleViewManager<MyNativeView> {
   @Override
   public final Map<String, Object> getExportedViewConstants() {
     return Collections.singletonMap("PI", 3.14);
+  }
+
+  @Override
+  public final Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    Map<String, Object> eventTypeConstants = new HashMap<String, Object>();
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "onColorChanged",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
+            .build());
+    return eventTypeConstants;
   }
 }
