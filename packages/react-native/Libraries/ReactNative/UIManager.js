@@ -175,6 +175,33 @@ const UIManager = {
       );
     }
   },
+
+  dispatchViewManagerCommand(
+    reactTag: number,
+    commandName: number | string,
+    commandArgs: any[],
+  ) {
+    if (isFabricReactTag(reactTag)) {
+      const FabricUIManager = nullthrows(getFabricUIManager());
+      const shadowNode =
+        FabricUIManager.findShadowNodeByTag_DEPRECATED(reactTag);
+      if (shadowNode) {
+        // Transform the accidental CommandID into a CommandName which is the stringified number.
+        // The interop layer knows how to convert this number into the right method name.
+        // Stringify a string is a no-op, so it's safe.
+        commandName = `${commandName}`;
+        FabricUIManager.dispatchCommand(shadowNode, commandName, commandArgs);
+      }
+    } else {
+      UIManagerImpl.dispatchViewManagerCommand(
+        reactTag,
+        // We have some legacy components that are actually already using strings. ¯\_(ツ)_/¯
+        // $FlowFixMe[incompatible-call]
+        commandName,
+        commandArgs,
+      );
+    }
+  },
 };
 
 module.exports = UIManager;

@@ -50,7 +50,7 @@
 
 - (void)handleCommand:(NSString *)commandName args:(NSArray *)args
 {
-  [_coordinator handleCommand:commandName args:args reactTag:_tag];
+  [_coordinator handleCommand:commandName args:args reactTag:_tag paperView:self.paperView];
 }
 
 @end

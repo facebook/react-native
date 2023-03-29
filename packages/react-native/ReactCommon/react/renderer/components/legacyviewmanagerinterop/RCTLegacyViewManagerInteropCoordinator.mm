@@ -100,13 +100,23 @@ using namespace facebook::react;
   return RCTDropReactPrefixes(_componentData.name);
 }
 
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args reactTag:(NSInteger)tag
+- (void)handleCommand:(NSString *)commandName
+                 args:(NSArray *)args
+             reactTag:(NSInteger)tag
+            paperView:(nonnull UIView *)paperView
 {
   Class managerClass = _componentData.managerClass;
   [self _lookupModuleMethodsIfNecessary];
   RCTModuleData *moduleData = [_bridge.batchedBridge moduleDataForName:RCTBridgeModuleNameForClass(managerClass)];
   id<RCTBridgeMethod> method;
-  if ([commandName isKindOfClass:[NSNumber class]]) {
+
+  // We can't use `[NSString intValue]` as "0" is a valid command,
+  // but also a falsy value. [NSNumberFormatter numberFromString] returns a
+  // `NSNumber *` which is NULL when it's to be NULL
+  // and it points to 0 when the string is @"0" (not a falsy value).
+  NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+
+  if ([commandName isKindOfClass:[NSNumber class]] || [formatter numberFromString:commandName] != NULL) {
     method = moduleData ? moduleData.methods[[commandName intValue]] : _moduleMethods[[commandName intValue]];
   } else if ([commandName isKindOfClass:[NSString class]]) {
     method = moduleData ? moduleData.methodsByName[commandName] : _moduleMethodsByName[commandName];
@@ -121,12 +131,14 @@ using namespace facebook::react;
   NSArray *newArgs = [@[ [NSNumber numberWithInteger:tag] ] arrayByAddingObjectsFromArray:args];
 
   if (_bridge) {
+    [self _addViewToRegistry:paperView withTag:tag];
     [_bridge.batchedBridge
         dispatchBlock:^{
           [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
           [self->_bridge.uiManager setNeedsLayout];
         }
                 queue:RCTGetUIManagerQueue()];
+    [self _removeViewFromRegistryWithTag:tag];
   } else {
     // TODO T86826778 - Figure out which queue this should be dispatched to.
     [method invokeWithBridge:nil module:self->_componentData.manager arguments:newArgs];
@@ -134,6 +146,41 @@ using namespace facebook::react;
 }
 
 #pragma mark - Private
+- (void)_addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
+{
+  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    if ([viewRegistry objectForKey:@(tag)] != NULL) {
+      return;
+    }
+    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
+        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
+    [mutableViewRegistry setObject:view forKey:@(tag)];
+  }];
+}
+
+- (void)_removeViewFromRegistryWithTag:(NSInteger)tag
+{
+  [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    if ([viewRegistry objectForKey:@(tag)] == NULL) {
+      return;
+    }
+
+    NSMutableDictionary<NSNumber *, UIView *> *mutableViewRegistry =
+        (NSMutableDictionary<NSNumber *, UIView *> *)viewRegistry;
+    [mutableViewRegistry removeObjectForKey:@(tag)];
+  }];
+}
+
+- (void)_addUIBlock:(RCTViewManagerUIBlock)block
+{
+  __weak __typeof__(self) weakSelf = self;
+  [_bridge.batchedBridge
+      dispatchBlock:^{
+        __typeof__(self) strongSelf = weakSelf;
+        [strongSelf->_bridge.uiManager addUIBlock:block];
+      }
+              queue:RCTGetUIManagerQueue()];
+}
 
 // This is copy-pasta from RCTModuleData.
 - (void)_lookupModuleMethodsIfNecessary

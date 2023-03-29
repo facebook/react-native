@@ -15,8 +15,9 @@ import RNTMyNativeView, {
   Commands as RNTMyNativeViewCommands,
 } from './MyNativeViewNativeComponent';
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
+import type {MyLegacyViewType} from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
-
+import {callNativeMethodToChangeBackgroundColor} from './MyLegacyViewNativeComponent';
 const colors = [
   '#0000FF',
   '#FF0000',
@@ -52,8 +53,8 @@ class HSBA {
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
+  const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
-  const [color, setColor] = useState('#FF0000');
   const [hsba, setHsba] = useState<HSBA>(new HSBA());
   return (
     <View style={{flex: 1}}>
@@ -61,9 +62,9 @@ export default function MyNativeView(props: {}): React.Node {
       <RNTMyNativeView ref={ref} style={{flex: 1}} opacity={opacity} />
       <Text style={{color: 'red'}}>Legacy View</Text>
       <RNTMyLegacyNativeView
+        ref={legacyRef}
         style={{flex: 1}}
         opacity={opacity}
-        color={color}
         onColorChanged={event =>
           setHsba(
             new HSBA(
@@ -84,12 +85,13 @@ export default function MyNativeView(props: {}): React.Node {
         title="Change Background"
         onPress={() => {
           let newColor = colors[Math.floor(Math.random() * 5)];
-          setColor(newColor);
           RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
             // $FlowFixMe[incompatible-call]
             ref.current,
             newColor,
           );
+
+          callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
         }}
       />
       <Button
