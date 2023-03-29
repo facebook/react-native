@@ -30,6 +30,13 @@ RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 
 RCT_EXPORT_VIEW_PROPERTY(onColorChanged, RCTBubblingEventBlock)
 
+RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, CGFloat, RNTLegacyView)
+{
+  view.clipsToBounds = true;
+  NSNumber *cornerRadius = (NSNumber *)json;
+  view.layer.cornerRadius = [cornerRadius floatValue];
+}
+
 RCT_EXPORT_METHOD(changeBackgroundColor : (nonnull NSNumber *)reactTag color : (NSString *)color)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
