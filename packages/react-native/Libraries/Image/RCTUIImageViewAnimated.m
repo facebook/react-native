@@ -11,12 +11,12 @@
 #import <mach/mach.h>
 #import <objc/runtime.h>
 
-static NSUInteger RCTDeviceTotalMemory()
+static NSUInteger RCTDeviceTotalMemory(void)
 {
   return (NSUInteger)[[NSProcessInfo processInfo] physicalMemory];
 }
 
-static NSUInteger RCTDeviceFreeMemory()
+static NSUInteger RCTDeviceFreeMemory(void)
 {
   mach_port_t host_port = mach_host_self();
   mach_msg_type_number_t host_size = sizeof(vm_statistics_data_t) / sizeof(integer_t);
