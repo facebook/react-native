@@ -298,6 +298,12 @@ function throwIfMoreThanOneCodegenNativecommands(
   }
 }
 
+function throwIfConfigNotfound(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length === 0) {
+    throw new Error('Could not find component config for native component');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -316,4 +322,5 @@ module.exports = {
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
 };

@@ -12,6 +12,8 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
+import {throwIfConfigNotfound} from '../../error-utils';
+
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
@@ -39,9 +41,7 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
     findNativeComponentType(statement, foundConfigs, parser);
   });
 
-  if (foundConfigs.length === 0) {
-    throw new Error('Could not find component config for native component');
-  }
+  throwIfConfigNotfound(foundConfigs);
   if (foundConfigs.length > 1) {
     throw new Error('Only one component is supported per file');
   }
