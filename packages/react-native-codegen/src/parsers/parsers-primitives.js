@@ -521,9 +521,6 @@ function emitCommonTypes(
   nullable: boolean,
   parser: Parser,
 ): $FlowFixMe {
-  const genericTypeAnnotationName =
-    parser.nameForGenericTypeAnnotation(typeAnnotation);
-
   const typeMap = {
     Stringish: emitStringish,
     Int32: emitInt32,
@@ -533,7 +530,24 @@ function emitCommonTypes(
     Object: emitGenericObject,
     $Partial: emitPartial,
     Partial: emitPartial,
+    BooleanTypeAnnotation: emitBoolean,
+    NumberTypeAnnotation: emitNumber,
+    VoidTypeAnnotation: emitVoid,
+    StringTypeAnnotation: emitString,
+    MixedTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
   };
+
+  const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
+    typeAnnotation.type,
+  );
+
+  const simpleEmitter = typeMap[typeAnnotationName];
+  if (simpleEmitter) {
+    return simpleEmitter(nullable);
+  }
+
+  const genericTypeAnnotationName =
+    parser.nameForGenericTypeAnnotation(typeAnnotation);
 
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {

@@ -248,4 +248,11 @@ export interface Parser {
    * @returns: an array of properties.
    */
   bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a keyword convert it to TypeAnnotation.
+   * @parameter keyword
+   * @returns: converted TypeAnnotation to Keywords
+   */
+  convertKeywordToTypeAnnotation(keyword: string): string;
 }

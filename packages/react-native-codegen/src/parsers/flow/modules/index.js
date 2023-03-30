@@ -31,15 +31,10 @@ const {
 } = require('../../parsers-commons');
 const {
   emitArrayType,
-  emitBoolean,
   emitFunction,
-  emitNumber,
   emitGenericObject,
   emitPromise,
   emitRootTag,
-  emitVoid,
-  emitString,
-  emitMixed,
   emitUnion,
   emitCommonTypes,
   typeAliasResolution,
@@ -207,18 +202,6 @@ function translateTypeAnnotation(
         nullable,
       );
     }
-    case 'BooleanTypeAnnotation': {
-      return emitBoolean(nullable);
-    }
-    case 'NumberTypeAnnotation': {
-      return emitNumber(nullable);
-    }
-    case 'VoidTypeAnnotation': {
-      return emitVoid(nullable);
-    }
-    case 'StringTypeAnnotation': {
-      return emitString(nullable);
-    }
     case 'FunctionTypeAnnotation': {
       return emitFunction(
         nullable,
@@ -243,13 +226,6 @@ function translateTypeAnnotation(
         memberType: 'StringTypeAnnotation',
       });
     }
-    case 'MixedTypeAnnotation': {
-      if (cxxOnly) {
-        return emitMixed(nullable);
-      } else {
-        return emitGenericObject(nullable);
-      }
-    }
     case 'EnumStringBody':
     case 'EnumNumberBody': {
       return typeEnumResolution(
@@ -262,11 +238,26 @@ function translateTypeAnnotation(
       );
     }
     default: {
-      throw new UnsupportedTypeAnnotationParserError(
+      const commonType = emitCommonTypes(
         hasteModuleName,
+        types,
         typeAnnotation,
-        parser.language(),
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        nullable,
+        parser,
       );
+
+      if (!commonType) {
+        throw new UnsupportedTypeAnnotationParserError(
+          hasteModuleName,
+          typeAnnotation,
+          parser.language(),
+        );
+      }
+      return commonType;
     }
   }
 }
