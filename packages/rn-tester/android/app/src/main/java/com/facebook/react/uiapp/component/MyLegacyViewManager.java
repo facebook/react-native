@@ -59,6 +59,11 @@ public class MyLegacyViewManager extends SimpleViewManager<MyNativeView> {
     view.setBackgroundColor(Color.parseColor(color));
   }
 
+  @ReactProp(name = "cornerRadius")
+  public void setCornerRadius(@NonNull MyNativeView view, @Nullable float cornerRadius) {
+    view.setCornerRadius(cornerRadius);
+  }
+
   @Override
   public final Map<String, Object> getExportedViewConstants() {
     return Collections.singletonMap("PI", 3.14);
