@@ -7,6 +7,8 @@
 
 #include "EventListener.h"
 
+#include <mutex>
+
 namespace facebook::react {
 
 bool EventListenerContainer::willDispatchEvent(const RawEvent &event) {
