@@ -25,12 +25,26 @@ const nodeFiles = new RegExp(
   ].join('|'),
 );
 
-// Use metro-babel-register to build the Babel configuration we need for Node
-// files, but Jest takes care of hooking require so we don't actually register
-// Babel here.
+// Get Babel config from metro-babel-register, without registering against
+// `require`. This is used below to configure babelTransformSync under Jest.
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
-const transformer = require('metro-react-native-babel-transformer');
+let transformer;
+
+try {
+  transformer = require('metro-react-native-babel-transformer');
+} catch (e) {
+  if (e.name !== 'SyntaxError') {
+    throw e;
+  }
+
+  // [fbsource only] When Metro dependency versions match the latest release,
+  // they are loaded from source (facebook/metro lives inside Meta's monorepo).
+  // We need babel-register to use the transformer in this configuration file.
+  babelRegisterOnly([]);
+  transformer = require('metro-react-native-babel-transformer');
+}
+
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
     if (nodeFiles.test(file)) {
