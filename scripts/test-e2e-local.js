@@ -78,6 +78,7 @@ if (argv.target === 'RNTester') {
   // FIXME: make sure that the commands retains colors
   // (--ansi) doesn't always work
   // see also https://github.com/shelljs/shelljs/issues/86
+  pushd('packages/rn-tester');
 
   if (argv.platform === 'iOS') {
     console.info(
@@ -91,7 +92,7 @@ if (argv.target === 'RNTester') {
     // in your local setup - also: if I'm on release branch, I pick the
     // hermes ref from the hermes ref file (see hermes-engine.podspec)
     exec(
-      `cd packages/rn-tester && USE_HERMES=${
+      `USE_HERMES=${
         argv.hermes ? 1 : 0
       } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
@@ -101,9 +102,7 @@ if (argv.target === 'RNTester') {
     launchPackagerInSeparateWindow();
 
     // launch the app on iOS simulator
-    pushd('packages/rn-tester');
     exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
-    popd();
   } else {
     // we do the android path here
 
@@ -136,6 +135,7 @@ if (argv.target === 'RNTester') {
     // just to make sure that the Android up won't have troubles finding the Metro server
     exec('adb reverse tcp:8081 tcp:8081');
   }
+  popd();
 } else {
   console.info("We're going to test a fresh new RN project");
 
