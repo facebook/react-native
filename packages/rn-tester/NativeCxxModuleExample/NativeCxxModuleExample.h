@@ -127,6 +127,18 @@ class NativeCxxModuleExample
   void voidFunc(jsi::Runtime &rt);
 
   void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName);
+
+  void voidFuncThrows(jsi::Runtime &rt);
+
+  ObjectStruct getObjectThrows(jsi::Runtime &rt, ObjectStruct arg);
+
+  AsyncPromise<jsi::Value> promiseThrows(jsi::Runtime &rt);
+
+  void voidFuncAssert(jsi::Runtime &rt);
+
+  ObjectStruct getObjectAssert(jsi::Runtime &rt, ObjectStruct arg);
+
+  AsyncPromise<jsi::Value> promiseAssert(jsi::Runtime &rt);
 };
 
 } // namespace facebook::react
