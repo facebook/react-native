@@ -20,9 +20,9 @@
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
   },
   "dependencies": {
+    "flow-enums-runtime": "^0.0.5",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1",
-    "flow-enums-runtime": "^0.0.5"
+    "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
     "react": "18.2.0",

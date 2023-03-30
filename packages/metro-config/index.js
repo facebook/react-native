@@ -83,4 +83,4 @@ function getDefaultConfig(
   );
 }
 
-module.exports = {getDefaultConfig};
+module.exports = {getDefaultConfig, mergeConfig};
