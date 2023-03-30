@@ -9,6 +9,7 @@ package com.facebook.react.fabric.mounting.mountitems;
 
 import static com.facebook.react.fabric.FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT;
 import static com.facebook.react.fabric.FabricUIManager.TAG;
+import static com.facebook.react.fabric.mounting.mountitems.FabricNameComponentMapping.getFabricComponentName;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +38,7 @@ public class PreAllocateViewMountItem implements MountItem {
       @NonNull StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
-    mComponent = component;
+    mComponent = getFabricComponentName(component);
     mSurfaceId = surfaceId;
     mProps = props;
     mStateWrapper = stateWrapper;

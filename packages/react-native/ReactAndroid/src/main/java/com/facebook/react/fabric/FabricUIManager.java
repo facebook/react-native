@@ -9,7 +9,6 @@ package com.facebook.react.fabric;
 
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.react.fabric.FabricComponents.getFabricComponentName;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
@@ -716,7 +715,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         new PreAllocateViewMountItem(
             rootTag,
             reactTag,
-            getFabricComponentName(componentName),
+            componentName,
             props,
             (StateWrapper) stateWrapper,
             (EventEmitterWrapper) eventEmitterWrapper,
