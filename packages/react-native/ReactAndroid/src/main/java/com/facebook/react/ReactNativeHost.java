@@ -81,7 +81,8 @@ public abstract class ReactNativeHost {
             .setJSIModulesPackage(getJSIModulePackage())
             .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
             .setReactPackageTurboModuleManagerDelegateBuilder(
-                getReactPackageTurboModuleManagerDelegateBuilder());
+                getReactPackageTurboModuleManagerDelegateBuilder())
+            .setJSEngineResolutionAlgorithm(getJSEngineResolutionAlgorithm());
 
     for (ReactPackage reactPackage : getPackages()) {
       builder.addPackage(reactPackage);
