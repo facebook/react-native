@@ -126,7 +126,7 @@ public class ReactInstanceManagerBuilder {
    * Sets the JS Engine to load as either Hermes or JSC. If not set, the default is JSC with a
    * Hermes fallback.
    */
-  private void setJSEngineResolutionAlgorithm(
+  public void setJSEngineResolutionAlgorithm(
       @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
     this.jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
   }
