@@ -15,8 +15,9 @@ import RNTMyNativeView, {
   Commands as RNTMyNativeViewCommands,
 } from './MyNativeViewNativeComponent';
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
+import type {MyLegacyViewType} from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
-
+import {callNativeMethodToChangeBackgroundColor} from './MyLegacyViewNativeComponent';
 const colors = [
   '#0000FF',
   '#FF0000',
@@ -25,6 +26,8 @@ const colors = [
   '#330000',
   '#000033',
 ];
+
+const cornerRadiuses = [0, 20, 40, 60, 80, 100, 120];
 
 class HSBA {
   hue: number;
@@ -49,21 +52,58 @@ class HSBA {
   }
 }
 
+function beautify(number: number): string {
+  if (number % 1 === 0) {
+    return number.toFixed();
+  }
+  return number.toFixed(2);
+}
+
+type MeasureStruct = {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+};
+
+const MeasureStructZero: MeasureStruct = {
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+};
+
+function getTextFor(measureStruct: MeasureStruct): string {
+  return `x: ${beautify(measureStruct.x)}, y: ${beautify(
+    measureStruct.y,
+  )}, width: ${beautify(measureStruct.width)}, height: ${beautify(
+    measureStruct.height,
+  )}`;
+}
+
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
+  const containerRef = useRef<typeof View | null>(null);
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
+  const legacyRef = useRef<React.ElementRef<MyLegacyViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
-  const [color, setColor] = useState('#FF0000');
   const [hsba, setHsba] = useState<HSBA>(new HSBA());
+  const [cornerRadiusIndex, setCornerRadiusIndex] = useState<number>(0);
+  const [legacyMeasure, setLegacyMeasure] =
+    useState<MeasureStruct>(MeasureStructZero);
+  const [legacyMeasureInWindow, setLegacyMeasureInWindow] =
+    useState<MeasureStruct>(MeasureStructZero);
+  const [legacyMeasureLayout, setLegacyMeasureLayout] =
+    useState<MeasureStruct>(MeasureStructZero);
   return (
-    <View style={{flex: 1}}>
+    <View ref={containerRef} style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
       <RNTMyNativeView ref={ref} style={{flex: 1}} opacity={opacity} />
       <Text style={{color: 'red'}}>Legacy View</Text>
       <RNTMyLegacyNativeView
+        ref={legacyRef}
         style={{flex: 1}}
         opacity={opacity}
-        color={color}
         onColorChanged={event =>
           setHsba(
             new HSBA(
@@ -75,8 +115,10 @@ export default function MyNativeView(props: {}): React.Node {
           )
         }
       />
-      <Text style={{color: 'green'}}>HSBA: {hsba.toString()}</Text>
-      <Text style={{color: 'green'}}>
+      <Text style={{color: 'green', textAlign: 'center'}}>
+        HSBA: {hsba.toString()}
+      </Text>
+      <Text style={{color: 'green', textAlign: 'center'}}>
         Constants From Interop Layer:{' '}
         {UIManager.RNTMyLegacyNativeView.Constants.PI}
       </Text>
@@ -84,12 +126,13 @@ export default function MyNativeView(props: {}): React.Node {
         title="Change Background"
         onPress={() => {
           let newColor = colors[Math.floor(Math.random() * 5)];
-          setColor(newColor);
           RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
             // $FlowFixMe[incompatible-call]
             ref.current,
             newColor,
           );
+
+          callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
         }}
       />
       <Button
@@ -103,6 +146,49 @@ export default function MyNativeView(props: {}): React.Node {
         onPress={() => {
           ref.current?.measure((x, y, width, height) => {
             console.log(x, y, width, height);
+          });
+
+          legacyRef.current?.measure((x, y, width, height) => {
+            setLegacyMeasure({x, y, width, height});
+          });
+          legacyRef.current?.measureInWindow((x, y, width, height) => {
+            setLegacyMeasureInWindow({x, y, width, height});
+          });
+
+          if (containerRef.current) {
+            legacyRef.current?.measureLayout(
+              // $FlowFixMe[incompatible-call]
+              containerRef.current,
+              (x, y, width, height) => {
+                setLegacyMeasureLayout({x, y, width, height});
+              },
+            );
+          }
+        }}
+      />
+
+      <Text style={{textAlign: 'center'}}>
+        &gt; Interop Layer Measurements &lt;
+      </Text>
+      <Text style={{textAlign: 'center'}}>
+        measure {getTextFor(legacyMeasure)}
+      </Text>
+      <Text style={{textAlign: 'center'}}>
+        InWindow {getTextFor(legacyMeasureInWindow)}
+      </Text>
+      <Text style={{textAlign: 'center'}}>
+        InLayout {getTextFor(legacyMeasureLayout)}
+      </Text>
+      <Button
+        title="Test setNativeProps"
+        onPress={() => {
+          const newCRIndex =
+            cornerRadiusIndex + 1 >= cornerRadiuses.length
+              ? 0
+              : cornerRadiusIndex + 1;
+          setCornerRadiusIndex(newCRIndex);
+          legacyRef.current?.setNativeProps({
+            cornerRadius: cornerRadiuses[newCRIndex],
           });
         }}
       />

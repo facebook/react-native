@@ -235,4 +235,8 @@ export class MockedParser implements Parser {
   getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe {
     return annotatedElement.right.properties;
   }
+
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
+    return typeAlias.body.properties;
+  }
 }

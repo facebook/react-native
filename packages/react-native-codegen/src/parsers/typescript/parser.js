@@ -307,6 +307,10 @@ class TypeScriptParser implements Parser {
   getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe {
     return annotatedElement.typeAnnotation.members;
   }
+
+  bodyProperties(typeAlias: TypeDeclarationMap): $ReadOnlyArray<$FlowFixMe> {
+    return typeAlias.body.body;
+  }
 }
 
 module.exports = {

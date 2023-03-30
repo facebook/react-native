@@ -765,7 +765,6 @@ function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
       'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
     );
   }
-
   return foundOptions;
 }
 
@@ -810,6 +809,14 @@ function getCommandTypeNameAndOptionsExpression(
   };
 }
 
+function propertyNames(
+  properties: $ReadOnlyArray<$FlowFixMe>,
+): $ReadOnlyArray<$FlowFixMe> {
+  return properties
+    .map(property => property && property.key && property.key.name)
+    .filter(Boolean);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -825,6 +832,7 @@ module.exports = {
   parseModuleName,
   buildModuleSchema,
   findNativeComponentType,
+  propertyNames,
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,

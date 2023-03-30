@@ -21,6 +21,7 @@ import {
   buildSchema,
   parseModuleName,
   createComponentConfig,
+  propertyNames,
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
@@ -1534,6 +1535,25 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
     ).toStrictEqual({
       commandTypeName,
       commandOptionsExpression,
+    });
+  });
+
+  describe('propertyNames', () => {
+    it('returns propertyNames with valid properties', () => {
+      const properties = [
+        {key: {name: 'testName'}},
+        {key: {name: 'testName2'}},
+      ];
+      const expected = ['testName', 'testName2'];
+      expect(propertyNames(properties)).toEqual(expected);
+    });
+
+    it('returns empty propertyNames with incorrect properties', () => {
+      const properties = [
+        {key: {invalid: 'testName'}},
+        {key: {invalid: 'testName2'}},
+      ];
+      expect(propertyNames(properties)).toEqual([]);
     });
   });
 });
