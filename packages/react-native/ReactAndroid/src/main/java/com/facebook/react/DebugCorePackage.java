@@ -99,7 +99,7 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
   }
 
   /** @return a map of view managers that should be registered with {@link UIManagerModule} */
-  private Map<String, ModuleSpec> getViewManagersMap(final ReactApplicationContext reactContext) {
+  private Map<String, ModuleSpec> getViewManagersMap() {
     if (mViewManagers == null) {
       Map<String, ModuleSpec> viewManagers = new HashMap<>();
       appendMap(
@@ -119,18 +119,18 @@ public class DebugCorePackage extends TurboReactPackage implements ViewManagerOn
 
   @Override
   public List<ModuleSpec> getViewManagers(ReactApplicationContext reactContext) {
-    return new ArrayList<>(getViewManagersMap(reactContext).values());
+    return new ArrayList<>(getViewManagersMap().values());
   }
 
   @Override
   public Collection<String> getViewManagerNames(ReactApplicationContext reactContext) {
-    return getViewManagersMap(reactContext).keySet();
+    return getViewManagersMap().keySet();
   }
 
   @Override
   public @Nullable ViewManager createViewManager(
       ReactApplicationContext reactContext, String viewManagerName) {
-    ModuleSpec spec = getViewManagersMap(reactContext).get(viewManagerName);
+    ModuleSpec spec = getViewManagersMap().get(viewManagerName);
     return spec != null ? (ViewManager) spec.getProvider().get() : null;
   }
 }
