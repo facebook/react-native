@@ -99,7 +99,7 @@ if (argv.target === 'RNTester') {
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
+    launchPackagerInSeparateWindow(pwd());
 
     // launch the app on iOS simulator
     exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
@@ -114,7 +114,7 @@ if (argv.target === 'RNTester') {
       } version of RNTester Android with the new Architecture enabled`,
     );
     exec(
-      `./gradlew :packages:rn-tester:android:app:${
+      `../../gradlew :packages:rn-tester:android:app:${
         argv.hermes ? 'installHermesDebug' : 'installJscDebug'
       } --quiet`,
     );
@@ -125,7 +125,7 @@ if (argv.target === 'RNTester') {
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
+    launchPackagerInSeparateWindow(pwd());
 
     // launch the app
     exec(
