@@ -12,11 +12,6 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-import {
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-} from '../../error-utils';
-
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
@@ -31,6 +26,10 @@ const {
   getOptions,
   getCommandTypeNameAndOptionsExpression,
 } = require('../../parsers-commons');
+const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../../error-utils');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function findComponentConfig(ast: $FlowFixMe, parser: Parser) {

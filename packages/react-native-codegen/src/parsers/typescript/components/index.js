@@ -13,11 +13,6 @@ import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-import {
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-} from '../../error-utils';
-
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
@@ -32,6 +27,10 @@ const {
   getOptions,
   getCommandTypeNameAndOptionsExpression,
 } = require('../../parsers-commons');
+const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../../error-utils');
 
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
 function findComponentConfig(ast: $FlowFixMe, parser: Parser) {

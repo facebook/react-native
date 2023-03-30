@@ -11,7 +11,10 @@
 
 'use strict';
 
-import {throwIfConfigNotfound, throwIfMoreThanOneConfig} from '../error-utils';
+const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../error-utils');
 
 const {
   throwIfModuleInterfaceNotFound,
