@@ -167,16 +167,16 @@ export default function MyNativeView(props: {}): React.Node {
         }}
       />
 
-      <Text style={{textAlign: 'center'}}>
+      <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>
-      <Text style={{textAlign: 'center'}}>
+      <Text style={{color: 'green', textAlign: 'center'}}>
         measure {getTextFor(legacyMeasure)}
       </Text>
-      <Text style={{textAlign: 'center'}}>
+      <Text style={{color: 'green', textAlign: 'center'}}>
         InWindow {getTextFor(legacyMeasureInWindow)}
       </Text>
-      <Text style={{textAlign: 'center'}}>
+      <Text style={{color: 'green', textAlign: 'center'}}>
         InLayout {getTextFor(legacyMeasureLayout)}
       </Text>
       <Button
