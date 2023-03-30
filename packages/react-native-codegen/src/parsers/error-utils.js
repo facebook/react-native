@@ -304,6 +304,12 @@ function throwIfConfigNotfound(foundConfigs: Array<{[string]: string}>) {
   }
 }
 
+function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length > 1) {
+    throw new Error('Only one component is supported per file');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -323,4 +329,5 @@ module.exports = {
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
   throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
 };

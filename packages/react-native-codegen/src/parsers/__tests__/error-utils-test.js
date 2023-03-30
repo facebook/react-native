@@ -11,7 +11,7 @@
 
 'use strict';
 
-import {throwIfConfigNotfound} from '../error-utils';
+import {throwIfConfigNotfound, throwIfMoreThanOneConfig} from '../error-utils';
 
 const {
   throwIfModuleInterfaceNotFound,
@@ -869,6 +869,36 @@ describe('throwIfConfigNotfound', () => {
     ];
     expect(() => {
       throwIfConfigNotfound(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfMoreThanOneConfig', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName1',
+        componentName: 'testComponentName1',
+      },
+      {
+        propsTypeName: 'testPropsTypeName2',
+        componentName: 'testComponentName2',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).toThrowError('Only one component is supported per file');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
     }).not.toThrow();
   });
 });

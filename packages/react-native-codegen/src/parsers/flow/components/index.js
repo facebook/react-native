@@ -12,7 +12,10 @@
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-import {throwIfConfigNotfound} from '../../error-utils';
+import {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} from '../../error-utils';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
@@ -42,9 +45,7 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
   });
 
   throwIfConfigNotfound(foundConfigs);
-  if (foundConfigs.length > 1) {
-    throw new Error('Only one component is supported per file');
-  }
+  throwIfMoreThanOneConfig(foundConfigs);
 
   const foundConfig = foundConfigs[0];
 
