@@ -648,7 +648,7 @@ static NSString *const RCTIndex = @"index";
  *  If the RCTIndex key is present then object returned from UIColor is an
  *  NSArray and the object at index RCTIndex is to be used.
  */
-static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
+static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap(void)
 {
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
@@ -864,7 +864,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
 
 /** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
-static NSString *RCTSemanticColorNames()
+static NSString *RCTSemanticColorNames(void)
 {
   NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();

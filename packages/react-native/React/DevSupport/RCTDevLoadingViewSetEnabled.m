@@ -18,7 +18,7 @@ void RCTDevLoadingViewSetEnabled(BOOL enabled)
   isDevLoadingViewEnabled = enabled;
 }
 
-BOOL RCTDevLoadingViewGetEnabled()
+BOOL RCTDevLoadingViewGetEnabled(void)
 {
   return isDevLoadingViewEnabled;
 }

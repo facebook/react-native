@@ -25,7 +25,7 @@ NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
  */
 static BOOL RCTDispatchW3CPointerEvents = NO;
 
-BOOL RCTGetDispatchW3CPointerEvents()
+BOOL RCTGetDispatchW3CPointerEvents(void)
 {
   return RCTDispatchW3CPointerEvents;
 }
@@ -40,7 +40,7 @@ void RCTSetDispatchW3CPointerEvents(BOOL value)
  */
 static BOOL RCTValidateCanSendEventInRCTEventEmitter = NO;
 
-BOOL RCTGetValidateCanSendEventInRCTEventEmitter()
+BOOL RCTGetValidateCanSendEventInRCTEventEmitter(void)
 {
   return RCTValidateCanSendEventInRCTEventEmitter;
 }
@@ -56,7 +56,7 @@ void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
  */
 static int RCTMemoryPressureUnloadLevel = 15;
 
-BOOL RCTGetMemoryPressureUnloadLevel()
+BOOL RCTGetMemoryPressureUnloadLevel(void)
 {
   return RCTMemoryPressureUnloadLevel;
 }
@@ -72,7 +72,7 @@ void RCTSetMemoryPressureUnloadLevel(int value)
  */
 static BOOL RCTParseUnhandledJSErrorStackNatively = NO;
 
-BOOL RCTGetParseUnhandledJSErrorStackNatively()
+BOOL RCTGetParseUnhandledJSErrorStackNatively(void)
 {
   return RCTParseUnhandledJSErrorStackNatively;
 }

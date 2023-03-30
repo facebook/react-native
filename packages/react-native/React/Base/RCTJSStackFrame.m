@@ -29,7 +29,7 @@
  *   at eval (native)
  *   at global (/path/to/file.js:13:5)
  */
-static NSRegularExpression *RCTJSStackFrameRegex()
+static NSRegularExpression *RCTJSStackFrameRegex(void)
 {
   static dispatch_once_t onceToken;
   static NSRegularExpression *_regex;
