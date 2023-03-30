@@ -15,7 +15,6 @@ import {
   Text,
   View,
   FlatList,
-  Platform,
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
