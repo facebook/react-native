@@ -82,7 +82,10 @@ public class PreAllocateViewMountItem implements MountItem {
           .append(" props: ")
           .append(mProps != null ? mProps : "<null>")
           .append(" state: ")
-          .append(mStateWrapper != null ? mStateWrapper : "<null>");
+          .append(
+              mStateWrapper != null && mStateWrapper.getStateData() != null
+                  ? mStateWrapper.getStateData().toString()
+                  : "<null>");
     }
 
     return result.toString();
