@@ -68,7 +68,7 @@
 #if !TARGET_OS_OSX // [macOS]
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
 #else // [macOS
-@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate, NSUserNotificationCenterDelegate> { // [macOS]
+@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate, NSUserNotificationCenterDelegate> {
 #endif // macOS]
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
@@ -77,10 +77,6 @@
 #endif
 
   RCTTurboModuleManager *_turboModuleManager;
-#if TARGET_OS_OSX // [macOS
-  // Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
-  // std::shared_ptr<winrt::Microsoft::ReactNative::TurboModulesProvider> _turboModulesProvider;
-#endif // macOS]
 }
 @end
 
@@ -256,16 +252,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  // [macOS Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
-  // if (!_turboModulesProvider) {
-  //   _turboModulesProvider = std::make_shared<winrt::Microsoft::ReactNative::TurboModulesProvider>();
-  //   _turboModulesProvider->SetReactContext(winrt::Microsoft::ReactNative::CreateMacOSReactContext(jsInvoker));
-
-  //   _turboModulesProvider->AddModuleProvider(
-  //       L"ScreenshotManager", winrt::Microsoft::ReactNative::MakeModuleProvider<ScreenshotManagerCxx>());
-  // }
-  // return _turboModulesProvider->getModule(name, jsInvoker);
-  // macOS]
   return facebook::react::RNTesterTurboModuleProvider(name, jsInvoker);
 }
 

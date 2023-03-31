@@ -22,9 +22,6 @@ Pod::Spec.new do |s|
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
 
   s.source_files    = "**/*.{h,m,mm,swift}"
-  # [macOS Github#1734: Disable React-TurboModuleCxx RNW implementation as React Native now has C++ sharing support and examples
-  s.exclude_files   = "ScreenshotMacOS.{h,mm}"
-  # macOS]
   s.requires_arc    = true
 
   install_modules_dependencies(s)

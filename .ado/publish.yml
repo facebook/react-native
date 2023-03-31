@@ -73,14 +73,6 @@ jobs:
         condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
       - task: CmdLine@2
-        displayName: pod update React-TurboModuleCxx-RNW
-        inputs:
-          script: |
-            cd packages/rn-tester
-            pod update React-TurboModuleCxx-RNW
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
-
-      - task: CmdLine@2
         displayName: Set canary package version
         inputs:
           script: node scripts/set-rn-version.js --nightly --autogenerateVersionNumber
