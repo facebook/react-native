@@ -136,7 +136,7 @@ function checkIfTagExists(version) {
     throw new Error('Failed to retrieve the list of tags');
   }
   const tags = new Set(stdout.split('\n'));
-  return tags.has(`v${version}`);
+  return tags.has(`v${version}-microsoft`); // [macOS] We append `-microsoft` to the tag
 }
 
 module.exports = {

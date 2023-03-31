@@ -223,3 +223,52 @@ jobs:
       - template: templates/react-native-macos-init.yml
         parameters:
           configuration: $(configuration)
+
+  - job: NPMPublishDryRun
+    displayName: NPM Publish Dry Run
+    pool:
+      vmImage: $(VmImageApple)
+    timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        # fetchDepth: 2 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      - template: templates/apple-tools-setup.yml
+
+      - template: templates/apple-install-dependencies.yml
+
+      - task: CmdLine@2
+        displayName: Set next version if release branch
+        inputs:
+          script: |
+            VERSION=$(node .ado/get-next-semver-version.js)
+            echo "Set Version to: $VERSION"
+        condition: and(succeeded(), ne(variables['Build.TargetBranchName'], 'main'))
+
+
+      - task: CmdLine@2
+        displayName: Prepare package for release
+        inputs:
+          script: |
+            if [[ -z "$VERSION" ]]; then
+              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+              echo "Using the version from the package.json: $VERSION"
+            fi
+            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l false --dry-run true
+
+      - task: CmdLine@2
+        displayName: NPM Publish Dry Run
+        inputs:
+          script: |
+            node ./scripts/publish-npm.js --dry-run
+
+      - task: CmdLine@2
+        displayName: Print tarball output
+        inputs:
+          script: |
+            npm publish --dry-run

@@ -19,7 +19,7 @@ function gatherVersionInfo() {
     return {pkgJson, releaseVersion, branchVersionSuffix};
 }
 
-function updateVersionsInFiles(patchVersionPrefix) {
+function getNextVersion(patchVersionPrefix) {
 
     let {pkgJson, releaseVersion, branchVersionSuffix} = gatherVersionInfo();
 
@@ -42,34 +42,9 @@ function updateVersionsInFiles(patchVersionPrefix) {
     }
  
     pkgJson.version = releaseVersion;
-    console.log(`Bumping files to version ${releaseVersion}`);
-    execSync(`node ./scripts/set-rn-version.js --rnmpublish --to-version ${releaseVersion}`, {stdio: 'inherit', env: process.env});
 
     return {releaseVersion, branchVersionSuffix};
 }
 
-const workspaceJsonPath = path.resolve(require('os').tmpdir(), 'rnpkg.json');
-
-function removeWorkspaceConfig() {
-  let {pkgJson} = gatherVersionInfo();
-  fs.writeFileSync(workspaceJsonPath, JSON.stringify(pkgJson, null, 2));
-  delete pkgJson.private;
-  delete pkgJson.workspaces;
-  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-  console.log(`Removing workspace config from package.json to prepare to publish.`);
-}
-
-function restoreWorkspaceConfig() {
-  let pkgJson = JSON.parse(fs.readFileSync(workspaceJsonPath, "utf8"));
-  fs.writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2));
-  console.log(`Restoring workspace config from package.json`);
-}
-
-module.exports = {
-    gatherVersionInfo,
-    publishBranchName,
-    pkgJsonPath,
-    removeWorkspaceConfig,
-    restoreWorkspaceConfig,
-    updateVersionsInFiles
-}
+const nextVersion = getNextVersion().releaseVersion;
+console.log(nextVersion);

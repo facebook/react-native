@@ -52,23 +52,11 @@ steps:
   - task: CmdLine@2
     displayName: Set package version
     inputs:
-      script: node scripts/set-rn-version.js --nightly -v 0.0.1000
-
-  # Publish will fail if package.json is marked as private
-  - task: CmdLine@2
-    displayName: Remove workspace config from package.json
-    inputs:
-      script: node .ado/removeWorkspaceConfig.js
+      script: node scripts/set-rn-version.js -b dry-run -v 1000.0.0
 
   - script: |
       npm publish --registry http://localhost:4873
     displayName: Publish react-native-macos to verdaccio
-
-  # Put the private flag back
-  - task: CmdLine@2
-    displayName: Restore package.json workspace config
-    inputs:
-      script: node .ado/restoreWorkspaceConfig.js
 
   - script: |
       npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
@@ -77,7 +65,7 @@ steps:
   - task: CmdLine@2
     displayName: Init new project
     inputs:
-      script: npx --yes react-native@0.71.4 init testcli --template react-native@0.71.4 --skip-install
+      script: npx --yes react-native@0.71.5 init testcli --template react-native@0.71.5 --skip-install
       workingDirectory: $(Agent.BuildDirectory)
 
   - task: CmdLine@2
