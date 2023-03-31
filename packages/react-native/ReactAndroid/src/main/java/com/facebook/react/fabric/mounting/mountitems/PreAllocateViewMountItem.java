@@ -30,12 +30,12 @@ public class PreAllocateViewMountItem implements MountItem {
   private final @Nullable EventEmitterWrapper mEventEmitterWrapper;
   private final boolean mIsLayoutable;
 
-  public PreAllocateViewMountItem(
+  PreAllocateViewMountItem(
       int surfaceId,
       int reactTag,
       @NonNull String component,
       @Nullable Object props,
-      @NonNull StateWrapper stateWrapper,
+      @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     mComponent = getFabricComponentName(component);
@@ -66,6 +66,7 @@ public class PreAllocateViewMountItem implements MountItem {
   }
 
   @Override
+  @NonNull
   public String toString() {
     StringBuilder result =
         new StringBuilder("PreAllocateViewMountItem [")

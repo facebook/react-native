@@ -1202,7 +1202,7 @@ public class SurfaceMountingManager {
 
   @UiThread
   public void preallocateView(
-      String componentName,
+      @NonNull String componentName,
       int reactTag,
       @Nullable Object props,
       @Nullable StateWrapper stateWrapper,

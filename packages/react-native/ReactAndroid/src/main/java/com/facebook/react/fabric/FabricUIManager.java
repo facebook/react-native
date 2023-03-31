@@ -62,7 +62,6 @@ import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
-import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -710,7 +709,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       boolean isLayoutable) {
 
     mMountItemDispatcher.addPreAllocateMountItem(
-        new PreAllocateViewMountItem(
+        MountItemFactory.createPreAllocateViewMountItem(
             rootTag,
             reactTag,
             componentName,
