@@ -1109,10 +1109,10 @@ public class SurfaceMountingManager {
       // Invoke pending event queued to the view state
       for (ViewEvent viewEvent : viewState.mPendingEventQueue) {
         if (viewEvent.canCoalesceEvent()) {
-          eventEmitter.invokeUnique(
+          eventEmitter.dispatchUnique(
               viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
         } else {
-          eventEmitter.invoke(
+          eventEmitter.dispatch(
               viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
         }
       }

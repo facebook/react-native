@@ -944,7 +944,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
-
     if (eventEmitter == null) {
       if (ReactFeatureFlags.enableFabricPendingEventQueue
           && mMountingManager.getViewExists(reactTag)) {
@@ -962,9 +961,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     if (canCoalesceEvent) {
-      eventEmitter.invokeUnique(eventName, params, customCoalesceKey);
+      eventEmitter.dispatchUnique(eventName, params, customCoalesceKey);
     } else {
-      eventEmitter.invoke(eventName, params, eventCategory);
+      eventEmitter.dispatch(eventName, params, eventCategory);
     }
   }
 
