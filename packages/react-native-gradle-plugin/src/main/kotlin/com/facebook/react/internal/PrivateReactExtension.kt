@@ -52,5 +52,5 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
       objects.listProperty(String::class.java).convention(listOf("node"))
 
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
+      objects.directoryProperty().convention(root.dir("node_modules/react-native-codegen"))
 }

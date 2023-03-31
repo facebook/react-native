@@ -39,15 +39,21 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     return mJniCallCounter;
   }
 
-  private HashMap<String, Object> getLocalMap() {
-    if (mLocalMap != null) {
-      return mLocalMap;
-    }
+  private void ensureKeysAreImported() {
     synchronized (this) {
       if (mKeys == null) {
         mKeys = Assertions.assertNotNull(importKeys());
         mJniCallCounter++;
       }
+    }
+  }
+
+  private HashMap<String, Object> getLocalMap() {
+    if (mLocalMap != null) {
+      return mLocalMap;
+    }
+    ensureKeysAreImported();
+    synchronized (this) {
       if (mLocalMap == null) {
         Object[] values = Assertions.assertNotNull(importValues());
         mJniCallCounter++;
@@ -69,11 +75,8 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (mLocalTypeMap != null) {
       return mLocalTypeMap;
     }
+    ensureKeysAreImported();
     synchronized (this) {
-      if (mKeys == null) {
-        mKeys = Assertions.assertNotNull(importKeys());
-        mJniCallCounter++;
-      }
       // check that no other thread has already updated
       if (mLocalTypeMap == null) {
         Object[] types = Assertions.assertNotNull(importTypes());
@@ -187,48 +190,47 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
   @Override
   public @NonNull Iterator<Map.Entry<String, Object>> getEntryIterator() {
-    if (mKeys == null) {
-      mKeys = Assertions.assertNotNull(importKeys());
-    }
+    ensureKeysAreImported();
     final String[] iteratorKeys = mKeys;
-    final Object[] iteratorValues = Assertions.assertNotNull(importValues());
-    return new Iterator<Map.Entry<String, Object>>() {
-      int currentIndex = 0;
+    synchronized (this) {
+      final Object[] iteratorValues = Assertions.assertNotNull(importValues());
 
-      @Override
-      public boolean hasNext() {
-        return currentIndex < iteratorKeys.length;
-      }
+      return new Iterator<Map.Entry<String, Object>>() {
+        int currentIndex = 0;
 
-      @Override
-      public Map.Entry<String, Object> next() {
-        final int index = currentIndex++;
-        return new Map.Entry<String, Object>() {
-          @Override
-          public String getKey() {
-            return iteratorKeys[index];
-          }
+        @Override
+        public boolean hasNext() {
+          return currentIndex < iteratorKeys.length;
+        }
 
-          @Override
-          public Object getValue() {
-            return iteratorValues[index];
-          }
+        @Override
+        public Map.Entry<String, Object> next() {
+          final int index = currentIndex++;
+          return new Map.Entry<String, Object>() {
+            @Override
+            public String getKey() {
+              return iteratorKeys[index];
+            }
 
-          @Override
-          public Object setValue(Object value) {
-            throw new UnsupportedOperationException(
-                "Can't set a value while iterating over a ReadableNativeMap");
-          }
-        };
-      }
-    };
+            @Override
+            public Object getValue() {
+              return iteratorValues[index];
+            }
+
+            @Override
+            public Object setValue(Object value) {
+              throw new UnsupportedOperationException(
+                  "Can't set a value while iterating over a ReadableNativeMap");
+            }
+          };
+        }
+      };
+    }
   }
 
   @Override
   public @NonNull ReadableMapKeySetIterator keySetIterator() {
-    if (mKeys == null) {
-      mKeys = Assertions.assertNotNull(importKeys());
-    }
+    ensureKeysAreImported();
     final String[] iteratorKeys = mKeys;
     return new ReadableMapKeySetIterator() {
       int currentIndex = 0;
