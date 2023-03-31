@@ -63,7 +63,6 @@ import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
-import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -1042,7 +1041,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void sendAccessibilityEvent(int reactTag, int eventType) {
     // Can be called from native, not just JS - we need to migrate the native callsites
     // before removing this entirely.
-    mMountItemDispatcher.addMountItem(new SendAccessibilityEvent(View.NO_ID, reactTag, eventType));
+    mMountItemDispatcher.addMountItem(
+        MountItemFactory.createSendAccessibilityEventMountItem(View.NO_ID, reactTag, eventType));
   }
 
   @AnyThread
@@ -1061,7 +1061,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       throw new IllegalArgumentException(
           "sendAccessibilityEventFromJS: invalid eventType " + eventTypeJS);
     }
-    mMountItemDispatcher.addMountItem(new SendAccessibilityEvent(surfaceId, reactTag, eventType));
+    mMountItemDispatcher.addMountItem(
+        MountItemFactory.createSendAccessibilityEventMountItem(surfaceId, reactTag, eventType));
   }
 
   /**
