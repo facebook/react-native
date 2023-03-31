@@ -16,14 +16,10 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
-import AnimatedObject, {hasAnimatedNode} from './AnimatedObject';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
-function createAnimatedStyle(
-  inputStyle: any,
-  keepUnanimatedValues: boolean,
-): Object {
+function createAnimatedStyle(inputStyle: any): Object {
   // $FlowFixMe[underconstrained-implicit-instantiation]
   const style = flattenStyle(inputStyle);
   const animatedStyles: any = {};
@@ -33,13 +29,24 @@ function createAnimatedStyle(
       animatedStyles[key] = new AnimatedTransform(value);
     } else if (value instanceof AnimatedNode) {
       animatedStyles[key] = value;
-    } else if (hasAnimatedNode(value)) {
-      animatedStyles[key] = new AnimatedObject(value);
-    } else if (keepUnanimatedValues) {
-      animatedStyles[key] = value;
+    } else if (value && !Array.isArray(value) && typeof value === 'object') {
+      animatedStyles[key] = createAnimatedStyle(value);
     }
   }
   return animatedStyles;
+}
+
+function createStyleWithAnimatedTransform(inputStyle: any): Object {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
+  let style = flattenStyle(inputStyle) || ({}: {[string]: any});
+
+  if (style.transform) {
+    style = {
+      ...style,
+      transform: new AnimatedTransform(style.transform),
+    };
+  }
+  return style;
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
@@ -48,33 +55,56 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 
   constructor(style: any) {
     super();
-    this._inputStyle = style;
-    this._style = createAnimatedStyle(style, Platform.OS !== 'web');
+    if (Platform.OS === 'web') {
+      this._inputStyle = style;
+      this._style = createAnimatedStyle(style);
+    } else {
+      this._style = createStyleWithAnimatedTransform(style);
+    }
+  }
+
+  // Recursively get values for nested styles (like iOS's shadowOffset)
+  _walkStyleAndGetValues(style: any): {[string]: any | {...}} {
+    const updatedStyle: {[string]: any | {...}} = {};
+    for (const key in style) {
+      const value = style[key];
+      if (value instanceof AnimatedNode) {
+        updatedStyle[key] = value.__getValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this._walkStyleAndGetValues(value);
+      } else {
+        updatedStyle[key] = value;
+      }
+    }
+    return updatedStyle;
   }
 
   __getValue(): Object | Array<Object> {
-    const result: {[string]: any} = {};
-    for (const key in this._style) {
-      const value = this._style[key];
-      if (value instanceof AnimatedNode) {
-        result[key] = value.__getValue();
-      } else {
-        result[key] = value;
-      }
+    if (Platform.OS === 'web') {
+      return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
     }
 
-    return Platform.OS === 'web' ? [this._inputStyle, result] : result;
+    return this._walkStyleAndGetValues(this._style);
+  }
+
+  // Recursively get animated values for nested styles (like iOS's shadowOffset)
+  _walkStyleAndGetAnimatedValues(style: any): {[string]: any | {...}} {
+    const updatedStyle: {[string]: any | {...}} = {};
+    for (const key in style) {
+      const value = style[key];
+      if (value instanceof AnimatedNode) {
+        updatedStyle[key] = value.__getAnimatedValue();
+      } else if (value && !Array.isArray(value) && typeof value === 'object') {
+        // Support animating nested values (for example: shadowOffset.height)
+        updatedStyle[key] = this._walkStyleAndGetAnimatedValues(value);
+      }
+    }
+    return updatedStyle;
   }
 
   __getAnimatedValue(): Object {
-    const result: {[string]: any} = {};
-    for (const key in this._style) {
-      const value = this._style[key];
-      if (value instanceof AnimatedNode) {
-        result[key] = value.__getAnimatedValue();
-      }
-    }
-    return result;
+    return this._walkStyleAndGetAnimatedValues(this._style);
   }
 
   __attach(): void {

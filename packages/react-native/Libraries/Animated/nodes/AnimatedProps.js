@@ -16,26 +16,8 @@ import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
-import AnimatedObject, {hasAnimatedNode} from './AnimatedObject';
 import AnimatedStyle from './AnimatedStyle';
 import invariant from 'invariant';
-
-function createAnimatedProps(inputProps: Object): Object {
-  const props: Object = {};
-  for (const key in inputProps) {
-    const value = inputProps[key];
-    if (key === 'style') {
-      props[key] = new AnimatedStyle(value);
-    } else if (value instanceof AnimatedNode) {
-      props[key] = value;
-    } else if (key !== 'children' && hasAnimatedNode(value)) {
-      props[key] = new AnimatedObject(value);
-    } else {
-      props[key] = value;
-    }
-  }
-  return props;
-}
 
 export default class AnimatedProps extends AnimatedNode {
   _props: Object;
@@ -44,7 +26,13 @@ export default class AnimatedProps extends AnimatedNode {
 
   constructor(props: Object, callback: () => void) {
     super();
-    this._props = createAnimatedProps(props);
+    if (props.style) {
+      props = {
+        ...props,
+        style: new AnimatedStyle(props.style),
+      };
+    }
+    this._props = props;
     this._callback = callback;
   }
 
