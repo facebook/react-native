@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /**
@@ -24,7 +25,7 @@ class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent>
 
   @Deprecated
   public ReactTextInputEndEditingEvent(int viewId, String text) {
-    this(-1, viewId, text);
+    this(ViewUtil.NO_SURFACE_ID, viewId, text);
   }
 
   public ReactTextInputEndEditingEvent(int surfaceId, int viewId, String text) {

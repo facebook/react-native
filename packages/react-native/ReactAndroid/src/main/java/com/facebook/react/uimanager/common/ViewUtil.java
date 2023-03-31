@@ -12,6 +12,8 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 public class ViewUtil {
 
+  public static final int NO_SURFACE_ID = -1;
+
   /**
    * Counter for uniquely identifying views. - % 2 === 0 means it is a Fabric tag. See
    * https://github.com/facebook/react/pull/12587
