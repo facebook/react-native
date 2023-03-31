@@ -20,7 +20,7 @@ import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.uimanager.StateWrapper;
 
 /** {@link MountItem} that is used to pre-allocate views for JS components. */
-public class PreAllocateViewMountItem implements MountItem {
+final class PreAllocateViewMountItem implements MountItem {
 
   private final @NonNull String mComponent;
   private final int mSurfaceId;

@@ -34,7 +34,7 @@ import com.facebook.systrace.Systrace;
  * allocations in C++ and JNI round-trips.
  */
 @DoNotStrip
-public class IntBufferBatchMountItem implements MountItem {
+final class IntBufferBatchMountItem implements BatchMountItem {
   static final String TAG = IntBufferBatchMountItem.class.getSimpleName();
 
   static final int INSTRUCTION_FLAG_MULTIPLE = 1;
@@ -60,7 +60,7 @@ public class IntBufferBatchMountItem implements MountItem {
   private final int mIntBufferLen;
   private final int mObjBufferLen;
 
-  public IntBufferBatchMountItem(int surfaceId, int[] intBuf, Object[] objBuf, int commitNumber) {
+  IntBufferBatchMountItem(int surfaceId, int[] intBuf, Object[] objBuf, int commitNumber) {
     mSurfaceId = surfaceId;
     mCommitNumber = commitNumber;
 
@@ -193,8 +193,9 @@ public class IntBufferBatchMountItem implements MountItem {
     return mSurfaceId;
   }
 
-  public boolean shouldSchedule() {
-    return mIntBufferLen != 0;
+  @Override
+  public boolean isBatchEmpty() {
+    return mIntBufferLen == 0;
   }
 
   @Override

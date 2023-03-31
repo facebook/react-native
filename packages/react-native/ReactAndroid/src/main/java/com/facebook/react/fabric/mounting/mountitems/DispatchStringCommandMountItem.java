@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.fabric.mounting.MountingManager;
 
-class DispatchStringCommandMountItem extends DispatchCommandMountItem {
+final class DispatchStringCommandMountItem extends DispatchCommandMountItem {
 
   private final int mSurfaceId;
   private final int mReactTag;
