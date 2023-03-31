@@ -15,62 +15,30 @@ import android.app.Activity;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.testutils.shadows.ShadowArguments;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
-@PrepareForTest({Arguments.class})
+@Config(shadows = {ShadowArguments.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({
-  "org.mockito.*",
-  "org.robolectric.*",
-  "androidx.*",
-  "android.*",
-  "javax.xml.*",
-  "org.xml.sax.*",
-  "org.w3c.dom.*",
-  "org.springframework.context.*",
-  "org.apache.log4j.*"
-})
-@Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class ShareModuleTest {
 
   private Activity mActivity;
   private ShareModule mShareModule;
 
-  @Rule public PowerMockRule rule = new PowerMockRule();
-
   @Before
   public void prepareModules() throws Exception {
-    PowerMockito.mockStatic(Arguments.class);
-    Mockito.when(Arguments.createMap())
-        .thenAnswer(
-            new Answer<Object>() {
-              @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
-                return new JavaOnlyMap();
-              }
-            });
-
     mActivity = Robolectric.setupActivity(Activity.class);
 
     ReactApplicationContext applicationContext = ReactTestHelper.createCatalystContextForTest();

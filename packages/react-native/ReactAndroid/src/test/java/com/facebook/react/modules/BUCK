@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
 
+oncall("react_native")
+
 rn_robolectric_test(
     name = "modules",
     srcs = glob(["**/*.java"]),
@@ -41,5 +43,6 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/com/facebook/react/bridge:testhelpers"),
+        react_native_tests_target("java/com/facebook/testutils/shadows:shadows"),
     ],
 )
