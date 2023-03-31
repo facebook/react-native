@@ -35,6 +35,10 @@ public class Arguments {
       return makeNativeMap((Map<String, Object>) object);
     } else if (object instanceof Bundle) {
       return makeNativeMap((Bundle) object);
+    } else if (object instanceof JavaOnlyMap) {
+      return makeNativeMap(((JavaOnlyMap) object).toHashMap());
+    } else if (object instanceof JavaOnlyArray) {
+      return makeNativeArray(((JavaOnlyArray) object).toArrayList());
     } else {
       // Boolean, Integer, Double, String, WritableNativeArray, WritableNativeMap
       return object;
