@@ -11,9 +11,11 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -37,6 +39,7 @@ export default class Animation {
   __nativeId: number;
   __onEnd: ?EndCallback;
   __iterations: number;
+
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -44,22 +47,41 @@ export default class Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {}
+
   stop(): void {
     if (this.__nativeId) {
       NativeAnimatedHelper.API.stopAnimation(this.__nativeId);
     }
   }
+
   __getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
     throw new Error('This animation type cannot be offloaded to native');
   }
+
   // Helper function for subclasses to make sure onEnd is only called once.
   __debouncedOnEnd(result: EndResult): void {
     const onEnd = this.__onEnd;
     this.__onEnd = null;
     onEnd && onEnd(result);
   }
+
+  __findAnimatedPropsNode(node: AnimatedNode): ?AnimatedProps {
+    if (node instanceof AnimatedProps) {
+      return node;
+    }
+
+    for (const child of node.__getChildren()) {
+      const result = this.__findAnimatedPropsNode(child);
+      if (result) {
+        return result;
+      }
+    }
+
+    return null;
+  }
+
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
     startNativeAnimationNextId += 1;
@@ -74,8 +96,29 @@ export default class Animation {
         this.__nativeId,
         animatedValue.__getNativeTag(),
         config,
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        this.__debouncedOnEnd.bind(this),
+        result => {
+          this.__debouncedOnEnd(result);
+
+          // When using native driven animations, once the animation completes,
+          // the JS side does not have the updated values anymore, causing some
+          // interactions on the component to be ignored (eg. Pressable has an
+          // incorrect rect). Using `setNativeProps` and the value received from
+          // native, a new commit is triggered and the updated layout calculations
+          // can be performed.
+          const {value} = result;
+          if (value != null) {
+            animatedValue.__onAnimatedValueUpdateReceived(value);
+
+            const animatedPropsNode =
+              this.__findAnimatedPropsNode(animatedValue);
+            if (animatedPropsNode != null) {
+              const animatedView = animatedPropsNode.__getAnimatedView();
+              animatedView.setNativeProps(
+                animatedPropsNode.__getAnimatedValue(),
+              );
+            }
+          }
+        },
       );
     } catch (e) {
       throw e;

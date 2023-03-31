@@ -36,6 +36,10 @@ export default class AnimatedProps extends AnimatedNode {
     this._callback = callback;
   }
 
+  __getAnimatedView(): any {
+    return this._animatedView;
+  }
+
   __getValue(): Object {
     const props: {[string]: any | ((...args: any) => void)} = {};
     for (const key in this._props) {
