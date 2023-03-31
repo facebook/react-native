@@ -19,7 +19,7 @@ class DispatchIntCommandMountItem extends DispatchCommandMountItem {
   private final int mCommandId;
   private final @Nullable ReadableArray mCommandArgs;
 
-  public DispatchIntCommandMountItem(
+  DispatchIntCommandMountItem(
       int surfaceId, int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
     mSurfaceId = surfaceId;
     mReactTag = reactTag;
@@ -38,6 +38,7 @@ class DispatchIntCommandMountItem extends DispatchCommandMountItem {
   }
 
   @Override
+  @NonNull
   public String toString() {
     return "DispatchIntCommandMountItem [" + mReactTag + "] " + mCommandId;
   }
