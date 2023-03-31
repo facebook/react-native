@@ -15,14 +15,14 @@ import com.facebook.yoga.YogaMeasureMode;
 
 public interface LayoutMetricsConversions {
 
-  public static float getMinSize(int viewMeasureSpec) {
+  static float getMinSize(int viewMeasureSpec) {
     int mode = View.MeasureSpec.getMode(viewMeasureSpec);
     int size = View.MeasureSpec.getSize(viewMeasureSpec);
 
     return mode == EXACTLY ? size : 0f;
   }
 
-  public static float getMaxSize(int viewMeasureSpec) {
+  static float getMaxSize(int viewMeasureSpec) {
     int mode = View.MeasureSpec.getMode(viewMeasureSpec);
     int size = View.MeasureSpec.getSize(viewMeasureSpec);
 
@@ -30,7 +30,7 @@ public interface LayoutMetricsConversions {
     return mode == View.MeasureSpec.UNSPECIFIED ? Float.POSITIVE_INFINITY : size;
   }
 
-  public static float getYogaSize(float minSize, float maxSize) {
+  static float getYogaSize(float minSize, float maxSize) {
     if (minSize == maxSize) {
       return PixelUtil.toPixelFromDIP(maxSize);
     } else if (Float.isInfinite(maxSize)) {
@@ -40,7 +40,7 @@ public interface LayoutMetricsConversions {
     }
   }
 
-  public static YogaMeasureMode getYogaMeasureMode(float minSize, float maxSize) {
+  static YogaMeasureMode getYogaMeasureMode(float minSize, float maxSize) {
     if (minSize == maxSize) {
       return YogaMeasureMode.EXACTLY;
     } else if (Float.isInfinite(maxSize)) {

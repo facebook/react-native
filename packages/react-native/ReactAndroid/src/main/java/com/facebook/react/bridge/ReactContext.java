@@ -510,7 +510,7 @@ public class ReactContext extends ContextWrapper {
    * JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  public JavaScriptContextHolder getJavaScriptContextHolder() {
+  public @Nullable JavaScriptContextHolder getJavaScriptContextHolder() {
     if (mCatalystInstance != null) {
       return mCatalystInstance.getJavaScriptContextHolder();
     }
@@ -532,15 +532,12 @@ public class ReactContext extends ContextWrapper {
    * @return The JS bundle URL set when the bundle was loaded
    */
   public @Nullable String getSourceURL() {
-    return mCatalystInstance.getSourceURL();
+    return mCatalystInstance == null ? null : mCatalystInstance.getSourceURL();
   }
 
   /**
    * Register a JS segment after loading it from cache or server, make sure mCatalystInstance is
    * properly initialised and not null before calling.
-   *
-   * @param segmentId
-   * @param path
    */
   public void registerSegment(int segmentId, String path, Callback callback) {
     Assertions.assertNotNull(mCatalystInstance).registerSegment(segmentId, path);
