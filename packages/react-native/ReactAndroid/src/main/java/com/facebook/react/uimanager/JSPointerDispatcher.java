@@ -158,10 +158,6 @@ public class JSPointerDispatcher {
           motionEvent,
           enterViewTargets,
           eventDispatcher);
-    } else {
-      // There are cases when the pointer may have moved in the same frame as the down event.
-      // Dispatch the move event before the down event.
-      onMove(activeTargetTag, eventState, motionEvent, eventDispatcher);
     }
 
     boolean listeningForDown =
@@ -254,6 +250,8 @@ public class JSPointerDispatcher {
       }
       activeTargetTag = activeHitPath.get(0).getViewId();
     }
+
+    handleHitStateDivergence(activeTargetTag, eventState, motionEvent, eventDispatcher);
 
     // Dispatch pointer events from the MotionEvents. When we want to ignore an event, we need to
     // exit early so we don't record anything about this MotionEvent.
@@ -362,7 +360,7 @@ public class JSPointerDispatcher {
     return dispatchableViewTargets;
   }
 
-  private void dispatchEventForViewTargets(
+  private static void dispatchEventForViewTargets(
       String eventName,
       PointerEventState eventState,
       MotionEvent motionEvent,
@@ -375,20 +373,20 @@ public class JSPointerDispatcher {
     }
   }
 
-  private boolean qualifiedMove(float[] eventCoordinates, float[] lastEventCoordinates) {
+  private static boolean qualifiedMove(float[] eventCoordinates, float[] lastEventCoordinates) {
     return (Math.abs(lastEventCoordinates[0] - eventCoordinates[0]) > ONMOVE_EPSILON
         || Math.abs(lastEventCoordinates[1] - eventCoordinates[1]) > ONMOVE_EPSILON);
   }
 
-  private void onMove(
+  // Determines which views are being entered and exited based on comparison between the previous
+  // hit path and the current hit path, and dispatches out/over/leave/enter events.
+  private void handleHitStateDivergence(
       int targetTag,
       PointerEventState eventState,
       MotionEvent motionEvent,
       EventDispatcher eventDispatcher) {
-
     int activePointerId = eventState.getActivePointerId();
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
-
     List<ViewTarget> lastHitPath =
         mLastHitPathByPointerId != null && mLastHitPathByPointerId.containsKey(activePointerId)
             ? mLastHitPathByPointerId.get(activePointerId)
@@ -483,6 +481,15 @@ public class JSPointerDispatcher {
             eventDispatcher);
       }
     }
+  }
+
+  private void onMove(
+      int targetTag,
+      PointerEventState eventState,
+      MotionEvent motionEvent,
+      EventDispatcher eventDispatcher) {
+    int activePointerId = eventState.getActivePointerId();
+    List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
     boolean listeningToMove =
         isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.MOVE, EVENT.MOVE_CAPTURE);
@@ -551,7 +558,7 @@ public class JSPointerDispatcher {
     }
   }
 
-  private void debugPrintHitPath(List<ViewTarget> hitPath) {
+  private static void debugPrintHitPath(List<ViewTarget> hitPath) {
     StringBuilder builder = new StringBuilder("hitPath: ");
     for (ViewTarget viewTarget : hitPath) {
       builder.append(String.format("%d, ", viewTarget.getViewId()));
