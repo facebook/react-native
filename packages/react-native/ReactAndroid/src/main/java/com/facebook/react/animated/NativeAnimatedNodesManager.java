@@ -640,17 +640,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
+          WritableMap params = Arguments.createMap();
+          params.putBoolean("finished", true);
+          params.putDouble("value", animation.mAnimatedValue.mValue);
           if (animation.mEndCallback != null) {
-            WritableMap endCallbackResponse = Arguments.createMap();
-            endCallbackResponse.putBoolean("finished", true);
-            animation.mEndCallback.invoke(endCallbackResponse);
+            animation.mEndCallback.invoke(params);
           } else if (mReactApplicationContext != null) {
             // If no callback is passed in, this /may/ be an animation set up by the single-op
             // instruction from JS, meaning that no jsi::functions are passed into native and
             // we communicate via RCTDeviceEventEmitter instead of callbacks.
-            WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.mId);
-            params.putBoolean("finished", true);
             mReactApplicationContext.emitDeviceEvent(
                 "onNativeAnimatedModuleAnimationFinished", params);
           }
