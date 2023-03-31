@@ -512,6 +512,18 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+    UIInterfaceOrientationMask,
+    (@{
+      @"ALL" : @(UIInterfaceOrientationMaskAll),
+      @"PORTRAIT" : @(UIInterfaceOrientationMaskPortrait),
+      @"LANDSCAPE" : @(UIInterfaceOrientationMaskLandscape),
+      @"LANDSCAPE_LEFT" : @(UIInterfaceOrientationMaskLandscapeLeft),
+      @"LANDSCAPE_RIGHT" : @(UIInterfaceOrientationMaskLandscapeRight),
+    }),
+    NSNotFound,
+    unsignedIntegerValue)
+
+RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
       @"scale-to-fill" : @(UIViewContentModeScaleToFill),
