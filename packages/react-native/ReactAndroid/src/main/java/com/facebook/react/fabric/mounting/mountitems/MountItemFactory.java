@@ -25,4 +25,10 @@ public class MountItemFactory {
       int surfaceId, int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
     return new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs);
   }
+
+  /** @return a {@link MountItem} that will control the execution of an AccessibilityEvent */
+  public static MountItem createSendAccessibilityEventMountItem(
+      int surfaceId, int reactTag, int eventType) {
+    return new SendAccessibilityEventMountItem(surfaceId, reactTag, eventType);
+  }
 }
