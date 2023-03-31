@@ -9,9 +9,8 @@ package com.facebook.react.bridge;
 
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.soloader.SoLoader;
+import com.facebook.testutils.shadows.ShadowSoLoader;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,19 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-
-@Implements(SoLoader.class)
-class ShadowSoLoader {
-  @Implementation
-  public static void init(Context context, int flags) {}
-
-  @Implementation
-  public static boolean loadLibrary(String shortName) {
-    return true;
-  }
-}
 
 /** Tests for {@link BaseJavaModule} and {@link JavaModuleWrapper} */
 @Config(
