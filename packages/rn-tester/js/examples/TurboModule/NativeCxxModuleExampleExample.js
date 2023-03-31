@@ -134,7 +134,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     },
     promiseThrows: () => {
       try {
-        NativeCxxModuleExample?.promiseThrows().then(() =>
+        NativeCxxModuleExample?.promiseThrows().finally(() =>
           this._setResult('promiseAssert', 'test failed'),
         );
       } catch (e) {
@@ -157,7 +157,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     },
     promiseAssert: () => {
       try {
-        NativeCxxModuleExample?.promiseAssert().then(() =>
+        NativeCxxModuleExample?.promiseAssert().finally(() =>
           this._setResult('promiseAssert', 'test failed'),
         );
       } catch (e) {

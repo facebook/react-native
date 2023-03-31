@@ -93,7 +93,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     },
     promiseThrows: () => {
       try {
-        NativeSampleTurboModule.promiseThrows().then(() =>
+        NativeSampleTurboModule.promiseThrows().finally(() =>
           this._setResult('promiseAssert', 'test failed'),
         );
       } catch (e) {
@@ -116,7 +116,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     },
     promiseAssert: () => {
       try {
-        NativeSampleTurboModule.promiseAssert().then(() =>
+        NativeSampleTurboModule.promiseAssert().finally(() =>
           this._setResult('promiseAssert', 'test failed'),
         );
       } catch (e) {
