@@ -10,6 +10,8 @@ package com.facebook.react.fabric.mounting.mountitems;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.fabric.events.EventEmitterWrapper;
+import com.facebook.react.uimanager.StateWrapper;
 
 /** Factory class that expose creation of {@link MountItem} */
 public class MountItemFactory {
@@ -30,5 +32,18 @@ public class MountItemFactory {
   public static MountItem createSendAccessibilityEventMountItem(
       int surfaceId, int reactTag, int eventType) {
     return new SendAccessibilityEventMountItem(surfaceId, reactTag, eventType);
+  }
+
+  /** @return a {@link MountItem} that will be used to preallocate views */
+  public static MountItem createPreAllocateViewMountItem(
+      int surfaceId,
+      int reactTag,
+      @NonNull String component,
+      @Nullable Object props,
+      @Nullable StateWrapper stateWrapper,
+      @Nullable EventEmitterWrapper eventEmitterWrapper,
+      boolean isLayoutable) {
+    return new PreAllocateViewMountItem(
+        surfaceId, reactTag, component, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
 }
