@@ -113,6 +113,11 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   return properties;
 }
 
+function getProps2() {
+  const props = getProps(componentPropAsts, types);
+  return {extendsProps, props};
+}
+
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;
 
