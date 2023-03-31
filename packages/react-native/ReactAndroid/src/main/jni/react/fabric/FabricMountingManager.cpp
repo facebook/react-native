@@ -600,11 +600,8 @@ void FabricMountingManager::executeMount(
       }
 
       // Do not hold a reference to javaEventEmitter from the C++ side.
-      SharedEventEmitter eventEmitter =
-          mountItem.newChildShadowView.eventEmitter;
-      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
+          mountItem.newChildShadowView.eventEmitter);
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -782,14 +779,9 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
 
-      SharedEventEmitter eventEmitter =
-          mountItem.newChildShadowView.eventEmitter;
-
       // Do not hold a reference to javaEventEmitter from the C++ side.
-      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
+      auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
+          mountItem.newChildShadowView.eventEmitter);
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
   }
