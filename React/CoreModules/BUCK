@@ -22,17 +22,13 @@ rn_apple_library(
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
     enable_exceptions = True,
-    exported_linker_flags = [
-        "-weak_framework",
-        "UserNotifications",
-        "-weak_framework",
-        "WebKit",
-    ],
     exported_preprocessor_flags = rn_extra_build_flags(),
     extension_api_only = True,
     frameworks = [
         "Foundation",
         "UIKit",
+        "UserNotifications",
+        "WebKit",
     ],
     header_path_prefix = "React",
     labels = [
@@ -134,6 +130,7 @@ rn_apple_library(
         "//xplat/js/react-native-github:FBReactNativeSpecApple",
         "//xplat/js/react-native-github:RCTLinkingApple",
         "//xplat/js/react-native-github:RCTPushNotificationApple",
+        "//xplat/js/react-native-github:RCTSettingsApple",
         "//xplat/js/react-native-github:ReactInternalApple",
     ],
 )

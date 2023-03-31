@@ -93,7 +93,7 @@ export type ImageProps = {|
   'aria-label'?: ?Stringish,
 
   /**
-   * Reperesents the nativeID of the associated label. When the assistive technology focuses on the component with this props.
+   * Represents the nativeID of the associated label. When the assistive technology focuses on the component with this props.
    *
    * @platform android
    */

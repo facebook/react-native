@@ -7,7 +7,7 @@
 
 #import <React/RCTInspector.h>
 
-#if RCT_DEV
+#if RCT_DEV || RCT_REMOTE_PROFILE
 
 #include <jsinspector/InspectorInterfaces.h>
 

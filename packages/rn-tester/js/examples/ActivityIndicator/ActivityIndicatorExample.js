@@ -9,11 +9,12 @@
  */
 
 import type {Node} from 'React';
+
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import React, {useState, useCallback, useRef, useEffect} from 'react';
 
 function ToggleAnimatingActivityIndicator() {
-  const timer = useRef();
+  const timer = useRef<void | TimeoutID>();
 
   const [animating, setAnimating] = useState(true);
 

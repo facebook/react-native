@@ -8,13 +8,11 @@ rn_android_library(
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     language = "JAVA",
-    provided_deps = [
-        react_native_dep("third-party/android/androidx:annotation"),
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),

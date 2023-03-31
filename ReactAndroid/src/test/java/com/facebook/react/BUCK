@@ -10,7 +10,6 @@ rn_robolectric_test(
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),
-        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
         react_native_dep("third-party/java/assertj:assertj-core"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),

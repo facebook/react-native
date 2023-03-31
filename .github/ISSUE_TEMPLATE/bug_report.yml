@@ -10,15 +10,15 @@ body:
     id: description
     attributes:
       label: Description
-      description: Please provide a clear and concise description of what the bug is. Include screenshots if needed. Please test using the latest React Native release to make sure your issue has not already been fixed - https://reactnative.dev/docs/upgrading.html
+      description: Please provide a clear and concise description of what the bug is. Include screenshots if needed. Test using the [latest React Native release](https://github.com/facebook/react-native/releases/latest) to make sure your issue has not already been fixed.
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Version
-      description: What react-native version does this appear on?
-      placeholder: ex. 0.66.0
+      description: What react-native version does this appear on? Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
+      placeholder: ex. 0.70.0
     validations:
       required: true
   - type: textarea
@@ -43,6 +43,6 @@ body:
         Please provide a Snack (https://snack.expo.dev/), a link to a repository on GitHub, or provide a minimal code example that reproduces the problem.
         You may provide a screenshot of the application if you think it is relevant to your bug report.
         Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve
-        Please note that a reproducer is mandatory. Issues without reproducer are more likely to stall and will be closed.
+        Please note that a reproducer is **mandatory**. Issues without reproducer are more likely to stall and will be closed.
     validations:
       required: true

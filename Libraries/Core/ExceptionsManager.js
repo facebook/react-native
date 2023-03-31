@@ -103,7 +103,7 @@ function reportException(
   }
 
   if (__DEV__) {
-    const LogBox = require('../LogBox/LogBox');
+    const LogBox = require('../LogBox/LogBox').default;
     LogBox.addException({
       ...data,
       isComponentError: !!e.isComponentError,
@@ -184,7 +184,7 @@ function reactConsoleErrorHandler(...args) {
     // Throwing an uncaught exception:
     // 1. exception thrown
     // 2. picked up by handleException
-    // 3. should be send to console.error (not console._errorOriginal, as DevTools might have patched _later_ and it needs to send it to Metro)
+    // 3. should be sent to console.error (not console._errorOriginal, as DevTools might have patched _later_ and it needs to send it to Metro)
     // 4. that _might_ bubble again to the `reactConsoleErrorHandle` defined here
     //    -> should not handle exception _again_, to avoid looping / showing twice (this code branch)
     // 5. should still bubble up to original console (which might either be console.log, or the DevTools handler in case that one patched _earlier_)

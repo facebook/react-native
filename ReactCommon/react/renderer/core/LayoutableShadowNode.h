@@ -18,7 +18,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
-#include <react/renderer/graphics/Geometry.h>
 #include <react/renderer/graphics/Transform.h>
 
 namespace facebook {

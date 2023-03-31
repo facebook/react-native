@@ -277,7 +277,7 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 
   render(): React.Node {
-    const child = React.Children.only(this.props.children);
+    const child = React.Children.only<$FlowFixMe>(this.props.children);
 
     // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
     // adopting `Pressability`, so preserve that behavior.

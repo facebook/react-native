@@ -54,7 +54,7 @@ void RCTDevSettingsSetEnabled(BOOL enabled)
   devSettingsMenuEnabled = enabled;
 }
 
-#if RCT_DEV_MENU
+#if RCT_DEV_MENU || RCT_REMOTE_PROFILE
 
 @interface RCTDevSettingsUserDefaultsDataSource : NSObject <RCTDevSettingsDataSource>
 
@@ -632,7 +632,9 @@ RCT_EXPORT_MODULE()	// [macOS]
 
 - (RCTDevSettings *)devSettings
 {
-#if RCT_DEV_MENU
+#if RCT_REMOTE_PROFILE
+  return [self moduleForClass:[RCTDevSettings class]];
+#elif RCT_DEV_MENU
   return devSettingsMenuEnabled ? [self moduleForClass:[RCTDevSettings class]] : nil;
 #else
   return nil;

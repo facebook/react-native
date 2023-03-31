@@ -9,7 +9,7 @@
 
 #include <cxxreact/NativeModule.h>
 #include <fbjni/fbjni.h>
-#include <folly/Optional.h>
+#include <optional>
 
 #include "MethodInvoker.h"
 
@@ -82,7 +82,7 @@ class JavaNativeModule : public NativeModule {
   std::weak_ptr<Instance> instance_;
   jni::global_ref<JavaModuleWrapper::javaobject> wrapper_;
   std::shared_ptr<MessageQueueThread> messageQueueThread_;
-  std::vector<folly::Optional<MethodInvoker>> syncMethods_;
+  std::vector<std::optional<MethodInvoker>> syncMethods_;
 };
 
 } // namespace react

@@ -15,7 +15,6 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),
-        react_native_dep("third-party/android/androidx:legacy-support-core-ui"),
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/bridge:bridge"),

@@ -39,6 +39,7 @@
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
+using namespace facebook;
 using namespace facebook::react;
 
 static dispatch_queue_t RCTGetBackgroundQueue()

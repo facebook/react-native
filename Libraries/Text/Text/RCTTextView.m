@@ -42,6 +42,8 @@
 
 #endif // macOS]
 
+#import <QuartzCore/QuartzCore.h>
+
 @implementation RCTTextView {
   CAShapeLayer *_highlightLayer;
 #if !TARGET_OS_OSX // [macOS]

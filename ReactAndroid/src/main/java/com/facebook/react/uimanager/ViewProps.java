@@ -139,6 +139,10 @@ public class ViewProps {
   public static final String BORDER_TOP_END_RADIUS = "borderTopEndRadius";
   public static final String BORDER_BOTTOM_START_RADIUS = "borderBottomStartRadius";
   public static final String BORDER_BOTTOM_END_RADIUS = "borderBottomEndRadius";
+  public static final String BORDER_END_END_RADIUS = "borderEndEndRadius";
+  public static final String BORDER_END_START_RADIUS = "borderEndStartRadius";
+  public static final String BORDER_START_END_RADIUS = "borderStartEndRadius";
+  public static final String BORDER_START_START_RADIUS = "borderStartStartRadius";
   public static final String BORDER_START_COLOR = "borderStartColor";
   public static final String BORDER_END_COLOR = "borderEndColor";
   public static final String ON_LAYOUT = "onLayout";

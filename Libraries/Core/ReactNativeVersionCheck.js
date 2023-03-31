@@ -40,15 +40,7 @@ exports.checkVersions = function checkVersions(): void {
 };
 
 function _formatVersion(
-  version:
-    | {major: number, minor: number, patch: number, prerelease: ?number}
-    | {major: number, minor: number, patch: number, prerelease: ?string}
-    | $TEMPORARY$object<{
-        major: number,
-        minor: number,
-        patch: number,
-        prerelease: null,
-      }>,
+  version: (typeof Platform)['constants']['reactNativeVersion'],
 ): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +

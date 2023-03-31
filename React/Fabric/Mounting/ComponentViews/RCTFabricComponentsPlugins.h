@@ -34,7 +34,6 @@ Class<RCTComponentViewProtocol> RCTSafeAreaViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTScrollViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTPullToRefreshViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTActivityIndicatorViewCls(void) __attribute__((used));
-Class<RCTComponentViewProtocol> RCTSliderCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTSwitchCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTUnimplementedNativeViewCls(void) __attribute__((used));
 Class<RCTComponentViewProtocol> RCTParagraphCls(void) __attribute__((used));

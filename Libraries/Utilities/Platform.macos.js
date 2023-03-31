@@ -10,8 +10,6 @@
 
 // [macOS]
 
-'use strict';
-
 import NativePlatformConstantsMacOS from './NativePlatformConstantsMacOS';
 
 export type PlatformSelectSpec<T> = {

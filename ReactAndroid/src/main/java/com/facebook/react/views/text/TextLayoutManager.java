@@ -407,6 +407,13 @@ public class TextLayoutManager {
       }
     }
 
+    // Android 11+ introduces changes in text width calculation which leads to cases
+    // where the container is measured smaller than text. Math.ceil prevents it
+    // See T136756103 for investigation
+    if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+      calculatedWidth = (float) Math.ceil(calculatedWidth);
+    }
+
     float calculatedHeight = height;
     if (heightYogaMeasureMode != YogaMeasureMode.EXACTLY) {
       calculatedHeight = layout.getLineBottom(calculatedLineCount - 1);

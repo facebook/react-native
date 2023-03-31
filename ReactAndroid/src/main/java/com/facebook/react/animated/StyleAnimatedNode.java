@@ -42,7 +42,14 @@ import java.util.Map;
       } else if (node instanceof TransformAnimatedNode) {
         ((TransformAnimatedNode) node).collectViewUpdates(propsMap);
       } else if (node instanceof ValueAnimatedNode) {
-        propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
+        if (animatedObject instanceof Integer) {
+          propsMap.putInt(entry.getKey(), (Integer) animatedObject);
+        } else if (animatedObject instanceof String) {
+          propsMap.putString(entry.getKey(), (String) animatedObject);
+        } else {
+          propsMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
+        }
       } else if (node instanceof ColorAnimatedNode) {
         propsMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
       } else {

@@ -43,6 +43,11 @@
   return _value + _offset;
 }
 
+- (id)animatedObject
+{
+  return nil;
+}
+
 - (void)setValue:(CGFloat)value
 {
   _value = value;

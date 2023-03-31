@@ -74,7 +74,10 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context: mixed,
   ): EventSubscription {
-    const registrations = allocate(this._registry, eventType);
+    const registrations = allocate<_, _, TEventToArgsMap[TEvent]>(
+      this._registry,
+      eventType,
+    );
     const registration: Registration<$ElementType<TEventToArgsMap, TEvent>> = {
       context,
       listener,

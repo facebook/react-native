@@ -36,7 +36,7 @@ namespace detail {
 class SerialExecutor : public folly::Executor {
  public:
   SerialExecutor(const std::string &name);
-  ~SerialExecutor();
+  ~SerialExecutor() override;
 
   void add(folly::Func) override;
 

@@ -24,7 +24,7 @@ const path = require('path');
 const RN_ROOT = path.join(__dirname, '../..');
 
 const CODEGEN_REPO_PATH = `${RN_ROOT}/packages/react-native-codegen`;
-const CODEGEN_NPM_PATH = `${RN_ROOT}/../react-native-codegen`;
+const CODEGEN_NPM_PATH = `${RN_ROOT}/../@react-native/codegen`;
 const CORE_LIBRARIES = new Set(['rncore', 'FBReactNativeSpec']);
 const REACT_NATIVE_DEPENDENCY_NAME = 'react-native';
 

@@ -1,6 +1,6 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "fb_apple_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_apple_library")
 
-fb_apple_library(
+rn_apple_library(
     name = "FBLazyVector",
     exported_headers = [
         "FBLazyVector/FBLazyIterator.h",

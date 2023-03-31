@@ -13,24 +13,54 @@
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import flattenStyle from '../../StyleSheet/flattenStyle';
+import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
 import AnimatedTransform from './AnimatedTransform';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
+function createAnimatedStyle(inputStyle: any): Object {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
+  const style = flattenStyle(inputStyle);
+  const animatedStyles: any = {};
+  for (const key in style) {
+    const value = style[key];
+    if (key === 'transform') {
+      animatedStyles[key] = new AnimatedTransform(value);
+    } else if (value instanceof AnimatedNode) {
+      animatedStyles[key] = value;
+    } else if (value && !Array.isArray(value) && typeof value === 'object') {
+      animatedStyles[key] = createAnimatedStyle(value);
+    }
+  }
+  return animatedStyles;
+}
+
+function createStyleWithAnimatedTransform(inputStyle: any): Object {
+  // $FlowFixMe[underconstrained-implicit-instantiation]
+  let style = flattenStyle(inputStyle) || ({}: {[string]: any});
+
+  if (style.transform) {
+    style = {
+      ...style,
+      transform: new AnimatedTransform(style.transform),
+    };
+  }
+  return style;
+}
+
 export default class AnimatedStyle extends AnimatedWithChildren {
+  _inputStyle: any;
   _style: Object;
 
   constructor(style: any) {
     super();
-    style = flattenStyle(style) || ({}: {[string]: any});
-    if (style.transform) {
-      style = {
-        ...style,
-        transform: new AnimatedTransform(style.transform),
-      };
+    if (Platform.OS === 'web') {
+      this._inputStyle = style;
+      this._style = createAnimatedStyle(style);
+    } else {
+      this._style = createStyleWithAnimatedTransform(style);
     }
-    this._style = style;
   }
 
   // Recursively get values for nested styles (like iOS's shadowOffset)
@@ -50,7 +80,11 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return updatedStyle;
   }
 
-  __getValue(): Object {
+  __getValue(): Object | Array<Object> {
+    if (Platform.OS === 'web') {
+      return [this._inputStyle, this._walkStyleAndGetValues(this._style)];
+    }
+
     return this._walkStyleAndGetValues(this._style);
   }
 

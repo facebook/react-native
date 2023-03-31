@@ -1,0 +1,12 @@
+steps:
+  - task: CmdLine@2
+    displayName: yarn install
+    inputs:
+      script: yarn install --frozen-lockfile
+
+  - task: CmdLine@2
+    displayName: bundle install
+    inputs:
+      script: |
+        cd packages/rn-tester
+        bundle install

@@ -16,8 +16,6 @@
 namespace facebook {
 namespace react {
 
-class JSCallInvoker;
-
 enum class TurboModuleBindingMode : uint8_t {
   HostObject = 0,
   Prototype = 1,
@@ -36,14 +34,12 @@ class TurboModuleBinding {
   static void install(
       jsi::Runtime &runtime,
       const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode,
-      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
+      TurboModuleBindingMode bindingMode);
 
  private:
   TurboModuleBinding(
       const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode,
-      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection);
+      TurboModuleBindingMode bindingMode);
   virtual ~TurboModuleBinding();
 
   /**
@@ -57,7 +53,6 @@ class TurboModuleBinding {
       size_t count);
 
   TurboModuleProviderFunctionType moduleProvider_;
-  std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection_;
   TurboModuleBindingMode bindingMode_;
 };
 

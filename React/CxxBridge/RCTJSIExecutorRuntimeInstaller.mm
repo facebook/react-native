@@ -20,16 +20,7 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::Runtim
       _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     };
     bindNativeLogger(runtime, iosLoggingBinder);
-
-    PerformanceNow iosPerformanceNowBinder = []() {
-      auto time = std::chrono::steady_clock::now();
-      auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count();
-
-      constexpr double NANOSECONDS_IN_MILLISECOND = 1000000.0;
-
-      return duration / NANOSECONDS_IN_MILLISECOND;
-    };
-    bindNativePerformanceNow(runtime, iosPerformanceNowBinder);
+    bindNativePerformanceNow(runtime);
 
     // Wrap over the original runtimeInstaller
     if (runtimeInstaller) {

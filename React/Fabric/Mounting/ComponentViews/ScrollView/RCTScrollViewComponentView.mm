@@ -18,7 +18,6 @@
 #import <react/renderer/components/scrollview/ScrollViewProps.h>
 #import <react/renderer/components/scrollview/ScrollViewState.h>
 #import <react/renderer/components/scrollview/conversions.h>
-#import <react/renderer/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"

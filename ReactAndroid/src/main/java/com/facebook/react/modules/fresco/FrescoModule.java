@@ -77,9 +77,31 @@ public class FrescoModule extends ReactContextBaseJavaModule
    * @param reactContext the context to use
    */
   public FrescoModule(
-      ReactApplicationContext reactContext, ImagePipeline imagePipeline, boolean clearOnDestroy) {
+      ReactApplicationContext reactContext,
+      @Nullable ImagePipeline imagePipeline,
+      boolean clearOnDestroy) {
+    this(reactContext, imagePipeline, clearOnDestroy, false);
+  }
+
+  /**
+   * Create a new Fresco module with a default configuration (or the previously given configuration
+   * via {@link #FrescoModule(ReactApplicationContext, boolean, ImagePipelineConfig)}.
+   *
+   * @param clearOnDestroy whether to clear the memory cache in onHostDestroy: this should be {@code
+   *     true} for pure RN apps and {@code false} for apps that use Fresco outside of RN as well
+   * @param reactContext the context to use
+   * @param hasBeenInitializedExternally whether Fresco has already been initialized
+   */
+  public FrescoModule(
+      ReactApplicationContext reactContext,
+      @Nullable ImagePipeline imagePipeline,
+      boolean clearOnDestroy,
+      boolean hasBeenInitializedExternally) {
     this(reactContext, clearOnDestroy);
     mImagePipeline = imagePipeline;
+    if (hasBeenInitializedExternally) {
+      sHasBeenInitialized = true;
+    }
   }
 
   /**

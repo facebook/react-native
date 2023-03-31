@@ -31,12 +31,6 @@ let argv = yargs
     describe: 'Specifies whether Hermes was built for Debug or Release.',
     default: 'Debug',
   })
-  .option('v', {
-    alias: 'releaseVersion',
-    type: 'string',
-    describe: 'The version of React Native that will use this tarball.',
-    default: '1000.0.0',
-  })
   .option('o', {
     alias: 'outputDir',
     describe: 'Location where the tarball will be saved to.',
@@ -50,7 +44,6 @@ let argv = yargs
 async function main() {
   const hermesDir = argv.inputDir;
   const buildType = argv.buildType;
-  const releaseVersion = argv.releaseVersion;
   const excludeDebugSymbols = argv.excludeDebugSymbols;
   let tarballOutputDir = argv.outputDir;
 
@@ -69,7 +62,6 @@ async function main() {
   const tarballOutputPath = createHermesPrebuiltArtifactsTarball(
     hermesDir,
     buildType,
-    releaseVersion,
     tarballOutputDir,
     excludeDebugSymbols,
   );

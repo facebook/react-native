@@ -46,7 +46,6 @@ export type RNTesterModuleInfo = $ReadOnly<{|
     default?: string,
   }, // [macOS]
   category?: string,
-  supportsTVOS?: boolean,
   documentationURL?: string,
   isBookmarked?: boolean,
   exampleType?: 'components' | 'apis',

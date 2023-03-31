@@ -17,7 +17,7 @@ const React = require('react');
 
 describe('LogBoxMessage', () => {
   it('should render message', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -31,7 +31,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render message truncated to 6 chars', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={5}
@@ -47,7 +47,7 @@ describe('LogBoxMessage', () => {
 
   it('should render the whole message when maxLength = message length', () => {
     const message = 'Some kind of message';
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={message.length}
@@ -62,7 +62,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render message with substitution', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -76,7 +76,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render message with substitution, truncating the first word 3 letters in', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={3}
@@ -91,7 +91,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render message with substitution, truncating the second word 6 letters in', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={13}
@@ -106,7 +106,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render message with substitution, truncating the third word 2 letters in', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={22}
@@ -122,7 +122,7 @@ describe('LogBoxMessage', () => {
 
   it('should render the whole message with substitutions when maxLength = message length', () => {
     const message = 'normal substitution normal';
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         maxLength={message.length}
@@ -137,7 +137,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render a plaintext message with no substitutions', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         plaintext
         style={{}}
@@ -152,7 +152,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('should render a plaintext message and clean the content', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         plaintext
         style={{}}
@@ -167,7 +167,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('Should strip "TransformError " without breaking substitution', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -181,7 +181,7 @@ describe('LogBoxMessage', () => {
   });
 
   it('Should strip "Warning: " without breaking substitution', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         message={{
@@ -195,12 +195,55 @@ describe('LogBoxMessage', () => {
   });
 
   it('Should strip "Warning: Warning: " without breaking substitution', () => {
-    const output = render.shallowRender(
+    const output = render.create(
       <LogBoxMessage
         style={{}}
         message={{
           content: 'Warning: Warning: normal substitution normal',
           substitutions: [{length: 12, offset: 25}],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should make links tappable', () => {
+    const output = render.create(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'http://reactnative.dev',
+          substitutions: [],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should handle multiple links', () => {
+    const output = render.create(
+      <LogBoxMessage
+        style={{}}
+        message={{
+          content: 'http://reactnative.dev and http://reactjs.org',
+          substitutions: [],
+        }}
+      />,
+    );
+
+    expect(output).toMatchSnapshot();
+  });
+
+  it('Should handle truncated links', () => {
+    const output = render.create(
+      <LogBoxMessage
+        style={{}}
+        maxLength={35}
+        message={{
+          content: 'http://reactnative.dev and http://reactjs.org',
+          substitutions: [],
         }}
       />,
     );

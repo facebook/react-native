@@ -26,16 +26,11 @@ import {
   InputAccessoryViewProps,
   ActivityIndicatorProps,
   ActivityIndicatorIOSProps,
-  DatePickerIOSProps,
   DrawerLayoutAndroidProps,
   ProgressBarAndroidProps,
-  ProgressViewIOSProps,
   RefreshControlProps,
   RefreshControlPropsIOS,
   RefreshControlPropsAndroid,
-  SliderProps,
-  SliderPropsIOS,
-  SliderPropsAndroid,
   ImageSourcePropType,
   ImageProps,
   ImagePropsIOS,
@@ -117,17 +112,11 @@ export type ActivityIndicatorProperties = ActivityIndicatorProps;
 /** @deprecated Use ActivityIndicatorIOSProps */
 export type ActivityIndicatorIOSProperties = ActivityIndicatorIOSProps;
 
-/** @deprecated Use DatePickerIOSProps */
-export type DatePickerIOSProperties = DatePickerIOSProps;
-
 /** @deprecated Use DrawerLayoutAndroidProps */
 export type DrawerLayoutAndroidProperties = DrawerLayoutAndroidProps;
 
 /** @deprecated Use ProgressBarAndroidProps */
 export type ProgressBarAndroidProperties = ProgressBarAndroidProps;
-
-/** @deprecated Use ProgressViewIOSProps */
-export type ProgressViewIOSProperties = ProgressViewIOSProps;
 
 /** @deprecated Use RefreshControlProps */
 export type RefreshControlProperties = RefreshControlProps;
@@ -137,15 +126,6 @@ export type RefreshControlPropertiesIOS = RefreshControlPropsIOS;
 
 /** @deprecated Use RefreshControlPropsAndroid */
 export type RefreshControlPropertiesAndroid = RefreshControlPropsAndroid;
-
-/** @deprecated Use SliderProps */
-export type SliderProperties = SliderProps;
-
-/** @deprecated Use SliderPropsIOS */
-export type SliderPropertiesIOS = SliderPropsIOS;
-
-/** @deprecated Use SliderPropsAndroid */
-export type SliderPropertiesAndroid = SliderPropsAndroid;
 
 /** @deprecated Use ImageSourcePropType */
 export type ImagePropertiesSourceOptions = ImageSourcePropType;

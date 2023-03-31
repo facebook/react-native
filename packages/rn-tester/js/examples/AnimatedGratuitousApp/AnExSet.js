@@ -139,11 +139,9 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 25,
     color: 'white',
-    // [macOS Github#1409
     textShadowRadius: 3,
     textShadowColor: 'rgba(0, 0, 0, 1.0)',
     textShadowOffset: {height: 1, width: 0},
-    // macOS]
   },
 });
 

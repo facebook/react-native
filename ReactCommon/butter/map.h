@@ -23,9 +23,9 @@ namespace facebook {
 namespace butter {
 
 /*
- * Note: In Butter, `map` aliases to `unorderd_map` because everyone agrees that
- * an *ordered* map is nonsense and was a huge mistake for standardization. If
- * you need an *ordered* map, feel free to introduce that as
+ * Note: In Butter, `map` aliases to `unordered_map` because everyone agrees
+ * that an *ordered* map is nonsense and was a huge mistake for standardization.
+ * If you need an *ordered* map, feel free to introduce that as
  * `butter::ordered_map`.
  */
 

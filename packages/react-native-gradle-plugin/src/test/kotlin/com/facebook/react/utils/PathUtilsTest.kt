@@ -13,7 +13,6 @@ import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
-import java.io.FileNotFoundException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
@@ -249,7 +248,7 @@ class PathUtilsTest {
     assertEquals(localFile, findPackageJsonFile(project, extension))
   }
 
-  @Test(expected = FileNotFoundException::class)
+  @Test
   fun readPackageJsonFile_withMissingFile_returnsNull() {
     val moduleFolder = tempFolder.newFolder("awesome-module")
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()

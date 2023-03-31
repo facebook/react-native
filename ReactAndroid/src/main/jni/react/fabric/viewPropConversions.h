@@ -113,6 +113,10 @@ constexpr MapBuffer::Key CORNER_TOP_END = 5;
 constexpr MapBuffer::Key CORNER_BOTTOM_END = 6;
 constexpr MapBuffer::Key CORNER_BOTTOM_START = 7;
 constexpr MapBuffer::Key CORNER_ALL = 8;
+constexpr MapBuffer::Key CORNER_END_END = 9;
+constexpr MapBuffer::Key CORNER_END_START = 10;
+constexpr MapBuffer::Key CORNER_START_END = 11;
+constexpr MapBuffer::Key CORNER_START_START = 12;
 
 inline void putOptionalFloat(
     MapBufferBuilder &builder,
@@ -122,7 +126,7 @@ inline void putOptionalFloat(
 }
 
 MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
-  MapBufferBuilder builder(9);
+  MapBufferBuilder builder(13);
   putOptionalFloat(builder, CORNER_TOP_LEFT, radii.topLeft);
   putOptionalFloat(builder, CORNER_TOP_RIGHT, radii.topRight);
   putOptionalFloat(builder, CORNER_BOTTOM_RIGHT, radii.bottomRight);
@@ -132,6 +136,10 @@ MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
   putOptionalFloat(builder, CORNER_BOTTOM_END, radii.bottomEnd);
   putOptionalFloat(builder, CORNER_BOTTOM_START, radii.bottomStart);
   putOptionalFloat(builder, CORNER_ALL, radii.all);
+  putOptionalFloat(builder, CORNER_END_END, radii.endEnd);
+  putOptionalFloat(builder, CORNER_END_START, radii.endStart);
+  putOptionalFloat(builder, CORNER_START_END, radii.startEnd);
+  putOptionalFloat(builder, CORNER_START_START, radii.startStart);
   return builder.build();
 }
 

@@ -10,6 +10,7 @@
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
 #import <react/renderer/core/ComponentDescriptor.h>
+#import <react/renderer/core/RawProps.h>
 #import <react/renderer/core/ReactPrimitives.h>
 #import <react/renderer/mounting/MountingCoordinator.h>
 #import <react/renderer/mounting/ShadowView.h>

@@ -625,6 +625,7 @@ describe('Native Animated', () => {
           type: 'interpolation',
           inputRange: [10, 20],
           outputRange: [0, 1],
+          outputType: null,
           extrapolateLeft: 'extend',
           extrapolateRight: 'extend',
         },

@@ -493,10 +493,28 @@ jsi::Value UIManagerBinding::get(
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           if (shadowNode) {
             uiManager->dispatchCommand(
-                shadowNodeFromValue(runtime, arguments[0]),
+                shadowNode,
                 stringFromValue(runtime, arguments[1]),
                 commandArgsFromValue(runtime, arguments[2]));
           }
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "setNativeProps") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &,
+            const jsi::Value *arguments,
+            size_t) -> jsi::Value {
+          uiManager->setNativeProps_DEPRECATED(
+              shadowNodeFromValue(runtime, arguments[0]),
+              RawProps(runtime, arguments[1]));
+
           return jsi::Value::undefined();
         });
   }
@@ -673,6 +691,27 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "unstable_DiscreteEventPriority") {
     return {serialize(ReactEventPriority::Discrete)};
+  }
+
+  if (methodName == "findShadowNodeByTag_DEPRECATED") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          auto shadowNode = uiManager->findShadowNodeByTag_DEPRECATED(
+              tagFromValue(arguments[0]));
+
+          if (!shadowNode) {
+            return jsi::Value::null();
+          }
+
+          return valueFromShadowNode(runtime, shadowNode);
+        });
   }
 
   return jsi::Value::undefined();

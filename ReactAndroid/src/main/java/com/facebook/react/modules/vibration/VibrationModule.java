@@ -18,18 +18,11 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 
 @SuppressLint("MissingPermission")
-@ReactModule(name = VibrationModule.NAME)
+@ReactModule(name = NativeVibrationSpec.NAME)
 public class VibrationModule extends NativeVibrationSpec {
-
-  public static final String NAME = "Vibration";
 
   public VibrationModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

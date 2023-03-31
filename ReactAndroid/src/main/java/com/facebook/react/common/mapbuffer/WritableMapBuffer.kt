@@ -30,6 +30,7 @@ class WritableMapBuffer : MapBuffer {
 
   /**
    * Adds a boolean value for given key to the MapBuffer.
+   *
    * @param key entry key
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
@@ -38,6 +39,7 @@ class WritableMapBuffer : MapBuffer {
 
   /**
    * Adds an int value for given key to the MapBuffer.
+   *
    * @param key entry key
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
@@ -46,6 +48,7 @@ class WritableMapBuffer : MapBuffer {
 
   /**
    * Adds a double value for given key to the MapBuffer.
+   *
    * @param key entry key
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
@@ -54,6 +57,7 @@ class WritableMapBuffer : MapBuffer {
 
   /**
    * Adds a string value for given key to the MapBuffer.
+   *
    * @param key entry key
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
@@ -62,6 +66,7 @@ class WritableMapBuffer : MapBuffer {
 
   /**
    * Adds a [MapBuffer] value for given key to the current MapBuffer.
+   *
    * @param key entry key
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range

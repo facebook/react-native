@@ -1595,13 +1595,21 @@ static void YGNodeAbsoluteLayoutChild(
       depth,
       generationCount);
 
+  auto trailingMarginOuterSize =
+      YGConfigIsExperimentalFeatureEnabled(
+          node->getConfig(),
+          YGExperimentalFeatureFixAbsoluteTrailingColumnMargin)
+      ? isMainAxisRow ? height : width
+      : width;
+
   if (child->isTrailingPosDefined(mainAxis) &&
       !child->isLeadingPositionDefined(mainAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimensions[dim[mainAxis]] -
             child->getLayout().measuredDimensions[dim[mainAxis]] -
             node->getTrailingBorder(mainAxis) -
-            child->getTrailingMargin(mainAxis, width).unwrap() -
+            child->getTrailingMargin(mainAxis, trailingMarginOuterSize)
+                .unwrap() -
             child->getTrailingPosition(mainAxis, isMainAxisRow ? width : height)
                 .unwrap(),
         leading[mainAxis]);
@@ -1620,6 +1628,22 @@ static void YGNodeAbsoluteLayoutChild(
         (node->getLayout().measuredDimensions[dim[mainAxis]] -
          child->getLayout().measuredDimensions[dim[mainAxis]]),
         leading[mainAxis]);
+  } else if (
+      YGConfigIsExperimentalFeatureEnabled(
+          node->getConfig(),
+          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
+      child->isLeadingPositionDefined(mainAxis)) {
+    child->setLayoutPosition(
+        child->getLeadingPosition(
+                 mainAxis, node->getLayout().measuredDimensions[dim[mainAxis]])
+                .unwrap() +
+            node->getLeadingBorder(mainAxis) +
+            child
+                ->getLeadingMargin(
+                    mainAxis,
+                    node->getLayout().measuredDimensions[dim[mainAxis]])
+                .unwrap(),
+        leading[mainAxis]);
   }
 
   if (child->isTrailingPosDefined(crossAxis) &&
@@ -1628,7 +1652,8 @@ static void YGNodeAbsoluteLayoutChild(
         node->getLayout().measuredDimensions[dim[crossAxis]] -
             child->getLayout().measuredDimensions[dim[crossAxis]] -
             node->getTrailingBorder(crossAxis) -
-            child->getTrailingMargin(crossAxis, width).unwrap() -
+            child->getTrailingMargin(crossAxis, trailingMarginOuterSize)
+                .unwrap() -
             child
                 ->getTrailingPosition(crossAxis, isMainAxisRow ? height : width)
                 .unwrap(),
@@ -1649,6 +1674,23 @@ static void YGNodeAbsoluteLayoutChild(
     child->setLayoutPosition(
         (node->getLayout().measuredDimensions[dim[crossAxis]] -
          child->getLayout().measuredDimensions[dim[crossAxis]]),
+        leading[crossAxis]);
+  } else if (
+      YGConfigIsExperimentalFeatureEnabled(
+          node->getConfig(),
+          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
+      child->isLeadingPositionDefined(crossAxis)) {
+    child->setLayoutPosition(
+        child->getLeadingPosition(
+                 crossAxis,
+                 node->getLayout().measuredDimensions[dim[crossAxis]])
+                .unwrap() +
+            node->getLeadingBorder(crossAxis) +
+            child
+                ->getLeadingMargin(
+                    crossAxis,
+                    node->getLayout().measuredDimensions[dim[crossAxis]])
+                .unwrap(),
         leading[crossAxis]);
   }
 }
@@ -2079,7 +2121,7 @@ static float YGDistributeFreeSpaceSecondPass(
     const float availableInnerCrossDim,
     const float availableInnerWidth,
     const float availableInnerHeight,
-    const bool flexBasisOverflows,
+    const bool mainAxisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
@@ -2175,7 +2217,7 @@ static float YGDistributeFreeSpaceSecondPass(
         !YGNodeIsStyleDimDefined(
             currentRelativeChild, crossAxis, availableInnerCrossDim) &&
         measureModeCrossDim == YGMeasureModeExactly &&
-        !(isNodeFlexWrap && flexBasisOverflows) &&
+        !(isNodeFlexWrap && mainAxisOverflows) &&
         YGNodeAlignItem(node, currentRelativeChild) == YGAlignStretch &&
         currentRelativeChild->marginLeadingValue(crossAxis).unit !=
             YGUnitAuto &&
@@ -2383,7 +2425,7 @@ static void YGResolveFlexibleLength(
     const float availableInnerCrossDim,
     const float availableInnerWidth,
     const float availableInnerHeight,
-    const bool flexBasisOverflows,
+    const bool mainAxisOverflows,
     const YGMeasureMode measureModeCrossDim,
     const bool performLayout,
     const YGConfigRef config,
@@ -2411,7 +2453,7 @@ static void YGResolveFlexibleLength(
       availableInnerCrossDim,
       availableInnerWidth,
       availableInnerHeight,
-      flexBasisOverflows,
+      mainAxisOverflows,
       measureModeCrossDim,
       performLayout,
       config,
@@ -2540,6 +2582,11 @@ static void YGJustifyMainAxis(
     const YGNodeRef child = node->getChild(i);
     const YGStyle& childStyle = child->getStyle();
     const YGLayout childLayout = child->getLayout();
+    const bool isLastChild = i == collectedFlexItemsValues.endOfLineIndex - 1;
+    // remove the gap if it is the last element of the line
+    if (isLastChild) {
+      betweenMainDim -= gap;
+    }
     if (childStyle.display() == YGDisplayNone) {
       continue;
     }
@@ -2884,7 +2931,9 @@ static void YGNodelayoutImpl(
 
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
-  float totalOuterFlexBasis = YGNodeComputeFlexBasisForChildren(
+  // Computed basis + margins + gap
+  float totalMainDim = 0;
+  totalMainDim += YGNodeComputeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
@@ -2899,10 +2948,17 @@ static void YGNodelayoutImpl(
       depth,
       generationCount);
 
-  const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
-      ? false
-      : totalOuterFlexBasis > availableInnerMainDim;
-  if (isNodeFlexWrap && flexBasisOverflows &&
+  if (childCount > 1) {
+    totalMainDim +=
+        node->getGapForAxis(mainAxis, availableInnerCrossDim).unwrap() *
+        (childCount - 1);
+  }
+
+  const bool mainAxisOverflows =
+      (measureModeMainDim != YGMeasureModeUndefined) &&
+      totalMainDim > availableInnerMainDim;
+
+  if (isNodeFlexWrap && mainAxisOverflows &&
       measureModeMainDim == YGMeasureModeAtMost) {
     measureModeMainDim = YGMeasureModeExactly;
   }
@@ -3025,7 +3081,7 @@ static void YGNodelayoutImpl(
           availableInnerCrossDim,
           availableInnerWidth,
           availableInnerHeight,
-          flexBasisOverflows,
+          mainAxisOverflows,
           measureModeCrossDim,
           performLayout,
           config,
@@ -3555,9 +3611,17 @@ static void YGNodelayoutImpl(
       YGNodeAbsoluteLayoutChild(
           node,
           child,
-          availableInnerWidth,
+          YGConfigIsExperimentalFeatureEnabled(
+              node->getConfig(),
+              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
+              ? node->getLayout().measuredDimensions[YGDimensionWidth]
+              : availableInnerWidth,
           isMainAxisRow ? measureModeMainDim : measureModeCrossDim,
-          availableInnerHeight,
+          YGConfigIsExperimentalFeatureEnabled(
+              node->getConfig(),
+              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
+              ? node->getLayout().measuredDimensions[YGDimensionHeight]
+              : availableInnerHeight,
           direction,
           config,
           layoutMarkerData,

@@ -379,7 +379,7 @@ const JSTimers = {
 
   callIdleCallbacks: function (frameTime: number) {
     if (
-      FRAME_DURATION - (global.performance.now() - frameTime) <
+      FRAME_DURATION - (Date.now() - frameTime) <
       IDLE_CALLBACK_FRAME_DEADLINE
     ) {
       return;

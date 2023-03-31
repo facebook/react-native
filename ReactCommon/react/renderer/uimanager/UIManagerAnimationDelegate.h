@@ -37,6 +37,14 @@ class UIManagerAnimationDelegate {
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry) = 0;
 
   /**
+   * Set Animation flags for dropping delete and create mutations
+   *
+   * @param reduceDeleteCreateMutation
+   */
+  virtual void setReduceDeleteCreateMutation(
+      bool reduceDeleteCreateMutation) = 0;
+
+  /**
    * Only needed on Android to drive animations.
    */
   virtual bool shouldAnimateFrame() const = 0;

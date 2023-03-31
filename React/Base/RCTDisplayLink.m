@@ -100,14 +100,12 @@
 
 - (void)invalidate
 {
-  // [macOS
   // ensure observer callbacks do not hold a reference to weak self via pauseCallback
   for (RCTModuleData *moduleData in _frameUpdateObservers) {
     id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
     [observer setPauseCallback:nil];
   }
-  [_frameUpdateObservers removeAllObjects];	// just to be explicit
-  // macOS]
+  [_frameUpdateObservers removeAllObjects]; // just to be explicit
 
   [_jsDisplayLink invalidate];
 }

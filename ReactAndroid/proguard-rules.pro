@@ -60,3 +60,10 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
+
+# yoga
+-keep,allowobfuscation @interface com.facebook.yoga.annotations.DoNotStrip
+-keep @com.facebook.yoga.annotations.DoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.yoga.annotations.DoNotStrip *;
+}

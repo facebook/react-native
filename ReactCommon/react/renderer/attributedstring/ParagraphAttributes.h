@@ -12,7 +12,7 @@
 #include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Float.h>
 
 namespace facebook {
 namespace react {

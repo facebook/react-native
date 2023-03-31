@@ -32,7 +32,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import java.util.Map;
 
 /** {@link NativeModule} that allows changing the appearance of the status bar. */
-@ReactModule(name = StatusBarModule.NAME)
+@ReactModule(name = NativeStatusBarManagerAndroidSpec.NAME)
 public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   private static final String HEIGHT_KEY = "HEIGHT";
@@ -41,11 +41,6 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

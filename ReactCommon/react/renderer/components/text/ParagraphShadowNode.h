@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/Optional.h>
 #include <react/renderer/components/text/ParagraphEventEmitter.h>
 #include <react/renderer/components/text/ParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>

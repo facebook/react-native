@@ -416,6 +416,7 @@ class VirtualizedSectionList<
     if (updateHighlightFn != null) {
       this._updateHighlightMap[cellKey] = updateHighlightFn;
     } else {
+      // $FlowFixMe[prop-missing]
       delete this._updateHighlightFor[cellKey];
     }
   };
@@ -529,6 +530,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
 
   React.useEffect(() => {
     setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
+    // $FlowFixMe[incompatible-call]
     setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
 
     return () => {

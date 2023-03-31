@@ -10,11 +10,12 @@
 
 'use strict';
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewToken} from '../../../../../Libraries/Lists/ViewabilityHelper';
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import BaseFlatListExample from './BaseFlatListExample';
-import {StyleSheet, View, FlatList} from 'react-native';
 import * as React from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
 
 type FlatListProps = React.ElementProps<typeof FlatList>;
 type ViewabilityConfig = $PropertyType<FlatListProps, 'viewabilityConfig'>;
@@ -49,7 +50,7 @@ export function FlatList_onViewableItemsChanged(props: {
     horizontal,
   };
 
-  const ref = React.useRef(null);
+  const ref = React.useRef<any>(null);
   const onTest =
     useScrollRefScroll === true
       ? () => {

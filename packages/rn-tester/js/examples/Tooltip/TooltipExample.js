@@ -14,7 +14,6 @@ const React = require('react');
 const {
   Button,
   Image,
-  Slider,
   StyleSheet,
   Text,
   TextInput,
@@ -42,21 +41,6 @@ const styles = StyleSheet.create({
 const image = {
   uri: 'https://www.facebook.com/favicon.ico',
 };
-
-function SliderExample(props: React.ElementConfig<typeof Slider>) {
-  const [value, setValue] = React.useState(0);
-
-  return (
-    <View>
-      <Text>{value.toFixed(3)}</Text>
-      <Slider
-        {...props}
-        onValueChange={newValue => setValue(newValue)}
-        tooltip={value.toFixed(3)}
-      />
-    </View>
-  );
-}
 
 exports.displayName = 'TooltipExample';
 exports.framework = 'React';
@@ -102,13 +86,6 @@ exports.examples = [
     description: ('Background color view to showcase tooltip.': string),
     render: function (): React.Node {
       return <View style={styles.view} tooltip={'Turquoise'} />;
-    },
-  },
-  {
-    title: 'Slider',
-    description: ('Tooltip displays the current value.': string),
-    render(): React.Element<any> {
-      return <SliderExample />;
     },
   },
   {

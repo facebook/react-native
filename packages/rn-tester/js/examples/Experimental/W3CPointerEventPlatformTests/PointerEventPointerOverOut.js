@@ -9,12 +9,13 @@
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import * as React from 'react';
-import {useRef, useCallback} from 'react';
+import {useCallback, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 function getNativeTagFromHostElement(
@@ -59,14 +60,34 @@ function PointerEventPointerOverOutTestCase(
   const innerNativeTagRef = useRef(-1);
   const outerNativeTagRef = useRef(-1);
 
-  const handleInnerRefCallback = useCallback(elem => {
-    const nativeTag = getNativeTagFromHostElement(elem);
-    innerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
-  }, []);
-  const handleOuterRefCallback = useCallback(elem => {
-    const nativeTag = getNativeTagFromHostElement(elem);
-    outerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
-  }, []);
+  const handleInnerRefCallback = useCallback(
+    (
+      elem: null | React$ElementRef<
+        React$AbstractComponent<
+          ViewProps,
+          React.ElementRef<HostComponent<ViewProps>>,
+        >,
+      >,
+    ) => {
+      const nativeTag = getNativeTagFromHostElement(elem);
+      innerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
+    },
+    [],
+  );
+  const handleOuterRefCallback = useCallback(
+    (
+      elem: null | React$ElementRef<
+        React$AbstractComponent<
+          ViewProps,
+          React.ElementRef<HostComponent<ViewProps>>,
+        >,
+      >,
+    ) => {
+      const nativeTag = getNativeTagFromHostElement(elem);
+      outerNativeTagRef.current = nativeTag != null ? nativeTag : -1;
+    },
+    [],
+  );
 
   const innerOverRef = useRef(0);
   const innerOutRef = useRef(0);

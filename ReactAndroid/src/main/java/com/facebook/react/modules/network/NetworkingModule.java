@@ -51,7 +51,7 @@ import okio.GzipSource;
 import okio.Okio;
 
 /** Implements the XMLHttpRequest JavaScript interface. */
-@ReactModule(name = NetworkingModule.NAME)
+@ReactModule(name = NativeNetworkingAndroidSpec.NAME)
 public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   /**
@@ -84,9 +84,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     WritableMap toResponseData(ResponseBody body) throws IOException;
   }
 
-  public static final String NAME = "Networking";
-
-  private static final String TAG = "NetworkingModule";
+  private static final String TAG = NativeNetworkingAndroidSpec.NAME;
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
   private static final String REQUEST_BODY_KEY_STRING = "string";
@@ -109,7 +107,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private final List<ResponseHandler> mResponseHandlers = new ArrayList<>();
   private boolean mShuttingDown;
 
-  /* package */ NetworkingModule(
+  public NetworkingModule(
       ReactApplicationContext reactContext,
       @Nullable String defaultUserAgent,
       OkHttpClient client,
@@ -183,11 +181,6 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   @Override
   public void initialize() {
     mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
   }
 
   @Override

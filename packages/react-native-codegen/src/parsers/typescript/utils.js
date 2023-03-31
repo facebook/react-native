@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -17,7 +17,6 @@ const {parseTopLevelType} = require('./parseTopLevelType');
 /**
  * TODO(T108222691): Use flow-types for @babel/parser
  */
-
 function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
   return ast.body.reduce((types, node) => {
     switch (node.type) {
@@ -91,12 +90,18 @@ function resolveTypeAnnotation(
         break;
       }
 
-      invariant(
-        resolvedTypeAnnotation.type === 'TSTypeAliasDeclaration',
-        `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
-      );
-
-      node = resolvedTypeAnnotation.typeAnnotation;
+      switch (resolvedTypeAnnotation.type) {
+        case 'TSTypeAliasDeclaration':
+          node = resolvedTypeAnnotation.typeAnnotation;
+          break;
+        case 'TSInterfaceDeclaration':
+          node = resolvedTypeAnnotation;
+          break;
+        default:
+          throw new Error(
+            `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration or a TSInterfaceDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
+          );
+      }
     } else {
       break;
     }

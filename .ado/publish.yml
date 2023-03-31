@@ -10,6 +10,7 @@ trigger:
     include:
       - main
       - 0.68-stable
+      - 0.71-stable
   paths:
     exclude:
       - package.json
@@ -43,78 +44,62 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - script: exit 1
-        displayName: Validate variables
-        condition: eq(variables.latestStableBranch, '')
-
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
-        displayName: Set dist-tag to latest
-        condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
-
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
-        displayName: Set dist-tag to canary
-        condition: eq(variables['Build.SourceBranchName'], 'main')
-
-      - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
-        displayName: Set dist-tag to v0.x-stable
-        condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
-
       - template: templates/apple-tools-setup.yml
 
-      - task: CmdLine@2
-        displayName: yarn install
-        inputs:
-          script: yarn install --frozen-lockfile
+      - template: templates/apple-install-dependencies.yml
+
+      - template: templates/apple-release-setup.yml
 
       - task: CmdLine@2
-        displayName: Bump stable package version
+        displayName: Set next version if release branch
         inputs:
-          script: node .ado/bumpFileVersions.js
+          script: |
+            VERSION=$(node .ado/get-next-semver-version.js)
+            echo "Set version to: $VERSION"
         condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
       - task: CmdLine@2
-        displayName: Set canary package version
+        displayName: Set release type
         inputs:
-          script: node scripts/set-rn-version.js --nightly --autogenerateVersionNumber
-        condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
-
-      # Publish will fail if package.json is marked as private
+          script: |
+            RELEASE_TYPE=$(node .ado/get-next-release-type.js)
+            echo "Set release type to: $RELEASE_TYPE"
+  
       - task: CmdLine@2
-        displayName: Remove workspace config from package.json
+        displayName: Set latest tag if latest stable branch
         inputs:
-          script: node .ado/removeWorkspaceConfig.js
+          script: |
+            LATEST=true
+            echo "Set latest to: $LATEST"
+        condition: eq(variables['Build.SourceBranchName'], $(latest_stable_branch))
+
+      - task: CmdLine@2
+        displayName: Prepare package for release
+        inputs:
+          script: |
+            if [[ -z "$VERSION" ]]; then
+              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
+              echo "Using the version from the package.json: $VERSION"
+            fi
+            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l $LATEST
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
 
       - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
         displayName: 📒 Generate Manifest
         inputs:
           BuildDropPath: $(System.DefaultWorkingDirectory)
 
+      - task: CmdLine@2
+        displayName: NPM Publish
+        inputs:
+          script: |
+            node ./scripts/publish-npm.js --$RELEASE_TYPE
+
       - task: PublishPipelineArtifact@1
         displayName: 📒 Publish Manifest
         inputs:
           artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
           targetPath: $(System.DefaultWorkingDirectory)/_manifest
-
-      - script: npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-        displayName: Publish react-native-macos to npmjs.org
-
-      # Put the private flag back so that the removal does not get committed by the tag release step
-      - task: CmdLine@2
-        displayName: Restore package.json workspace config
-        inputs:
-          script: node .ado/restoreWorkspaceConfig.js
-
-      - task: CmdLine@2
-        displayName: 'Tag published release'
-        inputs:
-          script: node .ado/gitTagRelease.js
-        env:
-          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
-          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          githubApiToken: $(githubAuthToken)
-        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
-
 
   - job: RNMacOSInitNpmJSPublish
     displayName: react-native-macos-init Publish to npmjs.org
@@ -132,17 +117,14 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - template: templates/configure-git.yml
+      - template: templates/apple-tools-setup.yml
+
+      - template: templates/apple-install-dependencies.yml
+
+      - template: templates/apple-release-setup.yml
 
       - task: CmdLine@2
-        displayName: yarn install
-        inputs:
-          script: |
-            cd packages/react-native-macos-init
-            yarn install --frozen-lockfile
-
-      - task: CmdLine@2
-        displayName: yarn build
+        displayName: Build react-native-macos-init
         inputs:
           script: |
             cd packages/react-native-macos-init

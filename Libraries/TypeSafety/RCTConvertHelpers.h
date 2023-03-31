@@ -23,7 +23,7 @@ using LazyVector = FB::LazyVector<T, id>;
 template <typename ContainerT>
 NSArray *RCTConvertVecToArray(const ContainerT &vec, id (^convertor)(typename ContainerT::value_type element))
 {
-  NSMutableArray *array = [NSMutableArray new];
+  NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:vec.size()];
   for (size_t i = 0, size = vec.size(); i < size; ++i) {
     id object = convertor(vec[i]);
     array[i] = object ?: (id)kCFNull;

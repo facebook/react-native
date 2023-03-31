@@ -56,7 +56,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
-inference_mode=constrain_writes
+experimental.array_literal_providers=true
+inference_mode=experimental.lti
 
 [lints]
 sketchy-null-number=warn
@@ -78,4 +79,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.191.0
+^0.196.3

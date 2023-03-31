@@ -19,6 +19,7 @@ function codegenNativeCommands<T: interface {}>(options: Options<$Keys<T>>): T {
 
   options.supportedCommands.forEach(command => {
     commandObj[command] = (ref, ...args) => {
+      // $FlowFixMe[incompatible-call]
       dispatchCommand(ref, command, args);
     };
   });

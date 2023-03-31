@@ -33,6 +33,7 @@ RCT_MULTI_ENUM_CONVERTER(
     (@{
       @"none" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"dropdownlist" : @(UIAccessibilityTraitNone),
       @"togglebutton" : @(UIAccessibilityTraitButton),
       @"link" : @(UIAccessibilityTraitLink),
       @"header" : @(UIAccessibilityTraitHeader),
@@ -74,6 +75,15 @@ RCT_MULTI_ENUM_CONVERTER(
       @"tablist" : @(UIAccessibilityTraitNone),
       @"timer" : @(UIAccessibilityTraitNone),
       @"toolbar" : @(UIAccessibilityTraitNone),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"viewgroup" : @(UIAccessibilityTraitNone),
+      @"webview" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"list" : @(UIAccessibilityTraitNone),
       @"grid" : @(UIAccessibilityTraitNone),
     }),
@@ -488,6 +498,10 @@ RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomLeft)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomRight)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomStart)
 RCT_VIEW_BORDER_RADIUS_PROPERTY(BottomEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(EndEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(EndStart)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(StartEnd)
+RCT_VIEW_BORDER_RADIUS_PROPERTY(StartStart)
 
 RCT_REMAP_VIEW_PROPERTY(display, reactDisplay, YGDisplay)
 RCT_REMAP_VIEW_PROPERTY(zIndex, reactZIndex, NSInteger)

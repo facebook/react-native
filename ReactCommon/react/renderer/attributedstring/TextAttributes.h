@@ -17,7 +17,8 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/Geometry.h>
+#include <react/renderer/graphics/Float.h>
+#include <react/renderer/graphics/Size.h>
 
 namespace facebook {
 namespace react {
@@ -50,6 +51,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<FontStyle> fontStyle{};
   std::optional<FontVariant> fontVariant{};
   std::optional<bool> allowFontScaling{};
+  std::optional<DynamicTypeRamp> dynamicTypeRamp{};
   Float letterSpacing{std::numeric_limits<Float>::quiet_NaN()};
   std::optional<TextTransform> textTransform{};
 

@@ -285,8 +285,7 @@ void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
       link_.shadowTree->commit(
           [&](RootShadowNode const & /*oldRootShadowNode*/) {
             return std::static_pointer_cast<RootShadowNode>(
-                revision.rootShadowNode->ShadowNode::clone(
-                    ShadowNodeFragment{}));
+                revision.rootShadowNode->ShadowNode::clone({}));
           });
       break;
   }

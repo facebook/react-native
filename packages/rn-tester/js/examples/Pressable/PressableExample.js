@@ -232,7 +232,7 @@ function PressableHitSlop() {
 
 function PressableNativeMethods() {
   const [status, setStatus] = useState<?boolean>(null);
-  const ref = useRef(null);
+  const ref = useRef<$FlowFixMe>(null);
 
   useEffect(() => {
     setStatus(ref.current != null && typeof ref.current.measure === 'function');

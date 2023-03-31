@@ -10,7 +10,9 @@
 #include <react/bridging/Base.h>
 #include <react/bridging/CallbackWrapper.h>
 
-#include <folly/Function.h>
+#include <ReactCommon/SchedulerPriority.h>
+
+#include <butter/function.h>
 
 namespace facebook::react {
 
@@ -37,23 +39,36 @@ class AsyncCallback {
   }
 
   void call(Args... args) const {
-    auto wrapper = callback_->wrapper_.lock();
-    if (!wrapper) {
-      throw std::runtime_error("Failed to call invalidated async callback");
-    }
+    callInternal(std::nullopt, std::forward<Args>(args)...);
+  }
 
-    auto argsTuple = std::make_tuple(std::forward<Args>(args)...);
-
-    wrapper->jsInvoker().invokeAsync(
-        [callback = callback_,
-         argsPtr = std::make_shared<decltype(argsTuple)>(
-             std::move(argsTuple))] { callback->apply(std::move(*argsPtr)); });
+  void callWithPriority(SchedulerPriority priority, Args... args) const {
+    callInternal(priority, std::forward<Args>(args)...);
   }
 
  private:
   friend Bridging<AsyncCallback>;
 
   std::shared_ptr<SyncCallback<void(Args...)>> callback_;
+
+  void callInternal(std::optional<SchedulerPriority> priority, Args... args)
+      const {
+    auto wrapper = callback_->wrapper_.lock();
+    if (!wrapper) {
+      throw std::runtime_error("Failed to call invalidated async callback");
+    }
+    auto fn = [callback = callback_,
+               argsPtr = std::make_shared<std::tuple<Args...>>(
+                   std::make_tuple(std::forward<Args>(args)...))] {
+      callback->apply(std::move(*argsPtr));
+    };
+
+    if (priority) {
+      wrapper->jsInvoker().invokeAsync(*priority, std::move(fn));
+    } else {
+      wrapper->jsInvoker().invokeAsync(std::move(fn));
+    }
+  }
 };
 
 template <typename R, typename... Args>
@@ -154,8 +169,8 @@ struct Bridging<SyncCallback<R(Args...)>> {
 };
 
 template <typename R, typename... Args>
-struct Bridging<folly::Function<R(Args...)>> {
-  using Func = folly::Function<R(Args...)>;
+struct Bridging<butter::function<R(Args...)>> {
+  using Func = butter::function<R(Args...)>;
   using IndexSequence = std::index_sequence_for<Args...>;
 
   static constexpr size_t kArgumentCount = sizeof...(Args);
@@ -202,13 +217,17 @@ struct Bridging<folly::Function<R(Args...)>> {
 };
 
 template <typename R, typename... Args>
-struct Bridging<std::function<R(Args...)>>
-    : Bridging<folly::Function<R(Args...)>> {};
+struct Bridging<
+    std::function<R(Args...)>,
+    std::enable_if_t<!std::is_same_v<
+        std::function<R(Args...)>,
+        butter::function<R(Args...)>>>>
+    : Bridging<butter::function<R(Args...)>> {};
 
 template <typename R, typename... Args>
-struct Bridging<R(Args...)> : Bridging<folly::Function<R(Args...)>> {};
+struct Bridging<R(Args...)> : Bridging<butter::function<R(Args...)>> {};
 
 template <typename R, typename... Args>
-struct Bridging<R (*)(Args...)> : Bridging<folly::Function<R(Args...)>> {};
+struct Bridging<R (*)(Args...)> : Bridging<butter::function<R(Args...)>> {};
 
 } // namespace facebook::react

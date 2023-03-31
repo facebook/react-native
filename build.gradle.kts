@@ -89,8 +89,8 @@ tasks.register("buildAll") {
   dependsOn(":ReactAndroid:assemble")
   // This creates all the Maven artifacts and makes them available in the /android folder
   dependsOn(":ReactAndroid:installArchives")
-  // This builds RN Tester for Hermes/JSC for debug only
-  dependsOn(":packages:rn-tester:android:app:assembleDebug")
+  // This builds RN Tester for Hermes/JSC for debug and release
+  dependsOn(":packages:rn-tester:android:app:assemble")
   // This compiles the Unit Test sources (without running them as they're partially broken)
   dependsOn(":ReactAndroid:compileDebugUnitTestSources")
   dependsOn(":ReactAndroid:compileReleaseUnitTestSources")

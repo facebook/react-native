@@ -11,8 +11,8 @@
 'use strict';
 
 describe('PixelRatio', () => {
-  const Dimensions = require('../Dimensions');
-  const PixelRatio = require('../PixelRatio');
+  const Dimensions = require('../Dimensions').default;
+  const PixelRatio = require('../PixelRatio').default;
 
   beforeEach(() => {
     Dimensions.set({

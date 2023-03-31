@@ -871,13 +871,13 @@ type NativeType = HostComponent<ModuleProps>;
 interface NativeCommands {
   +handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
-  +scrollTo: (
+  scrollTo(
     viewRef: React.ElementRef<NativeType>,
     x: Float,
     y: Int32,
     z: Double,
     animated: boolean,
-  ) => void;
+  ): void;
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({

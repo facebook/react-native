@@ -14,8 +14,6 @@
 import typeof AccessibilityInfo from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 import typeof ActivityIndicator from './Libraries/Components/ActivityIndicator/ActivityIndicator';
 import typeof Button from './Libraries/Components/Button';
-import typeof DatePickerIOS from './Libraries/Components/DatePicker/DatePickerIOS';
-import typeof DatePickerMacOS from './Libraries/Components/DatePickerMacOS/DatePickerMacOS'; // [macOS]
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof FlatList from './Libraries/Lists/FlatList';
 import typeof Image from './Libraries/Image/Image';
@@ -25,12 +23,10 @@ import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/Keyboar
 import typeof Modal from './Libraries/Modal/Modal';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
-import typeof ProgressViewIOS from './Libraries/Components/ProgressViewIOS/ProgressViewIOS';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
 import typeof SafeAreaView from './Libraries/Components/SafeAreaView/SafeAreaView';
 import typeof ScrollView from './Libraries/Components/ScrollView/ScrollView';
 import typeof SectionList from './Libraries/Lists/SectionList';
-import typeof Slider from './Libraries/Components/Slider/Slider';
 import typeof StatusBar from './Libraries/Components/StatusBar/StatusBar';
 import typeof Switch from './Libraries/Components/Switch/Switch';
 import typeof Text from './Libraries/Text/Text';
@@ -60,7 +56,6 @@ import typeof Dimensions from './Libraries/Utilities/Dimensions';
 import typeof Easing from './Libraries/Animated/Easing';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
 import typeof I18nManager from './Libraries/ReactNative/I18nManager';
-import typeof ImagePickerIOS from './Libraries/Image/ImagePickerIOS';
 import typeof InteractionManager from './Libraries/Interaction/InteractionManager';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof LayoutAnimation from './Libraries/LayoutAnimation/LayoutAnimation';
@@ -113,32 +108,12 @@ module.exports = {
       .default;
   },
   get ActivityIndicator(): ActivityIndicator {
-    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator');
+    return require('./Libraries/Components/ActivityIndicator/ActivityIndicator')
+      .default;
   },
   get Button(): Button {
     return require('./Libraries/Components/Button');
   },
-  // $FlowFixMe[value-as-type]
-  get DatePickerIOS(): DatePickerIOS {
-    warnOnce(
-      'DatePickerIOS-merged',
-      'DatePickerIOS has been merged with DatePickerAndroid and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
-        'See https://github.com/react-native-datetimepicker/datetimepicker',
-    );
-    return require('./Libraries/Components/DatePicker/DatePickerIOS');
-  },
-  // [macOS
-  // $FlowFixMe[value-as-type]
-  get DatePickerMacOS(): DatePickerMacOS {
-    warnOnce(
-      'DatePickerMacOS-deprecated',
-      'DatePickerMacOS has been deprecated and will be removed in a future release. ' +
-        "DatePickerMacOS needs to be ported to '@react-native-community/datetimepicker'. " +
-        'See https://github.com/microsoft/react-native-macos/issues/389',
-    );
-    return require('./Libraries/Components/DatePickerMacOS/DatePickerMacOS');
-  }, // macOS]
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
@@ -175,16 +150,6 @@ module.exports = {
     );
     return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
   },
-  // $FlowFixMe[value-as-type]
-  get ProgressViewIOS(): ProgressViewIOS {
-    warnOnce(
-      'progress-view-ios-moved',
-      'ProgressViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-progress-view/progress-view',
-    );
-    return require('./Libraries/Components/ProgressViewIOS/ProgressViewIOS');
-  },
   get RefreshControl(): RefreshControl {
     return require('./Libraries/Components/RefreshControl/RefreshControl');
   },
@@ -196,15 +161,6 @@ module.exports = {
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
-  },
-  get Slider(): Slider {
-    warnOnce(
-      'slider-moved',
-      'Slider has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
-        'See https://github.com/callstack/react-native-slider',
-    );
-    return require('./Libraries/Components/Slider/Slider');
   },
   get StatusBar(): StatusBar {
     return require('./Libraries/Components/StatusBar/StatusBar');
@@ -284,7 +240,7 @@ module.exports = {
     return require('./Libraries/Utilities/DevSettings');
   },
   get Dimensions(): Dimensions {
-    return require('./Libraries/Utilities/Dimensions');
+    return require('./Libraries/Utilities/Dimensions').default;
   },
   get Easing(): Easing {
     return require('./Libraries/Animated/Easing').default;
@@ -294,16 +250,6 @@ module.exports = {
   },
   get I18nManager(): I18nManager {
     return require('./Libraries/ReactNative/I18nManager');
-  },
-  get ImagePickerIOS(): ImagePickerIOS {
-    warnOnce(
-      'imagePickerIOS-moved',
-      'ImagePickerIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
-        "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
-        'See https://github.com/rnc-archive/react-native-image-picker-ios',
-    );
-    return require('./Libraries/Image/ImagePickerIOS');
   },
   get InteractionManager(): InteractionManager {
     return require('./Libraries/Interaction/InteractionManager');
@@ -318,7 +264,7 @@ module.exports = {
     return require('./Libraries/Linking/Linking');
   },
   get LogBox(): LogBox {
-    return require('./Libraries/LogBox/LogBox');
+    return require('./Libraries/LogBox/LogBox').default;
   },
   get NativeDialogManagerAndroid(): NativeDialogManagerAndroid {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
@@ -328,16 +274,16 @@ module.exports = {
     return require('./Libraries/EventEmitter/NativeEventEmitter').default;
   },
   get Networking(): Networking {
-    return require('./Libraries/Network/RCTNetworking');
+    return require('./Libraries/Network/RCTNetworking').default;
   },
   get PanResponder(): PanResponder {
-    return require('./Libraries/Interaction/PanResponder');
+    return require('./Libraries/Interaction/PanResponder').default;
   },
   get PermissionsAndroid(): PermissionsAndroid {
     return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
   },
   get PixelRatio(): PixelRatio {
-    return require('./Libraries/Utilities/PixelRatio');
+    return require('./Libraries/Utilities/PixelRatio').default;
   },
   get PushNotificationIOS(): PushNotificationIOS {
     warnOnce(
@@ -387,7 +333,7 @@ module.exports = {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
   get UTFSequence(): UTFSequence {
-    return require('./Libraries/UTFSequence');
+    return require('./Libraries/UTFSequence').default;
   },
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration');
@@ -418,7 +364,7 @@ module.exports = {
       .PlatformColor;
   },
   get processColor(): processColor {
-    return require('./Libraries/StyleSheet/processColor');
+    return require('./Libraries/StyleSheet/processColor').default;
   },
   // [macOS
   get DynamicColorMacOS(): DynamicColorMacOS {
@@ -432,7 +378,7 @@ module.exports = {
   get requireNativeComponent(): <T>(
     uiViewClassName: string,
   ) => HostComponent<T> {
-    return require('./Libraries/ReactNative/requireNativeComponent');
+    return require('./Libraries/ReactNative/requireNativeComponent').default;
   },
   get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
@@ -786,6 +732,67 @@ if (__DEV__) {
         'AsyncStorage has been removed from react-native core. ' +
           "It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. " +
           'See https://github.com/react-native-async-storage/async-storage',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ImagePickerIOS. */
+  Object.defineProperty(module.exports, 'ImagePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ImagePickerIOS has been removed from React Native. ' +
+          "Please upgrade to use either '@react-native-community/react-native-image-picker' or 'expo-image-picker'. " +
+          "If you cannot upgrade to a different library, please install the deprecated '@react-native-community/image-picker-ios' package. " +
+          'See https://github.com/rnc-archive/react-native-image-picker-ios',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access ProgressViewIOS. */
+  Object.defineProperty(module.exports, 'ProgressViewIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ProgressViewIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/progress-view' instead of 'react-native'. " +
+          'See https://github.com/react-native-progress-view/progress-view',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access DatePickerIOS. */
+  Object.defineProperty(module.exports, 'DatePickerIOS', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'DatePickerIOS has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/datetimepicker' instead of 'react-native'. " +
+          'See https://github.com/react-native-datetimepicker/datetimepicker',
+      );
+    },
+  });
+  /* $FlowFixMe[prop-missing] This is intentional: Flow will error when
+   * attempting to access Slider. */
+  /* $FlowFixMe[invalid-export] This is intentional: Flow will error when
+   * attempting to access Slider. */
+  Object.defineProperty(module.exports, 'Slider', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'Slider has been removed from react-native core. ' +
+          "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
+          'See https://github.com/callstack/react-native-slider',
       );
     },
   });

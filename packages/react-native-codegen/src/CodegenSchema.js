@@ -220,7 +220,7 @@ export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
   aliases: NativeModuleAliasMap,
   spec: NativeModuleSpec,
-  moduleNames: $ReadOnlyArray<string>,
+  moduleName: string,
   // Use for modules that are not used on other platforms.
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
@@ -299,6 +299,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
+  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =

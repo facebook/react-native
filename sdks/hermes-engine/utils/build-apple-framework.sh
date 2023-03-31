@@ -52,7 +52,7 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local build_cli_tools enable_bitcode enable_debugger
+  local build_cli_tools enable_bitcode enable_debugger cmake_build_type
 
   if [[ $1 == iphoneos || $1 == catalyst ]]; then
     enable_bitcode="true"
@@ -68,6 +68,13 @@ function configure_apple_framework {
     enable_debugger="true"
   else
     enable_debugger="false"
+  fi
+  if [[ $BUILD_TYPE == "Debug" ]]; then
+    # JS developers aren't VM developers.
+    # Therefore we're passing as build type Release, to provide a faster build.
+    cmake_build_type="Release"
+  else
+    cmake_build_type="MinSizeRel"
   fi
 
   pushd "$HERMES_PATH" > /dev/null || exit 1
@@ -88,7 +95,7 @@ function configure_apple_framework {
       -DJSI_DIR="$JSI_PATH" \
       -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
       -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
-      -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+      -DCMAKE_BUILD_TYPE="$cmake_build_type"
     popd > /dev/null || exit 1
 }
 
