@@ -84,7 +84,8 @@ describe('Animated tests', () => {
 
       node.__attach();
 
-      expect(anim.__getChildren().length).toBe(3);
+      // Children: [AnimatedStyle, AnimatedTransform, AnimatedInterpolation, AnimatedObject, AnimatedObject]
+      expect(anim.__getChildren().length).toBe(5);
 
       anim.setValue(0.5);
 
