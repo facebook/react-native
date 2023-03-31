@@ -74,10 +74,10 @@ export interface Spec extends TurboModule {
   +voidFunc: () => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
   +voidFuncThrows: () => void;
-  +getObjectThrows: (arg: Object) => Object;
+  +getObjectThrows: (arg: ObjectStruct) => ObjectStruct;
   +promiseThrows: () => Promise<void>;
   +voidFuncAssert: () => void;
-  +getObjectAssert: (arg: Object) => Object;
+  +getObjectAssert: (arg: ObjectStruct) => ObjectStruct;
   +promiseAssert: () => Promise<void>;
 }
 
