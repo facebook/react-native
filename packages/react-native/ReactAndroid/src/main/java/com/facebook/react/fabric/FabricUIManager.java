@@ -59,7 +59,7 @@ import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
-import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -724,7 +724,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @ThreadConfined(ANY)
   private MountItem createIntBufferBatchMountItem(
       int rootTag, int[] intBuffer, Object[] objBuffer, int commitNumber) {
-    return new IntBufferBatchMountItem(rootTag, intBuffer, objBuffer, commitNumber);
+    return MountItemFactory.createIntBufferBatchMountItem(
+        rootTag, intBuffer, objBuffer, commitNumber);
   }
 
   /**
@@ -749,9 +750,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
     long scheduleMountItemStartTime = SystemClock.uptimeMillis();
-    boolean isBatchMountItem = mountItem instanceof IntBufferBatchMountItem;
+    boolean isBatchMountItem = mountItem instanceof BatchMountItem;
     boolean shouldSchedule =
-        (isBatchMountItem && ((IntBufferBatchMountItem) mountItem).shouldSchedule())
+        (isBatchMountItem && !((BatchMountItem) mountItem).isBatchEmpty())
             || (!isBatchMountItem && mountItem != null);
 
     // In case of sync rendering, this could be called on the UI thread. Otherwise,

@@ -46,4 +46,12 @@ public class MountItemFactory {
     return new PreAllocateViewMountItem(
         surfaceId, reactTag, component, props, stateWrapper, eventEmitterWrapper, isLayoutable);
   }
+  /**
+   * @return a {@link MountItem} that will be read and execute a collection of MountItems serialized
+   *     in the int[] and Object[] received by parameter
+   */
+  public static MountItem createIntBufferBatchMountItem(
+      int surfaceId, int[] intBuf, Object[] objBuf, int commitNumber) {
+    return new IntBufferBatchMountItem(surfaceId, intBuf, objBuf, commitNumber);
+  }
 }
