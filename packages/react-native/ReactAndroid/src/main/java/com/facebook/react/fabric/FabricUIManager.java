@@ -59,10 +59,9 @@ import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
-import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
-import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.SendAccessibilityEvent;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -1021,7 +1020,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int commandId,
       @Nullable final ReadableArray commandArgs) {
     mMountItemDispatcher.dispatchCommandMountItem(
-        new DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs));
+        MountItemFactory.createDispatchCommandMountItem(
+            surfaceId, reactTag, commandId, commandArgs));
   }
 
   @AnyThread
@@ -1032,7 +1032,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
     mMountItemDispatcher.dispatchCommandMountItem(
-        new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs));
+        MountItemFactory.createDispatchCommandMountItem(
+            surfaceId, reactTag, commandId, commandArgs));
   }
 
   @Override
