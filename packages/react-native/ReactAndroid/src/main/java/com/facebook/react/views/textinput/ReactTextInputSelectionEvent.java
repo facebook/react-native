@@ -10,7 +10,6 @@ package com.facebook.react.views.textinput;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by EditText native view when the text selection changes. */
@@ -23,7 +22,7 @@ import com.facebook.react.uimanager.events.Event;
 
   @Deprecated
   public ReactTextInputSelectionEvent(int viewId, int selectionStart, int selectionEnd) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, selectionStart, selectionEnd);
+    this(-1, viewId, selectionStart, selectionEnd);
   }
 
   public ReactTextInputSelectionEvent(

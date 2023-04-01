@@ -9,7 +9,6 @@ package com.facebook.react.views.drawer.events;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
@@ -20,7 +19,7 @@ public class DrawerStateChangedEvent extends Event<DrawerStateChangedEvent> {
 
   @Deprecated
   public DrawerStateChangedEvent(int viewId, int drawerState) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, drawerState);
+    this(-1, viewId, drawerState);
   }
 
   public DrawerStateChangedEvent(int surfaceId, int viewId, int drawerState) {

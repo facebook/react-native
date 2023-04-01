@@ -9,7 +9,6 @@ package com.facebook.react.views.drawer.events;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by a DrawerLayout as it is being moved open/closed. */
@@ -21,7 +20,7 @@ public class DrawerSlideEvent extends Event<DrawerSlideEvent> {
 
   @Deprecated
   public DrawerSlideEvent(int viewId, float offset) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, offset);
+    this(-1, viewId, offset);
   }
 
   public DrawerSlideEvent(int surfaceId, int viewId, float offset) {

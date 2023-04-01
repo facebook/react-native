@@ -10,7 +10,6 @@ package com.facebook.react.views.modal;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** {@link Event} for dismissing a Dialog. */
@@ -20,7 +19,7 @@ import com.facebook.react.uimanager.events.Event;
 
   @Deprecated
   protected RequestCloseEvent(int viewTag) {
-    this(ViewUtil.NO_SURFACE_ID, viewTag);
+    this(-1, viewTag);
   }
 
   protected RequestCloseEvent(int surfaceId, int viewTag) {
