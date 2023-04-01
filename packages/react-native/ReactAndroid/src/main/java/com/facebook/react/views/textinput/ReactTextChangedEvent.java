@@ -10,7 +10,6 @@ package com.facebook.react.views.textinput;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /**
@@ -26,7 +25,7 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
 
   @Deprecated
   public ReactTextChangedEvent(int viewId, String text, int eventCount) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, text, eventCount);
+    this(-1, viewId, text, eventCount);
   }
 
   public ReactTextChangedEvent(int surfaceId, int viewId, String text, int eventCount) {

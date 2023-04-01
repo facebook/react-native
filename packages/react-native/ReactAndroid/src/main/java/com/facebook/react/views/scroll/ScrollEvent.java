@@ -14,7 +14,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** A event dispatched from a ScrollView scrolling. */
@@ -47,7 +46,7 @@ public class ScrollEvent extends Event<ScrollEvent> {
       int scrollViewWidth,
       int scrollViewHeight) {
     return obtain(
-        ViewUtil.NO_SURFACE_ID,
+        -1,
         viewTag,
         scrollEventType,
         scrollX,
