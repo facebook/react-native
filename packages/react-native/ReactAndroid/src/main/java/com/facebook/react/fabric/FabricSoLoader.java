@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
-class FabricSoLoader {
+public class FabricSoLoader {
   private static volatile boolean sDidInit = false;
 
   public static void staticInit() {

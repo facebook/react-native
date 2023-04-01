@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.fabric.FabricSoLoader;
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 
 /**
@@ -19,6 +20,10 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 public class EventBeatManager implements BatchEventDispatchedListener {
+
+  static {
+    FabricSoLoader.staticInit();
+  }
 
   @DoNotStrip private final HybridData mHybridData;
   private final ReactApplicationContext mReactApplicationContext;

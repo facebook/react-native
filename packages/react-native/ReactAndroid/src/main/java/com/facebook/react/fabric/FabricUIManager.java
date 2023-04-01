@@ -91,10 +91,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
 public class FabricUIManager implements UIManager, LifecycleEventListener {
-  static {
-    FabricSoLoader.staticInit();
-  }
-
   public static final String TAG = FabricUIManager.class.getSimpleName();
 
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
@@ -154,6 +150,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
         }
       };
+
+  static {
+    FabricSoLoader.staticInit();
+  }
 
   @Nullable private Binding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
