@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,29 +36,29 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
 
   @Deprecated
   public static final ImageLoadEvent createLoadStartEvent(int viewId) {
-    return createLoadStartEvent(ViewUtil.NO_SURFACE_ID, viewId);
+    return createLoadStartEvent(-1, viewId);
   }
 
   @Deprecated
   public static final ImageLoadEvent createProgressEvent(
       int viewId, @Nullable String imageUri, int loaded, int total) {
-    return createProgressEvent(ViewUtil.NO_SURFACE_ID, viewId, imageUri, loaded, total);
+    return createProgressEvent(-1, viewId, imageUri, loaded, total);
   }
 
   @Deprecated
   public static final ImageLoadEvent createLoadEvent(
       int viewId, @Nullable String imageUri, int width, int height) {
-    return createLoadEvent(ViewUtil.NO_SURFACE_ID, viewId, imageUri, width, height);
+    return createLoadEvent(-1, viewId, imageUri, width, height);
   }
 
   @Deprecated
   public static final ImageLoadEvent createErrorEvent(int viewId, Throwable throwable) {
-    return createErrorEvent(ViewUtil.NO_SURFACE_ID, viewId, throwable);
+    return createErrorEvent(-1, viewId, throwable);
   }
 
   @Deprecated
   public static final ImageLoadEvent createLoadEndEvent(int viewId) {
-    return createLoadEndEvent(ViewUtil.NO_SURFACE_ID, viewId);
+    return createLoadEndEvent(-1, viewId);
   }
 
   public static final ImageLoadEvent createLoadStartEvent(int surfaceId, int viewId) {
