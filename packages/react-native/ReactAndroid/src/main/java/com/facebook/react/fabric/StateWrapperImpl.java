@@ -35,17 +35,15 @@ public class StateWrapperImpl implements StateWrapper {
   @DoNotStrip private final HybridData mHybridData;
   private volatile boolean mDestroyed = false;
 
+  private static native HybridData initHybrid();
+
   private StateWrapperImpl() {
     mHybridData = initHybrid();
   }
 
-  private static native HybridData initHybrid();
-
   private native ReadableNativeMap getStateDataImpl();
 
   private native ReadableMapBuffer getStateMapBufferDataImpl();
-
-  public native void updateStateImpl(@NonNull NativeMap map);
 
   @Override
   @Nullable
@@ -66,6 +64,8 @@ public class StateWrapperImpl implements StateWrapper {
     }
     return getStateDataImpl();
   }
+
+  public native void updateStateImpl(@NonNull NativeMap map);
 
   @Override
   public void updateState(@NonNull WritableMap map) {
