@@ -14,6 +14,7 @@ NSString* const RCTVersionMinor = @"minor";
 NSString* const RCTVersionPatch = @"patch";
 NSString* const RCTVersionPrerelease = @"prerelease";
 
+
 NSDictionary* RCTGetReactNativeVersion(void)
 {
   static NSDictionary* __rnVersion;
@@ -22,7 +23,7 @@ NSDictionary* RCTGetReactNativeVersion(void)
     __rnVersion = @{
                   RCTVersionMajor: @(0),
                   RCTVersionMinor: @(71),
-                  RCTVersionPatch: @(5),
+                  RCTVersionPatch: @(0),
                   RCTVersionPrerelease: [NSNull null],
                   };
   });
