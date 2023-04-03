@@ -13,6 +13,8 @@
  * This script prepares a release version of react-native and may publish to NPM.
  * It is supposed to run in CI environment, not on a developer's machine.
  *
+ * [macOS] For React Native macOS, we have modified this script to not create Android Artifacts.
+ *
  * For a dry run (commitly), this script will:
  *  * Version the commitly of the form `1000.0.0-<commitSha>`
  *  * Create Android artifacts
@@ -38,6 +40,7 @@ const {
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
+/* [macOS We do not generate Android artifacts for React Native macOS
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -46,9 +49,11 @@ const {
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+macOS] */
 const yargs = require('yargs');
 
-const buildTag = process.env.CIRCLE_TAG;
+// [macOS] Use git to get the tag name, rather than relying on CircleCI environment variables.
+const buildTag = exec('git tag --points-at HEAD');
 const otp = process.env.NPM_CONFIG_OTP;
 const tmpPublishingFolder = fs.mkdtempSync(
   path.join(os.tmpdir(), 'rn-publish-'),
@@ -100,7 +105,7 @@ const rawVersion =
     nightlyBuild
     ? '0.0.0'
     : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
-      buildTag;
+      buildTag.substring(0, str.indexOf('-microsft')); // [macOS] Strip off the "-microsoft" suffix from the tag name.
 
 let version,
   major,
@@ -141,11 +146,13 @@ if (isCommitly) {
   }
 }
 
+/* [macOS We do not generate Android artifacts for React Native macOS
 generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
 
 // Write version number to the build folder
 const releaseVersionFile = path.join('build', '.version');
 fs.writeFileSync(releaseVersionFile, releaseVersion);
+macOS] */
 
 if (dryRunBuild) {
   echo('Skipping `npm publish` because --dry-run is set.');
@@ -158,9 +165,11 @@ const isLatest = exitIfNotOnGit(
   'Not in git. We do not want to publish anything',
 );
 
+/* [macOS We do not generate Android artifacts for React Native macOS
 // We first publish on Maven Central all the necessary artifacts.
 // NPM publishing is done just after.
 publishAndroidArtifactsToMaven(releaseVersion, nightlyBuild);
+macOS] */
 
 const releaseBranch = `${major}.${minor}-stable`;
 
