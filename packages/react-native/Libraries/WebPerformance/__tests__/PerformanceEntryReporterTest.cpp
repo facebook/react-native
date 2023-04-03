@@ -152,36 +152,11 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
 
   ASSERT_EQ(0, res.droppedEntriesCount);
 
-  ASSERT_STREQ("mark0", entries[0].name.c_str());
-  ASSERT_STREQ("mark1", entries[1].name.c_str());
-  ASSERT_STREQ("mark2", entries[2].name.c_str());
-  ASSERT_STREQ("measure0", entries[3].name.c_str());
-  ASSERT_STREQ("measure1", entries[4].name.c_str());
-  ASSERT_STREQ("measure2", entries[5].name.c_str());
-  ASSERT_STREQ("measure3", entries[6].name.c_str());
-  ASSERT_STREQ("measure4", entries[7].name.c_str());
-
-  ASSERT_EQ(8, entries.size());
-
   const std::vector<RawPerformanceEntry> expected = {
       {"mark0",
        static_cast<int>(PerformanceEntryType::MARK),
        0.0,
        1.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark1",
-       static_cast<int>(PerformanceEntryType::MARK),
-       1.0,
-       3.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark2",
-       static_cast<int>(PerformanceEntryType::MARK),
-       2.0,
-       4.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
@@ -206,6 +181,13 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        std::nullopt,
        std::nullopt,
        std::nullopt},
+      {"mark1",
+       static_cast<int>(PerformanceEntryType::MARK),
+       1.0,
+       3.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
       {"measure3",
        static_cast<int>(PerformanceEntryType::MEASURE),
        1.0,
@@ -217,6 +199,13 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        static_cast<int>(PerformanceEntryType::MEASURE),
        1.5,
        0.5,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"mark2",
+       static_cast<int>(PerformanceEntryType::MARK),
+       2.0,
+       4.0,
        std::nullopt,
        std::nullopt,
        std::nullopt}};

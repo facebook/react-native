@@ -12,71 +12,66 @@
 
 #include <unordered_map>
 
-// All the unflushed entries beyond this amount will get discarded, with
-// the amount of discarded ones sent back to the observers' callbacks as
-// "droppedEntryCount" value
-static constexpr size_t MAX_ENTRY_BUFFER_SIZE = 1024;
-
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
-
-RawPerformanceEntry PerformanceMark::toRawPerformanceEntry() const {
-  return {
-      name,
-      static_cast<int>(PerformanceEntryType::MARK),
-      timeStamp,
-      0.0,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt};
-}
-
-RawPerformanceEntry PerformanceMeasure::toRawPerformanceEntry() const {
-  return {
-      name,
-      static_cast<int>(PerformanceEntryType::MEASURE),
-      timeStamp,
-      duration,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt};
-}
 
 PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
   return instance;
 }
 
+PerformanceEntryReporter::PerformanceEntryReporter() {
+  // For mark entry types we also want to keep the lookup by name, to make
+  // sure that marks can be referenced by measures
+  getBuffer(PerformanceEntryType::MARK).hasNameLookup = true;
+}
 void PerformanceEntryReporter::setReportingCallback(
     std::optional<AsyncCallback<>> callback) {
   callback_ = callback;
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
-  int entryTypeIdx = static_cast<int>(entryType);
-  reportingType_[entryTypeIdx] = true;
-  durationThreshold_[entryTypeIdx] = DEFAULT_DURATION_THRESHOLD;
+  auto &buffer = getBuffer(entryType);
+  buffer.isReporting = true;
+  buffer.durationThreshold = DEFAULT_DURATION_THRESHOLD;
 }
 
 void PerformanceEntryReporter::setDurationThreshold(
     PerformanceEntryType entryType,
     double durationThreshold) {
-  durationThreshold_[static_cast<int>(entryType)] = durationThreshold;
+  getBuffer(entryType).durationThreshold = durationThreshold;
 }
 
 void PerformanceEntryReporter::stopReporting(PerformanceEntryType entryType) {
-  reportingType_[static_cast<int>(entryType)] = false;
+  getBuffer(entryType).isReporting = false;
 }
 
 void PerformanceEntryReporter::stopReporting() {
-  reportingType_.fill(false);
+  for (auto &buffer : buffers_) {
+    buffer.isReporting = false;
+  }
 }
 
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   std::lock_guard<std::mutex> lock(entriesMutex_);
+  GetPendingEntriesResult res = {
+      std::vector<RawPerformanceEntry>(), droppedEntryCount_};
+  for (auto &buffer : buffers_) {
+    buffer.entries.consume(res.entries);
+  }
 
-  GetPendingEntriesResult res = {std::move(entries_), droppedEntryCount_};
-  entries_ = {};
+  // Sort by starting time (or ending time, if starting times are equal)
+  std::sort(
+      res.entries.begin(),
+      res.entries.end(),
+      [](const RawPerformanceEntry &lhs, const RawPerformanceEntry &rhs) {
+        if (lhs.startTime != rhs.startTime) {
+          return lhs.startTime < rhs.startTime;
+        } else {
+          return lhs.duration < rhs.duration;
+        }
+      });
+
   droppedEntryCount_ = 0;
   return res;
 }
@@ -91,24 +86,39 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
     return;
   }
 
-  if (entry.duration < durationThreshold_[entry.entryType]) {
-    // The entries duration is lower than the desired reporting threshold, skip
-    // return;
-  }
-
   std::lock_guard<std::mutex> lock(entriesMutex_);
 
-  if (entries_.size() == MAX_ENTRY_BUFFER_SIZE) {
+  auto &buffer = buffers_[entry.entryType];
+
+  if (entry.duration < buffer.durationThreshold) {
+    // The entries duration is lower than the desired reporting threshold, skip
+    return;
+  }
+
+  if (buffer.hasNameLookup) {
+    auto overwriteCandidate = buffer.entries.getNextOverwriteCandidate();
+    if (overwriteCandidate != nullptr) {
+      auto it = buffer.nameLookup.find(overwriteCandidate);
+      if (it != buffer.nameLookup.end() && *it == overwriteCandidate) {
+        buffer.nameLookup.erase(it);
+      }
+    }
+  }
+
+  auto pushResult = buffer.entries.add(std::move(entry));
+  if (pushResult ==
+      BoundedConsumableBuffer<RawPerformanceEntry>::PushStatus::DROP) {
     // Start dropping entries once reached maximum buffer size.
     // The number of dropped entries will be reported back to the corresponding
     // PerformanceObserver callback.
     droppedEntryCount_ += 1;
-    return;
   }
 
-  entries_.emplace_back(entry);
+  if (buffer.hasNameLookup) {
+    buffer.nameLookup.insert(&buffer.entries.back());
+  }
 
-  if (entries_.size() == 1) {
+  if (buffer.entries.getNumToConsume() == 1) {
     // If the buffer was empty, it signals that JS side just has possibly
     // consumed it and is ready to get more
     scheduleFlushBuffer();
@@ -119,95 +129,75 @@ void PerformanceEntryReporter::mark(
     const std::string &name,
     double startTime,
     double duration) {
-  // Register the mark for further possible "measure" lookup, as well as add
-  // it to a circular buffer:
-  PerformanceMark &mark = marksBuffer_[marksBufferPosition_];
-  marksBufferPosition_ = (marksBufferPosition_ + 1) % marksBuffer_.size();
-  marksCount_ = std::min(marksBuffer_.size(), marksCount_ + 1);
-
-  if (!mark.name.empty()) {
-    // Drop off the oldest mark out of the queue, but only if that's indeed the
-    // oldest one
-    auto it = marksRegistry_.find(&mark);
-    if (it != marksRegistry_.end() && *it == &mark) {
-      marksRegistry_.erase(it);
-    }
-  }
-
-  mark.name = name;
-  mark.timeStamp = startTime;
-  marksRegistry_.insert(&mark);
-
-  logEntry(
-      {name,
-       static_cast<int>(PerformanceEntryType::MARK),
-       startTime,
-       duration,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt});
+  logEntry(RawPerformanceEntry{
+      name,
+      static_cast<int>(PerformanceEntryType::MARK),
+      startTime,
+      duration,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt});
 }
 
 void PerformanceEntryReporter::clearEntries(
     PerformanceEntryType entryType,
     const char *entryName) {
-  if (entryType == PerformanceEntryType::MARK ||
-      entryType == PerformanceEntryType::UNDEFINED) {
+  if (entryType == PerformanceEntryType::UNDEFINED) {
+    // Clear all entry types
+    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+      clearEntries(static_cast<PerformanceEntryType>(i), entryName);
+    }
+  } else {
+    auto &buffer = getBuffer(entryType);
     if (entryName != nullptr) {
-      // remove a named mark from the mark/measure registry
-      PerformanceMark mark{{entryName, 0}};
-      marksRegistry_.erase(&mark);
-
-      clearCircularBuffer(
-          marksBuffer_, marksCount_, marksBufferPosition_, entryName);
+      if (buffer.hasNameLookup) {
+        RawPerformanceEntry entry{
+            entryName,
+            static_cast<int>(entryType),
+            0.0,
+            0.0,
+            std::nullopt,
+            std::nullopt,
+            std::nullopt};
+        buffer.nameLookup.erase(&entry);
+      }
+      buffer.entries.clear([entryName](const RawPerformanceEntry &entry) {
+        return std::strcmp(entry.name.c_str(), entryName) == 0;
+      });
     } else {
-      marksCount_ = 0;
-      marksRegistry_.clear();
+      buffer.entries.clear();
+      buffer.nameLookup.clear();
     }
   }
+}
 
-  if (entryType == PerformanceEntryType::MEASURE ||
-      entryType == PerformanceEntryType::UNDEFINED) {
-    if (entryName != nullptr) {
-      clearCircularBuffer(
-          measuresBuffer_, measuresCount_, measuresBufferPosition_, entryName);
+void PerformanceEntryReporter::getEntries(
+    PerformanceEntryType entryType,
+    const char *entryName,
+    std::vector<RawPerformanceEntry> &res) const {
+  if (entryType == PerformanceEntryType::UNDEFINED) {
+    // Collect all entry types
+    for (int i = 1; i < NUM_PERFORMANCE_ENTRY_TYPES; i++) {
+      getEntries(static_cast<PerformanceEntryType>(i), entryName, res);
+    }
+  } else {
+    const auto &entries = getBuffer(entryType).entries;
+    if (entryName == nullptr) {
+      entries.getEntries(res);
     } else {
-      measuresCount_ = 0;
+      entries.getEntries(res, [entryName](const RawPerformanceEntry &entry) {
+        return std::strcmp(entry.name.c_str(), entryName) == 0;
+      });
     }
   }
-
-  int lastPos = entries_.size() - 1;
-  int pos = lastPos;
-  while (pos >= 0) {
-    const RawPerformanceEntry &entry = entries_[pos];
-    if (entry.entryType == static_cast<int32_t>(entryType) &&
-        (entryName == nullptr || entry.name == entryName)) {
-      entries_[pos] = entries_[lastPos];
-      lastPos--;
-    }
-    pos--;
-  }
-  entries_.resize(lastPos + 1);
 }
 
 std::vector<RawPerformanceEntry> PerformanceEntryReporter::getEntries(
     PerformanceEntryType entryType,
     const char *entryName) const {
-  if (entryType == PerformanceEntryType::MARK) {
-    return getCircularBufferContents(
-        marksBuffer_, marksCount_, marksBufferPosition_, entryName);
-  } else if (entryType == PerformanceEntryType::MEASURE) {
-    return getCircularBufferContents(
-        measuresBuffer_, measuresCount_, measuresBufferPosition_, entryName);
-  } else if (entryType == PerformanceEntryType::UNDEFINED) {
-    auto marks = getCircularBufferContents(
-        marksBuffer_, marksCount_, marksBufferPosition_, entryName);
-    auto measures = getCircularBufferContents(
-        measuresBuffer_, measuresCount_, measuresBufferPosition_, entryName);
-    marks.insert(marks.end(), measures.begin(), measures.end());
-    return marks;
-  }
-  return {};
+  std::vector<RawPerformanceEntry> res;
+  getEntries(entryType, entryName, res);
+  return res;
 }
 
 void PerformanceEntryReporter::measure(
@@ -220,13 +210,6 @@ void PerformanceEntryReporter::measure(
   double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
   double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
-
-  measuresBuffer_[measuresBufferPosition_] =
-      PerformanceMeasure{name, startTime, endTime};
-  measuresBufferPosition_ =
-      (measuresBufferPosition_ + 1) % measuresBuffer_.size();
-  measuresCount_ = std::min(measuresBuffer_.size(), measuresCount_ + 1);
-
   logEntry(
       {name,
        static_cast<int>(PerformanceEntryType::MEASURE),
@@ -239,10 +222,19 @@ void PerformanceEntryReporter::measure(
 
 double PerformanceEntryReporter::getMarkTime(
     const std::string &markName) const {
-  PerformanceMark mark{{std::move(markName), 0}};
-  auto it = marksRegistry_.find(&mark);
-  if (it != marksRegistry_.end()) {
-    return (*it)->timeStamp;
+  RawPerformanceEntry mark{
+      markName,
+      static_cast<int>(PerformanceEntryType::MARK),
+      0.0,
+      0.0,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt};
+
+  const auto &marksBuffer = getBuffer(PerformanceEntryType::MARK);
+  auto it = marksBuffer.nameLookup.find(&mark);
+  if (it != marksBuffer.nameLookup.end()) {
+    return (*it)->startTime;
   } else {
     return 0.0;
   }
