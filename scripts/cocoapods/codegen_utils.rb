@@ -60,6 +60,13 @@ class CodegenUtils
         @@REACT_CODEGEN_PODSPEC_GENERATED = true
     end
 
+    # This function returns the min iOS version supported by React Native
+    # By using this function, you won't have to manually change your Podfile
+    # when we change the minimum version supported by the framework.
+    def min_ios_version_supported
+      return '12.4'
+    end
+
     # It generates the podspec object that represents the `React-Codegen.podspec` file
     #
     # Parameters
@@ -84,7 +91,7 @@ class CodegenUtils
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '11.0',
+            'ios' => min_ios_version_supported,
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
