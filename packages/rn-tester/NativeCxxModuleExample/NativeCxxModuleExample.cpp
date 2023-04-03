@@ -6,6 +6,7 @@
  */
 
 #include "NativeCxxModuleExample.h"
+#include <react/debug/react_native_assert.h>
 
 namespace facebook::react {
 
@@ -141,5 +142,43 @@ void NativeCxxModuleExample::emitCustomDeviceEvent(
         args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
       });
 }
+
+void NativeCxxModuleExample::voidFuncThrows(jsi::Runtime &rt) {
+  throw std::runtime_error("Intentional exception from Cxx voidFuncThrows");
+};
+
+ObjectStruct NativeCxxModuleExample::getObjectThrows(
+    jsi::Runtime &rt,
+    ObjectStruct arg) {
+  throw std::runtime_error("Intentional exception from Cxx getObjectThrows");
+};
+
+AsyncPromise<jsi::Value> NativeCxxModuleExample::promiseThrows(
+    jsi::Runtime &rt) {
+  throw std::runtime_error("Intentional exception from Cxx promiseThrows");
+};
+
+void NativeCxxModuleExample::voidFuncAssert(jsi::Runtime &rt) {
+  react_native_assert(false && "Intentional assert from Cxx voidFuncAssert");
+};
+
+ObjectStruct NativeCxxModuleExample::getObjectAssert(
+    jsi::Runtime &rt,
+    ObjectStruct arg) {
+  react_native_assert(false && "Intentional assert from Cxx getObjectAssert");
+
+  // Asserts disabled
+  return {};
+};
+
+AsyncPromise<jsi::Value> NativeCxxModuleExample::promiseAssert(
+    jsi::Runtime &rt) {
+  react_native_assert(false && "Intentional assert from Cxx promiseAssert");
+
+  // Asserts disabled
+  auto promise = AsyncPromise<jsi::Value>(rt, jsInvoker_);
+  promise.reject("Asserts disabled");
+  return promise;
+};
 
 } // namespace facebook::react

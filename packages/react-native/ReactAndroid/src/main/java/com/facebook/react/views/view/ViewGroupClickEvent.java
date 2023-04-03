@@ -10,6 +10,7 @@ package com.facebook.react.views.view;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Represents a Click on the ReactViewGroup */
@@ -18,7 +19,7 @@ public class ViewGroupClickEvent extends Event<ViewGroupClickEvent> {
 
   @Deprecated
   public ViewGroupClickEvent(int viewId) {
-    this(-1, viewId);
+    this(ViewUtil.NO_SURFACE_ID, viewId);
   }
 
   public ViewGroupClickEvent(int surfaceId, int viewId) {

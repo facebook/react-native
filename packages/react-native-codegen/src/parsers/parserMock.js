@@ -239,4 +239,8 @@ export class MockedParser implements Parser {
   bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
     return typeAlias.body.properties;
   }
+
+  convertKeywordToTypeAnnotation(keyword: string): string {
+    return keyword;
+  }
 }

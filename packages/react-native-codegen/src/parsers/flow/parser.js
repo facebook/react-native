@@ -67,7 +67,7 @@ class FlowParser implements Parser {
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+    return typeAnnotation?.id?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
@@ -324,6 +324,10 @@ class FlowParser implements Parser {
 
   bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
     return typeAlias.body.properties;
+  }
+
+  convertKeywordToTypeAnnotation(keyword: string): string {
+    return keyword;
   }
 }
 

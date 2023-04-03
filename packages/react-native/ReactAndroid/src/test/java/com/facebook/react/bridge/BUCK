@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "react_native_android_toplevel_dep", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library", "rn_robolectric_test")
 
+oncall("react_native")
+
 STANDARD_TEST_SRCS = [
     "*Test.java",
 ]
@@ -43,5 +45,6 @@ rn_robolectric_test(
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_tests_target("java/com/facebook/common/logging:logging"),
+        react_native_tests_target("java/com/facebook/testutils/shadows:shadows"),
     ],
 )

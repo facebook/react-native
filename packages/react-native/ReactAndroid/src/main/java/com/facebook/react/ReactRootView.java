@@ -1068,8 +1068,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void emitUpdateDimensionsEvent() {
-      DeviceInfoModule deviceInfo =
-          getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
+      ReactContext reactContext = getCurrentReactContext();
+      if (reactContext == null) {
+        return;
+      }
+      DeviceInfoModule deviceInfo = reactContext.getNativeModule(DeviceInfoModule.class);
 
       if (deviceInfo != null) {
         deviceInfo.emitUpdateDimensionsEvent();

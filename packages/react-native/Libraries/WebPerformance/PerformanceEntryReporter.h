@@ -15,49 +15,44 @@
 #include <optional>
 #include <unordered_map>
 #include <unordered_set>
+#include "BoundedConsumableBuffer.h"
 #include "NativePerformanceObserver.h"
 
 namespace facebook::react {
 
-struct PerformanceMark {
-  std::string name;
-  double timeStamp;
-
-  RawPerformanceEntry toRawPerformanceEntry() const;
-};
-
-struct PerformanceMarkHash {
-  size_t operator()(const PerformanceMark *mark) const {
-    return std::hash<std::string>()(mark->name);
+struct PerformanceEntryHash {
+  size_t operator()(const RawPerformanceEntry *entry) const {
+    return std::hash<std::string>()(entry->name);
   }
 };
 
-struct PerformanceMarkEqual {
-  bool operator()(const PerformanceMark *lhs, const PerformanceMark *rhs)
-      const {
+struct PerformanceEntryEqual {
+  bool operator()(
+      const RawPerformanceEntry *lhs,
+      const RawPerformanceEntry *rhs) const {
     return lhs->name == rhs->name;
   }
 };
 
-struct PerformanceMeasure {
-  std::string name;
-  double timeStamp;
-  double duration;
+using PerformanceEntryRegistryType = std::unordered_set<
+    const RawPerformanceEntry *,
+    PerformanceEntryHash,
+    PerformanceEntryEqual>;
 
-  RawPerformanceEntry toRawPerformanceEntry() const;
-};
-
-using PerformanceMarkRegistryType = std::
-    unordered_set<PerformanceMark *, PerformanceMarkHash, PerformanceMarkEqual>;
-
-// Only the MARKS_BUFFER_SIZE amount of the latest marks will be kept in
-// memory for the sake of the "Performance.measure" mark name lookup
-constexpr size_t MARKS_BUFFER_SIZE = 1024;
-
-// Limit buffer size for the measures kept in memory (only keep the latest ones)
-constexpr size_t MEASURES_BUFFER_SIZE = 1024;
-
+// Default duration threshold for reporting performance entries (0 means "report
+// all")
 constexpr double DEFAULT_DURATION_THRESHOLD = 0.0;
+
+// Default buffer size limit, per entry type
+constexpr size_t DEFAULT_MAX_BUFFER_SIZE = 1024;
+
+struct PerformanceEntryBuffer {
+  BoundedConsumableBuffer<RawPerformanceEntry> entries{DEFAULT_MAX_BUFFER_SIZE};
+  bool isReporting{false};
+  double durationThreshold{DEFAULT_DURATION_THRESHOLD};
+  bool hasNameLookup{false};
+  PerformanceEntryRegistryType nameLookup;
+};
 
 enum class PerformanceEntryType {
   UNDEFINED = 0,
@@ -66,6 +61,9 @@ enum class PerformanceEntryType {
   EVENT = 3,
   _COUNT = 4,
 };
+
+constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
+    (size_t)PerformanceEntryType::_COUNT;
 
 class PerformanceEntryReporter : public EventLogger {
  public:
@@ -87,10 +85,20 @@ class PerformanceEntryReporter : public EventLogger {
       double durationThreshold);
 
   GetPendingEntriesResult popPendingEntries();
+
   void logEntry(const RawPerformanceEntry &entry);
 
+  PerformanceEntryBuffer &getBuffer(PerformanceEntryType entryType) {
+    return buffers_[static_cast<int>(entryType)];
+  }
+
+  const PerformanceEntryBuffer &getBuffer(
+      PerformanceEntryType entryType) const {
+    return buffers_[static_cast<int>(entryType)];
+  }
+
   bool isReporting(PerformanceEntryType entryType) const {
-    return reportingType_[static_cast<int>(entryType)];
+    return getBuffer(entryType).isReporting;
   }
 
   bool isReportingEvents() const {
@@ -137,23 +145,13 @@ class PerformanceEntryReporter : public EventLogger {
 
  private:
   std::optional<AsyncCallback<>> callback_;
-  std::vector<RawPerformanceEntry> entries_;
+
   std::mutex entriesMutex_;
-  std::array<bool, (size_t)PerformanceEntryType::_COUNT> reportingType_{false};
+  std::array<PerformanceEntryBuffer, NUM_PERFORMANCE_ENTRY_TYPES> buffers_;
   std::unordered_map<std::string, uint32_t> eventCounts_;
-  std::array<double, (size_t)PerformanceEntryType::_COUNT> durationThreshold_{
-      DEFAULT_DURATION_THRESHOLD};
 
   // Mark registry for "measure" lookup
-  PerformanceMarkRegistryType marksRegistry_;
-  std::array<PerformanceMark, MARKS_BUFFER_SIZE> marksBuffer_;
-  size_t marksBufferPosition_{0};
-  size_t marksCount_{0};
-
-  std::array<PerformanceMeasure, MEASURES_BUFFER_SIZE> measuresBuffer_;
-  size_t measuresBufferPosition_{0};
-  size_t measuresCount_{0};
-
+  PerformanceEntryRegistryType marksRegistry_;
   uint32_t droppedEntryCount_{0};
 
   struct EventEntry {
@@ -171,49 +169,15 @@ class PerformanceEntryReporter : public EventLogger {
 
   static EventTag sCurrentEventTag_;
 
-  PerformanceEntryReporter() {}
+  PerformanceEntryReporter();
 
   double getMarkTime(const std::string &markName) const;
   void scheduleFlushBuffer();
 
-  template <class T, size_t N>
-  std::vector<RawPerformanceEntry> getCircularBufferContents(
-      const std::array<T, N> &buffer,
-      size_t entryCount,
-      size_t bufferPosition,
-      const char *entryName = nullptr) const {
-    std::vector<RawPerformanceEntry> res;
-    size_t pos = (bufferPosition - entryCount + buffer.size()) % buffer.size();
-    for (size_t i = 0; i < entryCount; i++) {
-      if (entryName == nullptr || buffer[pos].name == entryName) {
-        res.push_back(buffer[pos].toRawPerformanceEntry());
-      }
-      pos = (pos + 1) % buffer.size();
-    }
-    return res;
-  }
-
-  template <class T, size_t N>
-  void clearCircularBuffer(
-      std::array<T, N> &buffer,
-      size_t &entryCount,
-      size_t &bufferPosition,
-      const char *entryName) const {
-    std::array<T, N> newBuffer;
-    size_t newEntryCount = 0;
-
-    size_t pos = (bufferPosition - entryCount + buffer.size()) % buffer.size();
-    for (size_t i = 0; i < entryCount; i++) {
-      if (buffer[pos].name != entryName) {
-        newBuffer[newEntryCount++] = buffer[pos];
-      }
-      pos = (pos + 1) % buffer.size();
-    }
-
-    buffer = newBuffer;
-    bufferPosition = newEntryCount;
-    entryCount = newEntryCount;
-  }
+  void getEntries(
+      PerformanceEntryType entryType,
+      const char *entryName,
+      std::vector<RawPerformanceEntry> &res) const;
 };
 
 } // namespace facebook::react

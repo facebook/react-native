@@ -9,6 +9,7 @@ package com.facebook.react.uiapp.component;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
@@ -18,18 +19,26 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 class MyNativeView extends View {
 
   private int currentColor = 0;
+  private GradientDrawable background;
 
   public MyNativeView(Context context) {
     super(context);
+    background = new GradientDrawable();
   }
 
   @Override
   public void setBackgroundColor(int color) {
-    super.setBackgroundColor(color);
     if (color != currentColor) {
+      background.setColor(color);
       currentColor = color;
       emitNativeEvent(color);
+      setBackground(background);
     }
+  }
+
+  public void setCornerRadius(float cornerRadius) {
+    background.setCornerRadius(cornerRadius);
+    setBackground(background);
   }
 
   private void emitNativeEvent(int color) {

@@ -18,7 +18,7 @@ typedef NS_ENUM(NSInteger, RCTInterpolationOutputType) {
   RCTInterpolationOutputString,
 };
 
-static NSRegularExpression *getNumericComponentRegex()
+static NSRegularExpression *getNumericComponentRegex(void)
 {
   static NSRegularExpression *regex;
   static dispatch_once_t onceToken;

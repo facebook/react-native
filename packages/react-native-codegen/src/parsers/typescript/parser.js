@@ -67,7 +67,7 @@ class TypeScriptParser implements Parser {
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.typeName.name;
+    return typeAnnotation?.typeName?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
@@ -310,6 +310,23 @@ class TypeScriptParser implements Parser {
 
   bodyProperties(typeAlias: TypeDeclarationMap): $ReadOnlyArray<$FlowFixMe> {
     return typeAlias.body.body;
+  }
+
+  convertKeywordToTypeAnnotation(keyword: string): string {
+    switch (keyword) {
+      case 'TSBooleanKeyword':
+        return 'BooleanTypeAnnotation';
+      case 'TSNumberKeyword':
+        return 'NumberTypeAnnotation';
+      case 'TSVoidKeyword':
+        return 'VoidTypeAnnotation';
+      case 'TSStringKeyword':
+        return 'StringTypeAnnotation';
+      case 'TSUnknownKeyword':
+        return 'MixedTypeAnnotation';
+    }
+
+    return keyword;
   }
 }
 

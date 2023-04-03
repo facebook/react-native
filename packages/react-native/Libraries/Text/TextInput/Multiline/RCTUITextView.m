@@ -20,12 +20,12 @@
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
 }
 
-static UIFont *defaultPlaceholderFont()
+static UIFont *defaultPlaceholderFont(void)
 {
   return [UIFont systemFontOfSize:17];
 }
 
-static UIColor *defaultPlaceholderColor()
+static UIColor *defaultPlaceholderColor(void)
 {
   // Default placeholder color from UITextField.
   return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];

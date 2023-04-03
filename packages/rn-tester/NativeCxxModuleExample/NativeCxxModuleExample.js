@@ -73,6 +73,12 @@ export interface Spec extends TurboModule {
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
+  +voidFuncThrows: () => void;
+  +getObjectThrows: (arg: ObjectStruct) => ObjectStruct;
+  +promiseThrows: () => Promise<void>;
+  +voidFuncAssert: () => void;
+  +getObjectAssert: (arg: ObjectStruct) => ObjectStruct;
+  +promiseAssert: () => Promise<void>;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

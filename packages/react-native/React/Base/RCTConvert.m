@@ -512,6 +512,18 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
+    UIInterfaceOrientationMask,
+    (@{
+      @"ALL" : @(UIInterfaceOrientationMaskAll),
+      @"PORTRAIT" : @(UIInterfaceOrientationMaskPortrait),
+      @"LANDSCAPE" : @(UIInterfaceOrientationMaskLandscape),
+      @"LANDSCAPE_LEFT" : @(UIInterfaceOrientationMaskLandscapeLeft),
+      @"LANDSCAPE_RIGHT" : @(UIInterfaceOrientationMaskLandscapeRight),
+    }),
+    NSNotFound,
+    unsignedIntegerValue)
+
+RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
       @"scale-to-fill" : @(UIViewContentModeScaleToFill),
@@ -648,7 +660,7 @@ static NSString *const RCTIndex = @"index";
  *  If the RCTIndex key is present then object returned from UIColor is an
  *  NSArray and the object at index RCTIndex is to be used.
  */
-static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap()
+static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap(void)
 {
   static NSDictionary<NSString *, NSDictionary *> *colorMap = nil;
   if (colorMap == nil) {
@@ -864,7 +876,7 @@ static UIColor *RCTColorFromSemanticColorName(NSString *semanticColorName)
 
 /** Returns an alphabetically sorted comma separated list of the valid semantic color names
  */
-static NSString *RCTSemanticColorNames()
+static NSString *RCTSemanticColorNames(void)
 {
   NSMutableString *names = [NSMutableString new];
   NSDictionary<NSString *, NSDictionary *> *colorMap = RCTSemanticColorsMap();
