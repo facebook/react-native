@@ -24,11 +24,6 @@ def pods(options = {}, use_flipper: false)
   hermes_enabled = ENV['USE_HERMES'] == '1'
   puts "Building RNTester with Fabric #{fabric_enabled ? "enabled" : "disabled"}.#{hermes_enabled ? " Using Hermes engine." : ""}"
 
-  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
-    # Custom fabric component is only supported when using codegen discovery.
-    pod 'MyNativeView', :path => "NativeComponentExample"
-  end
-
   use_react_native!(
     path: @prefix_path,
     fabric_enabled: fabric_enabled,
@@ -37,6 +32,11 @@ def pods(options = {}, use_flipper: false)
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
   )
+
+  if ENV['USE_CODEGEN_DISCOVERY'] == '1'
+    # Custom fabric component is only supported when using codegen discovery.
+    pod 'MyNativeView', :path => "NativeComponentExample"
+  end
   pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
 
   # Additional Pods which aren't included in the default Podfile
