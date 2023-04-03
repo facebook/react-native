@@ -46,10 +46,10 @@ const {
   publishAndroidArtifactsToMaven,
   saveFilesToRestore,
 } = require('./release-utils');
+macOS] */
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-macOS] */
 const yargs = require('yargs');
 
 // [macOS] Use git to get the tag name, rather than relying on CircleCI environment variables.

@@ -85,7 +85,7 @@ class CodegenUtils
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '12.4',
+            'ios' => min_ios_version_supported,
             'osx' => '10.15'
           },
           'source_files' => "**/*.{h,mm,cpp}",
