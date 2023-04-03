@@ -64,10 +64,14 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                          layoutConstraints:(LayoutConstraints)layoutConstraints
                                textStorage:(NSTextStorage *_Nullable)textStorage
 {
-  return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
-                     paragraphAttributes:paragraphAttributes
-                       layoutConstraints:layoutConstraints
-                             textStorage:textStorage];
+  if (textStorage) {
+    return [self _measureTextStorage:textStorage];
+  } else {
+    return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
+                       paragraphAttributes:paragraphAttributes
+                         layoutConstraints:layoutConstraints
+                               textStorage:nil];
+  }
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
