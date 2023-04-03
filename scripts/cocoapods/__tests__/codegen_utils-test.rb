@@ -15,6 +15,14 @@ require_relative "./test_utils/CodegenUtilsMock.rb"
 require_relative "./test_utils/CodegenScriptPhaseExtractorMock.rb"
 require_relative "./test_utils/FileUtilsMock.rb"
 
+# mocking the min_ios_version_supported function
+# as it is not possible to require the original react_native_pod
+# without incurring in circular deps
+# TODO: move `min_ios_version_supported` to utils.rb
+def min_ios_version_supported
+    return '12.4'
+end
+
 class CodegenUtilsTests < Test::Unit::TestCase
     :base_path
 
@@ -485,14 +493,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
     end
 
     private
-
-    # mocking the min_ios_version_supported function
-    # as it is not possible to require the original react_native_pod
-    # without incurring in circular deps
-    # TODO: move `min_ios_version_supported` to utils.rb
-    def min_ios_version_supported
-        return '12.4'
-    end
 
     def get_podspec_no_fabric_no_script
         spec = {
