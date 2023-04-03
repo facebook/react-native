@@ -248,7 +248,7 @@ jobs:
           script: |
             VERSION=$(node .ado/get-next-semver-version.js)
             echo "Set Version to: $VERSION"
-        condition: and(succeeded(), ne(variables['Build.TargetBranchName'], 'main'))
+        condition: and(succeeded(), ne(variables['Build.TargetBranchName'], 'refs/heads/main'))
 
 
       - task: CmdLine@2
