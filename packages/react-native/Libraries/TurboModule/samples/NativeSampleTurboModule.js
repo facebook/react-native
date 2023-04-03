@@ -37,6 +37,12 @@ export interface Spec extends TurboModule {
   +getValue: (x: number, y: string, z: Object) => Object;
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
+  +voidFuncThrows?: () => void;
+  +getObjectThrows?: (arg: Object) => Object;
+  +promiseThrows?: () => Promise<void>;
+  +voidFuncAssert?: () => void;
+  +getObjectAssert?: (arg: Object) => Object;
+  +promiseAssert?: () => Promise<void>;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

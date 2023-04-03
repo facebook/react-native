@@ -68,6 +68,24 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @ReactMethod(isBlockingSynchronousMethod = true)
   public abstract double getEnum(double arg);
 
+  @ReactMethod()
+  public abstract void voidFuncThrows();
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableMap getObjectThrows(ReadableMap arg);
+
+  @ReactMethod()
+  public abstract void promiseThrows(Promise promise);
+
+  @ReactMethod()
+  public abstract void voidFuncAssert();
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public abstract WritableMap getObjectAssert(ReadableMap arg);
+
+  @ReactMethod()
+  public abstract void promiseAssert(Promise promise);
+
   protected abstract Map<String, Object> getTypedExportedConstants();
 
   @Override
