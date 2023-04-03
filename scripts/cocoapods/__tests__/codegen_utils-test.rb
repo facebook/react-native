@@ -486,6 +486,14 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     private
 
+    # mocking the min_ios_version_supported function
+    # as it is not possible to require the original react_native_pod
+    # without incurring in circular deps
+    # TODO: move `min_ios_version_supported` to utils.rb
+    def min_ios_version_supported
+        return '12.4'
+    end
+
     def get_podspec_no_fabric_no_script
         spec = {
           'name' => "React-Codegen",
@@ -498,7 +506,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '11.0',
+            'ios' => min_ios_version_supported,
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
