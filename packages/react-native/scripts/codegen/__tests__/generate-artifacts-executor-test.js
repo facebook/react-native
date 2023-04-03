@@ -34,39 +34,32 @@ describe('generateCode', () => {
     const node = 'usr/bin/node';
     const pathToSchema = 'app/build/schema.json';
     const rnRoot = path.join(__dirname, '../..');
-    const libraryTypeArg = 'all';
+    const libraryType = 'all';
 
-    const tmpOutputDir = path.join(tmpDir, 'out');
+    const tmpOutDir = path.join(tmpDir, 'out');
 
     // mock used functions
     jest.spyOn(fs, 'mkdirSync').mockImplementation();
     jest.spyOn(child_process, 'execSync').mockImplementation();
-    jest.spyOn(child_process, 'execFileSync').mockImplementation();
 
     underTest._generateCode(iosOutputDir, library, tmpDir, node, pathToSchema);
 
-    expect(child_process.execFileSync).toHaveBeenCalledTimes(1);
-    expect(child_process.execFileSync).toHaveBeenNthCalledWith(1, node, [
-      `${path.join(rnRoot, 'generate-specs-cli.js')}`,
-      '--platform',
-      'ios',
-      '--schemaPath',
-      pathToSchema,
-      '--outputDir',
-      tmpOutputDir,
-      '--libraryName',
-      library.config.name,
-      '--libraryType',
-      libraryTypeArg,
-    ]);
-    expect(child_process.execSync).toHaveBeenCalledTimes(1);
+    const expectedCommand = `${node} ${path.join(
+      rnRoot,
+      'generate-specs-cli.js',
+    )}         --platform ios         --schemaPath ${pathToSchema}         --outputDir ${tmpOutDir}         --libraryName ${
+      library.config.name
+    }         --libraryType ${libraryType}`;
+
+    expect(child_process.execSync).toHaveBeenCalledTimes(2);
+    expect(child_process.execSync).toHaveBeenNthCalledWith(1, expectedCommand);
     expect(child_process.execSync).toHaveBeenNthCalledWith(
-      1,
-      `cp -R ${tmpOutputDir}/* ${iosOutputDir}`,
+      2,
+      `cp -R ${tmpOutDir}/* ${iosOutputDir}`,
     );
 
     expect(fs.mkdirSync).toHaveBeenCalledTimes(2);
-    expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, tmpOutputDir, {
+    expect(fs.mkdirSync).toHaveBeenNthCalledWith(1, tmpOutDir, {
       recursive: true,
     });
     expect(fs.mkdirSync).toHaveBeenNthCalledWith(2, iosOutputDir, {

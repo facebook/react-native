@@ -20,7 +20,7 @@
  */
 
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
-const {execFileSync, spawn} = require('child_process');
+const spawn = require('child_process').spawn;
 const argv = require('yargs').argv;
 const path = require('path');
 
@@ -99,11 +99,9 @@ try {
   );
 
   describe('Scaffold a basic React Native app from template');
-  execFileSync('rsync', [
-    '-a',
-    `${ROOT}/packages/react-native/template`,
-    REACT_NATIVE_TEMP_DIR,
-  ]);
+  exec(
+    `rsync -a ${ROOT}/packages/react-native/template ${REACT_NATIVE_TEMP_DIR}`,
+  );
   cd(REACT_NATIVE_APP_DIR);
 
   mv('_bundle', '.bundle');
