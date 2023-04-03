@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.71.6
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([0010c3807d](https://github.com/facebook/react-native/commit/0010c3807d7e47d7d518667dbfac62f7c0da1ac1) by [@kelset](https://github.com/kelset))
+
 ## v0.71.5
 
 ### Changed
