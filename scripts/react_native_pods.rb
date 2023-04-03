@@ -17,6 +17,13 @@ $REACT_CODEGEN_DISCOVERY_DONE = false
 DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'
 NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 
+# This function returns the min iOS version supported by React Native
+# By using this function, you won't have to manually change your Podfile
+# when we change the minimum version supported by the framework.
+def min_ios_version_supported
+  return '12.4'
+end
+
 def use_react_native! (options={})
   # The prefix to react-native
   prefix = options[:path] ||= "../node_modules/react-native"
@@ -420,7 +427,7 @@ def get_react_codegen_spec(options={})
     'source' => { :git => '' },
     'header_mappings_dir' => './',
     'platforms' => {
-      'ios' => '11.0',
+      'ios' => min_ios_version_supported,
     },
     'source_files' => "**/*.{h,mm,cpp}",
     'pod_target_xcconfig' => { "HEADER_SEARCH_PATHS" =>
