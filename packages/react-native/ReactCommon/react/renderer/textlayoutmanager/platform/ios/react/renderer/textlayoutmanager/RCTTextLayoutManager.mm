@@ -56,43 +56,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     textStorage.layoutManagers.firstObject.textContainers.firstObject.size = maximumSize;
   }
 
-  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  [layoutManager ensureLayoutForTextContainer:textContainer];
-
-  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
-
-  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
-
-  __block auto attachments = TextMeasurement::Attachments{};
-
-  [textStorage
-      enumerateAttribute:NSAttachmentAttributeName
-                 inRange:NSMakeRange(0, textStorage.length)
-                 options:0
-              usingBlock:^(NSTextAttachment *attachment, NSRange range, BOOL *stop) {
-                if (!attachment) {
-                  return;
-                }
-
-                CGSize attachmentSize = attachment.bounds.size;
-                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
-
-                UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
-
-                CGRect frame = {
-                    {glyphRect.origin.x,
-                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
-                    attachmentSize};
-
-                auto rect = facebook::react::Rect{
-                    facebook::react::Point{frame.origin.x, frame.origin.y},
-                    facebook::react::Size{frame.size.width, frame.size.height}};
-
-                attachments.push_back(TextMeasurement::Attachment{rect, false});
-              }];
-
-  return TextMeasurement{{size.width, size.height}, attachments};
+  return [self _measureTextStorage:textStorage];
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
@@ -178,35 +142,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
-- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
-                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                size:(CGSize)size
-{
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
-
-  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
-  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
-      : NSLineBreakByClipping;
-  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
-
-  NSLayoutManager *layoutManager = [NSLayoutManager new];
-  layoutManager.usesFontLeading = NO;
-  [layoutManager addTextContainer:textContainer];
-
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
-
-  [textStorage addLayoutManager:layoutManager];
-
-  if (paragraphAttributes.adjustsFontSizeToFit) {
-    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
-    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
-    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
-  }
-
-  return textStorage;
-}
-
 - (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString
                               paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                              size:(CGSize)size
@@ -246,15 +181,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return nil;
 }
 
-- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
-{
-  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
-    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
-  });
-
-  return unwrapManagedObject(sharedNSAttributedString);
-}
-
 - (void)getRectWithAttributedString:(AttributedString)attributedString
                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
@@ -292,6 +218,87 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                          *stop = YES;
                                                        }];
                        }];
+}
+
+#pragma mark - Private
+
+- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
+                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                size:(CGSize)size
+{
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+
+  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
+      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
+      : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+
+  NSLayoutManager *layoutManager = [NSLayoutManager new];
+  layoutManager.usesFontLeading = NO;
+  [layoutManager addTextContainer:textContainer];
+
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
+
+  [textStorage addLayoutManager:layoutManager];
+
+  if (paragraphAttributes.adjustsFontSizeToFit) {
+    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
+    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
+    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
+  }
+
+  return textStorage;
+}
+
+- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
+{
+  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
+  });
+
+  return unwrapManagedObject(sharedNSAttributedString);
+}
+
+- (TextMeasurement)_measureTextStorage:(NSTextStorage *)textStorage
+{
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+
+  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
+
+  __block auto attachments = TextMeasurement::Attachments{};
+
+  [textStorage
+      enumerateAttribute:NSAttachmentAttributeName
+                 inRange:NSMakeRange(0, textStorage.length)
+                 options:0
+              usingBlock:^(NSTextAttachment *attachment, NSRange range, BOOL *stop) {
+                if (!attachment) {
+                  return;
+                }
+
+                CGSize attachmentSize = attachment.bounds.size;
+                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
+
+                UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+
+                CGRect frame = {
+                    {glyphRect.origin.x,
+                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                    attachmentSize};
+
+                auto rect = facebook::react::Rect{
+                    facebook::react::Point{frame.origin.x, frame.origin.y},
+                    facebook::react::Size{frame.size.width, frame.size.height}};
+
+                attachments.push_back(TextMeasurement::Attachment{rect, false});
+              }];
+
+  return TextMeasurement{{size.width, size.height}, attachments};
 }
 
 @end
