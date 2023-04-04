@@ -118,7 +118,7 @@ TEST(MessageTests, testSerializeResponse) {
   debugger::SetBreakpointByUrlResponse resp;
   resp.id = 1;
   resp.breakpointId = "myBreakpointId";
-  resp.locations = {location};
+  resp.locations.push_back(std::move(location));
 
   dynamic result = resp.toDynamic();
   dynamic expected = folly::parseJson(R"({
@@ -180,8 +180,8 @@ TEST(MessageTests, testSerializeNotification) {
   scope.object.description = "myDesc";
   scope.object.objectId = "id1";
   scope.name = "myScope";
-  scope.startLocation = startLocation;
-  scope.endLocation = endLocation;
+  scope.startLocation = std::move(startLocation);
+  scope.endLocation = std::move(endLocation);
 
   debugger::CallFrame frame;
   frame.callFrameId = "callFrame1";
@@ -190,11 +190,11 @@ TEST(MessageTests, testSerializeNotification) {
   frame.location.lineNumber = 3;
   frame.location.columnNumber = 4;
   frame.url = "foo.js";
-  frame.scopeChain = std::vector<debugger::Scope>{scope};
+  frame.scopeChain.push_back(std::move(scope));
   frame.thisObj.type = "function";
 
   debugger::PausedNotification note;
-  note.callFrames = std::vector<debugger::CallFrame>{frame};
+  note.callFrames.push_back(std::move(frame));
   note.reason = "debugCommand";
   note.data = dynamic::object("foo", "bar");
   note.hitBreakpoints = std::vector<std::string>{"a", "b"};

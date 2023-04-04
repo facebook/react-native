@@ -62,6 +62,8 @@ export class HeaderWriter {
       namespace chrome {
       namespace message {
 
+template<typename T>
+void deleter(T* p);
     `);
   }
 
@@ -222,8 +224,12 @@ export function emitTypeDecl(stream: Writable, type: PropsType) {
 
   stream.write(`struct ${cppNs}::${cppType} : public Serializable {
     ${cppType}() = default;
+    ${cppType}(${cppType}&&) = default;
+    ${cppType}(const ${cppType}&) = delete;
     explicit ${cppType}(const folly::dynamic &obj);
     folly::dynamic toDynamic() const override;
+    ${cppType}& operator=(const ${cppType}&) = delete;
+    ${cppType}& operator=(${cppType}&&) = default;
   `);
 
   if (type instanceof PropsType) {
