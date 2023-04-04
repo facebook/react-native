@@ -19,7 +19,7 @@ yarn build
 
 node bin/index.js \
   --ignore-experimental \
-  --include-experimental=Runtime.getHeapUsage \
+  --include-experimental=Runtime.getProperties.generatePreview,Runtime.evaluate.generatePreview,Runtime.callFunctionOn.generatePreview,Debugger.evaluateOnCallFrame.generatePreview,Runtime.RemoteObject.preview,Runtime.RemoteObject.customPreview,Runtime.CustomPreview,Runtime.EntryPreview,Runtime.ObjectPreview,Runtime.PropertyPreview,Runtime.getHeapUsage \
   --roots "${MSGTYPES_PATH}" \
   "${HEADER_PATH}" "${CPP_PATH}"
 

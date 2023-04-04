@@ -18,20 +18,34 @@ export class Event {
   experimental: ?boolean;
   parameters: Array<Property>;
 
-  static create(domain: string, obj: any, ignoreExperimental: boolean): ?Event {
-    return ignoreExperimental && obj.experimental
+  static create(
+    domain: string,
+    obj: any,
+    ignoreExperimental: boolean,
+    includeExperimental: Set<string>,
+  ): ?Event {
+    return ignoreExperimental &&
+      obj.experimental &&
+      !includeExperimental.has(domain + '.' + obj.name)
       ? null
-      : new Event(domain, obj, ignoreExperimental);
+      : new Event(domain, obj, ignoreExperimental, includeExperimental);
   }
 
-  constructor(domain: string, obj: any, ignoreExperimental: boolean) {
+  constructor(
+    domain: string,
+    obj: any,
+    ignoreExperimental: boolean,
+    includeExperimental: Set<string>,
+  ) {
     this.domain = domain;
     this.name = obj.name;
     this.description = obj.description;
     this.parameters = Property.createArray(
       domain,
+      obj.name,
       obj.parameters || [],
       ignoreExperimental,
+      includeExperimental,
     );
   }
 
