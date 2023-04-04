@@ -40,13 +40,13 @@ const {
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
-/* [macOS We do not generate Android artifacts for React Native macOS
 const {
+  /* [macOS We do not generate Android artifacts for React Native macOS
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
+  macOS] */
   saveFilesToRestore,
 } = require('./release-utils');
-macOS] */
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
