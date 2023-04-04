@@ -45,6 +45,6 @@ open class DefaultReactActivityDelegate(
   override fun createRootView(): ReactRootView =
       ReactRootView(context).apply { setIsFabric(fabricEnabled) }
 
-  override fun createRootView(bundle: Bundle): ReactRootView =
+  override fun createRootView(bundle: Bundle?): ReactRootView =
       ReactRootView(context).apply { setIsFabric(fabricEnabled) }
 }
