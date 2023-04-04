@@ -573,6 +573,21 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.8
+
+### Changed
+
+#### iOS specific
+
+- Relax Ruby requirements ([e3a5fbe72f](https://github.com/facebook/react-native/commit/e3a5fbe72f966b27b967192317d7072db52d1c8c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([34f3794f18](https://github.com/facebook/react-native/commit/34f3794f18c3b6462f3fce4b8e272c65801a35f6) by [@cipolleschi](https://github.com/cipolleschi))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
+
 ## v0.70.7
 
 ### Fixed
