@@ -40,11 +40,11 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - ${{ if eq(variables['isMain'], true) }}:
+      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
         - template: templates/apple-job-publish.yml
           parameters:
             build_type: nightly
-      - ${{ elseif eq(variables['isReleaseBranch'], true) }}:
+      - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
         - template: templates/apple-job-publish.yml
           parameters:
             build_type: release
