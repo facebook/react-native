@@ -24,6 +24,7 @@ packages:
   '@react-native/*':
     access: $all
     publish: $all
+    proxy: npmjs
   '@*/*':
     access: $all
     publish: $authenticated
