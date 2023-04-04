@@ -52,8 +52,7 @@ const os = require('os');
 const path = require('path');
 const yargs = require('yargs');
 
-// [macOS] Use git to get the tag name, rather than relying on CircleCI environment variables.
-const buildTag = exec('git tag --points-at HEAD');
+const buildTag = exec('git tag --points-at HEAD'); // [macOS] Don't rely on CircleCI environment variables.
 const otp = process.env.NPM_CONFIG_OTP;
 const tmpPublishingFolder = fs.mkdtempSync(
   path.join(os.tmpdir(), 'rn-publish-'),
@@ -105,7 +104,7 @@ const rawVersion =
     nightlyBuild
     ? '0.0.0'
     : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
-      buildTag.substring(0, str.indexOf('-microsft')); // [macOS] Strip off the "-microsoft" suffix from the tag name.
+      buildTag.substring(0, buildTag.indexOf('-microsft')); // [macOS] Strip off the "-microsoft" suffix from the tag name.
 
 let version,
   major,

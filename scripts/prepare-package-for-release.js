@@ -22,6 +22,7 @@ const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const {isReleaseBranch, parseVersion} = require('./version-utils');
 const {failIfTagExists} = require('./release-utils');
+const {getBranchName} = require('./scm-utils'); // [macOS]
 
 const argv = yargs
   .option('r', {
@@ -44,11 +45,7 @@ const argv = yargs
     default: false,
   }).argv;
 
-// [macOS Use git to get the branch name, rather than relying on CircleCI env vars.
-const branch = exec('git rev-parse --abbrev-ref HEAD', {
-  silent: true,
-}).stdout.trim();
-// // macOS]
+const branch = getBranchName(); // [macOS] Don't rely on CircleCI environment variables.
 const remote = argv.remote;
 const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;

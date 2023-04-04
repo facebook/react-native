@@ -238,37 +238,7 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - template: templates/apple-tools-setup.yml
+      - template: templates/apple-job-publish.yml
+        parameters:
+          build_type: 'dry-run'
 
-      - template: templates/apple-install-dependencies.yml
-
-      - task: CmdLine@2
-        displayName: Set next version if release branch
-        inputs:
-          script: |
-            VERSION=$(node .ado/get-next-semver-version.js)
-            echo "Set Version to: $VERSION"
-        condition: and(succeeded(), ne(variables['Build.TargetBranchName'], 'main'))
-
-
-      - task: CmdLine@2
-        displayName: Prepare package for release
-        inputs:
-          script: |
-            if [[ -z "$VERSION" ]]; then
-              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
-              echo "Using the version from the package.json: $VERSION"
-            fi
-            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l false --dry-run true
-
-      - task: CmdLine@2
-        displayName: NPM Publish Dry Run
-        inputs:
-          script: |
-            node ./scripts/publish-npm.js --dry-run
-
-      - task: CmdLine@2
-        displayName: Print tarball output
-        inputs:
-          script: |
-            npm publish --dry-run
