@@ -894,6 +894,21 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
+## v0.69.9
+
+### Changed
+
+#### iOS specific
+
+- Relax Ruby requirements ([4e015c69d6](https://github.com/facebook/react-native/commit/4e015c69d646b320d58888f70af566c1d753eaed) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([74ba411b55](https://github.com/facebook/react-native/commit/74ba411b55535cee1b98062875b7b4b1428c931a) by [@cipolleschi](https://github.com/cipolleschi))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
+
 ## v0.69.8
 
 ### Fixed
