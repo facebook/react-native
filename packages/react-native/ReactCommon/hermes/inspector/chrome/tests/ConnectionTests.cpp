@@ -214,6 +214,7 @@ void sendRuntimeEvalRequest(
   m::runtime::EvaluateRequest req;
   req.id = id;
   req.expression = expression;
+  req.generatePreview = true;
   conn.send(req.toJson());
 }
 
@@ -226,6 +227,7 @@ void sendEvalRequest(
   req.id = id;
   req.callFrameId = folly::to<std::string>(callFrameId);
   req.expression = expression;
+  req.generatePreview = true;
   conn.send(req.toJson());
 }
 
@@ -458,6 +460,9 @@ void expectEvalResponse(
   EXPECT_FALSE(resp.exceptionDetails.has_value());
 
   EXPECT_TRUE(resp.result.objectId.has_value());
+  EXPECT_TRUE(resp.result.preview.has_value());
+  EXPECT_EQ(resp.result.preview->type, "object");
+
   expectProps(conn, id + 1, resp.result.objectId.value(), infos);
 }
 
@@ -1312,17 +1317,23 @@ TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
   // We expect this JSON object to be evaluated and return by value, so
   // that JSON encoding the result will give the same string.
   auto object = "{\"key\":[1,\"two\"]}";
+  auto preview =
+      "{\"properties\":[{\"subtype\":\"array\",\"value\":\"Array(2)\",\"type\":\"object\",\"name\":\"key\"}],\"overflow\":false,\"description\":\"Object\",\"type\":\"object\"}";
 
   m::runtime::EvaluateRequest req;
   req.id = msgId;
   req.expression = std::string("(") + object + ")";
   req.returnByValue = true;
+  req.generatePreview = true;
   conn.send(req.toJson());
 
   auto resp =
       expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
   EXPECT_EQ(resp.result.type, "object");
   ASSERT_TRUE(resp.result.value.has_value());
+  ASSERT_TRUE(resp.result.preview.has_value());
+  EXPECT_EQ(resp.result.preview->type, "object");
+  EXPECT_EQ(folly::toJson(resp.result.preview->toDynamic()), preview);
   EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
 
   // [3] exit run loop
