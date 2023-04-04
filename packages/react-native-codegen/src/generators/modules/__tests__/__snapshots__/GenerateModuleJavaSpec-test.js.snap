@@ -377,6 +377,10 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @DoNotStrip
   public abstract void getValueWithPromise(boolean error, Promise promise);
 
+  @ReactMethod
+  @DoNotStrip
+  public abstract void getValueWithOptionalArg(ReadableMap parameter, Promise promise);
+
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
   public abstract String getEnums(double enumInt, double enumFloat, String enumString);

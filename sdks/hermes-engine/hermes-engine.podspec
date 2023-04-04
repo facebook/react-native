@@ -17,7 +17,7 @@ version = package['version']
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-isInCI = ENV['CI'] === 'true'
+isInCI = ENV['REACT_NATIVE_CI'] === 'true'
 
 source = {}
 git = "https://github.com/facebook/hermes.git"
@@ -26,7 +26,13 @@ isInMain = version.include?('1000.0.0')
 isNightly = version.start_with?('0.0.0-')
 
 if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
+  if !File.exist?(ENV['HERMES_ENGINE_TARBALL_PATH'])
+    abort "[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: \"#{ENV['HERMES_ENGINE_TARBALL_PATH']}\"\nIf you don't want to use tarball, run `unset HERMES_ENGINE_TARBALL_PATH`"
+  end
+end
+
+if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
+  Pod::UI.puts "[Hermes] Using pre-built Hermes binaries from local path: #{ENV['HERMES_ENGINE_TARBALL_PATH']}".yellow if Object.const_defined?("Pod::UI")
   source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
 elsif isInMain
   Pod::UI.puts '[Hermes] Installing hermes-engine may take slightly longer, building Hermes compiler from source...'.yellow if Object.const_defined?("Pod::UI")
@@ -37,7 +43,7 @@ elsif isNightly
   destination_path = download_nightly_hermes(react_native_path, version)
   # set tarball as hermes engine
   source[:http] = "file://#{destination_path}"
-elsif File.exists?(hermestag_file) && isInCI
+elsif File.exist?(hermestag_file) && isInCI
   Pod::UI.puts '[Hermes] Detected that you are on a React Native release branch, building Hermes from source but fetched from tag...'.yellow if Object.const_defined?("Pod::UI")
   hermestag = File.read(hermestag_file).strip
   source[:git] = git
@@ -80,8 +86,6 @@ Pod::Spec.new do |spec|
 
   elsif source[:git] then
 
-    ENV['HERMES_BUILD_FROM_SOURCE'] = "1"
-
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
@@ -108,6 +112,7 @@ Pod::Spec.new do |spec|
       # Keep hermesc_path synchronized with .gitignore entry.
       ENV['REACT_NATIVE_PATH'] = react_native_path
       hermesc_path = "${REACT_NATIVE_PATH}/sdks/hermes-engine/build_host_hermesc"
+      # NOTE: Prepare command is not run  if the pod is not downloaded.
       spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}"
     end
 

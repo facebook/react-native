@@ -7,7 +7,7 @@
 
 #include "JSCExecutorFactory.h"
 
-#import <jsi/JSCRuntime.h>
+#import <jsc/JSCRuntime.h>
 
 #import <memory>
 

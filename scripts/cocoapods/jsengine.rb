@@ -11,9 +11,9 @@ require_relative './utils.rb'
 # @parameter fabric_enabled: whether Fabirc is enabled
 def setup_jsc!(react_native_path: "../node_modules/react-native", fabric_enabled: false)
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
-    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsi"
+    pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsc"
     if fabric_enabled
-        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsi"
+        pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsc"
     end
 end
 
@@ -30,14 +30,14 @@ def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enab
     abort unless prep_status == 0
 
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
-    pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes/hermes-engine.podspec"
+    pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec"
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
 end
 
 def add_copy_hermes_framework_script_phase(installer, react_native_path)
     utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
-    phase_name = "[RN]Copy Hermes framework"
+    phase_name = "[RN] Copy Hermes Framework"
     project = installer.generated_aggregate_targets.first.user_project
     target = project.targets.first
     if target.shell_script_build_phases.none? { |phase| phase.name == phase_name }
@@ -49,8 +49,33 @@ end
 
 def remove_copy_hermes_framework_script_phase(installer, react_native_path)
     utils_dir = File.join(react_native_path, "sdks", "hermes-engine", "utils")
-    phase_name = "[RN]Copy Hermes framework"
+    phase_name = "[RN] Copy Hermes Framework"
     project = installer.generated_aggregate_targets.first.user_project
-    project.targets.first.shell_script_build_phases.delete_if { |phase| phase.name == phase_name }
+    target = project.native_targets.first
+    target.shell_script_build_phases.each do |phase|
+        if phase.name == phase_name
+            target.build_phases.delete(phase)
+        end
+    end
     project.save()
+end
+
+def remove_hermesc_build_dir(react_native_path)
+    %x(rm -rf #{react_native_path}/sdks/hermes-engine/build_host_hermesc)
+end
+
+def is_building_hermes_from_source(react_native_version, react_native_path)
+    if ENV['HERMES_ENGINE_TARBALL_PATH'] != nil
+        return false
+    end
+
+    isInMain = react_native_version.include?('1000.0.0')
+
+    hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
+    isInCI = ENV['REACT_NATIVE_CI'] === 'true'
+
+    isReleaseBranch = File.exist?(hermestag_file) && isInCI
+
+
+    return isInMain || isReleaseBranch
 end

@@ -384,6 +384,11 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getVal
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, \\"getValueWithPromise\\", \\"(ZLcom/facebook/react/bridge/Promise;)V\\", args, count, cachedMethodId);
 }
 
+static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithOptionalArg(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, \\"getValueWithOptionalArg\\", \\"(Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V\\", args, count, cachedMethodId);
+}
+
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
   return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, StringKind, \\"getEnums\\", \\"(DDLjava/lang/String;)Ljava/lang/String;\\", args, count, cachedMethodId);
@@ -402,6 +407,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+  methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithOptionalArg};
   methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnums};
 }
 

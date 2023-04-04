@@ -14,53 +14,11 @@ import type {
   VirtualizedListProps,
 } from './VirtualizedList';
 import type {ScrollViewComponent} from '../Components/ScrollView/ScrollView';
-import {StyleProp} from '../StyleSheet/StyleSheet';
-import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
-import {View} from '../Components/View/View';
+import type {StyleProp} from '../StyleSheet/StyleSheet';
+import type {ViewStyle} from '../StyleSheet/StyleSheetTypes';
+import type {View} from '../Components/View/View';
 
 export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
-  /**
-   * Rendered in between each item, but not at the top or bottom
-   */
-  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
-
-  /**
-   * Rendered when the list is empty.
-   */
-  ListEmptyComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Rendered at the very end of the list.
-   */
-  ListFooterComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListFooterComponent
-   */
-  ListFooterComponentStyle?: StyleProp<ViewStyle> | undefined;
-
-  /**
-   * Rendered at the very beginning of the list.
-   */
-  ListHeaderComponent?:
-    | React.ComponentType<any>
-    | React.ReactElement
-    | null
-    | undefined;
-
-  /**
-   * Styling for internal View for ListHeaderComponent
-   */
-  ListHeaderComponentStyle?: StyleProp<ViewStyle> | undefined;
-
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1
    */
@@ -82,10 +40,10 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
     | undefined;
 
   /**
-   * For simplicity, data is just a plain array. If you want to use something else,
-   * like an immutable list, use the underlying VirtualizedList directly.
+   * An array (or array-like list) of items to render. Other data types can be
+   * used by targetting VirtualizedList directly.
    */
-  data: ReadonlyArray<ItemT> | null | undefined;
+  data: ArrayLike<ItemT> | null | undefined;
 
   /**
    * A marker property for telling the list to re-render (since it implements PureComponent).
@@ -248,6 +206,7 @@ export class FlatList<ItemT = any> extends React.Component<
   scrollToItem: (params: {
     animated?: boolean | null | undefined;
     item: ItemT;
+    viewOffset?: number | undefined;
     viewPosition?: number | undefined;
   }) => void;
 

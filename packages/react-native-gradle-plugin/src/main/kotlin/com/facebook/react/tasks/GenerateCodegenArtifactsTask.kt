@@ -8,6 +8,7 @@
 package com.facebook.react.tasks
 
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
@@ -26,8 +27,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
 
   @get:Internal abstract val reactNativeDir: DirectoryProperty
 
-  @get:Internal abstract val codegenDir: DirectoryProperty
-
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
   @get:InputFile abstract val packageJsonFile: RegularFileProperty
@@ -37,10 +36,6 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:Input abstract val codegenJavaPackageName: Property<String>
 
   @get:Input abstract val libraryName: Property<String>
-
-  @get:InputFile
-  val combineJsToSchemaCli: Provider<RegularFile> =
-      codegenDir.file("lib/cli/combine/combine-js-to-schema-cli.js")
 
   @get:InputFile
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")
@@ -69,16 +64,17 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   }
 
   internal fun setupCommandLine(libraryName: String, codegenJavaPackageName: String) {
+    val workingDir = project.projectDir
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
-            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.absolutePath,
+            reactNativeDir.file("scripts/generate-specs-cli.js").get().asFile.cliPath(workingDir),
             "--platform",
             "android",
             "--schemaPath",
-            generatedSchemaFile.get().asFile.absolutePath,
+            generatedSchemaFile.get().asFile.cliPath(workingDir),
             "--outputDir",
-            generatedSrcDir.get().asFile.absolutePath,
+            generatedSrcDir.get().asFile.cliPath(workingDir),
             "--libraryName",
             libraryName,
             "--javaPackageName",

@@ -19,6 +19,15 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   enable_debugger="true"
 fi
 
+cmake_build_type=""
+if [[ $CONFIGURATION == "Debug" ]]; then
+  # JS developers aren't VM developers.
+  # Therefore we're passing as build type Release, to provide a faster build.
+  cmake_build_type="Release"
+else
+  cmake_build_type="MinSizeRel"
+fi
+
 deployment_target=${IPHONEOS_DEPLOYMENT_TARGET}
 if [ -z "$deployment_target" ]; then
   deployment_target=${MACOSX_DEPLOYMENT_TARGET}
@@ -46,7 +55,7 @@ echo "Configure Apple framework"
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
   -DCMAKE_INSTALL_PREFIX:PATH="${PODS_ROOT}/hermes-engine/destroot" \
-  -DCMAKE_BUILD_TYPE="$CONFIGURATION"
+  -DCMAKE_BUILD_TYPE="$cmake_build_type"
 
 echo "Build Apple framework"
 

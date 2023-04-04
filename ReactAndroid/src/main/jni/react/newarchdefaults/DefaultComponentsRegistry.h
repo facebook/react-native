@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <ComponentFactory.h>
 #include <fbjni/fbjni.h>
+#include <react/fabric/ComponentFactory.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>

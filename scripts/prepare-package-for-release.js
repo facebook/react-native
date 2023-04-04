@@ -21,6 +21,8 @@
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const {isReleaseBranch, parseVersion} = require('./version-utils');
+const {failIfTagExists} = require('./release-utils');
+const {getBranchName} = require('./scm-utils'); // [macOS]
 
 const argv = yargs
   .option('r', {
@@ -43,11 +45,19 @@ const argv = yargs
     default: false,
   }).argv;
 
-const branch = process.env.CIRCLE_BRANCH;
+const branch = getBranchName(); // [macOS] Don't rely on CircleCI environment variables.
 const remote = argv.remote;
 const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;
 const isDryRun = argv.dryRun;
+
+const buildType = isDryRun
+  ? 'dry-run'
+  : isReleaseBranch(branch)
+  ? 'release'
+  : 'nightly';
+
+failIfTagExists(releaseVersion, buildType);
 
 if (branch && !isReleaseBranch(branch) && !isDryRun) {
   console.error(`This needs to be on a release branch. On branch: ${branch}`);
@@ -57,13 +67,17 @@ if (branch && !isReleaseBranch(branch) && !isDryRun) {
   exit(1);
 }
 
-const {version} = parseVersion(releaseVersion);
+const {version} = parseVersion(releaseVersion, buildType);
 if (version == null) {
   console.error(`Invalid version provided: ${releaseVersion}`);
   exit(1);
 }
 
-if (exec(`node scripts/set-rn-version.js --to-version ${version}`).code) {
+if (
+  exec(
+    `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
+  ).code
+) {
   echo(`Failed to set React Native version to ${version}`);
   exit(1);
 }
@@ -89,7 +103,8 @@ if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
 }
 
 // Add tag v0.21.0-rc.1
-if (exec(`git tag -a v${version} -m "v${version}"`).code) {
+// [macOS] Add "-microsoft" suffix to tag to distinguish from React Native Core.
+if (exec(`git tag -a v${version}-microsoft -m "v${version}-microsoft"`).code) {
   echo(
     `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
   );

@@ -6,7 +6,7 @@
  */
 
 #include <fbjni/fbjni.h>
-#include <jsi/JSCRuntime.h>
+#include <jsc/JSCRuntime.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/jni/JReactMarker.h>
 #include <react/jni/JSLogging.h>

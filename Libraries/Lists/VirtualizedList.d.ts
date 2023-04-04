@@ -9,7 +9,14 @@
 
 import type * as React from 'react';
 import type {LayoutChangeEvent} from '../../types';
-import type {ScrollViewProps} from '../Components/ScrollView/ScrollView';
+import {StyleProp} from '../StyleSheet/StyleSheet';
+import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
+import type {
+  ScrollResponderMixin,
+  ScrollView,
+  ScrollViewProps,
+} from '../Components/ScrollView/ScrollView';
+import type {View} from '../Components/View/View';
 
 export interface ViewToken {
   item: any;
@@ -96,6 +103,7 @@ export class VirtualizedList<ItemT> extends React.Component<
   scrollToItem: (params: {
     animated?: boolean | undefined;
     item: ItemT;
+    viewOffset?: number | undefined;
     viewPosition?: number | undefined;
   }) => void;
 
@@ -111,6 +119,13 @@ export class VirtualizedList<ItemT> extends React.Component<
   }) => void;
 
   recordInteraction: () => void;
+
+  getScrollRef: () =>
+    | React.ElementRef<typeof ScrollView>
+    | React.ElementRef<typeof View>
+    | null;
+
+  getScrollResponder: () => ScrollResponderMixin | null;
 }
 
 /**
@@ -124,6 +139,11 @@ export interface VirtualizedListProps<ItemT>
 
 export interface VirtualizedListWithoutRenderItemProps<ItemT>
   extends ScrollViewProps {
+  /**
+   * Rendered in between each item, but not at the top or bottom
+   */
+  ItemSeparatorComponent?: React.ComponentType<any> | null | undefined;
+
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -145,6 +165,11 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
     | undefined;
 
   /**
+   * Styling for internal View for ListFooterComponent
+   */
+  ListFooterComponentStyle?: StyleProp<ViewStyle> | undefined;
+
+  /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
@@ -153,6 +178,11 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
     | React.ReactElement
     | null
     | undefined;
+
+  /**
+   * Styling for internal View for ListHeaderComponent
+   */
+  ListHeaderComponentStyle?: StyleProp<ViewStyle> | undefined;
 
   /**
    * The default accessor functions assume this is an Array<{key: string}> but you can override

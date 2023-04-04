@@ -64,8 +64,8 @@ buck-out
 .gradle
 local.properties
 *.iml
-/android/
-/ReactAndroid/packages/
+/android/*
+!/android/README.md
 
 # Node
 node_modules
@@ -102,6 +102,8 @@ package-lock.json
 # Ruby Gems (Bundler)
 /vendor
 /template/vendor
+.ruby-version
+/**/.ruby-version
 
 # iOS / CocoaPods
 /template/ios/build/

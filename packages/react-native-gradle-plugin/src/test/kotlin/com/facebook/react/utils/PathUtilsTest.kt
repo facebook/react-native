@@ -13,7 +13,6 @@ import com.facebook.react.tests.OS
 import com.facebook.react.tests.OsRule
 import com.facebook.react.tests.WithOs
 import java.io.File
-import java.io.FileNotFoundException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
@@ -56,6 +55,20 @@ class PathUtilsTest {
     val actual = detectedEntryFile(extension)
 
     assertEquals(File(tempFolder.root, "index.js"), actual)
+  }
+
+  @Test
+  fun detectedEntryFile_withEnvironmentVariable() {
+    val extension = TestReactExtension(ProjectBuilder.builder().build())
+    val expected = tempFolder.newFile("./fromenv.index.js")
+    // As we can't override env variable for tests, we're going to emulate them here.
+    val envVariable = "./fromenv.index.js"
+
+    extension.root.set(tempFolder.root)
+
+    val actual = detectedEntryFile(extension, envVariable)
+
+    assertEquals(expected, actual)
   }
 
   @Test
@@ -232,7 +245,7 @@ class PathUtilsTest {
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
-    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -246,10 +259,10 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    assertEquals(localFile, findPackageJsonFile(project, extension))
+    assertEquals(localFile, findPackageJsonFile(project, extension.root))
   }
 
-  @Test(expected = FileNotFoundException::class)
+  @Test
   fun readPackageJsonFile_withMissingFile_returnsNull() {
     val moduleFolder = tempFolder.newFolder("awesome-module")
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
@@ -258,7 +271,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNull(actual)
   }
@@ -273,7 +286,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNull(actual!!.codegenConfig)
@@ -299,7 +312,7 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    val actual = readPackageJsonFile(project, extension)
+    val actual = readPackageJsonFile(project, extension.root)
 
     assertNotNull(actual)
     assertNotNull(actual!!.codegenConfig)

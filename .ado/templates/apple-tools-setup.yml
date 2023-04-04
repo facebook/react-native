@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSource: 'fromFile' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
+      versionSource: 'fromFile'
       versionFilePath: '.node-version'
 
   - task: UseRubyVersion@0

@@ -13,9 +13,22 @@ add_library(jscexecutor SHARED ${jscexecutor_SRC})
 
 target_include_directories(jscexecutor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Patch from Expo: https://github.com/expo/react-native/blob/02714ab44d1e206fa80e81aef618e61017cccdc1/ReactAndroid/src/main/java/com/facebook/react/jscexecutor/CMakeLists.txt#L16-L25
+# Explicitly link libgcc.a to prevent undefined `_Unwind_Resume` symbol and crash from throwing c++ exceptions even someone tries to catch the exceptions.
+# according to https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding,
+# we should put the unwinder between static libs and shared libs.
+#
+# TODO(ncor): we don't need this patch anymore after upgrading to ndk r23
+if(ANDROID_NDK_REVISION VERSION_LESS "23.0.0")
+  set(LIB_UNWIND gcc)
+else()
+  set(LIB_UNWIND unwind)
+endif()
+
 target_link_libraries(jscexecutor
         jsireact
         jscruntime
+        ${LIB_UNWIND}
         fb
         fbjni
         folly_runtime

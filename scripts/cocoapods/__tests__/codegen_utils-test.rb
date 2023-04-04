@@ -15,6 +15,14 @@ require_relative "./test_utils/CodegenUtilsMock.rb"
 require_relative "./test_utils/CodegenScriptPhaseExtractorMock.rb"
 require_relative "./test_utils/FileUtilsMock.rb"
 
+# mocking the min_ios_version_supported function
+# as it is not possible to require the original react_native_pod
+# without incurring in circular deps
+# TODO: move `min_ios_version_supported` to utils.rb
+def min_ios_version_supported
+    return '12.4'
+end
+
 class CodegenUtilsTests < Test::Unit::TestCase
     :base_path
 
@@ -380,9 +388,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(true)
         codegen_dir = "build/generated/ios"
+        ios_folder = '.'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -394,9 +403,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
+        ios_folder = '.'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)
@@ -409,7 +419,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         # Arrange
         CodegenUtils.set_cleanup_done(false)
         codegen_dir = "build/generated/ios"
-        codegen_path = "#{@base_path}/#{codegen_dir}"
+        ios_folder = '.'
+        codegen_path = "#{@base_path}/./#{codegen_dir}"
         globs = [
             "/MyModuleSpecs/MyModule.h",
             "#{codegen_path}/MyModuleSpecs/MyModule.mm",
@@ -420,15 +431,65 @@ class CodegenUtilsTests < Test::Unit::TestCase
         Dir.mocked_existing_globs(globs, "#{codegen_path}/*")
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, codegen_dir)
+        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir)
 
         # Assert
-        assert_equal(Dir.exist_invocation_params, [codegen_path])
-        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*"])
+        assert_equal(Dir.exist_invocation_params, [codegen_path, codegen_path])
+        assert_equal(Dir.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 1)
         assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [globs])
         assert_equal(CodegenUtils.cleanup_done(), true)
+    end
 
+    # ===================================== #
+    # Test - Assert Codegen Folder Is Empty #
+    # ===================================== #
+
+    def test_assertCodegenFolderIsEmpty_whenItDoesNotExists_doesNotAbort
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/./#{codegen_dir}"
+        ios_folder = '.'
+
+        # Act
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [])
+    end
+
+    def test_assertCodegenFolderIsEmpty_whenItExistsAndIsEmpty_doesNotAbort
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/./#{codegen_dir}"
+        ios_folder = '.'
+        Dir.mocked_existing_dirs(codegen_path)
+        Dir.mocked_existing_globs([], "#{codegen_path}/*")
+
+        # Act
+        CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [])
+    end
+
+    def test_assertCodegenFolderIsEmpty_whenItIsNotEmpty_itAborts
+        # Arrange
+        codegen_dir = "build/generated/ios"
+        codegen_path = "#{@base_path}/./#{codegen_dir}"
+        ios_folder = '.'
+        Dir.mocked_existing_dirs(codegen_path)
+        Dir.mocked_existing_globs(["#{codegen_path}/MyModuleSpecs/MyModule.mm",], "#{codegen_path}/*")
+
+        # Act
+        assert_raises() {
+            CodegenUtils.assert_codegen_folder_is_empty(@base_path, ios_folder, codegen_dir)
+        }
+
+        # Assert
+        assert_equal(Pod::UI.collected_warns, [
+            "Unable to remove the content of ~/app/ios/./build/generated/ios folder. Please run rm -rf ~/app/ios/./build/generated/ios and try again."
+        ])
     end
 
     private
@@ -445,7 +506,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '12.4',
+            'ios' => min_ios_version_supported,
             'osx' => '10.15',
           },
           'source_files' => "**/*.{h,mm,cpp}",
@@ -459,15 +520,16 @@ class CodegenUtilsTests < Test::Unit::TestCase
             ].join(' ')
           },
           'dependencies': {
-            "FBReactNativeSpec":  ["99.98.97"],
-            "React-jsiexecutor":  ["99.98.97"],
-            "RCT-Folly": ["2021.07.22.00"],
-            "RCTRequired": ["99.98.97"],
-            "RCTTypeSafety": ["99.98.97"],
-            "React-Core": ["99.98.97"],
-            "React-jsi": ["99.98.97"],
-            "hermes-engine": ["99.98.97"],
-            "ReactCommon/turbomodule/core": ["99.98.97"]
+            "FBReactNativeSpec":  [],
+            "React-jsiexecutor":  [],
+            "RCT-Folly": [],
+            "RCTRequired": [],
+            "RCTTypeSafety": [],
+            "React-Core": [],
+            "React-jsi": [],
+            "hermes-engine": [],
+            "ReactCommon/turbomodule/bridging": [],
+            "ReactCommon/turbomodule/core": []
           }
         }
     end
@@ -476,8 +538,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs[:dependencies].merge!({
-            'React-graphics': ["99.98.97"],
-            'React-rncore':  ["99.98.97"],
+            'React-graphics': [],
+            'React-rncore':  [],
         })
 
         specs[:'script_phases'] = script_phases

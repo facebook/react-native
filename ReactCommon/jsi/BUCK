@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "APPLE", "IOS", "MACOSX", "react_native_xplat_dep", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_dep", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "jsi",
@@ -53,36 +53,6 @@ rn_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        react_native_xplat_dep("jsi:jsi"),
-    ],
-)
-
-rn_xplat_cxx_library(
-    name = "JSCRuntime",
-    srcs = [
-        "JSCRuntime.cpp",
-    ],
-    header_namespace = "jsi",
-    exported_headers = [
-        "JSCRuntime.h",
-    ],
-    apple_sdks = (IOS, MACOSX),
-    compiler_flags_pedantic = True,
-    fbobjc_compiler_flags = [
-        "-Os",
-    ],
-    fbobjc_frameworks = [
-        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
-    ],
-    labels = [
-        "pfh:ReactNative_CommonInfrastructurePlaceholder",
-    ],
-    platforms = APPLE,
-    visibility = ["PUBLIC"],
-    xplat_mangled_args = {
-        "soname": "libjscjsi.$(ext)",
-    },
-    exported_deps = [
         react_native_xplat_dep("jsi:jsi"),
     ],
 )

@@ -21,97 +21,28 @@ const os = require('os');
 const path = require('path');
 const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
-const {parseVersion} = require('./version-utils');
+const {parseVersion, validateBuildType} = require('./version-utils');
 const {saveFiles} = require('./scm-utils');
-
-const tmpVersioningFolder = fs.mkdtempSync(
-  path.join(os.tmpdir(), 'rn-set-version'),
-);
-echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 let argv = yargs
   .option('v', {
     alias: 'to-version',
     type: 'string',
-    // [macOS Extra options used during RNM's publish pipelines
+    required: true,
   })
-  .option('p', {
-    alias: 'rnmpublish',
-    type: 'boolean',
-    default: false,
-  })
-  .option('n', {
-    alias: 'nightly',
-    type: 'boolean',
-    default: false,
-  })
-  .option('a', {
-    alias: 'autogenerate-version-number',
-    type: 'boolean',
-    default: false,
-  })
-  .option('S', {
-    // [macOS Remove this option once version bumping scripts have been refactored
-    alias: 'skip-update-ruby',
-    type: 'boolean',
-    default: false, // macOS]
-    // macOS]
+  .option('b', {
+    alias: 'build-type',
+    type: 'string',
+    required: true,
   }).argv;
 
-const autogenerateVersionNumber = argv.autogenerateVersionNumber;
-const nightlyBuild = argv.nightly;
-// Nightly builds don't need an update as main will already be up-to-date.
-const updatePodfileLock = !nightlyBuild;
-let version = argv.toVersion;
+const buildType = argv.buildType;
+const version = argv.toVersion;
 
-if (!version) {
-  if (nightlyBuild && autogenerateVersionNumber) {
-    // [macOS Some of our calls to set-rn-version.js still depend on an automatically generated version number
-    const currentCommit = exec('git rev-parse HEAD', {
-      silent: true,
-    }).stdout.trim();
-    const calvar = exec(
-      `git show -s --format=%cd --date=format:%Y%m%d ${currentCommit}`,
-      {silent: true},
-    ).stdout.trim();
-    version = `0.0.0-${calvar}-${currentCommit.slice(0, 9)}`;
-    // macOS]
-  } else {
-    echo('You must specify a version using -v');
-    exit(1);
-  }
-}
-
-// [macOS
-let branch;
-if (!nightlyBuild) {
-  // Check we are in release branch, e.g. 0.33-stable
-  if (process.env.BUILD_SOURCEBRANCH) {
-    console.log(`BUILD_SOURCEBRANCH: ${process.env.BUILD_SOURCEBRANCH}`);
-    branch = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
-    console.log(`Identified branch: ${branch}`);
-  } else {
-    branch = exec('git symbolic-ref --short HEAD', {
-      silent: true,
-    }).stdout.trim();
-  }
-
-  if (branch.indexOf('-stable') === -1) {
-    echo('You must be in 0.XX-stable branch to bump a version');
-    exit(1);
-  }
-
-  // e.g. 0.33
-  let versionMajor = branch.slice(0, branch.indexOf('-stable'));
-
-  // - check that argument version matches branch
-  // e.g. 0.33.1 or 0.33.0-rc4
-  if (version.indexOf(versionMajor) !== 0) {
-    echo(
-      `You must specify a version tag like 0.${versionMajor}.[X]-rc[Y] to bump a version`,
-    );
-    exit(1);
-  }
+try {
+  validateBuildType(buildType);
+} catch (e) {
+  throw e;
 }
 
 let major,
@@ -119,11 +50,15 @@ let major,
   patch,
   prerelease = -1;
 try {
-  ({major, minor, patch, prerelease} = parseVersion(version));
+  ({major, minor, patch, prerelease} = parseVersion(version, buildType));
 } catch (e) {
-  echo(e.message);
-  exit(1);
+  throw e;
 }
+
+const tmpVersioningFolder = fs.mkdtempSync(
+  path.join(os.tmpdir(), 'rn-set-version'),
+);
+echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
 saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
 
@@ -181,25 +116,21 @@ fs.writeFileSync(
 
 let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
-
-// [macOS We do this separately in a non-destructive way as part of our publish steps
-// delete packageJson.workspaces;
-// delete packageJson.private;
+delete packageJson.workspaces;
+delete packageJson.private;
 
 // Copy repo-config/package.json dependencies as devDependencies
-// const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
-// packageJson.devDependencies = {
-//   ...packageJson.devDependencies,
-//   ...repoConfigJson.dependencies,
-// };
+const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
+packageJson.devDependencies = {
+  ...packageJson.devDependencies,
+  ...repoConfigJson.dependencies,
+};
 // Make react-native-codegen a direct dependency of react-native
-// delete packageJson.devDependencies['react-native-codegen'];
-// packageJson.dependencies = {
-//   ...packageJson.dependencies,
-//   'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
-// };
-// macOS]
-
+delete packageJson.devDependencies['react-native-codegen'];
+packageJson.dependencies = {
+  ...packageJson.dependencies,
+  'react-native-codegen': repoConfigJson.dependencies['react-native-codegen'],
+};
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
 // Change ReactAndroid/gradle.properties
@@ -219,20 +150,8 @@ if (
 // Change react-native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
-// [macOS
-if (updatePodfileLock) {
-  echo('Updating RNTester Podfile.lock...');
-  if (exec('source scripts/update_podfile_lock.sh && update_pods').code) {
-    echo('Failed to update RNTester Podfile.lock.');
-    echo('Fix the issue, revert and try again.');
-    exit(1);
-  }
-}
-// macOS]
-
 // Make sure to update ruby version
-if (!argv.skipUpdateRuby && exec('scripts/update-ruby.sh').code) {
-  // [macOS]
+if (exec('scripts/update-ruby.sh').code) {
   echo('Failed to update Ruby version');
   exit(1);
 }
@@ -249,72 +168,18 @@ const numberOfChangedLinesWithNewVersion = exec(
   {silent: true},
 ).stdout.trim();
 
-// Release builds should commit the version bumps, and create tags.
-// Nightly builds do not need to do that.
-if (!nightlyBuild) {
-  if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
-    echo(
-      `Failed to update all the files: [${filesToValidate.join(
-        ', ',
-      )}] must have versions in them`,
-    );
-    echo('Fix the issue and try again');
-    exec('git diff');
-    exit(1);
-  }
-
-  // [macOS we run this script when publishing react-native-macos and when publishing react-native microsoft fork
-  // The react-native publish build runs on an agent without cocopods - so we cannot update the podfile.lock
-  if (require('../package.json').name !== 'react-native-macos') {
-    exit(0);
-  }
-
-  // Update Podfile.lock only on release builds, not nightlies.
-  // Nightly builds don't need it as the main branch will already be up-to-date.
-  echo('Updating RNTester Podfile.lock...');
-  if (exec('. scripts/update_podfile_lock.sh && update_pods').code) {
-    echo('Failed to update RNTester Podfile.lock.');
-    echo('Fix the issue, revert and try again.');
-    exit(1);
-  }
-
-  // [macOS we run this script when publishing react-native-macos and when publishing react-native microsoft fork
-  // We have seperate logic to tag and commit changes.  -- If we used the rest of the logic we'd end up with two publish jobs
-  // competing and conflicting to tag / commit the changes.
-  if (argv.rnmpublish) {
-    exit(0);
-  }
-
-  // Make commit [0.21.0-rc] Bump version numbers
-  if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
-    echo('failed to commit');
-    exit(1);
-  }
-
-  // Add tag v0.21.0-rc
-  if (exec(`git tag v${version}`).code) {
-    echo(
-      `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
-    );
-    echo('You may want to rollback the last commit');
-    echo('git reset --hard HEAD~1');
-    exit(1);
-  }
-
-  // Push newly created tag
-  let remote = argv.remote;
-  exec(`git push ${remote} v${version}`);
-
-  // Tag latest if doing stable release.
-  // This will also tag npm release as `latest`
-  if (prerelease == null && argv.latest) {
-    exec('git tag -d latest');
-    exec(`git push ${remote} :latest`);
-    exec('git tag latest');
-    exec(`git push ${remote} latest`);
-  }
-
-  exec(`git push ${remote} ${branch} --follow-tags`);
+if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
+  // TODO: the logic that checks whether all the changes have been applied
+  // is missing several files. For example, it is not checking Ruby version nor that
+  // the Objecive-C files, the codegen and other files are properly updated.
+  // We are going to work on this in another PR.
+  echo('WARNING:');
+  echo(
+    `Failed to update all the files: [${filesToValidate.join(
+      ', ',
+    )}] must have versions in them`,
+  );
+  echo(`These files already had version ${version} set.`);
 }
 
 exit(0);

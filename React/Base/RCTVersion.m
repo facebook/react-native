@@ -14,14 +14,15 @@ NSString* const RCTVersionMinor = @"minor";
 NSString* const RCTVersionPatch = @"patch";
 NSString* const RCTVersionPrerelease = @"prerelease";
 
+
 NSDictionary* RCTGetReactNativeVersion(void)
 {
   static NSDictionary* __rnVersion;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^(void){
     __rnVersion = @{
-                  RCTVersionMajor: @(1000),
-                  RCTVersionMinor: @(0),
+                  RCTVersionMajor: @(0),
+                  RCTVersionMinor: @(71),
                   RCTVersionPatch: @(0),
                   RCTVersionPrerelease: [NSNull null],
                   };

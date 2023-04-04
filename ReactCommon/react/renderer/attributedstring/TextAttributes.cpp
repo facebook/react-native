@@ -46,6 +46,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   allowFontScaling = textAttributes.allowFontScaling.has_value()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
+  dynamicTypeRamp = textAttributes.dynamicTypeRamp.has_value()
+      ? textAttributes.dynamicTypeRamp
+      : dynamicTypeRamp;
   letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
@@ -111,6 +114,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              fontStyle,
              fontVariant,
              allowFontScaling,
+             dynamicTypeRamp,
              alignment,
              baseWritingDirection,
              lineBreakStrategy,
@@ -131,6 +135,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.fontStyle,
              rhs.fontVariant,
              rhs.allowFontScaling,
+             rhs.dynamicTypeRamp,
              rhs.alignment,
              rhs.baseWritingDirection,
              rhs.lineBreakStrategy,
@@ -186,6 +191,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("fontStyle", fontStyle),
       debugStringConvertibleItem("fontVariant", fontVariant),
       debugStringConvertibleItem("allowFontScaling", allowFontScaling),
+      debugStringConvertibleItem("dynamicTypeRamp", dynamicTypeRamp),
       debugStringConvertibleItem("letterSpacing", letterSpacing),
 
       // Paragraph Styles

@@ -49,5 +49,6 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
-  s.dependency "SocketRocket", socket_rocket_version
+  s.dependency 'React-RCTBlob'
+  s.dependency "SocketRocket", socket_rocket_version # [macOS]
 end

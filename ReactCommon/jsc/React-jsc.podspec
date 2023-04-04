@@ -16,27 +16,22 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.07.22.00'
-boost_compiler_flags = '-Wno-documentation'
-
 Pod::Spec.new do |s|
-  s.name                   = "React-jsidynamic"
+  s.name                   = "React-jsc"
   s.version                = version
-  s.summary                = "Provides support for converting between folly::dynamic and jsi::value"
+  s.summary                = "JavaScriptCore engine for React Native"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "12.4", :osx => "10.15" }
   s.source                 = source
-  s.source_files           = "jsi/JSIDynamic.{cpp,h}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
-  s.header_dir             = 'jsi'
+  s.source_files           = "JSCRuntime.{cpp,h}"
+  s.exclude_files          = "**/test/*"
+  s.framework              = "JavaScriptCore"
 
-  s.dependency "boost", "1.76.0"
-  s.dependency "DoubleConversion"
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "glog"
   s.dependency "React-jsi", version
+
+  s.subspec "Fabric" do |ss|
+    ss.pod_target_xcconfig  = { "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" }
+  end
 end

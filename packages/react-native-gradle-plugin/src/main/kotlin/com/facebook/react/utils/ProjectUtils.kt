@@ -7,9 +7,9 @@
 
 package com.facebook.react.utils
 
-import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
 
 internal object ProjectUtils {
   internal val Project.isNewArchEnabled: Boolean
@@ -35,12 +35,21 @@ internal object ProjectUtils {
           HERMES_FALLBACK
         }
 
-  internal fun Project.needsCodegenFromPackageJson(extension: ReactExtension): Boolean {
-    val parsedPackageJson = readPackageJsonFile(this, extension)
+  internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
+    val parsedPackageJson = readPackageJsonFile(this, rootProperty)
     return needsCodegenFromPackageJson(parsedPackageJson)
   }
 
   internal fun Project.needsCodegenFromPackageJson(model: ModelPackageJson?): Boolean {
     return model?.codegenConfig != null
+  }
+
+  internal fun Project.getReactNativeArchitectures(): List<String> {
+    val architectures = mutableListOf<String>()
+    if (project.hasProperty("reactNativeArchitectures")) {
+      val architecturesString = project.property("reactNativeArchitectures").toString()
+      architectures.addAll(architecturesString.split(",").filter { it.isNotBlank() })
+    }
+    return architectures
   }
 }

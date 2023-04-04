@@ -236,7 +236,6 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
   borderTopWidth?: number | undefined;
   borderWidth?: number | undefined;
   opacity?: number | undefined;
-  testID?: string | undefined;
   /**
    * Sets the elevation of a view, using Android's underlying
    * [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation).

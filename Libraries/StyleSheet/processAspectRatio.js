@@ -12,9 +12,19 @@
 
 const invariant = require('invariant');
 
-function processAspectRatio(aspectRatio: number | string): ?number {
+function processAspectRatio(aspectRatio?: number | string): ?number {
   if (typeof aspectRatio === 'number') {
     return aspectRatio;
+  }
+  if (typeof aspectRatio !== 'string') {
+    if (__DEV__) {
+      invariant(
+        !aspectRatio,
+        'aspectRatio must either be a number, a ratio string or `auto`. You passed: %s',
+        aspectRatio,
+      );
+    }
+    return;
   }
 
   const matches = aspectRatio.split('/').map(s => s.trim());
@@ -34,7 +44,7 @@ function processAspectRatio(aspectRatio: number | string): ?number {
   if (__DEV__) {
     invariant(
       !hasNonNumericValues && (matches.length === 1 || matches.length === 2),
-      'aspectRatio must either be a number, a ratio or `auto`. You passed: %s',
+      'aspectRatio must either be a number, a ratio string or `auto`. You passed: %s',
       aspectRatio,
     );
   }

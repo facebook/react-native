@@ -22,14 +22,16 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   val targetName = variant.name.replaceFirstChar { it.uppercase() }
   val targetPath = variant.name
 
-  // React js bundle directories
+  // Resources: generated/assets/react/<variant>/index.android.bundle
   val resourcesDir = File(buildDir, "generated/res/react/$targetPath")
-  // Bundle: generated/assets/react/path/index.android.bundle
+  // Bundle: generated/assets/react/<variant>/index.android.bundle
   val jsBundleDir = File(buildDir, "generated/assets/react/$targetPath")
-  // Sourcemap: generated/sourcemaps/react/path/index.android.bundle.map
+  // Sourcemap: generated/sourcemaps/react/<variant>/index.android.bundle.map
   val jsSourceMapsDir = File(buildDir, "generated/sourcemaps/react/$targetPath")
-  // Intermediate packager: intermediates/sourcemaps/react/path/index.android.bundle.packager.map
-  // Intermediate compiler: intermediates/sourcemaps/react/path/index.android.bundle.compiler.map
+  // Intermediate packager:
+  // intermediates/sourcemaps/react/<variant>/index.android.bundle.packager.map
+  // Intermediate compiler:
+  // intermediates/sourcemaps/react/<variant>/index.android.bundle.compiler.map
   val jsIntermediateSourceMapsDir = File(buildDir, "intermediates/sourcemaps/react/$targetPath")
 
   // The location of the cli.js file for React Native
@@ -46,17 +48,17 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
       config.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
 
   configureNewArchPackagingOptions(project, variant)
-  configureJsEnginePackagingOptions(
-      config, variant, isHermesEnabledInThisVariant, isDebuggableVariant)
+  configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant)
 
   if (!isDebuggableVariant) {
+    val entryFileEnvVariable = System.getenv("ENTRY_FILE")
     val bundleTask =
         tasks.register("createBundle${targetName}JsAndAssets", BundleHermesCTask::class.java) {
           it.root.set(config.root)
           it.nodeExecutableAndArgs.set(config.nodeExecutableAndArgs)
           it.cliFile.set(cliFile)
           it.bundleCommand.set(config.bundleCommand)
-          it.entryFile.set(detectedEntryFile(config))
+          it.entryFile.set(detectedEntryFile(config, entryFileEnvVariable))
           it.extraPackagerArgs.set(config.extraPackagerArgs)
           it.bundleConfig.set(config.bundleConfig)
           it.bundleAssetName.set(config.bundleAssetName)
@@ -71,7 +73,9 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
           it.hermesFlags.set(config.hermesFlags)
           it.reactNativeDir.set(config.reactNativeDir)
         }
-    variant.sources.res?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::resourcesDir)
+    // Currently broken inside AGP 7.3 We need to wait for a release of AGP 7.4 in order to use
+    // the addGeneratedSourceDirectory API.
+    // variant.sources.res?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::resourcesDir)
     variant.sources.assets?.addGeneratedSourceDirectory(bundleTask, BundleHermesCTask::jsBundleDir)
   }
 }

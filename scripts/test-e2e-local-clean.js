@@ -49,6 +49,9 @@ exec('rm -rf /tmp/maven-local');
 console.info('\n** Nuking the derived data folder **\n');
 exec('rm -rf ~/Library/Developer/Xcode/DerivedData');
 
+console.info('\n** Removing the hermes-engine pod cache **\n');
+exec('rm -rf ~/Library/Caches/CocoaPods/Pods/External/hermes-engine');
+
 // RNTester Pods
 console.info('\n** Removing the RNTester Pods **\n');
 exec('rm -rf packages/rn-tester/Pods');

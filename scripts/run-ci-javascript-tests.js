@@ -65,6 +65,13 @@ try {
     throw Error(exitCode);
   }
 
+  describe('Test: TypeScript tests');
+  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+    echo('Failed to run TypeScript tests.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   exitCode = 0;
 } finally {
   // Do cleanup here
