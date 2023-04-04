@@ -79,9 +79,9 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.2.1",
-    "@react-native-community/cli": "11.0.0",
-    "@react-native-community/cli-platform-android": "11.0.0",
-    "@react-native-community/cli-platform-ios": "11.0.0",
+    "@react-native-community/cli": "12.0.0-alpha.0",
+    "@react-native-community/cli-platform-android": "12.0.0-alpha.0",
+    "@react-native-community/cli-platform-ios": "12.0.0-alpha.0",
     "@react-native/assets-registry": "^0.73.0",
     "@react-native/codegen": "^0.73.0",
     "@react-native/gradle-plugin": "^0.73.0",
