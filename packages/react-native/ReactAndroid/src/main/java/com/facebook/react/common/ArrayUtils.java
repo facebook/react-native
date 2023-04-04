@@ -9,10 +9,11 @@ package com.facebook.react.common;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class ArrayUtils {
 
-  public static float[] copyArray(float[] array) {
+  public static float[] copyArray(@Nullable float[] array) {
     return array == null ? null : Arrays.copyOf(array, array.length);
   }
 
