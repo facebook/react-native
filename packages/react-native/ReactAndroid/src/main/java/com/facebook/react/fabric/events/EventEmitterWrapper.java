@@ -14,7 +14,6 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.fabric.FabricSoLoader;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 
 /**
@@ -23,10 +22,6 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
  */
 @SuppressLint("MissingNativeLoadLibrary")
 public class EventEmitterWrapper {
-
-  static {
-    FabricSoLoader.staticInit();
-  }
 
   @DoNotStrip private final HybridData mHybridData;
 
