@@ -105,6 +105,19 @@ void assign(std::unique_ptr<T> &lhs, const dynamic &obj, const U &key) {
   }
 }
 
+template <typename T, typename U, typename D>
+void assign(
+    std::unique_ptr<T, std::function<void(D *)>> &lhs,
+    const dynamic &obj,
+    const U &key) {
+  auto it = obj.find(key);
+  if (it != obj.items().end()) {
+    lhs = std::make_unique<T>(valueFromDynamic<T>(it->second));
+  } else {
+    lhs.reset();
+  }
+}
+
 /// valueToDynamic
 
 inline dynamic valueToDynamic(const Serializable &value) {
@@ -151,6 +164,23 @@ void put(dynamic &obj, const K &key, const std::unique_ptr<V> &ptr) {
   } else {
     obj.erase(key);
   }
+}
+
+template <typename K, typename V, typename D>
+void put(
+    dynamic &obj,
+    const K &key,
+    const std::unique_ptr<V, std::function<void(D *)>> &ptr) {
+  if (ptr.get()) {
+    obj[key] = valueToDynamic(*ptr);
+  } else {
+    obj.erase(key);
+  }
+}
+
+template <typename T>
+void deleter(T *p) {
+  delete p;
 }
 
 } // namespace message

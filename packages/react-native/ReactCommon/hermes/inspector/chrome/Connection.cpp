@@ -482,7 +482,7 @@ void Connection::Impl::handle(
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
@@ -642,7 +642,7 @@ void Connection::Impl::handle(const m::heapProfiler::StopSamplingRequest &req) {
             m::heapProfiler::StopSamplingResponse resp;
             resp.id = id;
             m::heapProfiler::SamplingHeapProfile profile{json};
-            resp.profile = profile;
+            resp.profile = std::move(profile);
             sendResponseToClient(resp);
           })
       .via(executor_.get())
@@ -690,7 +690,7 @@ void Connection::Impl::handle(
         if (!remoteObjPtr->type.empty()) {
           m::heapProfiler::GetObjectByHeapObjectIdResponse resp;
           resp.id = id;
-          resp.result = *remoteObjPtr;
+          resp.result = std::move(*remoteObjPtr);
           sendResponseToClient(resp);
         } else {
           sendResponseToClient(m::makeErrorResponse(
@@ -1075,7 +1075,7 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
@@ -1149,7 +1149,7 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
