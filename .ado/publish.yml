@@ -21,8 +21,8 @@ variables:
     value: production,externalfacing
 
 jobs:
-  - job: NPMPublishRNM
-    displayName: NPM Publish React Native macOS
+  - job: RNGithubNpmJSPublish
+    displayName: NPM Publish React-native-macos
     pool:
       vmImage: $(VmImageApple)
     variables:
@@ -40,65 +40,26 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - template: templates/apple-tools-setup.yml
-
-      - template: templates/apple-install-dependencies.yml
-
-      - template: templates/apple-release-setup.yml
-
-      - task: CmdLine@2
-        displayName: Set next version if release branch
-        inputs:
-          script: |
-            VERSION=$(node .ado/get-next-semver-version.js)
-            echo "Set version to: $VERSION"
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
-  
-      - task: CmdLine@2
-        displayName: Set latest tag if latest stable branch
-        inputs:
-          script: |
-            LATEST=true
-            echo "Set latest to: $LATEST"
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
-
-      - task: CmdLine@2
-        displayName: Set release type to 'nightly'
-        inputs:
-          script: |
-            RELEASE_TYPE=nightly
-            echo "Set release type to: $RELEASE_TYPE"
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-  
-      - task: CmdLine@2
-        displayName: Set release type to 'release'
-        inputs:
-          script: |
-            RELEASE_TYPE=release
-            echo "Set release type to: $RELEASE_TYPE"
-        condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
-
-      - task: CmdLine@2
-        displayName: Prepare package for release
-        inputs:
-          script: |
-            if [[ -z "$VERSION" ]]; then
-              VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
-              echo "Using the version from the package.json: $VERSION"
-            fi
-            node ./scripts/prepare-package-for-release.js -v "$VERSION" -l $LATEST
-        condition: and(succeeded(), ne(variables['Build.TargetBranch'], 'refs/heads/main'))
+      - ${{ if eq(variables['isMain'], true) }}:
+        - template: templates/apple-job-publish.yml
+          parameters:
+            build_type: nightly
+      - ${{ elseif eq(variables['isReleaseBranch'], true) }}:
+        - template: templates/apple-job-publish.yml
+          parameters:
+            build_type: release
+      - ${{ else }}:
+        - task: CmdLine@2
+          displayName: Unknown branch, skipping publish
+          inputs:
+            script: |
+              echo "Skipping publish for branch $(Build.SourceBranchName)"
+              exit 1
 
       - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
         displayName: 📒 Generate Manifest
         inputs:
           BuildDropPath: $(System.DefaultWorkingDirectory)
-
-      - task: CmdLine@2
-        displayName: NPM Publish
-        inputs:
-          script: |
-            node ./scripts/publish-npm.js --$RELEASE_TYPE
 
       - task: PublishPipelineArtifact@1
         displayName: 📒 Publish Manifest
@@ -107,7 +68,7 @@ jobs:
           targetPath: $(System.DefaultWorkingDirectory)/_manifest
 
   - job: RNMacOSInitNpmJSPublish
-    displayName: react-native-macos-init Publish to npmjs.org
+    displayName: NPM Publish react-native-macos-init
     pool: cxeiss-ubuntu-20-04-large
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
@@ -121,8 +82,6 @@ jobs:
         lfs: false # whether to download Git-LFS files
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-
-      - template: templates/apple-tools-setup.yml
 
       - template: templates/apple-install-dependencies.yml
 
