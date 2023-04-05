@@ -292,7 +292,15 @@ export type FontVariant =
   | 'oldstyle-nums'
   | 'lining-nums'
   | 'tabular-nums'
-  | 'proportional-nums';
+  | 'proportional-nums'
+  | 'common-ligatures'
+  | 'no-common-ligatures'
+  | 'discretionary-ligatures'
+  | 'no-discretionary-ligatures'
+  | 'historical-ligatures'
+  | 'no-historical-ligatures'
+  | 'contextual'
+  | 'no-contextual';
 export interface TextStyleIOS extends ViewStyle {
   fontVariant?: FontVariant[] | undefined;
   textDecorationColor?: ColorValue | undefined;
