@@ -9,7 +9,7 @@
 
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTColorAnimatedNode.h>
-#import <React/RCTLog.h>
+#import <React/RCTObjectAnimatedNode.h>
 #import <React/RCTStyleAnimatedNode.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTValueAnimatedNode.h>
@@ -131,6 +131,10 @@
       RCTColorAnimatedNode *colorAnimatedNode = (RCTColorAnimatedNode *)parentNode;
       NSString *property = [self propertyNameForParentTag:parentTag];
       _propsDictionary[property] = @(colorAnimatedNode.color);
+    } else if ([parentNode isKindOfClass:[RCTObjectAnimatedNode class]]) {
+      RCTObjectAnimatedNode *objectAnimatedNode = (RCTObjectAnimatedNode *)parentNode;
+      NSString *property = [self propertyNameForParentTag:parentTag];
+      _propsDictionary[property] = objectAnimatedNode.value;
     }
   }
 
