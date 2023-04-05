@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTVirtualTextViewManager.h>
-
 #import <React/RCTVirtualTextShadowView.h>
+#import <React/RCTVirtualTextView.h>
+#import <React/RCTVirtualTextViewManager.h>
 
 @implementation RCTVirtualTextViewManager
 
@@ -15,7 +15,7 @@ RCT_EXPORT_MODULE(RCTVirtualText)
 
 - (UIView *)view
 {
-  return [UIView new];
+  return [RCTVirtualTextView new];
 }
 
 - (RCTShadowView *)shadowView

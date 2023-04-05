@@ -30,6 +30,7 @@ class TouchEventEmitter : public EventEmitter {
   void onTouchEnd(TouchEvent const &event) const;
   void onTouchCancel(TouchEvent const &event) const;
 
+  void onClick(PointerEvent const &event) const;
   void onPointerCancel(PointerEvent const &event) const;
   void onPointerDown(PointerEvent const &event) const;
   void onPointerMove(PointerEvent const &event) const;

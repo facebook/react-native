@@ -11,13 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTTextView : UIView
-
-@property (nonatomic, assign) BOOL selectable;
-
-- (void)setTextStorage:(NSTextStorage *)textStorage
-          contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<UIView *> *)descendantViews;
+@interface RCTVirtualTextView : UIView
 
 /**
  * (Experimental and unused for Paper) Pointer event handlers.

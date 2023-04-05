@@ -480,6 +480,7 @@ RCT_CUSTOM_VIEW_PROPERTY(onTouchEnd, BOOL, RCTView) {}
 RCT_CUSTOM_VIEW_PROPERTY(onTouchCancel, BOOL, RCTView) {}
 
 // Experimental/WIP Pointer Events (not yet ready for use)
+RCT_EXPORT_VIEW_PROPERTY(onClick, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerCancel, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerDown, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerMove, RCTBubblingEventBlock)
