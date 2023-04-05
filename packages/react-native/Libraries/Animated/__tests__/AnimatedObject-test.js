@@ -41,6 +41,30 @@ describe('AnimatedObject', () => {
     ]);
   });
 
+  it('should make all AnimatedNodes native', () => {
+    const anim = new Animated.Value(0);
+    const translateAnim = anim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [100, 200],
+    });
+
+    const node = new AnimatedObject([
+      {
+        translate: [translateAnim, translateAnim],
+      },
+      {
+        translateX: translateAnim,
+      },
+      {scale: anim},
+    ]);
+
+    node.__makeNative();
+
+    expect(node.__isNative).toBe(true);
+    expect(anim.__isNative).toBe(true);
+    expect(translateAnim.__isNative).toBe(true);
+  });
+
   describe('hasAnimatedNode', () => {
     it('should detect any animated nodes', () => {
       expect(hasAnimatedNode(10)).toBe(false);

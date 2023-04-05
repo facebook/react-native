@@ -129,14 +129,18 @@ export default class AnimatedObject extends AnimatedWithChildren {
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    throw new Error(
-      'This JS animated node type cannot be used as native animated node',
-    );
+    visit(this._value, value => {
+      value.__makeNative(platformConfig);
+    });
+    super.__makeNative(platformConfig);
   }
 
   __getNativeConfig(): any {
-    throw new Error(
-      'This JS animated node type cannot be used as native animated node',
-    );
+    return {
+      type: 'object',
+      value: mapAnimatedNodes(this._value, node => {
+        return {nodeTag: node.__getNativeTag()};
+      }),
+    };
   }
 }
