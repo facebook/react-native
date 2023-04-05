@@ -26,6 +26,10 @@ const {
   getOptions,
   getCommandTypeNameAndOptionsExpression,
 } = require('../../parsers-commons');
+const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../../error-utils');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
@@ -39,12 +43,8 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
     findNativeComponentType(statement, foundConfigs, parser);
   });
 
-  if (foundConfigs.length === 0) {
-    throw new Error('Could not find component config for native component');
-  }
-  if (foundConfigs.length > 1) {
-    throw new Error('Only one component is supported per file');
-  }
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
 
   const foundConfig = foundConfigs[0];
 

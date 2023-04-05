@@ -12,6 +12,11 @@
 'use strict';
 
 const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../error-utils');
+
+const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfModuleInterfaceIsMisnamed,
@@ -846,6 +851,57 @@ describe('throwIfMoreThanOneCodegenNativecommands', () => {
     ];
     expect(() => {
       throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfConfigNotfound', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).toThrowError('Could not find component config for native component');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfMoreThanOneConfig', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName1',
+        componentName: 'testComponentName1',
+      },
+      {
+        propsTypeName: 'testPropsTypeName2',
+        componentName: 'testComponentName2',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).toThrowError('Only one component is supported per file');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
     }).not.toThrow();
   });
 });
