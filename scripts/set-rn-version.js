@@ -149,12 +149,6 @@ if (
 // Change react-native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
-// Make sure to update ruby version
-if (exec('scripts/update-ruby.sh').code) {
-  echo('Failed to update Ruby version');
-  exit(1);
-}
-
 // Verify that files changed, we just do a git diff and check how many times version is added across files
 const filesToValidate = [
   'packages/react-native/package.json',
