@@ -21,6 +21,7 @@
 #import <React/RCTInterpolationAnimatedNode.h>
 #import <React/RCTModuloAnimatedNode.h>
 #import <React/RCTMultiplicationAnimatedNode.h>
+#import <React/RCTObjectAnimatedNode.h>
 #import <React/RCTPropsAnimatedNode.h>
 #import <React/RCTSpringAnimation.h>
 #import <React/RCTStyleAnimatedNode.h>
@@ -97,7 +98,8 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
       @"modulus" : [RCTModuloAnimatedNode class],
       @"subtraction" : [RCTSubtractionAnimatedNode class],
       @"transform" : [RCTTransformAnimatedNode class],
-      @"tracking" : [RCTTrackingAnimatedNode class]
+      @"tracking" : [RCTTrackingAnimatedNode class],
+      @"object" : [RCTObjectAnimatedNode class],
     };
   });
 
