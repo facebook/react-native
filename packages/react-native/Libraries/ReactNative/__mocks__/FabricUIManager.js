@@ -25,11 +25,12 @@ import type {
 } from '../FabricUIManager';
 
 type NodeMock = {
+  children: NodeSet,
+  instanceHandle: InstanceHandle,
+  props: NodeProps,
   reactTag: number,
   rootTag: RootTag,
-  props: NodeProps,
-  instanceHandle: InstanceHandle,
-  children: NodeSet,
+  viewName: string,
 };
 
 function fromNode(node: Node): NodeMock {
@@ -42,6 +43,29 @@ function toNode(node: NodeMock): Node {
   return node;
 }
 
+// Mock of the Native Hooks
+
+const roots: Map<RootTag, NodeSet> = new Map();
+const allocatedTags: Set<number> = new Set();
+
+function ensureHostNode(node: Node): void {
+  if (node == null || typeof node !== 'object') {
+    throw new Error(
+      `Expected node to be an object. Got ${
+        node === null ? 'null' : typeof node
+      } value`,
+    );
+  }
+
+  if (typeof node.viewName !== 'string') {
+    throw new Error(
+      `Expected node to be a host node. Got object with ${
+        node.viewName === null ? 'null' : typeof node.viewName
+      } viewName`,
+    );
+  }
+}
+
 const FabricUIManagerMock: FabricUIManager = {
   createNode: jest.fn(
     (
@@ -51,11 +75,17 @@ const FabricUIManagerMock: FabricUIManager = {
       props: NodeProps,
       instanceHandle: InstanceHandle,
     ): Node => {
+      if (allocatedTags.has(reactTag)) {
+        throw new Error(`Created two native views with tag ${reactTag}`);
+      }
+
+      allocatedTags.add(reactTag);
       return toNode({
         reactTag,
         rootTag,
-        props,
+        viewName,
         instanceHandle,
+        props: props,
         children: [],
       });
     },
@@ -67,31 +97,49 @@ const FabricUIManagerMock: FabricUIManager = {
     return toNode({...fromNode(node), children: []});
   }),
   cloneNodeWithNewProps: jest.fn((node: Node, newProps: NodeProps): Node => {
-    return toNode({...fromNode(node), props: newProps});
+    return toNode({
+      ...fromNode(node),
+      props: {
+        ...fromNode(node).props,
+        ...newProps,
+      },
+    });
   }),
   cloneNodeWithNewChildrenAndProps: jest.fn(
     (node: Node, newProps: NodeProps): Node => {
-      return toNode({...fromNode(node), children: [], props: newProps});
+      return toNode({
+        ...fromNode(node),
+        children: [],
+        props: {
+          ...fromNode(node).props,
+          ...newProps,
+        },
+      });
     },
   ),
   createChildSet: jest.fn((rootTag: RootTag): NodeSet => {
     return [];
   }),
   appendChild: jest.fn((parentNode: Node, child: Node): Node => {
-    return toNode({
-      ...fromNode(parentNode),
-      children: fromNode(parentNode).children.concat(child),
-    });
+    // Although the signature returns a Node, React expects this to be mutating.
+    fromNode(parentNode).children.push(child);
+    return parentNode;
   }),
   appendChildToSet: jest.fn((childSet: NodeSet, child: Node): void => {
     childSet.push(child);
   }),
-  completeRoot: jest.fn((rootTag: RootTag, childSet: NodeSet): void => {}),
+  completeRoot: jest.fn((rootTag: RootTag, childSet: NodeSet): void => {
+    roots.set(rootTag, childSet);
+  }),
   measure: jest.fn((node: Node, callback: MeasureOnSuccessCallback): void => {
+    ensureHostNode(node);
+
     callback(10, 10, 100, 100, 0, 0);
   }),
   measureInWindow: jest.fn(
     (node: Node, callback: MeasureInWindowOnSuccessCallback): void => {
+      ensureHostNode(node);
+
       callback(10, 10, 100, 100);
     },
   ),
@@ -102,6 +150,9 @@ const FabricUIManagerMock: FabricUIManager = {
       onFail: () => void,
       onSuccess: MeasureLayoutOnSuccessCallback,
     ): void => {
+      ensureHostNode(node);
+      ensureHostNode(relativeNode);
+
       onSuccess(1, 1, 100, 100);
     },
   ),
@@ -123,7 +174,9 @@ const FabricUIManagerMock: FabricUIManager = {
       /* width:*/ number,
       /* height:*/ number,
     ] => {
-      return [1, 1, 100, 100];
+      ensureHostNode(node);
+
+      return [10, 10, 100, 100];
     },
   ),
   setNativeProps: jest.fn((node: Node, newProps: NodeProps): void => {}),
