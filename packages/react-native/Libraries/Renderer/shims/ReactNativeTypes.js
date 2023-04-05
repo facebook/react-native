@@ -6,7 +6,7 @@
  *
  * @noformat
  * @flow strict
- * @generated SignedSource<<7dc3ed81183377055bac08760fcd775b>>
+ * @generated SignedSource<<e35074dabf9cff3672b45eadd68af01e>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -216,7 +216,7 @@ export type ReactNativeType = {
 };
 
 export opaque type Node = mixed;
-type InternalInstanceHandle = mixed;
+export opaque type InternalInstanceHandle = mixed;
 type PublicInstance = mixed;
 
 export type ReactFabricType = {
