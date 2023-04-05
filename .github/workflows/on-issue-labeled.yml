@@ -22,7 +22,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const verifyVersion = require('./.github/workflows/verifyVersion.js')
+            const verifyVersion = require('./.github/workflow-scripts/verifyVersion.js')
             const labelToAdd = await verifyVersion(github, context);
 
             if(labelToAdd) {
@@ -33,7 +33,7 @@ jobs:
                 labels: [labelToAdd]
               })
 
-              const actOnLabel = require('./.github/workflows/actOnLabel.js')
+              const actOnLabel = require('./.github/workflow-scripts/actOnLabel.js')
               await actOnLabel(github, context, labelToAdd)
             }
 
@@ -53,5 +53,5 @@ jobs:
       - uses: actions/github-script@v6
         with:
           script: |
-            const actOnLabel = require('./.github/workflows/actOnLabel.js')
+            const actOnLabel = require('./.github/workflow-scripts/actOnLabel.js')
             await actOnLabel(github, context, context.payload.label.name)
