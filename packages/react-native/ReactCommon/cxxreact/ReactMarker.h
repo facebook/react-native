@@ -16,7 +16,7 @@ namespace react {
 namespace ReactMarker {
 
 enum ReactMarkerId {
-  NATIVE_REQUIRE_START,
+  NATIVE_REQUIRE_START = 0,
   NATIVE_REQUIRE_STOP,
   RUN_JS_BUNDLE_START,
   RUN_JS_BUNDLE_STOP,
@@ -28,7 +28,8 @@ enum ReactMarkerId {
   REGISTER_JS_SEGMENT_START,
   REGISTER_JS_SEGMENT_STOP,
   REACT_INSTANCE_INIT_START,
-  REACT_INSTANCE_INIT_STOP
+  REACT_INSTANCE_INIT_STOP,
+  APP_CREATE,
 };
 
 #ifdef __APPLE__
@@ -66,24 +67,6 @@ struct ReactMarkerEvent {
   const ReactMarkerId markerId;
   const char *tag;
   double time;
-};
-
-class StartupLogger {
- public:
-  static StartupLogger &getInstance();
-
-  void logStartupEvent(const ReactMarker::ReactMarkerId markerId);
-  double getAppStartTime();
-  double getRunJSBundleStartTime();
-  double getRunJSBundleEndTime();
-
- private:
-  StartupLogger() = default;
-  StartupLogger(const StartupLogger &) = delete;
-  StartupLogger &operator=(const StartupLogger &) = delete;
-
-  double runJSBundleStartTime;
-  double runJSBundleEndTime;
 };
 
 } // namespace ReactMarker

@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <cxxreact/PerformanceEntryLogger.h>
 #include <react/bridging/Function.h>
-#include <react/renderer/core/EventLogger.h>
 #include <array>
 #include <functional>
 #include <mutex>
@@ -59,13 +59,14 @@ enum class PerformanceEntryType {
   MARK = 1,
   MEASURE = 2,
   EVENT = 3,
-  _COUNT = 4,
+  RN_STARTUP_INTERNAL = 4,
+  _COUNT = 5,
 };
 
 constexpr size_t NUM_PERFORMANCE_ENTRY_TYPES =
     (size_t)PerformanceEntryType::_COUNT;
 
-class PerformanceEntryReporter : public EventLogger {
+class PerformanceEntryReporter : public PerformanceEntryLogger {
  public:
   PerformanceEntryReporter(PerformanceEntryReporter const &) = delete;
   void operator=(PerformanceEntryReporter const &) = delete;
@@ -87,6 +88,11 @@ class PerformanceEntryReporter : public EventLogger {
   GetPendingEntriesResult popPendingEntries();
 
   void logEntry(const RawPerformanceEntry &entry);
+  void logEntry(
+      const std::string &name,
+      PerformanceEntryType entryType,
+      double startTime,
+      double duration = 0.0);
 
   PerformanceEntryBuffer &getBuffer(PerformanceEntryType entryType) {
     return buffers_[static_cast<int>(entryType)];
@@ -98,7 +104,8 @@ class PerformanceEntryReporter : public EventLogger {
   }
 
   bool isReporting(PerformanceEntryType entryType) const {
-    return getBuffer(entryType).isReporting;
+    return entryType == PerformanceEntryType::RN_STARTUP_INTERNAL ||
+        getBuffer(entryType).isReporting;
   }
 
   bool isReportingEvents() const {
@@ -135,13 +142,16 @@ class PerformanceEntryReporter : public EventLogger {
       double processingEnd,
       uint32_t interactionId);
 
-  EventTag onEventStart(const char *name) override;
-  void onEventDispatch(EventTag tag) override;
-  void onEventEnd(EventTag tag) override;
-
   const std::unordered_map<std::string, uint32_t> &getEventCounts() const {
     return eventCounts_;
   }
+
+  // PerformanceEntryLogger interface implementation:
+  EventTag onEventStart(const char *name) override;
+  void onEventDispatch(EventTag tag) override;
+  void onEventEnd(EventTag tag) override;
+  void onReactMarkerStart(const char *markerName, double timeStamp) override;
+  void onReactMarkerEnd(const char *markerName, double timeStamp) override;
 
  private:
   std::optional<AsyncCallback<>> callback_;
@@ -160,12 +170,20 @@ class PerformanceEntryReporter : public EventLogger {
     double dispatchTime{0.0};
   };
 
+  struct MarkerEntry {
+    double startTime{-1.0};
+    double endTime{-1.0};
+  };
+
   // Registry to store the events that are currently ongoing.
   // Note that we could probably use a more efficient container for that,
   // but since we only report discrete events, the volume is normally low,
   // so a hash map should be just fine.
   std::unordered_map<EventTag, EventEntry> eventsInFlight_;
   std::mutex eventsInFlightMutex_;
+
+  std::unordered_map<std::string, MarkerEntry> markersInFlight_;
+  std::mutex markersInFlightMutex_;
 
   static EventTag sCurrentEventTag_;
 

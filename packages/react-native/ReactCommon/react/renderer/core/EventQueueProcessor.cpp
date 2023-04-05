@@ -6,8 +6,8 @@
  */
 
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/PerformanceEntryLogger.h>
 #include "EventEmitter.h"
-#include "EventLogger.h"
 #include "EventQueue.h"
 #include "ShadowNodeFamily.h"
 
@@ -48,9 +48,9 @@ void EventQueueProcessor::flushEvents(
       reactPriority = ReactEventPriority::Discrete;
     }
 
-    auto eventLogger = getEventLogger();
-    if (eventLogger != nullptr) {
-      eventLogger->onEventDispatch(event.loggingTag);
+    auto performanceEntryLogger = getPerformanceEntryLogger();
+    if (performanceEntryLogger != nullptr) {
+      performanceEntryLogger->onEventDispatch(event.loggingTag);
     }
 
     eventPipe_(
@@ -60,8 +60,8 @@ void EventQueueProcessor::flushEvents(
         reactPriority,
         event.payloadFactory);
 
-    if (eventLogger != nullptr) {
-      eventLogger->onEventEnd(event.loggingTag);
+    if (performanceEntryLogger != nullptr) {
+      performanceEntryLogger->onEventEnd(event.loggingTag);
     }
 
     if (event.category == RawEvent::Category::ContinuousStart) {

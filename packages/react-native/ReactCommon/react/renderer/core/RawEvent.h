@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include <react/renderer/core/EventLogger.h>
+#include <cxxreact/PerformanceEntryLogger.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ValueFactory.h>
 

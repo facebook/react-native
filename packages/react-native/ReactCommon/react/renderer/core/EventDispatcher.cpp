@@ -7,8 +7,8 @@
 
 #include "EventDispatcher.h"
 #include <cxxreact/JSExecutor.h>
+#include <cxxreact/PerformanceEntryLogger.h>
 #include <react/renderer/core/StateUpdate.h>
-#include "EventLogger.h"
 
 #include "BatchedEventQueue.h"
 #include "RawEvent.h"
@@ -41,9 +41,10 @@ void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
     return;
   }
 
-  auto eventLogger = getEventLogger();
-  if (eventLogger != nullptr) {
-    rawEvent.loggingTag = eventLogger->onEventStart(rawEvent.type.c_str());
+  auto performanceEntryLogger = getPerformanceEntryLogger();
+  if (performanceEntryLogger != nullptr) {
+    rawEvent.loggingTag =
+        performanceEntryLogger->onEventStart(rawEvent.type.c_str());
   }
   getEventQueue(priority).enqueueEvent(std::move(rawEvent));
 }

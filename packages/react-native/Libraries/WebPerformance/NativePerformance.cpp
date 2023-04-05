@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
 #include "NativePerformance.h"
 #include "PerformanceEntryReporter.h"
@@ -53,22 +52,6 @@ std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
     heapInfoToJs[entry.first] = static_cast<double>(entry.second);
   }
   return heapInfoToJs;
-}
-
-ReactNativeStartupTiming NativePerformance::getReactNativeStartupTiming(
-    jsi::Runtime &rt) {
-  ReactNativeStartupTiming result = {0, 0, 0, 0};
-
-  ReactMarker::StartupLogger &startupLogger =
-      ReactMarker::StartupLogger::getInstance();
-  result.startTime = startupLogger.getAppStartTime();
-  result.executeJavaScriptBundleEntryPointStart =
-      startupLogger.getRunJSBundleStartTime();
-  result.executeJavaScriptBundleEntryPointEnd =
-      startupLogger.getRunJSBundleEndTime();
-  result.endTime = startupLogger.getRunJSBundleEndTime();
-
-  return result;
 }
 
 } // namespace facebook::react

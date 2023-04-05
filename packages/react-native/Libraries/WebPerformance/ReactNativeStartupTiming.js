@@ -11,7 +11,12 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {ReactNativeStartupTiming as ReactNativeStartupTimingType} from './NativePerformance';
+export type ReactNativeStartupTimingType = {|
+  startTime: number,
+  endTime: number,
+  executeJavaScriptBundleEntryPointStart: number,
+  executeJavaScriptBundleEntryPointEnd: number,
+|};
 
 // Read-only object with RN startup timing information.
 // This is returned by the performance.reactNativeStartup API.

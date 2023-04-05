@@ -10,7 +10,6 @@
 
 import type {
   NativeMemoryInfo,
-  ReactNativeStartupTiming,
   Spec as NativePerformance,
 } from '../NativePerformance';
 
@@ -50,15 +49,6 @@ const NativePerformanceMock: NativePerformance = {
 
   getSimpleMemoryInfo: (): NativeMemoryInfo => {
     return {};
-  },
-
-  getReactNativeStartupTiming: (): ReactNativeStartupTiming => {
-    return {
-      startTime: 0,
-      endTime: 0,
-      executeJavaScriptBundleEntryPointStart: 0,
-      executeJavaScriptBundleEntryPointEnd: 0,
-    };
   },
 };
 

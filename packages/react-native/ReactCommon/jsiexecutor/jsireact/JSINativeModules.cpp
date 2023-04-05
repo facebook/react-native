@@ -81,6 +81,10 @@ std::optional<Object> JSINativeModules::createModule(
 
   auto result = m_moduleRegistry->getConfig(name);
   if (!result.has_value()) {
+    /*if (hasLogger) {
+      ReactMarker::logTaggedMarker(
+          ReactMarker::NATIVE_MODULE_SETUP_STOP, name.c_str());
+    }*/
     return std::nullopt;
   }
 

@@ -22,6 +22,7 @@ export const RawPerformanceEntryTypeValues = {
   MARK: 1,
   MEASURE: 2,
   EVENT: 3,
+  RN_STARTUP_INTERNAL: 4,
 };
 
 export function rawToPerformanceEntry(
@@ -56,6 +57,9 @@ export function rawToPerformanceEntryType(
       return 'measure';
     case RawPerformanceEntryTypeValues.EVENT:
       return 'event';
+    case RawPerformanceEntryTypeValues.RN_STARTUP_INTERNAL:
+      // $FlowExpectedError[incompatible-return]
+      return 'rn-startup-internal';
     case RawPerformanceEntryTypeValues.UNDEFINED:
       throw new TypeError(
         "rawToPerformanceEntryType: UNDEFINED can't be cast to PerformanceEntryType",
@@ -77,6 +81,9 @@ export function performanceEntryTypeToRaw(
       return RawPerformanceEntryTypeValues.MEASURE;
     case 'event':
       return RawPerformanceEntryTypeValues.EVENT;
+    // $FlowExpectedError[incompatible-type]
+    case 'rn-startup-internal':
+      return RawPerformanceEntryTypeValues.RN_STARTUP_INTERNAL;
     default:
       // Verify exhaustive check with Flow
       (type: empty);

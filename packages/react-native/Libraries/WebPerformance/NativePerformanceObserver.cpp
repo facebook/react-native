@@ -23,13 +23,7 @@ namespace facebook::react {
 
 NativePerformanceObserver::NativePerformanceObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {
-  setEventLogger(&PerformanceEntryReporter::getInstance());
-}
-
-NativePerformanceObserver::~NativePerformanceObserver() {
-  setEventLogger(nullptr);
-}
+    : NativePerformanceObserverCxxSpec(std::move(jsInvoker)) {}
 
 void NativePerformanceObserver::startReporting(
     jsi::Runtime &rt,

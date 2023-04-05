@@ -7,12 +7,21 @@
 
 #include "PerformanceEntryReporter.h"
 #include <cxxreact/JSExecutor.h>
-#include <react/renderer/core/EventLogger.h>
+#include <cxxreact/PerformanceEntryLogger.h>
 #include "NativePerformanceObserver.h"
 
 #include <unordered_map>
 
+#include <glog/logging.h>
+
 namespace facebook::react {
+
+static volatile size_t registerPerformanceEntryLogger = [] {
+  auto logger = &PerformanceEntryReporter::getInstance();
+  setPerformanceEntryLogger(logger);
+  return reinterpret_cast<size_t>(logger);
+}();
+
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
 PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
@@ -57,7 +66,9 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   GetPendingEntriesResult res = {
       std::vector<RawPerformanceEntry>(), droppedEntryCount_};
   for (auto &buffer : buffers_) {
-    buffer.entries.consume(res.entries);
+    if (buffer.isReporting) {
+      buffer.entries.consume(res.entries);
+    }
   }
 
   // Sort by starting time (or ending time, if starting times are equal)
@@ -74,6 +85,21 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
 
   droppedEntryCount_ = 0;
   return res;
+}
+
+void PerformanceEntryReporter::logEntry(
+    const std::string &name,
+    PerformanceEntryType entryType,
+    double startTime,
+    double duration) {
+  logEntry(RawPerformanceEntry{
+      name,
+      static_cast<int>(entryType),
+      startTime,
+      duration,
+      std::nullopt,
+      std::nullopt,
+      std::nullopt});
 }
 
 void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
@@ -129,14 +155,7 @@ void PerformanceEntryReporter::mark(
     const std::string &name,
     double startTime,
     double duration) {
-  logEntry(RawPerformanceEntry{
-      name,
-      static_cast<int>(PerformanceEntryType::MARK),
-      startTime,
-      duration,
-      std::nullopt,
-      std::nullopt,
-      std::nullopt});
+  logEntry(name, PerformanceEntryType::MARK, startTime, duration);
 }
 
 void PerformanceEntryReporter::clearEntries(
@@ -210,14 +229,7 @@ void PerformanceEntryReporter::measure(
   double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
   double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
-  logEntry(
-      {name,
-       static_cast<int>(PerformanceEntryType::MEASURE),
-       startTimeVal,
-       durationVal,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt});
+  logEntry(name, PerformanceEntryType::MEASURE, startTimeVal, durationVal);
 }
 
 double PerformanceEntryReporter::getMarkTime(
@@ -393,6 +405,46 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
         timeStamp,
         interactionId);
     eventsInFlight_.erase(it);
+  }
+}
+
+void PerformanceEntryReporter::onReactMarkerStart(
+    const char *markerName,
+    double timeStamp) {
+  std::lock_guard<std::mutex> lock(markersInFlightMutex_);
+  auto it = markersInFlight_.find(markerName);
+  if (it != markersInFlight_.end()) {
+    if (it->second.endTime >= 0.0) {
+      logEntry(
+          markerName,
+          PerformanceEntryType::RN_STARTUP_INTERNAL,
+          timeStamp,
+          it->second.endTime - timeStamp);
+      markersInFlight_.erase(it);
+    }
+  } else {
+    markersInFlight_.emplace(
+        std::make_pair(markerName, MarkerEntry{timeStamp, -1.0}));
+  }
+}
+
+void PerformanceEntryReporter::onReactMarkerEnd(
+    const char *markerName,
+    double timeStamp) {
+  std::lock_guard<std::mutex> lock(markersInFlightMutex_);
+  auto it = markersInFlight_.find(markerName);
+  if (it != markersInFlight_.end()) {
+    if (it->second.startTime >= 0.0) {
+      logEntry(
+          markerName,
+          PerformanceEntryType::RN_STARTUP_INTERNAL,
+          it->second.startTime,
+          timeStamp - it->second.startTime);
+      markersInFlight_.erase(it);
+    }
+  } else {
+    markersInFlight_.emplace(
+        std::make_pair(markerName, MarkerEntry{-1.0, timeStamp}));
   }
 }
 

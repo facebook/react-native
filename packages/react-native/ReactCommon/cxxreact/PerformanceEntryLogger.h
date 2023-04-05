@@ -16,9 +16,9 @@ using EventTag = unsigned int;
  * which can be used for implementing W3C Event Timing API standard,
  * see https://www.w3.org/TR/event-timing
  */
-class EventLogger {
+class PerformanceEntryLogger {
  public:
-  virtual ~EventLogger() = default;
+  virtual ~PerformanceEntryLogger() = default;
 
   /*
    * Called when an event is first created, returns and unique tag for this
@@ -36,9 +36,15 @@ class EventLogger {
    * Called when event finishes being dispatched
    */
   virtual void onEventEnd(EventTag tag) = 0;
+
+  /*
+   * Called to log RN startup timings markers as performance entries
+   */
+  virtual void onReactMarkerStart(const char *markerName, double timeStamp) = 0;
+  virtual void onReactMarkerEnd(const char *markerName, double timeStamp) = 0;
 };
 
-void setEventLogger(EventLogger *eventLogger);
-EventLogger *getEventLogger();
+void setPerformanceEntryLogger(PerformanceEntryLogger *logger);
+PerformanceEntryLogger *getPerformanceEntryLogger();
 
 } // namespace facebook::react

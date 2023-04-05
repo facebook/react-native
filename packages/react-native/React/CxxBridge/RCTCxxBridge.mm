@@ -163,6 +163,7 @@ static void mapReactMarkerToPerformanceLogger(
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
     case ReactMarker::REGISTER_JS_SEGMENT_START:
     case ReactMarker::REGISTER_JS_SEGMENT_STOP:
+    case ReactMarker::APP_CREATE:
       break;
   }
 }
