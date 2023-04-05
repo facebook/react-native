@@ -15,6 +15,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
+import * as React from 'react';
 
 const MAX_DEPTH = 5;
 
@@ -80,6 +81,10 @@ export function hasAnimatedNode(value: any, depth: number = 0): boolean {
       }
     }
   } else if (isPlainObject(value)) {
+    // Don't consider React elements
+    if (React.isValidElement(value)) {
+      return false;
+    }
     for (const key in value) {
       if (hasAnimatedNode(value[key], depth + 1)) {
         return true;
