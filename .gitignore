@@ -127,6 +127,8 @@ package-lock.json
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /**/RCTThirdPartyFabricComponentsProvider.*
 
+# @react-native/codegen-typescript-test
+/packages/react-native-codegen-typescript-test/lib
 
 # Additional SDKs
 /packages/react-native/sdks/download
