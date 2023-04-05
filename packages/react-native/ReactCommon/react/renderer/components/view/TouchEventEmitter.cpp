@@ -153,6 +153,14 @@ void TouchEventEmitter::onTouchCancel(TouchEvent const &event) const {
       RawEvent::Category::ContinuousEnd);
 }
 
+void TouchEventEmitter::onClick(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "click",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::Discrete);
+}
+
 void TouchEventEmitter::onPointerCancel(const PointerEvent &event) const {
   dispatchPointerEvent(
       "pointerCancel",

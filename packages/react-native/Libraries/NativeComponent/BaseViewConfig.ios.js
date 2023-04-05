@@ -88,6 +88,12 @@ const bubblingEventTypes = {
   },
 
   // Experimental/Work in Progress Pointer Events (not yet ready for use)
+  topClick: {
+    phasedRegistrationNames: {
+      captured: 'onClickCapture',
+      bubbled: 'onClick',
+    },
+  },
   topPointerCancel: {
     phasedRegistrationNames: {
       captured: 'onPointerCancelCapture',
@@ -350,6 +356,7 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onTouchCancel: true,
 
   // Pointer events
+  onClick: true,
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,
