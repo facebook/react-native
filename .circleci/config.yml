@@ -6,6 +6,7 @@ version: 2.1
 
 orbs:
   win: circleci/windows@2.4.0
+  macos: circleci/macos@2.3.4
 
 # -------------------------
 #        REFERENCES
@@ -46,7 +47,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "14.3.0"
+    xcode_version: &xcode_version "14.2.0"
     nodelts_image: &nodelts_image "cimg/node:18.12.1"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
@@ -69,7 +70,7 @@ references:
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+    rbenv_cache_key: &rbenv_cache_key v2-rbenv-{{ checksum "/tmp/required_ruby" }}
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -128,7 +129,7 @@ executors:
     <<: *defaults
     macos:
       xcode: *xcode_version
-    resource_class: macos.x86.medium.gen2
+    resource_class: macos.m1.large.gen1
     environment:
       - BUILD_FROM_SOURCE: true
 
@@ -170,38 +171,13 @@ commands:
           command: echo << parameters.ruby_version >> > /tmp/required_ruby
       - restore_cache:
           key: *rbenv_cache_key
+      - macos/install-rosetta
+      - macos/switch-ruby:
+          version: << parameters.ruby_version >>
       - run:
-          name: Bundle Install
+          name: "Bundle Install"
           command: |
-            # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
-
-            if [[ -z "$(command -v rbenv)" ]]; then
-              brew install rbenv ruby-build
-              # Load and init rbenv
-              (rbenv init 2> /dev/null) || true
-              echo '' >>  ~/.bash_profile
-              echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
-              source ~/.bash_profile
-            else
-              echo "rbenv found; Skipping installation"
-            fi
-
-            brew reinstall libyaml
-            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
-            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
-
-            # Install the right version of ruby
-            if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
-              # ensure that `ruby-build` can see all the available versions of Ruby
-              # some PRs received machines in a weird state, this should make the pipelines
-              # more robust.
-              brew update && brew upgrade ruby-build
-              rbenv install << parameters.ruby_version >>
-            fi
-
-            # Set ruby dependencies
-            rbenv global << parameters.ruby_version >>
-            gem install bundler
+            # bundle check
             bundle check || bundle install --path vendor/bundle --clean
       - save_cache:
           key: *rbenv_cache_key
