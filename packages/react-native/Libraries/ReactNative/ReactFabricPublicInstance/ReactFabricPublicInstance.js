@@ -178,6 +178,13 @@ export function createPublicInstance(
   return new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
 }
 
+export function createPublicTextInstance(internalInstanceHandle: mixed): {} {
+  // React will call this method to create text instances but we'll return an
+  // empty object for now. These instances are only created lazily when
+  // traversing the tree, and that's not enabled yet.
+  return {};
+}
+
 export function getNativeTagFromPublicInstance(
   publicInstance: ReactFabricHostComponent,
 ): number {

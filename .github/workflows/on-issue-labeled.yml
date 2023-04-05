@@ -15,8 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     if: "${{ github.repository == 'facebook/react-native' && contains(github.event.label.name, 'Needs: Triage :mag:') }}"
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/github-script@v6
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Verify RN version
+        uses: actions/github-script@v6
         with:
           script: |
             const verifyVersion = require('./.github/workflows/verifyVersion.js')
@@ -33,6 +36,14 @@ jobs:
               const actOnLabel = require('./.github/workflows/actOnLabel.js')
               await actOnLabel(github, context, labelToAdd)
             }
+
+      - name: Add descriptive label
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const addDescriptiveLabel = require('./.github/workflows/addDescriptiveLabels.js')
+            await addDescriptiveLabel(github, context);
+
   # Reacts to the label that triggered this workflow (added manually or via other workflows)
   act-on-label:
     runs-on: ubuntu-latest

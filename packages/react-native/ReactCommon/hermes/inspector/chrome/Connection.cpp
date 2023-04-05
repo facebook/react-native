@@ -120,11 +120,13 @@ class Connection::Impl : public inspector::InspectorObserver,
   std::vector<m::runtime::PropertyDescriptor> makePropsFromScope(
       std::pair<uint32_t, uint32_t> frameAndScopeIndex,
       const std::string &objectGroup,
-      const debugger::ProgramState &state);
+      const debugger::ProgramState &state,
+      bool generatePreview);
   std::vector<m::runtime::PropertyDescriptor> makePropsFromValue(
       const jsi::Value &value,
       const std::string &objectGroup,
-      bool onlyOwnProperties);
+      bool onlyOwnProperties,
+      bool generatePreview);
 
   void sendSnapshot(
       int reqId,
@@ -428,7 +430,9 @@ void Connection::Impl::onMessageAdded(
         getRuntime(),
         info.args.getValueAtIndex(getRuntime(), index),
         objTable_,
-        "ConsoleObjectGroup"));
+        "ConsoleObjectGroup",
+        false,
+        false));
   }
 
   sendNotificationToClientViaExecutor(apiCalledNote);
@@ -462,7 +466,8 @@ void Connection::Impl::handle(
           [this,
            remoteObjPtr,
            objectGroup = req.objectGroup,
-           byValue = req.returnByValue.value_or(false)](
+           byValue = req.returnByValue.value_or(false),
+           generatePreview = req.generatePreview.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
@@ -470,7 +475,8 @@ void Connection::Impl::handle(
                 evalResult.value,
                 objTable_,
                 objectGroup.value_or(""),
-                byValue);
+                byValue,
+                generatePreview);
           })
       .via(executor_.get())
       .thenValue(
@@ -482,7 +488,7 @@ void Connection::Impl::handle(
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
@@ -642,7 +648,7 @@ void Connection::Impl::handle(const m::heapProfiler::StopSamplingRequest &req) {
             m::heapProfiler::StopSamplingResponse resp;
             resp.id = id;
             m::heapProfiler::SamplingHeapProfile profile{json};
-            resp.profile = profile;
+            resp.profile = std::move(profile);
             sendResponseToClient(resp);
           })
       .via(executor_.get())
@@ -682,7 +688,12 @@ void Connection::Impl::handle(
                 return;
               }
               *remoteObjPtr = m::runtime::makeRemoteObject(
-                  getRuntime(), val, objTable_, group.value_or(""));
+                  getRuntime(),
+                  val,
+                  objTable_,
+                  group.value_or(""),
+                  false,
+                  false);
             }
           })
       .via(executor_.get())
@@ -690,7 +701,7 @@ void Connection::Impl::handle(
         if (!remoteObjPtr->type.empty()) {
           m::heapProfiler::GetObjectByHeapObjectIdResponse resp;
           resp.id = id;
-          resp.result = *remoteObjPtr;
+          resp.result = std::move(*remoteObjPtr);
           sendResponseToClient(resp);
         } else {
           sendResponseToClient(m::makeErrorResponse(
@@ -1051,6 +1062,7 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
            objectGroup = req.objectGroup,
            jsThisId = req.objectId,
            byValue = req.returnByValue.value_or(false),
+           generatePreview = req.generatePreview.value_or(false),
            runner =
                std::move(runner)](const facebook::hermes::debugger::EvalResult
                                       &evalResult) mutable {
@@ -1063,7 +1075,8 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
                 runner(getRuntime(), objTable_, evalResult),
                 objTable_,
                 objectGroup.value_or("ConsoleObjectGroup"),
-                byValue);
+                byValue,
+                generatePreview);
           })
       .via(executor_.get())
       .thenValue(
@@ -1075,7 +1088,7 @@ void Connection::Impl::handle(const m::runtime::CallFunctionOnRequest &req) {
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
@@ -1129,7 +1142,8 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
           [this,
            remoteObjPtr,
            objectGroup = req.objectGroup,
-           byValue = req.returnByValue.value_or(false)](
+           byValue = req.returnByValue.value_or(false),
+           generatePreview = req.generatePreview.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
@@ -1137,7 +1151,8 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
                 evalResult.value,
                 objTable_,
                 objectGroup.value_or("ConsoleObjectGroup"),
-                byValue);
+                byValue,
+                generatePreview);
           })
       .via(executor_.get())
       .thenValue(
@@ -1149,7 +1164,7 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
               resp.exceptionDetails =
                   m::runtime::makeExceptionDetails(result.exceptionDetails);
             } else {
-              resp.result = *remoteObjPtr;
+              resp.result = std::move(*remoteObjPtr);
             }
 
             sendResponseToClient(resp);
@@ -1331,7 +1346,8 @@ std::vector<m::runtime::PropertyDescriptor>
 Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
     const std::string &objectGroup,
-    const debugger::ProgramState &state) {
+    const debugger::ProgramState &state,
+    bool generatePreview) {
   // Chrome represents variables in a scope as properties on a dummy object.
   // We don't instantiate such dummy objects, we just pretended to have one.
   // Chrome has now asked for its properties, so it's time to synthesize
@@ -1349,7 +1365,12 @@ Connection::Impl::makePropsFromScope(
     m::runtime::PropertyDescriptor desc;
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
-        getRuntime(), varInfo.value, objTable_, objectGroup);
+        getRuntime(),
+        varInfo.value,
+        objTable_,
+        objectGroup,
+        false,
+        generatePreview);
     // Chrome only shows enumerable properties.
     desc.enumerable = true;
     result.emplace_back(std::move(desc));
@@ -1363,7 +1384,12 @@ Connection::Impl::makePropsFromScope(
     m::runtime::PropertyDescriptor desc;
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
-        getRuntime(), varInfo.value, objTable_, objectGroup);
+        getRuntime(),
+        varInfo.value,
+        objTable_,
+        objectGroup,
+        false,
+        generatePreview);
     desc.enumerable = true;
 
     result.emplace_back(std::move(desc));
@@ -1376,7 +1402,8 @@ std::vector<m::runtime::PropertyDescriptor>
 Connection::Impl::makePropsFromValue(
     const jsi::Value &value,
     const std::string &objectGroup,
-    bool onlyOwnProperties) {
+    bool onlyOwnProperties,
+    bool generatePreview) {
   std::vector<m::runtime::PropertyDescriptor> result;
 
   if (value.isObject()) {
@@ -1406,7 +1433,7 @@ Connection::Impl::makePropsFromValue(
         // Chrome instead detects getters and makes you click to invoke.
         jsi::Value propValue = obj.getProperty(runtime, propName);
         desc.value = m::runtime::makeRemoteObject(
-            runtime, propValue, objTable_, objectGroup);
+            runtime, propValue, objTable_, objectGroup, false, generatePreview);
       } catch (const jsi::JSError &err) {
         // We fetched a property with a getter that threw. Show a placeholder.
         // We could have added additional info, but the UI quickly gets messy.
@@ -1414,7 +1441,9 @@ Connection::Impl::makePropsFromValue(
             runtime,
             jsi::String::createFromUtf8(runtime, "(Exception)"),
             objTable_,
-            objectGroup);
+            objectGroup,
+            false,
+            generatePreview);
       }
 
       result.emplace_back(std::move(desc));
@@ -1429,7 +1458,7 @@ Connection::Impl::makePropsFromValue(
         m::runtime::PropertyDescriptor desc;
         desc.name = "__proto__";
         desc.value = m::runtime::makeRemoteObject(
-            runtime, proto, objTable_, objectGroup);
+            runtime, proto, objTable_, objectGroup, false, generatePreview);
         result.emplace_back(std::move(desc));
       }
     }
@@ -1456,16 +1485,24 @@ void Connection::Impl::handle(const m::runtime::GetPropertiesRequest &req) {
   inspector_
       ->executeIfEnabled(
           "Runtime.getProperties",
-          [this, req, resp](const debugger::ProgramState &state) {
+          [this,
+           req,
+           resp,
+           generatePreview = req.generatePreview.value_or(false)](
+              const debugger::ProgramState &state) {
             std::string objGroup = objTable_.getObjectGroup(req.objectId);
             auto scopePtr = objTable_.getScope(req.objectId);
             auto valuePtr = objTable_.getValue(req.objectId);
 
             if (scopePtr != nullptr) {
-              resp->result = makePropsFromScope(*scopePtr, objGroup, state);
+              resp->result = makePropsFromScope(
+                  *scopePtr, objGroup, state, generatePreview);
             } else if (valuePtr != nullptr) {
               resp->result = makePropsFromValue(
-                  *valuePtr, objGroup, req.ownProperties.value_or(true));
+                  *valuePtr,
+                  objGroup,
+                  req.ownProperties.value_or(true),
+                  generatePreview);
             }
           })
       .via(executor_.get())

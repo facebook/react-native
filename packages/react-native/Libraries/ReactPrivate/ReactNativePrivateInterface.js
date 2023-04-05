@@ -18,6 +18,7 @@ import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
+  createPublicTextInstance,
   getNativeTagFromPublicInstance,
   getNodeFromPublicInstance,
 } from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
@@ -93,6 +94,10 @@ module.exports = {
   get createPublicInstance(): createPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
       .createPublicInstance;
+  },
+  get createPublicTextInstance(): createPublicTextInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicTextInstance;
   },
   get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
