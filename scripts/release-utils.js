@@ -17,9 +17,7 @@ const {createHermesPrebuiltArtifactsTarball} = require('./hermes/hermes-utils');
 function saveFilesToRestore(tmpPublishingFolder) {
   const filesToSaveAndRestore = [
     'template/Gemfile',
-    'template/_ruby-version',
     'template/package.json',
-    '.ruby-version',
     'Gemfile.lock',
     'Gemfile',
     'package.json',

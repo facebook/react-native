@@ -30,6 +30,8 @@ jobs:
         value: true
     timeoutInMinutes: 90 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    dependsOn:
+      - Compliance
     steps:
       - checkout: self # self represents the repo where the initial Pipelines YAML file was found
         clean: true # whether to fetch clean each time
@@ -38,11 +40,16 @@ jobs:
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-      - ${{ if eq(variables['isMain'], true) }}:
+      # Setup the repo to be ready for release. This includes:
+      # - Autogenerating the next version number
+      # - Calling the approprate scripts that upstream React Native uses to prepare a release
+      # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
+
+      - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
         - template: templates/apple-job-publish.yml
           parameters:
             build_type: nightly
-      - ${{ elseif eq(variables['isReleaseBranch'], true) }}:
+      - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
         - template: templates/apple-job-publish.yml
           parameters:
             build_type: release
@@ -54,6 +61,8 @@ jobs:
               echo "Skipping publish for branch $(Build.SourceBranchName)"
               exit 1
 
+      # Generate and publish the SBOM
+  
       - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
         displayName: 📒 Generate Manifest
         inputs:
@@ -64,6 +73,40 @@ jobs:
         inputs:
           artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
           targetPath: $(System.DefaultWorkingDirectory)/_manifest
+
+      # Set the NPM dist-tag and do the actual NPM publish
+  
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
+        displayName: Set dist-tag to latest
+        condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
+
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
+        displayName: Set dist-tag to canary
+        condition: eq(variables['Build.SourceBranchName'], 'main')
+
+      - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
+        displayName: Set dist-tag to v0.x-stable
+        condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
+
+      - task: CmdLine@2
+        displayName: Actual NPM Publish
+        inputs:
+          script: |
+            npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+
+      # Set the git tag and push the version update back to Github
+
+      - task: CmdLine@2
+        displayName: 'Tag and push to Github'
+        inputs:
+          script: node .ado/gitTagRelease.js
+        env:
+          BUILD_STAGINGDIRECTORY: $(Build.StagingDirectory)
+          BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          githubAuthToken: $(githubAuthToken)
+        condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
+      
 
   - job: RNMacOSInitNpmJSPublish
     displayName: NPM Publish react-native-macos-init
@@ -83,7 +126,7 @@ jobs:
 
       - template: templates/apple-install-dependencies.yml
 
-      - template: templates/apple-release-setup.yml
+      - template: templates/configure-git.yml
 
       - task: CmdLine@2
         displayName: Build react-native-macos-init
