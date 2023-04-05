@@ -124,7 +124,8 @@ RemoteObject makeRemoteObject(
     const facebook::jsi::Value &value,
     facebook::hermes::inspector::chrome::RemoteObjectsTable &objTable,
     const std::string &objectGroup,
-    bool byValue = false);
+    bool byValue = false,
+    bool generatePreview = false);
 
 } // namespace runtime
 
