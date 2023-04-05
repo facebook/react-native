@@ -132,14 +132,6 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  // Store default TextAttributes in state.
-  // In the case where the TextInput is completely empty (no value, no
-  // defaultValue, no placeholder, no children) there are therefore no fragments
-  // in the AttributedString, and when State is updated, it needs some way to
-  // reconstruct a Fragment with default TextAttributes.
-  auto defaultTextAttributes = TextAttributes::defaultTextAttributes();
-  defaultTextAttributes.apply(getConcreteProps().textAttributes);
-
   // Even if we're here and updating state, it may be only to update the layout
   // manager If that is the case, make sure we don't update text: pass in the
   // current attributedString unchanged, and pass in zero for the "event count"
@@ -156,8 +148,6 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       newAttributedString,
       reactTreeAttributedString,
       getConcreteProps().paragraphAttributes,
-      defaultTextAttributes,
-      ShadowView(*this),
       state.defaultThemePaddingStart,
       state.defaultThemePaddingEnd,
       state.defaultThemePaddingTop,
