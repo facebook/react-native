@@ -141,6 +141,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       node = new TransformAnimatedNode(config, this);
     } else if ("tracking".equals(type)) {
       node = new TrackingAnimatedNode(config, this);
+    } else if ("object".equals(type)) {
+      node = new ObjectAnimatedNode(config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }

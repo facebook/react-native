@@ -111,6 +111,8 @@ import java.util.Map;
         }
       } else if (node instanceof ColorAnimatedNode) {
         mPropMap.putInt(entry.getKey(), ((ColorAnimatedNode) node).getColor());
+      } else if (node instanceof ObjectAnimatedNode) {
+        ((ObjectAnimatedNode) node).collectViewUpdates(entry.getKey(), mPropMap);
       } else {
         throw new IllegalArgumentException(
             "Unsupported type of node used in property node " + node.getClass());
