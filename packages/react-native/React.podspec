@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.cocoapods_version      = ">= 1.10.1"

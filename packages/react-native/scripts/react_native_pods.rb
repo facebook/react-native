@@ -38,7 +38,7 @@ require Pod::Executable.execute_command('node', ['-p',
 # By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
 def min_ios_version_supported
-  return '12.4'
+  return '13.4'
 end
 
 # This function prepares the project for React Native, before processing
@@ -359,22 +359,14 @@ end
 # Actual fix was authored by https://github.com/mikehardy.
 # New app template will call this for now until the underlying issue is resolved.
 def __apply_Xcode_12_5_M1_post_install_workaround(installer)
-  # Flipper podspecs are still targeting an older iOS deployment target, and may cause an error like:
-  #   "error: thread-local storage is not supported for the current target"
-  # The most reliable known workaround is to bump iOS deployment target to match react-native (iOS 11 now).
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      # ensure IPHONEOS_DEPLOYMENT_TARGET is at least 11.0
-      deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
-      should_upgrade = deployment_target < 11.0 && deployment_target != 0.0
-      if should_upgrade
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
-      end
-    end
-  end
+  # NOTE: This fix is still required due to RCT-Folly
+  # creating a function with a better name but keeping the
+  # previous for backward compatibility
+  __fix_double_definition_of_clockid_in_folly()
+end
 
-  # But... doing so caused another issue in Flipper:
-  #   "Time.h:52:17: error: typedef redefinition with different types"
+def __fix_double_definition_of_clockid_in_folly()
+  # "Time.h:52:17: error: typedef redefinition with different types"
   # We need to make a patch to RCT-Folly - remove the `__IPHONE_OS_VERSION_MIN_REQUIRED` check.
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"

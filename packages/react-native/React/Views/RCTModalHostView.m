@@ -182,9 +182,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     if (self.presentationStyle != UIModalPresentationNone) {
       _modalViewController.modalPresentationStyle = self.presentationStyle;
     }
-    if (@available(iOS 13.0, *)) {
-      _modalViewController.presentationController.delegate = self;
-    }
+
+    _modalViewController.presentationController.delegate = self;
+
     [_delegate presentModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
     _isPresented = YES;
   }

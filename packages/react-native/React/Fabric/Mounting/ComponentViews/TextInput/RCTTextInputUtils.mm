@@ -44,9 +44,7 @@ void RCTCopyBackedTextInput(
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
 
-  if (@available(iOS 12.0, *)) {
-    toTextInput.passwordRules = fromTextInput.passwordRules;
-  }
+  toTextInput.passwordRules = fromTextInput.passwordRules;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
@@ -213,12 +211,10 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"password" : UITextContentTypePassword,
     } mutableCopy];
 
-    if (@available(iOS 12.0, *)) {
-      [mutableContentTypeMap addEntriesFromDictionary:@{
-        @"newPassword" : UITextContentTypeNewPassword,
-        @"oneTimeCode" : UITextContentTypeOneTimeCode
-      }];
-    }
+    [mutableContentTypeMap addEntriesFromDictionary:@{
+      @"newPassword" : UITextContentTypeNewPassword,
+      @"oneTimeCode" : UITextContentTypeOneTimeCode
+    }];
 
     contentTypeMap = [mutableContentTypeMap copy];
   });

@@ -272,12 +272,9 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     scrollView.snapToOffsets = snapToOffsets;
   }
 
-  if (@available(iOS 13.0, *)) {
-    if (oldScrollViewProps.automaticallyAdjustsScrollIndicatorInsets !=
-        newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets) {
-      scrollView.automaticallyAdjustsScrollIndicatorInsets =
-          newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets;
-    }
+  if (oldScrollViewProps.automaticallyAdjustsScrollIndicatorInsets !=
+      newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets) {
+    scrollView.automaticallyAdjustsScrollIndicatorInsets = newScrollViewProps.automaticallyAdjustsScrollIndicatorInsets;
   }
 
   if ((oldScrollViewProps.contentInsetAdjustmentBehavior != newScrollViewProps.contentInsetAdjustmentBehavior) ||
