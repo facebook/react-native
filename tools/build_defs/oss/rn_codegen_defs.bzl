@@ -31,7 +31,8 @@ def rn_codegen(
         codegen_components = False,
         codegen_modules = False,
         library_labels = [],
-        src_prefix = ""):
+        src_prefix = "",
+        external_spec_target = None):
     if codegen_modules:
         error_header = "rn_codegen(name=\"{}\")".format(name)
         if not native_module_spec_name:
@@ -43,6 +44,7 @@ def rn_codegen(
         spec_srcs = native.glob(
             [
                 src_prefix + "**/Native*.js",
+                src_prefix + "**/Native*.ts",
             ],
             exclude = [
                 src_prefix + "**/nativeImageSource.js",
@@ -81,6 +83,7 @@ def rn_codegen(
             srcs = native.glob(
                 [
                     src_prefix + "**/*NativeComponent.js",
+                    src_prefix + "**/*NativeComponent.ts",
                 ],
                 exclude = [
                     "**/__*__/**",
