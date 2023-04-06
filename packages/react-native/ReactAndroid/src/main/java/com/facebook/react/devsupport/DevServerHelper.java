@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
-import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
@@ -28,7 +27,6 @@ import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.util.RNLog;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -42,7 +40,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Okio;
 import okio.Sink;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -86,10 +83,6 @@ public class DevServerHelper {
   }
 
   public interface PackagerCustomCommandProvider {}
-
-  public interface SymbolicationListener {
-    void onSymbolicationComplete(@Nullable Iterable<StackFrame> stackFrames);
-  }
 
   private enum BundleType {
     BUNDLE("bundle"),
@@ -280,80 +273,6 @@ public class DevServerHelper {
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
   }
 
-  public void symbolicateStackTrace(
-      Iterable<StackFrame> stackFrames, final SymbolicationListener listener) {
-    try {
-      final String symbolicateURL =
-          createSymbolicateURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
-      final JSONArray jsonStackFrames = new JSONArray();
-      for (final StackFrame stackFrame : stackFrames) {
-        jsonStackFrames.put(stackFrame.toJSON());
-      }
-      final Request request =
-          new Request.Builder()
-              .url(symbolicateURL)
-              .post(
-                  RequestBody.create(
-                      MediaType.parse("application/json"),
-                      new JSONObject().put("stack", jsonStackFrames).toString()))
-              .build();
-      Call symbolicateCall = Assertions.assertNotNull(mClient.newCall(request));
-      symbolicateCall.enqueue(
-          new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-              FLog.w(
-                  ReactConstants.TAG,
-                  "Got IOException when attempting symbolicate stack trace: " + e.getMessage());
-              listener.onSymbolicationComplete(null);
-            }
-
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-              try {
-                listener.onSymbolicationComplete(
-                    Arrays.asList(
-                        StackTraceHelper.convertJsStackTrace(
-                            new JSONObject(response.body().string()).getJSONArray("stack"))));
-              } catch (JSONException exception) {
-                listener.onSymbolicationComplete(null);
-              }
-            }
-          });
-    } catch (JSONException e) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Got JSONException when attempting symbolicate stack trace: " + e.getMessage());
-    }
-  }
-
-  public void openStackFrameCall(StackFrame stackFrame) {
-    final String openStackFrameURL =
-        createOpenStackFrameURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
-    final Request request =
-        new Request.Builder()
-            .url(openStackFrameURL)
-            .post(
-                RequestBody.create(
-                    MediaType.parse("application/json"), stackFrame.toJSON().toString()))
-            .build();
-    Call symbolicateCall = Assertions.assertNotNull(mClient.newCall(request));
-    symbolicateCall.enqueue(
-        new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
-            FLog.w(
-                ReactConstants.TAG,
-                "Got IOException when attempting to open stack frame: " + e.getMessage());
-          }
-
-          @Override
-          public void onResponse(Call call, final Response response) throws IOException {
-            // We don't have a listener for this.
-          }
-        });
-  }
-
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
@@ -446,14 +365,6 @@ public class DevServerHelper {
 
   private static String createResourceURL(String host, String resourcePath) {
     return String.format(Locale.US, "http://%s/%s", host, resourcePath);
-  }
-
-  private static String createSymbolicateURL(String host) {
-    return String.format(Locale.US, "http://%s/symbolicate", host);
-  }
-
-  private static String createOpenStackFrameURL(String host) {
-    return String.format(Locale.US, "http://%s/open-stack-frame", host);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
