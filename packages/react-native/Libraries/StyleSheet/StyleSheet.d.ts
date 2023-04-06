@@ -79,7 +79,7 @@ export namespace StyleSheet {
    */
   export function flatten<T>(
     style?: StyleProp<T>,
-  ): T extends (infer U)[] ? U : T;
+  ): (T extends (infer U)[] ? U : T) | undefined;
 
   /**
    * Combines two styles such that style2 will override any styles in style1.
