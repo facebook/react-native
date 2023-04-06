@@ -155,7 +155,7 @@ export default {
   examples: [
     {
       name: 'pointerevent_attributes_hoverable_pointers',
-      description: '',
+      description: 'Requires physical device + mouse',
       title: 'WPT 1: Pointer Events hoverable pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesHoverablePointers />;
@@ -163,7 +163,6 @@ export default {
     },
     {
       name: 'pointerevent_attributes_nohover_pointers',
-      description: '',
       title: 'WPT 2: Pointer Events no-hover pointer attributes test',
       render(): React.Node {
         return <PointerEventAttributesNoHoverPointers />;
@@ -171,7 +170,6 @@ export default {
     },
     {
       name: 'pointerevent_pointermove',
-      description: '',
       title: 'WPT 3: PointerMove test',
       render(): React.Node {
         return <PointerEventPointerMove />;
@@ -179,7 +177,7 @@ export default {
     },
     {
       name: 'pointerevent_primary_touch_pointer',
-      description: '',
+      description: 'Requires multi-touch (difficult on emulator)',
       title: 'WPT 4: Pointer Event primary touch pointer test',
       render(): React.Node {
         return <PointerEventPrimaryTouchPointer />;
@@ -187,7 +185,7 @@ export default {
     },
     {
       name: 'pointerevent_pointermove_on_chorded_mouse_button',
-      description: '',
+      description: 'Requires physical device + mouse',
       title: 'WPT 5: PointerEvents pointermove on button state changes',
       render(): React.Node {
         return <PointerEventPointerMoveOnChordedMouseButton />;
@@ -195,7 +193,8 @@ export default {
     },
     {
       name: 'pointerevent_pointermove_across',
-      description: '',
+      description:
+        'Works best with a mouse, can be done with touch if you start outside the indicated elements',
       title: 'WPT 6: Pointermove handling across elements',
       render(): React.Node {
         return <PointerEventPointerMoveAcross />;
@@ -203,7 +202,6 @@ export default {
     },
     {
       name: 'pointerevent_pointermove_event_order',
-      description: '',
       title: 'WPT 7: PointerEvent - pointermove event order',
       render(): React.Node {
         return <PointerEventPointerMoveEventOrder />;
@@ -211,7 +209,6 @@ export default {
     },
     {
       name: 'pointerevent_pointermove_between',
-      description: '',
       title: 'WPT 8: Pointermove handling between elements',
       render(): React.Node {
         return <PointerEventPointerMoveBetween />;
@@ -219,7 +216,6 @@ export default {
     },
     {
       name: 'pointerevent_pointerover_out',
-      description: '',
       title: 'WPT 9: PointerOver/PointerOut handling',
       render(): React.Node {
         return <PointerEventPointerOverOut />;
@@ -227,7 +223,7 @@ export default {
     },
     {
       name: 'pointerevent_layout_change_should_fire_pointerover',
-      description: '',
+      description: 'Currently expected to fail',
       title: 'WPT 10: Layout change should fire pointerover',
       render(): React.Node {
         return <PointerEventLayoutChangeShouldFirePointerOver />;
@@ -235,7 +231,6 @@ export default {
     },
     {
       name: 'pointerevent_pointercancel_touch',
-      description: '',
       title: 'WPT 11: Pointer Events pointercancel Tests',
       render(): React.Node {
         return <PointerEventPointerCancelTouch />;
