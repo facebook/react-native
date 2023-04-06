@@ -20,6 +20,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "extraData": undefined,
           "isComponentError": false,
           "level": "warn",
           "message": Object {
@@ -39,6 +40,7 @@ exports[`LogBoxNotificationContainer should render inspector with logs, even whe
           "codeFrame": undefined,
           "componentStack": Array [],
           "count": 1,
+          "extraData": undefined,
           "isComponentError": false,
           "level": "error",
           "message": Object {
