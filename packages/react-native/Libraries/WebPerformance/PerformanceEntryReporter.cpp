@@ -36,6 +36,13 @@ void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
   buffer.durationThreshold = DEFAULT_DURATION_THRESHOLD;
 }
 
+void PerformanceEntryReporter::setAlwaysLogged(
+    PerformanceEntryType entryType,
+    bool isAlwaysLogged) {
+  auto &buffer = getBuffer(entryType);
+  buffer.isAlwaysLogged = isAlwaysLogged;
+}
+
 void PerformanceEntryReporter::setDurationThreshold(
     PerformanceEntryType entryType,
     double durationThreshold) {
@@ -82,7 +89,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
     eventCounts_[entry.name]++;
   }
 
-  if (!isReporting(entryType)) {
+  if (!isReporting(entryType) && !isAlwaysLogged(entryType)) {
     return;
   }
 
@@ -328,7 +335,7 @@ static const SupportedEventTypeRegistry &getSupportedEvents() {
 }
 
 EventTag PerformanceEntryReporter::onEventStart(const char *name) {
-  if (!isReportingEvents()) {
+  if (!isReporting(PerformanceEntryType::EVENT)) {
     return 0;
   }
   const auto &supportedEvents = getSupportedEvents();
@@ -355,7 +362,7 @@ EventTag PerformanceEntryReporter::onEventStart(const char *name) {
 }
 
 void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
-  if (!isReportingEvents() || tag == 0) {
+  if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
   auto timeStamp = JSExecutor::performanceNow();
@@ -369,7 +376,7 @@ void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
 }
 
 void PerformanceEntryReporter::onEventEnd(EventTag tag) {
-  if (!isReportingEvents() || tag == 0) {
+  if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
   auto timeStamp = JSExecutor::performanceNow();

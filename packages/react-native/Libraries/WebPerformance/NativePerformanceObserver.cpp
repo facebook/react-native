@@ -45,6 +45,16 @@ void NativePerformanceObserver::stopReporting(
       static_cast<PerformanceEntryType>(entryType));
 }
 
+void NativePerformanceObserver::setIsBuffered(
+    jsi::Runtime &rt,
+    std::vector<int32_t> entryTypes,
+    bool isBuffered) {
+  for (const int32_t entryType : entryTypes) {
+    PerformanceEntryReporter::getInstance().setAlwaysLogged(
+        static_cast<PerformanceEntryType>(entryType), isBuffered);
+  }
+}
+
 GetPendingEntriesResult NativePerformanceObserver::popPendingEntries(
     jsi::Runtime &rt) {
   return PerformanceEntryReporter::getInstance().popPendingEntries();

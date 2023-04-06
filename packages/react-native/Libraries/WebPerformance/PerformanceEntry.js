@@ -11,6 +11,11 @@
 export type HighResTimeStamp = number;
 export type PerformanceEntryType = 'mark' | 'measure' | 'event';
 
+export const ALWAYS_LOGGED_ENTRY_TYPES: $ReadOnlyArray<PerformanceEntryType> = [
+  'mark',
+  'measure',
+];
+
 export class PerformanceEntry {
   name: string;
   entryType: PerformanceEntryType;

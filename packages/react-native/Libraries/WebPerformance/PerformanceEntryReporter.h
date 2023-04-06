@@ -49,6 +49,7 @@ constexpr size_t DEFAULT_MAX_BUFFER_SIZE = 1024;
 struct PerformanceEntryBuffer {
   BoundedConsumableBuffer<RawPerformanceEntry> entries{DEFAULT_MAX_BUFFER_SIZE};
   bool isReporting{false};
+  bool isAlwaysLogged{false};
   double durationThreshold{DEFAULT_DURATION_THRESHOLD};
   bool hasNameLookup{false};
   PerformanceEntryRegistryType nameLookup;
@@ -80,6 +81,7 @@ class PerformanceEntryReporter : public EventLogger {
   void startReporting(PerformanceEntryType entryType);
   void stopReporting(PerformanceEntryType entryType);
   void stopReporting();
+  void setAlwaysLogged(PerformanceEntryType entryType, bool isAlwaysLogged);
   void setDurationThreshold(
       PerformanceEntryType entryType,
       double durationThreshold);
@@ -101,8 +103,8 @@ class PerformanceEntryReporter : public EventLogger {
     return getBuffer(entryType).isReporting;
   }
 
-  bool isReportingEvents() const {
-    return isReporting(PerformanceEntryType::EVENT);
+  bool isAlwaysLogged(PerformanceEntryType entryType) const {
+    return getBuffer(entryType).isAlwaysLogged;
   }
 
   uint32_t getDroppedEntryCount() const {

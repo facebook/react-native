@@ -18,6 +18,7 @@ import type {
 import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 const reportingType: Set<RawPerformanceEntryType> = new Set();
+const isAlwaysLogged: Set<RawPerformanceEntryType> = new Set();
 const eventCounts: Map<string, number> = new Map();
 const durationThresholds: Map<RawPerformanceEntryType, number> = new Map();
 let entries: Array<RawPerformanceEntry> = [];
@@ -31,6 +32,19 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
   stopReporting: (entryType: RawPerformanceEntryType) => {
     reportingType.delete(entryType);
     durationThresholds.delete(entryType);
+  },
+
+  setIsBuffered: (
+    entryTypes: $ReadOnlyArray<RawPerformanceEntryType>,
+    isBuffered: boolean,
+  ) => {
+    for (const entryType of entryTypes) {
+      if (isBuffered) {
+        isAlwaysLogged.add(entryType);
+      } else {
+        isAlwaysLogged.delete(entryType);
+      }
+    }
   },
 
   popPendingEntries: (): GetPendingEntriesResult => {
@@ -47,7 +61,10 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
   },
 
   logRawEntry: (entry: RawPerformanceEntry) => {
-    if (reportingType.has(entry.entryType)) {
+    if (
+      reportingType.has(entry.entryType) ||
+      isAlwaysLogged.has(entry.entryType)
+    ) {
       const durationThreshold = durationThresholds.get(entry.entryType);
       if (
         durationThreshold !== undefined &&
@@ -81,8 +98,9 @@ const NativePerformanceObserverMock: NativePerformanceObserver = {
   clearEntries: (entryType: RawPerformanceEntryType, entryName?: string) => {
     entries = entries.filter(
       e =>
-        e.entryType === entryType &&
-        (entryName == null || e.name === entryName),
+        (entryType !== RawPerformanceEntryTypeValues.UNDEFINED &&
+          e.entryType !== entryType) ||
+        (entryName != null && e.name !== entryName),
     );
   },
 
