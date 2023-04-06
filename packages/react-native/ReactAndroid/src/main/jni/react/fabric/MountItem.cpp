@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "FabricMountItem.h"
+#include "MountItem.h"
 
 namespace facebook {
 namespace react {
