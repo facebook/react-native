@@ -43,11 +43,10 @@
 
 - (void)show:(BOOL)animated completion:(void (^)(void))completion
 {
-  if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle style =
-        RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
-    self.overrideUserInterfaceStyle = style;
-  }
+  UIUserInterfaceStyle style =
+      RCTSharedApplication().delegate.window.overrideUserInterfaceStyle ?: UIUserInterfaceStyleUnspecified;
+  self.overrideUserInterfaceStyle = style;
+
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
 }
@@ -65,14 +64,13 @@
 
 - (UIWindow *)getUIWindowFromScene
 {
-  if (@available(iOS 13.0, *)) {
-    for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-      if (scene.activationState == UISceneActivationStateForegroundActive &&
-          [scene isKindOfClass:[UIWindowScene class]]) {
-        return [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
-      }
+  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
+    if (scene.activationState == UISceneActivationStateForegroundActive &&
+        [scene isKindOfClass:[UIWindowScene class]]) {
+      return [[UIWindow alloc] initWithWindowScene:(UIWindowScene *)scene];
     }
   }
+
   return nil;
 }
 

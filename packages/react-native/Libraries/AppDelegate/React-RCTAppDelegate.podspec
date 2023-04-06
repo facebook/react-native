@@ -57,7 +57,7 @@ Pod::Spec.new do |s|
   s.documentation_url      = "https://reactnative.dev/docs/actionsheetios"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
   s.source_files            = "**/*.{c,h,m,mm,S,cpp}"
 

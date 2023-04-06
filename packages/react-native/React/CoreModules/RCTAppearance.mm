@@ -38,32 +38,27 @@ NSString *RCTCurrentOverrideAppearancePreference()
 
 NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-  if (@available(iOS 13.0, *)) {
-    static NSDictionary *appearances;
-    static dispatch_once_t onceToken;
+  static NSDictionary *appearances;
+  static dispatch_once_t onceToken;
 
-    if (sColorSchemeOverride) {
-      return sColorSchemeOverride;
-    }
-
-    dispatch_once(&onceToken, ^{
-      appearances = @{
-        @(UIUserInterfaceStyleLight) : RCTAppearanceColorSchemeLight,
-        @(UIUserInterfaceStyleDark) : RCTAppearanceColorSchemeDark
-      };
-    });
-
-    if (!sAppearancePreferenceEnabled) {
-      // Return the default if the app doesn't allow different color schemes.
-      return RCTAppearanceColorSchemeLight;
-    }
-
-    traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
-    return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
+  if (sColorSchemeOverride) {
+    return sColorSchemeOverride;
   }
-#endif
+
+  dispatch_once(&onceToken, ^{
+    appearances = @{
+      @(UIUserInterfaceStyleLight) : RCTAppearanceColorSchemeLight,
+      @(UIUserInterfaceStyleDark) : RCTAppearanceColorSchemeDark
+    };
+  });
+
+  if (!sAppearancePreferenceEnabled) {
+    // Return the default if the app doesn't allow different color schemes.
+    return RCTAppearanceColorSchemeLight;
+  }
+
+  traitCollection = traitCollection ?: [UITraitCollection currentTraitCollection];
+  return appearances[@(traitCollection.userInterfaceStyle)] ?: RCTAppearanceColorSchemeLight;
 
   // Default to light on older OS version - same behavior as Android.
   return RCTAppearanceColorSchemeLight;
@@ -97,10 +92,9 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 {
   UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
   NSArray<__kindof UIWindow *> *windows = RCTSharedApplication().windows;
-  if (@available(iOS 13.0, *)) {
-    for (UIWindow *window in windows) {
-      window.overrideUserInterfaceStyle = userInterfaceStyle;
-    }
+
+  for (UIWindow *window in windows) {
+    window.overrideUserInterfaceStyle = userInterfaceStyle;
   }
 }
 
@@ -135,19 +129,15 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 
 - (void)startObserving
 {
-  if (@available(iOS 13.0, *)) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(appearanceChanged:)
-                                                 name:RCTUserInterfaceStyleDidChangeNotification
-                                               object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(appearanceChanged:)
+                                               name:RCTUserInterfaceStyleDidChangeNotification
+                                             object:nil];
 }
 
 - (void)stopObserving
 {
-  if (@available(iOS 13.0, *)) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

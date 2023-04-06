@@ -959,31 +959,23 @@ static NSString *RCTSemanticColorNames(void)
       id highContrastDark = [appearances objectForKey:@"highContrastDark"];
       UIColor *highContrastDarkColor = [RCTConvert UIColor:highContrastDark];
       if (lightColor != nil && darkColor != nil) {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-        if (@available(iOS 13.0, *)) {
-          UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(
-                                        UITraitCollection *_Nonnull collection) {
-            if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
-                return highContrastDarkColor;
-              } else {
-                return darkColor;
-              }
+        UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
+          if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+              return highContrastDarkColor;
             } else {
-              if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
-                return highContrastLightColor;
-              } else {
-                return lightColor;
-              }
+              return darkColor;
             }
-          }];
-          return color;
-        } else {
-#endif
-          return lightColor;
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-        }
-#endif
+          } else {
+            if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+              return highContrastLightColor;
+            } else {
+              return lightColor;
+            }
+          }
+        }];
+        return color;
+
       } else {
         RCTLogConvertError(json, @"a UIColor. Expected an iOS dynamic appearance aware color.");
         return nil;

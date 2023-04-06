@@ -599,13 +599,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
-      [self.layer setNeedsDisplay];
-    }
+
+  if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+    [self.layer setNeedsDisplay];
   }
-#endif
 }
 
 #pragma mark - Borders
@@ -756,17 +753,12 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
     borderTopColor = _borderBlockStartColor;
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    borderColor = [borderColor resolvedColorWithTraitCollection:self.traitCollection];
-    borderTopColor = [borderTopColor resolvedColorWithTraitCollection:self.traitCollection];
-    directionAwareBorderLeftColor =
-        [directionAwareBorderLeftColor resolvedColorWithTraitCollection:self.traitCollection];
-    borderBottomColor = [borderBottomColor resolvedColorWithTraitCollection:self.traitCollection];
-    directionAwareBorderRightColor =
-        [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
-  }
-#endif
+  borderColor = [borderColor resolvedColorWithTraitCollection:self.traitCollection];
+  borderTopColor = [borderTopColor resolvedColorWithTraitCollection:self.traitCollection];
+  directionAwareBorderLeftColor = [directionAwareBorderLeftColor resolvedColorWithTraitCollection:self.traitCollection];
+  borderBottomColor = [borderBottomColor resolvedColorWithTraitCollection:self.traitCollection];
+  directionAwareBorderRightColor =
+      [directionAwareBorderRightColor resolvedColorWithTraitCollection:self.traitCollection];
 
   return (RCTBorderColors){
       (borderTopColor ?: borderColor).CGColor,
@@ -814,15 +806,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   // correctly clip the subviews.
 
   CGColorRef backgroundColor;
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
-  } else {
-    backgroundColor = _backgroundColor.CGColor;
-  }
-#else
-  backgroundColor = _backgroundColor.CGColor;
-#endif
+
+  backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
 
   if (useIOSBorderRendering) {
     layer.cornerRadius = cornerRadii.topLeft;

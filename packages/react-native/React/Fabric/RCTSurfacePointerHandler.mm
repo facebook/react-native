@@ -165,17 +165,16 @@ static UIView *FindClosestFabricManagedTouchableView(UIView *componentView)
 
 static NSInteger ButtonMaskDiffToButton(UIEventButtonMask prevButtonMask, UIEventButtonMask curButtonMask)
 {
-  if (@available(iOS 13.4, *)) {
-    if ((prevButtonMask & UIEventButtonMaskPrimary) != (curButtonMask & UIEventButtonMaskPrimary)) {
-      return 0;
-    }
-    if ((prevButtonMask & 0x4) != (curButtonMask & 0x4)) {
-      return 1;
-    }
-    if ((prevButtonMask & UIEventButtonMaskSecondary) != (curButtonMask & UIEventButtonMaskSecondary)) {
-      return 2;
-    }
+  if ((prevButtonMask & UIEventButtonMaskPrimary) != (curButtonMask & UIEventButtonMaskPrimary)) {
+    return 0;
   }
+  if ((prevButtonMask & 0x4) != (curButtonMask & 0x4)) {
+    return 1;
+  }
+  if ((prevButtonMask & UIEventButtonMaskSecondary) != (curButtonMask & UIEventButtonMaskSecondary)) {
+    return 2;
+  }
+
   return -1;
 }
 
@@ -218,18 +217,18 @@ static CGFloat RadsToDegrees(CGFloat rads)
 static NSInteger ButtonMaskToButtons(UIEventButtonMask buttonMask)
 {
   NSInteger buttonsMaskResult = 0;
-  if (@available(iOS 13.4, *)) {
-    if ((buttonMask & UIEventButtonMaskPrimary) != 0) {
-      buttonsMaskResult |= 1;
-    }
-    if ((buttonMask & UIEventButtonMaskSecondary) != 0) {
-      buttonsMaskResult |= 2;
-    }
-    // undocumented mask value which represents the "auxiliary button" (i.e. middle mouse button)
-    if ((buttonMask & 0x4) != 0) {
-      buttonsMaskResult |= 4;
-    }
+
+  if ((buttonMask & UIEventButtonMaskPrimary) != 0) {
+    buttonsMaskResult |= 1;
   }
+  if ((buttonMask & UIEventButtonMaskSecondary) != 0) {
+    buttonsMaskResult |= 2;
+  }
+  // undocumented mask value which represents the "auxiliary button" (i.e. middle mouse button)
+  if ((buttonMask & 0x4) != 0) {
+    buttonsMaskResult |= 4;
+  }
+
   return buttonsMaskResult;
 }
 
@@ -250,17 +249,10 @@ static const char *PointerTypeCStringFromUITouchType(UITouchType type)
 
 static void UpdatePointerEventModifierFlags(PointerEvent &event, UIKeyModifierFlags flags)
 {
-  if (@available(iOS 13.4, *)) {
-    event.ctrlKey = (flags & UIKeyModifierControl) != 0;
-    event.shiftKey = (flags & UIKeyModifierShift) != 0;
-    event.altKey = (flags & UIKeyModifierAlternate) != 0;
-    event.metaKey = (flags & UIKeyModifierCommand) != 0;
-  } else {
-    event.ctrlKey = false;
-    event.shiftKey = false;
-    event.altKey = false;
-    event.metaKey = false;
-  }
+  event.ctrlKey = (flags & UIKeyModifierControl) != 0;
+  event.shiftKey = (flags & UIKeyModifierShift) != 0;
+  event.altKey = (flags & UIKeyModifierAlternate) != 0;
+  event.metaKey = (flags & UIKeyModifierCommand) != 0;
 }
 
 static PointerEvent CreatePointerEventFromActivePointer(
@@ -286,21 +278,20 @@ static PointerEvent CreatePointerEventFromActivePointer(
   }
 
   event.pressure = activePointer.force;
-  if (@available(iOS 13.4, *)) {
-    if (activePointer.touchType == UITouchTypeIndirectPointer) {
-      // pointer events with a mouse button pressed should report a pressure of 0.5
-      // when the touch is down and 0.0 when it is lifted regardless of how it is reported by the OS
-      event.pressure = eventType != RCTPointerEventTypeEnd ? 0.5 : 0.0;
-    }
+
+  if (activePointer.touchType == UITouchTypeIndirectPointer) {
+    // pointer events with a mouse button pressed should report a pressure of 0.5
+    // when the touch is down and 0.0 when it is lifted regardless of how it is reported by the OS
+    event.pressure = eventType != RCTPointerEventTypeEnd ? 0.5 : 0.0;
   }
 
   CGFloat pointerSize = activePointer.majorRadius * 2.0;
-  if (@available(iOS 13.4, *)) {
-    if (activePointer.touchType == UITouchTypeIndirectPointer) {
-      // mouse type pointers should always report a size of 1
-      pointerSize = 1.0;
-    }
+
+  if (activePointer.touchType == UITouchTypeIndirectPointer) {
+    // mouse type pointers should always report a size of 1
+    pointerSize = 1.0;
   }
+
   event.width = pointerSize;
   event.height = pointerSize;
 
@@ -374,19 +365,13 @@ static void UpdateActivePointerWithUITouch(
   activePointer.altitudeAngle = uiTouch.altitudeAngle;
   activePointer.azimuthAngle = [uiTouch azimuthAngleInView:nil];
 
-  if (@available(ios 13.4, *)) {
-    UIEventButtonMask nextButtonMask = 0;
-    if (uiTouch.phase != UITouchPhaseEnded) {
-      nextButtonMask = uiTouch.type == UITouchTypeIndirectPointer ? uiEvent.buttonMask : 1;
-    }
-    activePointer.button = ButtonMaskDiffToButton(activePointer.buttonMask, nextButtonMask);
-    activePointer.buttonMask = nextButtonMask;
-    activePointer.modifierFlags = uiEvent.modifierFlags;
-  } else {
-    activePointer.button = 0;
-    activePointer.buttonMask = 0;
-    activePointer.modifierFlags = 0;
+  UIEventButtonMask nextButtonMask = 0;
+  if (uiTouch.phase != UITouchPhaseEnded) {
+    nextButtonMask = uiTouch.type == UITouchTypeIndirectPointer ? uiEvent.buttonMask : 1;
   }
+  activePointer.button = ButtonMaskDiffToButton(activePointer.buttonMask, nextButtonMask);
+  activePointer.buttonMask = nextButtonMask;
+  activePointer.modifierFlags = uiEvent.modifierFlags;
 }
 
 static BOOL IsViewListeningToEvent(RCTReactTaggedView *taggedView, ViewEvents::Offset eventType)
@@ -477,15 +462,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [view addGestureRecognizer:self];
   _rootComponentView = view;
 
-  if (@available(iOS 13.4, *)) {
-    _mouseHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(mouseHovering:)];
-    _mouseHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypeIndirectPointer) ];
-    [view addGestureRecognizer:_mouseHoverRecognizer];
+  _mouseHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(mouseHovering:)];
+  _mouseHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypeIndirectPointer) ];
+  [view addGestureRecognizer:_mouseHoverRecognizer];
 
-    _penHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(penHovering:)];
-    _penHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypePencil) ];
-    [view addGestureRecognizer:_penHoverRecognizer];
-  }
+  _penHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(penHovering:)];
+  _penHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypePencil) ];
+  [view addGestureRecognizer:_penHoverRecognizer];
 }
 
 - (void)detachFromView:(UIView *)view
@@ -515,32 +498,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     ActivePointer activePointer = {};
 
     // Determine the identifier of the Pointer and if it is the primary pointer
-    if (@available(iOS 13.4, *)) {
-      switch (touch.type) {
-        case UITouchTypeIndirectPointer:
-          activePointer.identifier = kMousePointerId;
-          activePointer.isPrimary = true;
-          break;
-        case UITouchTypePencil:
-          activePointer.identifier = kPencilPointerId;
-          activePointer.isPrimary = true;
-          break;
-        default:
-          // use the identifier pool offset to ensure no conflicts between the reserved IDs and the
-          // touch IDs
-          activePointer.identifier = _identifierPool.dequeue() + kTouchIdentifierPoolOffset;
-          if (_primaryTouchPointerId == -1) {
-            _primaryTouchPointerId = activePointer.identifier;
-            activePointer.isPrimary = true;
-          }
-          break;
-      }
-    } else {
-      activePointer.identifier = _identifierPool.dequeue();
-      if (_primaryTouchPointerId == -1) {
-        _primaryTouchPointerId = activePointer.identifier;
+
+    switch (touch.type) {
+      case UITouchTypeIndirectPointer:
+        activePointer.identifier = kMousePointerId;
         activePointer.isPrimary = true;
-      }
+        break;
+      case UITouchTypePencil:
+        activePointer.identifier = kPencilPointerId;
+        activePointer.isPrimary = true;
+        break;
+      default:
+        // use the identifier pool offset to ensure no conflicts between the reserved IDs and the
+        // touch IDs
+        activePointer.identifier = _identifierPool.dequeue() + kTouchIdentifierPoolOffset;
+        if (_primaryTouchPointerId == -1) {
+          _primaryTouchPointerId = activePointer.identifier;
+          activePointer.isPrimary = true;
+        }
+        break;
     }
 
     // If the pointer has not been marked as hovering over views before the touch started, we register
@@ -582,19 +558,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       _primaryTouchPointerId = -1;
     }
 
-    if (@available(iOS 13.4, *)) {
-      // only need to enqueue if the touch type isn't one with a reserved identifier
-      switch (touch.type) {
-        case UITouchTypeIndirectPointer:
-        case UITouchTypePencil:
-          break;
-        default:
-          // since the touch's identifier has been offset we need to re-normalize it to 0-based
-          // which is what the identifier pool expects
-          _identifierPool.enqueue(activePointer.identifier - kTouchIdentifierPoolOffset);
-      }
-    } else {
-      _identifierPool.enqueue(activePointer.identifier);
+    // only need to enqueue if the touch type isn't one with a reserved identifier
+    switch (touch.type) {
+      case UITouchTypeIndirectPointer:
+      case UITouchTypePencil:
+        break;
+      default:
+        // since the touch's identifier has been offset we need to re-normalize it to 0-based
+        // which is what the identifier pool expects
+        _identifierPool.enqueue(activePointer.identifier - kTouchIdentifierPoolOffset);
     }
 
     _activePointers.erase(touch);
@@ -749,11 +721,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   CGPoint offsetLocation = [recognizer locationInView:targetView];
 
   UIKeyModifierFlags modifierFlags;
-  if (@available(iOS 13.4, *)) {
-    modifierFlags = recognizer.modifierFlags;
-  } else {
-    modifierFlags = 0;
-  }
+
+  modifierFlags = recognizer.modifierFlags;
 
   PointerEvent event = CreatePointerEventFromIncompleteHoverData(
       pointerId, pointerType, clientLocation, screenLocation, offsetLocation, modifierFlags);

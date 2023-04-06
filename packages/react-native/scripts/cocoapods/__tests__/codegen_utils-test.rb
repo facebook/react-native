@@ -20,7 +20,7 @@ require_relative "./test_utils/FileUtilsMock.rb"
 # without incurring in circular deps
 # TODO: move `min_ios_version_supported` to utils.rb
 def min_ios_version_supported
-    return '12.4'
+    return '13.4'
 end
 
 class CodegenUtilsTests < Test::Unit::TestCase
@@ -535,7 +535,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            'ios' => '12.4',
+            'ios' => '13.4',
           },
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {

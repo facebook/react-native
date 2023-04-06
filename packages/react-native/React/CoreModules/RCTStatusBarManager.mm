@@ -21,25 +21,11 @@
   static NSDictionary *mapping;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    if (@available(iOS 13.0, *)) {
-      mapping = @{
-        @"default" : @(UIStatusBarStyleDefault),
-        @"light-content" : @(UIStatusBarStyleLightContent),
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-        @"dark-content" : @(UIStatusBarStyleDarkContent)
-#else
-          @"dark-content": @(UIStatusBarStyleDefault)
-#endif
-      };
-
-    } else {
-      mapping = @{
-        @"default" : @(UIStatusBarStyleDefault),
-        @"light-content" : @(UIStatusBarStyleLightContent),
-        @"dark-content" : @(UIStatusBarStyleDefault)
-      };
-    }
+    mapping = @{
+      @"default" : @(UIStatusBarStyleDefault),
+      @"light-content" : @(UIStatusBarStyleLightContent),
+      @"dark-content" : @(UIStatusBarStyleDarkContent)
+    };
   });
   return _RCT_CAST(
       UIStatusBarStyle,
