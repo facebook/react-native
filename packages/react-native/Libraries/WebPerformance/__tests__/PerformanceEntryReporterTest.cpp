@@ -44,7 +44,6 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStartReporting) {
   ASSERT_TRUE(reporter.isReporting(PerformanceEntryType::MEASURE));
 
   ASSERT_FALSE(reporter.isReporting(PerformanceEntryType::EVENT));
-  ASSERT_FALSE(reporter.isReportingEvents());
 }
 
 TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {

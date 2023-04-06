@@ -53,4 +53,56 @@ describe('NativePerformanceObserver', () => {
 
     NativePerformanceObserverMock.stopReporting('mark');
   });
+
+  it('correctly clears/gets entries', async () => {
+    NativePerformanceObserverMock.logRawEntry({
+      name: 'mark1',
+      entryType: RawPerformanceEntryTypeValues.MARK,
+      startTime: 0,
+      duration: 0,
+    });
+
+    NativePerformanceObserverMock.logRawEntry({
+      name: 'event1',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
+      startTime: 0,
+      duration: 0,
+    });
+
+    NativePerformanceObserverMock.clearEntries(
+      RawPerformanceEntryTypeValues.UNDEFINED,
+    );
+
+    expect(NativePerformanceObserverMock.getEntries()).toStrictEqual([]);
+
+    NativePerformanceObserverMock.logRawEntry({
+      name: 'entry1',
+      entryType: RawPerformanceEntryTypeValues.MARK,
+      startTime: 0,
+      duration: 0,
+    });
+
+    NativePerformanceObserverMock.logRawEntry({
+      name: 'entry2',
+      entryType: RawPerformanceEntryTypeValues.MARK,
+      startTime: 0,
+      duration: 0,
+    });
+
+    NativePerformanceObserverMock.logRawEntry({
+      name: 'entry1',
+      entryType: RawPerformanceEntryTypeValues.EVENT,
+      startTime: 0,
+      duration: 0,
+    });
+
+    NativePerformanceObserverMock.clearEntries(
+      RawPerformanceEntryTypeValues.UNDEFINED,
+      'entry1',
+    );
+
+    expect(
+      NativePerformanceObserverMock.getEntries().map(e => e.name),
+    ).toStrictEqual(['entry2']);
+  });
 });

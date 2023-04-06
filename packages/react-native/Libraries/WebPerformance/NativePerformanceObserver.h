@@ -63,6 +63,11 @@ class NativePerformanceObserver
 
   void stopReporting(jsi::Runtime &rt, int32_t entryType);
 
+  void setIsBuffered(
+      jsi::Runtime &rt,
+      std::vector<int32_t> entryTypes,
+      bool isBuffered);
+
   GetPendingEntriesResult popPendingEntries(jsi::Runtime &rt);
 
   void setOnPerformanceEntryCallback(
