@@ -51,10 +51,13 @@ export function deleteStack(stack: Stack): void {
   cache.delete(stack);
 }
 
-export function symbolicate(stack: Stack): Promise<SymbolicatedStackTrace> {
+export function symbolicate(
+  stack: Stack,
+  extraData?: mixed,
+): Promise<SymbolicatedStackTrace> {
   let promise = cache.get(stack);
   if (promise == null) {
-    promise = symbolicateStackTrace(stack).then(sanitize);
+    promise = symbolicateStackTrace(stack, extraData).then(sanitize);
     cache.set(stack, promise);
   }
 

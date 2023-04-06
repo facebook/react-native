@@ -211,6 +211,7 @@ export function parseLogBoxException(
         substitutions: [],
       },
       category: `${fileName}-${row}-${column}`,
+      extraData: error.extraData,
     };
   }
 
@@ -238,6 +239,7 @@ export function parseLogBoxException(
         substitutions: [],
       },
       category: `${fileName}-${row}-${column}`,
+      extraData: error.extraData,
     };
   }
 
@@ -261,6 +263,7 @@ export function parseLogBoxException(
         substitutions: [],
       },
       category: `${fileName}-${1}-${1}`,
+      extraData: error.extraData,
     };
   }
 
@@ -275,6 +278,7 @@ export function parseLogBoxException(
         substitutions: [],
       },
       category: message,
+      extraData: error.extraData,
     };
   }
 
@@ -286,6 +290,7 @@ export function parseLogBoxException(
       isComponentError: error.isComponentError,
       componentStack:
         componentStack != null ? parseComponentStack(componentStack) : [],
+      extraData: error.extraData,
       ...parseInterpolation([message]),
     };
   }
@@ -297,6 +302,7 @@ export function parseLogBoxException(
       stack: error.stack,
       isComponentError: error.isComponentError,
       componentStack: parseComponentStack(componentStack),
+      extraData: error.extraData,
       ...parseInterpolation([message]),
     };
   }
@@ -307,6 +313,7 @@ export function parseLogBoxException(
     level: 'error',
     stack: error.stack,
     isComponentError: error.isComponentError,
+    extraData: error.extraData,
     ...parseLogBoxLog([message]),
   };
 }
