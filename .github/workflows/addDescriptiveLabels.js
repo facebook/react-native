@@ -37,7 +37,7 @@ module.exports = async (github, context) => {
       labelsToAdd.push(topics[topic]);
     }
   }
-  if (labelsToAdd.length > 0){
+  if (labelsToAdd.length > 0) {
     await addLabels(labelsToAdd);
   }
 };
