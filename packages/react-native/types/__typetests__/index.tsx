@@ -215,7 +215,7 @@ StyleSheet.setStyleAttributePreprocessor(
   (family: string) => family,
 );
 
-const welcomeFontSize = StyleSheet.flatten(styles.welcome).fontSize;
+const welcomeFontSize = StyleSheet.flatten(styles.welcome)?.fontSize;
 
 const viewStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#F5FCFF',
@@ -230,15 +230,15 @@ const fontVariantStyle: StyleProp<TextStyle> = {
   fontVariant: ['tabular-nums'],
 };
 
-const viewProperty = StyleSheet.flatten(viewStyle).backgroundColor;
-const textProperty = StyleSheet.flatten(textStyle).fontSize;
-const imageProperty = StyleSheet.flatten(imageStyle).resizeMode;
-const fontVariantProperty = StyleSheet.flatten(fontVariantStyle).fontVariant;
+const viewProperty = StyleSheet.flatten(viewStyle)?.backgroundColor;
+const textProperty = StyleSheet.flatten(textStyle)?.fontSize;
+const imageProperty = StyleSheet.flatten(imageStyle)?.resizeMode;
+const fontVariantProperty = StyleSheet.flatten(fontVariantStyle)?.fontVariant;
 
 // correct use of the StyleSheet.flatten
 const styleArray: StyleProp<ViewStyle>[] = [];
 const flattenStyle = StyleSheet.flatten(styleArray);
-const {top} = flattenStyle;
+const top = flattenStyle?.top;
 
 const s = StyleSheet.create({
   shouldWork: {
