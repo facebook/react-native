@@ -8,7 +8,7 @@
 #include "FabricMountingManager.h"
 
 #include "EventEmitterWrapper.h"
-#include "FabricMountItem.h"
+#include "MountItem.h"
 #include "StateWrapperImpl.h"
 
 #include <react/jni/ReadableNativeMap.h>
