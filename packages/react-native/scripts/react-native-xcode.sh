@@ -187,6 +187,6 @@ else
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
-  echo "error: File $BUNDLE_FILE does not exist. This must be a bug with React Native, please report it here: https://github.com/facebook/react-native/issues" >&2
+  echo "error: File $BUNDLE_FILE does not exist. Your environment is misconfigured as Metro was not able to produce the bundle so your release application won't work!" >&2
   exit 2
 fi
