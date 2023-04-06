@@ -43,12 +43,15 @@ nexusPublishing {
   }
 }
 
-tasks.register("cleanAll", Delete::class.java) {
+tasks.register("clean", Delete::class.java) {
   description = "Remove all the build files and intermediate build outputs"
   dependsOn(gradle.includedBuild("react-native-gradle-plugin").task(":clean"))
-  dependsOn(":packages:react-native:ReactAndroid:clean")
-  dependsOn(":packages:react-native:ReactAndroid:hermes-engine:clean")
-  dependsOn(":packages:rn-tester:android:app:clean")
+  subprojects.forEach {
+    if (it.project.plugins.hasPlugin("com.android.library") ||
+        it.project.plugins.hasPlugin("com.android.application")) {
+      dependsOn(it.tasks.named("clean"))
+    }
+  }
   delete(allprojects.map { it.buildDir })
   delete(rootProject.file("./packages/react-native/ReactAndroid/.cxx"))
   delete(rootProject.file("./packages/react-native/ReactAndroid/hermes-engine/.cxx"))
@@ -62,6 +65,7 @@ tasks.register("cleanAll", Delete::class.java) {
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86/"))
   delete(rootProject.file("./packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/x86_64/"))
   delete(rootProject.file("./packages/react-native-codegen/lib"))
+  delete(rootProject.file("./node_modules/@react-native/codegen/lib"))
   delete(rootProject.file("./packages/rn-tester/android/app/.cxx"))
 }
 
