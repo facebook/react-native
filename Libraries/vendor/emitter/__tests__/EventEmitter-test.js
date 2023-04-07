@@ -78,6 +78,13 @@ describe('listeners', () => {
     expect(results).toEqual(['A', 'B', 'C']);
   });
 
+  it('registers an event with an illegal argument', () => {
+    const emitter = new EventEmitter<{A: []}>();
+    const fakeFunction = ({}: any);
+
+    expect(() => emitter.addListener('A', fakeFunction)).toThrow('EventEmitter.addListener(…): 2nd argument must be a function.');
+  });
+
   it('invokes the same listener registered multiple times', () => {
     const emitter = new EventEmitter<{A: []}>();
 

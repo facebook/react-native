@@ -74,6 +74,9 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context: mixed,
   ): EventSubscription {
+    if (typeof listener !== 'function') {
+      throw new TypeError('EventEmitter.addListener(…): 2nd argument must be a function.');
+    }
     const registrations = allocate<_, _, TEventToArgsMap[TEvent]>(
       this._registry,
       eventType,
