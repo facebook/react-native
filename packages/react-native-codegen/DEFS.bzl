@@ -20,6 +20,7 @@ load(
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "get_preprocessor_flags_for_build_mode",
+    "is_rn_desktop",
     "react_native_dep",
     "react_native_desktop_root_target",
     "react_native_root_target",
@@ -408,6 +409,14 @@ def rn_codegen_components(
         if is_running_buck_project():
             rn_xplat_cxx_library(name = "generated_components-{}".format(name), visibility = ["PUBLIC"])
         else:
+            MOBILE_DEPS = [
+                react_native_xplat_target("react/renderer/debug:debug"),
+                react_native_xplat_target("react/renderer/core:core"),
+                react_native_xplat_target("react/renderer/graphics:graphics"),
+                react_native_xplat_target("react/renderer/components/image:image"),
+                react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
+                react_native_xplat_target("react/renderer/components/view:view"),
+            ]
             rn_xplat_cxx_library(
                 name = "generated_components-{}".format(name),
                 srcs = [
@@ -448,14 +457,9 @@ def rn_codegen_components(
                 ],
                 tests = [":generated_tests-{}".format(name)],
                 visibility = ["PUBLIC"],
-                deps = [
-                    react_native_xplat_target("react/renderer/debug:debug"),
-                    react_native_xplat_target("react/renderer/core:core"),
-                    react_native_xplat_target("react/renderer/graphics:graphics"),
-                    react_native_xplat_target("react/renderer/components/image:image"),
-                    react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
-                    react_native_xplat_target("react/renderer/components/view:view"),
-                ],
+                fbandroid_deps = MOBILE_DEPS,
+                ios_deps = MOBILE_DEPS,
+                macosx_deps = [react_native_desktop_root_target(":renderer_headers")] if is_rn_desktop() else MOBILE_DEPS,
             )
 
         # Tests
@@ -476,9 +480,15 @@ def rn_codegen_components(
             fbandroid_use_instrumentation_test = True,
             labels = library_labels + ["codegen_rule"],
             platforms = (ANDROID, APPLE, CXX),
+            fbandroid_deps = [react_native_xplat_target("react/renderer/core:core")],
+            ios_deps = [
+                react_native_xplat_target("react/renderer/core:core"),
+            ],
+            macosx_deps = ([react_native_desktop_root_target(":renderer_headers")] if is_rn_desktop() else [
+                react_native_xplat_target("react/renderer/core:core"),
+            ]),
             deps = [
                 YOGA_CXX_TARGET,
-                react_native_xplat_target("react/renderer/core:core"),
                 "//xplat/third-party/gmock:gtest",
                 ":generated_components-{}".format(name),
             ],
