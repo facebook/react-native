@@ -168,6 +168,9 @@ def react_native_xplat_shared_library_target(path):
 def react_native_desktop_root_target(path):
     return "//packages/react-native/" + path
 
+def is_rn_desktop():
+    return False
+
 # Example: react_native_tests_target('java/com/facebook/react/modules:modules')
 def react_native_tests_target(path):
     return "//packages/react-native/ReactAndroid/src/test/" + path
