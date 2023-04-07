@@ -119,6 +119,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  FontVariant,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -215,7 +216,9 @@ StyleSheet.setStyleAttributePreprocessor(
   (family: string) => family,
 );
 
-const welcomeFontSize = StyleSheet.flatten(styles.welcome)?.fontSize;
+const welcomeFontSize: number | undefined = StyleSheet.flatten(
+  styles.welcome,
+).fontSize;
 
 const viewStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#F5FCFF',
@@ -230,15 +233,20 @@ const fontVariantStyle: StyleProp<TextStyle> = {
   fontVariant: ['tabular-nums'],
 };
 
-const viewProperty = StyleSheet.flatten(viewStyle)?.backgroundColor;
-const textProperty = StyleSheet.flatten(textStyle)?.fontSize;
-const imageProperty = StyleSheet.flatten(imageStyle)?.resizeMode;
-const fontVariantProperty = StyleSheet.flatten(fontVariantStyle)?.fontVariant;
+const viewProperty: ColorValue | undefined =
+  StyleSheet.flatten(viewStyle).backgroundColor;
+const textProperty: number | undefined = StyleSheet.flatten(textStyle).fontSize;
+const imageProperty: ImageResizeMode | undefined =
+  StyleSheet.flatten(imageStyle).resizeMode;
+const fontVariantProperty: FontVariant[] | undefined =
+  StyleSheet.flatten(fontVariantStyle).fontVariant;
 
 // correct use of the StyleSheet.flatten
 const styleArray: StyleProp<ViewStyle>[] = [];
 const flattenStyle = StyleSheet.flatten(styleArray);
-const top = flattenStyle?.top;
+const {top} = flattenStyle;
+
+const undefinedStyle: undefined = StyleSheet.flatten(undefined);
 
 const s = StyleSheet.create({
   shouldWork: {
