@@ -50,7 +50,7 @@ const fs = require('fs');
 const path = require('path');
 const yargs = require('yargs');
 
-const buildTag = exec('git tag --points-at HEAD'); // [macOS] Don't rely on CircleCI environment variables.
+// const buildTag = process.env.CIRCLE_TAG; // [macOS] We can't use the CircleCI build tag.
 const otp = process.env.NPM_CONFIG_OTP;
 
 const argv = yargs
@@ -85,6 +85,15 @@ const buildType = releaseBuild
 const currentCommit = getCurrentCommit();
 const shortCommit = currentCommit.slice(0, 9);
 
+// [macOS] Function to get our version from package.json instead of the CircleCI build tag.
+function getPkgJsonVersion() {
+  const pkgJsonPath = path.resolve(__dirname, '../package.json');
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+  const pkgJsonVersion = pkgJson.version;
+  return pkgJsonVersion;
+}
+// macOS]
+
 const rawVersion =
   // 0.0.0 triggers issues with cocoapods for codegen when building template project.
   dryRunBuild
@@ -93,7 +102,7 @@ const rawVersion =
     nightlyBuild
     ? '0.0.0'
     : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in set-rn-version)
-      buildTag.substring(0, buildTag.indexOf('-microsft')); // [macOS] Strip off the "-microsoft" suffix from the tag name.
+      getPkgJsonVersion(); // [macOS] We can't use the CircleCI build tag, so we use the version argument instead.
 
 let version,
   major,
@@ -159,6 +168,7 @@ const isLatest = exitIfNotOnGit(
 publishAndroidArtifactsToMaven(releaseVersion, nightlyBuild);
 macOS] */
 
+/* [macOS Comment the NPM publish out as we do this separately
 const releaseBranch = `${major}.${minor}-stable`;
 
 // Set the right tag for nightly and prerelease builds
@@ -175,10 +185,11 @@ const tagFlag = nightlyBuild
 // use otp from envvars if available
 const otpFlag = otp ? `--otp ${otp}` : '';
 
-if (exec(`npm publish ${tagFlag} ${otpFlag}`).code) {
+if (exec(`npm publish ${tagFlag} ${otpFlag}`, {cwd: RN_PACKAGE_DIR}).code) {
   echo('Failed to publish package to npm');
   exit(1);
 } else {
   echo(`Published to npm ${releaseVersion}`);
   exit(0);
 }
+macOS] */

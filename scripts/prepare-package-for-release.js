@@ -22,7 +22,6 @@ const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 const {isReleaseBranch, parseVersion} = require('./version-utils');
 const {failIfTagExists} = require('./release-utils');
-const {getBranchName} = require('./scm-utils'); // [macOS]
 
 const argv = yargs
   .option('r', {
@@ -45,7 +44,7 @@ const argv = yargs
     default: false,
   }).argv;
 
-const branch = getBranchName(); // [macOS] Don't rely on CircleCI environment variables.
+const branch = process.env.CIRCLE_BRANCH;
 const remote = argv.remote;
 const releaseVersion = argv.toVersion;
 const isLatest = argv.latest;

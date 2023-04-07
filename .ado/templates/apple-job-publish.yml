@@ -6,52 +6,36 @@ steps:
 
   - template: apple-install-dependencies.yml
 
-  # Only set up our release environment if we're not doing a dry run
-  - ${{ if ne( parameters['build_type'], 'dry-run') }}:
-    - template: apple-release-setup.yml  
-
-  - task: CmdLine@2
-    displayName: Set build type to ${{parameters.build_type}}
-    inputs:
-      script: |
-        BUILD_TYPE=${{parameters.build_type}}
-        echo "Set build type: $BUILD_TYPE"
-
   # Extra steps needed for *-stable releases
   - ${{ if eq( parameters['build_type'], 'release') }}:
-    - task: CmdLine@2
-      displayName: Set next version
-      inputs:
-        script: |
-          VERSION=$(node .ado/get-next-semver-version.js)
-          echo "Set version: $VERSION"
-
-    - task: CmdLine@2
-      displayName: Set build type to ${{parameters.build_type}}
-      inputs:
-        script: |
-          BUILD_TYPE=release
-          echo "Set build type: $BUILD_TYPE"
-
     - task: CmdLine@2
       displayName: Set latest tag
       inputs:
         script: |
           LATEST=true
           echo "Set latest to: $LATEST"
+      condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
 
+    # Note, This won't do the actual `git tag` and `git push` as we're doing a dry run.
+    # We do that as a separate step in `.ado/publish.yml`.
     - task: CmdLine@2
-      displayName: Prepare and tag package for release
+      displayName: Prepare package for release
       inputs:
         script: |
+          VERSION=$(node .ado/get-next-semver-version.js)
           if [[ -z "$VERSION" ]]; then
             VERSION=$(grep '"version"' package.json | cut -d '"' -f 4 | head -1)
             echo "Using the version from the package.json: $VERSION"
           fi
-          node ./scripts/prepare-package-for-release.js -v "$VERSION" -l $LATEST
+          node ./scripts/prepare-package-for-release.js -v "$VERSION" --dry-run
+      env:
+        # Map the corresponding variable since `prepare-package-for-release.js` depends on it.
+        CIRCLE_BRANCH: $(Build.SourceBranchName)
 
+  # Note: This won't actually publish to NPM as we've commented that bit out.
+  # We do that as a separate step in `.ado/publish.yml`. 
   - task: CmdLine@2
-    displayName: NPM Publish
+    displayName: Run publish-npm.js
     inputs:
       script: |
         node ./scripts/publish-npm.js --${{ parameters.build_type }}
