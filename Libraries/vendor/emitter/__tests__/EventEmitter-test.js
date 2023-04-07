@@ -82,7 +82,9 @@ describe('listeners', () => {
     const emitter = new EventEmitter<{A: []}>();
     const fakeFunction = ({}: any);
 
-    expect(() => emitter.addListener('A', fakeFunction)).toThrow('EventEmitter.addListener(…): 2nd argument must be a function.');
+    expect(() => emitter.addListener('A', fakeFunction)).toThrow(
+      'EventEmitter.addListener(…): 2nd argument must be a function.',
+    );
   });
 
   it('invokes the same listener registered multiple times', () => {
