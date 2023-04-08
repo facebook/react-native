@@ -16,6 +16,7 @@ rn_android_library(
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/main/java/com/facebook/common/logging:logging"),
         react_native_dep("third-party/android/androidx:annotation"),
+        react_native_dep("third-party/android/androidx-core:view"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_root_target(":generated_components_java-FBReactNativeComponentSpec"),
