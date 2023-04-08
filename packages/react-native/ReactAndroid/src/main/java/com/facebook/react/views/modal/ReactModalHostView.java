@@ -19,11 +19,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.Window;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
@@ -331,9 +334,34 @@ public class ReactModalHostView extends ViewGroup
       mDialog.show();
       if (context instanceof Activity) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-          int appearance =
-              ((Activity) context).getWindow().getInsetsController().getSystemBarsAppearance();
-          mDialog.getWindow().getInsetsController().setSystemBarsAppearance(appearance, appearance);
+          Window window = ((Activity) context).getWindow();
+          WindowInsetsController windowInsetsController = window.getInsetsController();
+          WindowInsetsController dialogWindowInsetsController = mDialog.getWindow().getInsetsController();
+
+          int appearance = windowInsetsController.getSystemBarsAppearance();
+          dialogWindowInsetsController.setSystemBarsAppearance(appearance, appearance);
+          dialogWindowInsetsController.setSystemBarsBehavior(windowInsetsController.getSystemBarsBehavior());
+
+          boolean statusBarsIsVisible = window.getDecorView().getRootWindowInsets().isVisible(WindowInsetsCompat.Type.statusBars());
+          if (statusBarsIsVisible) {
+            dialogWindowInsetsController.show(WindowInsetsCompat.Type.statusBars());
+          } else {
+            dialogWindowInsetsController.hide(WindowInsetsCompat.Type.statusBars());
+          }
+
+          boolean navigationBarsIsVisible = window.getDecorView().getRootWindowInsets().isVisible(WindowInsetsCompat.Type.navigationBars());
+          if (navigationBarsIsVisible) {
+            dialogWindowInsetsController.show(WindowInsetsCompat.Type.navigationBars());
+          } else {
+            dialogWindowInsetsController.hide(WindowInsetsCompat.Type.navigationBars());
+          }
+
+          boolean captionBarIsVisible = window.getDecorView().getRootWindowInsets().isVisible(WindowInsetsCompat.Type.captionBar());
+          if (captionBarIsVisible) {
+            dialogWindowInsetsController.show(WindowInsetsCompat.Type.captionBar());
+          } else {
+            dialogWindowInsetsController.hide(WindowInsetsCompat.Type.captionBar());
+          }
         } else {
           mDialog
               .getWindow()
