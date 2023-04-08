@@ -80,9 +80,8 @@ describe('listeners', () => {
 
   it('registers an event with an illegal argument', () => {
     const emitter = new EventEmitter<{A: []}>();
-    const fakeFunction = ({}: any);
 
-    expect(() => emitter.addListener('A', fakeFunction)).toThrow(
+    expect(() => emitter.addListener('A', null)).toThrow(
       'EventEmitter.addListener(…): 2nd argument must be a function.',
     );
   });
