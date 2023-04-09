@@ -46,7 +46,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   public static final String REACT_CLASS = "RCTScrollView";
 
   private static final int[] SPACING_TYPES = {
-    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL_EDGES, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
 
   private @Nullable FpsListener mFpsListener = null;

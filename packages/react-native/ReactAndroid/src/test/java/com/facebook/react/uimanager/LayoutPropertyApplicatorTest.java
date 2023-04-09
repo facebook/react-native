@@ -140,7 +140,7 @@ public class LayoutPropertyApplicatorTest {
     ReactStylesDiffMap map = spy(buildStyles("margin", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setMargin(eq(Spacing.ALL), anyFloat());
+    verify(reactShadowNode).setMargin(eq(Spacing.ALL_EDGES), anyFloat());
     verify(map).getFloat("margin", YogaConstants.UNDEFINED);
 
     // marginVertical
@@ -207,7 +207,7 @@ public class LayoutPropertyApplicatorTest {
     ReactStylesDiffMap map = spy(buildStyles("padding", 10.0));
 
     reactShadowNode.updateProperties(map);
-    verify(reactShadowNode).setPadding(eq(Spacing.ALL), anyFloat());
+    verify(reactShadowNode).setPadding(eq(Spacing.ALL_EDGES), anyFloat());
     verify(map).getFloat("padding", YogaConstants.UNDEFINED);
 
     // paddingVertical
@@ -343,7 +343,7 @@ public class LayoutPropertyApplicatorTest {
     verify(reactShadowNode).setPosition(Spacing.START, 10.f);
     verify(reactShadowNode).setPosition(Spacing.TOP, 10.f);
     verify(reactShadowNode).setFlex(1.0f);
-    verify(reactShadowNode).setPadding(Spacing.ALL, 10.f);
+    verify(reactShadowNode).setPadding(Spacing.ALL_EDGES, 10.f);
     verify(reactShadowNode).setMargin(Spacing.START, 10.f);
     verify(reactShadowNode).setBorder(Spacing.TOP, 10.f);
     verify(reactShadowNode).setFlexDirection(YogaFlexDirection.ROW);
@@ -388,7 +388,7 @@ public class LayoutPropertyApplicatorTest {
     verify(reactShadowNode).setPosition(Spacing.START, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setPosition(Spacing.TOP, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setFlex(0.f);
-    verify(reactShadowNode).setPadding(Spacing.ALL, YogaConstants.UNDEFINED);
+    verify(reactShadowNode).setPadding(Spacing.ALL_EDGES, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setMargin(Spacing.START, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setBorder(Spacing.TOP, YogaConstants.UNDEFINED);
     verify(reactShadowNode).setFlexDirection(YogaFlexDirection.COLUMN);

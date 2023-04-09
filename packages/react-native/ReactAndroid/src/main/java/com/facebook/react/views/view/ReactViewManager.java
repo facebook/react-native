@@ -42,7 +42,7 @@ public class ReactViewManager extends ReactClippingViewManager<ReactViewGroup> {
   @VisibleForTesting public static final String REACT_CLASS = ViewProps.VIEW_CLASS_NAME;
 
   private static final int[] SPACING_TYPES = {
-    Spacing.ALL,
+    Spacing.ALL_EDGES,
     Spacing.LEFT,
     Spacing.RIGHT,
     Spacing.TOP,

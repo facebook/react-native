@@ -188,7 +188,7 @@ public class ViewProps {
   public static final String NATIVE_ID = "nativeID";
 
   public static final int[] BORDER_SPACING_TYPES = {
-    Spacing.ALL,
+    Spacing.ALL_EDGES,
     Spacing.START,
     Spacing.END,
     Spacing.TOP,
@@ -197,7 +197,7 @@ public class ViewProps {
     Spacing.RIGHT
   };
   public static final int[] PADDING_MARGIN_SPACING_TYPES = {
-    Spacing.ALL,
+    Spacing.ALL_EDGES,
     Spacing.VERTICAL,
     Spacing.HORIZONTAL,
     Spacing.START,

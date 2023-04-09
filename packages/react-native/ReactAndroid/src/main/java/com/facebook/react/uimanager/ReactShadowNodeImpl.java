@@ -82,8 +82,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private int mScreenWidth;
   private int mScreenHeight;
   private final Spacing mDefaultPadding;
-  private final float[] mPadding = new float[Spacing.ALL + 1];
-  private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
+  private final float[] mPadding = new float[Spacing.ALL_EDGES + 1];
+  private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL_EDGES + 1];
   private YogaNode mYogaNode;
   private Integer mWidthMeasureSpec;
   private Integer mHeightMeasureSpec;
@@ -921,21 +921,21 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   private void updatePadding() {
-    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL; spacingType++) {
+    for (int spacingType = Spacing.LEFT; spacingType <= Spacing.ALL_EDGES; spacingType++) {
       if (spacingType == Spacing.LEFT
           || spacingType == Spacing.RIGHT
           || spacingType == Spacing.START
           || spacingType == Spacing.END) {
         if (YogaConstants.isUndefined(mPadding[spacingType])
             && YogaConstants.isUndefined(mPadding[Spacing.HORIZONTAL])
-            && YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
+            && YogaConstants.isUndefined(mPadding[Spacing.ALL_EDGES])) {
           mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
           continue;
         }
       } else if (spacingType == Spacing.TOP || spacingType == Spacing.BOTTOM) {
         if (YogaConstants.isUndefined(mPadding[spacingType])
             && YogaConstants.isUndefined(mPadding[Spacing.VERTICAL])
-            && YogaConstants.isUndefined(mPadding[Spacing.ALL])) {
+            && YogaConstants.isUndefined(mPadding[Spacing.ALL_EDGES])) {
           mYogaNode.setPadding(YogaEdge.fromInt(spacingType), mDefaultPadding.getRaw(spacingType));
           continue;
         }

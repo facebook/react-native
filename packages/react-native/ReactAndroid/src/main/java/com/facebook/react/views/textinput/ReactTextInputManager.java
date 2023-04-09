@@ -95,7 +95,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   private static final int[] SPACING_TYPES = {
-    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL_EDGES, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
   private static final Map<String, String> REACT_PROPS_AUTOFILL_HINTS_MAP =
       new HashMap<String, String>() {

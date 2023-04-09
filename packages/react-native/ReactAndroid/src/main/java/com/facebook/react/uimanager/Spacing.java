@@ -44,9 +44,9 @@ public class Spacing {
    */
   public static final int VERTICAL = 7;
   /**
-   * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
+   * Spacing type that represents all edge directions (left, top, right, bottom). E.g. {@code margin}.
    */
-  public static final int ALL = 8;
+  public static final int ALL_EDGES = 8;
   /** Spacing type that represents block directions (top, bottom). E.g. {@code marginBlock}. */
   public static final int BLOCK = 9;
   /** Spacing type that represents the block end direction (bottom). E.g. {@code marginBlockEnd}. */
@@ -67,11 +67,15 @@ public class Spacing {
    * right-to-left). E.g. {@code marginInlineStart}.
    */
   public static final int INLINE_START = 14;
+  /**
+   * Spacing type that represents all directions E.g. {@code margin}.
+   */
+  public static final int ALL = 15;
 
   private static final int[] sFlagsMap = {
     1, /*LEFT*/ 2, /*TOP*/ 4, /*RIGHT*/ 8, /*BOTTOM*/ 16, /*START*/ 32, /*END*/ 64, /*HORIZONTAL*/
-    128, /*VERTICAL*/ 256, /*ALL*/ 512, /*BLOCK*/ 1024, /*BLOCK_END*/ 2048, /*BLOCK_START*/
-    4096, /*INLINE*/ 8192, /*INLINE_END*/ 16384, /*INLINE_START*/
+    128, /*VERTICAL*/ 256, /*ALL_EDGES*/ 512, /*BLOCK*/ 1024, /*BLOCK_END*/ 2048, /*BLOCK_START*/
+    4096, /*INLINE*/ 8192, /*INLINE_END*/ 16384, /*INLINE_START*/ 32768, /*ALL*/
   };
 
   private final float[] mSpacing;
@@ -99,7 +103,7 @@ public class Spacing {
    * Set a spacing value.
    *
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}, {@link
-   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
+   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL_EDGES}
    * @param value the value for this direction
    * @return {@code true} if the spacing has changed, or {@code false} if the same value was already
    *     set
@@ -115,7 +119,7 @@ public class Spacing {
       }
 
       mHasAliasesSet =
-          (mValueFlags & sFlagsMap[ALL]) != 0
+          (mValueFlags & sFlagsMap[ALL_EDGES]) != 0
               || (mValueFlags & sFlagsMap[VERTICAL]) != 0
               || (mValueFlags & sFlagsMap[HORIZONTAL]) != 0
               || (mValueFlags & sFlagsMap[BLOCK]) != 0
@@ -157,8 +161,8 @@ public class Spacing {
       int secondType = spacingType == TOP || spacingType == BOTTOM ? VERTICAL : HORIZONTAL;
       if ((mValueFlags & sFlagsMap[secondType]) != 0) {
         return mSpacing[secondType];
-      } else if ((mValueFlags & sFlagsMap[ALL]) != 0) {
-        return mSpacing[ALL];
+      } else if ((mValueFlags & sFlagsMap[ALL_EDGES]) != 0) {
+        return mSpacing[ALL_EDGES];
       }
     }
 
@@ -170,7 +174,7 @@ public class Spacing {
    * any default values.
    *
    * @param spacingType one of {@link #LEFT}, {@link #TOP}, {@link #RIGHT}, {@link #BOTTOM}, {@link
-   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL}
+   *     #VERTICAL}, {@link #HORIZONTAL}, {@link #ALL_EDGES}
    */
   public float getRaw(int spacingType) {
     return mSpacing[spacingType];
@@ -197,6 +201,7 @@ public class Spacing {
 
   private static float[] newFullSpacingArray() {
     return new float[] {
+      YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,

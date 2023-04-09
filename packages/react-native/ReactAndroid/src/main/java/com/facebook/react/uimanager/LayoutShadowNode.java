@@ -786,7 +786,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
       Spacing.RIGHT,
       Spacing.TOP,
       Spacing.BOTTOM,
-      Spacing.ALL,
+      Spacing.ALL_EDGES,
       Spacing.BLOCK,
       Spacing.BLOCK_END,
       Spacing.BLOCK_START,
@@ -814,8 +814,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     }
 
     // Aliases with precedence
-    if (mPosition[Spacing.ALL] != null && !mPosition[Spacing.ALL].isNull()) {
-      setYogaPosition(Spacing.ALL, mPosition[Spacing.ALL]);
+    if (mPosition[Spacing.ALL_EDGES] != null && !mPosition[Spacing.ALL_EDGES].isNull()) {
+      setYogaPosition(Spacing.ALL_EDGES, mPosition[Spacing.ALL_EDGES]);
     }
     if (mPosition[Spacing.BLOCK] != null && !mPosition[Spacing.BLOCK].isNull()) {
       setYogaPosition(Spacing.VERTICAL, mPosition[Spacing.BLOCK]);
@@ -840,7 +840,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   }
 
   private void setYogaPosition(int spacingType, Dynamic position) {
-    if(position == null){
+    if (position == null){
       return;
     }
 

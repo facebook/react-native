@@ -39,7 +39,7 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
     extends BaseViewManager<T, C> {
 
   private static final int[] SPACING_TYPES = {
-    Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
+    Spacing.ALL_EDGES, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
   };
   private static final String TAG = "ReactTextAnchorViewManager";
 
