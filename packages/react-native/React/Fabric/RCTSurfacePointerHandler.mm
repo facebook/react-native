@@ -24,6 +24,26 @@ typedef NS_ENUM(NSInteger, RCTPointerEventType) {
   RCTPointerEventTypeCancel,
 };
 
+static BOOL AllTouchesAreCancelledOrEnded(NSSet<UITouch *> *touches)
+{
+  for (UITouch *touch in touches) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved || touch.phase == UITouchPhaseStationary) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches)
+{
+  for (UITouch *touch in touches) {
+    if (touch.phase == UITouchPhaseBegan || touch.phase == UITouchPhaseMoved) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 struct ActivePointer {
   /*
    * Pointer ID
@@ -349,7 +369,9 @@ static void UpdateActivePointerWithUITouch(
     UIEvent *uiEvent,
     UIView *rootComponentView)
 {
-  activePointer.componentView = FindClosestFabricManagedTouchableView(uiTouch.view);
+  CGPoint location = [uiTouch locationInView:rootComponentView];
+  UIView *hitTestedView = [rootComponentView hitTest:location withEvent:nil];
+  activePointer.componentView = FindClosestFabricManagedTouchableView(hitTestedView);
 
   activePointer.clientPoint = [uiTouch locationInView:rootComponentView];
   activePointer.screenPoint = [rootComponentView convertPoint:activePointer.clientPoint
@@ -390,6 +412,22 @@ static BOOL IsAnyViewInPathListeningToEvent(NSOrderedSet<RCTReactTaggedView *> *
 {
   for (RCTReactTaggedView *taggedView in viewPath) {
     if (IsViewListeningToEvent(taggedView, eventType)) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+/**
+ * Given an ActivePointer determine if it is still within the same event target tree as
+ * the one which initiated the pointer gesture.
+ */
+static BOOL IsPointerWithinInitialTree(ActivePointer activePointer)
+{
+  NSOrderedSet<RCTReactTaggedView *> *initialViewSet =
+      GetTouchableViewsInPathToRoot(activePointer.initialComponentView);
+  for (RCTReactTaggedView *canidateTaggedView in initialViewSet) {
+    if (canidateTaggedView.tag == activePointer.componentView.tag) {
       return YES;
     }
   }
@@ -526,6 +564,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
       activePointer.shouldLeaveWhenReleased = YES;
     }
 
+    activePointer.initialComponentView = FindClosestFabricManagedTouchableView(touch.view);
+
     UpdateActivePointerWithUITouch(activePointer, touch, event, _rootComponentView);
 
     _activePointers.emplace(touch, activePointer);
@@ -618,6 +658,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
         }
         case RCTPointerEventTypeEnd: {
           eventEmitter->onPointerUp(pointerEvent);
+
+          if (pointerEvent.isPrimary && pointerEvent.button == 0 && IsPointerWithinInitialTree(activePointer)) {
+            eventEmitter->onClick(pointerEvent);
+          }
+
           if (activePointer.shouldLeaveWhenReleased) {
             [self handleIncomingPointerEvent:pointerEvent onView:nil];
           }
@@ -641,6 +686,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [self _registerTouches:touches withEvent:event];
   [self _dispatchActivePointers:[self _activePointersFromTouches:touches] eventType:RCTPointerEventTypeStart];
+
+  if (self.state == UIGestureRecognizerStatePossible) {
+    self.state = UIGestureRecognizerStateBegan;
+  } else if (self.state == UIGestureRecognizerStateBegan) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -649,6 +700,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   [self _updateTouches:touches withEvent:event];
   [self _dispatchActivePointers:[self _activePointersFromTouches:touches] eventType:RCTPointerEventTypeMove];
+
+  self.state = UIGestureRecognizerStateChanged;
 }
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -658,6 +711,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [self _updateTouches:touches withEvent:event];
   [self _dispatchActivePointers:[self _activePointersFromTouches:touches] eventType:RCTPointerEventTypeEnd];
   [self _unregisterTouches:touches];
+
+  if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
+    self.state = UIGestureRecognizerStateEnded;
+  } else if (AnyTouchesChanged(event.allTouches)) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -667,6 +726,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   [self _updateTouches:touches withEvent:event];
   [self _dispatchActivePointers:[self _activePointersFromTouches:touches] eventType:RCTPointerEventTypeCancel];
   [self _unregisterTouches:touches];
+
+  if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
+    self.state = UIGestureRecognizerStateCancelled;
+  } else if (AnyTouchesChanged(event.allTouches)) {
+    self.state = UIGestureRecognizerStateChanged;
+  }
 }
 
 - (void)reset
