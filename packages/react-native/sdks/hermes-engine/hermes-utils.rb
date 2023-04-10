@@ -16,6 +16,8 @@ end
 # It computes the right value for the hermes-engine.podspec's source.
 # - To use a specific tarball, install the dependencies with:
 # `HERMES_ENGINE_TARBALL_PATH=<path_to_tarball> bundle exec pod install`
+# - To use a specific remote prebuilt, install the dependencies with:
+# `HERMES_ENGINE_PREBUILT_VERSION=<prebuilt_version> bundle exec pod install`
 # - To force a build from source, install the dependencies with:
 # `BUILD_FROM_SOURCE=true bundle exec pod install`
 # If none of the two are provided, Cocoapods will check whether there is a tarball for the current version
@@ -35,6 +37,8 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, build
 
     if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
         use_tarball(source)
+    elsif ENV.has_key?('HERMES_ENGINE_PREBUILT_VERSION')
+        download_prebuilt_for_version(source, ENV['HERMES_ENGINE_PREBUILT_VERSION'], build_type)
     elsif ENV.has_key?('HERMES_COMMIT')
         build_hermes_from_commit(source, git, ENV['HERMES_COMMIT'])
     elsif build_from_source
@@ -58,6 +62,14 @@ def use_tarball(source)
     tarball_path = ENV['HERMES_ENGINE_TARBALL_PATH']
     putsIfPodPresent("[Hermes] Using pre-built Hermes binaries from local path: #{tarball_path}")
     source[:http] = "file://#{tarball_path}"
+end
+
+def download_prebuilt_for_version(source, prebuilt_version, build_type)
+    if hermes_artifact_exists(release_tarball_url(prebuilt_version, build_type))
+        use_release_tarball(source, prebuilt_version, build_type)
+    else
+        abort "[Hermes] HERMES_ENGINE_PREBUILT_VERSION is set, but prebuilt does not exist for version #{prebuilt_version}"
+    end
 end
 
 def build_from_tagfile(source, git, hermestag_file)
