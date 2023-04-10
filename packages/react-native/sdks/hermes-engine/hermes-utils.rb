@@ -35,6 +35,8 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, build
 
     if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
         use_tarball(source)
+    elsif ENV.has_key('HERMES_ENGINE_TARBALL_URL')
+        use_exrternal_tarball(source)
     elsif ENV.has_key?('HERMES_COMMIT')
         build_hermes_from_commit(source, git, ENV['HERMES_COMMIT'])
     elsif build_from_source
@@ -58,6 +60,11 @@ def use_tarball(source)
     tarball_path = ENV['HERMES_ENGINE_TARBALL_PATH']
     putsIfPodPresent("[Hermes] Using pre-built Hermes binaries from local path: #{tarball_path}")
     source[:http] = "file://#{tarball_path}"
+end
+
+def use_external_tarball(source)
+    tarball_url = ENV['HERMES_ENGINE_TARBALL_URL']
+    source[:http] = tarball_url
 end
 
 def build_from_tagfile(source, git, hermestag_file)
