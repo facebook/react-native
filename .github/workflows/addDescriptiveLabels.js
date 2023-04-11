@@ -37,8 +37,9 @@ module.exports = async (github, context) => {
       labelsToAdd.push(topics[topic]);
     }
   }
-
-  await addLabels(labelsToAdd);
+  if (labelsToAdd.length > 0) {
+    await addLabels(labelsToAdd);
+  }
 };
 
 const labelAndroid = 'Platform: Android';
