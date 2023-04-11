@@ -12,38 +12,34 @@
 
 'use strict';
 
-const babelRegisterOnly = require('metro-babel-register');
+const metroBabelRegister = require('metro-babel-register');
 const createCacheKeyFunction =
   require('@jest/create-cache-key-function').default;
 
 const {transformSync: babelTransformSync} = require('@babel/core');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = new RegExp(
-  [
-    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc.
-  ].join('|'),
-);
+// Files matching this pattern will be transformed with the Node JS Babel
+// transformer, rather than with the React Native Babel transformer. Scripts
+// intended to run through Node JS should be included here.
+const nodeFiles = /[\\/]metro(?:-[^/]*)[\\/]/;
 
-// Get Babel config from metro-babel-register, without registering against
-// `require`. This is used below to configure babelTransformSync under Jest.
-const nodeOptions = babelRegisterOnly.config([nodeFiles]);
+// Get Babel config from metro-babel-register, without registering a require
+// hook. This is used below to configure babelTransformSync under Jest.
+const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 
-let transformer;
-
-try {
-  transformer = require('metro-react-native-babel-transformer');
-} catch (e) {
-  if (e.name !== 'SyntaxError') {
-    throw e;
-  }
-
-  // [fbsource only] When Metro dependency versions match the latest release,
-  // they are loaded from source (facebook/metro lives inside Meta's monorepo).
-  // We need babel-register to use the transformer in this configuration file.
-  babelRegisterOnly([]);
-  transformer = require('metro-react-native-babel-transformer');
+// Register Babel to allow the transformer itself to be loaded from source.
+if (process.env.FBSOURCE_ENV) {
+  // Internal: Use `@fb-scripts/babel-register` to re-use internal
+  // registration, rather than potentially clobbering it and conflicting with
+  // other Jest projects running in the same process.
+  // This package should *NOT* be a dependency of `@react-native/monorepo`.
+  // $FlowIgnore[cannot-resolve-module]
+  require('@fb-scripts/babel-register');
+} else {
+  metroBabelRegister([nodeFiles]);
 }
+const transformer = require('metro-react-native-babel-transformer');
 
 module.exports = {
   process(src /*: string */, file /*: string */) /*: {code: string, ...} */ {
@@ -52,7 +48,7 @@ module.exports = {
       return babelTransformSync(src, {
         filename: file,
         sourceType: 'script',
-        ...nodeOptions,
+        ...nodeBabelOptions,
         ast: false,
       });
     }
