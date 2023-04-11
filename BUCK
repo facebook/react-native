@@ -769,23 +769,23 @@ rn_codegen(
     name = "FBReactNativeSpec",
     android_package_name = "com.facebook.fbreact.specs",
     codegen_modules = True,
+    codegen_src_prefix = "packages/react-native/Libraries/",
     ios_assume_nonnull = False,
     library_labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
     native_module_spec_name = "FBReactNativeSpec",
-    src_prefix = "packages/react-native/Libraries/",
 )
 
 # TODO: Merge this into FBReactNativeSpec
 rn_codegen(
     name = "FBReactNativeComponentSpec",
     codegen_components = True,
+    codegen_src_prefix = "packages/react-native/Libraries/",
     ios_assume_nonnull = False,
     library_labels = [
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
-    src_prefix = "packages/react-native/Libraries/",
 )
 
 rn_apple_library(
