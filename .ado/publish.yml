@@ -61,19 +61,6 @@ jobs:
               echo "Skipping publish for branch $(Build.SourceBranchName)"
               exit 1
 
-      # Generate and publish the SBOM
-  
-      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-        displayName: 📒 Generate Manifest
-        inputs:
-          BuildDropPath: $(System.DefaultWorkingDirectory)
-
-      - task: PublishPipelineArtifact@1
-        displayName: 📒 Publish Manifest
-        inputs:
-          artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
-          targetPath: $(System.DefaultWorkingDirectory)/_manifest
-
       # Set the NPM dist-tag and do the actual NPM publish
   
       - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
@@ -108,6 +95,19 @@ jobs:
           SYSTEM_ACCESSTOKEN: $(System.AccessToken)
           githubAuthToken: $(githubAuthToken)
         condition: and(succeeded(), ne(variables['Build.SourceBranchName'], 'main'))
+
+      # Generate and publish the SBOM
+  
+      - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+        displayName: 📒 Generate Manifest
+        inputs:
+          BuildDropPath: $(System.DefaultWorkingDirectory)
+
+      - task: PublishPipelineArtifact@1
+        displayName: 📒 Publish Manifest
+        inputs:
+          artifactName: SBom-RNGithubNpmJSPublish-$(System.JobAttempt)
+          targetPath: $(System.DefaultWorkingDirectory)/_manifest
       
 
   - job: RNMacOSInitNpmJSPublish
