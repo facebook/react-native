@@ -12,6 +12,7 @@ import type {
   AttributeConfiguration,
   HostComponent,
   INativeMethods,
+  InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -41,14 +42,14 @@ const noop = () => {};
 export default class ReactFabricHostComponent implements INativeMethods {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
-  __internalInstanceHandle: mixed;
+  __internalInstanceHandle: InternalInstanceHandle;
 
   _viewConfig: ViewConfig;
 
   constructor(
     tag: number,
     viewConfig: ViewConfig,
-    internalInstanceHandle: mixed,
+    internalInstanceHandle: InternalInstanceHandle,
   ) {
     this.__nativeTag = tag;
     this._viewConfig = viewConfig;

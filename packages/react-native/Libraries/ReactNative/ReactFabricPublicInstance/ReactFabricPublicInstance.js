@@ -9,7 +9,10 @@
  */
 
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
-import type {ViewConfig} from '../../Renderer/shims/ReactNativeTypes';
+import type {
+  InternalInstanceHandle,
+  ViewConfig,
+} from '../../Renderer/shims/ReactNativeTypes';
 import type ReactFabricHostComponentType from './ReactFabricHostComponent';
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
@@ -20,7 +23,7 @@ let ReactFabric: ReactFabricType;
 export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
-  internalInstanceHandle: mixed,
+  internalInstanceHandle: InternalInstanceHandle,
 ): ReactFabricHostComponentType {
   if (ReactFabricHostComponent == null) {
     ReactFabricHostComponent = require('./ReactFabricHostComponent').default;
