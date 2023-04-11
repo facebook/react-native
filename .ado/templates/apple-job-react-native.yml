@@ -8,7 +8,7 @@ parameters:
   xcode_extraArgs: ''
   slice_name: ''
   xcode_version: ''
-  use_fabric: ''
+  new_arch_enabled: ''
   use_hermes: ''
 
 steps:
@@ -33,7 +33,7 @@ steps:
         bundle install
         bundle exec pod install
     env:
-      USE_FABRIC: $(use_fabric)
+      RCT_NEW_ARCH_ENABLED: $(new_arch_enabled)
       USE_HERMES: $(use_hermes)
 
   - task: ShellScript@2
@@ -78,4 +78,3 @@ steps:
       disableAutoCwd: true
       cwd: ''
     condition: always()
-

@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.description     = "NativeCxxModuleExample"
   s.homepage        = "https://github.com/facebook/react-native.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "12.4" }
+  s.platforms       = { :ios => "12.4", :osx => "10.15" } # [macos]
   s.compiler_flags  = '-Wno-nullability-completeness'
   s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }

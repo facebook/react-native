@@ -38,8 +38,8 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-          use_fabric: '0'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+          new_arch_enabled: '0'
           use_hermes: '0'
         'iOS Paper Release JSC':
           packager_platform: 'ios'
@@ -48,8 +48,8 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-          use_fabric: '0'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+          new_arch_enabled: '0'
           use_hermes: '0'
         'macOS Paper Debug JSC':
           packager_platform: 'macos'
@@ -58,8 +58,8 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-          use_fabric: '0'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+          new_arch_enabled: '0'
           use_hermes: '0'
         'macOS Paper Release JSC':
           packager_platform: 'macos'
@@ -68,8 +68,8 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-          use_fabric: '0'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+          new_arch_enabled: '0'
           use_hermes: '0'
         'iOS Fabric Debug JSC':
           packager_platform: 'ios'
@@ -78,8 +78,8 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build test'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-          use_fabric: '1'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+          new_arch_enabled: '1'
           use_hermes: '0'
         'iOS Fabric Release JSC':
           packager_platform: 'ios'
@@ -88,8 +88,8 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
           xcode_actions: 'build'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-          use_fabric: '1' 
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+          new_arch_enabled: '1'
           use_hermes: '0'
         'macOS Fabric Debug JSC':
           packager_platform: 'macos'
@@ -98,8 +98,8 @@ jobs:
           xcode_configuration: 'Debug'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build test'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-          use_fabric: '1'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+          new_arch_enabled: '1'
           use_hermes: '0'
         'macOS Fabric Release JSC':
           packager_platform: 'macos'
@@ -108,8 +108,8 @@ jobs:
           xcode_configuration: 'Release'
           xcode_destination: 'platform=macOS,arch=x86_64'
           xcode_actions: 'build'
-          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-          use_fabric: '1'
+          xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+          new_arch_enabled: '1'
           use_hermes: '0'
         # Disable Hermes Jobs for now
         # 'iOS Paper Debug Hermes':
@@ -119,8 +119,8 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build test'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-        #   use_fabric: '0'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+        #   new_arch_enabled: '0'
         #   use_hermes: '1'
         # 'iOS Paper Release Hermes':
         #   packager_platform: 'ios'
@@ -128,9 +128,9 @@ jobs:
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
         #   xcode_actions: 'build'
-        #   use_fabric: '0'
+        #   new_arch_enabled: '0'
         #   use_hermes: '1'
         # 'macOS Paper Debug Hermes':
         #   packager_platform: 'macos'
@@ -139,8 +139,8 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build test'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-        #   use_fabric: '0'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+        #   new_arch_enabled: '0'
         #   use_hermes: '1'
         # 'macOS Paper Release Hermes':
         #   packager_platform: 'macos'
@@ -149,28 +149,28 @@ jobs:
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-        #   use_fabric: '0'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+        #   new_arch_enabled: '0'
         #   use_hermes: '1'
-        # 'iOS Fabric Debug Hermes': 
+        # 'iOS Fabric Debug Hermes':
         #   packager_platform: 'ios'
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build test'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-        #   use_fabric: '1'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+        #   new_arch_enabled: '1'
         #   use_hermes: '1'
-        # 'iOS Fabric Release Hermes': 
+        # 'iOS Fabric Release Hermes':
         #   packager_platform: 'ios'
         #   xcode_sdk: iphonesimulator
         #   xcode_scheme: 'RNTester'
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 14'
         #   xcode_actions: 'build'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-        #   use_fabric: '1' 
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+        #   new_arch_enabled: '1'
         #   use_hermes: '0'
         # 'macOS Fabric Debug Hermes':
         #   packager_platform: 'macos'
@@ -179,8 +179,8 @@ jobs:
         #   xcode_configuration: 'Debug'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build test'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig' 
-        #   use_fabric: '1'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/debug_overrides.xcconfig'
+        #   new_arch_enabled: '1'
         #   use_hermes: '1'
         # 'macOS Fabric Release Hermes':
         #   packager_platform: 'macos'
@@ -189,8 +189,8 @@ jobs:
         #   xcode_configuration: 'Release'
         #   xcode_destination: 'platform=macOS,arch=x86_64'
         #   xcode_actions: 'build'
-        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig' 
-        #   use_fabric: '1'
+        #   xcode_extraArgs: '-xcconfig $(Build.Repository.LocalPath)/.ado/xcconfig/release_overrides.xcconfig'
+        #   new_arch_enabled: '1'
         #   use_hermes: '1'
     pool:
       vmImage: $(VmImageApple)
@@ -241,4 +241,3 @@ jobs:
       - template: templates/apple-job-publish.yml
         parameters:
           build_type: 'dry-run'
-
