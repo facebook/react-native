@@ -166,6 +166,7 @@
     "jscodeshift": "^0.13.1",
     "metro-babel-register": "0.72.3",
     "metro-memory-fs": "0.72.3",
+    "mock-fs": "^5.1.4",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
     "shelljs": "^0.8.5",
