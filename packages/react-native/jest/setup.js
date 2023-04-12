@@ -374,4 +374,11 @@ jest
       __esModule: true,
       default: Component,
     };
+  })
+  // In tests, we can use the default version instead of the one using
+  // dependency injection.
+  .mock('../Libraries/ReactNative/RendererProxy', () => {
+    return jest.requireActual(
+      '../Libraries/ReactNative/RendererImplementation',
+    );
   });
