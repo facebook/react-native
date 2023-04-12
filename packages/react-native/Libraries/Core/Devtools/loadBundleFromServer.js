@@ -18,6 +18,8 @@ declare var global: {globalEvalWithSourceUrl?: (string, string) => mixed, ...};
 
 let pendingRequests = 0;
 
+const cachedPromisesByUrl = new Map<string, Promise<void>>();
+
 function asyncRequest(
   url: string,
 ): Promise<{body: string, headers: {[string]: string}}> {
@@ -90,9 +92,15 @@ function buildUrlForBundle(bundlePathAndQuery: string) {
 module.exports = function (bundlePathAndQuery: string): Promise<void> {
   const requestUrl = buildUrlForBundle(bundlePathAndQuery);
 
+  let loadPromise = cachedPromisesByUrl.get(requestUrl);
+
+  if (loadPromise) {
+    return loadPromise;
+  }
   LoadingView.showMessage('Downloading...', 'load');
   ++pendingRequests;
-  return asyncRequest(requestUrl)
+
+  loadPromise = asyncRequest(requestUrl)
     .then<void>(({body, headers}) => {
       if (
         headers['Content-Type'] != null &&
@@ -116,9 +124,16 @@ module.exports = function (bundlePathAndQuery: string): Promise<void> {
         eval(body);
       }
     })
+    .catch<void>(e => {
+      cachedPromisesByUrl.delete(requestUrl);
+      throw e;
+    })
     .finally(() => {
       if (!--pendingRequests) {
         LoadingView.hide();
       }
     });
+
+  cachedPromisesByUrl.set(requestUrl, loadPromise);
+  return loadPromise;
 };
