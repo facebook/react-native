@@ -15,23 +15,20 @@
 
 namespace facebook::react {
 
-using Color = int32_t;
-
 /*
- * On Android, a color can be represented as 32 bits integer, so there is no
- * need to instantiate complex color objects and then pass them as shared
- * pointers. Hense instead of using shared_ptr, we use a simple wrapper class
- * which provides a pointer-like interface.
+ * Represent colors as a 32-bit integer, which is wrapped here to provide
+ * a pointer-like interface, instead of passing it around as a shared pointer.
  */
 class SharedColor {
+  using ColorT = uint32_t;
+
  public:
-  static const Color UndefinedColor = std::numeric_limits<Color>::max();
+  static constexpr ColorT UndefinedColor = std::numeric_limits<ColorT>::max();
 
-  SharedColor() : color_(UndefinedColor) {}
+  constexpr SharedColor() : color_(UndefinedColor) {}
+  explicit constexpr SharedColor(ColorT color) : color_(color) {}
 
-  SharedColor(Color color) : color_(color) {}
-
-  Color operator*() const {
+  ColorT operator*() const {
     return color_;
   }
 
@@ -48,16 +45,23 @@ class SharedColor {
   }
 
  private:
-  Color color_;
+  ColorT color_;
 };
 
 bool isColorMeaningful(SharedColor const &color) noexcept;
+
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
 
-SharedColor clearColor();
-SharedColor blackColor();
-SharedColor whiteColor();
+constexpr SharedColor clearColor() {
+  return SharedColor(0x00000000);
+}
+constexpr SharedColor blackColor() {
+  return SharedColor(0xFF000000);
+}
+constexpr SharedColor whiteColor() {
+  return SharedColor(0xFFFFFFFF);
+}
 
 } // namespace facebook::react
 
