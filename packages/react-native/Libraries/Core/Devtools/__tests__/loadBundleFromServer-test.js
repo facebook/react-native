@@ -170,3 +170,46 @@ test('shows and hides the loading view around concurrent requests', async () => 
   await promise2;
   expect(loadingViewMock.hide).toHaveBeenCalledTimes(1);
 });
+
+test('loadBundleFromServer does not cache errors', async () => {
+  mockHeaders = {'Content-Type': 'application/json'};
+  mockDataResponse = JSON.stringify({message: 'Error thrown from Metro'});
+
+  await expect(
+    loadBundleFromServer('/Fail.bundle?platform=ios'),
+  ).rejects.toThrow();
+
+  mockDataResponse = '"code";';
+  mockHeaders = {'Content-Type': 'application/javascript'};
+
+  await expect(
+    loadBundleFromServer('/Fail.bundle?platform=ios'),
+  ).resolves.not.toThrow();
+});
+
+test('loadBundleFromServer caches successful fetches', async () => {
+  mockDataResponse = '"code";';
+  mockHeaders = {'Content-Type': 'application/javascript'};
+
+  const promise1 = loadBundleFromServer(
+    '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
+  );
+
+  // Request again in the same tick = same promise
+  const promise2 = loadBundleFromServer(
+    '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
+  );
+  expect(promise2).toBe(promise1);
+
+  await promise1;
+
+  // Request again once resolved = still the same promise
+  const promise3 = loadBundleFromServer(
+    '/Banana.bundle?platform=ios&dev=true&minify=false&unusedExtraParam=42&modulesOnly=true&runModule=false',
+  );
+  expect(promise3).toBe(promise1);
+
+  await promise2;
+
+  expect(sendRequest).toBeCalledTimes(1);
+});
