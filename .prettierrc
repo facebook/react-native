@@ -4,5 +4,6 @@
   "bracketSpacing": false,
   "requirePragma": true,
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "endOfLine": "lf"
 }
