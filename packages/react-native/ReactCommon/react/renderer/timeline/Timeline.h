@@ -8,9 +8,8 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <vector>
-
-#include <butter/mutex.h>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/timeline/TimelineSnapshot.h>
