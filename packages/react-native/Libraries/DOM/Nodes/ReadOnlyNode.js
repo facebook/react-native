@@ -17,7 +17,14 @@ import type {
 import type NodeList from '../OldStyleCollections/NodeList';
 import type ReadOnlyElement from './ReadOnlyElement';
 
+import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
 import ReactFabric from '../../Renderer/shims/ReactFabric';
+import {createNodeList} from '../OldStyleCollections/NodeList';
+import nullthrows from 'nullthrows';
+
+// We initialize this lazily to avoid a require cycle
+// (`ReadOnlyElement` also depends on `ReadOnlyNode`).
+let ReadOnlyElementClass: Class<ReadOnlyElement>;
 
 export default class ReadOnlyNode {
   constructor(internalInstanceHandle: InternalInstanceHandle) {
@@ -25,11 +32,18 @@ export default class ReadOnlyNode {
   }
 
   get childNodes(): NodeList<ReadOnlyNode> {
-    throw new TypeError('Unimplemented');
+    const childNodes = getChildNodes(this);
+    return createNodeList(childNodes);
   }
 
   get firstChild(): ReadOnlyNode | null {
-    throw new TypeError('Unimplemented');
+    const childNodes = getChildNodes(this);
+
+    if (childNodes.length === 0) {
+      return null;
+    }
+
+    return childNodes[0];
   }
 
   get isConnected(): boolean {
@@ -37,39 +51,104 @@ export default class ReadOnlyNode {
   }
 
   get lastChild(): ReadOnlyNode | null {
-    throw new TypeError('Unimplemented');
+    const childNodes = getChildNodes(this);
+
+    if (childNodes.length === 0) {
+      return null;
+    }
+
+    return childNodes[childNodes.length - 1];
   }
 
   get nextSibling(): ReadOnlyNode | null {
-    throw new TypeError('Unimplemented');
+    const [siblings, position] = getNodeSiblingsAndPosition(this);
+
+    if (position === siblings.length - 1) {
+      // this node is the last child of its parent, so there is no next sibling.
+      return null;
+    }
+
+    return siblings[position + 1];
   }
 
+  /**
+   * @abstract
+   */
   get nodeName(): string {
-    throw new TypeError('Unimplemented');
+    throw new TypeError(
+      'Unexpected access to `nodeName` in abstract class `ReadOnlyNode`',
+    );
   }
 
+  /**
+   * @abstract
+   */
   get nodeType(): number {
-    throw new TypeError('Unimplemented');
+    throw new TypeError(
+      '`nodeType` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
+    );
   }
 
+  /**
+   * @abstract
+   */
   get nodeValue(): string | null {
-    throw new TypeError('Unimplemented');
+    throw new TypeError(
+      '`nodeValue` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
+    );
   }
 
   get parentElement(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const parentNode = this.parentNode;
+
+    if (ReadOnlyElementClass == null) {
+      // We initialize this lazily to avoid a require cycle.
+      ReadOnlyElementClass = require('./ReadOnlyElement').default;
+    }
+
+    if (parentNode instanceof ReadOnlyElementClass) {
+      return parentNode;
+    }
+
+    return null;
   }
 
   get parentNode(): ReadOnlyNode | null {
-    throw new TypeError('Unimplemented');
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode == null) {
+      return null;
+    }
+
+    const parentInstanceHandle = nullthrows(getFabricUIManager()).getParentNode(
+      shadowNode,
+    );
+
+    if (parentInstanceHandle == null) {
+      return null;
+    }
+
+    return getPublicInstanceFromInternalInstanceHandle(parentInstanceHandle);
   }
 
   get previousSibling(): ReadOnlyNode | null {
-    throw new TypeError('Unimplemented');
+    const [siblings, position] = getNodeSiblingsAndPosition(this);
+
+    if (position === 0) {
+      // this node is the first child of its parent, so there is no previous sibling.
+      return null;
+    }
+
+    return siblings[position - 1];
   }
 
+  /**
+   * @abstract
+   */
   get textContent(): string | null {
-    throw new TypeError('Unimplemented');
+    throw new TypeError(
+      '`textContent` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
+    );
   }
 
   compareDocumentPosition(otherNode: ReadOnlyNode): number {
@@ -77,15 +156,26 @@ export default class ReadOnlyNode {
   }
 
   contains(otherNode: ReadOnlyNode): boolean {
-    throw new TypeError('Unimplemented');
+    const position = this.compareDocumentPosition(otherNode);
+    // eslint-disable-next-line no-bitwise
+    return (position & ReadOnlyNode.DOCUMENT_POSITION_CONTAINS) !== 0;
   }
 
   getRootNode(): ReadOnlyNode {
-    throw new TypeError('Unimplemented');
+    // eslint-disable-next-line consistent-this
+    let lastKnownParent: ReadOnlyNode = this;
+    let nextPossibleParent: ?ReadOnlyNode = this.parentNode;
+
+    while (nextPossibleParent != null) {
+      lastKnownParent = nextPossibleParent;
+      nextPossibleParent = nextPossibleParent.parentNode;
+    }
+
+    return lastKnownParent;
   }
 
   hasChildNodes(): boolean {
-    throw new TypeError('Unimplemented');
+    return getChildNodes(this).length > 0;
   }
 
   /*
@@ -193,4 +283,49 @@ function setInstanceHandle(
 
 export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
   return ReactFabric.getNodeFromInternalInstanceHandle(getInstanceHandle(node));
+}
+
+export function getChildNodes(
+  node: ReadOnlyNode,
+): $ReadOnlyArray<ReadOnlyNode> {
+  const shadowNode = getShadowNode(node);
+
+  if (shadowNode == null) {
+    return [];
+  }
+
+  const childNodeInstanceHandles = nullthrows(
+    getFabricUIManager(),
+  ).getChildNodes(shadowNode);
+  return childNodeInstanceHandles.map(instanceHandle =>
+    getPublicInstanceFromInternalInstanceHandle(instanceHandle),
+  );
+}
+
+function getNodeSiblingsAndPosition(
+  node: ReadOnlyNode,
+): [$ReadOnlyArray<ReadOnlyNode>, number] {
+  const parent = node.parentNode;
+  if (parent == null) {
+    // This node is the root or it's disconnected.
+    return [[node], 0];
+  }
+
+  const siblings = getChildNodes(parent);
+  const position = siblings.indexOf(node);
+
+  if (position === -1) {
+    throw new TypeError("Missing node in parent's child node list");
+  }
+
+  return [siblings, position];
+}
+
+export function getPublicInstanceFromInternalInstanceHandle(
+  instanceHandle: InternalInstanceHandle,
+): ReadOnlyNode {
+  const mixedPublicInstance =
+    ReactFabric.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
+  // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
+  return mixedPublicInstance;
 }

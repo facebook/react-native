@@ -12,15 +12,16 @@
 
 import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
 
-import ReadOnlyNode from './ReadOnlyNode';
+import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
+import ReadOnlyNode, {getChildNodes} from './ReadOnlyNode';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {
-    throw new TypeError('Unimplemented');
+    return getChildElements(this).length;
   }
 
   get children(): HTMLCollection<ReadOnlyElement> {
-    throw new TypeError('Unimplemented');
+    return createHTMLCollection(getChildElements(this));
   }
 
   get clientHeight(): number {
@@ -40,7 +41,13 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get firstElementChild(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const childElements = getChildElements(this);
+
+    if (childElements.length === 0) {
+      return null;
+    }
+
+    return childElements[0];
   }
 
   get id(): string {
@@ -48,15 +55,49 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get lastElementChild(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const childElements = getChildElements(this);
+
+    if (childElements.length === 0) {
+      return null;
+    }
+
+    return childElements[childElements.length - 1];
   }
 
   get nextElementSibling(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const [siblings, position] = getElementSiblingsAndPosition(this);
+
+    if (position === siblings.length - 1) {
+      // this node is the last child of its parent, so there is no next sibling.
+      return null;
+    }
+
+    return siblings[position + 1];
   }
 
+  get nodeName(): string {
+    return this.tagName;
+  }
+
+  get nodeType(): number {
+    return ReadOnlyNode.ELEMENT_NODE;
+  }
+
+  get nodeValue(): string | null {
+    return null;
+  }
+
+  set nodeValue(value: string): void {}
+
   get previousElementSibling(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const [siblings, position] = getElementSiblingsAndPosition(this);
+
+    if (position === 0) {
+      // this node is the last child of its parent, so there is no next sibling.
+      return null;
+    }
+
+    return siblings[position - 1];
   }
 
   get scrollHeight(): number {
@@ -79,11 +120,37 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     throw new TypeError('Unimplemented');
   }
 
-  getBoundingClientRect(): DOMRect {
+  get textContent(): string | null {
     throw new TypeError('Unimplemented');
   }
 
   getClientRects(): DOMRectList {
     throw new TypeError('Unimplemented');
   }
+}
+
+function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
+  // $FlowIssue[incompatible-call]
+  return getChildNodes(node).filter(
+    childNode => childNode instanceof ReadOnlyElement,
+  );
+}
+
+export function getElementSiblingsAndPosition(
+  element: ReadOnlyElement,
+): [$ReadOnlyArray<ReadOnlyElement>, number] {
+  const parent = element.parentNode;
+  if (parent == null) {
+    // This node is the root or it's disconnected.
+    return [[element], 0];
+  }
+
+  const siblings = getChildElements(parent);
+  const position = siblings.indexOf(element);
+
+  if (position === -1) {
+    throw new TypeError("Missing node in parent's child node list");
+  }
+
+  return [siblings, position];
 }
