@@ -913,4 +913,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   return eventPathViews;
 }
 
+#pragma mark - Pointer Capture APIs
+
+- (BOOL)isPointerCaptured:(int)pointerId forView:(UIView *)componentView
+{
+  // TODO: Implement
+  return NO;
+}
+
+- (void)setPointerCapture:(int)pointerId forView:(UIView *)componentView
+{
+  // TODO: Implement
+}
+
+- (void)releasePointerCapture:(int)pointerId forView:(UIView *)componentView
+{
+  // TODO: Implement
+}
+
 @end

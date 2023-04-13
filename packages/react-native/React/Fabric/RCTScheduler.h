@@ -41,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
                 blockNativeResponder:(BOOL)blockNativeResponder
                        forShadowView:(facebook::react::ShadowView const &)shadowView;
 
+- (BOOL)schedulerDidRequestPointerCaptureStatus:(int)pointerId
+                                  forShadowView:(facebook::react::ShadowView const &)shadowView;
+
+- (void)schedulerDidSetPointerCapture:(int)pointerId forShadowView:(facebook::react::ShadowView const &)shadowView;
+
+- (void)schedulerDidReleasePointerCapture:(int)pointerId forShadowView:(facebook::react::ShadowView const &)shadowView;
+
 @end
 
 /**

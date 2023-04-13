@@ -375,6 +375,34 @@ void Scheduler::uiManagerDidSetIsJSResponder(
   }
 }
 
+bool Scheduler::uiManagerDidRequestPointerCaptureStatus(
+    ShadowNode::Shared const &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    return delegate_->schedulerDidRequestPointerCaptureStatus(
+        ShadowView(*shadowNode), pointerId);
+  }
+  return false;
+}
+
+void Scheduler::uiManagerDidSetPointerCapture(
+    ShadowNode::Shared const &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidSetPointerCapture(
+        ShadowView(*shadowNode), pointerId);
+  }
+}
+
+void Scheduler::uiManagerDidReleasePointerCapture(
+    ShadowNode::Shared const &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidReleasePointerCapture(
+        ShadowView(*shadowNode), pointerId);
+  }
+}
+
 ContextContainer::Shared Scheduler::getContextContainer() const {
   return contextContainer_;
 }

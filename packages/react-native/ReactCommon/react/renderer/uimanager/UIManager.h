@@ -181,6 +181,16 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType);
 
+  bool requestPointerCaptureStatus(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId);
+
+  void setPointerCapture(ShadowNode::Shared const &shadowNode, int pointerId);
+
+  void releasePointerCapture(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId);
+
   /*
    * Iterates over all shadow nodes which are parts of all registered surfaces
    * and find the one that has given `tag`. Returns `nullptr` if the node wasn't

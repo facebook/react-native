@@ -86,6 +86,13 @@ export type Spec = {|
     /* offsetTop: */ number,
     /* offsetLeft: */ number,
   ],
+
+  /**
+   * Support methods for the Pointer Capture APIs.
+   */
+  +hasPointerCapture: (node: Node, pointerId: number) => boolean,
+  +setPointerCapture: (node: Node, pointerId: number) => void,
+  +releasePointerCapture: (node: Node, pointerId: number) => void,
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

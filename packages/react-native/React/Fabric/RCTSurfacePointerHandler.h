@@ -23,6 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) CGPoint viewOriginOffset;
 
+/*
+ * Pointer Capture APIs
+ */
+- (BOOL)isPointerCaptured:(int)pointerId forView:(UIView *)componentView;
+- (void)setPointerCapture:(int)pointerId forView:(UIView *)componentView;
+- (void)releasePointerCapture:(int)pointerId forView:(UIView *)componentView;
+
 @end
 
 NS_ASSUME_NONNULL_END

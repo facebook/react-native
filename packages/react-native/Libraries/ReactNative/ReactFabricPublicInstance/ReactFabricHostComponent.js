@@ -31,6 +31,9 @@ const {
   measureInWindow: fabricMeasureInWindow,
   measureLayout: fabricMeasureLayout,
   getBoundingClientRect: fabricGetBoundingClientRect,
+  hasPointerCapture: fabricHasPointerCapture,
+  setPointerCapture: fabricSetPointerCapture,
+  releasePointerCapture: fabricReleasePointerCapture,
   setNativeProps,
 } = nullthrows(getFabricUIManager());
 
@@ -133,6 +136,34 @@ export default class ReactFabricHostComponent implements INativeMethods {
 
     // Empty rect if any of the above failed
     return new DOMRect(0, 0, 0, 0);
+  }
+
+  hasPointerCapture(pointerId: number): boolean {
+    const node = getNodeFromInternalInstanceHandle(
+      this.__internalInstanceHandle,
+    );
+    if (node != null) {
+      return fabricHasPointerCapture(node, pointerId);
+    }
+    return false;
+  }
+
+  setPointerCapture(pointerId: number): void {
+    const node = getNodeFromInternalInstanceHandle(
+      this.__internalInstanceHandle,
+    );
+    if (node != null) {
+      fabricSetPointerCapture(node, pointerId);
+    }
+  }
+
+  releasePointerCapture(pointerId: number): void {
+    const node = getNodeFromInternalInstanceHandle(
+      this.__internalInstanceHandle,
+    );
+    if (node != null) {
+      fabricReleasePointerCapture(node, pointerId);
+    }
   }
 
   setNativeProps(nativeProps: {...}): void {

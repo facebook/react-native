@@ -397,6 +397,25 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   [_mountingManager setIsJSResponder:isJSResponder blockNativeResponder:blockNativeResponder forShadowView:shadowView];
 }
 
+- (BOOL)schedulerDidRequestPointerCaptureStatus:(int)pointerId
+                                  forShadowView:(facebook::react::ShadowView const &)shadowView
+{
+  RCTFabricSurface *surface = [self surfaceForRootTag:shadowView.surfaceId];
+  return [_mountingManager requestPointerCaptureStatus:pointerId onSurface:surface forShadowView:shadowView];
+}
+
+- (void)schedulerDidSetPointerCapture:(int)pointerId forShadowView:(const facebook::react::ShadowView &)shadowView
+{
+  RCTFabricSurface *surface = [self surfaceForRootTag:shadowView.surfaceId];
+  [_mountingManager setPointerCapture:pointerId onSurface:surface forShadowView:shadowView];
+}
+
+- (void)schedulerDidReleasePointerCapture:(int)pointerId forShadowView:(const facebook::react::ShadowView &)shadowView
+{
+  RCTFabricSurface *surface = [self surfaceForRootTag:shadowView.surfaceId];
+  [_mountingManager releasePointerCapture:pointerId onSurface:surface forShadowView:shadowView];
+}
+
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock lock(_observerListMutex);

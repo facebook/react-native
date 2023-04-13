@@ -102,6 +102,15 @@ class Scheduler final : public UIManagerDelegate {
       ShadowNode::Shared const &shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
+  bool uiManagerDidRequestPointerCaptureStatus(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) override;
+  void uiManagerDidSetPointerCapture(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) override;
+  void uiManagerDidReleasePointerCapture(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) override;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;

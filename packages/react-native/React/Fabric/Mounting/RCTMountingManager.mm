@@ -294,6 +294,42 @@ static void RCTPerformMountInstructions(
   });
 }
 
+- (BOOL)requestPointerCaptureStatus:(int)pointerId
+                          onSurface:(RCTFabricSurface *)surface
+                      forShadowView:(const facebook::react::ShadowView &)shadowView
+{
+  __block NSNumber *result;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIView<RCTComponentViewProtocol> *componentView =
+        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    BOOL rawResult = [surface isPointerCaptured:pointerId forView:componentView];
+    result = @(rawResult);
+  });
+  return [result boolValue];
+}
+
+- (void)setPointerCapture:(int)pointerId
+                onSurface:(RCTFabricSurface *)surface
+            forShadowView:(const facebook::react::ShadowView &)shadowView
+{
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIView<RCTComponentViewProtocol> *componentView =
+        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    [surface setPointerCapture:pointerId forView:componentView];
+  });
+}
+
+- (void)releasePointerCapture:(int)pointerId
+                    onSurface:(RCTFabricSurface *)surface
+                forShadowView:(const facebook::react::ShadowView &)shadowView
+{
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    UIView<RCTComponentViewProtocol> *componentView =
+        [self->_componentViewRegistry findComponentViewWithTag:shadowView.tag];
+    [surface releasePointerCapture:pointerId forView:componentView];
+  });
+}
+
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const ComponentDescriptor &)componentDescriptor

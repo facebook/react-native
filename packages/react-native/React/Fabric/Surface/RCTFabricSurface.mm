@@ -272,6 +272,23 @@ using namespace facebook::react;
   [self _updateLayoutContext];
 }
 
+#pragma mark - Touch handler methods
+
+- (BOOL)isPointerCaptured:(int)pointerId forView:(UIView *)componentView
+{
+  return [_touchHandler isPointerCaptured:pointerId forView:componentView];
+}
+
+- (void)setPointerCapture:(int)pointerId forView:(UIView *)componentView
+{
+  return [_touchHandler setPointerCapture:pointerId forView:componentView];
+}
+
+- (void)releasePointerCapture:(int)pointerId forView:(UIView *)componentView
+{
+  return [_touchHandler releasePointerCapture:pointerId forView:componentView];
+}
+
 #pragma mark - Private
 
 - (SurfaceHandler const &)surfaceHandler;

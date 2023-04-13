@@ -547,6 +547,25 @@ void Binding::schedulerDidSetIsJSResponder(
       shadowView, isJSResponder, blockNativeResponder);
 }
 
+bool Binding::schedulerDidRequestPointerCaptureStatus(
+    ShadowView const &shadowView,
+    int pointerId) {
+  // TODO(T150517979): Implement
+  return false;
+}
+
+void Binding::schedulerDidSetPointerCapture(
+    ShadowView const &shadowView,
+    int pointerId) {
+  // TODO(T150517979): Implement
+}
+
+void Binding::schedulerDidReleasePointerCapture(
+    ShadowView const &shadowView,
+    int pointerId) {
+  // TODO(T150517979): Implement
+}
+
 void Binding::onAnimationStarted() {
   auto &mountingManager = verifyMountingManager("Binding::onAnimationStarted");
   if (!mountingManager) {

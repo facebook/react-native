@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTFabricSurface.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
 #import <react/renderer/core/ComponentDescriptor.h>
@@ -65,6 +66,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setIsJSResponder:(BOOL)isJSResponder
     blockNativeResponder:(BOOL)blockNativeResponder
            forShadowView:(facebook::react::ShadowView const &)shadowView;
+
+- (BOOL)requestPointerCaptureStatus:(int)pointerId
+                          onSurface:(RCTFabricSurface *)surface
+                      forShadowView:(const facebook::react::ShadowView &)shadowView;
+
+- (void)setPointerCapture:(int)pointerId
+                onSurface:(RCTFabricSurface *)surface
+            forShadowView:(const facebook::react::ShadowView &)shadowView;
+
+- (void)releasePointerCapture:(int)pointerId
+                    onSurface:(RCTFabricSurface *)surface
+                forShadowView:(const facebook::react::ShadowView &)shadowView;
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props

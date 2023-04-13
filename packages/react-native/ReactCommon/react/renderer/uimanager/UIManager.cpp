@@ -501,6 +501,32 @@ void UIManager::sendAccessibilityEvent(
   }
 }
 
+bool UIManager::requestPointerCaptureStatus(
+    const ShadowNode::Shared &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    return delegate_->uiManagerDidRequestPointerCaptureStatus(
+        shadowNode, pointerId);
+  }
+  return false;
+}
+
+void UIManager::setPointerCapture(
+    const ShadowNode::Shared &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidSetPointerCapture(shadowNode, pointerId);
+  }
+}
+
+void UIManager::releasePointerCapture(
+    const ShadowNode::Shared &shadowNode,
+    int pointerId) {
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidReleasePointerCapture(shadowNode, pointerId);
+  }
+}
+
 void UIManager::configureNextLayoutAnimation(
     jsi::Runtime &runtime,
     RawValue const &config,

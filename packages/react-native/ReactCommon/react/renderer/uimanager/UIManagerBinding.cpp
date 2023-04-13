@@ -1013,6 +1013,61 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  /**
+   * Pointer Capture APIs
+   */
+
+  if (methodName == "hasPointerCapture") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          bool isCapturing = uiManager->requestPointerCaptureStatus(
+              shadowNodeFromValue(runtime, arguments[0]),
+              (int)arguments[1].asNumber());
+          return jsi::Value(isCapturing);
+        });
+  }
+
+  if (methodName == "setPointerCapture") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          uiManager->setPointerCapture(
+              shadowNodeFromValue(runtime, arguments[0]),
+              (int)arguments[1].asNumber());
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "releasePointerCapture") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        2,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const &,
+            jsi::Value const *arguments,
+            size_t) -> jsi::Value {
+          uiManager->releasePointerCapture(
+              shadowNodeFromValue(runtime, arguments[0]),
+              (int)arguments[1].asNumber());
+          return jsi::Value::undefined();
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

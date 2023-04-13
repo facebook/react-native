@@ -58,6 +58,27 @@ class UIManagerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 
+  /*
+   * Asks to determine if a fiven view is capturing the given pointer id.
+   */
+  virtual bool uiManagerDidRequestPointerCaptureStatus(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) = 0;
+
+  /*
+   * Sets the pointer capture override to a given view.
+   */
+  virtual void uiManagerDidSetPointerCapture(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) = 0;
+
+  /*
+   * Releases the pointer capture override to a given view.
+   */
+  virtual void uiManagerDidReleasePointerCapture(
+      ShadowNode::Shared const &shadowNode,
+      int pointerId) = 0;
+
   virtual ~UIManagerDelegate() noexcept = default;
 };
 

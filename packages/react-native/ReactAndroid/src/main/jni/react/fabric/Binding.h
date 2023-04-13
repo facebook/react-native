@@ -117,6 +117,18 @@ class Binding : public jni::HybridClass<Binding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+  bool schedulerDidRequestPointerCaptureStatus(
+      ShadowView const &shadowView,
+      int pointerId) override;
+
+  void schedulerDidSetPointerCapture(
+      ShadowView const &shadowView,
+      int pointerId) override;
+
+  void schedulerDidReleasePointerCapture(
+      ShadowView const &shadowView,
+      int pointerId) override;
+
   void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
 
   void setPixelDensity(float pointScaleFactor);

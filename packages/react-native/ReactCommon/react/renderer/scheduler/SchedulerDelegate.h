@@ -52,6 +52,18 @@ class SchedulerDelegate {
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 
+  virtual bool schedulerDidRequestPointerCaptureStatus(
+      ShadowView const &shadowView,
+      int pointerId) = 0;
+
+  virtual void schedulerDidSetPointerCapture(
+      ShadowView const &shadowView,
+      int pointerId) = 0;
+
+  virtual void schedulerDidReleasePointerCapture(
+      ShadowView const &shadowView,
+      int pointerId) = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 

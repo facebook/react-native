@@ -110,6 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)synchronouslyWaitFor:(NSTimeInterval)timeout;
 
+#pragma mark - Touch handler Methods
+
+- (BOOL)isPointerCaptured:(int)pointerId forView:(UIView *)componentView;
+- (void)setPointerCapture:(int)pointerId forView:(UIView *)componentView;
+- (void)releasePointerCapture:(int)pointerId forView:(UIView *)componentView;
+
 @end
 
 @interface RCTFabricSurface (Internal)

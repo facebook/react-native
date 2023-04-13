@@ -60,6 +60,24 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
   }
 
+  bool schedulerDidRequestPointerCaptureStatus(const ShadowView &shadowView, int pointerId) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    return [scheduler.delegate schedulerDidRequestPointerCaptureStatus:pointerId forShadowView:shadowView];
+  }
+
+  void schedulerDidSetPointerCapture(const ShadowView &shadowView, int pointerId) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSetPointerCapture:pointerId forShadowView:shadowView];
+  }
+
+  void schedulerDidReleasePointerCapture(const ShadowView &shadowView, int pointerId) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidReleasePointerCapture:pointerId forShadowView:shadowView];
+  }
+
  private:
   void *scheduler_;
 };

@@ -277,6 +277,9 @@ const FabricUIManagerMock: FabricUIManager = {
       return [x, y, width, height];
     },
   ),
+  hasPointerCapture: jest.fn((node: Node, pointerId: number): boolean => false),
+  setPointerCapture: jest.fn((node: Node, pointerId: number): void => {}),
+  releasePointerCapture: jest.fn((node: Node, pointerId: number): void => {}),
   setNativeProps: jest.fn((node: Node, newProps: NodeProps): void => {}),
   dispatchCommand: jest.fn(
     (node: Node, commandName: string, args: Array<mixed>): void => {},
