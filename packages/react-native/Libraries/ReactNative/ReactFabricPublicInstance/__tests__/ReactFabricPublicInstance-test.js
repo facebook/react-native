@@ -15,13 +15,13 @@ import * as React from 'react';
 import {act} from 'react-test-renderer';
 
 const TextInputState = require('../../../Components/TextInput/TextInputState');
-const FabricUIManager = require('../../../ReactNative/FabricUIManager');
 const ReactFabric = require('../../../Renderer/shims/ReactFabric');
 const ReactNativeViewConfigRegistry = require('../../../Renderer/shims/ReactNativeViewConfigRegistry');
+const FabricUIManager = require('../../FabricUIManager');
 const nullthrows = require('nullthrows');
 
-jest.mock('../../../ReactNative/FabricUIManager', () =>
-  require('../../../ReactNative/__mocks__/FabricUIManager'),
+jest.mock('../../FabricUIManager', () =>
+  require('../../__mocks__/FabricUIManager'),
 );
 
 /**
@@ -107,161 +107,171 @@ async function mockRenderKeys(
   return result;
 }
 
-describe('ReactFabricPublicInstance', () => {
-  beforeEach(() => {
-    jest.resetModules();
-    // Installs the global `nativeFabricUIManager` pointing to the mock.
-    require('../../../ReactNative/__mocks__/FabricUIManager');
-    jest.spyOn(TextInputState, 'blurTextInput');
-    jest.spyOn(TextInputState, 'focusTextInput');
-  });
+[
+  {enableAccessToHostTreeInFabric: false},
+  {enableAccessToHostTreeInFabric: true},
+].forEach(flags => {
+  describe(`ReactFabricPublicInstance (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric = ${String(
+    flags.enableAccessToHostTreeInFabric,
+  )})'`, () => {
+    beforeEach(() => {
+      jest.resetModules();
+      // Installs the global `nativeFabricUIManager` pointing to the mock.
+      require('../../../ReactNative/__mocks__/FabricUIManager');
+      jest.spyOn(TextInputState, 'blurTextInput');
+      jest.spyOn(TextInputState, 'focusTextInput');
 
-  describe('blur', () => {
-    test('blur() invokes TextInputState', async () => {
-      const result = await mockRenderKeys([['foo']]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-
-      fooRef.blur();
-
-      expect(mockOf(TextInputState.blurTextInput).mock.calls).toEqual([
-        [fooRef],
-      ]);
-    });
-  });
-
-  describe('focus', () => {
-    test('focus() invokes TextInputState', async () => {
-      const result = await mockRenderKeys([['foo']]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-
-      fooRef.focus();
-
-      expect(mockOf(TextInputState.focusTextInput).mock.calls).toEqual([
-        [fooRef],
-      ]);
-    });
-  });
-
-  describe('measure', () => {
-    test('component.measure(...) invokes callback', async () => {
-      const result = await mockRenderKeys([['foo']]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-
-      const callback = jest.fn();
-      fooRef.measure(callback);
-
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measure,
-      ).toHaveBeenCalledTimes(1);
-      expect(callback.mock.calls).toEqual([[10, 10, 100, 100, 0, 0]]);
+      require('../../../ReactNative/ReactNativeFeatureFlags').enableAccessToHostTreeInFabric =
+        () => flags.enableAccessToHostTreeInFabric;
     });
 
-    test('unmounted.measure(...) does nothing', async () => {
-      const result = await mockRenderKeys([['foo'], null]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-      const callback = jest.fn();
-      fooRef.measure(callback);
+    describe('blur', () => {
+      test('blur() invokes TextInputState', async () => {
+        const result = await mockRenderKeys([['foo']]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
 
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measure,
-      ).not.toHaveBeenCalled();
-      expect(callback).not.toHaveBeenCalled();
-    });
-  });
+        fooRef.blur();
 
-  describe('measureInWindow', () => {
-    test('component.measureInWindow(...) invokes callback', async () => {
-      const result = await mockRenderKeys([['foo']]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-
-      const callback = jest.fn();
-      fooRef.measureInWindow(callback);
-
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
-      ).toHaveBeenCalledTimes(1);
-      expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
+        expect(mockOf(TextInputState.blurTextInput).mock.calls).toEqual([
+          [fooRef],
+        ]);
+      });
     });
 
-    test('unmounted.measureInWindow(...) does nothing', async () => {
-      const result = await mockRenderKeys([['foo'], null]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
+    describe('focus', () => {
+      test('focus() invokes TextInputState', async () => {
+        const result = await mockRenderKeys([['foo']]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
 
-      const callback = jest.fn();
-      fooRef.measureInWindow(callback);
+        fooRef.focus();
 
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
-      ).not.toHaveBeenCalled();
-      expect(callback).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('measureLayout', () => {
-    test('component.measureLayout(component, ...) invokes callback', async () => {
-      const result = await mockRenderKeys([['foo', 'bar']]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-      const barRef = nullthrows(result?.[0]?.[1]);
-
-      const successCallback = jest.fn();
-      const failureCallback = jest.fn();
-      fooRef.measureLayout(barRef, successCallback, failureCallback);
-
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-      ).toHaveBeenCalledTimes(1);
-      expect(successCallback.mock.calls).toEqual([[1, 1, 100, 100]]);
+        expect(mockOf(TextInputState.focusTextInput).mock.calls).toEqual([
+          [fooRef],
+        ]);
+      });
     });
 
-    test('unmounted.measureLayout(component, ...) does nothing', async () => {
-      const result = await mockRenderKeys([
-        ['foo', 'bar'],
-        ['foo', null],
-      ]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-      const barRef = nullthrows(result?.[0]?.[1]);
+    describe('measure', () => {
+      test('component.measure(...) invokes callback', async () => {
+        const result = await mockRenderKeys([['foo']]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
 
-      const successCallback = jest.fn();
-      const failureCallback = jest.fn();
-      fooRef.measureLayout(barRef, successCallback, failureCallback);
+        const callback = jest.fn();
+        fooRef.measure(callback);
 
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-      ).not.toHaveBeenCalled();
-      expect(successCallback).not.toHaveBeenCalled();
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measure,
+        ).toHaveBeenCalledTimes(1);
+        expect(callback.mock.calls).toEqual([[10, 10, 100, 100, 0, 0]]);
+      });
+
+      test('unmounted.measure(...) does nothing', async () => {
+        const result = await mockRenderKeys([['foo'], null]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+        const callback = jest.fn();
+        fooRef.measure(callback);
+
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measure,
+        ).not.toHaveBeenCalled();
+        expect(callback).not.toHaveBeenCalled();
+      });
     });
 
-    test('component.measureLayout(unmounted, ...) does nothing', async () => {
-      const result = await mockRenderKeys([
-        ['foo', 'bar'],
-        [null, 'bar'],
-      ]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-      const barRef = nullthrows(result?.[0]?.[1]);
+    describe('measureInWindow', () => {
+      test('component.measureInWindow(...) invokes callback', async () => {
+        const result = await mockRenderKeys([['foo']]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
 
-      const successCallback = jest.fn();
-      const failureCallback = jest.fn();
-      fooRef.measureLayout(barRef, successCallback, failureCallback);
+        const callback = jest.fn();
+        fooRef.measureInWindow(callback);
 
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-      ).not.toHaveBeenCalled();
-      expect(successCallback).not.toHaveBeenCalled();
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
+        ).toHaveBeenCalledTimes(1);
+        expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
+      });
+
+      test('unmounted.measureInWindow(...) does nothing', async () => {
+        const result = await mockRenderKeys([['foo'], null]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+
+        const callback = jest.fn();
+        fooRef.measureInWindow(callback);
+
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
+        ).not.toHaveBeenCalled();
+        expect(callback).not.toHaveBeenCalled();
+      });
     });
 
-    test('unmounted.measureLayout(unmounted, ...) does nothing', async () => {
-      const result = await mockRenderKeys([['foo', 'bar'], null]);
-      const fooRef = nullthrows(result?.[0]?.[0]);
-      const barRef = nullthrows(result?.[0]?.[1]);
+    describe('measureLayout', () => {
+      test('component.measureLayout(component, ...) invokes callback', async () => {
+        const result = await mockRenderKeys([['foo', 'bar']]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+        const barRef = nullthrows(result?.[0]?.[1]);
 
-      const successCallback = jest.fn();
-      const failureCallback = jest.fn();
-      fooRef.measureLayout(barRef, successCallback, failureCallback);
+        const successCallback = jest.fn();
+        const failureCallback = jest.fn();
+        fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-      expect(
-        nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-      ).not.toHaveBeenCalled();
-      expect(successCallback).not.toHaveBeenCalled();
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+        ).toHaveBeenCalledTimes(1);
+        expect(successCallback.mock.calls).toEqual([[1, 1, 100, 100]]);
+      });
+
+      test('unmounted.measureLayout(component, ...) does nothing', async () => {
+        const result = await mockRenderKeys([
+          ['foo', 'bar'],
+          ['foo', null],
+        ]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+        const barRef = nullthrows(result?.[0]?.[1]);
+
+        const successCallback = jest.fn();
+        const failureCallback = jest.fn();
+        fooRef.measureLayout(barRef, successCallback, failureCallback);
+
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+        ).not.toHaveBeenCalled();
+        expect(successCallback).not.toHaveBeenCalled();
+      });
+
+      test('component.measureLayout(unmounted, ...) does nothing', async () => {
+        const result = await mockRenderKeys([
+          ['foo', 'bar'],
+          [null, 'bar'],
+        ]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+        const barRef = nullthrows(result?.[0]?.[1]);
+
+        const successCallback = jest.fn();
+        const failureCallback = jest.fn();
+        fooRef.measureLayout(barRef, successCallback, failureCallback);
+
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+        ).not.toHaveBeenCalled();
+        expect(successCallback).not.toHaveBeenCalled();
+      });
+
+      test('unmounted.measureLayout(unmounted, ...) does nothing', async () => {
+        const result = await mockRenderKeys([['foo', 'bar'], null]);
+        const fooRef = nullthrows(result?.[0]?.[0]);
+        const barRef = nullthrows(result?.[0]?.[1]);
+
+        const successCallback = jest.fn();
+        const failureCallback = jest.fn();
+        fooRef.measureLayout(barRef, successCallback, failureCallback);
+
+        expect(
+          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+        ).not.toHaveBeenCalled();
+        expect(successCallback).not.toHaveBeenCalled();
+      });
     });
   });
 });
