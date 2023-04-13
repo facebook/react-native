@@ -49,7 +49,6 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Color
   Float opacity{1.0};
-  SharedColor foregroundColor{};
   SharedColor backgroundColor{};
 
   // Borders

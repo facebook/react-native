@@ -142,11 +142,6 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.foregroundColor =
-        entropy.random<bool>() ? SharedColor() : blackColor();
-  }
-
-  if (entropy.random<bool>(0.1)) {
     viewProps.shadowColor =
         entropy.random<bool>() ? SharedColor() : blackColor();
   }
@@ -195,7 +190,6 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
     viewProps.nativeId = "";
     viewProps.collapsable = true;
     viewProps.backgroundColor = SharedColor();
-    viewProps.foregroundColor = SharedColor();
     viewProps.shadowColor = SharedColor();
     viewProps.accessible = false;
     viewProps.zIndex = {};
@@ -205,7 +199,6 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
   } else {
     viewProps.nativeId = "42";
     viewProps.backgroundColor = whiteColor();
-    viewProps.foregroundColor = blackColor();
     viewProps.shadowColor = blackColor();
     viewProps.accessible = true;
     viewProps.zIndex = {entropy.random<int>()};
