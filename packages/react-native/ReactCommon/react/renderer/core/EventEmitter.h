@@ -56,6 +56,8 @@ class EventEmitter {
    */
   void setEnabled(bool enabled) const;
 
+  SharedEventTarget const &getEventTarget() const;
+
  protected:
 #ifdef ANDROID
   // We need this temporarily due to lack of Java-counterparts for particular

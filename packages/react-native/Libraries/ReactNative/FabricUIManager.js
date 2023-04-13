@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  InternalInstanceHandle,
   LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -21,14 +22,13 @@ import type {RootTag} from '../Types/RootTagTypes';
 
 export type NodeSet = Array<Node>;
 export type NodeProps = {...};
-export type InstanceHandle = {...};
 export type Spec = {|
   +createNode: (
     reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: NodeProps,
-    instanceHandle: InstanceHandle,
+    instanceHandle: InternalInstanceHandle,
   ) => Node,
   +cloneNode: (node: Node) => Node,
   +cloneNodeWithNewChildren: (node: Node) => Node,
@@ -70,6 +70,8 @@ export type Spec = {|
     commandName: string,
     args: Array<mixed>,
   ) => void,
+  +getParentNode: (node: Node) => ?InternalInstanceHandle,
+  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>,
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

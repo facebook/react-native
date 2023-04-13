@@ -10,6 +10,7 @@
  */
 
 import type {
+  InternalInstanceHandle,
   LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -18,7 +19,6 @@ import type {
 } from '../../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../../Types/RootTagTypes';
 import type {
-  InstanceHandle,
   NodeProps,
   NodeSet,
   Spec as FabricUIManager,
@@ -26,7 +26,7 @@ import type {
 
 type NodeMock = {
   children: NodeSet,
-  instanceHandle: InstanceHandle,
+  instanceHandle: InternalInstanceHandle,
   props: NodeProps,
   reactTag: number,
   rootTag: RootTag,
@@ -66,6 +66,53 @@ function ensureHostNode(node: Node): void {
   }
 }
 
+function getAncestorsInCurrentTree(
+  node: Node,
+): ?$ReadOnlyArray<[Node, number]> {
+  const childSet = roots.get(fromNode(node).rootTag);
+  if (childSet == null) {
+    return null;
+  }
+
+  const rootNode = toNode({
+    reactTag: 0,
+    rootTag: fromNode(node).rootTag,
+    viewName: 'RootNode',
+    // $FlowExpectedError
+    instanceHandle: null,
+    props: {},
+    children: childSet,
+  });
+
+  let position = 0;
+  for (const child of childSet) {
+    const ancestors = getAncestors(child, node);
+    if (ancestors) {
+      return [[rootNode, position]].concat(ancestors);
+    }
+    position++;
+  }
+
+  return null;
+}
+
+function getAncestors(root: Node, node: Node): ?$ReadOnlyArray<[Node, number]> {
+  if (fromNode(root).reactTag === fromNode(node).reactTag) {
+    return [];
+  }
+
+  let position = 0;
+  for (const child of fromNode(root).children) {
+    const ancestors = getAncestors(child, node);
+    if (ancestors != null) {
+      return [[root, position]].concat(ancestors);
+    }
+    position++;
+  }
+
+  return null;
+}
+
 const FabricUIManagerMock: FabricUIManager = {
   createNode: jest.fn(
     (
@@ -73,7 +120,7 @@ const FabricUIManagerMock: FabricUIManager = {
       viewName: string,
       rootTag: RootTag,
       props: NodeProps,
-      instanceHandle: InstanceHandle,
+      instanceHandle: InternalInstanceHandle,
     ): Node => {
       if (allocatedTags.has(reactTag)) {
         throw new Error(`Created two native views with tag ${reactTag}`);
@@ -182,6 +229,30 @@ const FabricUIManagerMock: FabricUIManager = {
   setNativeProps: jest.fn((node: Node, newProps: NodeProps): void => {}),
   dispatchCommand: jest.fn(
     (node: Node, commandName: string, args: Array<mixed>): void => {},
+  ),
+  getParentNode: jest.fn((node: Node): ?InternalInstanceHandle => {
+    const ancestors = getAncestorsInCurrentTree(node);
+    if (ancestors == null || ancestors.length - 2 < 0) {
+      return null;
+    }
+
+    const [parentOfParent, position] = ancestors[ancestors.length - 2];
+    const parentInCurrentTree = fromNode(parentOfParent).children[position];
+    return fromNode(parentInCurrentTree).instanceHandle;
+  }),
+  getChildNodes: jest.fn(
+    (node: Node): $ReadOnlyArray<InternalInstanceHandle> => {
+      const ancestors = getAncestorsInCurrentTree(node);
+      if (ancestors == null) {
+        return [];
+      }
+
+      const [parent, position] = ancestors[ancestors.length - 1];
+      const nodeInCurrentTree = fromNode(parent).children[position];
+      return fromNode(nodeInCurrentTree).children.map(
+        child => fromNode(child).instanceHandle,
+      );
+    },
   ),
 };
 

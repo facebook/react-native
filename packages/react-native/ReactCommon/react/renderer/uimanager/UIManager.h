@@ -85,6 +85,9 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared getNewestCloneOfShadowNode(
       ShadowNode const &shadowNode) const;
 
+  ShadowNode::Shared getNewestParentOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
 #pragma mark - Surface Start & Stop
 
   void startSurface(

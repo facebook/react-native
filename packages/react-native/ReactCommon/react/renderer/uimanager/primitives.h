@@ -183,4 +183,40 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
+inline static jsi::Value getInstanceHandleFromShadowNode(
+    ShadowNode::Shared shadowNode,
+    jsi::Runtime &runtime) {
+  auto eventTarget = shadowNode->getEventEmitter()->getEventTarget();
+  // shadowNode is probably a RootShadowNode and they don't have
+  // event targets.
+  if (eventTarget == nullptr) {
+    return jsi::Value::null();
+  }
+  eventTarget->retain(runtime);
+  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+  eventTarget->release(runtime);
+  return instanceHandle;
+}
+
+inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
+    ShadowNode::ListOfShared const &nodes,
+    jsi::Runtime &runtime) {
+  // JSI doesn't support adding elements to an array after creation,
+  // so we need to accumulate the values in a vector and then create
+  // the array when we know the size.
+  std::vector<jsi::Value> nonNullInstanceHandles;
+  nonNullInstanceHandles.reserve(nodes.size());
+  for (auto const &shadowNode : nodes) {
+    auto instanceHandle = getInstanceHandleFromShadowNode(shadowNode, runtime);
+    if (!instanceHandle.isNull()) {
+      nonNullInstanceHandles.push_back(std::move(instanceHandle));
+    }
+  }
+
+  auto result = jsi::Array(runtime, nonNullInstanceHandles.size());
+  for (size_t i = 0; i < nonNullInstanceHandles.size(); i++) {
+    result.setValueAtIndex(runtime, i, nonNullInstanceHandles[i]);
+  }
+  return result;
+}
 } // namespace facebook::react

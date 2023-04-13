@@ -642,40 +642,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "getBoundingClientRect") {
-    // This is similar to `measureInWindow`, except it's explicitly synchronous
-    // (returns the result instead of passing it to a callback).
-    // The behavior is similar to `Element.prototype.getBoundingClientRect` from
-    // Web.
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        1,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const & /*thisValue*/,
-            jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ true,
-               /* .includeViewportOffset = */ true});
-
-          if (layoutMetrics == EmptyLayoutMetrics) {
-            return jsi::Value::undefined();
-          }
-
-          auto frame = layoutMetrics.frame;
-          return jsi::Array::createWithElements(
-              runtime,
-              jsi::Value{runtime, (double)frame.origin.x},
-              jsi::Value{runtime, (double)frame.origin.y},
-              jsi::Value{runtime, (double)frame.size.width},
-              jsi::Value{runtime, (double)frame.size.height});
-        });
-  }
-
   if (methodName == "sendAccessibilityEvent") {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -754,6 +720,109 @@ jsi::Value UIManagerBinding::get(
           }
 
           return valueFromShadowNode(runtime, shadowNode);
+        });
+  }
+
+  /**
+   * DOM traversal and layout APIs
+   */
+
+  if (methodName == "getBoundingClientRect") {
+    // This is similar to `measureInWindow`, except it's explicitly synchronous
+    // (returns the result instead of passing it to a callback).
+    // The behavior is similar to `Element.prototype.getBoundingClientRect` from
+    // Web.
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* .includeViewportOffset = */ true});
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, (double)frame.origin.x},
+              jsi::Value{runtime, (double)frame.origin.y},
+              jsi::Value{runtime, (double)frame.size.width},
+              jsi::Value{runtime, (double)frame.size.height});
+        });
+  }
+
+  if (methodName == "getParentNode") {
+    // This is a React Native implementation of `Node.prototype.parentNode`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode).
+
+    // If a version of the given shadow node is present in the current revision
+    // of an active shadow tree, it returns the instance handle of its parent.
+    // Otherwise, it returns null.
+
+    // getParent(shadowNode: ShadowNode): ?InstanceHandle
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto parentShadowNode =
+              uiManager->getNewestParentOfShadowNode(*shadowNode);
+
+          // shadowNode is a RootShadowNode
+          if (!parentShadowNode) {
+            return jsi::Value::null();
+          }
+
+          return getInstanceHandleFromShadowNode(parentShadowNode, runtime);
+        });
+  }
+
+  if (methodName == "getChildNodes") {
+    // This is a React Native implementation of `Node.prototype.childNodes`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes).
+
+    // If a version of the given shadow node is present in the current revision
+    // of an active shadow tree, it returns an array of instance handles of its
+    // children. Otherwise, it returns an empty array.
+
+    // getChildren(shadowNode: ShadowNode): Array<InstanceHandle>
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          // There's no version of this node in the current shadow tree
+          if (newestCloneOfShadowNode == nullptr) {
+            return jsi::Array(runtime, 0);
+          }
+
+          auto childShadowNodes = newestCloneOfShadowNode->getChildren();
+          return getArrayOfInstanceHandlesFromShadowNodes(
+              childShadowNodes, runtime);
         });
   }
 

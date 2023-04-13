@@ -260,6 +260,34 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
   return pair->first.get().getChildren().at(pair->second);
 }
 
+ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
+    ShadowNode const &shadowNode) const {
+  auto ancestorShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+
+  if (!ancestorShadowNode) {
+    return nullptr;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+
+  if (ancestors.empty()) {
+    return nullptr;
+  }
+
+  if (ancestors.size() == 1) {
+    // The parent is the shadow root
+    return ancestorShadowNode;
+  }
+
+  auto parentOfParentPair = ancestors[ancestors.size() - 2];
+  return parentOfParentPair.first.get().getChildren().at(
+      parentOfParentPair.second);
+}
+
 ShadowNode::Shared UIManager::findNodeAtPoint(
     ShadowNode::Shared const &node,
     Point point) const {
