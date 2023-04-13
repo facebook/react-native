@@ -91,8 +91,6 @@ class ShadowNode : public Sealable,
   ShadowNode(ShadowNode const &shadowNode) noexcept = delete;
   ShadowNode &operator=(ShadowNode const &other) noexcept = delete;
 
-  virtual ~ShadowNode() = default;
-
   /*
    * Clones the shadow node using stored `cloneFunction`.
    */

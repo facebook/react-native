@@ -40,7 +40,7 @@ class Scheduler final : public UIManagerDelegate {
       SchedulerToolbox const &schedulerToolbox,
       UIManagerAnimationDelegate *animationDelegate,
       SchedulerDelegate *delegate);
-  ~Scheduler();
+  ~Scheduler() override;
 
 #pragma mark - Surface Management
 
