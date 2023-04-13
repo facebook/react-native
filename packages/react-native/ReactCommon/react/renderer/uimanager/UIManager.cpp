@@ -296,6 +296,14 @@ ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
       parentOfParentPair.second);
 }
 
+std::string UIManager::getTextContentInNewestCloneOfShadowNode(
+    ShadowNode const &shadowNode) const {
+  auto newestCloneOfShadowNode = getNewestCloneOfShadowNode(shadowNode);
+  std::string result;
+  getTextContentInShadowNode(*newestCloneOfShadowNode, result);
+  return result;
+}
+
 int UIManager::compareDocumentPosition(
     ShadowNode const &shadowNode,
     ShadowNode const &otherShadowNode) const {

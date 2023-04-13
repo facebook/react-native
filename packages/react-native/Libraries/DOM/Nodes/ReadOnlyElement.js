@@ -124,7 +124,13 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get textContent(): string | null {
-    throw new TypeError('Unimplemented');
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode != null) {
+      return nullthrows(getFabricUIManager()).getTextContent(shadowNode);
+    }
+
+    return '';
   }
 
   getBoundingClientRect(): DOMRect {

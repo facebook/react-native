@@ -124,6 +124,18 @@ function getNodeInCurrentTree(node: Node): ?Node {
   return nodeInCurrentTree;
 }
 
+function* dfs(node: ?Node): Iterator<Node> {
+  if (node == null) {
+    return;
+  }
+
+  yield node;
+
+  for (const child of fromNode(node).children) {
+    yield* dfs(child);
+  }
+}
+
 const FabricUIManagerMock: FabricUIManager = {
   createNode: jest.fn(
     (
@@ -287,6 +299,27 @@ const FabricUIManagerMock: FabricUIManager = {
   ),
   isConnected: jest.fn((node: Node): boolean => {
     return getNodeInCurrentTree(node) != null;
+  }),
+  getTextContent: jest.fn((node: Node): string => {
+    const nodeInCurrentTree = getNodeInCurrentTree(node);
+
+    let result = '';
+
+    if (nodeInCurrentTree == null) {
+      return result;
+    }
+
+    for (const childNode of dfs(nodeInCurrentTree)) {
+      if (fromNode(childNode).viewName === 'RCTRawText') {
+        const props = fromNode(childNode).props;
+        // $FlowExpectedError[prop-missing]
+        const maybeString: ?string = props.text;
+        if (typeof maybeString === 'string') {
+          result += maybeString;
+        }
+      }
+    }
+    return result;
   }),
   compareDocumentPosition: jest.fn((node: Node, otherNode: Node): number => {
     /* eslint-disable no-bitwise */

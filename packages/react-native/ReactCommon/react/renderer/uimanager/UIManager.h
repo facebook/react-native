@@ -88,6 +88,9 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared getNewestParentOfShadowNode(
       ShadowNode const &shadowNode) const;
 
+  std::string getTextContentInNewestCloneOfShadowNode(
+      ShadowNode const &shadowNode) const;
+
   int compareDocumentPosition(
       ShadowNode const &shadowNode,
       ShadowNode const &otherShadowNode) const;

@@ -892,6 +892,37 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getTextContent") {
+    // This is a React Native implementation of
+    // `Element.prototype.textContent` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/textContent).
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree.
+    // If the version is present, is traverses all its children in DFS and
+    // concatenates all the text contents. Otherwise, it returns an empty
+    // string.
+
+    // getTextContent(shadowNode: ShadowNode): string
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto textContent =
+              uiManager->getTextContentInNewestCloneOfShadowNode(*shadowNode);
+
+          return jsi::Value(
+              runtime, jsi::String::createFromUtf8(runtime, textContent));
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

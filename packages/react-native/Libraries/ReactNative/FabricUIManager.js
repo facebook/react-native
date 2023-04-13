@@ -70,6 +70,7 @@ export type Spec = {|
   +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>,
   +isConnected: (node: Node) => boolean,
   +compareDocumentPosition: (node: Node, otherNode: Node) => number,
+  +getTextContent: (node: Node) => string,
   +getBoundingClientRect: (
     node: Node,
   ) => ?[
