@@ -1799,6 +1799,52 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   },
 };
 
+const UNION_WITH_DIFFERENT_TYPES: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        properties: [
+          {
+            name: 'returnUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: [
+                  'StringTypeAnnotation',
+                  'NumberTypeAnnotation',
+                  'ObjectTypeAnnotation',
+                  'GenericObjectTypeAnnotation',
+                ],
+              },
+              params: [
+                {
+                  name: 'param',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: [
+                      'StringTypeAnnotation',
+                      'NumberTypeAnnotation',
+                      'ObjectTypeAnnotation',
+                      'GenericObjectTypeAnnotation',
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
@@ -1808,4 +1854,5 @@ module.exports = {
   real_module_example: REAL_MODULE_EXAMPLE,
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
+  union_with_different_types: UNION_WITH_DIFFERENT_TYPES,
 };

@@ -131,6 +131,8 @@ function translateFunctionParamToJavaType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrapNullable('double', 'Double');
+        case 'AnyType':
+          return wrapNullable('Object');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -158,12 +160,18 @@ function translateFunctionParamToJavaType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the union properly
-        throw new Error(
-          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        const unionTypes = realTypeAnnotation.memberType;
+        if (
+          unionTypes.indexOf('ObjectTypeAnnotation') >= 0 ||
+          unionTypes.indexOf('GenericObjectTypeAnnotation') >= 0
+        ) {
+          imports.add('com.facebook.react.bridge.ReadableMap');
+        }
+        // Java does not have a typesafe union type we can leverage
+        // So we need to rely to a dynamic type that client code can
+        // cast at runtime.
+        // This can be cast to Double, String or ReadableMap
+        return wrapNullable('Object');
       }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -228,6 +236,8 @@ function translateFunctionReturnTypeToJavaType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrapNullable('double', 'Double');
+        case 'AnyType':
+          return wrapNullable('Object');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -259,12 +269,18 @@ function translateFunctionReturnTypeToJavaType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the union type properly
-        throw new Error(
-          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        const unionTypes = realTypeAnnotation.memberType;
+        if (
+          unionTypes.indexOf('ObjectTypeAnnotation') >= 0 ||
+          unionTypes.indexOf('GenericObjectTypeAnnotation') >= 0
+        ) {
+          imports.add('com.facebook.react.bridge.WritableMap');
+        }
+        // Java does not have a typesafe union type we can leverage
+        // So we need to rely to a dynamic type that client code can
+        // cast at runtime.
+        // This can be cast to Double, String or WriteableMap
+        return wrapNullable('Object');
       }
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -314,6 +330,8 @@ function getFalsyReturnStatementFromReturnType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'return 0.0;';
+        case 'AnyType':
+          return 'return null';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -343,12 +361,7 @@ function getFalsyReturnStatementFromReturnType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the union type properly
-        throw new Error(
-          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
-            ',',
-          )}]"`,
-        );
+        return 'return null';
       }
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':

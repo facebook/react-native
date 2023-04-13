@@ -151,6 +151,8 @@ function translatePrimitiveJSTypeToCpp(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrap('double');
+        case 'AnyType':
+          return wrap('jsi::Value');
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(createErrorMessage(realTypeAnnotation.name));
@@ -189,10 +191,14 @@ function translatePrimitiveJSTypeToCpp(
         case 'NumberTypeAnnotation':
           return wrap('double');
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           return wrap('jsi::Object');
         case 'StringTypeAnnotation':
           return wrap('jsi::String');
         default:
+          if (Array.isArray(typeAnnotation.memberType)) {
+            return wrap('jsi::Value');
+          }
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'ObjectTypeAnnotation':

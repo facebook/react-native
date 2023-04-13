@@ -140,6 +140,8 @@ function translateReturnTypeToKind(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return 'NumberKind';
+        case 'AnyType':
+          return 'ObjectKind';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -165,12 +167,8 @@ function translateReturnTypeToKind(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the array union type properly
-        throw new Error(
-          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        // Threat this as a generic object that can be cast to String, double or ReadableMap
+        return 'ObjectKind';
       }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -230,6 +228,8 @@ function translateParamTypeToJniType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
+        case 'AnyType':
+          return 'Ljava/lang/Object;';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -253,12 +253,7 @@ function translateParamTypeToJniType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO handle the array type properly
-        throw new Error(
-          `Unsupported union prop value, found: [${realTypeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        return 'Ljava/lang/Object;';
       }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
@@ -312,6 +307,8 @@ function translateReturnTypeToJniType(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return nullable ? 'Ljava/lang/Double;' : 'D';
+        case 'AnyType':
+          return 'Ljava/lang/Object;';
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -337,12 +334,7 @@ function translateReturnTypeToJniType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the union type properly
-        throw new Error(
-          `Unsupported union member type, found: [${realTypeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        return 'Ljava/lang/Object;';
       }
 
       switch (typeAnnotation.memberType) {

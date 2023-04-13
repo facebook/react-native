@@ -157,6 +157,8 @@ function getObjCParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'AnyType':
+          return 'NSObject *';
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -185,6 +187,8 @@ function getObjCExpectedKindParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return '[NSNumber class]';
+        case 'AnyType':
+          return '[NSObject class]';
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -213,6 +217,8 @@ function getReadableExpectedKindParamType(param: Param): string {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'AnyType':
+          return 'object';
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);
@@ -244,6 +250,8 @@ function getObjCRightHandAssignmentParamType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `[(NSNumber *)arg${index} doubleValue]`;
+        case 'AnyType':
+          return `[(NSObject *)arg${index}]`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);

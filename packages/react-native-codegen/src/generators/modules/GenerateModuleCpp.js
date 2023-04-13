@@ -150,6 +150,8 @@ function serializeArg(
       switch (realTypeAnnotation.name) {
         case 'RootTag':
           return wrap(val => `${val}.getNumber()`);
+        case 'AnyType':
+          return wrap(val => `jsi::Value(rt, ${val})`);
         default:
           (realTypeAnnotation.name: empty);
           throw new Error(
@@ -187,12 +189,10 @@ function serializeArg(
       return wrap(val => `${val}.asObject(rt)`);
     case 'UnionTypeAnnotation':
       if (Array.isArray(realTypeAnnotation.memberType)) {
-        // TODO: handle the union properly
-        throw new Error(
-          `Unsupported union member type for param  "${
-            arg.name
-          }, found: [${realTypeAnnotation.memberType.join(', ')}]"`,
-        );
+        // jsi does not have a way to extract a type safe union value at build-time
+        // so we have to rely on a dynamic value and let the client code handle it.
+        // This is the same handling of a mixed type.
+        return wrap(val => `jsi::Value(rt, ${val})`);
       }
 
       switch (typeAnnotation.memberType) {
