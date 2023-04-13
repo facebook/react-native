@@ -47,7 +47,13 @@ export default class ReadOnlyNode {
   }
 
   get isConnected(): boolean {
-    throw new TypeError('Unimplemented');
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode == null) {
+      return false;
+    }
+
+    return nullthrows(getFabricUIManager()).isConnected(shadowNode);
   }
 
   get lastChild(): ReadOnlyNode | null {

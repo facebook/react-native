@@ -72,6 +72,7 @@ export type Spec = {|
   ) => void,
   +getParentNode: (node: Node) => ?InternalInstanceHandle,
   +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>,
+  +isConnected: (node: Node) => boolean,
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

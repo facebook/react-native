@@ -836,6 +836,32 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "isConnected") {
+    // This is a React Native implementation of `Node.prototype.isConnected`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected).
+
+    // Indicates whether a version of the given shadow node is present in
+    // the current revision of an active shadow tree.
+
+    // isConnected(shadowNode: ShadowNode): boolean
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          return jsi::Value(newestCloneOfShadowNode != nullptr);
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

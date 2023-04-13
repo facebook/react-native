@@ -285,6 +285,9 @@ const FabricUIManagerMock: FabricUIManager = {
       );
     },
   ),
+  isConnected: jest.fn((node: Node): boolean => {
+    return getNodeInCurrentTree(node) != null;
+  }),
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;
