@@ -337,8 +337,10 @@ function emitUnion(
     typeAnnotation.types,
   );
 
-  // Only support unionTypes of the same kind
-  if (unionTypes.length > 1) {
+  if (
+    unionTypes.length > 1 &&
+    unionTypes.indexOf('NullLiteralTypeAnnotation') > -1 //discard nullables
+  ) {
     throw new UnsupportedUnionTypeAnnotationParserError(
       hasteModuleName,
       typeAnnotation,
@@ -348,7 +350,7 @@ function emitUnion(
 
   return wrapNullable(nullable, {
     type: 'UnionTypeAnnotation',
-    memberType: unionTypes[0],
+    memberType: unionTypes.length === 1 ? unionTypes[0] : unionTypes,
   });
 }
 

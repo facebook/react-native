@@ -2147,18 +2147,21 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             }
           },
           {
-            'name': 'returnUnsupportedIndex',
+            'name': 'returnHeterogeneousIndex',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'GenericObjectTypeAnnotation'
+                }
               },
               'params': []
             }
           },
           {
-            'name': 'returnSupportedIndex',
+            'name': 'returnHomogeneousIndex',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
@@ -2199,6 +2202,54 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
                 }
               },
               'params': []
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture UNION_WITH_DIFFERENT_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'returnUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': [
+                  'StringTypeAnnotation',
+                  'NumberTypeAnnotation',
+                  'ObjectTypeAnnotation',
+                  'GenericObjectTypeAnnotation'
+                ]
+              },
+              'params': [
+                {
+                  'name': 'param',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': [
+                      'StringTypeAnnotation',
+                      'NumberTypeAnnotation',
+                      'ObjectTypeAnnotation',
+                      'GenericObjectTypeAnnotation'
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]

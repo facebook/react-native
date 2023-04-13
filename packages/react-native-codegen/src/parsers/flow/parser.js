@@ -85,7 +85,8 @@ class FlowParser implements Parser {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.type
         .replace('NumberLiteralTypeAnnotation', 'NumberTypeAnnotation')
-        .replace('StringLiteralTypeAnnotation', 'StringTypeAnnotation');
+        .replace('StringLiteralTypeAnnotation', 'StringTypeAnnotation')
+        .replace('GenericTypeAnnotation', 'GenericObjectTypeAnnotation');
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];

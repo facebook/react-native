@@ -774,10 +774,37 @@ export interface Spec extends TurboModule {
   returnObjectArray(): Promise<Array<Object>>;
   returnNullableNumber(): Promise<number | null>;
   returnEmpty(): Promise<empty>;
-  returnUnsupportedIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
-  returnSupportedIndex(): Promise<{ [string]: CustomObject }>;
+  returnHeterogeneousIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+  returnHomogeneousIndex(): Promise<{ [string]: CustomObject }>;
   returnEnum() : Promise<Season>;
   returnObject() : Promise<CustomObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const UNION_WITH_DIFFERENT_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+type MyObject = {
+  aNumber: number,
+};
+
+export interface Spec extends TurboModule {
+  returnUnion(param: string | number | { astring: string } | MyObject): string | number | { aString: string } | MyObject
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -809,4 +836,5 @@ module.exports = {
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
   PROMISE_WITH_COMMONLY_USED_TYPES,
+  UNION_WITH_DIFFERENT_TYPES,
 };

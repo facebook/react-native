@@ -157,10 +157,19 @@ function translateFunctionParamToJavaType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the union properly
+        throw new Error(
+          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return wrapNullable('double', 'Double');
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           imports.add('com.facebook.react.bridge.ReadableMap');
           return wrapNullable('ReadableMap');
         case 'StringTypeAnnotation':
@@ -249,6 +258,14 @@ function translateFunctionReturnTypeToJavaType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the union type properly
+        throw new Error(
+          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return wrapNullable('double', 'Double');
@@ -325,6 +342,14 @@ function getFalsyReturnStatementFromReturnType(
           throw new Error(createErrorMessage(realTypeAnnotation.type));
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the union type properly
+        throw new Error(
+          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
+            ',',
+          )}]"`,
+        );
+      }
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return nullable ? 'return null;' : 'return 0;';
