@@ -76,7 +76,7 @@ export default class ReadOnlyNode {
    */
   get nodeName(): string {
     throw new TypeError(
-      'Unexpected access to `nodeName` in abstract class `ReadOnlyNode`',
+      '`nodeName` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
     );
   }
 

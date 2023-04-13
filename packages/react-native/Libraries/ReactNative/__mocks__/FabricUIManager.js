@@ -113,6 +113,17 @@ function getAncestors(root: Node, node: Node): ?$ReadOnlyArray<[Node, number]> {
   return null;
 }
 
+function getNodeInCurrentTree(node: Node): ?Node {
+  const ancestors = getAncestorsInCurrentTree(node);
+  if (ancestors == null) {
+    return null;
+  }
+
+  const [parent, position] = ancestors[ancestors.length - 1];
+  const nodeInCurrentTree = fromNode(parent).children[position];
+  return nodeInCurrentTree;
+}
+
 const FabricUIManagerMock: FabricUIManager = {
   createNode: jest.fn(
     (
@@ -215,7 +226,7 @@ const FabricUIManagerMock: FabricUIManager = {
   getBoundingClientRect: jest.fn(
     (
       node: Node,
-    ): [
+    ): ?[
       /* x:*/ number,
       /* y:*/ number,
       /* width:*/ number,
@@ -223,7 +234,28 @@ const FabricUIManagerMock: FabricUIManager = {
     ] => {
       ensureHostNode(node);
 
-      return [10, 10, 100, 100];
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const boundingClientRectForTests: ?{
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__boundingClientRectForTests;
+
+      if (boundingClientRectForTests == null) {
+        return null;
+      }
+
+      const {x, y, width, height} = boundingClientRectForTests;
+      return [x, y, width, height];
     },
   ),
   setNativeProps: jest.fn((node: Node, newProps: NodeProps): void => {}),
@@ -242,13 +274,12 @@ const FabricUIManagerMock: FabricUIManager = {
   }),
   getChildNodes: jest.fn(
     (node: Node): $ReadOnlyArray<InternalInstanceHandle> => {
-      const ancestors = getAncestorsInCurrentTree(node);
-      if (ancestors == null) {
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+
+      if (nodeInCurrentTree == null) {
         return [];
       }
 
-      const [parent, position] = ancestors[ancestors.length - 1];
-      const nodeInCurrentTree = fromNode(parent).children[position];
       return fromNode(nodeInCurrentTree).children.map(
         child => fromNode(child).instanceHandle,
       );

@@ -728,10 +728,20 @@ jsi::Value UIManagerBinding::get(
    */
 
   if (methodName == "getBoundingClientRect") {
+    // This is a React Native implementation of
+    // `Element.prototype.getBoundingClientRect` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+
     // This is similar to `measureInWindow`, except it's explicitly synchronous
     // (returns the result instead of passing it to a callback).
-    // The behavior is similar to `Element.prototype.getBoundingClientRect` from
-    // Web.
+
+    // getBoundingClientRect(shadowNode: ShadowNode):
+    //   [
+    //     /* x: */ number,
+    //     /* y: */ number,
+    //     /* width: */ number,
+    //     /* height: */ number
+    //   ]
     return jsi::Function::createFromHostFunction(
         runtime,
         name,

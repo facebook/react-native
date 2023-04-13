@@ -12,8 +12,11 @@
 
 import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
 
+import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
+import DOMRect from '../Geometry/DOMRect';
 import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
-import ReadOnlyNode, {getChildNodes} from './ReadOnlyNode';
+import ReadOnlyNode, {getChildNodes, getShadowNode} from './ReadOnlyNode';
+import nullthrows from 'nullthrows';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {
@@ -122,6 +125,23 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
   get textContent(): string | null {
     throw new TypeError('Unimplemented');
+  }
+
+  getBoundingClientRect(): DOMRect {
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode != null) {
+      const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
+        shadowNode,
+      );
+
+      if (rect) {
+        return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
+      }
+    }
+
+    // Empty rect if any of the above failed
+    return new DOMRect(0, 0, 0, 0);
   }
 
   getClientRects(): DOMRectList {

@@ -58,7 +58,7 @@ export type Spec = {|
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
   +getBoundingClientRect: (
     node: Node,
-  ) => [
+  ) => ?[
     /* x:*/ number,
     /* y:*/ number,
     /* width:*/ number,
