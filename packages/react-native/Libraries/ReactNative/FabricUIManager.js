@@ -79,6 +79,13 @@ export type Spec = {|
     /* width:*/ number,
     /* height:*/ number,
   ],
+  +getOffset: (
+    node: Node,
+  ) => ?[
+    /* offsetParent: */ InternalInstanceHandle,
+    /* offsetTop: */ number,
+    /* offsetLeft: */ number,
+  ],
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

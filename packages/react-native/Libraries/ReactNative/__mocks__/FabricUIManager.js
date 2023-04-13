@@ -136,6 +136,13 @@ function* dfs(node: ?Node): Iterator<Node> {
   }
 }
 
+function hasDisplayNone(node: Node): boolean {
+  const props = fromNode(node).props;
+  // Style is flattened when passed to native, so there's no style object.
+  // $FlowFixMe[prop-missing]
+  return props != null && props.display === 'none';
+}
+
 const FabricUIManagerMock: FabricUIManager = {
   createNode: jest.fn(
     (
@@ -374,6 +381,56 @@ const FabricUIManagerMock: FabricUIManager = {
 
     return ReadOnlyNode.DOCUMENT_POSITION_FOLLOWING;
   }),
+  getOffset: jest.fn(
+    (
+      node: Node,
+    ): ?[
+      /* offsetParent: */ InternalInstanceHandle,
+      /* offsetTop: */ number,
+      /* offsetLeft: */ number,
+    ] => {
+      const ancestors = getAncestorsInCurrentTree(node);
+      if (ancestors == null) {
+        return null;
+      }
+
+      const [parent, position] = ancestors[ancestors.length - 1];
+      const nodeInCurrentTree = fromNode(parent).children[position];
+
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null || hasDisplayNone(nodeInCurrentTree)) {
+        return null;
+      }
+
+      const offsetForTests: ?{
+        top: number,
+        left: number,
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__offsetForTests;
+
+      if (offsetForTests == null) {
+        return null;
+      }
+
+      let currentIndex = ancestors.length - 1;
+      while (currentIndex >= 0 && !hasDisplayNone(ancestors[currentIndex][0])) {
+        currentIndex--;
+      }
+
+      if (currentIndex >= 0) {
+        // The node or one of its ancestors have display: none
+        return null;
+      }
+
+      return [
+        fromNode(parent).instanceHandle,
+        offsetForTests.top,
+        offsetForTests.left,
+      ];
+    },
+  ),
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;

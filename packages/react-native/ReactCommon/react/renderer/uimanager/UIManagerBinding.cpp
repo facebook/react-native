@@ -923,6 +923,93 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getOffset") {
+    // This is a method to access offset information for React Native nodes, to
+    // implement these methods:
+    // * `HTMLElement.prototype.offsetParent`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent.
+    // * `HTMLElement.prototype.offsetTop`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop.
+    // * `HTMLElement.prototype.offsetLeft`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetLeft.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present or is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // it returns undefined. Otherwise, it returns its parent (as all nodes in
+    // React Native are currently "positioned") and its offset relative to its
+    // parent.
+
+    // getOffset(shadowNode: ShadowNode):
+    //   ?[
+    //     /* parent: */ InstanceHandle,
+    //     /* top: */ number,
+    //     /* left: */ number,
+    //   ]
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+          auto newestParentOfShadowNode =
+              uiManager->getNewestParentOfShadowNode(*shadowNode);
+          // The node is no longer part of an active shadow tree, or it is the
+          // root node
+          if (newestCloneOfShadowNode == nullptr ||
+              newestParentOfShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none", it returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          // This should never happen
+          if (layoutableShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableParentShadowNode =
+              traitCast<LayoutableShadowNode const *>(
+                  newestParentOfShadowNode.get());
+          // This should never happen
+          if (layoutableParentShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto originRelativeToParentOuterBorder =
+              layoutableShadowNode->getLayoutMetrics().frame.origin;
+
+          // On the Web, offsets are computed from the inner border of the
+          // parent.
+          auto offsetTop = originRelativeToParentOuterBorder.y -
+              layoutableParentShadowNode->getLayoutMetrics().borderWidth.top;
+          auto offsetLeft = originRelativeToParentOuterBorder.x -
+              layoutableParentShadowNode->getLayoutMetrics().borderWidth.left;
+
+          return jsi::Array::createWithElements(
+              runtime,
+              getInstanceHandleFromShadowNode(
+                  newestParentOfShadowNode, runtime),
+              jsi::Value{runtime, (double)offsetTop},
+              jsi::Value{runtime, (double)offsetLeft});
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

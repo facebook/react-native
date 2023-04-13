@@ -21,14 +21,21 @@ namespace react {
  * Describes results of layout process for particular shadow node.
  */
 struct LayoutMetrics {
+  // Origin: relative to its parent content frame (unless using a method that
+  // computes it relative to other parent or the viewport)
+  // Size: includes border, padding and content.
   Rect frame;
+  // Width of the border + padding in all directions.
   EdgeInsets contentInsets{0};
+  // Width of the border in all directions.
   EdgeInsets borderWidth{0};
   DisplayType displayType{DisplayType::Flex};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
   Float pointScaleFactor{1.0};
   EdgeInsets overflowInset{};
 
+  // Origin: the outer border of the node.
+  // Size: includes content only.
   Rect getContentFrame() const {
     return Rect{
         Point{contentInsets.left, contentInsets.top},

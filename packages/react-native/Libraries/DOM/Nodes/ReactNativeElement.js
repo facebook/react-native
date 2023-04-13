@@ -27,7 +27,10 @@ import {create as createAttributePayload} from '../../ReactNative/ReactFabricPub
 import warnForStyleProps from '../../ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import ReadOnlyElement from './ReadOnlyElement';
 import ReadOnlyNode from './ReadOnlyNode';
-import {getShadowNode} from './ReadOnlyNode';
+import {
+  getPublicInstanceFromInternalInstanceHandle,
+  getShadowNode,
+} from './ReadOnlyNode';
 import nullthrows from 'nullthrows';
 
 const noop = () => {};
@@ -59,15 +62,48 @@ export default class ReactNativeElement
   }
 
   get offsetLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      if (offset != null) {
+        return Math.round(offset[2]);
+      }
+    }
+
+    return 0;
   }
 
   get offsetParent(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      if (offset != null) {
+        const offsetParentInstanceHandle = offset[0];
+        const offsetParent = getPublicInstanceFromInternalInstanceHandle(
+          offsetParentInstanceHandle,
+        );
+        // $FlowExpectedError[incompatible-type] The value returned by `getOffset` is always an instance handle for `ReadOnlyElement`.
+        const offsetParentElement: ReadOnlyElement = offsetParent;
+        return offsetParentElement;
+      }
+    }
+
+    return null;
   }
 
   get offsetTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const offset = nullthrows(getFabricUIManager()).getOffset(node);
+      if (offset != null) {
+        return Math.round(offset[1]);
+      }
+    }
+
+    return 0;
   }
 
   get offsetWidth(): number {
