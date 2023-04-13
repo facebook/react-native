@@ -612,7 +612,8 @@ type AndroidProps = $ReadOnly<{|
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
    * from the color of the text selection box.
-   * @platform android
+   // [macOS]
+   * @platform android macos
    */
   cursorColor?: ?ColorValue,
 

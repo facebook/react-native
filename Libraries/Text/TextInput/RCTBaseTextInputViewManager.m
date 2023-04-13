@@ -74,6 +74,8 @@ RCT_EXPORT_VIEW_PROPERTY(onGrammarCheckChange, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(clearTextOnSubmit, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onSubmitEditing, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(submitKeyEvents, NSArray<NSDictionary *>);
+
+RCT_REMAP_VIEW_PROPERTY(cursorColor, backedTextInputView.cursorColor, UIColor)
 #endif // macOS]
 
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)

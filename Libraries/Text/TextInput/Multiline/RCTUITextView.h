@@ -47,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_OSX // [macOS
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
-@property (nonatomic, strong, nullable) RCTUIColor *selectionColor; // TODO(OSS Candidate ISS#2710739)
+@property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
+@property (nonatomic, strong, nullable) RCTUIColor *cursorColor;
 @property (nonatomic, assign) UIEdgeInsets textContainerInsets;
 @property (nonatomic, copy) NSString *text;
 @property (nonatomic, assign) NSTextAlignment textAlignment;

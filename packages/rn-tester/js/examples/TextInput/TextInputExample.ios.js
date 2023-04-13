@@ -1107,6 +1107,55 @@ if (Platform.OS === 'macos') {
         return <OnPaste />;
       },
     },
+    {
+      title: 'Cursor color',
+      render: function (): React.Node {
+        return (
+          <View>
+            <TextInput
+              placeholder="Single line"
+              cursorColor="#00FF00"
+              placeholderTextColor="grey"
+              style={[
+                styles.default,
+                {backgroundColor: 'black', color: 'white', marginBottom: 4},
+              ]}
+            />
+            <TextInput
+              multiline={true}
+              placeholder="Multiline"
+              cursorColor="#00FF00"
+              placeholderTextColor="grey"
+              style={[
+                styles.default,
+                {backgroundColor: 'black', color: 'white', marginBottom: 4},
+              ]}
+            />
+            <TextInput
+              placeholder="Single line with selection color"
+              cursorColor="#00FF00"
+              selectionColor="yellow"
+              placeholderTextColor="grey"
+              style={[
+                styles.default,
+                {backgroundColor: 'black', color: 'white', marginBottom: 4},
+              ]}
+            />
+            <TextInput
+              multiline={true}
+              placeholder="Multiline with selection color"
+              cursorColor="#00FF00"
+              selectionColor="yellow"
+              placeholderTextColor="grey"
+              style={[
+                styles.default,
+                {backgroundColor: 'black', color: 'white'},
+              ]}
+            />
+          </View>
+        );
+      },
+    },
   );
 }
 // [macOS]

@@ -152,12 +152,18 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   NSMutableDictionary *selectTextAttributes = self.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = selectionColor ?: [NSColor selectedControlColor];
   self.selectedTextAttributes = selectTextAttributes.copy;
-  self.insertionPointColor = self.selectionColor ?: [NSColor textColor];
+  self.insertionPointColor = _cursorColor ?: self.selectionColor ?: [NSColor textColor];
 }
 
 - (RCTUIColor*)selectionColor
 {
   return (RCTUIColor*)self.selectedTextAttributes[NSBackgroundColorAttributeName];
+}
+
+- (void)setCursorColor:(NSColor *)cursorColor
+{
+  _cursorColor = cursorColor;
+  self.insertionPointColor = cursorColor;
 }
 
 - (void)setEnabledTextCheckingTypes:(NSTextCheckingTypes)checkingType

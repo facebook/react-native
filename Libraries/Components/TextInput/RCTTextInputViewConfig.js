@@ -163,6 +163,7 @@ const RCTTextInputViewConfig = {
     pastedTypes: true,
     submitKeyEvents: true,
     tooltip: true,
+    cursorColor: {process: require('../../StyleSheet/processColor').default},
     // macOS]
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,

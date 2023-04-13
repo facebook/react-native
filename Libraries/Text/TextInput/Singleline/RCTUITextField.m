@@ -30,6 +30,7 @@
 @property (nonatomic, getter=isContinuousSpellCheckingEnabled) BOOL continuousSpellCheckingEnabled;
 @property (nonatomic, getter=isGrammarCheckingEnabled) BOOL grammarCheckingEnabled;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
+@property (nonatomic, strong, nullable) RCTUIColor *insertionPointColor;
 
 @end
 
@@ -77,7 +78,8 @@
   fieldEditor.grammarCheckingEnabled = self.isGrammarCheckingEnabled;
   NSMutableDictionary *selectTextAttributes = fieldEditor.selectedTextAttributes.mutableCopy;
   selectTextAttributes[NSBackgroundColorAttributeName] = self.selectionColor ?: [NSColor selectedControlColor];
-	fieldEditor.selectedTextAttributes = selectTextAttributes;
+  fieldEditor.selectedTextAttributes = selectTextAttributes;
+  fieldEditor.insertionPointColor = self.insertionPointColor ?: [NSColor textColor];
   return fieldEditor;
 }
 
@@ -261,6 +263,16 @@
 - (RCTUIColor*)selectionColor
 {
   return ((RCTUITextFieldCell*)self.cell).selectionColor;
+}
+    
+- (void)setCursorColor:(NSColor *)cursorColor
+{
+    ((RCTUITextFieldCell*)self.cell).insertionPointColor = cursorColor;
+}
+
+- (RCTUIColor*)cursorColor
+{
+  return ((RCTUITextFieldCell*)self.cell).insertionPointColor;
 }
 
 - (void)setFont:(UIFont *)font
