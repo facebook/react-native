@@ -862,6 +862,36 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "compareDocumentPosition") {
+    // This is a React Native implementation of
+    // `Node.prototype.compareDocumentPosition` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
+
+    // It uses the version of the shadow nodes that are present in the current
+    // revision of the shadow tree (if any). If any of the nodes is not present,
+    // it just indicates they are disconnected.
+
+    // compareDocumentPosition(shadowNode: ShadowNode, otherShadowNode:
+    // ShadowNode): number
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto otherShadowNode = shadowNodeFromValue(runtime, arguments[1]);
+
+          auto documentPosition =
+              uiManager->compareDocumentPosition(*shadowNode, *otherShadowNode);
+
+          return jsi::Value(documentPosition);
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

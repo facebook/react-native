@@ -158,13 +158,32 @@ export default class ReadOnlyNode {
   }
 
   compareDocumentPosition(otherNode: ReadOnlyNode): number {
-    throw new TypeError('Unimplemented');
+    // Quick check to avoid having to call into Fabric if the nodes are the same.
+    if (otherNode === this) {
+      return 0;
+    }
+
+    const shadowNode = getShadowNode(this);
+    const otherShadowNode = getShadowNode(otherNode);
+
+    if (shadowNode == null || otherShadowNode == null) {
+      return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
+    }
+
+    return nullthrows(getFabricUIManager()).compareDocumentPosition(
+      shadowNode,
+      otherShadowNode,
+    );
   }
 
   contains(otherNode: ReadOnlyNode): boolean {
+    if (otherNode === this) {
+      return true;
+    }
+
     const position = this.compareDocumentPosition(otherNode);
     // eslint-disable-next-line no-bitwise
-    return (position & ReadOnlyNode.DOCUMENT_POSITION_CONTAINS) !== 0;
+    return (position & ReadOnlyNode.DOCUMENT_POSITION_CONTAINED_BY) !== 0;
   }
 
   getRootNode(): ReadOnlyNode {

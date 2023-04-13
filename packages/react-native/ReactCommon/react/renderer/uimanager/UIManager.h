@@ -88,6 +88,10 @@ class UIManager final : public ShadowTreeDelegate {
   ShadowNode::Shared getNewestParentOfShadowNode(
       ShadowNode const &shadowNode) const;
 
+  int compareDocumentPosition(
+      ShadowNode const &shadowNode,
+      ShadowNode const &otherShadowNode) const;
+
 #pragma mark - Surface Start & Stop
 
   void startSurface(

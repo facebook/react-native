@@ -21,6 +21,14 @@
 
 #include <utility>
 
+namespace {
+constexpr int DOCUMENT_POSITION_DISCONNECTED = 1;
+constexpr int DOCUMENT_POSITION_PRECEDING = 2;
+constexpr int DOCUMENT_POSITION_FOLLOWING = 4;
+constexpr int DOCUMENT_POSITION_CONTAINS = 8;
+constexpr int DOCUMENT_POSITION_CONTAINED_BY = 16;
+} // namespace
+
 namespace facebook::react {
 
 // Explicitly define destructors here, as they to exist in order to act as a
@@ -286,6 +294,60 @@ ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
   auto parentOfParentPair = ancestors[ancestors.size() - 2];
   return parentOfParentPair.first.get().getChildren().at(
       parentOfParentPair.second);
+}
+
+int UIManager::compareDocumentPosition(
+    ShadowNode const &shadowNode,
+    ShadowNode const &otherShadowNode) const {
+  // Quick check for node vs. itself
+  if (&shadowNode == &otherShadowNode) {
+    return 0;
+  }
+
+  if (shadowNode.getSurfaceId() != otherShadowNode.getSurfaceId()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto ancestorShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+  if (!ancestorShadowNode) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+  if (ancestors.empty()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto otherAncestors =
+      otherShadowNode.getFamily().getAncestors(*ancestorShadowNode);
+  if (ancestors.empty()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  // Consume all common ancestors
+  size_t i = 0;
+  while (i < ancestors.size() && i < otherAncestors.size() &&
+         ancestors[i].second == otherAncestors[i].second) {
+    i++;
+  }
+
+  if (i == ancestors.size()) {
+    return (DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING);
+  }
+
+  if (i == otherAncestors.size()) {
+    return (DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING);
+  }
+
+  if (ancestors[i].second > otherAncestors[i].second) {
+    return DOCUMENT_POSITION_PRECEDING;
+  }
+
+  return DOCUMENT_POSITION_FOLLOWING;
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(

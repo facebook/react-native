@@ -288,6 +288,59 @@ const FabricUIManagerMock: FabricUIManager = {
   isConnected: jest.fn((node: Node): boolean => {
     return getNodeInCurrentTree(node) != null;
   }),
+  compareDocumentPosition: jest.fn((node: Node, otherNode: Node): number => {
+    /* eslint-disable no-bitwise */
+    const ReadOnlyNode = require('../../DOM/Nodes/ReadOnlyNode').default;
+
+    // Quick check for node vs. itself
+    if (fromNode(node).reactTag === fromNode(otherNode).reactTag) {
+      return 0;
+    }
+
+    if (fromNode(node).rootTag !== fromNode(otherNode).rootTag) {
+      return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
+    }
+
+    const ancestors = getAncestorsInCurrentTree(node);
+    if (ancestors == null) {
+      return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
+    }
+
+    const otherAncestors = getAncestorsInCurrentTree(otherNode);
+    if (otherAncestors == null) {
+      return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
+    }
+
+    // Consume all common ancestors
+    let i = 0;
+    while (
+      i < ancestors.length &&
+      i < otherAncestors.length &&
+      ancestors[i][1] === otherAncestors[i][1]
+    ) {
+      i++;
+    }
+
+    if (i === ancestors.length) {
+      return (
+        ReadOnlyNode.DOCUMENT_POSITION_CONTAINED_BY |
+        ReadOnlyNode.DOCUMENT_POSITION_FOLLOWING
+      );
+    }
+
+    if (i === otherAncestors.length) {
+      return (
+        ReadOnlyNode.DOCUMENT_POSITION_CONTAINS |
+        ReadOnlyNode.DOCUMENT_POSITION_PRECEDING
+      );
+    }
+
+    if (ancestors[i][1] > otherAncestors[i][1]) {
+      return ReadOnlyNode.DOCUMENT_POSITION_PRECEDING;
+    }
+
+    return ReadOnlyNode.DOCUMENT_POSITION_FOLLOWING;
+  }),
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;
