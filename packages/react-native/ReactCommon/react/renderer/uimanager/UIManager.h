@@ -38,7 +38,7 @@ class UIManager final : public ShadowTreeDelegate {
       BackgroundExecutor backgroundExecutor,
       ContextContainer::Shared contextContainer);
 
-  ~UIManager();
+  ~UIManager() override;
 
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry &componentDescriptorRegistry);

@@ -37,7 +37,7 @@ class UIManagerBinding : public jsi::HostObject {
 
   UIManagerBinding(std::shared_ptr<UIManager> uiManager);
 
-  ~UIManagerBinding();
+  ~UIManagerBinding() override;
 
   jsi::Value getInspectorDataForInstance(
       jsi::Runtime &runtime,
