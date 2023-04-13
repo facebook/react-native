@@ -9,7 +9,6 @@
  */
 
 'use strict';
-import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
@@ -134,17 +133,9 @@ function buildComponentSchema(
 
   const options = getOptions(optionsExpression);
 
-  const extendsProps: Array<ExtendsPropsShape> = [];
-  const componentPropAsts: Array<PropsAST> = [];
   const componentEventAsts: Array<PropsAST> = [];
-  categorizeProps(
-    propProperties,
-    types,
-    extendsProps,
-    componentPropAsts,
-    componentEventAsts,
-  );
-  const props = getProps(componentPropAsts, types);
+  categorizeProps(propProperties, types, componentEventAsts);
+  const {props, extendsProps} = getProps(propProperties, types);
   const events = getEvents(componentEventAsts, types);
   const commands = getCommands(commandProperties, types);
 
