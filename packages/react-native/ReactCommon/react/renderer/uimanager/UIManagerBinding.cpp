@@ -903,6 +903,9 @@ jsi::Value UIManagerBinding::get(
     // concatenates all the text contents. Otherwise, it returns an empty
     // string.
 
+    // This is also used to access the text content of text nodes, which does
+    // not need any traversal.
+
     // getTextContent(shadowNode: ShadowNode): string
     return jsi::Function::createFromHostFunction(
         runtime,

@@ -9,6 +9,7 @@
  */
 
 import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
+import type ReadOnlyText from '../../DOM/Nodes/ReadOnlyText';
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
 import type {
   InternalInstanceHandle,
@@ -23,6 +24,7 @@ import ReactNativeFeatureFlags from '../ReactNativeFeatureFlags';
 let PublicInstanceClass:
   | Class<ReactFabricHostComponent>
   | Class<ReactNativeElement>;
+let ReadOnlyTextClass: Class<ReadOnlyText>;
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let ReactFabric: ReactFabricType;
@@ -46,11 +48,14 @@ export function createPublicInstance(
   return new PublicInstanceClass(tag, viewConfig, internalInstanceHandle);
 }
 
-export function createPublicTextInstance(internalInstanceHandle: mixed): {} {
-  // React will call this method to create text instances but we'll return an
-  // empty object for now. These instances are only created lazily when
-  // traversing the tree, and that's not enabled yet.
-  return {};
+export function createPublicTextInstance(
+  internalInstanceHandle: InternalInstanceHandle,
+): ReadOnlyText {
+  if (ReadOnlyTextClass == null) {
+    ReadOnlyTextClass = require('../../DOM/Nodes/ReadOnlyText').default;
+  }
+
+  return new ReadOnlyTextClass(internalInstanceHandle);
 }
 
 export function getNativeTagFromPublicInstance(

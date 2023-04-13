@@ -16,6 +16,7 @@ import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
 import DOMRect from '../Geometry/DOMRect';
 import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
 import ReadOnlyNode, {getChildNodes, getShadowNode} from './ReadOnlyNode';
+import {getElementSibling} from './Utilities/Traversal';
 import nullthrows from 'nullthrows';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
@@ -68,14 +69,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get nextElementSibling(): ReadOnlyElement | null {
-    const [siblings, position] = getElementSiblingsAndPosition(this);
-
-    if (position === siblings.length - 1) {
-      // this node is the last child of its parent, so there is no next sibling.
-      return null;
-    }
-
-    return siblings[position + 1];
+    return getElementSibling(this, 'next');
   }
 
   get nodeName(): string {
@@ -93,14 +87,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   set nodeValue(value: string): void {}
 
   get previousElementSibling(): ReadOnlyElement | null {
-    const [siblings, position] = getElementSiblingsAndPosition(this);
-
-    if (position === 0) {
-      // this node is the last child of its parent, so there is no next sibling.
-      return null;
-    }
-
-    return siblings[position - 1];
+    return getElementSibling(this, 'previous');
   }
 
   get scrollHeight(): number {
@@ -160,23 +147,4 @@ function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
   return getChildNodes(node).filter(
     childNode => childNode instanceof ReadOnlyElement,
   );
-}
-
-export function getElementSiblingsAndPosition(
-  element: ReadOnlyElement,
-): [$ReadOnlyArray<ReadOnlyElement>, number] {
-  const parent = element.parentNode;
-  if (parent == null) {
-    // This node is the root or it's disconnected.
-    return [[element], 0];
-  }
-
-  const siblings = getChildElements(parent);
-  const position = siblings.indexOf(element);
-
-  if (position === -1) {
-    throw new TypeError("Missing node in parent's child node list");
-  }
-
-  return [siblings, position];
 }
