@@ -44,21 +44,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
 
-  private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
+  private static final MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
       new MatrixMathHelper.MatrixDecompositionContext();
-  private static double[] sTransformDecompositionArray = new double[16];
-
-  public static final Map<String, Integer> sStateDescription = new HashMap<>();
-
-  static {
-    sStateDescription.put("busy", R.string.state_busy_description);
-    sStateDescription.put("expanded", R.string.state_expanded_description);
-    sStateDescription.put("collapsed", R.string.state_collapsed_description);
-  }
-
-  // State definition constants -- must match the definition in
-  // ViewAccessibility.js. These only include states for which there
-  // is no native support in android.
+  private static final double[] sTransformDecompositionArray = new double[16];
 
   private static final String STATE_CHECKED = "checked"; // Special case for mixed state checkboxes
   private static final String STATE_BUSY = "busy";
