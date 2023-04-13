@@ -66,9 +66,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   /**
    * For the vast majority of ViewManagers, you will not need to override this. Only override this
    * if you really know what you're doing and have a very unique use-case.
-   *
-   * @param viewToUpdate
-   * @param props
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
     final ViewManagerDelegate<T> delegate = getDelegate();
