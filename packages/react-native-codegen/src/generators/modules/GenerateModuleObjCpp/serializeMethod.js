@@ -358,10 +358,20 @@ function getReturnObjCType(
           );
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(typeAnnotation.memberType)) {
+        // TODO: handle the array properly
+        throw new Error(
+          `Unsupported union return type for ${methodName}, found: [${typeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
+
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return wrapIntoNullableIfNeeded('NSNumber *');
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           return wrapIntoNullableIfNeeded('NSDictionary *');
         case 'StringTypeAnnotation':
           // TODO: Can NSString * returns not be _Nullable?

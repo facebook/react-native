@@ -186,10 +186,20 @@ function serializeArg(
     case 'GenericObjectTypeAnnotation':
       return wrap(val => `${val}.asObject(rt)`);
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the union properly
+        throw new Error(
+          `Unsupported union member type for param  "${
+            arg.name
+          }, found: [${realTypeAnnotation.memberType.join(', ')}]"`,
+        );
+      }
+
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return wrap(val => `${val}.asNumber()`);
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           return wrap(val => `${val}.asObject(rt)`);
         case 'StringTypeAnnotation':
           return wrap(val => `${val}.asString(rt)`);
