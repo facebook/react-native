@@ -468,7 +468,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       } else {
         TMPL::asyncMethodCallFail(moduleName, methodName);
       }
-      throw;
+      auto exception = std::current_exception();
+      auto throwable = facebook::jni::getJavaExceptionForCppException(exception);
+      auto stackTrace = throwable->getStackTrace();
+      std::string stackTraceStr = throwable->toString() + '\n';
+      for (int i = 0; i < stackTrace->size(); ++i) {
+        auto frame = stackTrace->getElement(i);
+        stackTraceStr += frame->toString() + '\n';
+      }
+      throw std::runtime_error(stackTraceStr);
     }
   };
 
