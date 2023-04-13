@@ -210,7 +210,7 @@ export type CommandParamTypeAnnotation =
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
-  name: 'RootTag', // Union with more custom types.
+  name: 'RootTag' | 'AnyType', // Union with more custom types.
 }>;
 
 /**

@@ -253,6 +253,8 @@ function getParamObjCType(
       switch (structTypeAnnotation.name) {
         case 'RootTag':
           return notStruct(notRequired ? 'NSNumber *' : 'double');
+        case 'AnyType':
+          return notStruct('NSObject *');
         default:
           (structTypeAnnotation.name: empty);
           throw new Error(
@@ -326,6 +328,8 @@ function getReturnObjCType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapIntoNullableIfNeeded('NSNumber *');
+        case 'AnyType':
+          return wrapIntoNullableIfNeeded('NSObject *');
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -359,12 +363,11 @@ function getReturnObjCType(
       }
     case 'UnionTypeAnnotation':
       if (Array.isArray(typeAnnotation.memberType)) {
-        // TODO: handle the array properly
-        throw new Error(
-          `Unsupported union return type for ${methodName}, found: [${typeAnnotation.memberType.join(
-            ', ',
-          )}]"`,
-        );
+        // Objective-C does not have any type-safe union type. In Swift, we could have generated an
+        // enum with associated values to represent this. So, the only solution here is
+        // to allow for a dynamic type that the client code has to handle approrpriately.
+        // This can be cast in platform code to NSNumber, NSString or NSDictionary.
+        return wrapIntoNullableIfNeeded('NSObject *');
       }
 
       switch (typeAnnotation.memberType) {
@@ -436,10 +439,14 @@ function getReturnJSType(
           );
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(typeAnnotation.memberType)) {
+        return 'ObjectKind';
+      }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return 'NumberKind';
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           return 'ObjectKind';
         case 'StringTypeAnnotation':
           return 'StringKind';

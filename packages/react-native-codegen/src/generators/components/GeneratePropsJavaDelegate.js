@@ -188,6 +188,8 @@ function getCommandArgJavaType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return `args.getDouble(${index})`;
+        case 'AnyType':
+          return `args.getObject(${index})`;
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);

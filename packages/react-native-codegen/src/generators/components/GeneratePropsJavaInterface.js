@@ -157,6 +157,8 @@ function getCommandArgJavaType(param: NamedShape<CommandParamTypeAnnotation>) {
       switch (typeAnnotation.name) {
         case 'RootTag':
           return 'double';
+        case 'AnyType':
+          return 'Object';
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Receieved invalid type: ${typeAnnotation.name}`);

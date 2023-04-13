@@ -79,6 +79,8 @@ function toObjCType(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return wrapOptional('double');
+        case 'AnyType':
+          return 'NSObject *';
         default:
           (typeAnnotation.name: empty);
           throw new Error(`Unknown prop type, found: ${typeAnnotation.name}"`);
@@ -154,6 +156,8 @@ function toObjCValue(
       switch (typeAnnotation.name) {
         case 'RootTag':
           return RCTBridgingTo('Double');
+        case 'AnyType':
+          return RCTBridgingTo('Object');
         default:
           (typeAnnotation.name: empty);
           throw new Error(
