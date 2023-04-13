@@ -338,11 +338,14 @@ export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
 export type UnionTypeAnnotationMemberType =
   | 'NumberTypeAnnotation'
   | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
+  | 'StringTypeAnnotation'
+  | 'GenericObjectTypeAnnotation';
 
 export type NativeModuleUnionTypeAnnotation = $ReadOnly<{
   type: 'UnionTypeAnnotation',
-  memberType: UnionTypeAnnotationMemberType,
+  memberType:
+    | UnionTypeAnnotationMemberType
+    | $ReadOnlyArray<UnionTypeAnnotationMemberType>,
 }>;
 
 export type NativeModuleMixedTypeAnnotation = $ReadOnly<{

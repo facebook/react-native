@@ -2515,3 +2515,51 @@ exports[`RN Codegen TypeScript Parser can generate fixture NATIVE_MODULE_WITH_UN
   }
 }"
 `;
+
+exports[`RN Codegen TypeScript Parser can generate fixture UNION_WITH_DIFFERENT_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'properties': [
+          {
+            'name': 'returnUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': [
+                  'StringTypeAnnotation',
+                  'NumberTypeAnnotation',
+                  'ObjectTypeAnnotation',
+                  'GenericObjectTypeAnnotation'
+                ]
+              },
+              'params': [
+                {
+                  'name': 'param',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': [
+                      'StringTypeAnnotation',
+                      'NumberTypeAnnotation',
+                      'ObjectTypeAnnotation',
+                      'GenericObjectTypeAnnotation'
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;

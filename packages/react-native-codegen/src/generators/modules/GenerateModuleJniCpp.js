@@ -164,10 +164,19 @@ function translateReturnTypeToKind(
           );
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the array union type properly
+        throw new Error(
+          `Unsupported union member returning value, found: [${realTypeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return 'NumberKind';
         case 'ObjectTypeAnnotation':
+        case 'GenericObjectTypeAnnotation':
           return 'ObjectKind';
         case 'StringTypeAnnotation':
           return 'StringKind';
@@ -243,6 +252,14 @@ function translateParamTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO handle the array type properly
+        throw new Error(
+          `Unsupported union prop value, found: [${realTypeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -319,6 +336,15 @@ function translateReturnTypeToJniType(
           );
       }
     case 'UnionTypeAnnotation':
+      if (Array.isArray(realTypeAnnotation.memberType)) {
+        // TODO: handle the union type properly
+        throw new Error(
+          `Unsupported union member type, found: [${realTypeAnnotation.memberType.join(
+            ', ',
+          )}]"`,
+        );
+      }
+
       switch (typeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
           return nullable ? 'Ljava/lang/Double;' : 'D';

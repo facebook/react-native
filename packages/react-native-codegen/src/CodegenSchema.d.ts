@@ -306,11 +306,14 @@ export interface NativeModulePromiseTypeAnnotation {
 export type UnionTypeAnnotationMemberType =
   | 'NumberTypeAnnotation'
   | 'ObjectTypeAnnotation'
-  | 'StringTypeAnnotation';
+  | 'StringTypeAnnotation'
+  | 'GenericObjectTypeAnnotation';
 
 export interface NativeModuleUnionTypeAnnotation {
   readonly type: 'UnionTypeAnnotation';
-  readonly memberType: UnionTypeAnnotationMemberType;
+  readonly memberType:
+    | UnionTypeAnnotationMemberType
+    | UnionTypeAnnotationMemberType[];
 }
 
 export interface NativeModuleMixedTypeAnnotation {
@@ -352,4 +355,3 @@ export type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModuleFunctionTypeAnnotation
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
-

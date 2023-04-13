@@ -83,11 +83,29 @@ class TypeScriptParser implements Parser {
     membersTypes: $FlowFixMe[],
   ): UnionTypeAnnotationMemberType[] {
     const remapLiteral = (item: $FlowFixMe) => {
-      return item.literal
-        ? item.literal.type
-            .replace('NumericLiteral', 'NumberTypeAnnotation')
-            .replace('StringLiteral', 'StringTypeAnnotation')
-        : 'ObjectTypeAnnotation';
+      if (item.literal) {
+        switch (item.literal.type) {
+          case 'NumericLiteral':
+            return 'NumberTypeAnnotation';
+          case 'StringLiteral':
+            return 'StringTypeAnnotation';
+          default:
+            return item.literal.type;
+        }
+      } else {
+        switch (item.type) {
+          case 'TSStringKeyword':
+            return 'StringTypeAnnotation';
+          case 'TSNumberKeyword':
+            return 'NumberTypeAnnotation';
+          case 'TSTypeLiteral':
+            return 'ObjectTypeAnnotation';
+          case 'TSTypeReference':
+            return 'GenericObjectTypeAnnotation';
+          default:
+            return 'ObjectTypeAnnotation';
+        }
+      }
     };
 
     return [...new Set(membersTypes.map(remapLiteral))];
