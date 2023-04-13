@@ -55,7 +55,7 @@ export default class ReactNativeElement
   }
 
   get offsetHeight(): number {
-    throw new TypeError('Unimplemented');
+    return Math.round(this.getBoundingClientRect().height);
   }
 
   get offsetLeft(): number {
@@ -71,7 +71,7 @@ export default class ReactNativeElement
   }
 
   get offsetWidth(): number {
-    throw new TypeError('Unimplemented');
+    return Math.round(this.getBoundingClientRect().width);
   }
 
   /**
