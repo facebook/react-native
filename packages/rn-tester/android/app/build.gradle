@@ -189,7 +189,9 @@ android {
         cmake {
             // RN Tester is doing custom linking of C++ libraries therefore needs
             // a dedicated CMakeLists.txt file.
-            path "src/main/jni/CMakeLists.txt"
+            if (project.property("newArchEnabled") == "true") {
+                path("src/main/jni/CMakeLists.txt")
+            }
         }
     }
 }
@@ -202,8 +204,10 @@ afterEvaluate {
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.
     // We fixing this by instructing Gradle to always mergeLibs after they've been built.
-    mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
-    mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
-    mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
-    mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
+    if (project.property("newArchEnabled") == "true") {
+        mergeHermesDebugNativeLibs.mustRunAfter(externalNativeBuildJscDebug)
+        mergeHermesReleaseNativeLibs.mustRunAfter(externalNativeBuildJscRelease)
+        mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
+        mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
+    }
 }
