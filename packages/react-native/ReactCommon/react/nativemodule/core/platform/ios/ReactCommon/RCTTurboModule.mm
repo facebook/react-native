@@ -211,6 +211,16 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
+static NSString *converNSExceptionToString(NSException *exception)
+{
+  NSMutableString *stack = [[NSMutableString alloc] init];
+  for (NSString* symbol in exception.callStackSymbols) {
+    [stack appendFormat:@"%@\u2028", symbol];
+  }
+  
+  return [NSString stringWithFormat:@"%@\u2028%@\u2028%@\u2028", exception.name, exception.reason, stack];
+}
+
 namespace facebook {
 namespace react {
 
@@ -378,8 +388,13 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     }
 
     // TODO(T66699874) Should we guard this with a try/catch?
-    [inv invokeWithTarget:strongModule];
-    [retainedObjectsForInvocation removeAllObjects];
+    @try {
+      [inv invokeWithTarget:strongModule];
+    } @catch (NSException *exception) {
+      throw std::string([converNSExceptionToString(exception) UTF8String]);
+    } @finally {
+      [retainedObjectsForInvocation removeAllObjects];
+    }
 
     if (!wasMethodSync) {
       TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
