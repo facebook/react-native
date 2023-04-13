@@ -454,7 +454,7 @@ function OnPaste(): React.Node {
     </>
   );
 }
-// [macOS]
+// macOS]
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TextInput';
@@ -608,6 +608,10 @@ exports.examples = ([
   },
   {
     title: 'Colored highlight/cursor for text input',
+    // [macOS
+    description:
+      ('Note: On macOS, the selectionColor prop does not change the cursor color.': string),
+    // macOS]
     render: function (): React.Node {
       return (
         <View>
@@ -1158,4 +1162,4 @@ if (Platform.OS === 'macos') {
     },
   );
 }
-// [macOS]
+// macOS]
