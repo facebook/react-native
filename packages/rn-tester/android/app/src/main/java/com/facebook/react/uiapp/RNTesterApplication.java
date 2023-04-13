@@ -24,6 +24,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.uiapp.component.MyLegacyViewManager;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
+import com.facebook.react.uiapp.modules.DoublerPackage;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
@@ -57,6 +58,7 @@ public class RNTesterApplication extends Application implements ReactApplication
         public List<ReactPackage> getPackages() {
           return Arrays.<ReactPackage>asList(
               new MainReactPackage(),
+              new DoublerPackage(),
               new TurboReactPackage() {
                 public NativeModule getModule(
                     final String name, final ReactApplicationContext reactContext) {

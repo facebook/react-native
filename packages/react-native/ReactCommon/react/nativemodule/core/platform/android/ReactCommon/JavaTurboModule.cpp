@@ -376,6 +376,22 @@ JNIArgs convertJSIArgsToJNIArgs(
       auto jParams =
           ReadableNativeMap::createWithContents(std::move(dynamicFromValue));
       jarg->l = makeGlobalIfNecessary(jParams.release());
+    } else if (type == "Ljava/lang/Object;") {
+      auto dynValue = jsi::dynamicFromValue(rt, *arg);
+
+      if (dynValue.isDouble()) {
+        jarg->l = makeGlobalIfNecessary(
+            jni::JDouble::valueOf(dynValue.asDouble()).release());
+      } else if (dynValue.isString()) {
+        jarg->l = makeGlobalIfNecessary(env->NewStringUTF(dynValue.c_str()));
+      } else if (dynValue.isObject()) {
+        auto jParams =
+            ReadableNativeMap::createWithContents(std::move(dynValue));
+        jarg->l = makeGlobalIfNecessary(jParams.release());
+      } else {
+        throw JavaTurboModuleInvalidArgumentTypeException(
+            type, argIndex, methodName);
+      }
     } else {
       throw JavaTurboModuleInvalidArgumentTypeException(
           type, argIndex, methodName);

@@ -54,6 +54,7 @@ rn_library(
             "NativeCxxModuleExample",
             "NativeModuleExample",
             "NativeComponentExample",
+            "NativeDoubler",
             "RCTTest",
         ],
         excludes = [
