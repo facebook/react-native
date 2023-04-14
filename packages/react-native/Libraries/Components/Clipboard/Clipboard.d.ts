@@ -14,15 +14,15 @@ export interface ClipboardStatic {
 
 /**
  * Clipboard has been extracted from react-native core and will be removed in a future release.
- * It can now be installed and imported from `@react-native-community/clipboard` instead of 'react-native'.
- * @see https://github.com/react-native-community/clipboard
+ * It can now be installed and imported from `@react-native-clipboard/clipboard` instead of 'react-native'.
+ * @see https://github.com/react-native-clipboard/clipboard
  * @deprecated
  */
 export const Clipboard: ClipboardStatic;
 /**
  * Clipboard has been extracted from react-native core and will be removed in a future release.
- * It can now be installed and imported from `@react-native-community/clipboard` instead of 'react-native'.
- * @see https://github.com/react-native-community/clipboard
+ * It can now be installed and imported from `@react-native-clipboard/clipboard` instead of 'react-native'.
+ * @see https://github.com/react-native-clipboard/clipboard
  * @deprecated
  */
 export type Clipboard = ClipboardStatic;
