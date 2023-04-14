@@ -402,7 +402,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
   //  │ ┃ ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛ ┃ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
   //  │ ┃ ┏━ BB (tag: 6) ━━━━━━━━━━━━━━┓ ┃ │    │ ┃ #FormsView              ┃ │
-  //  │ ┃ ┃ foregroundColor: black;    ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
+  //  │ ┃ ┃ backgroundColor: black;    ┃ ┃ │    │ ┃ #FormsStackingContext   ┃ │
   //  │ ┃ ┃                            ┃ ┃ │━━━▶│ ┃                         ┃ │
   //  │ ┃ ┃                            ┃ ┃ │    │ ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛ │
   //  │ ┃ ┃                            ┃ ┃ │    │ ┏━ BBB (tag: 8) ━━━━━━━━━━┓ │
@@ -448,7 +448,7 @@ TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
       nodeBA_, [](ViewProps &props) { props.nativeId = "42"; });
 
   mutateViewShadowNodeProps_(
-      nodeBB_, [](ViewProps &props) { props.foregroundColor = blackColor(); });
+      nodeBB_, [](ViewProps &props) { props.backgroundColor = blackColor(); });
 
   mutateViewShadowNodeProps_(nodeBBA_, [](ViewProps &props) {
     props.transform = Transform::Scale(2, 2, 2);

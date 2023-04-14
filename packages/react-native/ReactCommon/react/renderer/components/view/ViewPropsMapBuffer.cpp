@@ -56,10 +56,6 @@ void ViewProps::propsDiffMapBuffer(
     builder.putInt(VP_BG_COLOR, toAndroidRepr(newProps.backgroundColor));
   }
 
-  if (oldProps.foregroundColor != newProps.foregroundColor) {
-    builder.putInt(VP_FG_COLOR, toAndroidRepr(newProps.foregroundColor));
-  }
-
   if (oldProps.borderCurves != newProps.borderCurves) {
     builder.putMapBuffer(
         VP_BORDER_CURVES, convertCascadedCorners(newProps.borderCurves));
