@@ -40,6 +40,19 @@ CustomEnumInt NativeCxxModuleExample::getCustomEnum(
   return arg;
 }
 
+std::shared_ptr<CustomHostObject> NativeCxxModuleExample::getCustomHostObject(
+    jsi::Runtime &rt) {
+  return std::make_shared<CustomHostObject>(
+      std::make_shared<CustomHostObjectRef>("answer", 42));
+}
+
+std::string NativeCxxModuleExample::consumeCustomHostObject(
+    jsi::Runtime &rt,
+    std::shared_ptr<CustomHostObject> arg) {
+  auto value = arg->getValue();
+  return value->a_ + std::to_string(value->b_);
+}
+
 NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
     jsi::Runtime &rt,
     NativeCxxModuleExampleCxxEnumInt arg) {

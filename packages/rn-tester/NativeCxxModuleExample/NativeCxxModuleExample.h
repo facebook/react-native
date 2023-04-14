@@ -73,6 +73,30 @@ struct Bridging<CustomEnumInt> {
   }
 };
 
+#pragma mark - jsi::HostObjects
+template <typename T>
+class HostObjectWrapper : public jsi::HostObject {
+ public:
+  HostObjectWrapper(std::shared_ptr<T> value) : value_(std::move(value)) {}
+
+  std::shared_ptr<T> getValue() const {
+    return value_;
+  }
+
+  ~HostObjectWrapper() override = default;
+
+ private:
+  std::shared_ptr<T> value_;
+};
+
+struct CustomHostObjectRef {
+  CustomHostObjectRef(std::string a, int32_t b) : a_(a), b_(b) {}
+  std::string a_;
+  int32_t b_;
+};
+
+using CustomHostObject = HostObjectWrapper<CustomHostObjectRef>;
+
 #pragma mark - implementation
 class NativeCxxModuleExample
     : public NativeCxxModuleExampleCxxSpec<NativeCxxModuleExample> {
@@ -92,6 +116,12 @@ class NativeCxxModuleExample
   ConstantsStruct getConstants(jsi::Runtime &rt);
 
   CustomEnumInt getCustomEnum(jsi::Runtime &rt, CustomEnumInt arg);
+
+  std::shared_ptr<CustomHostObject> getCustomHostObject(jsi::Runtime &rt);
+
+  std::string consumeCustomHostObject(
+      jsi::Runtime &rt,
+      std::shared_ptr<CustomHostObject> arg);
 
   NativeCxxModuleExampleCxxEnumFloat getNumEnum(
       jsi::Runtime &rt,
