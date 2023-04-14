@@ -71,49 +71,43 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         delegate == null ? new ArrayList<String>() : delegate.getEagerInitModuleNames();
 
     mModuleProvider =
-        new ModuleProvider<TurboModule>() {
-          @Nullable
-          public TurboModule getModule(String moduleName) {
-            if (delegate == null || shouldRouteTurboModulesThroughInteropLayer()) {
-              return null;
-            }
-
-            TurboModule module = delegate.getModule(moduleName);
-            if (module == null) {
-              CxxModuleWrapper legacyCxxModule = delegate.getLegacyCxxModule(moduleName);
-
-              if (legacyCxxModule != null) {
-                // TurboModuleManagerDelegate.getLegacyCxxModule() must always return TurboModules
-                Assertions.assertCondition(
-                    legacyCxxModule instanceof TurboModule,
-                    "CxxModuleWrapper \"" + moduleName + "\" is not a TurboModule");
-                module = (TurboModule) legacyCxxModule;
-              }
-            }
-            return module;
+        moduleName -> {
+          if (delegate == null || shouldRouteTurboModulesThroughInteropLayer()) {
+            return null;
           }
+
+          TurboModule module = delegate.getModule(moduleName);
+          if (module == null) {
+            CxxModuleWrapper legacyCxxModule = delegate.getLegacyCxxModule(moduleName);
+
+            if (legacyCxxModule != null) {
+              // TurboModuleManagerDelegate.getLegacyCxxModule() must always return TurboModules
+              Assertions.assertCondition(
+                  legacyCxxModule instanceof TurboModule,
+                  "CxxModuleWrapper \"" + moduleName + "\" is not a TurboModule");
+              module = (TurboModule) legacyCxxModule;
+            }
+          }
+          return module;
         };
 
     mLegacyModuleProvider =
-        new ModuleProvider<NativeModule>() {
-          @Nullable
-          public NativeModule getModule(String moduleName) {
-            if (delegate == null || !shouldCreateLegacyModules()) {
-              return null;
-            }
+        moduleName -> {
+          if (delegate == null || !shouldCreateLegacyModules()) {
+            return null;
+          }
 
-            NativeModule nativeModule = delegate.getLegacyModule(moduleName);
-            if (nativeModule != null) {
-              if (!shouldRouteTurboModulesThroughInteropLayer()) {
-                // TurboModuleManagerDelegate.getLegacyModule must never return a TurboModule
-                Assertions.assertCondition(
-                    !(nativeModule instanceof TurboModule),
-                    "NativeModule \"" + moduleName + "\" is a TurboModule");
-              }
-              return nativeModule;
+          NativeModule nativeModule = delegate.getLegacyModule(moduleName);
+          if (nativeModule != null) {
+            if (!shouldRouteTurboModulesThroughInteropLayer()) {
+              // TurboModuleManagerDelegate.getLegacyModule must never return a TurboModule
+              Assertions.assertCondition(
+                  !(nativeModule instanceof TurboModule),
+                  "NativeModule \"" + moduleName + "\" is a TurboModule");
             }
             return nativeModule;
           }
+          return nativeModule;
         };
   }
 
@@ -148,6 +142,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         : null;
   }
 
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
@@ -158,6 +153,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         : null;
   }
 
+  @SuppressWarnings("unused")
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getTurboLegacyCxxModule(String moduleName) {
