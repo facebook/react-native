@@ -211,14 +211,14 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
-static NSString *converNSExceptionToString(NSException *exception)
+static NSString *converNSExceptionStackToString(NSException *exception)
 {
   NSMutableString *stack = [[NSMutableString alloc] init];
   for (NSString* symbol in exception.callStackSymbols) {
-    [stack appendFormat:@"%@\u2028", symbol];
+    [stack appendFormat:@"%@\n", symbol];
   }
   
-  return [NSString stringWithFormat:@"%@\u2028%@\u2028%@\u2028", exception.name, exception.reason, stack];
+  return stack;
 }
 
 namespace facebook {
@@ -391,7 +391,17 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw std::string([converNSExceptionToString(exception) UTF8String]);
+      std::string reason = std::string([exception.reason UTF8String]);
+      jsi::Object cause(runtime);
+      cause.setProperty(runtime, "name", std::string([exception.name UTF8String]));
+      cause.setProperty(runtime, "message", reason);
+      cause.setProperty(runtime, "stack", std::string([converNSExceptionStackToString(exception) UTF8String]));
+      //TODO For release builds better would be use include callStackReturnAddresses
+      jsi::Value error =
+        runtime.global().getPropertyAsFunction(runtime, "Error")
+          .call(runtime, "Exception in HostFunction: " + reason);
+      error.asObject(runtime).setProperty(runtime, "cause", cause);
+      throw jsi::JSError(runtime, std::move(error));
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
