@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "IS_OSS_BUILD", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_android_library")
 
 INTERFACES = [
     "Dynamic.java",
@@ -54,7 +54,8 @@ rn_android_library(
         react_native_target("java/com/facebook/react/turbomodule/core:callinvokerholder"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
         react_native_target("java/com/facebook/react/uimanager/common:common"),
-    ] + ([react_native_target("jni/react/jni:jni")] if not IS_OSS_BUILD else []),
+        react_native_target("jni/react/jni:jni"),
+    ],
     exported_deps = [
         react_native_dep("libraries/fbjni:java"),
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),

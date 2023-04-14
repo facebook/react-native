@@ -11,7 +11,6 @@ load(
     "APPLE",
     "CXX",
     "IOS",
-    "IS_OSS_BUILD",
     "MACOSX",
     "WINDOWS",
     "YOGA_CXX_TARGET",
@@ -37,68 +36,24 @@ load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace_binary")
 
 # Call this in the react-native-codegen/BUCK file
 def rn_codegen_cli():
-    if not IS_OSS_BUILD:
-        # FB Internal Setup
-        yarn_workspace_binary(
-            name = "write_to_json",
-            main = "src/cli/combine/combine-js-to-schema-cli.js",
-            root = "//xplat/js:workspace",
-            visibility = ["PUBLIC"],
-            deps = [
-                ":yarn-workspace",
-            ],
-        )
-        yarn_workspace_binary(
-            name = "generate_all_from_schema",
-            main = "src/cli/generators/generate-all.js",
-            root = "//xplat/js:workspace",
-            visibility = ["PUBLIC"],
-            deps = [
-                ":yarn-workspace",
-            ],
-        )
-    else:
-        # OSS setup, assumes yarn and node (v12.0.0+) are installed.
-        fb_native.genrule(
-            name = "setup_cli",
-            srcs = native.glob([
-                "scripts/**/*",
-                "src/**/*",
-            ], exclude = [
-                "__tests__/**/*",
-            ]) + [
-                ".babelrc",
-                ".prettierrc",
-                "package.json",
-            ],
-            out = "build",
-            bash = r"""
-                set -euo pipefail
-                mkdir -p "$OUT"
-                rsync -rLptgoD "$SRCDIR/" "$OUT"
-                cd "$OUT"
-                yarn install 2> >(grep -v '^warning' 1>&2)
-                yarn run build
-            """,
-        )
-
-        fb_native.sh_binary(
-            name = "write_to_json",
-            main = "scripts/buck-oss/combine_js_to_schema.sh",
-            resources = [
-                ":setup_cli",
-            ],
-            visibility = ["PUBLIC"],
-        )
-
-        fb_native.sh_binary(
-            name = "generate_all_from_schema",
-            main = "scripts/buck-oss/generate-all.sh",
-            resources = [
-                ":setup_cli",
-            ],
-            visibility = ["PUBLIC"],
-        )
+    yarn_workspace_binary(
+        name = "write_to_json",
+        main = "src/cli/combine/combine-js-to-schema-cli.js",
+        root = "//xplat/js:workspace",
+        visibility = ["PUBLIC"],
+        deps = [
+            ":yarn-workspace",
+        ],
+    )
+    yarn_workspace_binary(
+        name = "generate_all_from_schema",
+        main = "src/cli/generators/generate-all.js",
+        root = "//xplat/js:workspace",
+        visibility = ["PUBLIC"],
+        deps = [
+            ":yarn-workspace",
+        ],
+    )
 
 def rn_codegen_modules(
         name,
@@ -215,54 +170,53 @@ def rn_codegen_modules(
     ##############
     # macOS and iOS handling
     ##############
-    if not IS_OSS_BUILD:
-        # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
-        fb_native.genrule(
-            name = generate_module_hobjcpp_name,
-            out = "{}.h".format(name),
-            cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
-            labels = ["codegen_rule"],
-        )
+    # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
+    fb_native.genrule(
+        name = generate_module_hobjcpp_name,
+        out = "{}.h".format(name),
+        cmd = "cp $(location :{})/{}/{}.h $OUT".format(generate_fixtures_rule_name, name, name),
+        labels = ["codegen_rule"],
+    )
 
-        fb_native.genrule(
-            name = generate_module_mm_name,
-            out = "{}-generated.mm".format(name),
-            cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
-            labels = ["codegen_rule"],
-        )
+    fb_native.genrule(
+        name = generate_module_mm_name,
+        out = "{}-generated.mm".format(name),
+        cmd = "cp $(location :{})/{}/{}-generated.mm $OUT".format(generate_fixtures_rule_name, name, name),
+        labels = ["codegen_rule"],
+    )
 
-        MOBILE_DEPS = [
-            "//xplat/js/react-native-github:RCTTypeSafety",
-            "//xplat/js/react-native-github/packages/react-native/Libraries/RCTRequired:RCTRequired",
-            react_native_xplat_target_apple("react/nativemodule/core:core"),
-        ]
-        rn_apple_library(
-            name = "{}Apple".format(name),
-            srcs = [
-                ":{}".format(generate_module_mm_name),
-            ],
-            headers = [
-                ":{}".format(generate_module_hobjcpp_name),
-            ],
-            header_namespace = "",
-            exported_headers = {
-                "{}/{}.h".format(name, name): ":{}".format(generate_module_hobjcpp_name),
-            },
-            autoglob = False,
-            compiler_flags = [
-                "-Wno-unused-private-field",
-            ],
-            extension_api_only = True,
-            ios_exported_deps = MOBILE_DEPS,
-            labels = library_labels + ["codegen_rule"],
-            macosx_exported_deps = MOBILE_DEPS if is_catalyst_build() else [
-                react_native_desktop_root_target(":RCTTypeSafetyAppleMac"),
-                react_native_desktop_root_target(":RCTRequiredAppleMac"),
-                react_native_desktop_root_target(":nativemoduleAppleMac"),
-            ],
-            sdks = (IOS, MACOSX),
-            visibility = ["PUBLIC"],
-        )
+    MOBILE_DEPS = [
+        "//xplat/js/react-native-github:RCTTypeSafety",
+        "//xplat/js/react-native-github/packages/react-native/Libraries/RCTRequired:RCTRequired",
+        react_native_xplat_target_apple("react/nativemodule/core:core"),
+    ]
+    rn_apple_library(
+        name = "{}Apple".format(name),
+        srcs = [
+            ":{}".format(generate_module_mm_name),
+        ],
+        headers = [
+            ":{}".format(generate_module_hobjcpp_name),
+        ],
+        header_namespace = "",
+        exported_headers = {
+            "{}/{}.h".format(name, name): ":{}".format(generate_module_hobjcpp_name),
+        },
+        autoglob = False,
+        compiler_flags = [
+            "-Wno-unused-private-field",
+        ],
+        extension_api_only = True,
+        ios_exported_deps = MOBILE_DEPS,
+        labels = library_labels + ["codegen_rule"],
+        macosx_exported_deps = MOBILE_DEPS if is_catalyst_build() else [
+            react_native_desktop_root_target(":RCTTypeSafetyAppleMac"),
+            react_native_desktop_root_target(":RCTRequiredAppleMac"),
+            react_native_desktop_root_target(":nativemoduleAppleMac"),
+        ],
+        sdks = (IOS, MACOSX),
+        visibility = ["PUBLIC"],
+    )
 
 def rn_codegen_components(
         name = "",
@@ -406,63 +360,62 @@ def rn_codegen_components(
     ##############
     # iOS handling
     ##############
-    if not IS_OSS_BUILD:
-        # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
-        if is_running_buck_project():
-            rn_xplat_cxx_library(name = "generated_components-{}".format(name), visibility = ["PUBLIC"])
-        else:
-            MOBILE_DEPS = [
-                react_native_xplat_target("react/renderer/debug:debug"),
-                react_native_xplat_target("react/renderer/core:core"),
-                react_native_xplat_target("react/renderer/graphics:graphics"),
-                react_native_xplat_target("react/renderer/components/image:image"),
-                react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
-                react_native_xplat_target("react/renderer/components/view:view"),
-            ]
-            rn_xplat_cxx_library(
-                name = "generated_components-{}".format(name),
-                srcs = [
-                    ":{}".format(generate_event_emitter_cpp_name),
-                    ":{}".format(generate_props_cpp_name),
-                    ":{}".format(generate_state_cpp_name),
-                    ":{}".format(generate_shadow_node_cpp_name),
-                ],
-                headers = [
-                    ":{}".format(generate_component_descriptor_h_name),
-                    ":{}".format(generate_event_emitter_h_name),
-                    ":{}".format(generate_props_h_name),
-                    ":{}".format(generate_state_h_name),
-                    ":{}".format(generate_shadow_node_h_name),
-                ],
-                header_namespace = "react/renderer/components/{}".format(name),
-                exported_headers = {
-                    "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
-                    "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
-                    "Props.h": ":{}".format(generate_props_h_name),
-                    "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
-                    "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
-                    "States.h": ":{}".format(generate_state_h_name),
-                },
-                fbobjc_compiler_flags = get_apple_compiler_flags(),
-                fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
-                ios_exported_headers = {
-                    "ComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
-                },
-                ios_headers = [
-                    ":{}".format(generate_component_hobjcpp_name),
-                ],
-                labels = library_labels + ["codegen_rule"],
-                platforms = (ANDROID, APPLE, CXX),
-                preprocessor_flags = [
-                    "-DLOG_TAG=\"ReactNative\"",
-                    "-DWITH_FBSYSTRACE=1",
-                ],
-                tests = [":generated_tests-{}".format(name)],
-                visibility = ["PUBLIC"],
-                fbandroid_deps = MOBILE_DEPS,
-                ios_deps = MOBILE_DEPS,
-                macosx_deps = [react_native_desktop_root_target(":renderer_headers")] if is_rn_desktop() else MOBILE_DEPS,
-            )
+    # iOS Buck build isn't fully working in OSS, so let's skip it for OSS for now.
+    if is_running_buck_project():
+        rn_xplat_cxx_library(name = "generated_components-{}".format(name), visibility = ["PUBLIC"])
+    else:
+        MOBILE_DEPS = [
+            react_native_xplat_target("react/renderer/debug:debug"),
+            react_native_xplat_target("react/renderer/core:core"),
+            react_native_xplat_target("react/renderer/graphics:graphics"),
+            react_native_xplat_target("react/renderer/components/image:image"),
+            react_native_xplat_target("react/renderer/imagemanager:imagemanager"),
+            react_native_xplat_target("react/renderer/components/view:view"),
+        ]
+        rn_xplat_cxx_library(
+            name = "generated_components-{}".format(name),
+            srcs = [
+                ":{}".format(generate_event_emitter_cpp_name),
+                ":{}".format(generate_props_cpp_name),
+                ":{}".format(generate_state_cpp_name),
+                ":{}".format(generate_shadow_node_cpp_name),
+            ],
+            headers = [
+                ":{}".format(generate_component_descriptor_h_name),
+                ":{}".format(generate_event_emitter_h_name),
+                ":{}".format(generate_props_h_name),
+                ":{}".format(generate_state_h_name),
+                ":{}".format(generate_shadow_node_h_name),
+            ],
+            header_namespace = "react/renderer/components/{}".format(name),
+            exported_headers = {
+                "ComponentDescriptors.h": ":{}".format(generate_component_descriptor_h_name),
+                "EventEmitters.h": ":{}".format(generate_event_emitter_h_name),
+                "Props.h": ":{}".format(generate_props_h_name),
+                "RCTComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
+                "ShadowNodes.h": ":{}".format(generate_shadow_node_h_name),
+                "States.h": ":{}".format(generate_state_h_name),
+            },
+            fbobjc_compiler_flags = get_apple_compiler_flags(),
+            fbobjc_preprocessor_flags = get_preprocessor_flags_for_build_mode() + get_apple_inspector_flags(),
+            ios_exported_headers = {
+                "ComponentViewHelpers.h": ":{}".format(generate_component_hobjcpp_name),
+            },
+            ios_headers = [
+                ":{}".format(generate_component_hobjcpp_name),
+            ],
+            labels = library_labels + ["codegen_rule"],
+            platforms = (ANDROID, APPLE, CXX),
+            preprocessor_flags = [
+                "-DLOG_TAG=\"ReactNative\"",
+                "-DWITH_FBSYSTRACE=1",
+            ],
+            tests = [":generated_tests-{}".format(name)],
+            visibility = ["PUBLIC"],
+            fbandroid_deps = MOBILE_DEPS,
+            ios_deps = MOBILE_DEPS,
+            macosx_deps = [react_native_desktop_root_target(":renderer_headers")] if is_rn_desktop() else MOBILE_DEPS,
+        )
 
         # Tests
         fb_xplat_cxx_test(
