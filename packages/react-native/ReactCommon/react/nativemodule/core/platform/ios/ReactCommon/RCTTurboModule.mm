@@ -211,7 +211,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
-static NSString *converNSExceptionStackToString(NSException *exception)
+static NSString *convertNSExceptionStackToString(NSException *exception)
 {
   NSMutableString *stack = [[NSMutableString alloc] init];
   for (NSString* symbol in exception.callStackSymbols) {
@@ -395,7 +395,7 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       jsi::Object cause(runtime);
       cause.setProperty(runtime, "name", std::string([exception.name UTF8String]));
       cause.setProperty(runtime, "message", reason);
-      cause.setProperty(runtime, "stack", std::string([converNSExceptionStackToString(exception) UTF8String]));
+      cause.setProperty(runtime, "stack", std::string([convertNSExceptionStackToString(exception) UTF8String]));
       //TODO For release builds better would be use include callStackReturnAddresses
       jsi::Value error =
         runtime.global().getPropertyAsFunction(runtime, "Error")
