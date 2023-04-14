@@ -30,7 +30,6 @@ ADD packages/react-native/Libraries /app/packages/react-native/Libraries
 ADD packages/react-native/ReactAndroid /app/packages/react-native/ReactAndroid
 ADD packages/react-native/ReactCommon /app/packages/react-native/ReactCommon
 ADD packages/react-native/React /app/packages/react-native/React
-ADD keystores /app/keystores
 ADD packages/react-native-codegen /app/packages/react-native-codegen
 ADD tools /app/tools
 ADD scripts /app/scripts
