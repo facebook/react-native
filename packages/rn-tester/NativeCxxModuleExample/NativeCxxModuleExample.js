@@ -54,11 +54,15 @@ export type ValueStruct = {|
   z: ObjectStruct,
 |};
 
+export type CustomHostObject = {};
+
 export interface Spec extends TurboModule {
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
   +getCustomEnum: (arg: EnumInt) => EnumInt;
+  +getCustomHostObject: () => CustomHostObject;
+  +consumeCustomHostObject: (customHostObject: CustomHostObject) => string;
   +getNumEnum: (arg: EnumInt) => EnumFloat;
   +getStrEnum: (arg: EnumNone) => EnumStr;
   +getMap: (arg: {[key: string]: ?number}) => {[key: string]: ?number};
