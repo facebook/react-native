@@ -120,7 +120,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
           static_cast<unsigned int>(meta.argCount),
           [this, meta](
               jsi::Runtime &rt,
-              const jsi::Value &thisVal,
+              [[maybe_unused]] const jsi::Value &thisVal,
               const jsi::Value *args,
               size_t count) { return meta.invoker(rt, *this, args, count); });
     }
