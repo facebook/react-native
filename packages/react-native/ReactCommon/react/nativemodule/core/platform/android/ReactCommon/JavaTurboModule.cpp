@@ -411,32 +411,36 @@ jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string& messag
  */
 jsi::JSError convertThrowableToJSError(jsi::Runtime &runtime, facebook::jni::local_ref<facebook::jni::JThrowable> throwable)
 {
-    auto stackTrace = throwable->getStackTrace();
+  auto stackTrace = throwable->getStackTrace();
 
-    jsi::Array stackElements(runtime, stackTrace->size());
-    for (int i = 0; i < stackTrace->size(); ++i) {
-        auto frame = stackTrace->getElement(i);
+  jsi::Array stackElements(runtime, stackTrace->size());
+  for (int i = 0; i < stackTrace->size(); ++i) {
+    auto frame = stackTrace->getElement(i);
 
-        jsi::Object frameObject(runtime);
-        frameObject.setProperty(runtime, "className", frame->getClassName());
-        frameObject.setProperty(runtime, "fileName", frame->getFileName());
-        frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
-        frameObject.setProperty(runtime, "methodName", frame->getMethodName());
-        stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
-    }
+    jsi::Object frameObject(runtime);
+    frameObject.setProperty(runtime, "className", frame->getClassName());
+    frameObject.setProperty(runtime, "fileName", frame->getFileName());
+    frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+    frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+    stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+  }
 
-    // TODO Better would be use getMessage() but its missing in fbjni interface
-    auto throwableString = throwable->toString();
-    std::string name = throwableString.substr(0, throwableString.find(':'));
-    std::string message = throwableString.substr(throwableString.find(':') + 2, -1);
-    jsi::Object cause(runtime);
-    cause.setProperty(runtime, "name", name);
-    cause.setProperty(runtime, "message", message);
-    cause.setProperty(runtime, "stackElements", std::move(stackElements));
+  jsi::Object cause(runtime);
+  auto getName = throwable->getClass()->getClass()
+          ->getMethod<facebook::jni::local_ref<facebook::jni::JString>()>("getSimpleName");
+  auto getMessage = throwable->getClass()
+          ->getMethod<facebook::jni::local_ref<facebook::jni::JString>()>("getMessage");
+  auto message = getMessage(throwable)->toStdString();
+  cause.setProperty(
+          runtime,
+          "name",
+          getName(throwable->getClass())->toStdString());
+  cause.setProperty(runtime,"message",message);
+  cause.setProperty(runtime, "stackElements", std::move(stackElements));
 
-    jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
-    error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
-    return {runtime, std::move(error)};
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
 }
 
 } // namespace
