@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -44,6 +45,8 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.FabricViewStateManager;
@@ -66,9 +69,11 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
@@ -82,6 +87,12 @@ import java.util.Map;
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
   public static final String TAG = ReactTextInputManager.class.getSimpleName();
   public static final String REACT_CLASS = "AndroidTextInput";
+
+  // See also ReactTextViewManager
+  private static final short TX_STATE_KEY_ATTRIBUTED_STRING = 0;
+  private static final short TX_STATE_KEY_PARAGRAPH_ATTRIBUTES = 1;
+  private static final short TX_STATE_KEY_HASH = 2;
+  private static final short TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
 
   private static final int[] SPACING_TYPES = {
     Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -394,6 +405,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.FONT_STYLE)
   public void setFontStyle(ReactEditText view, @Nullable String fontStyle) {
     view.setFontStyle(fontStyle);
+  }
+
+  @ReactProp(name = ViewProps.FONT_VARIANT)
+  public void setFontVariant(ReactEditText view, @Nullable ReadableArray fontVariant) {
+    view.setFontFeatureSettings(ReactTypefaceUtils.parseFontVariant(fontVariant));
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
@@ -912,6 +928,20 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setAutoFocus(autoFocus);
   }
 
+  @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
+  public void setTextDecorationLine(ReactEditText view, @Nullable String textDecorationLineString) {
+    view.setPaintFlags(
+        view.getPaintFlags() & ~(Paint.STRIKE_THRU_TEXT_FLAG | Paint.UNDERLINE_TEXT_FLAG));
+
+    for (String token : textDecorationLineString.split(" ")) {
+      if (token.equals("underline")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+      } else if (token.equals("line-through")) {
+        view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+      }
+    }
+  }
+
   @ReactPropGroup(
       names = {
         ViewProps.BORDER_WIDTH,
@@ -1284,6 +1314,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     stateManager.setStateWrapper(stateWrapper);
 
+    if (ReactFeatureFlags.mapBufferSerializationEnabled) {
+      MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
+      if (stateMapBuffer != null) {
+        return getReactTextUpdate(view, props, stateMapBuffer);
+      }
+    }
+
     ReadableNativeMap state = stateWrapper.getStateData();
     if (state == null) {
       return null;
@@ -1302,9 +1339,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextLayoutManager.getOrCreateSpannableForText(
             view.getContext(), attributedString, mReactTextViewManagerCallback);
 
-    boolean containsMultipleFragments =
-        attributedString.getArray("fragments").toArrayList().size() > 1;
-
     int textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(paragraphAttributes.getString("textBreakStrategy"));
 
@@ -1313,7 +1347,37 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         state.getInt("mostRecentEventCount"),
         TextAttributeProps.getTextAlignment(props, TextLayoutManager.isRTL(attributedString)),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props),
-        containsMultipleFragments);
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
+  }
+
+  public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {
+    // If native wants to update the state wrapper but the state data hasn't actually
+    // changed, the MapBuffer may be empty
+    if (state.getCount() == 0) {
+      return null;
+    }
+
+    MapBuffer attributedString = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING);
+    MapBuffer paragraphAttributes = state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES);
+    if (attributedString == null || paragraphAttributes == null) {
+      throw new IllegalArgumentException(
+          "Invalid TextInput State (MapBuffer) was received as a parameters");
+    }
+
+    Spannable spanned =
+        TextLayoutManagerMapBuffer.getOrCreateSpannableForText(
+            view.getContext(), attributedString, mReactTextViewManagerCallback);
+
+    int textBreakStrategy =
+        TextAttributeProps.getTextBreakStrategy(
+            paragraphAttributes.getString(TextLayoutManagerMapBuffer.PA_KEY_TEXT_BREAK_STRATEGY));
+
+    return ReactTextUpdate.buildReactTextUpdateFromState(
+        spanned,
+        state.getInt(TX_STATE_KEY_MOST_RECENT_EVENT_COUNT),
+        TextAttributeProps.getTextAlignment(
+            props, TextLayoutManagerMapBuffer.isRTL(attributedString)),
+        textBreakStrategy,
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
   }
 }
