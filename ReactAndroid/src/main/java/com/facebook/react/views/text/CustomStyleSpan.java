@@ -71,6 +71,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     return mFontFamily;
   }
 
+  public @Nullable String getFontFeatureSettings() {
+    return mFeatureSettings;
+  }
+
   private static void apply(
       Paint paint,
       int style,
