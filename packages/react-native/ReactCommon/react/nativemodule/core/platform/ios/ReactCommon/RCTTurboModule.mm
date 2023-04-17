@@ -211,14 +211,27 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
-static NSString *convertNSExceptionStackToString(NSException *exception)
+static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string& message)
 {
-  NSMutableString *stack = [[NSMutableString alloc] init];
-  for (NSString* symbol in exception.callStackSymbols) {
-    [stack appendFormat:@"%@\n", symbol];
-  }
+  return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
+}
+
+/**
+ * Creates JSError with current JS runtime and NSException stack trace.
+ */
+static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception)
+{
+  std::string reason = [exception.reason UTF8String];
   
-  return stack;
+  jsi::Object cause(runtime);
+  cause.setProperty(runtime, "name", [exception.name UTF8String]);
+  cause.setProperty(runtime, "message", reason);
+  cause.setProperty(runtime, "stackSymbols", convertNSArrayToJSIArray(runtime, exception.callStackSymbols));
+  cause.setProperty(runtime, "stackReturnAddresses", convertNSArrayToJSIArray(runtime, exception.callStackReturnAddresses));
+
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
 }
 
 namespace facebook {
@@ -387,21 +400,10 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    // TODO(T66699874) Should we guard this with a try/catch?
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      std::string reason = std::string([exception.reason UTF8String]);
-      jsi::Object cause(runtime);
-      cause.setProperty(runtime, "name", std::string([exception.name UTF8String]));
-      cause.setProperty(runtime, "message", reason);
-      cause.setProperty(runtime, "stack", std::string([convertNSExceptionStackToString(exception) UTF8String]));
-      //TODO For release builds better would be use include callStackReturnAddresses
-      jsi::Value error =
-        runtime.global().getPropertyAsFunction(runtime, "Error")
-          .call(runtime, "Exception in HostFunction: " + reason);
-      error.asObject(runtime).setProperty(runtime, "cause", cause);
-      throw jsi::JSError(runtime, std::move(error));
+      throw convertNSExceptionToJSError(runtime, exception);
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
