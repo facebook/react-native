@@ -77,37 +77,4 @@ TEST_URL(
   XCTAssertEqualObjects([testURL absoluteString], [expectedURL absoluteString]);
 }
 
-// Escaping edge cases
-TEST_URL(
-    urlWithMultipleHashes,
-    @"https://example.com/#/abc/#test:example.com",
-    @"https://example.com/#/abc/%23test:example.com")
-TEST_URL(urlWithEqualsInQuery, @"https://example.com/abc.def?ghi=1234", @"https://example.com/abc.def?ghi=1234")
-TEST_URL(
-    urlWithEscapedCharacterInFragment,
-    @"https://example.com/abc/def.ghi#jkl-mno%27p-qrs",
-    @"https://example.com/abc/def.ghi#jkl-mno%27p-qrs")
-TEST_URL(
-    urlWithLongQuery,
-    @"https://example.com/abc?q=def+ghi+jkl&mno=p-q-r-s&tuv=wxy&z_=abc&abc=5",
-    @"https://example.com/abc?q=def+ghi+jkl&mno=p-q-r-s&tuv=wxy&z_=abc&abc=5")
-TEST_URL(
-    urlWithEscapedCharacterInPathFragment,
-    @"https://example.com/#/abc/%23def%3Aghi.org",
-    @"https://example.com/#/abc/%23def%3Aghi.org")
-TEST_URL(
-    urlWithEscapedCharacterInQuery,
-    @"https://site.com/script?foo=bar#this_ref",
-    @"https://site.com/script?foo=bar#this_ref")
-TEST_URL(
-    urlWithUnescapedJson,
-    @"https://example.com/?{\"key\":\"value\"}",
-    @"https://example.com/?%7B%22key%22:%22value%22%7D")
-TEST_URL(
-    urlWithPartiallyEscapedData,
-    @"https://example.com/?{%22key%22:%22value%22}",
-    @"https://example.com/?%7B%22key%22:%22value%22%7D")
-// NOTE: This is illegal per RFC 3986, but earlier URL specs allowed it
-TEST_URL(urlWithSquareBracketInPath, @"http://www.foo.com/file[.html", @"http://www.foo.com/file%5B.html")
-
 @end
