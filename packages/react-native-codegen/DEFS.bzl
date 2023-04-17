@@ -80,7 +80,7 @@ def rn_codegen_modules(
             library_name = name,
             schema_target = schema_target,
         ),
-        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
+        labels = ["codegen_rule"],
     )
 
     ##################
@@ -244,7 +244,7 @@ def rn_codegen_components(
         srcs = native.glob(["src/generators/**/*.js"]),
         out = "codegenfiles-{}".format(name),
         cmd = "$(exe {}) $(location {}) {} $OUT".format(react_native_root_target("packages/react-native-codegen:generate_all_from_schema"), schema_target, name),
-        labels = ["codegen_rule", "uses_local_filesystem_abspaths"],
+        labels = ["codegen_rule"],
     )
 
     fb_native.genrule(
