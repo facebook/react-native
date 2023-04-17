@@ -425,6 +425,8 @@ const SUPPORTED_TRANSFORMS = {
   rotateY: true,
   rotateZ: true,
   perspective: true,
+  skewX: true,
+  skewY: true,
   matrix: ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform(),
 };
 
