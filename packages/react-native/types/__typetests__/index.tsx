@@ -40,6 +40,8 @@ import {
   DrawerLayoutAndroid,
   DrawerSlideEvent,
   DynamicColorIOS,
+  EmitterSubscription,
+  EventSubscription,
   FlatList,
   FlatListProps,
   GestureResponderEvent,
