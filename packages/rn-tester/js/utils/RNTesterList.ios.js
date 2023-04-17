@@ -195,6 +195,10 @@ const APIs: Array<RNTesterModuleInfo> = [
     module: require('../examples/Dimensions/DimensionsExample'),
   },
   {
+    key: 'Doubler',
+    module: require('../examples/Doubler/DoublerExample'),
+  },
+  {
     key: 'InvalidPropsExample',
     module: require('../examples/InvalidProps/InvalidPropsExample'),
   },

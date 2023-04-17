@@ -52,6 +52,7 @@ rn_library(
         [
             "js",
             "NativeCxxModuleExample",
+            "NativeDoubler",
             "NativeModuleExample",
             "NativeComponentExample",
             "RCTTest",
