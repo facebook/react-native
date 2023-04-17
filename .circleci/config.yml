@@ -972,6 +972,7 @@ jobs:
             mkdir -p /tmp/hermes/osx-bin
             mkdir -p ~/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ~/react-native/sdks/hermes/.
+            cp -r ~/react-native/sdks/hermes-engine/utils/. ~/react-native/sdks/hermes/.
       - run:
           name: Install dependencies
           command: |
