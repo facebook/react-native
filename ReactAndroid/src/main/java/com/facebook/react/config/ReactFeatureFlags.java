@@ -74,7 +74,7 @@ public class ReactFeatureFlags {
   /** Feature flag to configure synchronized queue access for Animated module */
   public static boolean enableSynchronizationForAnimated = false;
 
-  private static boolean mapBufferSerializationEnabled = false;
+  public static boolean mapBufferSerializationEnabled = false;
 
   /** Enables or disables MapBuffer Serialization */
   public static void setMapBufferSerializationEnabled(boolean enabled) {
