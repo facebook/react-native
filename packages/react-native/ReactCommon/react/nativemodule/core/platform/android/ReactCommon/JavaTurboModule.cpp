@@ -471,12 +471,36 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       auto exception = std::current_exception();
       auto throwable = facebook::jni::getJavaExceptionForCppException(exception);
       auto stackTrace = throwable->getStackTrace();
-      std::string stackTraceStr = throwable->toString() + '\n';
+
+      jsi::Array stackArray(runtime, stackTrace->size());
+      std::string stackTraceStr;
       for (int i = 0; i < stackTrace->size(); ++i) {
         auto frame = stackTrace->getElement(i);
         stackTraceStr += frame->toString() + '\n';
+
+        jsi::Object frameObject(runtime);
+        frameObject.setProperty(runtime, "className", frame->getClassName());
+        frameObject.setProperty(runtime, "fileName", frame->getFileName());
+        frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+        frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+        stackArray.setValueAtIndex(runtime, i, std::move(frameObject));
       }
-      throw std::runtime_error(stackTraceStr);
+
+      // TODO Better would be use getMessage() but its missing in fbjni interface
+      auto throwableString = throwable->toString();
+      std::string name = throwableString.substr(0, throwableString.find(':'));
+      std::string message = throwableString.substr(throwableString.find(':') + 2, -1);
+      jsi::Object cause(runtime);
+      cause.setProperty(runtime, "name", name);
+      cause.setProperty(runtime, "message", message);
+      cause.setProperty(runtime, "stack", stackTraceStr);
+      cause.setProperty(runtime, "stackArray", std::move(stackArray));
+
+      jsi::Value error =
+        runtime.global().getPropertyAsFunction(runtime, "Error")
+          .call(runtime, "Exception in HostFunction: " + message);
+      error.asObject(runtime).setProperty(runtime, "cause", cause);
+      throw jsi::JSError(runtime, std::move(error));
     }
   };
 
