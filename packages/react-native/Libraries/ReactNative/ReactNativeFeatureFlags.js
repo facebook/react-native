@@ -45,10 +45,6 @@ export type FeatureFlags = {|
    * Enables access to the host tree in Fabric using DOM-compatible APIs.
    */
   enableAccessToHostTreeInFabric: () => boolean,
-  /**
-   * Enables animating object and array prop values.
-   */
-  isAnimatedObjectEnabled: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -59,7 +55,6 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   animatedShouldUseSingleOp: () => false,
   isGlobalWebPerformanceLoggerEnabled: () => false,
   enableAccessToHostTreeInFabric: () => false,
-  isAnimatedObjectEnabled: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
