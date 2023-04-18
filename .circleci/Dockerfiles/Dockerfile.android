@@ -23,9 +23,6 @@ LABEL maintainer="Meta Open Source <opensource@meta.com>"
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV KOTLIN_HOME="packages/react-native/third-party/kotlin"
 
-ADD .buckconfig /app/.buckconfig
-ADD .buckjavaargs /app/.buckjavaargs
-ADD BUCK /app/BUCK
 ADD packages/react-native/Libraries /app/packages/react-native/Libraries
 ADD packages/react-native/ReactAndroid /app/packages/react-native/ReactAndroid
 ADD packages/react-native/ReactCommon /app/packages/react-native/ReactCommon
