@@ -12,7 +12,6 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
@@ -34,10 +33,7 @@ function createAnimatedStyle(
       animatedStyles[key] = new AnimatedTransform(value);
     } else if (value instanceof AnimatedNode) {
       animatedStyles[key] = value;
-    } else if (
-      ReactNativeFeatureFlags.isAnimatedObjectEnabled &&
-      hasAnimatedNode(value)
-    ) {
+    } else if (hasAnimatedNode(value)) {
       animatedStyles[key] = new AnimatedObject(value);
     } else if (keepUnanimatedValues) {
       animatedStyles[key] = value;
