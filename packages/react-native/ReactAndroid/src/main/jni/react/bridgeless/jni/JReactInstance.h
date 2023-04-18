@@ -22,6 +22,7 @@
 #include <react/jni/JSLoader.h>
 #include <react/jni/ReadableNativeMap.h>
 
+#include "JBindingsInstaller.h"
 #include "JJSEngineInstance.h"
 #include "JJSTimerExecutor.h"
 #include "JJavaTimerManager.h"
@@ -45,6 +46,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+      jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling);
 
   /*
@@ -89,6 +91,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+      jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
@@ -101,6 +104,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
   jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
+  jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
 };
 
 } // namespace react

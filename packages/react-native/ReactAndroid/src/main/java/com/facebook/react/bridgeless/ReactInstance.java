@@ -149,6 +149,7 @@ public final class ReactInstance {
         });
 
     JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance(mBridgelessReactContext);
+    BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
         Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
@@ -160,6 +161,7 @@ public final class ReactInstance {
             mJavaTimerManager,
             jsTimerExecutor,
             reactExceptionManager,
+            bindingsInstaller,
             isProfiling);
 
     RuntimeExecutor unbufferedRuntimeExecutor = getUnbufferedRuntimeExecutor();
@@ -386,6 +388,7 @@ public final class ReactInstance {
       JavaTimerManager timerManager,
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
+      BindingsInstaller jBindingsInstaller,
       boolean isProfiling);
 
   @DoNotStrip
