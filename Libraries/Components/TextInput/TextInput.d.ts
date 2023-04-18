@@ -280,92 +280,6 @@ export interface TextInputIOSProps {
  */
 export interface TextInputAndroidProps {
   /**
-   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
-   * To disable autocomplete, set `autoComplete` to `off`.
-   *
-   * *Android Only*
-   *
-   * Possible values for `autoComplete` are:
-   *
-   * - `birthdate-day`
-   * - `birthdate-full`
-   * - `birthdate-month`
-   * - `birthdate-year`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-day`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
-   * - `cc-number`
-   * - `email`
-   * - `gender`
-   * - `name`
-   * - `name-family`
-   * - `name-given`
-   * - `name-middle`
-   * - `name-middle-initial`
-   * - `name-prefix`
-   * - `name-suffix`
-   * - `password`
-   * - `password-new`
-   * - `postal-address`
-   * - `postal-address-country`
-   * - `postal-address-extended`
-   * - `postal-address-extended-postal-code`
-   * - `postal-address-locality`
-   * - `postal-address-region`
-   * - `postal-code`
-   * - `street-address`
-   * - `sms-otp`
-   * - `tel`
-   * - `tel-country-code`
-   * - `tel-national`
-   * - `tel-device`
-   * - `username`
-   * - `username-new`
-   * - `off`
-   */
-  autoComplete?:
-    | 'birthdate-day'
-    | 'birthdate-full'
-    | 'birthdate-month'
-    | 'birthdate-year'
-    | 'cc-csc'
-    | 'cc-exp'
-    | 'cc-exp-day'
-    | 'cc-exp-month'
-    | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'gender'
-    | 'name'
-    | 'name-family'
-    | 'name-given'
-    | 'name-middle'
-    | 'name-middle-initial'
-    | 'name-prefix'
-    | 'name-suffix'
-    | 'password'
-    | 'password-new'
-    | 'postal-address'
-    | 'postal-address-country'
-    | 'postal-address-extended'
-    | 'postal-address-extended-postal-code'
-    | 'postal-address-locality'
-    | 'postal-address-region'
-    | 'postal-code'
-    | 'street-address'
-    | 'sms-otp'
-    | 'tel'
-    | 'tel-country-code'
-    | 'tel-national'
-    | 'tel-device'
-    | 'username'
-    | 'username-new'
-    | 'off'
-    | undefined;
-
-  /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
    * from the color of the text selection box.
@@ -547,6 +461,127 @@ export interface TextInputProps
    * https://reactnative.dev/docs/textinput#autocapitalize
    */
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters' | undefined;
+
+  /**
+   * Specifies autocomplete hints for the system, so it can provide autofill.
+   * On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set autoComplete to off.
+   *
+   * The following values work across platforms:
+   *
+   * - `additional-name`
+   * - `address-line1`
+   * - `address-line2`
+   * - `cc-number`
+   * - `country`
+   * - `current-password`
+   * - `email`
+   * - `family-name`
+   * - `given-name`
+   * - `honorific-prefix`
+   * - `honorific-suffix`
+   * - `name`
+   * - `new-password`
+   * - `off`
+   * - `one-time-code`
+   * - `postal-code`
+   * - `street-address`
+   * - `tel`
+   * - `username`
+   *
+   * The following values work on iOS only:
+   *
+   * - `nickname`
+   * - `organization`
+   * - `organization-title`
+   * - `url`
+   *
+   * The following values work on Android only:
+   *
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
+   * - `cc-csc`
+   * - `cc-exp`
+   * - `cc-exp-day`
+   * - `cc-exp-month`
+   * - `cc-exp-year`
+   * - `gender`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `sms-otp`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username-new`
+   */
+  autoComplete?:
+    | 'additional-name'
+    | 'address-line1'
+    | 'address-line2'
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-day'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'country'
+    | 'current-password'
+    | 'email'
+    | 'family-name'
+    | 'gender'
+    | 'given-name'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
+    | 'new-password'
+    | 'nickname'
+    | 'one-time-code'
+    | 'organization'
+    | 'organization-title'
+    | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
+    | 'postal-code'
+    | 'street-address'
+    | 'sms-otp'
+    | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
+    | 'url'
+    | 'username'
+    | 'username-new'
+    | 'off'
+    | undefined;
 
   /**
    * If false, disables auto-correct.
