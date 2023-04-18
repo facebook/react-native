@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 package com.facebook.react.bridgeless.exceptionmanager;
 
 import com.facebook.proguard.annotations.DoNotStripAny;

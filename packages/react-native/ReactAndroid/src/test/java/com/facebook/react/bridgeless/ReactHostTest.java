@@ -18,7 +18,6 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.app.Activity;
 import bolts.TaskCompletionSource;
-import com.facebook.base.applicationholder.ApplicationHolder;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.MemoryPressureListener;
@@ -28,7 +27,6 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.testing.robolectric.RobolectricTestUtil;
 import com.facebook.testing.robolectric.v4.WithTestDefaultsRunner;
 import com.facebook.ultralight.testing.MockitoWithUltralightAutoMockSupport;
 import org.junit.Before;
@@ -39,11 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
 /** Tests {@linkcom.facebook.react.bridgeless.ReactHost} */
+@SuppressStaticInitializationFor("com.facebook.react.fabric.ComponentFactory")
 @RunWith(WithTestDefaultsRunner.class)
 @PowerMockIgnore({
   "org.mockito.*",
@@ -52,7 +52,7 @@ import org.robolectric.android.controller.ActivityController;
   "androidx.*",
   "javax.net.ssl.*"
 })
-@PrepareForTest({ReactHost.class})
+@PrepareForTest({ReactHost.class, ComponentFactory.class})
 public class ReactHostTest extends MockitoWithUltralightAutoMockSupport {
 
   private ReactInstanceDelegate mReactInstanceDelegate;
@@ -69,12 +69,6 @@ public class ReactHostTest extends MockitoWithUltralightAutoMockSupport {
   @Before
   public void setUp() throws Exception {
     initMocks(this);
-
-    try {
-      ApplicationHolder.set(RobolectricTestUtil.getInstance().getApplication());
-    } catch (IllegalStateException e) {
-      // Do nothing, we're already initialized.
-    }
 
     mActivityController = Robolectric.buildActivity(Activity.class).create().start().resume();
     initializeNiceMockInjector(mActivityController.get());
