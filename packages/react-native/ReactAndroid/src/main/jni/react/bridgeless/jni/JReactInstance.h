@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #pragma once
 
 #include <ReactCommon/CallInvokerHolder.h>
@@ -35,7 +34,6 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
  public:
   constexpr static auto kJavaDescriptor =
       "Lcom/facebook/react/bridgeless/ReactInstance;";
-
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject>,

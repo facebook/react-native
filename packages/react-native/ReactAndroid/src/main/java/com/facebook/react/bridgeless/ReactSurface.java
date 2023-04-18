@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 package com.facebook.react.bridgeless;
 
 import android.content.Context;
@@ -14,13 +13,13 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import androidx.annotation.UiThread;
-import bolts.Task;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;

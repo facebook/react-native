@@ -5,19 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 package com.facebook.react.bridgeless;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import bolts.Continuation;
-import bolts.Task;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridgeless.internal.bolts.Continuation;
+import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
