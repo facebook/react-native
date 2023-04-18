@@ -20,6 +20,11 @@ const ReactNativeViewConfigRegistry = require('../../../Renderer/shims/ReactNati
 const FabricUIManager = require('../../FabricUIManager');
 const nullthrows = require('nullthrows');
 
+const isWindows = process.platform === 'win32';
+const itif = (condition: boolean) => {
+  return condition ? it : it.skip;
+};
+
 jest.mock('../../FabricUIManager', () =>
   require('../../__mocks__/FabricUIManager'),
 );
@@ -179,7 +184,7 @@ async function mockRenderKeys(
     });
 
     describe('measureInWindow', () => {
-      test('component.measureInWindow(...) invokes callback', async () => {
+      it('component.measureInWindow(...) invokes callback', async () => {
         const result = await mockRenderKeys([['foo']]);
         const fooRef = nullthrows(result?.[0]?.[0]);
 
@@ -192,18 +197,21 @@ async function mockRenderKeys(
         expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
       });
 
-      test('unmounted.measureInWindow(...) does nothing', async () => {
-        const result = await mockRenderKeys([['foo'], null]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
+      itif(!isWindows)(
+        'unmounted.measureInWindow(...) does nothing',
+        async () => {
+          const result = await mockRenderKeys([['foo'], null]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
 
-        const callback = jest.fn();
-        fooRef.measureInWindow(callback);
+          const callback = jest.fn();
+          fooRef.measureInWindow(callback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
-        ).not.toHaveBeenCalled();
-        expect(callback).not.toHaveBeenCalled();
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
+          ).not.toHaveBeenCalled();
+          expect(callback).not.toHaveBeenCalled();
+        },
+      );
     });
 
     describe('measureLayout', () => {
