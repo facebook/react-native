@@ -448,11 +448,11 @@ struct RCTInstanceCallback : public InstanceCallback {
    * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
    */
   if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
-    for (NSString *moduleName in [_turboModuleRegistry eagerInitModuleNames]) {
+    for (NSString *moduleName in [_parentBridge eagerInitModuleNames_DO_NOT_USE]) {
       [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
     }
 
-    for (NSString *moduleName in [_turboModuleRegistry eagerInitMainQueueModuleNames]) {
+    for (NSString *moduleName in [_parentBridge eagerInitMainQueueModuleNames_DO_NOT_USE]) {
       if (RCTIsMainQueue()) {
         [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
       } else {

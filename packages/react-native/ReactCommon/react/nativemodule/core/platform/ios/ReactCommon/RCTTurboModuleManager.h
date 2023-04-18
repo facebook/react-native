@@ -20,8 +20,6 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
 @optional
-- (NSArray<NSString *> *)getEagerInitModuleNames;
-- (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
 
 /**
  * Given a module name, return its actual class. If not provided, basic ObjC class lookup is performed.
