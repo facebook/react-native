@@ -93,6 +93,14 @@ function getPropertyType(
           options: typeAnnotation.types.map(option => option.value),
         },
       };
+    case 'UnsafeMixed':
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
     default:
       (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
