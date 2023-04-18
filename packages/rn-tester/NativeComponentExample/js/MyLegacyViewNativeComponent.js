@@ -44,8 +44,9 @@ export function callNativeMethodToChangeBackgroundColor(
   }
   UIManager.dispatchViewManagerCommand(
     ReactNative.findNodeHandle(viewRef),
-    UIManager.getViewManagerConfig('RNTMyLegacyNativeView').Commands
-      .changeBackgroundColor,
+    UIManager.getViewManagerConfig(
+      'RNTMyLegacyNativeView',
+    ).Commands.changeBackgroundColor.toString(),
     [color],
   );
 }
