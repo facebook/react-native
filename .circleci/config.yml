@@ -112,7 +112,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:7.0
+      - image: reactnativecommunity/react-native-android:8.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
