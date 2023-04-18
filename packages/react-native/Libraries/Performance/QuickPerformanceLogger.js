@@ -16,7 +16,7 @@ const DUMMY_INSTANCE_KEY = 0;
 // Defines map of annotations
 // Use as following:
 // {string: {key1: value1, key2: value2}}
-export type AnnotationsMap = $Shape<{
+export type AnnotationsMap = Partial<{
   string: ?{[string]: string, ...},
   int: ?{[string]: number, ...},
   double: ?{[string]: number, ...},

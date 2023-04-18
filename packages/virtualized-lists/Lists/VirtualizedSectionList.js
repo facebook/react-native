@@ -561,7 +561,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
     },
     updateProps: (
       select: 'leading' | 'trailing',
-      newProps: $Shape<ItemWithSeparatorCommonProps>,
+      newProps: Partial<ItemWithSeparatorCommonProps>,
     ) => {
       if (select === 'leading') {
         if (LeadingSeparatorComponent != null) {

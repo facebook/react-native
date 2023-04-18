@@ -32,7 +32,7 @@ export default class StateSafePureComponent<
   }
 
   setState(
-    partialState: ?($Shape<State> | ((State, Props) => ?$Shape<State>)),
+    partialState: ?(Partial<State> | ((State, Props) => ?Partial<State>)),
     callback?: () => mixed,
   ): void {
     if (typeof partialState === 'function') {

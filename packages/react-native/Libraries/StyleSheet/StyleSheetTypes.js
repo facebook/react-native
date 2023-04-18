@@ -892,20 +892,22 @@ type GenericStyleProp<+T> =
   | $ReadOnlyArray<GenericStyleProp<T>>;
 
 export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
-  $Shape<____DangerouslyImpreciseStyle_Internal>,
+  Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
 export type ____ViewStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____ViewStyle_Internal>>,
+  $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
 export type ____TextStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____TextStyle_Internal>>,
+  $ReadOnly<Partial<____TextStyle_Internal>>,
 >;
 export type ____ImageStyleProp_Internal = GenericStyleProp<
-  $ReadOnly<$Shape<____ImageStyle_Internal>>,
+  $ReadOnly<Partial<____ImageStyle_Internal>>,
 >;
 
 export type ____Styles_Internal = {
-  +[key: string]: $Shape<____DangerouslyImpreciseStyle_Internal>,
+  // $FlowFixMe[incompatible-exact]
+  // $FlowFixMe[incompatible-type]
+  +[key: string]: Partial<____DangerouslyImpreciseStyle_Internal>,
   ...
 };
 
