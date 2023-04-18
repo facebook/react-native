@@ -54,7 +54,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.ViewManagerResolver;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.soloader.SoLoader;
-import com.facebook.soloader.annotation.SoLoaderLibrary;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +68,6 @@ import javax.annotation.Nullable;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
-@SoLoaderLibrary({"rninstance"})
 public final class ReactInstance {
 
   private static final String TAG = ReactInstance.class.getSimpleName();
