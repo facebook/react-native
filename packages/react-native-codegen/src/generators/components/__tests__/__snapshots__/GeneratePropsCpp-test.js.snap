@@ -707,6 +707,7 @@ Map {
  */
 
 #include <react/renderer/components/MIXED_PROP/Props.h>
+#include <folly/dynamic.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 

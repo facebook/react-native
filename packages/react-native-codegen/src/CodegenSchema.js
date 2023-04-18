@@ -126,6 +126,7 @@ export type EventTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  | MixedTypeAnnotation
   | StringEnumTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>;
 
