@@ -44,8 +44,8 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
               | [number | AnimatedNode, number | AnimatedNode]
               | AnimatedNode,
           |}
-        | {|+skewX: string|}
-        | {|+skewY: string|}
+        | {|+skewX: string | AnimatedNode|}
+        | {|+skewY: string | AnimatedNode|}
         // TODO: what is the actual type it expects?
         | {|
             +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
