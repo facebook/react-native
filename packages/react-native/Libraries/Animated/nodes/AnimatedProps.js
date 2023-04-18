@@ -12,7 +12,6 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import {AnimatedEvent} from '../AnimatedEvent';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
@@ -29,10 +28,7 @@ function createAnimatedProps(inputProps: Object): Object {
       props[key] = new AnimatedStyle(value);
     } else if (value instanceof AnimatedNode) {
       props[key] = value;
-    } else if (
-      ReactNativeFeatureFlags.isAnimatedObjectEnabled &&
-      hasAnimatedNode(value)
-    ) {
+    } else if (hasAnimatedNode(value)) {
       props[key] = new AnimatedObject(value);
     } else {
       props[key] = value;
