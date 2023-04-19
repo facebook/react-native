@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-
 #include "HermesInstance.h"
 
 #include <jsi/jsilib.h>
