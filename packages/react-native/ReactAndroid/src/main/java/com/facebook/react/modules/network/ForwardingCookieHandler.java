@@ -7,9 +7,7 @@
 
 package com.facebook.react.modules.network;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -76,7 +74,6 @@ public class ForwardingCookieHandler extends CookieHandler {
     clearCookiesAsync(callback);
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void clearCookiesAsync(final Callback callback) {
     CookieManager cookieManager = getCookieManager();
     if (cookieManager != null) {
@@ -104,7 +101,6 @@ public class ForwardingCookieHandler extends CookieHandler {
     mCookieSaver.onCookiesModified();
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private void addCookieAsync(String url, String cookie) {
     CookieManager cookieManager = getCookieManager();
     if (cookieManager != null) {
@@ -199,7 +195,6 @@ public class ForwardingCookieHandler extends CookieHandler {
           });
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void flush() {
       CookieManager cookieManager = getCookieManager();
       if (cookieManager != null) {
