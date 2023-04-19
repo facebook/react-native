@@ -14,10 +14,8 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.JavaScriptTimerExecutor;
 import com.facebook.soloader.SoLoader;
-import com.facebook.soloader.annotation.SoLoaderLibrary;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-@SoLoaderLibrary("rninstance")
 public class JSTimerExecutor implements JavaScriptTimerExecutor {
 
   static {
