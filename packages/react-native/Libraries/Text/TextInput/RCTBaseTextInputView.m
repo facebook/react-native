@@ -184,7 +184,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       initWithStart:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
                                                  toPosition:selectedTextRange.start]
                 end:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
-                                                 toPosition:selectedTextRange.end]];
+                                                  toPosition:selectedTextRange.end]
+                cursorPosition:[backedTextInputView caretRectForPosition:selectedTextRange.start].origin];
 }
 
 - (void)setSelection:(RCTTextSelection *)selection
@@ -511,6 +512,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     @"selection" : @{
       @"start" : @(selection.start),
       @"end" : @(selection.end),
+      @"positionY": @(selectionOrigin.y),
+      @"positionX": @(selectionOrigin.x),
     },
   });
 }

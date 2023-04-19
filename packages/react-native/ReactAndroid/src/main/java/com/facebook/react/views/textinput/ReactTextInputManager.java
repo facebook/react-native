@@ -1233,6 +1233,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onSelectionChanged(int start, int end) {
+      // Calculate cursor position
+      Layout layout = mReactEditText.getLayout();
+      int line = layout.getLineForOffset(start);
+      int baseline = layout.getLineBaseline(line);
+      int ascent = layout.getLineAscent(line);
+      float cursorPositionX = layout.getPrimaryHorizontal(start);
+      float cursorPositionY = baseline + ascent;
+
       // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
       // To prevent double calling back into js we cache the result of the previous call and only
       // forward it on if we have new values
@@ -1245,7 +1253,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
             new ReactTextInputSelectionEvent(
-                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
+                mSurfaceId,
+                mReactEditText.getId(),
+                realStart,
+                realEnd,
+                PixelUtil.toDIPFromPixel(cursorPositionX),
+                PixelUtil.toDIPFromPixel(cursorPositionY)));
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;
