@@ -37,7 +37,7 @@ import java.util.Stack;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
 
-  private static String NAME = ViewManager.class.getSimpleName();
+  private static final String NAME = ViewManager.class.getSimpleName();
 
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
@@ -46,19 +46,11 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
 
-  private int mRecyclableViewsBufferSize = 1024;
-
   /** Call in constructor of concrete ViewManager class to enable. */
   protected void setupViewRecycling() {
     if (ReactFeatureFlags.enableViewRecycling) {
       mRecyclableViews = new HashMap<>();
     }
-  }
-
-  /** Call in constructor of concrete ViewManager class to enable. */
-  protected void setupViewRecycling(int bufferSize) {
-    mRecyclableViewsBufferSize = bufferSize;
-    setupViewRecycling();
   }
 
   private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
@@ -224,11 +216,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
     int surfaceId = themedReactContext.getSurfaceId();
     @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
-
-    // Any max buffer size <0 results in an infinite buffer size
-    if (recyclableViews != null
-        && (mRecyclableViewsBufferSize < 0
-            || recyclableViews.size() < mRecyclableViewsBufferSize)) {
+    if (recyclableViews != null) {
       recyclableViews.push(prepareToRecycleView(themedReactContext, view));
     }
   }
