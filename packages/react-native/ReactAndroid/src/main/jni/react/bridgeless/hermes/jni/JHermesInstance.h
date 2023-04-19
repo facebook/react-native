@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -19,7 +24,7 @@ class JHermesInstance
     : public jni::HybridClass<JHermesInstance, JJSEngineInstance> {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/venice/hermes/HermesInstance;";
+      "Lcom/facebook/react/bridgeless/hermes/HermesInstance;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 

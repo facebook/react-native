@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -26,7 +31,8 @@ namespace react {
 
 class JReactInstance : public jni::HybridClass<JReactInstance> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/venice/ReactInstance;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/react/bridgeless/ReactInstance;";
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject>,
