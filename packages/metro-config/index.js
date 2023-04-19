@@ -8,9 +8,9 @@
  * @noformat
  */
 
-/*:: import type {ConfigT} from 'metro-config'; */
+/*:: import type {MetroConfig} from 'metro-config'; */
 
-const {getDefaultConfig: getBaseConfig, mergeConfig} = require('metro-config');
+const {mergeConfig} = require('metro-config');
 
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
@@ -37,8 +37,8 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  */
 function getDefaultConfig(
   projectRoot /*: string */
-) /*: ConfigT */ {
-  const config = {
+) /*: MetroConfig */ {
+  return {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
@@ -76,11 +76,6 @@ function getDefaultConfig(
     },
     watchFolders: [],
   };
-
-  return mergeConfig(
-    getBaseConfig.getDefaultValues(projectRoot),
-    config,
-  );
 }
 
 module.exports = {getDefaultConfig, mergeConfig};
