@@ -7,14 +7,12 @@
 
 package com.facebook.react.views.switchview;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -51,7 +49,6 @@ import androidx.appcompat.widget.SwitchCompat;
   }
 
   @Override
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void setBackgroundColor(int color) {
     setBackground(
         new RippleDrawable(
