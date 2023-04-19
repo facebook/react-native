@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.71.7
+
+### Fixed
+
+#### iOS specific
+
+- Address Hermes performance regression ([9be2959](https://github.com/facebook/react-native/commit/9be29593c8bac64178d441e46c6f7b31e591360e) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+#### Android specific
+
+- Resolved bug with Text components in new arch losing text alignment state. ([31a8e92cad](https://github.com/facebook/react-native/commit/31a8e92caddcdbef9fe74de53e7f412a7e998591) by [@javache](https://github.com/javache))
+- Mimimize EditText Spans 9/9: Remove `addSpansForMeasurement()` ([92b8981499](https://github.com/facebook/react-native/commit/92b898149956a301a44f99019f5c7500335c5553) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 8/N: CustomStyleSpan ([b384bb613b](https://github.com/facebook/react-native/commit/b384bb613bf533aebf3271ba335c61946fcd3303) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 6/N: letterSpacing ([5791cf1f7b](https://github.com/facebook/react-native/commit/5791cf1f7b43aed1d98cad7bcc272d97ab659111) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 5/N: Strikethrough and Underline ([0869ea29db](https://github.com/facebook/react-native/commit/0869ea29db6a4ca20b9043d592a2233ae1a0e7a2) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 4/N: ReactForegroundColorSpan ([8c9c8ba5ad](https://github.com/facebook/react-native/commit/8c9c8ba5adb59f7f891a5307a0bce7200dd3ac7d) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 3/N: ReactBackgroundColorSpan ([cc0ba57ea4](https://github.com/facebook/react-native/commit/cc0ba57ea42d876155b2fd7d9ee78604ff8aa57a) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 1/N: Fix precedence ([1743dd7ab4](https://github.com/facebook/react-native/commit/1743dd7ab40998c4d3491e3b2c56c531daf5dc47) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix measurement of uncontrolled TextInput after edit ([8a0fe30591](https://github.com/facebook/react-native/commit/8a0fe30591e21b90a3481c1ef3eeadd4b592f3ed) by [@NickGerleman](https://github.com/NickGerleman))
+
 ## v0.71.6
 
 ### Fixed
