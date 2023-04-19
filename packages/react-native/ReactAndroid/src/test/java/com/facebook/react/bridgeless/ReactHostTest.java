@@ -25,6 +25,7 @@ import com.facebook.react.bridge.MemoryPressureListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.testing.robolectric.RobolectricTestUtil;
@@ -61,6 +62,7 @@ public class ReactHostTest extends MockitoWithUltralightAutoMockSupport {
   private JSBundleLoader mJSBundleLoader;
   private ReactHost mReactHost;
   private ActivityController<Activity> mActivityController;
+  private ComponentFactory mComponentFactory;
 
   @Rule public PowerMockRule rule = new PowerMockRule();
 
@@ -82,6 +84,7 @@ public class ReactHostTest extends MockitoWithUltralightAutoMockSupport {
     mMemoryPressureRouter = mock(MemoryPressureRouter.class);
     mDevSupportManager = mock(BridgelessDevSupportManager.class);
     mJSBundleLoader = mock(JSBundleLoader.class);
+    mComponentFactory = mock(ComponentFactory.class);
 
     whenNew(ReactInstance.class).withAnyArguments().thenReturn(mReactInstance);
     whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
@@ -93,7 +96,12 @@ public class ReactHostTest extends MockitoWithUltralightAutoMockSupport {
 
     mReactHost =
         new ReactHost(
-            mActivityController.get().getApplication(), mReactInstanceDelegate, false, null, false);
+            mActivityController.get().getApplication(),
+            mReactInstanceDelegate,
+            mComponentFactory,
+            false,
+            null,
+            false);
   }
 
   @Test

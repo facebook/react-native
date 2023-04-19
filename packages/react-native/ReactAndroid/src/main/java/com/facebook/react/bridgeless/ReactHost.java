@@ -46,6 +46,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -86,6 +87,7 @@ public class ReactHost {
 
   private final Context mContext;
   private final ReactInstanceDelegate mReactInstanceDelegate;
+  private final ComponentFactory mComponentFactory;
   private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
   private final Executor mBGExecutor;
@@ -123,12 +125,14 @@ public class ReactHost {
   public ReactHost(
       Context context,
       ReactInstanceDelegate delegate,
+      ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
       ReactJsExceptionHandler reactJsExceptionHandler,
       boolean useDevSupport) {
     this(
         context,
         delegate,
+        componentFactory,
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
         reactJsExceptionHandler,
@@ -139,6 +143,7 @@ public class ReactHost {
   public ReactHost(
       Context context,
       ReactInstanceDelegate delegate,
+      ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
       ReactJsExceptionHandler reactJsExceptionHandler,
@@ -146,6 +151,7 @@ public class ReactHost {
       boolean useDevSupport) {
     mContext = context;
     mReactInstanceDelegate = delegate;
+    mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
     mReactJsExceptionHandler = reactJsExceptionHandler;
@@ -765,6 +771,7 @@ public class ReactHost {
                         new ReactInstance(
                             reactContext,
                             mReactInstanceDelegate,
+                            mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
@@ -854,6 +861,7 @@ public class ReactHost {
                         new ReactInstance(
                             reactContext,
                             mReactInstanceDelegate,
+                            mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,

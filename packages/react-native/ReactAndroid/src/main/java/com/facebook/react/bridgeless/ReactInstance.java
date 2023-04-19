@@ -10,7 +10,6 @@ package com.facebook.react.bridgeless;
 import android.content.res.AssetManager;
 import android.view.View;
 import com.facebook.common.logging.FLog;
-import com.facebook.fbreact.fabric.components.CatalystRegistry;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -92,6 +91,7 @@ public final class ReactInstance {
   /* package */ ReactInstance(
       BridgelessReactContext bridgelessReactContext,
       ReactInstanceDelegate delegate,
+      ComponentFactory componentFactory,
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
       ReactJsExceptionHandler reactExceptionManager,
@@ -226,9 +226,6 @@ public final class ReactInstance {
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
     ReactNativeConfig config = mDelegate.getReactNativeConfig(mTurboModuleManager);
-    ComponentFactory componentFactory = new ComponentFactory();
-    // Using Catalyst for the defaults for now. This should be passed in from the Application.
-    CatalystRegistry.register(componentFactory);
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
