@@ -7,17 +7,17 @@
 
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/RuntimeExecutor.h>
+#include <functional>
 
 namespace facebook::react {
 
 /**
- * A native-to-JS call invoker that uses the RuntimeExecutor. Inspired by
- * BridgeJSCallInvoker. It guarantees that any calls from any thread are queued
- * on the right JS thread.
+ * A native-to-JS call invoker that uses the RuntimeExecutor. It guarantees that
+ * any calls from any thread are queued on the right JS thread.
  */
-class JSCallInvoker : public CallInvoker {
+class BridgelessJSCallInvoker : public CallInvoker {
  public:
-  JSCallInvoker(RuntimeExecutor runtimeExecutor);
+  explicit BridgelessJSCallInvoker(RuntimeExecutor runtimeExecutor);
   void invokeAsync(std::function<void()> &&func) override;
   void invokeSync(std::function<void()> &&func) override;
 

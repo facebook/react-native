@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JReactInstance.h"
 
@@ -14,11 +19,11 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
+#include <react/bridgeless/BridgelessJSCallInvoker.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#include "BridgelessJSCallInvoker.h"
 #include "BridgelessNativeCallInvoker.h"
 #include "JavaTimerRegistry.h"
 
