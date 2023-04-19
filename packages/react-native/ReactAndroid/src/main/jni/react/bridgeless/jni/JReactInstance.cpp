@@ -20,11 +20,11 @@
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/bridgeless/BridgelessJSCallInvoker.h>
+#include <react/bridgeless/BridgelessNativeCallInvoker.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#include "BridgelessNativeCallInvoker.h"
 #include "JavaTimerRegistry.h"
 
 namespace facebook {
