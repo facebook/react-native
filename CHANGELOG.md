@@ -597,7 +597,7 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 #### iOS specific
 
-- Address Hermes performance regression ([9be2959](https://github.com/facebook/react-native/commit/9be29593c8bac64178d441e46c6f7b31e591360e) by [@dmytrorykun](https://github.com/dmytrorykun))
+- Address Hermes performance regression ([1df92c6](https://github.com/facebook/react-native/commit/1df92c6948e08d42367843597fdd94dfae8b42a8) by [@kelset](https://github.com/kelset))
 
 ## v0.70.8
 
