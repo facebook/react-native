@@ -573,6 +573,32 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.9
+
+### Changed
+
+- Update Hermes to `hermes-2023-04-13-RNv0.70.8-c9b539bf3d7bfa4143ff1a5751886c7b2dd728a2` ([7b1441730b](https://github.com/facebook/react-native/commit/7b1441730b5b1c9d9c548dec80d597bed7d71759)), contains:
+  - Remove register stack size override in hermes.cpp ([03f2df](https://github.com/facebook/hermes/commit/03f2dffc1d0ef8b2360a6790ad425ce4013e4de3))
+  - Increase default max stack size ([1b759f4](https://github.com/facebook/hermes/commit/1b759f40bd2f6bb72b2a353f0d9856fcbdbb981c))
+
+### Fixed
+
+#### Android specific
+
+- Resolved bug with Text components in new arch losing text alignment state. ([31a8e92cad](https://github.com/facebook/react-native/commit/31a8e92caddcdbef9fe74de53e7f412a7e998591) by [@javache](https://github.com/javache))
+- Mimimize EditText Spans 9/9: Remove `addSpansForMeasurement()` ([92b8981499](https://github.com/facebook/react-native/commit/92b898149956a301a44f99019f5c7500335c5553) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 8/N: CustomStyleSpan ([b384bb613b](https://github.com/facebook/react-native/commit/b384bb613bf533aebf3271ba335c61946fcd3303) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 6/N: letterSpacing ([5791cf1f7b](https://github.com/facebook/react-native/commit/5791cf1f7b43aed1d98cad7bcc272d97ab659111) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 5/N: Strikethrough and Underline ([0869ea29db](https://github.com/facebook/react-native/commit/0869ea29db6a4ca20b9043d592a2233ae1a0e7a2) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 4/N: ReactForegroundColorSpan ([8c9c8ba5ad](https://github.com/facebook/react-native/commit/8c9c8ba5adb59f7f891a5307a0bce7200dd3ac7d) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 3/N: ReactBackgroundColorSpan ([cc0ba57ea4](https://github.com/facebook/react-native/commit/cc0ba57ea42d876155b2fd7d9ee78604ff8aa57a) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 1/N: Fix precedence ([1743dd7ab4](https://github.com/facebook/react-native/commit/1743dd7ab40998c4d3491e3b2c56c531daf5dc47) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix measurement of uncontrolled TextInput after edit ([8a0fe30591](https://github.com/facebook/react-native/commit/8a0fe30591e21b90a3481c1ef3eeadd4b592f3ed) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### iOS specific
+
+- Address Hermes performance regression ([1df92c6](https://github.com/facebook/react-native/commit/1df92c6948e08d42367843597fdd94dfae8b42a8) by [@kelset](https://github.com/kelset))
+
 ## v0.70.8
 
 ### Changed
