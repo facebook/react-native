@@ -4,11 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @noformat
+ * @format
  * @flow strict
- * @generated SignedSource<<31d4a4b65ed3b597c84dc2361d498e04>>
- *
- * This file was sync'd from the facebook/react repository.
  */
 
 import type {ElementRef, ElementType, Element, AbstractComponent} from 'react';
