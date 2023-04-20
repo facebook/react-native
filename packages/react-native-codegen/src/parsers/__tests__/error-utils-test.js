@@ -12,6 +12,11 @@
 'use strict';
 
 const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../error-utils');
+
+const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleRegistryCalls,
   throwIfModuleInterfaceIsMisnamed,
@@ -27,6 +32,7 @@ const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -554,9 +560,11 @@ describe('throwIfUntypedModule', () => {
 describe('throwIfModuleTypeIsUnsupported', () => {
   const hasteModuleName = 'moduleName';
   const property = {value: 'value', key: {name: 'name'}};
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
   it("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
     const value = {type: 'FunctionTypeAnnotation'};
-    const language = 'Flow';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -564,13 +572,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        flowParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it('throw error if module type is unsupported in Flow', () => {
     const value = {type: ''};
-    const language = 'Flow';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -578,13 +585,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        flowParser,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
   });
   it("don't throw error if module type is TSFunctionType in TypeScript", () => {
     const value = {type: 'TSFunctionType'};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -592,13 +598,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it("don't throw error if module type is TSMethodSignature in TypeScript", () => {
     const value = {type: 'TSMethodSignature'};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -606,13 +611,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it('throw error if module type is unsupported in TypeScript', () => {
     const value = {type: ''};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -620,7 +624,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
   });
@@ -818,5 +822,86 @@ describe('throwIfPartialWithMoreParameter', () => {
     expect(() => {
       throwIfPartialWithMoreParameter(typeAnnotation);
     }).not.toThrowError();
+  });
+});
+
+describe('throwIfMoreThanOneCodegenNativecommands', () => {
+  it('throws an error if given more than one codegenNativeCommands', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).toThrowError('codegenNativeCommands may only be called once in a file');
+  });
+
+  it('does not throw an error if given exactly one codegenNativeCommand', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfConfigNotfound', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).toThrowError('Could not find component config for native component');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfConfigNotfound(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfMoreThanOneConfig', () => {
+  it('throws an error if config is not found', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName1',
+        componentName: 'testComponentName1',
+      },
+      {
+        propsTypeName: 'testPropsTypeName2',
+        componentName: 'testComponentName2',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).toThrowError('Only one component is supported per file');
+  });
+
+  it('does not throw an error if config contains some elements', () => {
+    const configs: Array<{[string]: string}> = [
+      {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneConfig(configs);
+    }).not.toThrow();
   });
 });

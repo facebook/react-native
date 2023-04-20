@@ -13,7 +13,10 @@ pluginManagement {
   }
 }
 
-include(":ReactAndroid", ":ReactAndroid:hermes-engine", ":ReactAndroid:external-artifacts")
+include(
+    ":packages:react-native:ReactAndroid",
+    ":packages:react-native:ReactAndroid:hermes-engine",
+    ":packages:react-native:ReactAndroid:external-artifacts")
 
 // If the ./packages folder exists, then we're inside the React Native repository.
 // If not, a users is consuming this project for a build from source.

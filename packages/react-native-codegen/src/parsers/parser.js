@@ -162,6 +162,11 @@ export interface Parser {
   isModuleInterface(node: $FlowFixMe): boolean;
 
   /**
+   * Given a type name, it returns true if it is a generic type annotation
+   */
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean;
+
+  /**
    * Given a typeAnnotation, it returns the annotated element.
    * @parameter typeAnnotation: the annotation for a type.
    * @parameter types: a map of type declarations.
@@ -204,4 +209,50 @@ export interface Parser {
     tryParse: ParserErrorCapturer,
     cxxOnly: boolean,
   ): Array<$FlowFixMe>;
+
+  /**
+   * Given a propertyValueType, it returns a boolean specifying if the property is a function type annotation.
+   * @parameter propertyValueType: the propertyValueType.
+   * @returns: a boolean specifying if the property is a function type annotation.
+   */
+  functionTypeAnnotation(propertyValueType: string): boolean;
+
+  /**
+   * Given a declaration, it returns the typeArgumentParams of the declaration.
+   * @parameter declaration: the declaration.
+   * @returns: the typeArgumentParams of the declaration.
+   */
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeArgumentParams and funcArgumentParams it returns a native component type.
+   * @parameter typeArgumentParams: the typeArgumentParams.
+   * @parameter funcArgumentParams: the funcArgumentParams.
+   * @returns: a native component type.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string};
+
+  /**
+   * Given a annotatedElement, it returns the properties of annotated element.
+   * @parameter annotatedElement: the annotated element.
+   * @returns: the properties of annotated element.
+   */
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns an array of properties.
+   * @parameter typeAlias: the type alias.
+   * @returns: an array of properties.
+   */
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a keyword convert it to TypeAnnotation.
+   * @parameter keyword
+   * @returns: converted TypeAnnotation to Keywords
+   */
+  convertKeywordToTypeAnnotation(keyword: string): string;
 }

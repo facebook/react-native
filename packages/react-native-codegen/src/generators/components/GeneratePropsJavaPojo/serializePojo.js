@@ -24,6 +24,7 @@ function toJavaType(
     addImport('com.facebook.react.bridge.ReadableMap');
   const importArrayList = () => addImport('java.util.ArrayList');
   const importYogaValue = () => addImport('com.facebook.yoga.YogaValue');
+  const importDynamic = () => addImport('com.facebook.react.bridge.Dynamic');
   switch (typeAnnotation.type) {
     /**
      * Primitives
@@ -220,6 +221,11 @@ function toJavaType(
 
       importArrayList();
       return `ArrayList<${elementTypeString}>`;
+    }
+
+    case 'MixedTypeAnnotation': {
+      importDynamic();
+      return 'Dynamic';
     }
 
     default: {

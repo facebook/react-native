@@ -10,61 +10,41 @@
 
 'use strict';
 import type {Parser} from '../../parser';
-import type {TypeDeclarationMap} from '../../utils';
-import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
-const {createComponentConfig} = require('../../parsers-commons');
+const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
+const {
+  createComponentConfig,
+  findNativeComponentType,
+  propertyNames,
+  getCommandOptions,
+  getOptions,
+  getCommandTypeNameAndOptionsExpression,
+} = require('../../parsers-commons');
+const {
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+} = require('../../error-utils');
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function findComponentConfig(ast) {
-  const foundConfigs = [];
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
 
   const defaultExports = ast.body.filter(
     node => node.type === 'ExportDefaultDeclaration',
   );
 
   defaultExports.forEach(statement => {
-    let declaration = statement.declaration;
-
-    // codegenNativeComponent can be nested inside a cast
-    // expression so we need to go one level deeper
-    if (declaration.type === 'TypeCastExpression') {
-      declaration = declaration.expression;
-    }
-
-    try {
-      if (declaration.callee.name === 'codegenNativeComponent') {
-        const typeArgumentParams = declaration.typeArguments.params;
-        const funcArgumentParams = declaration.arguments;
-
-        const nativeComponentType: {[string]: string} = {
-          propsTypeName: typeArgumentParams[0].id.name,
-          componentName: funcArgumentParams[0].value,
-        };
-        if (funcArgumentParams.length > 1) {
-          nativeComponentType.optionsExpression = funcArgumentParams[1];
-        }
-        foundConfigs.push(nativeComponentType);
-      }
-    } catch (e) {
-      // ignore
-    }
+    findNativeComponentType(statement, foundConfigs, parser);
   });
 
-  if (foundConfigs.length === 0) {
-    throw new Error('Could not find component config for native component');
-  }
-  if (foundConfigs.length > 1) {
-    throw new Error('Only one component is supported per file');
-  }
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
 
   const foundConfig = foundConfigs[0];
 
@@ -73,59 +53,24 @@ function findComponentConfig(ast) {
   );
 
   const commandsTypeNames = namedExports
-    .map(statement => {
-      let callExpression;
-      let calleeName;
-      try {
-        callExpression = statement.declaration.declarations[0].init;
-        calleeName = callExpression.callee.name;
-      } catch (e) {
-        return;
-      }
-
-      if (calleeName !== 'codegenNativeCommands') {
-        return;
-      }
-
-      // const statement.declaration.declarations[0].init
-      if (callExpression.arguments.length !== 1) {
-        throw new Error(
-          'codegenNativeCommands must be passed options including the supported commands',
-        );
-      }
-
-      const typeArgumentParam = callExpression.typeArguments.params[0];
-
-      if (typeArgumentParam.type !== 'GenericTypeAnnotation') {
-        throw new Error(
-          "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
-        );
-      }
-
-      return {
-        commandTypeName: typeArgumentParam.id.name,
-        commandOptionsExpression: callExpression.arguments[0],
-      };
-    })
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
     .filter(Boolean);
 
-  if (commandsTypeNames.length > 1) {
-    throw new Error('codegenNativeCommands may only be called once in a file');
-  }
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
 
   return createComponentConfig(foundConfig, commandsTypeNames);
 }
 
-function getCommandProperties(
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  commandTypeName,
-  types: TypeDeclarationMap,
-  commandOptions: ?CommandOptions,
-) {
+function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
+
   if (commandTypeName == null) {
     return [];
   }
+  const types = parser.getTypes(ast);
 
   const typeAlias = types[commandTypeName];
 
@@ -135,18 +80,16 @@ function getCommandProperties(
     );
   }
 
-  let properties;
-  try {
-    properties = typeAlias.body.properties;
-  } catch (e) {
+  const properties = parser.bodyProperties(typeAlias);
+  if (!properties) {
     throw new Error(
       `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
     );
   }
 
-  const flowPropertyNames = properties
-    .map(property => property && property.key && property.key.name)
-    .filter(Boolean);
+  const flowPropertyNames = propertyNames(properties);
+
+  const commandOptions = getCommandOptions(commandOptionsExpression);
 
   if (commandOptions == null || commandOptions.supportedCommands == null) {
     throw new Error(
@@ -175,24 +118,16 @@ function buildComponentSchema(
   ast: $FlowFixMe,
   parser: Parser,
 ): ComponentSchemaBuilderConfig {
-  const {
-    componentName,
-    propsTypeName,
-    commandTypeName,
-    commandOptionsExpression,
-    optionsExpression,
-  } = findComponentConfig(ast);
+  const {componentName, propsTypeName, optionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
 
   const types = parser.getTypes(ast);
 
   const propProperties = getProperties(propsTypeName, types);
-  const commandOptions = getCommandOptions(commandOptionsExpression);
 
-  const commandProperties = getCommandProperties(
-    commandTypeName,
-    types,
-    commandOptions,
-  );
+  const commandProperties = getCommandProperties(ast, parser);
 
   const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);

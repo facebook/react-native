@@ -22,6 +22,7 @@ import type {
   NativeModulePropertyShape,
   SchemaType,
   NativeModuleEnumMap,
+  OptionsShape,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -60,6 +61,13 @@ const {
 } = require('./errors');
 
 const invariant = require('invariant');
+
+export type CommandOptions = $ReadOnly<{
+  supportedCommands: $ReadOnlyArray<string>,
+}>;
+
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type OptionsAST = Object;
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -328,7 +336,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    parser.language(),
+    parser,
   );
 
   return {
@@ -657,6 +665,158 @@ const buildModuleSchema = (
     );
 };
 
+/**
+ * This function is used to find the type of a native component
+ * provided the default exports statement from generated AST.
+ * @param statement The statement to be parsed.
+ * @param foundConfigs The 'mutable' array of configs that have been found.
+ * @param parser The language parser to be used.
+ * @returns void
+ */
+function findNativeComponentType(
+  statement: $FlowFixMe,
+  foundConfigs: Array<{[string]: string}>,
+  parser: Parser,
+): void {
+  let declaration = statement.declaration;
+
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (
+    declaration.type === 'TSAsExpression' ||
+    declaration.type === 'TypeCastExpression'
+  ) {
+    declaration = declaration.expression;
+  }
+
+  try {
+    if (declaration.callee.name === 'codegenNativeComponent') {
+      const typeArgumentParams =
+        parser.getTypeArgumentParamsFromDeclaration(declaration);
+      const funcArgumentParams = declaration.arguments;
+
+      const nativeComponentType: {[string]: string} =
+        parser.getNativeComponentType(typeArgumentParams, funcArgumentParams);
+      if (funcArgumentParams.length > 1) {
+        nativeComponentType.optionsExpression = funcArgumentParams[1];
+      }
+      foundConfigs.push(nativeComponentType);
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
+function getCommandOptions(
+  commandOptionsExpression: OptionsAST,
+): ?CommandOptions {
+  if (commandOptionsExpression == null) {
+    return null;
+  }
+
+  let foundOptions;
+  try {
+    foundOptions = commandOptionsExpression.properties.reduce(
+      (options, prop) => {
+        options[prop.key.name] = (
+          (prop && prop.value && prop.value.elements) ||
+          []
+        ).map(element => element && element.value);
+        return options;
+      },
+      {},
+    );
+  } catch (e) {
+    throw new Error(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
+  }
+
+  return foundOptions;
+}
+
+function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
+  if (!optionsExpression) {
+    return null;
+  }
+  let foundOptions;
+  try {
+    foundOptions = optionsExpression.properties.reduce((options, prop) => {
+      if (prop.value.type === 'ArrayExpression') {
+        options[prop.key.name] = prop.value.elements.map(
+          element => element.value,
+        );
+      } else {
+        options[prop.key.name] = prop.value.value;
+      }
+      return options;
+    }, {});
+  } catch (e) {
+    throw new Error(
+      'Failed to parse codegen options, please check that they are defined correctly',
+    );
+  }
+
+  if (
+    foundOptions.paperComponentName &&
+    foundOptions.paperComponentNameDeprecated
+  ) {
+    throw new Error(
+      'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
+    );
+  }
+  return foundOptions;
+}
+
+function getCommandTypeNameAndOptionsExpression(
+  namedExport: $FlowFixMe,
+  parser: Parser,
+): {
+  commandOptionsExpression: OptionsAST,
+  commandTypeName: string,
+} | void {
+  let callExpression;
+  let calleeName;
+  try {
+    callExpression = namedExport.declaration.declarations[0].init;
+    calleeName = callExpression.callee.name;
+  } catch (e) {
+    return;
+  }
+
+  if (calleeName !== 'codegenNativeCommands') {
+    return;
+  }
+
+  if (callExpression.arguments.length !== 1) {
+    throw new Error(
+      'codegenNativeCommands must be passed options including the supported commands',
+    );
+  }
+
+  const typeArgumentParam =
+    parser.getTypeArgumentParamsFromDeclaration(callExpression)[0];
+
+  if (!parser.isGenericTypeAnnotation(typeArgumentParam.type)) {
+    throw new Error(
+      "codegenNativeCommands doesn't support inline definitions. Specify a file local type alias",
+    );
+  }
+
+  return {
+    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandOptionsExpression: callExpression.arguments[0],
+  };
+}
+
+function propertyNames(
+  properties: $ReadOnlyArray<$FlowFixMe>,
+): $ReadOnlyArray<$FlowFixMe> {
+  return properties
+    .map(property => property && property.key && property.key.name)
+    .filter(Boolean);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -671,4 +831,9 @@ module.exports = {
   createComponentConfig,
   parseModuleName,
   buildModuleSchema,
+  findNativeComponentType,
+  propertyNames,
+  getCommandOptions,
+  getOptions,
+  getCommandTypeNameAndOptionsExpression,
 };

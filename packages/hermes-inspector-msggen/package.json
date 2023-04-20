@@ -13,8 +13,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "devtools-protocol": "0.0.959523",
-    "yargs": "^17.5.1"
+    "devtools-protocol": "0.0.1107588",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.19.0",

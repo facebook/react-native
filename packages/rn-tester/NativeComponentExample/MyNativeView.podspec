@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.description     = "my-native-view"
   s.homepage        = "https://github.com/sota000/my-native-view.git"
   s.license         = "MIT"
-  s.platforms       = { :ios => "12.4" }
+  s.platforms       = { :ios => min_ios_version_supported }
   s.compiler_flags  = boost_compiler_flags + ' -Wno-nullability-completeness'
   s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/my-native-view.git", :tag => "#{s.version}" }
@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   # Enable codegen for this library
   use_react_native_codegen!(s, {
     :library_name => "MyNativeViewSpec",
-    :react_native_path => "../../../",
+    :react_native_path => "../../react-native",
     :js_srcs_dir => "./js",
     :library_type => "components"
   })

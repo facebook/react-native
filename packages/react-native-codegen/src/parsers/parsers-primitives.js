@@ -34,7 +34,6 @@ import type {
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
 } from '../CodegenSchema';
-import type {ParserType} from './errors';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
@@ -50,6 +49,8 @@ const {
 
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('./error-utils');
 const {nullGuard} = require('./parsers-utils');
 const {
@@ -58,6 +59,8 @@ const {
   unwrapNullable,
   translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
+
+const {isModuleRegistryCall} = require('./utils');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -204,7 +207,6 @@ function typeEnumResolution(
   typeResolution: TypeResolutionStatus,
   nullable: boolean,
   hasteModuleName: string,
-  language: ParserType,
   enumMap: {...NativeModuleEnumMap},
   parser: Parser,
 ): Nullable<NativeModuleEnumDeclaration> {
@@ -212,7 +214,7 @@ function typeEnumResolution(
     throw new UnsupportedTypeAnnotationParserError(
       hasteModuleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 
@@ -439,6 +441,132 @@ function emitArrayType(
   );
 }
 
+function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
+  [type: string]: (node: $FlowFixMe) => void,
+} {
+  return {
+    CallExpression(node: $FlowFixMe) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'codegenNativeComponent'
+      ) {
+        infoMap.isComponent = true;
+      }
+
+      if (isModuleRegistryCall(node)) {
+        infoMap.isModule = true;
+      }
+    },
+    InterfaceExtends(node: $FlowFixMe) {
+      if (node.id.name === 'TurboModule') {
+        infoMap.isModule = true;
+      }
+    },
+    TSInterfaceDeclaration(node: $FlowFixMe) {
+      if (
+        Array.isArray(node.extends) &&
+        node.extends.some(
+          extension => extension.expression.name === 'TurboModule',
+        )
+      ) {
+        infoMap.isModule = true;
+      }
+    },
+  };
+}
+
+function emitPartial(
+  nullable: boolean,
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  parser: Parser,
+): Nullable<NativeModuleTypeAnnotation> {
+  throwIfPartialWithMoreParameter(typeAnnotation);
+
+  throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
+
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+  const annotatedElementProperties =
+    parser.getAnnotatedElementProperties(annotatedElement);
+
+  const partialProperties = parser.computePartialProperties(
+    annotatedElementProperties,
+    hasteModuleName,
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+  );
+
+  return emitObject(nullable, partialProperties);
+}
+
+function emitCommonTypes(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  typeAnnotation: $FlowFixMe,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  parser: Parser,
+): $FlowFixMe {
+  const typeMap = {
+    Stringish: emitStringish,
+    Int32: emitInt32,
+    Double: emitDouble,
+    Float: emitFloat,
+    UnsafeObject: emitGenericObject,
+    Object: emitGenericObject,
+    $Partial: emitPartial,
+    Partial: emitPartial,
+    BooleanTypeAnnotation: emitBoolean,
+    NumberTypeAnnotation: emitNumber,
+    VoidTypeAnnotation: emitVoid,
+    StringTypeAnnotation: emitString,
+    MixedTypeAnnotation: cxxOnly ? emitMixed : emitGenericObject,
+  };
+
+  const typeAnnotationName = parser.convertKeywordToTypeAnnotation(
+    typeAnnotation.type,
+  );
+
+  const simpleEmitter = typeMap[typeAnnotationName];
+  if (simpleEmitter) {
+    return simpleEmitter(nullable);
+  }
+
+  const genericTypeAnnotationName =
+    parser.nameForGenericTypeAnnotation(typeAnnotation);
+
+  const emitter = typeMap[genericTypeAnnotationName];
+  if (!emitter) {
+    return null;
+  }
+
+  return emitter(
+    nullable,
+    hasteModuleName,
+    typeAnnotation,
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+    parser,
+  );
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -456,7 +584,10 @@ module.exports = {
   emitStringish,
   emitMixed,
   emitUnion,
+  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
   translateArrayTypeAnnotation,
+  Visitor,
 };

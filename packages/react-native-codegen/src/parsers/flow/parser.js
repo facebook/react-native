@@ -31,7 +31,7 @@ const {flowTranslateTypeAnnotation} = require('./modules');
 const flowParser = require('flow-parser');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./Visitor');
+const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('../parsers-commons.js');
@@ -67,7 +67,7 @@ class FlowParser implements Parser {
   }
 
   nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+    return typeAnnotation?.id?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
@@ -214,6 +214,10 @@ class FlowParser implements Parser {
     );
   }
 
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean {
+    return type === 'GenericTypeAnnotation';
+  }
+
   extractAnnotatedElement(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
@@ -290,6 +294,40 @@ class FlowParser implements Parser {
         ),
       };
     });
+  }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return propertyValueType === 'FunctionTypeAnnotation';
+  }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeArguments.params;
+  }
+
+  /**
+   * This FlowFixMe is supposed to refer to typeArgumentParams and
+   * funcArgumentParams of generated AST.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].id.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
+
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe {
+    return annotatedElement.right.properties;
+  }
+
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
+    return typeAlias.body.properties;
+  }
+
+  convertKeywordToTypeAnnotation(keyword: string): string {
+    return keyword;
   }
 }
 

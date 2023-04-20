@@ -34,7 +34,7 @@ const {
 const {
   downloadHermesSourceTarball,
   expandHermesSourceTarball,
-} = require('./hermes/hermes-utils');
+} = require('react-native/scripts/hermes/hermes-utils.js');
 
 const argv = yargs
   .option('t', {
@@ -78,6 +78,7 @@ if (argv.target === 'RNTester') {
   // FIXME: make sure that the commands retains colors
   // (--ansi) doesn't always work
   // see also https://github.com/shelljs/shelljs/issues/86
+  pushd('packages/rn-tester');
 
   if (argv.platform === 'iOS') {
     console.info(
@@ -91,19 +92,17 @@ if (argv.target === 'RNTester') {
     // in your local setup - also: if I'm on release branch, I pick the
     // hermes ref from the hermes ref file (see hermes-engine.podspec)
     exec(
-      `cd packages/rn-tester && USE_HERMES=${
+      `USE_HERMES=${
         argv.hermes ? 1 : 0
       } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
+    launchPackagerInSeparateWindow(pwd());
 
     // launch the app on iOS simulator
-    pushd('packages/rn-tester');
     exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
-    popd();
   } else {
     // we do the android path here
 
@@ -115,7 +114,7 @@ if (argv.target === 'RNTester') {
       } version of RNTester Android with the new Architecture enabled`,
     );
     exec(
-      `./gradlew :packages:rn-tester:android:app:${
+      `../../gradlew :packages:rn-tester:android:app:${
         argv.hermes ? 'installHermesDebug' : 'installJscDebug'
       } --quiet`,
     );
@@ -126,7 +125,7 @@ if (argv.target === 'RNTester') {
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
+    launchPackagerInSeparateWindow(pwd());
 
     // launch the app
     exec(
@@ -136,6 +135,7 @@ if (argv.target === 'RNTester') {
     // just to make sure that the Android up won't have troubles finding the Metro server
     exec('adb reverse tcp:8081 tcp:8081');
   }
+  popd();
 } else {
   console.info("We're going to test a fresh new RN project");
 
@@ -144,7 +144,7 @@ if (argv.target === 'RNTester') {
   // base setup required (specular to publish-npm.js)
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
-  const baseVersion = require('../package.json').version;
+  const baseVersion = require('../packages/react-native/package.json').version;
 
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
@@ -175,8 +175,9 @@ if (argv.target === 'RNTester') {
 
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
-  const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-  const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
+  const reactNativePackagePath = `${repoRoot}/packages/react-native`;
+  const jsiFolder = `${reactNativePackagePath}/ReactCommon/jsi`;
+  const hermesCoreSourceFolder = `${reactNativePackagePath}/sdks/hermes`;
 
   if (!fs.existsSync(hermesCoreSourceFolder)) {
     console.info('The Hermes source folder is missing. Downloading...');
@@ -187,8 +188,8 @@ if (argv.target === 'RNTester') {
   // need to move the scripts inside the local hermes cloned folder
   // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
   cp(
-    `${repoRoot}/sdks/hermes-engine/utils/*.sh`,
-    `${repoRoot}/sdks/hermes/utils/.`,
+    `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
+    `${reactNativePackagePath}/sdks/hermes/utils/.`,
   );
 
   // for this scenario, we only need to create the debug build
@@ -206,16 +207,16 @@ if (argv.target === 'RNTester') {
     localMavenPath,
   );
 
-  // create locally the node module
-  exec('npm pack');
-
-  const localNodeTGZPath = `${repoRoot}/react-native-${releaseVersion}.tgz`;
+  const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
   exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
+
+  // create locally the node module
+  exec('npm pack', {cwd: reactNativePackagePath});
 
   pushd('/tmp/');
   // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${repoRoot}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${localNodeTGZPath} --skip-install`,
   );
 
   cd('RNTestProject');

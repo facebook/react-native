@@ -15,7 +15,6 @@ import {
   Text,
   View,
   FlatList,
-  Platform,
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
@@ -78,6 +77,50 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+    voidFuncThrows: () => {
+      try {
+        NativeSampleTurboModule.voidFuncThrows?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectThrows: () => {
+      try {
+        NativeSampleTurboModule.getObjectThrows?.({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseThrows: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeSampleTurboModule.promiseThrows?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    voidFuncAssert: () => {
+      try {
+        NativeSampleTurboModule.voidFuncAssert?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectAssert: () => {
+      try {
+        NativeSampleTurboModule.getObjectAssert?.({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseAssert: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeSampleTurboModule.promiseAssert?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
   };
 
   _setResult(
@@ -96,7 +139,13 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       | 'getValue'
       | 'promise'
       | 'rejectPromise'
-      | 'voidFunc',
+      | 'voidFunc'
+      | 'voidFuncThrows'
+      | 'getObjectThrows'
+      | 'promiseThrows'
+      | 'voidFuncAssert'
+      | 'getObjectAssert'
+      | 'promiseAssert',
     result:
       | $FlowFixMe
       | void
@@ -136,12 +185,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
-      );
-    }
-    if (Platform.OS === 'ios') {
-      // iOS is fully implemented, so show all results immediately.
-      Object.keys(this._tests).forEach(item =>
-        this._setResult(item, this._tests[item]()),
       );
     }
   }

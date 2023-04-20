@@ -11,7 +11,7 @@
     "directory": "packages/rn-tester"
   },
   "scripts": {
-    "start": "../../scripts/packager.sh",
+    "start": "react-native start",
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",
@@ -20,18 +20,13 @@
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
   },
   "dependencies": {
+    "flow-enums-runtime": "^0.0.5",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1",
-    "flow-enums-runtime": "^0.0.5"
+    "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
     "react": "18.2.0",
     "react-native": "*"
-  },
-  "devDependencies": {
-    "babel-plugin-transform-flow-enums":"^0.0.2",
-    "connect": "^3.6.5",
-    "ws": "^6.2.2"
   },
   "codegenConfig": {
     "name": "AppSpecs",

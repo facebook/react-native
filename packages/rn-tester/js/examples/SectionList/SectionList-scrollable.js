@@ -232,7 +232,7 @@ export function SectionList_scrollable(Props: {
   };
 
   return (
-    <RNTesterPage noSpacer={true} noScroll={true}>
+    <RNTesterPage noScroll={true}>
       <View style={styles.searchRow}>
         <PlainInput
           onChangeText={text => setFilterText(text)}

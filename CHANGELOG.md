@@ -1,5 +1,61 @@
 # Changelog
 
+## v0.71.7
+
+### Fixed
+
+#### iOS specific
+
+- Address Hermes performance regression ([9be2959](https://github.com/facebook/react-native/commit/9be29593c8bac64178d441e46c6f7b31e591360e) by [@dmytrorykun](https://github.com/dmytrorykun))
+
+#### Android specific
+
+- Resolved bug with Text components in new arch losing text alignment state. ([31a8e92cad](https://github.com/facebook/react-native/commit/31a8e92caddcdbef9fe74de53e7f412a7e998591) by [@javache](https://github.com/javache))
+- Mimimize EditText Spans 9/9: Remove `addSpansForMeasurement()` ([92b8981499](https://github.com/facebook/react-native/commit/92b898149956a301a44f99019f5c7500335c5553) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 8/N: CustomStyleSpan ([b384bb613b](https://github.com/facebook/react-native/commit/b384bb613bf533aebf3271ba335c61946fcd3303) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 6/N: letterSpacing ([5791cf1f7b](https://github.com/facebook/react-native/commit/5791cf1f7b43aed1d98cad7bcc272d97ab659111) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 5/N: Strikethrough and Underline ([0869ea29db](https://github.com/facebook/react-native/commit/0869ea29db6a4ca20b9043d592a2233ae1a0e7a2) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 4/N: ReactForegroundColorSpan ([8c9c8ba5ad](https://github.com/facebook/react-native/commit/8c9c8ba5adb59f7f891a5307a0bce7200dd3ac7d) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 3/N: ReactBackgroundColorSpan ([cc0ba57ea4](https://github.com/facebook/react-native/commit/cc0ba57ea42d876155b2fd7d9ee78604ff8aa57a) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 1/N: Fix precedence ([1743dd7ab4](https://github.com/facebook/react-native/commit/1743dd7ab40998c4d3491e3b2c56c531daf5dc47) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix measurement of uncontrolled TextInput after edit ([8a0fe30591](https://github.com/facebook/react-native/commit/8a0fe30591e21b90a3481c1ef3eeadd4b592f3ed) by [@NickGerleman](https://github.com/NickGerleman))
+
+## v0.71.6
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([0010c3807d](https://github.com/facebook/react-native/commit/0010c3807d7e47d7d518667dbfac62f7c0da1ac1) by [@kelset](https://github.com/kelset))
+
+## v0.71.5
+
+### Changed
+
+- Bump CLI to 10.2.2 and Metro to 0.73.9 ([4c3bc24893](https://github.com/facebook/react-native/commit/4c3bc24893b2dc7495a2e65ee8f1c6408cc31ad5) by [@kelset](https://github.com/kelset)), contains:
+  - CLI fix: correctly list ios devices and simulators ([relevant PR](https://github.com/react-native-community/cli/pull/1863))
+  - Metro fix: fix watching contents of new directories in NodeWatcher ([ab86982](https://github.com/facebook/metro/commit/ab86982fad83da457d949f01a301c589fabcb12e) by [@robhogan](https://github.com/robhogan))
+
+#### Android specific
+
+- Bump RNGP to 0.71.17 ([bf490d379f](https://github.com/facebook/react-native/commit/bf490d379f8727aa18ded97f0f86465a00e3bef0) by [@kelset](https://github.com/kelset)), contains:
+  - Fix patch for codegen for 0.71 ([ec3681143e](https://github.com/facebook/react-native/commit/ec3681143e041a19cdee36d9f1ce63d7d0663091) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Remove ruby-version from 0.71 ([1d22e29146](https://github.com/facebook/react-native/commit/1d22e291462ac452f2bb6b1b6af11986944ec54a) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### Android specific
+
+- Fix race condition in ReadableNativeMap ([9aac13d](https://github.com/facebook/react-native/commit/9aac13d4dc95925b57f03e7964fc7add6834e518) by [@rshest](https://github.com/rshest))
+
+#### iOS specific
+
+- Give precedence to `textContentType` property for backwards compat as mentioned in https://github.com/facebook/react-native/issues/36229#issuecomment-1470468374 ([c0abff11b6](https://github.com/facebook/react-native/commit/c0abff11b66d9ec3a8e1d09333a3fb6c05678bed) by [@lunaleaps](https://github.com/lunaleaps))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
+
 ## v0.71.4
 
 ### Changed
@@ -537,6 +593,47 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.9
+
+### Changed
+
+- Update Hermes to `hermes-2023-04-13-RNv0.70.8-c9b539bf3d7bfa4143ff1a5751886c7b2dd728a2` ([7b1441730b](https://github.com/facebook/react-native/commit/7b1441730b5b1c9d9c548dec80d597bed7d71759)), contains:
+  - Remove register stack size override in hermes.cpp ([03f2df](https://github.com/facebook/hermes/commit/03f2dffc1d0ef8b2360a6790ad425ce4013e4de3))
+  - Increase default max stack size ([1b759f4](https://github.com/facebook/hermes/commit/1b759f40bd2f6bb72b2a353f0d9856fcbdbb981c))
+
+### Fixed
+
+#### Android specific
+
+- Resolved bug with Text components in new arch losing text alignment state. ([31a8e92cad](https://github.com/facebook/react-native/commit/31a8e92caddcdbef9fe74de53e7f412a7e998591) by [@javache](https://github.com/javache))
+- Mimimize EditText Spans 9/9: Remove `addSpansForMeasurement()` ([92b8981499](https://github.com/facebook/react-native/commit/92b898149956a301a44f99019f5c7500335c5553) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 8/N: CustomStyleSpan ([b384bb613b](https://github.com/facebook/react-native/commit/b384bb613bf533aebf3271ba335c61946fcd3303) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize EditText Spans 6/N: letterSpacing ([5791cf1f7b](https://github.com/facebook/react-native/commit/5791cf1f7b43aed1d98cad7bcc272d97ab659111) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 5/N: Strikethrough and Underline ([0869ea29db](https://github.com/facebook/react-native/commit/0869ea29db6a4ca20b9043d592a2233ae1a0e7a2) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 4/N: ReactForegroundColorSpan ([8c9c8ba5ad](https://github.com/facebook/react-native/commit/8c9c8ba5adb59f7f891a5307a0bce7200dd3ac7d) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 3/N: ReactBackgroundColorSpan ([cc0ba57ea4](https://github.com/facebook/react-native/commit/cc0ba57ea42d876155b2fd7d9ee78604ff8aa57a) by [@NickGerleman](https://github.com/NickGerleman))
+- Minimize Spans 1/N: Fix precedence ([1743dd7ab4](https://github.com/facebook/react-native/commit/1743dd7ab40998c4d3491e3b2c56c531daf5dc47) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix measurement of uncontrolled TextInput after edit ([8a0fe30591](https://github.com/facebook/react-native/commit/8a0fe30591e21b90a3481c1ef3eeadd4b592f3ed) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### iOS specific
+
+- Address Hermes performance regression ([1df92c6](https://github.com/facebook/react-native/commit/1df92c6948e08d42367843597fdd94dfae8b42a8) by [@kelset](https://github.com/kelset))
+
+## v0.70.8
+
+### Changed
+
+#### iOS specific
+
+- Relax Ruby requirements ([e3a5fbe72f](https://github.com/facebook/react-native/commit/e3a5fbe72f966b27b967192317d7072db52d1c8c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([34f3794f18](https://github.com/facebook/react-native/commit/34f3794f18c3b6462f3fce4b8e272c65801a35f6) by [@cipolleschi](https://github.com/cipolleschi))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
+
 ## v0.70.7
 
 ### Fixed
@@ -842,6 +939,21 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
+
+## v0.69.9
+
+### Changed
+
+#### iOS specific
+
+- Relax Ruby requirements ([4e015c69d6](https://github.com/facebook/react-native/commit/4e015c69d646b320d58888f70af566c1d753eaed) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### iOS specific
+
+- Fix React Codegen podspec to build on Xcode 14.3 ([74ba411b55](https://github.com/facebook/react-native/commit/74ba411b55535cee1b98062875b7b4b1428c931a) by [@cipolleschi](https://github.com/cipolleschi))
+- Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
 
 ## v0.69.8
 
@@ -4134,7 +4246,7 @@ This release includes [599 commits by 73 different contributors](https://github.
 - Android tooling has been updated to match newer configuration requirements (SDK 27, gradle 4.4, and support library 27); building with Android plugin 3.2 doesn't work due to the gradle scripts, so **please** stay on Android Studio 3.1 for now
 - Support Babel 7 stable landed! Be sure to read [here](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/) about using TypeScript and check out the [Babel 7 migration guide](https://babeljs.io/docs/en/next/v7-migration) for help migrating.
 - Metro has been upgraded (with Babel 7 and better transformer support), and in the next major release we plan on having two new features (ram bundles and inline requires) optional for you all to use - you can read how it will happen [here](https://github.com/react-native-community/discussions-and-proposals/blob/master/core-meetings/2018-09-metro-meeting.md); moreover, if you have a custom packager config, we recommend you read also the "updating to this version" section.
-- Flow, React, and related packages have also been updated; this includes [working support](https://github.com/facebook/react-native/commit/5491c3f942430982ce9cb6140ed1733879ed3d1d) for the [React Profiler](https://reactjs.org/blog/2018/09/10/introducing-the-react-profiler.html).
+- Flow, React, and related packages have also been updated; this includes [working support](https://github.com/facebook/react-native/commit/5491c3f942430982ce9cb6140ed1733879ed3d1d) for the [React Profiler](https://react.dev/blog/2018/09/10/introducing-the-react-profiler.html).
 
 #### The Slimmening is happening
 
@@ -5086,7 +5198,7 @@ year!
   )
 - React is now v16.2.0, and it took react-test-renderer along with it; [now with
   more
-  fragments!](https://reactjs.org/blog/2017/11/28/react-v16.2.0-fragment-support.html)
+  fragments!](https://react.dev/blog/2017/11/28/react-v16.2.0-fragment-support.html)
   🎉 ([c7f37074ac](https://github.com/facebook/react-native/commit/c7f37074ac89f7e568ca26a6bad3bdb02812c39f) and
   [cd938d731c](https://github.com/facebook/react-native/commit/cd938d731c7531a683c050cd829a543d145e3dc1) by
   [@bvaughn](https://github.com/bvaughn))

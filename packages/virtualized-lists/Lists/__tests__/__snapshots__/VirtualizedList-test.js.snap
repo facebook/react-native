@@ -3122,12 +3122,53 @@ exports[`gracefully handles negative initialScrollIndex 1`] = `
       />
     </View>
     <View
-      style={
-        Object {
-          "height": 60,
-        }
-      }
-    />
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={4}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={5}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={6}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={7}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={8}
+      />
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={9}
+      />
+    </View>
   </View>
 </RCTScrollView>
 `;

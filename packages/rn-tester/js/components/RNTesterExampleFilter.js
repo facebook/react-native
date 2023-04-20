@@ -92,11 +92,6 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive">
           {this.props.render({filteredSections})}
-          {/**
-           * This is a fake list item. It is needed to provide the ScrollView some bottom padding.
-           * The height of this item is basically ScreenHeight - the height of (Header + bottom navbar)
-           * */}
-          <View style={{height: 350}} />
         </ScrollView>
       );
     } else {

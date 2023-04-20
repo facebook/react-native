@@ -172,6 +172,10 @@ export class MockedParser implements Parser {
     );
   }
 
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean {
+    return true;
+  }
+
   extractAnnotatedElement(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
@@ -208,5 +212,35 @@ export class MockedParser implements Parser {
         typeAnnotation: {type: 'BooleanTypeAnnotation'},
       },
     ];
+  }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return propertyValueType === 'FunctionTypeAnnotation';
+  }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeArguments.params;
+  }
+
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].id.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
+
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe {
+    return annotatedElement.right.properties;
+  }
+
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe> {
+    return typeAlias.body.properties;
+  }
+
+  convertKeywordToTypeAnnotation(keyword: string): string {
+    return keyword;
   }
 }

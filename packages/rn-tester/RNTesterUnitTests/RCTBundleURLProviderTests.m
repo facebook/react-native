@@ -22,42 +22,22 @@ static NSURL *mainBundleURL()
 
 static NSURL *localhostBundleURL()
 {
-#ifdef HERMES_BYTECODE_VERSION
-  return [NSURL
-      URLWithString:
-          [NSString
-              stringWithFormat:
-                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
-                  testFile,
-                  HERMES_BYTECODE_VERSION]];
-#else
   return [NSURL
       URLWithString:
           [NSString
               stringWithFormat:
                   @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
-#endif
 }
 
 static NSURL *ipBundleURL()
 {
-#ifdef HERMES_BYTECODE_VERSION
-  return [NSURL
-      URLWithString:
-          [NSString
-              stringWithFormat:
-                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
-                  testFile,
-                  HERMES_BYTECODE_VERSION]];
-#else
   return [NSURL
       URLWithString:
           [NSString
               stringWithFormat:
                   @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
-#endif
 }
 
 @implementation NSBundle (RCTBundleURLProviderTests)

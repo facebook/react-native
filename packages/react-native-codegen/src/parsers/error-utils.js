@@ -160,27 +160,15 @@ function throwIfModuleTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyName: string,
   propertyValueType: string,
-  language: ParserType,
+  parser: Parser,
 ) {
-  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+  if (!parser.functionTypeAnnotation(propertyValueType)) {
     throw new UnsupportedModulePropertyParserError(
       nativeModuleName,
       propertyValue,
       propertyName,
       propertyValueType,
-      language,
-    );
-  } else if (
-    language === 'TypeScript' &&
-    propertyValueType !== 'TSFunctionType' &&
-    propertyValueType !== 'TSMethodSignature'
-  ) {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
+      parser.language(),
     );
   }
 }
@@ -302,6 +290,26 @@ function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
   }
 }
 
+function throwIfMoreThanOneCodegenNativecommands(
+  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+) {
+  if (commandsTypeNames.length > 1) {
+    throw new Error('codegenNativeCommands may only be called once in a file');
+  }
+}
+
+function throwIfConfigNotfound(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length === 0) {
+    throw new Error('Could not find component config for native component');
+  }
+}
+
+function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length > 1) {
+    throw new Error('Only one component is supported per file');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -319,4 +327,7 @@ module.exports = {
   throwIfIncorrectModuleRegistryCallArgument,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
 };

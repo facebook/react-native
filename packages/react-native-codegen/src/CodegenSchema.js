@@ -58,6 +58,10 @@ export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   baseTypes?: $ReadOnlyArray<string>,
 }>;
 
+export type MixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
+}>;
+
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
   type: 'FunctionTypeAnnotation',
   params: $ReadOnlyArray<NamedShape<P>>,
@@ -122,6 +126,7 @@ export type EventTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  | MixedTypeAnnotation
   | StringEnumTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>;
 
@@ -177,7 +182,8 @@ export type PropTypeAnnotation =
             type: 'ArrayTypeAnnotation',
             elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
           }>,
-    }>;
+    }>
+  | MixedTypeAnnotation;
 
 export type ReservedPropTypeAnnotation = $ReadOnly<{
   type: 'ReservedPropTypeAnnotation',

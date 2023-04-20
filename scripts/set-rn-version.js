@@ -60,10 +60,16 @@ const tmpVersioningFolder = fs.mkdtempSync(
 );
 echo(`The temp versioning folder is ${tmpVersioningFolder}`);
 
-saveFiles(['package.json', 'template/package.json'], tmpVersioningFolder);
+saveFiles(
+  [
+    'packages/react-native/package.json',
+    'packages/react-native/template/package.json',
+  ],
+  tmpVersioningFolder,
+);
 
 fs.writeFileSync(
-  'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+  'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
   cat('scripts/versiontemplates/ReactNativeVersion.java.template')
     .replace('${major}', major)
     .replace('${minor}', minor)
@@ -76,7 +82,7 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-  'React/Base/RCTVersion.m',
+  'packages/react-native/React/Base/RCTVersion.m',
   cat('scripts/versiontemplates/RCTVersion.m.template')
     .replace('${major}', `@(${major})`)
     .replace('${minor}', `@(${minor})`)
@@ -89,7 +95,7 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-  'ReactCommon/cxxreact/ReactNativeVersion.h',
+  'packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h',
   cat('scripts/versiontemplates/ReactNativeVersion.h.template')
     .replace('${major}', major)
     .replace('${minor}', minor)
@@ -102,7 +108,7 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-  'Libraries/Core/ReactNativeVersion.js',
+  'packages/react-native/Libraries/Core/ReactNativeVersion.js',
   cat('scripts/versiontemplates/ReactNativeVersion.js.template')
     .replace('${major}', major)
     .replace('${minor}', minor)
@@ -114,33 +120,26 @@ fs.writeFileSync(
   'utf-8',
 );
 
-let packageJson = JSON.parse(cat('package.json'));
+const packageJson = JSON.parse(cat('packages/react-native/package.json'));
 packageJson.version = version;
-delete packageJson.workspaces;
-delete packageJson.private;
 
-// Copy repo-config/package.json dependencies as devDependencies
-const repoConfigJson = JSON.parse(cat('repo-config/package.json'));
-packageJson.devDependencies = {
-  ...packageJson.devDependencies,
-  ...repoConfigJson.dependencies,
-};
-// Make @react-native/codegen a direct dependency of react-native
-delete packageJson.devDependencies['@react-native/codegen'];
-packageJson.dependencies = {
-  ...packageJson.dependencies,
-  '@react-native/codegen': repoConfigJson.dependencies['@react-native/codegen'],
-};
-fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
+fs.writeFileSync(
+  'packages/react-native/package.json',
+  JSON.stringify(packageJson, null, 2),
+  'utf-8',
+);
 
 // Change ReactAndroid/gradle.properties
-saveFiles(['ReactAndroid/gradle.properties'], tmpVersioningFolder);
+saveFiles(
+  ['packages/react-native/ReactAndroid/gradle.properties'],
+  tmpVersioningFolder,
+);
 if (
   sed(
     '-i',
     /^VERSION_NAME=.*/,
     `VERSION_NAME=${version}`,
-    'ReactAndroid/gradle.properties',
+    'packages/react-native/ReactAndroid/gradle.properties',
   ).code
 ) {
   echo("Couldn't update version for Gradle");
@@ -150,17 +149,11 @@ if (
 // Change react-native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
-// Make sure to update ruby version
-if (exec('scripts/update-ruby.sh').code) {
-  echo('Failed to update Ruby version');
-  exit(1);
-}
-
 // Verify that files changed, we just do a git diff and check how many times version is added across files
 const filesToValidate = [
-  'package.json',
-  'ReactAndroid/gradle.properties',
-  'template/package.json',
+  'packages/react-native/package.json',
+  'packages/react-native/ReactAndroid/gradle.properties',
+  'packages/react-native/template/package.json',
 ];
 
 const numberOfChangedLinesWithNewVersion = exec(
