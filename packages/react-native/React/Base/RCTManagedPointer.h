@@ -24,8 +24,7 @@
 
 @end
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 template <typename T, typename P>
 RCTManagedPointer *managedPointer(P initializer)
@@ -34,7 +33,6 @@ RCTManagedPointer *managedPointer(P initializer)
   return [[RCTManagedPointer alloc] initWithPointer:std::move(ptr)];
 }
 
-}
-}
+} // namespace facebook::react
 
 #endif

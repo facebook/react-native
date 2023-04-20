@@ -24,8 +24,7 @@
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CoreComponentsRegistry::CoreComponentsRegistry(ComponentFactory *delegate)
     : delegate_(delegate) {}
@@ -109,5 +108,4 @@ void CoreComponentsRegistry::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

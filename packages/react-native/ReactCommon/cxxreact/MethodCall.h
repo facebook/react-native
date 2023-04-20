@@ -13,8 +13,7 @@
 
 #include <folly/dynamic.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct MethodCall {
   int moduleId;
@@ -32,5 +31,4 @@ struct MethodCall {
 /// \throws std::invalid_argument
 std::vector<MethodCall> parseMethodCalls(folly::dynamic &&calls);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

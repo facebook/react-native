@@ -11,8 +11,7 @@
 #include <jni.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactExceptionManager
     : public facebook::jni::JavaClass<JReactExceptionManager> {
@@ -23,5 +22,4 @@ class JReactExceptionManager
   void reportJsException(const JReadableMapBuffer::javaobject errorMapBuffer);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

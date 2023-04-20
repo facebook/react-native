@@ -9,8 +9,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace exceptions {
 const char *gUnexpectedNativeTypeExceptionClass =
@@ -61,5 +60,4 @@ local_ref<ReadableType> ReadableType::getType(folly::dynamic::Type type) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

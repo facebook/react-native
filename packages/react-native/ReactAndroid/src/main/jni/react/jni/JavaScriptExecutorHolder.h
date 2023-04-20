@@ -10,8 +10,7 @@
 #include <cxxreact/JSExecutor.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JavaScriptExecutorHolder
     : public jni::HybridClass<JavaScriptExecutorHolder> {
@@ -31,5 +30,4 @@ class JavaScriptExecutorHolder
   std::shared_ptr<JSExecutorFactory> mExecutorFactory;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

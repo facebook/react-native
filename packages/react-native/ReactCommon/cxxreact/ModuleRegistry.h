@@ -19,8 +19,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NativeModule;
 
@@ -88,5 +87,4 @@ class RN_EXPORT ModuleRegistry {
   ModuleNotFoundCallback moduleNotFoundCallback_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

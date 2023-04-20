@@ -9,8 +9,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO T112842309: Remove after fbjni upgraded in OSS
 void ReadableNativeMap::mapException(const std::exception &ex) {
@@ -134,5 +133,4 @@ void ReadableNativeMap::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,8 +14,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/core/EventBeat.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventBeatManagerObserver {
  public:
@@ -63,5 +62,4 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
       jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,8 +10,7 @@
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // RCTNativeModule arranges for native methods to be invoked on a queue which
 // is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
@@ -43,5 +42,4 @@ class DispatchMessageQueueThread : public MessageQueueThread {
   RCTModuleData *moduleData_;
 };
 
-}
-}
+} // namespace facebook::react

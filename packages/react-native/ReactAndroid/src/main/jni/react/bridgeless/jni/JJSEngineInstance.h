@@ -11,9 +11,7 @@
 #include <jni.h>
 #include <react/bridgeless/JSEngineInstance.h>
 
-namespace facebook {
-
-namespace react {
+namespace facebook::react {
 
 class JJSEngineInstance : public jni::HybridClass<JJSEngineInstance>,
                           public JSEngineInstance {
@@ -25,5 +23,4 @@ class JJSEngineInstance : public jni::HybridClass<JJSEngineInstance>,
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

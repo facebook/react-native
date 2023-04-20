@@ -19,8 +19,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RN_EXPORT RAMBundleRegistry {
  public:
@@ -52,5 +51,4 @@ class RN_EXPORT RAMBundleRegistry {
   std::unordered_map<uint32_t, std::unique_ptr<JSModulesUnbundle>> m_bundles;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

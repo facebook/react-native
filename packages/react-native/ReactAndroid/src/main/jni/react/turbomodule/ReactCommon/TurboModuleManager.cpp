@@ -19,8 +19,7 @@
 
 #include "TurboModuleManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -334,5 +333,4 @@ void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

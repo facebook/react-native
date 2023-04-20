@@ -12,8 +12,7 @@
 #include <fb/fbjni.h>
 #include <jni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct JJavaTimerManager : jni::JavaClass<JJavaTimerManager> {
   static auto constexpr kJavaDescriptor =
@@ -24,5 +23,4 @@ struct JJavaTimerManager : jni::JavaClass<JJavaTimerManager> {
   void deleteTimer(uint32_t timerID);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

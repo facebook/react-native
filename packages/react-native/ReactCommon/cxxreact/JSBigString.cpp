@@ -18,8 +18,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
     : m_fd{-1}, m_data{nullptr} {
@@ -95,5 +94,4 @@ std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
   return std::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

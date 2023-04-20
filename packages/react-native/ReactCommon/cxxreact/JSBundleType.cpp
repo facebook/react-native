@@ -7,8 +7,7 @@
 
 #include "JSBundleType.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static uint32_t constexpr RAMBundleMagicNumber = 0xFB0BD1E5;
 
@@ -38,5 +37,4 @@ bool isHermesBytecodeBundle(const BundleHeader &header) {
   return header.magic64 == HermesBCBundleMagicNumber;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
