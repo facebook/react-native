@@ -18,11 +18,10 @@ import static org.robolectric.shadows.ShadowInstrumentation.getInstrumentation;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import bolts.Task;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.testing.robolectric.v4.WithTestDefaultsRunner;
 import java.util.concurrent.Callable;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +31,9 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class ReactSurfaceTest {
   @Mock ReactInstanceDelegate mReactInstanceDelegate;
   @Mock EventDispatcher mEventDispatcher;
