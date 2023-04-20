@@ -32,8 +32,7 @@
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // This class manages calls from JS to native code.
 class JsToNativeBridge : public react::ExecutorDelegate {
@@ -340,5 +339,4 @@ std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
   return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

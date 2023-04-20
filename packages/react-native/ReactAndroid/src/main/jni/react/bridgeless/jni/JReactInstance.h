@@ -27,8 +27,7 @@
 #include "JJavaTimerManager.h"
 #include "JReactExceptionManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactInstance : public jni::HybridClass<JReactInstance> {
  public:
@@ -105,5 +104,4 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

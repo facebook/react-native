@@ -19,8 +19,7 @@ using magic_number_t = uint32_t;
 const magic_number_t MAGIC_FILE_HEADER = 0xFB0BD1E5;
 const char *MAGIC_FILE_NAME = "UNBUNDLE";
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using asset_ptr =
     std::unique_ptr<AAsset, std::function<decltype(AAsset_close)>>;
@@ -94,5 +93,4 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
   return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

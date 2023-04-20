@@ -15,8 +15,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -72,8 +71,7 @@ class JSCExecutorHolder
   using HybridBase::HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return facebook::jni::initialize(

@@ -17,8 +17,7 @@
 #include <react/bridgeless/hermes/HermesInstance.h>
 #include "../../jni/JJSEngineInstance.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JHermesInstance
     : public jni::HybridClass<JHermesInstance, JJSEngineInstance> {
@@ -38,5 +37,4 @@ class JHermesInstance
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

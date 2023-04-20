@@ -26,8 +26,7 @@ namespace {
 enum SchedulingContext { Sync, Async };
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static MethodCallResult invokeInner(
     RCTBridge *bridge,
@@ -235,5 +234,4 @@ static MethodCallResult invokeInner(
   return std::nullopt;
 }
 
-}
-}
+} // namespace facebook::react

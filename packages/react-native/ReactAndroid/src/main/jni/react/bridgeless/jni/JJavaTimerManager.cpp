@@ -10,8 +10,7 @@
 #include <fb/fbjni.h>
 #include <jni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JJavaTimerManager::createTimer(
     uint32_t timerID,
@@ -28,5 +27,4 @@ void JJavaTimerManager::deleteTimer(uint32_t timerID) {
   method(self(), timerID);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

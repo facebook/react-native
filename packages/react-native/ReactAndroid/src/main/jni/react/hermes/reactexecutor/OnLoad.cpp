@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void hermesFatalHandler(const std::string &reason) {
   LOG(ERROR) << "Hermes Fatal: " << reason << "\n";
@@ -110,8 +109,7 @@ class HermesExecutorHolder
   using HybridBase::HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return facebook::jni::initialize(

@@ -9,8 +9,7 @@
 
 #include <react/bridgeless/ReactInstance.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BindingsInstaller {
  public:
@@ -18,5 +17,5 @@ class BindingsInstaller {
     return nullptr;
   }
 };
-} // namespace react
-} // namespace facebook
+
+} // namespace facebook::react

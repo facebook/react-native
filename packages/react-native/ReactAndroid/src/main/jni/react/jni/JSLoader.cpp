@@ -20,8 +20,7 @@ using fbsystrace::FbSystraceSection;
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class AssetManagerString : public JSBigString {
  public:
@@ -95,5 +94,4 @@ loadScriptFromAssets(AAssetManager *manager, const std::string &assetName) {
       "' is packaged correctly for release."));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

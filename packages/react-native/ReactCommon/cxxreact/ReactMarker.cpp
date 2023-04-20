@@ -8,8 +8,7 @@
 #include "ReactMarker.h"
 #include <cxxreact/JSExecutor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 namespace ReactMarker {
 
 #if __clang__
@@ -85,5 +84,4 @@ double StartupLogger::getRunJSBundleEndTime() {
 }
 
 } // namespace ReactMarker
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -15,8 +15,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Scripts given to the JS Executors to run could be in any of the following
@@ -71,5 +70,4 @@ RN_EXPORT const char *stringForScriptTag(const ScriptTag &tag);
  */
 RN_EXPORT bool isHermesBytecodeBundle(const BundleHeader &header);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

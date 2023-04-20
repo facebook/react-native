@@ -20,8 +20,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
  public:
@@ -67,5 +66,4 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

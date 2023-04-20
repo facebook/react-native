@@ -10,8 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct JMountItem : public jni::JavaClass<JMountItem> {
   static constexpr auto kJavaDescriptor =
@@ -84,5 +83,4 @@ struct CppMountItem final {
   int index = {};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

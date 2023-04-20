@@ -13,8 +13,7 @@
 #include "NativeModule.h"
 #include "SystraceSection.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -236,5 +235,4 @@ MethodCallResult ModuleRegistry::callSerializableNativeHook(
       methodId, std::move(params));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

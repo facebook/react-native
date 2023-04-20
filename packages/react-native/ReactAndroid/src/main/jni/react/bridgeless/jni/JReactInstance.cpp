@@ -26,8 +26,7 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include "JavaTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JReactInstance::JReactInstance(
     jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
@@ -232,5 +231,4 @@ void JReactInstance::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

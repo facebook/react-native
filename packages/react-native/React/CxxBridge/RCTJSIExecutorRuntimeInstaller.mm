@@ -10,8 +10,7 @@
 #import <React/RCTLog.h>
 #include <chrono>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::RuntimeInstaller runtimeInstallerToWrap)
 {
@@ -29,5 +28,4 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::Runtim
   };
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

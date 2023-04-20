@@ -13,8 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RCTImageResponseObserverProxy final : public ImageResponseObserver {
  public:
@@ -28,7 +27,6 @@ class RCTImageResponseObserverProxy final : public ImageResponseObserver {
   __weak id<RCTImageResponseDelegate> delegate_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

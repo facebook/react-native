@@ -13,8 +13,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Called from Java constructor through the JNI.
@@ -64,5 +63,4 @@ void StateWrapperImpl::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

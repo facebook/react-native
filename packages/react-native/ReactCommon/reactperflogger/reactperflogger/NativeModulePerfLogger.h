@@ -8,8 +8,7 @@
 #pragma once
 #include <cstdint>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A platform-agnostic interface to do performance logging on NativeModules and
@@ -160,5 +159,4 @@ class NativeModulePerfLogger {
       int32_t id) = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

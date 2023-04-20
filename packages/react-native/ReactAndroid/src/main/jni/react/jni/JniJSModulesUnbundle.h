@@ -12,8 +12,7 @@
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JniJSModulesUnbundle : public JSModulesUnbundle {
   /**
@@ -41,5 +40,4 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
   std::string m_moduleDirectory;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
