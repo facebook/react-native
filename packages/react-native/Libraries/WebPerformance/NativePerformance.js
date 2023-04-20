@@ -22,7 +22,7 @@ export type ReactNativeStartupTiming = {|
 |};
 
 export interface Spec extends TurboModule {
-  +mark: (name: string, startTime: number) => void;
+  +mark: (name: string, startTime: number, duration: number) => void;
   +measure: (
     name: string,
     startTime: number,

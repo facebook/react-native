@@ -28,8 +28,9 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
 void NativePerformance::mark(
     jsi::Runtime &rt,
     std::string name,
-    double startTime) {
-  PerformanceEntryReporter::getInstance().mark(name, startTime);
+    double startTime,
+    double duration) {
+  PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
 }
 
 void NativePerformance::measure(

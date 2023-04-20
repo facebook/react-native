@@ -111,9 +111,7 @@ class PerformanceEntryReporter : public EventLogger {
     return droppedEntryCount_;
   }
 
-  void mark(
-      const std::string &name,
-      const std::optional<double> &startTime = std::nullopt);
+  void mark(const std::string &name, double startTime, double duration);
 
   void measure(
       const std::string &name,
