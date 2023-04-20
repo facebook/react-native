@@ -388,14 +388,11 @@ static Class getFallbackClassFromName(const char *name)
     /**
      * Step 2a: Resolve platform-specific class.
      */
-
-    if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-      if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-        moduleClass = [_delegate getModuleClassFromName:moduleName];
-      } else {
-        std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-        moduleClass = [_delegate getModuleClassFromName:moduleName];
-      }
+    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
+    } else {
+      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
     }
 
     if (!moduleClass) {
