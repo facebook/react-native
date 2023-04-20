@@ -92,9 +92,11 @@ class Element final {
    * Sets `state` using callback.
    */
   Element &stateData(std::function<void(ConcreteStateData &)> callback) {
-    fragment_.stateCallback = [callback =
-                                   std::move(callback)]() -> StateData::Shared {
-      auto stateData = ConcreteStateData();
+    fragment_.stateCallback =
+        [callback = std::move(callback)](
+            State::Shared const &state) -> StateData::Shared {
+      auto stateData =
+          static_cast<ConcreteState const *>(state.get())->getData();
       callback(stateData);
       return std::make_shared<ConcreteStateData>(stateData);
     };
