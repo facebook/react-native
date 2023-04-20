@@ -134,6 +134,10 @@ WIN_EXPORT void YGNodeCopyStyle(YGNodeRef dstNode, YGNodeRef srcNode);
 
 WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
 WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
+
+WIN_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node);
+WIN_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config);
+
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 bool YGNodeHasMeasureFunc(YGNodeRef node);
 WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
