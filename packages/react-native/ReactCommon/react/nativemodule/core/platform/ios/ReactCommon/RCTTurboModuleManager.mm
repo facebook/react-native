@@ -478,27 +478,13 @@ static Class getFallbackClassFromName(const char *name)
    */
 
   TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
-  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-      module = [_delegate getModuleInstanceFromClass:moduleClass];
-    } else {
-      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-      module = [_delegate getModuleInstanceFromClass:moduleClass];
-    }
-
-    /**
-     * If the application is unable to create the TurboModule object from its class:
-     * abort TurboModule creation, and early return nil.
-     */
-    if (!module) {
-      RCTLogError(
-          @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
-          NSStringFromClass([_delegate class]),
-          moduleName,
-          NSStringFromClass(moduleClass));
-      return nil;
-    }
+  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+    module = [_delegate getModuleInstanceFromClass:moduleClass];
   } else {
+    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+    module = [_delegate getModuleInstanceFromClass:moduleClass];
+  }
+  if (!module) {
     module = [moduleClass new];
   }
   TurboModulePerfLogger::moduleCreateConstructEnd(moduleName, moduleId);
