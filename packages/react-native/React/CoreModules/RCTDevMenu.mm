@@ -428,10 +428,10 @@ RCT_EXPORT_METHOD(show)
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
-  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+  NSString *devMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
 
-  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
+  _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
