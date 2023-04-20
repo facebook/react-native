@@ -24,12 +24,12 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
  */
 - (Class)getModuleClassFromName:(const char *)name;
 
-@optional
-
 /**
- * Given a module class, provide an instance for it. If not provided, default initializer is used.
+ * Given a module class, provide an instance for it. If nil is returned, default initializer is used.
  */
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
+
+@optional
 
 /**
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.
