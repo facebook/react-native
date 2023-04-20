@@ -7,8 +7,7 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class EventPriority {
   SynchronousUnbatched,
@@ -22,5 +21,4 @@ enum class EventPriority {
   Deferred = AsynchronousBatched
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

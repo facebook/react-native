@@ -12,8 +12,7 @@
 
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <AndroidSwitch> component.
@@ -47,5 +46,4 @@ class AndroidSwitchComponentDescriptor final
   const std::shared_ptr<AndroidSwitchMeasurementsManager> measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,8 +11,7 @@
 #include <react/renderer/components/safeareaview/SafeAreaViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <SafeAreaView> component.
@@ -43,5 +42,4 @@ class SafeAreaViewComponentDescriptor final
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -24,8 +24,7 @@
 
 #include "JavaTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TMPL = TurboModulePerfLogger;
 
@@ -850,5 +849,4 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,14 +11,12 @@
 
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
 constexpr MapBuffer::Key YG_OVERFLOW = 101;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

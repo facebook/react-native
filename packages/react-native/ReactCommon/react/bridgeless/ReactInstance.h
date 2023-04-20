@@ -16,8 +16,7 @@
 #include <react/bridgeless/TimerManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct CallableModule {
   explicit CallableModule(jsi::Function factory)
@@ -76,5 +75,4 @@ class ReactInstance final {
   std::shared_ptr<bool> hasFatalJsError_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

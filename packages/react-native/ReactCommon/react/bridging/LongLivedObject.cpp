@@ -7,8 +7,7 @@
 
 #include "LongLivedObject.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // LongLivedObjectCollection
 LongLivedObjectCollection &LongLivedObjectCollection::get() {
@@ -47,5 +46,4 @@ void LongLivedObject::allowRelease() {
   LongLivedObjectCollection::get().remove(this);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

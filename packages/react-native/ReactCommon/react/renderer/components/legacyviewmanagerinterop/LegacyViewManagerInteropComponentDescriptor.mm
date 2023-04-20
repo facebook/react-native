@@ -16,8 +16,7 @@
 #include "LegacyViewManagerInteropState.h"
 #include "RCTLegacyViewManagerInteropCoordinator.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static std::string moduleNameFromComponentName(const std::string &componentName)
 {
@@ -117,5 +116,4 @@ void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared con
 
   legacyViewManagerInteropShadowNode->setStateData(std::move(state));
 }
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

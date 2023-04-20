@@ -10,8 +10,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LegacyViewManagerInteropViewProps final : public ViewProps {
  public:
@@ -26,5 +25,4 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
   folly::dynamic const otherProps;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

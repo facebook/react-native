@@ -14,8 +14,7 @@
 
 #include "PlatformTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A HostObject subclass representing the result of a setTimeout call.
@@ -113,5 +112,4 @@ class TimerManager {
   std::vector<uint32_t> reactNativeMicrotasksQueue_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -24,8 +24,7 @@
 #include <cmath>
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Yoga's `float` <-> React Native's `Float` (can be `double` or `float`)
@@ -855,5 +854,4 @@ inline std::string toString(const YGStyle::Edges &value) {
   return "{" + result + "}";
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

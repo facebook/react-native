@@ -16,8 +16,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/flags.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Describes a view that can be mounted.
@@ -123,8 +122,7 @@ struct ShadowViewNodePairLegacy final {
   bool operator!=(const ShadowViewNodePairLegacy &rhs) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

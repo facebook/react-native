@@ -9,8 +9,7 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 BufferedRuntimeExecutor::BufferedRuntimeExecutor(
     RuntimeExecutor runtimeExecutor)
@@ -58,5 +57,4 @@ void BufferedRuntimeExecutor::unsafeFlush() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

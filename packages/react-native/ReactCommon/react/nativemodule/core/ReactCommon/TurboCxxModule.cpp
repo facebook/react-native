@@ -15,8 +15,7 @@
 using namespace facebook;
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 CxxModule::Callback makeTurboCxxModuleCallback(
@@ -225,5 +224,4 @@ jsi::Value TurboCxxModule::invokeMethod(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

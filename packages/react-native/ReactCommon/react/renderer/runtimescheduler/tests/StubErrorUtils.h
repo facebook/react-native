@@ -10,8 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Exposes StubErrorUtils to JavaScript realm.
@@ -68,5 +67,4 @@ class StubErrorUtils : public jsi::HostObject {
   int reportFatalCallCount_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,8 +11,7 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * An app/platform-specific provider function to determine if a component
@@ -57,5 +56,4 @@ class NativeComponentRegistryBinding {
   HasComponentProviderFunctionType hasComponentProvider_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -16,8 +16,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Template for all <View>-like classes (classes which have all same props
@@ -120,5 +119,4 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

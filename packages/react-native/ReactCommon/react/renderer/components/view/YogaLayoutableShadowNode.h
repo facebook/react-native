@@ -19,8 +19,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using CompactValue = facebook::yoga::detail::CompactValue;
@@ -202,5 +201,4 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   ListOfShared yogaLayoutableChildren_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

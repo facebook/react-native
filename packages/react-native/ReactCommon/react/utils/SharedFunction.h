@@ -9,8 +9,7 @@
 #include <memory>
 #include <shared_mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `SharedFunction` implements a pattern of a shared callable object that
@@ -56,5 +55,4 @@ class SharedFunction {
   std::shared_ptr<Pair> pair_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

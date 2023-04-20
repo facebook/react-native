@@ -23,8 +23,7 @@
 
 #include "Entropy.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static Tag generateReactTag() {
   static Tag tag = 1000;
@@ -311,5 +310,4 @@ static inline ShadowNode::Shared generateShadowNodeTree(
       family);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,8 +14,7 @@
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char TextComponentName[];
 
@@ -62,5 +61,4 @@ class TextShadowNode : public ConcreteShadowNode<
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

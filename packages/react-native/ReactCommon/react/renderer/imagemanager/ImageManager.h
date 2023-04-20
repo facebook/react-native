@@ -14,8 +14,7 @@
 #include <react/renderer/imagemanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageManager;
 
@@ -36,5 +35,4 @@ class ImageManager {
   void *self_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

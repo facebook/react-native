@@ -23,8 +23,7 @@
   ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CallbackWrapper;
 class Instance;
@@ -93,8 +92,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 @protocol RCTTurboModule <NSObject>
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

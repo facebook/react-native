@@ -21,8 +21,7 @@
 #include <react/renderer/core/State.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 
@@ -226,5 +225,4 @@ class ShadowNode : public Sealable,
   ShadowNodeTraits traits_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

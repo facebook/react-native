@@ -211,8 +211,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
@@ -724,5 +723,4 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int a
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

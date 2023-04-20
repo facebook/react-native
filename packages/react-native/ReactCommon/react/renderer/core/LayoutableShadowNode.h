@@ -20,8 +20,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Transform.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct LayoutConstraints;
 struct LayoutContext;
@@ -165,5 +164,4 @@ class LayoutableShadowNode : public ShadowNode {
   LayoutMetrics layoutMetrics_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

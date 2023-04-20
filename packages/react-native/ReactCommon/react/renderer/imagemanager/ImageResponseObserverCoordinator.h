@@ -14,8 +14,7 @@
 #include <mutex>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * The ImageResponseObserverCoordinator receives events and completed image
@@ -85,5 +84,4 @@ class ImageResponseObserverCoordinator {
   mutable std::mutex mutex_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

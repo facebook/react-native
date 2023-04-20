@@ -18,8 +18,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * State for <ScrollView> component.
@@ -55,5 +54,4 @@ class ScrollViewState final {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -15,8 +15,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void ViewProps::propsDiffMapBuffer(
@@ -192,7 +191,6 @@ void ViewProps::propsDiffMapBuffer(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

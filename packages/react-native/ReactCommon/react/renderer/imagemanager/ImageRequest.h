@@ -13,8 +13,7 @@
 #include <react/renderer/imagemanager/ImageTelemetry.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents ongoing request for an image resource.
@@ -96,5 +95,4 @@ class ImageRequest final {
   std::function<void(void)> cancelRequest_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,13 +12,11 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 constexpr MapBuffer::Key PROPS_MAX = 1;
 constexpr MapBuffer::Key PROPS_NATIVE_ID = 1;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

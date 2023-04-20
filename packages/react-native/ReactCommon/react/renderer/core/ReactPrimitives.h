@@ -11,8 +11,7 @@
 #include <memory>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `Tag` and `InstanceHandle` are used to address React Native components.
@@ -74,5 +73,4 @@ enum class DisplayMode {
   Hidden = 2,
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

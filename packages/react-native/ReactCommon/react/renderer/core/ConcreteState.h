@@ -13,8 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Concrete and only template implementation of State interface.
@@ -111,5 +110,4 @@ class ConcreteState : public State {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

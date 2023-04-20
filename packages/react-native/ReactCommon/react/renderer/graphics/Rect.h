@@ -15,8 +15,7 @@
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains the location and dimensions of a rectangle.
@@ -101,8 +100,7 @@ struct Rect {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

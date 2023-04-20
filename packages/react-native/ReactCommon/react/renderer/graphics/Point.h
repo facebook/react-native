@@ -12,8 +12,7 @@
 #include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains a point in a two-dimensional coordinate system.
@@ -57,8 +56,7 @@ inline bool operator!=(Point const &rhs, Point const &lhs) noexcept {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

@@ -12,8 +12,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class TurboModuleBindingMode : uint8_t {
   HostObject = 0,
@@ -57,5 +56,4 @@ class TurboModuleBinding {
   TurboModuleProviderFunctionType moduleProvider_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

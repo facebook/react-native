@@ -15,8 +15,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * State for <Image> component.
@@ -66,5 +65,4 @@ class ImageState final {
   Float const blurRadius_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

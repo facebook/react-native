@@ -10,8 +10,7 @@
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/components/view/ViewEventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TextInputMetrics {
  public:
@@ -61,5 +60,4 @@ class TextInputEventEmitter : public ViewEventEmitter {
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

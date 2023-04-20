@@ -12,8 +12,7 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/utils/RunLoopObserver.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Event beat associated with main run loop.
@@ -43,5 +42,4 @@ class SynchronousEventBeat final : public EventBeat,
   std::shared_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

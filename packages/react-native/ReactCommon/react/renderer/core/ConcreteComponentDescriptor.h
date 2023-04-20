@@ -22,8 +22,7 @@
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Default template-based implementation of ComponentDescriptor.
@@ -213,5 +212,4 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

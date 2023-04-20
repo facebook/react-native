@@ -11,8 +11,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline void fromRawValue(
     const PropsParserContext &context,
@@ -238,5 +237,4 @@ inline void fromRawValue(
   abort();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

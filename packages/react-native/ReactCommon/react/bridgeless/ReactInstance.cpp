@@ -22,8 +22,7 @@
 #include <tuple>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Looping on \c drainMicrotasks until it completes or hits the retries bound.
 static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
@@ -454,5 +453,4 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

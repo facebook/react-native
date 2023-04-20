@@ -13,8 +13,7 @@
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Unified layout constraints for measuring.
@@ -46,8 +45,7 @@ inline bool operator!=(
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>

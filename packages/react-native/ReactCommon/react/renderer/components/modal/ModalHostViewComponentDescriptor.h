@@ -11,8 +11,7 @@
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <ModalHostView> component.
@@ -43,5 +42,4 @@ class ModalHostViewComponentDescriptor final
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

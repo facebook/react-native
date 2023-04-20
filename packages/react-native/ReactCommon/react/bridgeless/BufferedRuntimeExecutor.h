@@ -11,8 +11,7 @@
 #include <atomic>
 #include <queue>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BufferedRuntimeExecutor {
  public:
@@ -47,5 +46,4 @@ class BufferedRuntimeExecutor {
   std::priority_queue<BufferedWork> queue_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

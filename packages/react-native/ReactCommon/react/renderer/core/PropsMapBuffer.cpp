@@ -10,8 +10,7 @@
 
 #ifdef ANDROID
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void Props::propsDiffMapBuffer(
     Props const *oldPropsPtr,
@@ -31,6 +30,5 @@ void Props::propsDiffMapBuffer(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 #endif
