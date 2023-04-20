@@ -72,7 +72,7 @@ GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
   }
 
   // Sort by starting time (or ending time, if starting times are equal)
-  std::stable_sort(
+  std::sort(
       res.entries.begin(),
       res.entries.end(),
       [](const RawPerformanceEntry &lhs, const RawPerformanceEntry &rhs) {
