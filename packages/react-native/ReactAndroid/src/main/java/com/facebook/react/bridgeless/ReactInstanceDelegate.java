@@ -24,6 +24,8 @@ public interface ReactInstanceDelegate {
 
   JSBundleLoader getJSBundleLoader(Context context);
 
+  BindingsInstaller getBindingsInstaller();
+
   TurboModuleManagerDelegate getTurboModuleManagerDelegate(ReactApplicationContext context);
 
   List<ViewManager> getViewManagers(ReactApplicationContext context);

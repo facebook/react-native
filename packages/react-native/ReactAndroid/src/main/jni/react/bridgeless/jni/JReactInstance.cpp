@@ -11,7 +11,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <BindingsInstaller.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/RecoverableError.h>
 #include <fb/fbjni.h>
@@ -37,6 +36,7 @@ JReactInstance::JReactInstance(
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+    jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling) noexcept {
   // TODO(janzer): Lazily create runtime
   auto sharedJSMessageQueueThread =
@@ -50,10 +50,6 @@ JReactInstance::JReactInstance(
   auto timerManager = std::make_shared<TimerManager>(std::move(timerRegistry));
   jsTimerExecutor->cthis()->setTimerManager(timerManager);
 
-  // Create the instance
-  std::unique_ptr<BindingsInstaller> bindingsInstaller =
-      std::make_unique<BindingsInstaller>();
-
   jReactExceptionManager_ = jni::make_global(jReactExceptionManager);
   auto jsErrorHandlingFunc = [this](MapBuffer errorMap) noexcept {
     if (jReactExceptionManager_ != nullptr) {
@@ -63,26 +59,31 @@ JReactInstance::JReactInstance(
     }
   };
 
+  jBindingsInstaller_ = jni::make_global(jBindingsInstaller);
+
   instance_ = std::make_unique<ReactInstance>(
       jsEngineInstance->cthis()->createJSRuntime(),
       sharedJSMessageQueueThread,
       timerManager,
       std::move(jsErrorHandlingFunc));
-  auto appBindingInstaller = bindingsInstaller->getBindingsInstallFunc();
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
-  instance_->initializeRuntime(
-      options,
-      [appBindingInstaller, instance = instance_.get()](jsi::Runtime &runtime) {
-        react::Logger androidLogger =
-            static_cast<void (*)(const std::string &, unsigned int)>(
-                &reactAndroidLoggingHook);
-        react::bindNativeLogger(runtime, androidLogger);
+  instance_->initializeRuntime(options, [this](jsi::Runtime &runtime) {
+    react::Logger androidLogger =
+        static_cast<void (*)(const std::string &, unsigned int)>(
+            &reactAndroidLoggingHook);
+    react::bindNativeLogger(runtime, androidLogger);
+    if (jBindingsInstaller_ != nullptr) {
+      auto appBindingInstaller =
+          jBindingsInstaller_->cthis()->getBindingsInstallFunc();
+      if (appBindingInstaller != nullptr) {
         appBindingInstaller(runtime);
-      });
+      }
+    }
+  });
 
   auto unbufferedRuntimeExecutor = instance_->getUnbufferedRuntimeExecutor();
   // Set up the JS and native modules call invokers (for TurboModules)
@@ -112,6 +113,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+    jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling) {
   return makeCxxInstance(
       jsEngineInstance,
@@ -120,6 +122,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       javaTimerManager,
       jsTimerExecutor,
       jReactExceptionManager,
+      jBindingsInstaller,
       isProfiling);
 }
 
