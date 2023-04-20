@@ -154,6 +154,11 @@ android {
     if (rootProject.hasProperty("ndkVersion")) {
         ndkVersion rootProject.ext.ndkVersion
     }
+    // For M1 Users we need to use the NDK 24, otherwise we default to the
+    // side-by-side NDK version from AGP.
+    if (System.properties['os.arch'] == "aarch64") {
+        ndkVersion = "24.0.8215888"
+    }
 
     flavorDimensions "vm"
     productFlavors {
