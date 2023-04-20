@@ -4,11 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @noformat
+ * @format
  * @flow
- * @generated SignedSource<<744176db456e2656dac661d36e55f42a>>
- *
- * This file was sync'd from the facebook/react repository.
  */
 
 'use strict';
