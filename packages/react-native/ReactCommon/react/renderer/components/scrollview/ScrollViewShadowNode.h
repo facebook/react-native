@@ -28,6 +28,11 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ScrollViewState initialStateData(
+      ShadowNodeFragment const &fragment,
+      ShadowNodeFamilyFragment const &familyFragment,
+      ComponentDescriptor const &componentDescriptor);
+
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
