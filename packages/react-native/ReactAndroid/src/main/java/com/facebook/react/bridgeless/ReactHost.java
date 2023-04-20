@@ -93,8 +93,7 @@ public class ReactHost {
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
   private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
-  private final Set<ReactSurface> mAttachedSurfaces =
-      Collections.synchronizedSet(new HashSet<ReactSurface>());
+  private final Set<ReactSurface> mAttachedSurfaces = Collections.synchronizedSet(new HashSet<>());
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final MemoryPressureListener mMemoryPressureListener;
   private final boolean mAllowPackagerServerAccess;
@@ -106,8 +105,7 @@ public class ReactHost {
       new BridgelessAtomicRef<>(
           Task.forResult(
               nullsafeFIXME(
-                  (ReactInstance) null,
-                  "forResult parameter supports null, but is not annotated as @Nullable")));
+                  null, "forResult parameter supports null, but is not annotated as @Nullable")));
 
   private final BridgelessAtomicRef<BridgelessReactContext> mBridgelessReactContextRef =
       new BridgelessAtomicRef<>(null);
@@ -119,7 +117,7 @@ public class ReactHost {
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
       new ReactLifecycleStateManager(mBridgelessReactStateTracker);
 
-  private static AtomicInteger mCounter = new AtomicInteger(0);
+  private static final AtomicInteger mCounter = new AtomicInteger(0);
   private final int mId = mCounter.getAndIncrement();
 
   public ReactHost(
@@ -197,7 +195,7 @@ public class ReactHost {
   @ThreadConfined("ReactHost")
   private @Nullable Task<Void> mPreloadTask = null;
 
-  public Task<Void> old_preload() {
+  private Task<Void> old_preload() {
     final String method = "old_preload()";
     return Task.call(
             () -> {
@@ -225,7 +223,7 @@ public class ReactHost {
         .continueWithTask(Task::getResult);
   }
 
-  public Task<Void> new_preload() {
+  private Task<Void> new_preload() {
     final String method = "new_preload()";
     return Task.call(
             () -> {
@@ -703,7 +701,6 @@ public class ReactHost {
    * @return
    */
   private Task<ReactInstance> getOrCreateReactInstanceTask() {
-    final String method = "getOrCreateReactInstanceTask()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(this::waitThen_new_getOrCreateReactInstanceTask, mBGExecutor)
           .continueWithTask(Task::getResult);
@@ -890,10 +887,10 @@ public class ReactHost {
                   mBGExecutor)
               .onSuccess(
                   task -> {
-                    /**
-                     * Call ReactContext.onHostResume() only when already in the resumed state which
-                     * aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
-                     */
+                    /*
+                     Call ReactContext.onHostResume() only when already in the resumed state which
+                     aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
+                    */
                     mReactLifecycleStateManager.resumeReactContextIfHostResumed(
                         reactContext, mActivity.get());
 
