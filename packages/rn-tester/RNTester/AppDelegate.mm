@@ -243,7 +243,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
       }));
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
