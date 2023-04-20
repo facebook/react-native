@@ -20,12 +20,12 @@ import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 const marks: Map<string, number> = new Map();
 
 const NativePerformanceMock: NativePerformance = {
-  mark: (name: string, startTime: number, duration: number): void => {
+  mark: (name: string, startTime: number): void => {
     NativePerformanceObserver?.logRawEntry({
       name,
       entryType: RawPerformanceEntryTypeValues.MARK,
       startTime,
-      duration,
+      duration: 0,
     });
     marks.set(name, startTime);
   },

@@ -15,6 +15,10 @@
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
+static inline double getCurrentTimeStamp() {
+  return JSExecutor::performanceNow();
+}
+
 PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
   return instance;
@@ -134,13 +138,12 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
 
 void PerformanceEntryReporter::mark(
     const std::string &name,
-    double startTime,
-    double duration) {
+    const std::optional<double> &startTime) {
   logEntry(RawPerformanceEntry{
       name,
       static_cast<int>(PerformanceEntryType::MARK),
-      startTime,
-      duration,
+      startTime ? *startTime : getCurrentTimeStamp(),
+      0.0,
       std::nullopt,
       std::nullopt,
       std::nullopt});
@@ -352,7 +355,7 @@ EventTag PerformanceEntryReporter::onEventStart(const char *name) {
     sCurrentEventTag_ = 1;
   }
 
-  auto timeStamp = JSExecutor::performanceNow();
+  auto timeStamp = getCurrentTimeStamp();
   {
     std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(std::make_pair(
@@ -365,7 +368,7 @@ void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
   if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
-  auto timeStamp = JSExecutor::performanceNow();
+  auto timeStamp = getCurrentTimeStamp();
   {
     std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -379,7 +382,7 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
   if (!isReporting(PerformanceEntryType::EVENT) || tag == 0) {
     return;
   }
-  auto timeStamp = JSExecutor::performanceNow();
+  auto timeStamp = getCurrentTimeStamp();
   {
     std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
