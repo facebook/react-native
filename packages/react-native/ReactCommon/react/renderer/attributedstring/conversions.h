@@ -30,8 +30,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
   switch (dynamicTypeRamp) {
@@ -1306,5 +1305,4 @@ inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

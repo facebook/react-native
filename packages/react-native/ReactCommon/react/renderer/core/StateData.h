@@ -15,8 +15,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Dummy type that is used as a placeholder for state data for nodes that
@@ -33,5 +32,4 @@ struct StateData final {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

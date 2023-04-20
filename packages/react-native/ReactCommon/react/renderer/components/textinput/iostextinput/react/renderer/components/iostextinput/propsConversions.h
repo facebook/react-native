@@ -12,8 +12,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static TextInputTraits convertRawProp(
     const PropsParserContext &context,
@@ -179,5 +178,4 @@ inline void fromRawValue(
     LOG(ERROR) << "Unsupported Selection type";
   }
 }
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

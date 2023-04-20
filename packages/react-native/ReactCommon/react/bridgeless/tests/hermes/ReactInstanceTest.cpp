@@ -20,8 +20,7 @@
 using ::testing::_;
 using ::testing::SaveArg;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MockTimerRegistry : public PlatformTimerRegistry {
  public:
@@ -866,5 +865,4 @@ function getResult() {
   EXPECT_EQ(result.getNumber(), 1);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

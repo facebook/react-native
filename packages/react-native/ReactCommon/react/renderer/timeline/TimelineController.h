@@ -16,8 +16,7 @@
 #include <react/renderer/timeline/TimelineHandler.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Provides tools for introspecting the series of commits and associated
@@ -76,5 +75,4 @@ class TimelineController final : public UIManagerCommitHook {
   mutable SurfaceId lastUpdatedSurface_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,8 +14,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RootShadowNode;
 
@@ -59,5 +58,4 @@ class RootShadowNode final
   Transform getTransform() const override;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

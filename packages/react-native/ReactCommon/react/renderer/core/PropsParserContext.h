@@ -10,8 +10,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // For props requiring some context to parse, this toolbox can be used.
 // It should be used as infrequently as possible - most props can and should
@@ -25,5 +24,4 @@ struct PropsParserContext {
   ContextContainer const &contextContainer;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

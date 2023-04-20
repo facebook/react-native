@@ -7,8 +7,7 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains the set of feature flags for the renderer core.
@@ -46,5 +45,4 @@ class CoreFeatures {
   static bool cacheLastTextMeasurement;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

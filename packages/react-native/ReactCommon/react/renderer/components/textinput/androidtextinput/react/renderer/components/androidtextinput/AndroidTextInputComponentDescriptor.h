@@ -17,8 +17,7 @@
 
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <AndroidTextInput> component.
@@ -181,5 +180,4 @@ class AndroidTextInputComponentDescriptor final
   mutable butter::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

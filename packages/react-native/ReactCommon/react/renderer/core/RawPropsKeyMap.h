@@ -12,8 +12,7 @@
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A map especially optimized to hold `{name: index}` relations.
@@ -60,5 +59,4 @@ class RawPropsKeyMap final {
       buckets_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

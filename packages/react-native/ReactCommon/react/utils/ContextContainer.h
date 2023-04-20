@@ -18,8 +18,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * General purpose dependency injection container.
@@ -109,5 +108,4 @@ class ContextContainer final {
   mutable butter::map<std::string, std::shared_ptr<void>> instances_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

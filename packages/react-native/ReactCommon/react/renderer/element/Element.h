@@ -14,8 +14,7 @@
 
 #include <react/renderer/element/ElementFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `Element<>` is an abstraction layer that allows describing component
@@ -154,5 +153,4 @@ class Element final {
   ElementFragment fragment_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

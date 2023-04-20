@@ -7,8 +7,7 @@
 
 #include "ReactNativeConfig.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * ReactNative configuration as provided by the hosting app.
@@ -42,5 +41,4 @@ double EmptyReactNativeConfig::getDouble(const std::string &param) const {
   return 0.0;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

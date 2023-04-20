@@ -15,8 +15,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Base templace class for all `ShadowNode`s which connects exact `ShadowNode`
@@ -132,5 +131,4 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

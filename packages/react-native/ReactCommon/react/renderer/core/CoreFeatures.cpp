@@ -7,8 +7,7 @@
 
 #include "CoreFeatures.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 bool CoreFeatures::enablePropIteratorSetter = false;
 bool CoreFeatures::enableMapBuffer = false;
@@ -17,5 +16,4 @@ bool CoreFeatures::useNativeState = false;
 bool CoreFeatures::cacheNSTextStorage = false;
 bool CoreFeatures::cacheLastTextMeasurement = false;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

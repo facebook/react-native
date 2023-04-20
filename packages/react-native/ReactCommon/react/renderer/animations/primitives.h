@@ -14,8 +14,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // This corresponds exactly with JS.
 enum class AnimationType {
@@ -101,5 +100,4 @@ struct LayoutAnimation {
   std::vector<AnimationKeyFrame> keyFrames;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

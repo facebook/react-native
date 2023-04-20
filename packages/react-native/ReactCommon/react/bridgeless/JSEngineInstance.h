@@ -10,8 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Interface for a class that creates and owns an instance of a JS VM
@@ -23,5 +22,4 @@ class JSEngineInstance {
   virtual ~JSEngineInstance() = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

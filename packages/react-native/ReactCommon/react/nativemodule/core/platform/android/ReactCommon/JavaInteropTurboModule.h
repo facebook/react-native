@@ -16,8 +16,7 @@
 
 #include "JavaTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
  public:
@@ -48,5 +47,4 @@ class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
   bool exportsConstants();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

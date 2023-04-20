@@ -15,8 +15,7 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BridgelessNativeModuleProxy : public jsi::HostObject {
   std::unique_ptr<TurboModuleBinding> binding_;
@@ -207,5 +206,4 @@ jsi::Value TurboModuleBinding::getModule(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

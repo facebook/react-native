@@ -10,8 +10,7 @@
 #include <functional>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Defines visibility of the shadow node and particular layout
@@ -32,8 +31,7 @@ enum class LayoutDirection {
   RightToLeft = 2,
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>

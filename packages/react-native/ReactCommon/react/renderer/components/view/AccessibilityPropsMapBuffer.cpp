@@ -8,8 +8,7 @@
 #include "AccessibilityPropsMapBuffer.h"
 #include "AccessibilityProps.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 
@@ -162,5 +161,4 @@ void AccessibilityProps::propsDiffMapBuffer(
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

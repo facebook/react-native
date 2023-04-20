@@ -10,8 +10,7 @@
 #include <optional>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // iOS & Android.
 enum class AutocapitalizationType {
@@ -225,5 +224,4 @@ class TextInputTraits final {
   std::string passwordRules{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

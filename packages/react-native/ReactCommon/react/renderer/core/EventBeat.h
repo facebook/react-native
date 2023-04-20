@@ -12,8 +12,7 @@
 #include <functional>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Event Beat serves two interleaving purposes: synchronization of event queues
@@ -87,5 +86,4 @@ class EventBeat {
   mutable std::atomic<bool> isRequested_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

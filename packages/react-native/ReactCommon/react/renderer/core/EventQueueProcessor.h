@@ -15,8 +15,7 @@
 #include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/StateUpdate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventQueueProcessor {
  public:
@@ -32,5 +31,4 @@ class EventQueueProcessor {
   mutable bool hasContinuousEventStarted_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

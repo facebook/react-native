@@ -9,8 +9,7 @@
 
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * ReactNative configuration as provided by the hosting app.
@@ -40,5 +39,4 @@ class EmptyReactNativeConfig : public ReactNativeConfig {
   double getDouble(const std::string &param) const override;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

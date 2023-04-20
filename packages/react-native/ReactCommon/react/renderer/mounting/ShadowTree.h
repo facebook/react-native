@@ -20,8 +20,7 @@
 #include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
     RootShadowNode const &oldRootShadowNode)>;
@@ -148,5 +147,4 @@ class ShadowTree final {
   MountingCoordinator::Shared mountingCoordinator_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

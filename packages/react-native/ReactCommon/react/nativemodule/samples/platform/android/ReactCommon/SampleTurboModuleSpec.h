@@ -13,8 +13,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * C++ class for module 'SampleTurboModule'
@@ -28,5 +27,4 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
     const std::string &moduleName,
     const JavaTurboModule::InitParams &params);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

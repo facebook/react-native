@@ -13,8 +13,7 @@
 
 #include <react/renderer/core/ShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * This is an implementation detail, do not use it directly.
@@ -58,5 +57,4 @@ class ElementFragment final {
   StateCallback stateCallback;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

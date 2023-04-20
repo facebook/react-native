@@ -13,8 +13,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 inline folly::dynamic toDynamic(ParagraphState const &paragraphState) {
@@ -37,5 +36,4 @@ inline MapBuffer toMapBuffer(ParagraphState const &paragraphState) {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

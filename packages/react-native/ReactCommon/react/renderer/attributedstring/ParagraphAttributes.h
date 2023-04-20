@@ -14,8 +14,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ParagraphAttributes;
 
@@ -81,8 +80,7 @@ class ParagraphAttributes : public DebugStringConvertible {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

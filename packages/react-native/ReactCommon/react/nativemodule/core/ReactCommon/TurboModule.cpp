@@ -7,8 +7,7 @@
 
 #include "TurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TurboModule::TurboModule(
     std::string name,
@@ -39,5 +38,4 @@ void TurboModule::emitDeviceEvent(
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

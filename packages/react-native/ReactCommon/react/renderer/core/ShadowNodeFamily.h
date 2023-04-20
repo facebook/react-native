@@ -16,8 +16,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNodeFamilyFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptor;
 class ShadowNode;
@@ -151,5 +150,4 @@ class ShadowNodeFamily final {
   mutable bool hasParent_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

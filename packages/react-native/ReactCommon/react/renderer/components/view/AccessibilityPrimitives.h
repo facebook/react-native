@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class AccessibilityTraits : uint32_t {
   None = 0,
@@ -137,5 +136,4 @@ enum class AccessibilityLiveRegion : uint8_t {
   Assertive,
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

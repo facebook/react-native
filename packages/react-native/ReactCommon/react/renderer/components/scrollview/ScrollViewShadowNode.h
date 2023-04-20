@@ -13,8 +13,7 @@
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ScrollViewComponentName[];
 
@@ -39,5 +38,4 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
   void updateScrollContentOffsetIfNeeded();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

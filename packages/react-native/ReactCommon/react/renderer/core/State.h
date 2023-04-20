@@ -15,8 +15,7 @@
 
 #include <react/renderer/core/ShadowNodeFamily.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * An abstract interface of State.
@@ -110,5 +109,4 @@ class State {
   size_t revision_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

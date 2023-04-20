@@ -9,8 +9,7 @@
 
 #include <cstdint>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * This interface is implemented by each platform.
@@ -30,5 +29,4 @@ class PlatformTimerRegistry {
 
 using TimerManagerDelegate = PlatformTimerRegistry;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

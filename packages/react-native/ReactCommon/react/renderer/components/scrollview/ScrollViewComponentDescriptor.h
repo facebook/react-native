@@ -10,11 +10,9 @@
 #include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ScrollViewComponentDescriptor =
     ConcreteComponentDescriptor<ScrollViewShadowNode>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

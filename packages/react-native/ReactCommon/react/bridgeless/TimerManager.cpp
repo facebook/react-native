@@ -10,8 +10,7 @@
 #include <cxxreact/SystraceSection.h>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
@@ -412,5 +411,4 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           }));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

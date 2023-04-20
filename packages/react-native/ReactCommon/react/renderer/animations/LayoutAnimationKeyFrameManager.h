@@ -21,8 +21,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef LAYOUT_ANIMATION_VERBOSE_LOGGING
 void PrintMutationInstruction(
@@ -176,5 +175,4 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
       ShadowViewMutationList const &mutations) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,8 +11,7 @@
 #include <jsi/jsi.h>
 #include <react/config/ReactNativeConfig.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class HermesInstance {
  public:
@@ -24,5 +23,4 @@ class HermesInstance {
       std::shared_ptr<::hermes::vm::CrashManager> cm) noexcept;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,8 +12,7 @@
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/RCTPlatformColorUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline ColorComponents parsePlatformColor(
     const PropsParserContext &context,
@@ -30,5 +29,4 @@ inline ColorComponents parsePlatformColor(
   return {0, 0, 0, 0};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

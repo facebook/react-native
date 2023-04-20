@@ -12,8 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class WeakFamilyRegistry final {
  public:
@@ -35,5 +34,4 @@ class WeakFamilyRegistry final {
   mutable std::unordered_map<SurfaceId, WeakFamilies> families_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

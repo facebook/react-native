@@ -17,8 +17,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptorParameters;
 class ComponentDescriptor;
@@ -158,5 +157,4 @@ class ComponentDescriptorParameters {
   ComponentDescriptor::Flavor flavor;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -13,8 +13,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TextProps : public Props, public BaseTextProps {
  public:
@@ -37,5 +36,4 @@ class TextProps : public Props, public BaseTextProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

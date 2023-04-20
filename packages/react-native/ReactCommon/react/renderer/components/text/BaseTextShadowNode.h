@@ -10,8 +10,7 @@
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Base class (one of) for shadow nodes that represents attributed text,
@@ -66,5 +65,4 @@ class BaseTextShadowNode {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
