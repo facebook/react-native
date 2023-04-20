@@ -19,12 +19,12 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
-@optional
-
 /**
- * Given a module name, return its actual class. If not provided, basic ObjC class lookup is performed.
+ * Given a module name, return its actual class. If nil is returned, basic ObjC class lookup is performed.
  */
 - (Class)getModuleClassFromName:(const char *)name;
+
+@optional
 
 /**
  * Given a module class, provide an instance for it. If not provided, default initializer is used.
