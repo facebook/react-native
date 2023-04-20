@@ -95,9 +95,17 @@ jest
       Constants: {},
     },
   }))
-  .mock('../Libraries/Image/Image', () =>
-    mockComponent('../Libraries/Image/Image'),
-  )
+  .mock('../Libraries/Image/Image', () => {
+    const Image = mockComponent('../Libraries/Image/Image');
+    Image.getSize = jest.fn();
+    Image.getSizeWithHeaders = jest.fn();
+    Image.prefetch = jest.fn();
+    Image.prefetchWithMetadata = jest.fn();
+    Image.queryCache = jest.fn();
+    Image.resolveAssetSource = jest.fn();
+
+    return Image;
+  })
   .mock('../Libraries/Text/Text', () =>
     mockComponent('../Libraries/Text/Text', MockNativeMethods),
   )
