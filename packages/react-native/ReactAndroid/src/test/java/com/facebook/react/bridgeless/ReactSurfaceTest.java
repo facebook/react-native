@@ -20,7 +20,6 @@ import android.content.Context;
 import android.view.View;
 import bolts.Task;
 import com.facebook.react.bridge.NativeMap;
-import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.testing.robolectric.v4.WithTestDefaultsRunner;
@@ -38,7 +37,6 @@ import org.robolectric.Robolectric;
 public class ReactSurfaceTest {
   @Mock ReactInstanceDelegate mReactInstanceDelegate;
   @Mock EventDispatcher mEventDispatcher;
-  @Mock ComponentFactory mComponentFactory;
 
   private ReactHost mReactHost;
   private Context mContext;
@@ -51,8 +49,7 @@ public class ReactSurfaceTest {
 
     mContext = Robolectric.buildActivity(Activity.class).create().get();
 
-    mReactHost =
-        spy(new ReactHost(mContext, mReactInstanceDelegate, mComponentFactory, false, null, false));
+    mReactHost = spy(new ReactHost(mContext, mReactInstanceDelegate, null, false, null, false));
     doAnswer(mockedStartSurface()).when(mReactHost).startSurface(any(ReactSurface.class));
     doAnswer(mockedStartSurface()).when(mReactHost).prerenderSurface(any(ReactSurface.class));
     doAnswer(mockedStopSurface()).when(mReactHost).stopSurface(any(ReactSurface.class));
