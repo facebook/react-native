@@ -41,8 +41,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
  public:
   NativePerformance(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void
-  mark(jsi::Runtime &rt, std::string name, double startTime, double duration);
+  void mark(jsi::Runtime &rt, std::string name, double startTime);
 
   void measure(
       jsi::Runtime &rt,
