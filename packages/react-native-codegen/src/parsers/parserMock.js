@@ -243,4 +243,12 @@ export class MockedParser implements Parser {
   convertKeywordToTypeAnnotation(keyword: string): string {
     return keyword;
   }
+
+  nameForNode(node: $FlowFixMe): string {
+    return '';
+  }
+
+  nextNode(resolvedTypeAnnotation: $FlowFixMe): $FlowFixMe {
+    return null;
+  }
 }

@@ -27,7 +27,11 @@ import type {
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  TypeResolutionStatus,
+} from './utils';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
@@ -817,6 +821,26 @@ function propertyNames(
     .filter(Boolean);
 }
 
+function handleEnumDeclaration(
+  node: $FlowFixMe,
+  resolvedTypeAnnotation: $FlowFixMe,
+  parser: Parser,
+): {
+  typeResolutionStatus: TypeResolutionStatus,
+  node: $FlowFixMe,
+} {
+  const typeResolutionStatus = {
+    successful: true,
+    type: 'enum',
+    name: parser.nameForNode(node),
+  };
+  const nextNode = parser.nextNode(resolvedTypeAnnotation);
+  return {
+    typeResolutionStatus,
+    node: nextNode,
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -836,4 +860,5 @@ module.exports = {
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
+  handleEnumDeclaration,
 };

@@ -15,7 +15,9 @@ import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 export type ASTNode = Object;
 
+const {handleEnumDeclaration} = require('../parsers-commons.js');
 const invariant = require('invariant');
+const {FlowParser} = require('./parser.js');
 
 function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
@@ -30,6 +32,7 @@ function resolveTypeAnnotation(
     typeAnnotation != null,
     'resolveTypeAnnotation(): typeAnnotation cannot be null',
   );
+  const parser = new FlowParser();
 
   let node = typeAnnotation;
   let nullable = false;
@@ -64,12 +67,13 @@ function resolveTypeAnnotation(
         break;
       }
       case 'EnumDeclaration': {
-        typeResolutionStatus = {
-          successful: true,
-          type: 'enum',
-          name: node.id.name,
-        };
-        node = resolvedTypeAnnotation.body;
+        const result = handleEnumDeclaration(
+          node,
+          resolvedTypeAnnotation,
+          parser,
+        );
+        typeResolutionStatus = result.typeResolutionStatus;
+        node = result.node;
         break;
       }
       default: {

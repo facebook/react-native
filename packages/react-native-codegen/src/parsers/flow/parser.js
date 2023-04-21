@@ -329,6 +329,14 @@ class FlowParser implements Parser {
   convertKeywordToTypeAnnotation(keyword: string): string {
     return keyword;
   }
+
+  nameForNode(node: $FlowFixMe): string {
+    return node.id.name;
+  }
+
+  nextNode(resolvedTypeAnnotation: $FlowFixMe): $FlowFixMe {
+    return resolvedTypeAnnotation.body;
+  }
 }
 
 module.exports = {

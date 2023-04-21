@@ -328,6 +328,14 @@ class TypeScriptParser implements Parser {
 
     return keyword;
   }
+
+  nameForNode(node: $FlowFixMe): string {
+    return node.typeName.name;
+  }
+
+  nextNode(resolvedTypeAnnotation: $FlowFixMe): $FlowFixMe {
+    return resolvedTypeAnnotation;
+  }
 }
 
 module.exports = {

@@ -17,7 +17,9 @@ const {parseTopLevelType} = require('./parseTopLevelType');
 // $FlowFixMe[unclear-type] Use flow-types for @babel/parser
 export type ASTNode = Object;
 
+const {handleEnumDeclaration} = require('../parsers-commons.js');
 const invariant = require('invariant');
+const {TypeScriptParser} = require('./parser.js');
 
 function resolveTypeAnnotation(
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -32,6 +34,7 @@ function resolveTypeAnnotation(
     typeAnnotation != null,
     'resolveTypeAnnotation(): typeAnnotation cannot be null',
   );
+  const parser = new TypeScriptParser();
 
   let node =
     typeAnnotation.type === 'TSTypeAnnotation'
@@ -76,12 +79,13 @@ function resolveTypeAnnotation(
         break;
       }
       case 'TSEnumDeclaration': {
-        typeResolutionStatus = {
-          successful: true,
-          type: 'enum',
-          name: node.typeName.name,
-        };
-        node = resolvedTypeAnnotation;
+        const result = handleEnumDeclaration(
+          node,
+          resolvedTypeAnnotation,
+          parser,
+        );
+        typeResolutionStatus = result.typeResolutionStatus;
+        node = result.node;
         break;
       }
       default: {

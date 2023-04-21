@@ -255,4 +255,19 @@ export interface Parser {
    * @returns: converted TypeAnnotation to Keywords
    */
   convertKeywordToTypeAnnotation(keyword: string): string;
+
+  /**
+   * Given a node, it extract the name of the node
+   * @parameter node
+   * @returns: the name of the node
+   */
+  nameForNode(node: $FlowFixMe): string;
+
+  /**
+   * Given a resolvedTypeAnnotation, produce the next node
+   * to be analyzed
+   * @Parameter resolvedTypeAnnotation
+   * @returns: the next node to be analyzed
+   */
+  nextNode(resolvedTypeAnnotation: $FlowFixMe): $FlowFixMe;
 }
