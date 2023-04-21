@@ -4347,22 +4347,3 @@ YOGA_EXPORT void YGConfigSetCloneNodeFunc(
     const YGCloneNodeFunc callback) {
   config->setCloneNodeCallback(callback);
 }
-
-static void YGTraverseChildrenPreOrder(
-    const YGVector& children,
-    const std::function<void(YGNodeRef node)>& f) {
-  for (YGNodeRef node : children) {
-    f(node);
-    YGTraverseChildrenPreOrder(node->getChildren(), f);
-  }
-}
-
-void YGTraversePreOrder(
-    YGNodeRef const node,
-    std::function<void(YGNodeRef node)>&& f) {
-  if (!node) {
-    return;
-  }
-  f(node);
-  YGTraverseChildrenPreOrder(node->getChildren(), f);
-}
