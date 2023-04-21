@@ -370,6 +370,7 @@ function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean,
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {

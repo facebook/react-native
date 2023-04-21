@@ -34,6 +34,7 @@ function buildPropSchema(
       name,
       typeAnnotation,
       defaultValue,
+      false, // Just to make `getTypeAnnotation` signature match with the one from Flow
       types,
       buildPropSchema,
     ),
