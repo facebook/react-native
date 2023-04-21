@@ -82,15 +82,3 @@ constexpr int n() {
 #else
 #define YG_ENUM_SEQ_DECL YG_ENUM_DECL
 #endif
-
-#ifdef __GNUC__
-#define YG_DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define YG_DEPRECATED __declspec(deprecated)
-#elif __cplusplus >= 201402L
-#if defined(__has_cpp_attribute)
-#if __has_cpp_attribute(deprecated)
-#define YG_DEPRECATED [[deprecated]]
-#endif
-#endif
-#endif

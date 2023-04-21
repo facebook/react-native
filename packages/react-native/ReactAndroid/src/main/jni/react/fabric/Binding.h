@@ -22,8 +22,7 @@
 #include "EventEmitterWrapper.h"
 #include "JFabricUIManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentFactory;
 class EventBeatManager;
@@ -151,5 +150,4 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableFabricLogs_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

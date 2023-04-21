@@ -14,8 +14,7 @@
 
 #include "NativeArray.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
@@ -55,5 +54,4 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
   Callback callback_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

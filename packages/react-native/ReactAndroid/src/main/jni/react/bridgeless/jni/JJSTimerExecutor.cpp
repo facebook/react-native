@@ -10,8 +10,7 @@
 #include <fb/fbjni.h>
 #include <jni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JJSTimerExecutor::setTimerManager(
     std::weak_ptr<TimerManager> timerManager) {
@@ -33,5 +32,4 @@ void JJSTimerExecutor::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

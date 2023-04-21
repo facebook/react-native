@@ -26,8 +26,7 @@
 #include <cmath>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 constexpr static auto kReactFeatureFlagsJavaDescriptor =
     "com/facebook/react/config/ReactFeatureFlags";
@@ -959,5 +958,4 @@ void FabricMountingManager::onAllAnimationsComplete() {
   allAnimationsCompleteJNI(javaUIManager_);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

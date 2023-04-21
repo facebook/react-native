@@ -15,8 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using namespace jni;
 
@@ -109,5 +108,4 @@ void JMessageQueueThread::quitSynchronous() {
   method(m_jobj);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

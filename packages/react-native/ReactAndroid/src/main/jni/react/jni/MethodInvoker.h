@@ -13,8 +13,7 @@
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
@@ -62,5 +61,4 @@ class MethodInvoker {
   bool isSync_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

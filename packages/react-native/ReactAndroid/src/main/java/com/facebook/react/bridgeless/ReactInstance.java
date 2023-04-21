@@ -221,7 +221,7 @@ public final class ReactInstance {
               }
             });
 
-    EventBeatManager eventBeatManager = new EventBeatManager(mBridgelessReactContext);
+    EventBeatManager eventBeatManager = new EventBeatManager();
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 

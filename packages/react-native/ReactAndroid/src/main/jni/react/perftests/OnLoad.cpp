@@ -13,8 +13,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using facebook::jni::alias_ref;
 
@@ -207,8 +206,7 @@ static void startWatchingForLogMessage(
 
 } // namespace logwatcher
 } // namespace
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 using namespace facebook::react;
 

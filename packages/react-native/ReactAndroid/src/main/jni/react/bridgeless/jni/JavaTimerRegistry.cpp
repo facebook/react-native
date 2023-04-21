@@ -7,8 +7,7 @@
 
 #include "JavaTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JavaTimerRegistry::JavaTimerRegistry(
     jni::global_ref<JJavaTimerManager::javaobject> javaTimerManager)
@@ -26,5 +25,4 @@ void JavaTimerRegistry::deleteTimer(uint32_t timerID) {
   javaTimerManager_->deleteTimer(timerID);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

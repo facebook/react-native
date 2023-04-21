@@ -14,8 +14,7 @@
 
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using namespace facebook::jni;
 
@@ -73,5 +72,4 @@ void ComponentNameResolverManager::installJSIBindings() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

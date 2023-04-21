@@ -9,8 +9,7 @@
 
 #include <fb/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<JHermesInstance::jhybriddata> JHermesInstance::initHybrid(
     jni::alias_ref<jhybridobject>) {
@@ -28,5 +27,4 @@ std::unique_ptr<jsi::Runtime> JHermesInstance::createJSRuntime() noexcept {
   return HermesInstance::createJSRuntime();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

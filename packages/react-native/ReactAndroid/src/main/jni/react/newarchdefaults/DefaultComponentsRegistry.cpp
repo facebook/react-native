@@ -12,8 +12,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<void(std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
@@ -66,5 +65,4 @@ void DefaultComponentsRegistry::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

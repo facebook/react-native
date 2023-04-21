@@ -8,8 +8,7 @@
 #include "SurfaceHandlerBinding.h"
 #include <react/renderer/scheduler/Scheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SurfaceHandlerBinding::SurfaceHandlerBinding(
     SurfaceId surfaceId,
@@ -113,5 +112,4 @@ void SurfaceHandlerBinding::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

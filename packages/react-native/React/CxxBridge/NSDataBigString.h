@@ -9,8 +9,7 @@
 
 #include <cxxreact/JSBigString.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NSDataBigString : public JSBigString {
  public:
@@ -38,5 +37,4 @@ class NSDataBigString : public JSBigString {
   size_t m_length;
 };
 
-}
-}
+} // namespace facebook::react

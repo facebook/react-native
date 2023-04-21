@@ -7,8 +7,7 @@
 
 #import "NSDataBigString.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static NSData *ensureNullTerminated(NSData *source)
 {
@@ -39,5 +38,4 @@ NSDataBigString::NSDataBigString(NSData *data)
   m_data = ensureNullTerminated(data);
 }
 
-}
-}
+} // namespace facebook::react

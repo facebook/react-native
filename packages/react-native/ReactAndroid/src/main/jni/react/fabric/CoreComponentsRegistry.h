@@ -12,8 +12,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include "ComponentFactory.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CoreComponentsRegistry
     : public facebook::jni::HybridClass<CoreComponentsRegistry> {
@@ -38,5 +37,4 @@ class CoreComponentsRegistry
       ComponentFactory *delegate);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

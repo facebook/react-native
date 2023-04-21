@@ -60,19 +60,21 @@ if (!includesTestPlan && !isFromPhabricator) {
 }
 
 // Check if there is a changelog and validate it
-const status = validateChangelog(danger.github.pr.body);
-const changelogInstructions =
-  'See <a target="_blank" href="https://reactnative.dev/contributing/changelogs-in-pull-requests">Changelog format</a>';
-if (status === 'missing') {
-  // Provides advice if a changelog is missing
-  const title = ':clipboard: Missing Changelog';
-  const idea =
-    'Please add a Changelog to your PR description. ' + changelogInstructions;
-  fail(`${title} - <i>${idea}</i>`);
-} else if (status === 'invalid') {
-  const title = ':clipboard: Verify Changelog Format';
-  const idea = changelogInstructions;
-  fail(`${title} - <i>${idea}</i>`);
+if (!isFromPhabricator) {
+  const status = validateChangelog(danger.github.pr.body);
+  const changelogInstructions =
+    'See <a target="_blank" href="https://reactnative.dev/contributing/changelogs-in-pull-requests">Changelog format</a>';
+  if (status === 'missing') {
+    // Provides advice if a changelog is missing
+    const title = ':clipboard: Missing Changelog';
+    const idea =
+      'Please add a Changelog to your PR description. ' + changelogInstructions;
+    fail(`${title} - <i>${idea}</i>`);
+  } else if (status === 'invalid') {
+    const title = ':clipboard: Verify Changelog Format';
+    const idea = changelogInstructions;
+    fail(`${title} - <i>${idea}</i>`);
+  }
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.

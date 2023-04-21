@@ -15,8 +15,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ReactNativeConfig;
 struct ShadowView;
@@ -68,5 +67,4 @@ class FabricMountingManager final {
       ShadowView const &newShadowView);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -37,8 +37,7 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
     jni::alias_ref<jclass>) {
@@ -586,5 +585,4 @@ void Binding::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
