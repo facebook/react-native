@@ -409,7 +409,7 @@ jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string& messag
 /**
  * Creates JSError with current JS runtime stack and Throwable stack trace.
  */
-jsi::JSError convertThrowableToJSError(jsi::Runtime &runtime, facebook::jni::local_ref<facebook::jni::JThrowable> throwable)
+jsi::JSError convertThrowableToJSError(jsi::Runtime &runtime, jni::local_ref<jni::JThrowable> throwable)
 {
   auto stackTrace = throwable->getStackTrace();
 
@@ -431,11 +431,8 @@ jsi::JSError convertThrowableToJSError(jsi::Runtime &runtime, facebook::jni::loc
   auto getMessage = throwable->getClass()
           ->getMethod<jni::local_ref<jni::JString>()>("getMessage");
   auto message = getMessage(throwable)->toStdString();
-  cause.setProperty(
-          runtime,
-          "name",
-          getName(throwable->getClass())->toStdString());
-  cause.setProperty(runtime,"message",message);
+  cause.setProperty(runtime, "name", getName(throwable->getClass())->toStdString());
+  cause.setProperty(runtime, "message", message);
   cause.setProperty(runtime, "stackElements", std::move(stackElements));
 
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
