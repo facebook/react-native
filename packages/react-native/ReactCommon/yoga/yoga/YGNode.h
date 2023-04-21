@@ -42,7 +42,6 @@ struct YOGA_EXPORT YGNode {
 private:
   void* context_ = nullptr;
   YGNodeFlags flags_ = {};
-  uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
     MeasureWithContextFn withContext;
@@ -113,9 +112,6 @@ public:
 
   // Getters
   void* getContext() const { return context_; }
-
-  uint8_t& reserved() { return reserved_; }
-  uint8_t reserved() const { return reserved_; }
 
   void print(void*);
 
