@@ -168,6 +168,26 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return (TurboModule) resolvedModule;
   }
 
+  public boolean unstable_isModuleRegistered(String moduleName) {
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null && moduleInfo.isTurboModule()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean unstable_isLegacyModuleRegistered(String moduleName) {
+    for (final ModuleProvider moduleProvider : mModuleProviders) {
+      final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
+      if (moduleInfo != null && !moduleInfo.isTurboModule()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
