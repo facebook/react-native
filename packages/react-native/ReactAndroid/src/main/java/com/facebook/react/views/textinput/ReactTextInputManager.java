@@ -39,8 +39,6 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
@@ -72,7 +70,6 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributeProps;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.text.TextTransform;
 import com.facebook.yoga.YogaConstants;
@@ -1327,42 +1324,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       // TODO T58784068: move this constructor once Fabric is shipped
       view.setPadding(0, 0, 0, 0);
     }
-
     stateManager.setStateWrapper(stateWrapper);
-
-    MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
-    if (stateMapBuffer != null) {
-      return getReactTextUpdate(view, props, stateMapBuffer);
-    }
-
-    ReadableNativeMap state = stateWrapper.getStateData();
-    if (state == null || !state.hasKey("attributedString")) {
-      return null;
-    }
-
-    ReadableMap attributedString = state.getMap("attributedString");
-    ReadableMap paragraphAttributes = state.getMap("paragraphAttributes");
-    if (attributedString == null || paragraphAttributes == null) {
-      throw new IllegalArgumentException("Invalid TextInput State was received as a parameters");
-    }
-
-    Spannable spanned =
-        TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, mReactTextViewManagerCallback);
-
-    int textBreakStrategy =
-        TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(ViewProps.TEXT_BREAK_STRATEGY));
-    int currentJustificationMode =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.O ? 0 : view.getJustificationMode();
-
-    return ReactTextUpdate.buildReactTextUpdateFromState(
-        spanned,
-        state.getInt("mostRecentEventCount"),
-        TextAttributeProps.getTextAlignment(
-            props, TextLayoutManager.isRTL(attributedString), view.getGravityHorizontal()),
-        textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode));
+    return getReactTextUpdate(view, props, stateWrapper.getStateDataMapBuffer());
   }
 
   public Object getReactTextUpdate(ReactEditText view, ReactStylesDiffMap props, MapBuffer state) {

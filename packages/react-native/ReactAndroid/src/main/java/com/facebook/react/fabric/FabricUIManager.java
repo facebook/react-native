@@ -77,7 +77,6 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
-import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -433,17 +432,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (!ReactFeatureFlags.enableBridgelessArchitecture) {
       mEventDispatcher.onCatalystInstanceDestroyed();
     }
-  }
-
-  @SuppressWarnings("unused")
-  private NativeArray measureLines(
-      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
-    return (NativeArray)
-        TextLayoutManager.measureLines(
-            mReactApplicationContext,
-            attributedString,
-            paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
   }
 
   @SuppressWarnings("unused")
