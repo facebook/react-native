@@ -121,7 +121,7 @@ module.exports = async (github, context, label) => {
       await addComment(
         `| :warning: | Missing Reproducible Example |\n` +
           `| --- | --- |\n` +
-          `| :information_source: | It looks like your issue is missing a reproducible example. Please provide a [Snack](https://snack.expo.dev) or a repository that demonstrates the issue you are reporting in a [minimal, complete, and reproducible](https://stackoverflow.com/help/minimal-reproducible-example) manner. |`,
+          `| :information_source: | It looks like your issue is missing a reproducible example. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate)</li></ul> |`,
       );
       await requestAuthorFeedback();
       return;
