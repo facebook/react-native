@@ -52,11 +52,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       if (reactPackage instanceof TurboReactPackage) {
         final TurboReactPackage turboPkg = (TurboReactPackage) reactPackage;
         final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                return turboPkg.getModule(moduleName, applicationContext);
-              }
-            };
+            moduleName -> turboPkg.getModule(moduleName, applicationContext);
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(
             moduleProvider, turboPkg.getReactModuleInfoProvider().getReactModuleInfos());
@@ -73,11 +69,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
         final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
-                return provider != null ? provider.get() : null;
-              }
+            moduleName -> {
+              Provider<? extends NativeModule> provider = moduleSpecProviderMap.get(moduleName);
+              return provider != null ? provider.get() : null;
             };
 
         mModuleProviders.add(moduleProvider);
@@ -130,12 +124,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
           moduleMap.put(moduleName, module);
         }
 
-        final ModuleProvider moduleProvider =
-            new ModuleProvider() {
-              public NativeModule getModule(String moduleName) {
-                return moduleMap.get(moduleName);
-              }
-            };
+        final ModuleProvider moduleProvider = moduleMap::get;
 
         mModuleProviders.add(moduleProvider);
         mPackageModuleInfos.put(moduleProvider, reactModuleInfoMap);
