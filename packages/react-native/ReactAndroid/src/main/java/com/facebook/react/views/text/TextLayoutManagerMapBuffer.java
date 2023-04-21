@@ -37,8 +37,9 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 /** Class responsible of creating {@link Spanned} object for the JS representation of Text */
 public class TextLayoutManagerMapBuffer {
@@ -83,8 +84,7 @@ public class TextLayoutManagerMapBuffer {
 
   private static final Object sCacheLock = new Object();
 
-  private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
-      new ConcurrentHashMap<>();
+  private static final Map<Integer, Spannable> sTagToSpannableCache = new HashMap<>();
 
   private static final LruCache<ReadableMapBuffer, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
