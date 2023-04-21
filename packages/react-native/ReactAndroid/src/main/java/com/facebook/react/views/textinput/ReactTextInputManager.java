@@ -1235,6 +1235,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     public void onSelectionChanged(int start, int end) {
       // Calculate cursor position
       Layout layout = mReactEditText.getLayout();
+      if (mReactEditText.getLayout() == null) {
+        mReactEditText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+              mReactEditText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+              onSelectionChanged(start, end);
+            }
+          });
+          return;
+      }
       int line = layout.getLineForOffset(start);
       int baseline = layout.getLineBaseline(line);
       int ascent = layout.getLineAscent(line);
