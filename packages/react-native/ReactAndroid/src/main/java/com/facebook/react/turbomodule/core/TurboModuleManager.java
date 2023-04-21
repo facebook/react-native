@@ -75,21 +75,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     mTurboModuleProvider =
         delegate == null
             ? nullProvider
-            : moduleName -> {
-              NativeModule module = (NativeModule) delegate.getModule(moduleName);
-              if (module == null) {
-                CxxModuleWrapper legacyCxxModule = delegate.getLegacyCxxModule(moduleName);
-
-                if (legacyCxxModule != null) {
-                  // TurboModuleManagerDelegate.getLegacyCxxModule() must always return TurboModules
-                  Assertions.assertCondition(
-                      legacyCxxModule instanceof TurboModule,
-                      "CxxModuleWrapper \"" + moduleName + "\" is not a TurboModule");
-                  return legacyCxxModule;
-                }
-              }
-              return module;
-            };
+            : moduleName -> (NativeModule) delegate.getModule(moduleName);
 
     mLegacyModuleProvider =
         delegate == null || !shouldCreateLegacyModules()

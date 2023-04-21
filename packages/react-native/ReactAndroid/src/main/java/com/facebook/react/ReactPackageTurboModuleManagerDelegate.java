@@ -219,13 +219,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return resolvedModule;
   }
 
-  @Deprecated
-  @Nullable
-  @Override
-  public CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    return null;
-  }
-
   @Override
   public List<String> getEagerInitModuleNames() {
     List<String> moduleNames = new ArrayList<>();
