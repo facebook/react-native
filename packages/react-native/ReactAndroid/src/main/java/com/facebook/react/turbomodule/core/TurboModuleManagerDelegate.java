@@ -38,6 +38,8 @@ public abstract class TurboModuleManagerDelegate {
   @Nullable
   public abstract TurboModule getModule(String moduleName);
 
+  public abstract boolean unstable_isModuleRegistered(String moduleName);
+
   /**
    * Create an return a legacy NativeModule with name `moduleName`. If `moduleName` is a
    * TurboModule, return null.
@@ -46,6 +48,10 @@ public abstract class TurboModuleManagerDelegate {
   public NativeModule getLegacyModule(String moduleName) {
     return null;
   }
+
+  public boolean unstable_isLegacyModuleRegistered(String moduleName) {
+    return false;
+  };
 
   public List<String> getEagerInitModuleNames() {
     return new ArrayList<>();
