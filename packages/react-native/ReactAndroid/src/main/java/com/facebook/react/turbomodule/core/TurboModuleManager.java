@@ -10,12 +10,15 @@ package com.facebook.react.turbomodule.core;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
@@ -227,6 +230,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         /*
          * Always return null after cleanup has started, so that getNativeModule(moduleName) returns null.
          */
+        logError(
+            "getModule(): Tried to get module \""
+                + moduleName
+                + "\", but TurboModuleManager was tearing down. Returning null. Was legacy: "
+                + isLegacyModule(moduleName)
+                + ". Was turbo: "
+                + isTurboModule(moduleName)
+                + ".");
         return null;
       }
 
@@ -302,6 +313,15 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
          * Therefore, we should initialize on the TurboModule now.
          */
         nativeModule.initialize();
+      } else {
+        logError(
+            "getOrCreateModule(): Unable to create module \""
+                + moduleName
+                + "\". Was legacy: "
+                + isLegacyModule(moduleName)
+                + ". Was turbo: "
+                + isTurboModule(moduleName)
+                + ".");
       }
 
       TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
@@ -372,6 +392,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     }
 
     return false;
+  }
+
+  public static void logError(String message) {
+    FLog.e("TurboModuleManager", message);
+    if (shouldRouteTurboModulesThroughInteropLayer()) {
+      ReactSoftExceptionLogger.logSoftException(
+          "TurboModuleManager", new ReactNoCrashSoftException(message));
+    }
   }
 
   private native HybridData initHybrid(
