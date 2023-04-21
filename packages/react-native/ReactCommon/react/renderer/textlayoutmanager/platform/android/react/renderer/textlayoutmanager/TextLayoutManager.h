@@ -78,11 +78,6 @@ class TextLayoutManager {
   void *getNativeTextLayoutManager() const;
 
  private:
-  TextMeasurement doMeasure(
-      AttributedString attributedString,
-      ParagraphAttributes const &paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
-
   TextMeasurement doMeasureMapBuffer(
       AttributedString attributedString,
       ParagraphAttributes const &paragraphAttributes,
