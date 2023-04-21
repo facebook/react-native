@@ -457,7 +457,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
-    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasNativeModule(moduleName)
+    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
         ? true
         : mNativeModuleRegistry.hasModule(moduleName);
   }
@@ -482,7 +482,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Nullable
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
-      NativeModule module = getTurboModuleRegistry().getNativeModule(moduleName);
+      NativeModule module = getTurboModuleRegistry().getModule(moduleName);
       if (module != null) {
         return module;
       }
@@ -509,7 +509,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
     if (getTurboModuleRegistry() != null) {
-      for (NativeModule module : getTurboModuleRegistry().getNativeModules()) {
+      for (NativeModule module : getTurboModuleRegistry().getModules()) {
         nativeModules.add(module);
       }
     }
