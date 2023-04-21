@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.text;
 
-import static com.facebook.react.config.ReactFeatureFlags.enableTextSpannableCache;
+import static com.facebook.react.config.ReactFeatureFlags.enableTextMeasureCache;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
@@ -221,7 +221,7 @@ public class TextLayoutManagerMapBuffer {
       Integer cacheId = attributedString.getInt(AS_KEY_CACHE_ID);
       text = sTagToSpannableCache.get(cacheId);
     } else {
-      if (enableTextSpannableCache && attributedString instanceof ReadableMapBuffer) {
+      if (enableTextMeasureCache && attributedString instanceof ReadableMapBuffer) {
         ReadableMapBuffer mapBuffer = (ReadableMapBuffer) attributedString;
         synchronized (sCacheLock) {
           text = sSpannableCache.get(mapBuffer);
