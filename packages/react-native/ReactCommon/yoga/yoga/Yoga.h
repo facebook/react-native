@@ -82,7 +82,7 @@ WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeRef node);
 WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef owner,
-    const YGNodeRef children[],
+    const YGNodeRef* children,
     uint32_t count);
 
 WIN_EXPORT void YGNodeSetIsReferenceBaseline(
@@ -364,11 +364,3 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     bool forceFloor);
 
 YG_EXTERN_C_END
-
-#ifdef __cplusplus
-
-#include <vector>
-
-void YGNodeSetChildren(YGNodeRef owner, const std::vector<YGNodeRef>& children);
-
-#endif

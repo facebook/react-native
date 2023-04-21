@@ -379,13 +379,16 @@ YOGA_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef owner) {
   owner->markDirtyAndPropagate();
 }
 
-static void YGNodeSetChildrenInternal(
-    YGNodeRef const owner,
-    const std::vector<YGNodeRef>& children) {
+YOGA_EXPORT void YGNodeSetChildren(
+    const YGNodeRef owner,
+    const YGNodeRef* children,
+    const uint32_t count) {
   if (!owner) {
     return;
   }
-  if (children.size() == 0) {
+
+  const YGVector childrenVector = {children, children + count};
+  if (childrenVector.size() == 0) {
     if (YGNodeGetChildCount(owner) > 0) {
       for (YGNodeRef const child : owner->getChildren()) {
         child->setLayout(YGLayout());
@@ -399,33 +402,19 @@ static void YGNodeSetChildrenInternal(
       for (YGNodeRef const oldChild : owner->getChildren()) {
         // Our new children may have nodes in common with the old children. We
         // don't reset these common nodes.
-        if (std::find(children.begin(), children.end(), oldChild) ==
-            children.end()) {
+        if (std::find(childrenVector.begin(), childrenVector.end(), oldChild) ==
+            childrenVector.end()) {
           oldChild->setLayout(YGLayout());
           oldChild->setOwner(nullptr);
         }
       }
     }
-    owner->setChildren(children);
-    for (YGNodeRef child : children) {
+    owner->setChildren(childrenVector);
+    for (YGNodeRef child : childrenVector) {
       child->setOwner(owner);
     }
     owner->markDirtyAndPropagate();
   }
-}
-
-YOGA_EXPORT void YGNodeSetChildren(
-    const YGNodeRef owner,
-    const YGNodeRef c[],
-    const uint32_t count) {
-  const YGVector children = {c, c + count};
-  YGNodeSetChildrenInternal(owner, children);
-}
-
-YOGA_EXPORT void YGNodeSetChildren(
-    YGNodeRef const owner,
-    const std::vector<YGNodeRef>& children) {
-  YGNodeSetChildrenInternal(owner, children);
 }
 
 YOGA_EXPORT YGNodeRef
