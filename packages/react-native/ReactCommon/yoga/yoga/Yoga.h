@@ -367,13 +367,7 @@ YG_EXTERN_C_END
 
 #ifdef __cplusplus
 
-#include <functional>
 #include <vector>
-
-// Calls f on each node in the tree including the given node argument.
-void YGTraversePreOrder(
-    YGNodeRef node,
-    std::function<void(YGNodeRef node)>&& f);
 
 void YGNodeSetChildren(YGNodeRef owner, const std::vector<YGNodeRef>& children);
 
