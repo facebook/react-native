@@ -62,7 +62,7 @@ import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.ReactUnderlineSpan;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
-import com.facebook.react.views.text.TextLayoutManager;
+import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -187,7 +187,7 @@ public class ReactEditText extends AppCompatEditText
     if (DEBUG_MODE) {
       FLog.e(TAG, "finalize[" + getId() + "] delete cached spannable");
     }
-    TextLayoutManager.deleteCachedSpannableForTag(getId());
+    TextLayoutManagerMapBuffer.deleteCachedSpannableForTag(getId());
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -1092,8 +1092,8 @@ public class ReactEditText extends AppCompatEditText
   /**
    * Update the cached Spannable used in TextLayoutManager to measure the text in Fabric. This is
    * mostly copied from ReactTextInputShadowNode.java (the non-Fabric version) and
-   * TextLayoutManager.java with some very minor modifications. There's some duplication between
-   * here and TextLayoutManager, so there might be an opportunity for refactor.
+   * TextLayoutManagerMapBuffer.java with some very minor modifications. There's some duplication
+   * between here and TextLayoutManager, so there might be an opportunity for refactor.
    */
   private void updateCachedSpannable() {
     // Noops in non-Fabric
@@ -1165,7 +1165,7 @@ public class ReactEditText extends AppCompatEditText
     }
 
     addSpansFromStyleAttributes(sb);
-    TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+    TextLayoutManagerMapBuffer.setCachedSpannabledForTag(getId(), sb);
   }
 
   void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {

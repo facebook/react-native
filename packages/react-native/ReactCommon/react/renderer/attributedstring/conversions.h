@@ -1266,6 +1266,12 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
   return builder.build();
 }
 
+inline MapBuffer cacheIdToMapBuffer(int64_t cacheId) {
+  auto builder = MapBufferBuilder();
+  builder.putInt(AS_KEY_CACHE_ID, (int32_t)cacheId);
+  return builder.build();
+}
+
 inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
   auto fragmentsBuilder = MapBufferBuilder();
 

@@ -22,75 +22,6 @@ using namespace facebook::jni;
 
 namespace facebook::react {
 
-Size measureAndroidComponent(
-    ContextContainer::Shared const &contextContainer,
-    Tag rootTag,
-    std::string const &componentName,
-    folly::dynamic localData,
-    folly::dynamic props,
-    folly::dynamic state,
-    float minWidth,
-    float maxWidth,
-    float minHeight,
-    float maxHeight,
-    jfloatArray attachmentPositions) {
-  const jni::global_ref<jobject> &fabricUIManager =
-      contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
-
-  static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<jlong(
-              jint,
-              jstring,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloatArray)>("measure");
-
-  auto componentNameRef = make_jstring(componentName);
-  local_ref<ReadableNativeMap::javaobject> localDataRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(localData));
-  local_ref<ReadableNativeMap::javaobject> propsRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(props));
-  local_ref<ReadableNativeMap::javaobject> stateRNM =
-      ReadableNativeMap::newObjectCxxArgs(std::move(state));
-
-  local_ref<ReadableMap::javaobject> localDataRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(localDataRNM.get()));
-  local_ref<ReadableMap::javaobject> propsRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(propsRNM.get()));
-  local_ref<ReadableMap::javaobject> stateRM =
-      make_local(reinterpret_cast<ReadableMap::javaobject>(stateRNM.get()));
-
-  auto size = yogaMeassureToSize(measure(
-      fabricUIManager,
-      rootTag,
-      componentNameRef.get(),
-      localDataRM.get(),
-      propsRM.get(),
-      stateRM.get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight,
-      attachmentPositions));
-
-  // Explicitly release smart pointers to free up space faster in JNI tables
-  componentNameRef.reset();
-  localDataRM.reset();
-  localDataRNM.reset();
-  propsRM.reset();
-  propsRNM.reset();
-  stateRM.reset();
-  stateRNM.reset();
-
-  return size;
-}
-
 Size measureAndroidComponentMapBuffer(
     const ContextContainer::Shared &contextContainer,
     Tag rootTag,
@@ -200,16 +131,15 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
 
-  folly::dynamic cacheIdMap = folly::dynamic::object;
-  cacheIdMap["cacheId"] = cacheId;
+  auto attributedStringMap = cacheIdToMapBuffer(cacheId);
+  auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
 
-  auto size = measureAndroidComponent(
+  auto size = measureAndroidComponentMapBuffer(
       contextContainer_,
       -1, // TODO: we should pass rootTag in
       "RCTText",
-      std::move(cacheIdMap),
-      toDynamic(paragraphAttributes),
-      nullptr,
+      std::move(attributedStringMap),
+      std::move(paragraphAttributesMap),
       minimumSize.width,
       maximumSize.width,
       minimumSize.height,
@@ -265,70 +195,6 @@ LinesMeasurements TextLayoutManager::measureLines(
   paragraphAttributesMB.reset();
 
   return lineMeasurements;
-}
-
-TextMeasurement TextLayoutManager::doMeasure(
-    AttributedString attributedString,
-    ParagraphAttributes const &paragraphAttributes,
-    LayoutConstraints layoutConstraints) const {
-  layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
-
-  int attachmentsCount = 0;
-  for (auto const &fragment : attributedString.getFragments()) {
-    if (fragment.isAttachment()) {
-      attachmentsCount++;
-    }
-  }
-  auto env = Environment::current();
-  auto attachmentPositions = env->NewFloatArray(attachmentsCount * 2);
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
-  auto serializedAttributedString = toDynamic(attributedString);
-  auto size = measureAndroidComponent(
-      contextContainer_,
-      -1, // TODO: we should pass rootTag in
-      "RCTText",
-      serializedAttributedString,
-      toDynamic(paragraphAttributes),
-      nullptr,
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height,
-      attachmentPositions);
-
-  jfloat *attachmentData =
-      env->GetFloatArrayElements(attachmentPositions, nullptr);
-
-  auto attachments = TextMeasurement::Attachments{};
-  if (attachmentsCount > 0) {
-    folly::dynamic const &fragments = serializedAttributedString["fragments"];
-    int attachmentIndex = 0;
-    for (auto const &fragment : fragments) {
-      auto isAttachment = fragment.find("isAttachment");
-      if (isAttachment != fragment.items().end() &&
-          isAttachment->second.getBool()) {
-        float top = attachmentData[attachmentIndex * 2];
-        float left = attachmentData[attachmentIndex * 2 + 1];
-        auto width = (float)fragment["width"].getDouble();
-        auto height = (float)fragment["height"].getDouble();
-
-        auto rect = facebook::react::Rect{
-            {left, top}, facebook::react::Size{width, height}};
-        attachments.push_back(TextMeasurement::Attachment{rect, false});
-        attachmentIndex++;
-      }
-    }
-  }
-
-  // Clean up allocated ref
-  env->ReleaseFloatArrayElements(
-      attachmentPositions, attachmentData, JNI_ABORT);
-  env->DeleteLocalRef(attachmentPositions);
-
-  return TextMeasurement{size, attachments};
 }
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
