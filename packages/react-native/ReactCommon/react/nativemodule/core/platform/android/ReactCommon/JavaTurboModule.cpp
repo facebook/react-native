@@ -427,9 +427,9 @@ jsi::JSError convertThrowableToJSError(jsi::Runtime &runtime, facebook::jni::loc
 
   jsi::Object cause(runtime);
   auto getName = throwable->getClass()->getClass()
-          ->getMethod<facebook::jni::local_ref<facebook::jni::JString>()>("getSimpleName");
+          ->getMethod<jni::local_ref<jni::JString>()>("getName");
   auto getMessage = throwable->getClass()
-          ->getMethod<facebook::jni::local_ref<facebook::jni::JString>()>("getMessage");
+          ->getMethod<jni::local_ref<jni::JString>()>("getMessage");
   auto message = getMessage(throwable)->toStdString();
   cause.setProperty(
           runtime,
@@ -511,7 +511,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
         TMPL::asyncMethodCallFail(moduleName, methodName);
       }
       auto exception = std::current_exception();
-      auto throwable = facebook::jni::getJavaExceptionForCppException(exception);
+      auto throwable = jni::getJavaExceptionForCppException(exception);
       throw convertThrowableToJSError(runtime, throwable);
     }
   };
