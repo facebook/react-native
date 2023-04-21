@@ -23,35 +23,12 @@ const {
   getSchemaInfo,
   getTypeAnnotation,
 } = require('./componentsUtils.js');
+const {buildPropSchema} = require('../../parsers-commons');
 
 type ExtendsForProp = null | {
   type: 'ReactNativeBuiltInType',
   knownTypeName: 'ReactNativeCoreViewProps',
 };
-
-function buildPropSchema(
-  property: PropAST,
-  types: TypeDeclarationMap,
-): ?NamedShape<PropTypeAnnotation> {
-  const info = getSchemaInfo(property, types);
-  if (info == null) {
-    return null;
-  }
-  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
-
-  return {
-    name,
-    optional,
-    typeAnnotation: getTypeAnnotation(
-      name,
-      typeAnnotation,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildPropSchema,
-    ),
-  };
-}
 
 function extendsForProp(
   prop: PropAST,
@@ -117,7 +94,9 @@ function getProps(
 } {
   const nonExtendsProps = removeKnownExtends(typeDefinition, types, parser);
   const props = flattenProperties(nonExtendsProps, types)
-    .map(property => buildPropSchema(property, types))
+    .map(property =>
+      buildPropSchema(property, types, getSchemaInfo, getTypeAnnotation),
+    )
     .filter(Boolean);
 
   return {

@@ -9,13 +9,12 @@
  */
 
 'use strict';
-import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
-import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 
 function getProperties(
   typeName: string,
@@ -370,7 +369,7 @@ function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
-  withNullDefault: boolean,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
   types: TypeDeclarationMap,
   buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
 ): $FlowFixMe {
@@ -436,6 +435,7 @@ type SchemaInfo = {
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
 };
 
 function getSchemaInfo(
@@ -461,6 +461,7 @@ function getSchemaInfo(
     optional: property.optional || topLevelType.optional,
     typeAnnotation: topLevelType.type,
     defaultValue: topLevelType.defaultValue,
+    withNullDefault: false, // Just to make `getTypeAnnotation` signature match with the one from Flow
   };
 }
 

@@ -10,10 +10,9 @@
 
 'use strict';
 
-import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
-import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 
 function getProperties(
   typeName: string,

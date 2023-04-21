@@ -19,27 +19,7 @@ import type {Parser} from '../../parser';
 
 const {flattenProperties} = require('./componentsUtils.js');
 const {parseTopLevelType} = require('../parseTopLevelType');
-const {extendsForProp} = require('../../parsers-commons');
-
-function buildPropSchema(
-  property: PropAST,
-  types: TypeDeclarationMap,
-): NamedShape<PropTypeAnnotation> {
-  const info = getSchemaInfo(property, types);
-  const {name, optional, typeAnnotation, defaultValue} = info;
-  return {
-    name,
-    optional,
-    typeAnnotation: getTypeAnnotation(
-      name,
-      typeAnnotation,
-      defaultValue,
-      false, // Just to make `getTypeAnnotation` signature match with the one from Flow
-      types,
-      buildPropSchema,
-    ),
-  };
-}
+const {buildPropSchema, extendsForProp} = require('../../parsers-commons');
 
 function isEvent(typeAnnotation: $FlowFixMe): boolean {
   if (typeAnnotation.type !== 'TSTypeReference') {
@@ -102,7 +82,9 @@ function getProps(
   }
 
   return {
-    props: componentPropAsts.map(property => buildPropSchema(property, types)),
+    props: componentPropAsts.map(property =>
+      buildPropSchema(property, types, getSchemaInfo, getTypeAnnotation),
+    ),
     extendsProps,
   };
 }

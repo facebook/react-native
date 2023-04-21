@@ -23,11 +23,17 @@ import type {
   SchemaType,
   NativeModuleEnumMap,
   OptionsShape,
+  PropTypeAnnotation,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  PropAST,
+  ASTNode,
+} from './utils';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
@@ -852,6 +858,54 @@ function extendsForProp(
   }
 }
 
+type SchemaInfo = {
+  name: string,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe,
+  withNullDefault: boolean,
+};
+
+function buildPropSchema(
+  property: PropAST,
+  types: TypeDeclarationMap,
+  getSchemaInfo: (property: PropAST, types: TypeDeclarationMap) => ?SchemaInfo,
+  getTypeAnnotation: (
+    name: string,
+    annotation: $FlowFixMe | ASTNode,
+    defaultValue: $FlowFixMe | void,
+    withNullDefault: boolean,
+    types: TypeDeclarationMap,
+    buildSchema: (property: PropAST, types: TypeDeclarationMap) => $FlowFixMe,
+  ) => $FlowFixMe,
+): ?NamedShape<PropTypeAnnotation> {
+  const info = getSchemaInfo(property, types);
+  if (info == null) {
+    return null;
+  }
+  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+
+  const wrappedBuildSchema = (
+    passedProps: PropAST,
+    passedTypes: TypeDeclarationMap,
+  ): $FlowFixMe => {
+    buildPropSchema(passedProps, passedTypes, getSchemaInfo, getTypeAnnotation);
+  };
+
+  return {
+    name,
+    optional,
+    typeAnnotation: getTypeAnnotation(
+      name,
+      typeAnnotation,
+      defaultValue,
+      withNullDefault,
+      types,
+      wrappedBuildSchema,
+    ),
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -872,4 +926,5 @@ module.exports = {
   getOptions,
   getCommandTypeNameAndOptionsExpression,
   extendsForProp,
+  buildPropSchema,
 };
