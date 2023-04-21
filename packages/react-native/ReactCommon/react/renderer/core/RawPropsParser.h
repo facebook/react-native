@@ -17,8 +17,7 @@
 #include <react/renderer/core/RawPropsPrimitives.h>
 #include <react/renderer/core/RawValue.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Specialized (to a particular type of Props) parser that provides the most
@@ -91,5 +90,4 @@ class RawPropsParser final {
   mutable bool ready_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

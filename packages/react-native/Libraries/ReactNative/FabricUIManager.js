@@ -11,6 +11,7 @@
 'use strict';
 
 import type {
+  InternalInstanceHandle,
   LayoutAnimationConfig,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
@@ -21,14 +22,13 @@ import type {RootTag} from '../Types/RootTagTypes';
 
 export type NodeSet = Array<Node>;
 export type NodeProps = {...};
-export type InstanceHandle = {...};
 export type Spec = {|
   +createNode: (
     reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: NodeProps,
-    instanceHandle: InstanceHandle,
+    instanceHandle: InternalInstanceHandle,
   ) => Node,
   +cloneNode: (node: Node) => Node,
   +cloneNodeWithNewChildren: (node: Node) => Node,
@@ -56,20 +56,36 @@ export type Spec = {|
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
-  +getBoundingClientRect: (
-    node: Node,
-  ) => [
-    /* x:*/ number,
-    /* y:*/ number,
-    /* width:*/ number,
-    /* height:*/ number,
-  ],
   +setNativeProps: (node: Node, newProps: NodeProps) => void,
   +dispatchCommand: (
     node: Node,
     commandName: string,
     args: Array<mixed>,
   ) => void,
+
+  /**
+   * Support methods for the DOM-compatible APIs.
+   */
+  +getParentNode: (node: Node) => ?InternalInstanceHandle,
+  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>,
+  +isConnected: (node: Node) => boolean,
+  +compareDocumentPosition: (node: Node, otherNode: Node) => number,
+  +getTextContent: (node: Node) => string,
+  +getBoundingClientRect: (
+    node: Node,
+  ) => ?[
+    /* x:*/ number,
+    /* y:*/ number,
+    /* width:*/ number,
+    /* height:*/ number,
+  ],
+  +getOffset: (
+    node: Node,
+  ) => ?[
+    /* offsetParent: */ InternalInstanceHandle,
+    /* offsetTop: */ number,
+    /* offsetLeft: */ number,
+  ],
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

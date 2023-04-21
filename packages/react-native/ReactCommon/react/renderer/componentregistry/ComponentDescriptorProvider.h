@@ -11,8 +11,7 @@
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Callable signature that represents the signature of `ComponentDescriptor`
@@ -70,5 +69,4 @@ ComponentDescriptorProvider concreteComponentDescriptorProvider() {
       &concreteComponentDescriptorConstructor<ComponentDescriptorT>};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -18,8 +18,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 const auto EXECUTOR_BASECLASS = "com/facebook/react/bridge/JavaJSExecutor";
 
@@ -140,5 +139,4 @@ std::string ProxyExecutor::getDescription() {
   return "Chrome";
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

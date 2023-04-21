@@ -17,8 +17,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * State for <TextInput> component.
@@ -81,5 +80,4 @@ class AndroidTextInputState final {
   MapBuffer getMapBuffer() const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

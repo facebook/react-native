@@ -14,33 +14,24 @@
 # and build a Android application that can be used to run the
 # tests specified in the scripts/ directory.
 #
-FROM reactnativecommunity/react-native-android:7.0
+FROM reactnativecommunity/react-native-android:8.0
 
 LABEL Description="React Native Android Test Image"
-LABEL maintainer="Héctor Ramos <hector@fb.com>"
+LABEL maintainer="Meta Open Source <opensource@meta.com>"
 
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV KOTLIN_HOME="packages/react-native/third-party/kotlin"
 
-ADD .buckconfig /app/.buckconfig
-ADD .buckjavaargs /app/.buckjavaargs
-ADD BUCK /app/BUCK
 ADD packages/react-native/Libraries /app/packages/react-native/Libraries
 ADD packages/react-native/ReactAndroid /app/packages/react-native/ReactAndroid
 ADD packages/react-native/ReactCommon /app/packages/react-native/ReactCommon
 ADD packages/react-native/React /app/packages/react-native/React
-ADD keystores /app/keystores
 ADD packages/react-native-codegen /app/packages/react-native-codegen
 ADD tools /app/tools
 ADD scripts /app/scripts
 
 WORKDIR /app
-
-RUN scripts/buck/buck_fetch.sh
-
-RUN buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react
-RUN buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react/shell
 
 ADD . /app
 

@@ -11,8 +11,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <UnstableReactLegacyComponent> component.
@@ -34,5 +33,4 @@ class UnstableLegacyViewManagerInteropComponentDescriptor
  private:
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

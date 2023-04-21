@@ -10,8 +10,7 @@
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO (T28334063): Consider for codegen.
 class ImageProps final : public ViewProps {
@@ -39,5 +38,4 @@ class ImageProps final : public ViewProps {
   std::string internal_analyticTag{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

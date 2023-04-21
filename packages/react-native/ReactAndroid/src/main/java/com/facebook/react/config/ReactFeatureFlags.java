@@ -80,6 +80,9 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
+  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
+  public static boolean enableTextSpannableCache = false;
+
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
 

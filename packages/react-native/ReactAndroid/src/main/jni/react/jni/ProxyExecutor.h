@@ -13,8 +13,7 @@
 #include <jni.h>
 #include "OnLoad.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * This executor factory can only create a single executor instance because it
@@ -63,5 +62,4 @@ class ProxyExecutor : public JSExecutor {
   std::shared_ptr<ExecutorDelegate> m_delegate;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

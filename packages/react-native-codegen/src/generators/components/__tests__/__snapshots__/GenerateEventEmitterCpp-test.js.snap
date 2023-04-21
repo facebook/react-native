@@ -14,6 +14,7 @@ Map {
 
 #include <react/renderer/components/ARRAY_PROPS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -36,6 +37,7 @@ Map {
  */
 
 #include <react/renderer/components/ARRAY_PROPS_WITH_NESTED_OBJECT/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -60,6 +62,7 @@ Map {
 
 #include <react/renderer/components/BOOLEAN_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -82,6 +85,7 @@ Map {
  */
 
 #include <react/renderer/components/COLOR_PROP/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -106,6 +110,7 @@ Map {
 
 #include <react/renderer/components/COMMANDS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -128,6 +133,7 @@ Map {
  */
 
 #include <react/renderer/components/COMMANDS_AND_PROPS/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -152,6 +158,7 @@ Map {
 
 #include <react/renderer/components/DIMENSION_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -174,6 +181,7 @@ Map {
  */
 
 #include <react/renderer/components/DOUBLE_PROPS/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -198,6 +206,7 @@ Map {
 
 #include <react/renderer/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -207,12 +216,12 @@ void EventsNestedObjectNativeComponentEventEmitter::onChange(OnChange $event) co
     {
   auto location = jsi::Object(runtime);
   {
-  auto source = jsi::Object(runtime);
-  source.setProperty(runtime, \\"url\\", $event.location.source.url);
-  location.setProperty(runtime, \\"source\\", source);
-}
-location.setProperty(runtime, \\"x\\", $event.location.x);
-location.setProperty(runtime, \\"y\\", $event.location.y);
+    auto source = jsi::Object(runtime);
+    source.setProperty(runtime, \\"url\\", $event.location.source.url);
+    location.setProperty(runtime, \\"source\\", source);
+  }
+  location.setProperty(runtime, \\"x\\", $event.location.x);
+  location.setProperty(runtime, \\"y\\", $event.location.y);
   $payload.setProperty(runtime, \\"location\\", location);
 }
     return $payload;
@@ -238,6 +247,7 @@ Map {
  */
 
 #include <react/renderer/components/EVENT_PROPS/EventEmitters.h>
+#include <jsi/JSIDynamic.h>
 
 namespace facebook {
 namespace react {
@@ -274,6 +284,15 @@ void EventsNativeComponentEventEmitter::onOrientationChange(OnOrientationChange 
 void EventsNativeComponentEventEmitter::onEnd() const {
   dispatchEvent(\\"end\\");
 }
+
+void EventsNativeComponentEventEmitter::onEventWithMixedPropAttribute(OnEventWithMixedPropAttribute $event) const {
+  dispatchEvent(\\"eventWithMixedPropAttribute\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    $payload.setProperty(runtime, \\"value\\", jsi::valueFromDynamic(runtime, $event.value));
+    return $payload;
+  });
+}
+
 } // namespace react
 } // namespace facebook
 ",
@@ -294,6 +313,7 @@ Map {
 
 #include <react/renderer/components/EVENTS_WITH_PAPER_NAME/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -306,8 +326,8 @@ void InterfaceOnlyComponentEventEmitter::onChange(OnChange $event) const {
 }
 
 
-void InterfaceOnlyComponentEventEmitter::onDire tChange(OnDire tChange $event) const {
-  dispatchEvent(\\"dire tChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+void InterfaceOnlyComponentEventEmitter::onDirectChange(OnDirectChange $event) const {
+  dispatchEvent(\\"directChange\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);
     $payload.setProperty(runtime, \\"value\\", $event.value);
     return $payload;
@@ -334,6 +354,7 @@ Map {
 
 #include <react/renderer/components/EXCLUDE_ANDROID/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -357,6 +378,7 @@ Map {
 
 #include <react/renderer/components/EXCLUDE_ANDROID_IOS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -379,6 +401,7 @@ Map {
  */
 
 #include <react/renderer/components/EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -404,6 +427,7 @@ Map {
 
 #include <react/renderer/components/FLOAT_PROPS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -426,6 +450,7 @@ Map {
  */
 
 #include <react/renderer/components/IMAGE_PROP/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -450,6 +475,7 @@ Map {
 
 #include <react/renderer/components/INSETS_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -472,6 +498,7 @@ Map {
  */
 
 #include <react/renderer/components/INT32_ENUM_PROP/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -496,6 +523,7 @@ Map {
 
 #include <react/renderer/components/INTEGER_PROPS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -518,6 +546,7 @@ Map {
  */
 
 #include <react/renderer/components/INTERFACE_ONLY/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -550,6 +579,7 @@ Map {
 
 #include <react/renderer/components/MIXED_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -572,6 +602,7 @@ Map {
  */
 
 #include <react/renderer/components/MULTI_NATIVE_PROP/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -596,6 +627,7 @@ Map {
 
 #include <react/renderer/components/NO_PROPS_NO_EVENTS/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -618,6 +650,7 @@ Map {
  */
 
 #include <react/renderer/components/OBJECT_PROPS/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -642,6 +675,7 @@ Map {
 
 #include <react/renderer/components/POINT_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -664,6 +698,7 @@ Map {
  */
 
 #include <react/renderer/components/STRING_ENUM_PROP/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -688,6 +723,7 @@ Map {
 
 #include <react/renderer/components/STRING_PROP/EventEmitters.h>
 
+
 namespace facebook {
 namespace react {
 
@@ -710,6 +746,7 @@ Map {
  */
 
 #include <react/renderer/components/TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {
@@ -734,6 +771,7 @@ Map {
  */
 
 #include <react/renderer/components/TWO_COMPONENTS_SAME_FILE/EventEmitters.h>
+
 
 namespace facebook {
 namespace react {

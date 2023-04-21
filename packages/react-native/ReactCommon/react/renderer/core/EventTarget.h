@@ -11,8 +11,7 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `EventTarget` represents storage of a weak instance handle object with some
@@ -74,5 +73,4 @@ class EventTarget {
 
 using SharedEventTarget = std::shared_ptr<const EventTarget>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

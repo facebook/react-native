@@ -56,16 +56,11 @@ public abstract class BaseJavaModule implements NativeModule {
 
   @Override
   public boolean canOverrideExistingModule() {
-    // TODO(t11394819): Make this final and use annotation
     return false;
   }
 
   @Override
   public void onCatalystInstanceDestroy() {}
-
-  public boolean hasConstants() {
-    return false;
-  }
 
   /**
    * The CatalystInstance is going away with Venice. Therefore, the TurboModule infra introduces the

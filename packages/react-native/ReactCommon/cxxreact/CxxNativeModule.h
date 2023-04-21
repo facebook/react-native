@@ -14,8 +14,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class MessageQueueThread;
@@ -66,5 +65,4 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
   static bool shouldWarnOnUse_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

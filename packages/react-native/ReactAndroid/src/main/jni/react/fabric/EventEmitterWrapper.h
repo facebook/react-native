@@ -11,8 +11,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/EventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
@@ -35,5 +34,4 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
       int customCoalesceKey);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

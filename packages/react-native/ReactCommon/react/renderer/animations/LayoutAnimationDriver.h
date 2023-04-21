@@ -11,8 +11,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
@@ -32,5 +31,4 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
       uint64_t now) const override;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

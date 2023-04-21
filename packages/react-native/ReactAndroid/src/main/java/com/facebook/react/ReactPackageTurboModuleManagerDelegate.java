@@ -44,12 +44,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         && ReactFeatureFlags.unstable_useTurboModuleInterop;
   }
 
-  private static boolean shouldRouteTurboModulesThroughInteropLayer() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop
-        && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
-  }
-
   protected ReactPackageTurboModuleManagerDelegate(
       ReactApplicationContext reactApplicationContext, List<ReactPackage> packages) {
     super();
@@ -152,10 +146,6 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public TurboModule getModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
-      return null;
-    }
-
     NativeModule resolvedModule = null;
 
     for (final ModuleProvider moduleProvider : mModuleProviders) {
@@ -181,7 +171,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     }
 
     // Skip TurboModule-incompatible modules
-    if (!(resolvedModule instanceof TurboModule)) {
+    boolean isLegacyModule = !(resolvedModule instanceof TurboModule);
+    if (isLegacyModule) {
       return null;
     }
 
@@ -201,7 +192,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
       try {
         final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
         if (moduleInfo != null
-            && (!moduleInfo.isTurboModule() || shouldRouteTurboModulesThroughInteropLayer())
+            && !moduleInfo.isTurboModule()
             && (resolvedModule == null || moduleInfo.canOverrideExistingModule())) {
 
           final NativeModule module = moduleProvider.getModule(moduleName);
@@ -221,7 +212,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
     // Skip TurboModule-compatible modules
     boolean isLegacyModule = !(resolvedModule instanceof TurboModule);
-    if (!(isLegacyModule || shouldRouteTurboModulesThroughInteropLayer())) {
+    if (!isLegacyModule) {
       return null;
     }
 

@@ -112,7 +112,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:7.0
+      - image: reactnativecommunity/react-native-android:8.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -716,60 +716,6 @@ jobs:
       # Collect Results
       - report_bundle_size:
           platform: ios
-      - store_test_results:
-          path: ./reports/junit
-
-  # -------------------------
-  #    JOBS: Test Buck
-  # -------------------------
-  test_buck:
-    executor: reactnativeandroid
-    environment:
-      KOTLIN_HOME=packages/react-native/third-party/kotlin
-    steps:
-      - checkout
-      - setup_artifacts
-      - run_yarn
-
-      - run:
-          name: Download Dependencies Using Buck
-          command: ./scripts/buck/buck_fetch.sh
-
-      - run:
-          name: Build & Test React Native using Buck
-          command: |
-            buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react
-            buck build packages/react-native/ReactAndroid/src/main/java/com/facebook/react/shell
-
-      - run:
-          name: Run Tests - Android Unit Tests with Buck
-          command: buck test packages/react-native/ReactAndroid/src/test/... --config build.threads=$BUILD_THREADS --xml ./reports/buck/all-results-raw.xml
-
-      - run:
-          name: Build JavaScript Bundle for instrumentation tests
-          working_directory: ~/react-native/packages/react-native
-          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-
-      - run:
-          name: Build Tests - Android Instrumentation Tests with Buck
-          # Here, just build the instrumentation tests. There is a known issue with installing the APK to android-21+ emulator.
-          command: |
-            if [[ ! -e packages/react-native/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js ]]; then
-              echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
-            fi
-            source scripts/android-setup.sh && NO_BUCKD=1 scripts/retry3 timeout 300 buck build packages/react-native/ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-
-      - run:
-          name: Collect Test Results
-          command: |
-            find . -type f -regex ".*/build/test-results/debug/.*xml" -exec cp {} ./reports/build/ \;
-            find . -type f -regex ".*/outputs/androidTest-results/connected/.*xml" -exec cp {} ./reports/outputs/ \;
-            find . -type f -regex ".*/buck-out/gen/packages/react-native/ReactAndroid/src/test/.*/.*xml" -exec cp {} ./reports/buck/ \;
-            if [ -f ~/react-native/reports/buck/all-results-raw.xml ]; then
-              ~/react-native/scripts/circleci/buckToJunit/buckToJunit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/results.xml
-            fi
-          when: always
-
       - store_test_results:
           path: ./reports/junit
 
@@ -1667,7 +1613,6 @@ workflows:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
-      - test_buck
       - test_ios_template:
           requires:
             - build_npm_package

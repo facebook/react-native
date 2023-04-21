@@ -11,8 +11,7 @@
 
 #include <react/renderer/attributedstring/AttributedString.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents an object storing a shared `AttributedString` or a shared pointer
@@ -61,8 +60,7 @@ class AttributedStringBox final {
 bool operator==(AttributedStringBox const &lhs, AttributedStringBox const &rhs);
 bool operator!=(AttributedStringBox const &lhs, AttributedStringBox const &rhs);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 template <>
 struct std::hash<facebook::react::AttributedStringBox> {

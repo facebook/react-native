@@ -16,8 +16,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * State for <ModalHostView> component.
@@ -51,5 +50,4 @@ class ModalHostViewState final {
 #pragma mark - Getters
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

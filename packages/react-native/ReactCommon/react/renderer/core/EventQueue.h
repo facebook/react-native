@@ -17,8 +17,7 @@
 #include <react/renderer/core/RawEvent.h>
 #include <react/renderer/core/StateUpdate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Event Queue synchronized with given Event Beat and dispatching event
@@ -72,5 +71,4 @@ class EventQueue {
   mutable bool hasContinuousEventStarted_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

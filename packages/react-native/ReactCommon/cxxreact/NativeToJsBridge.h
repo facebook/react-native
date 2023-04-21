@@ -20,8 +20,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct InstanceCallback;
 class JsToNativeBridge;
@@ -132,5 +131,4 @@ class NativeToJsBridge {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

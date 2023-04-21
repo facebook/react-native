@@ -14,8 +14,7 @@
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ValueFactory.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents ready-to-dispatch event object.
@@ -72,5 +71,4 @@ struct RawEvent {
   EventTag loggingTag{0};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

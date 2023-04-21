@@ -19,19 +19,17 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
-@optional
-- (NSArray<NSString *> *)getEagerInitModuleNames;
-- (NSArray<NSString *> *)getEagerInitMainQueueModuleNames;
-
 /**
- * Given a module name, return its actual class. If not provided, basic ObjC class lookup is performed.
+ * Given a module name, return its actual class. If nil is returned, basic ObjC class lookup is performed.
  */
 - (Class)getModuleClassFromName:(const char *)name;
 
 /**
- * Given a module class, provide an instance for it. If not provided, default initializer is used.
+ * Given a module class, provide an instance for it. If nil is returned, default initializer is used.
  */
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
+
+@optional
 
 /**
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.

@@ -12,8 +12,7 @@
 #import <react/renderer/imagemanager/ImageResponseObserver.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RCTImageResponseObserverProxy::RCTImageResponseObserverProxy(id<RCTImageResponseDelegate> delegate)
     : delegate_(delegate)
@@ -49,5 +48,4 @@ void RCTImageResponseObserverProxy::didReceiveFailure() const
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

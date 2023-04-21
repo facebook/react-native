@@ -14,8 +14,7 @@
 #include <jsi/jsi.h>
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Holds and creates JS representations of the modules in ModuleRegistry
@@ -36,5 +35,4 @@ class JSINativeModules {
       const std::string &name);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

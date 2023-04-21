@@ -38,6 +38,7 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.util.Predicate;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -676,11 +677,6 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  // TODO: Replace with Predicate<T> and lambdas once Java 8 builds in OSS
-  interface SpanPredicate<T> {
-    boolean test(T span);
-  }
-
   /**
    * Remove spans from the SpannableStringBuilder which can be represented by TextAppearance
    * attributes on the underlying EditText. This works around instability on Samsung devices with
@@ -690,81 +686,44 @@ public class ReactEditText extends AppCompatEditText
     stripSpansOfKind(
         sb,
         ReactAbsoluteSizeSpan.class,
-        new SpanPredicate<ReactAbsoluteSizeSpan>() {
-          @Override
-          public boolean test(ReactAbsoluteSizeSpan span) {
-            return span.getSize() == mTextAttributes.getEffectiveFontSize();
-          }
-        });
+        (span) -> span.getSize() == mTextAttributes.getEffectiveFontSize());
 
     stripSpansOfKind(
         sb,
         ReactBackgroundColorSpan.class,
-        new SpanPredicate<ReactBackgroundColorSpan>() {
-          @Override
-          public boolean test(ReactBackgroundColorSpan span) {
-            return span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor();
-          }
-        });
+        (span) -> span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor());
 
     stripSpansOfKind(
         sb,
         ReactForegroundColorSpan.class,
-        new SpanPredicate<ReactForegroundColorSpan>() {
-          @Override
-          public boolean test(ReactForegroundColorSpan span) {
-            return span.getForegroundColor() == getCurrentTextColor();
-          }
-        });
+        (span) -> span.getForegroundColor() == getCurrentTextColor());
 
     stripSpansOfKind(
         sb,
         ReactStrikethroughSpan.class,
-        new SpanPredicate<ReactStrikethroughSpan>() {
-          @Override
-          public boolean test(ReactStrikethroughSpan span) {
-            return (getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0;
-          }
-        });
+        (span) -> (getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0);
+
+    stripSpansOfKind(
+        sb, ReactUnderlineSpan.class, (span) -> (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0);
 
     stripSpansOfKind(
         sb,
-        ReactUnderlineSpan.class,
-        new SpanPredicate<ReactUnderlineSpan>() {
-          @Override
-          public boolean test(ReactUnderlineSpan span) {
-            return (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0;
-          }
-        });
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      stripSpansOfKind(
-          sb,
-          CustomLetterSpacingSpan.class,
-          new SpanPredicate<CustomLetterSpacingSpan>() {
-            @Override
-            public boolean test(CustomLetterSpacingSpan span) {
-              return span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing();
-            }
-          });
-    }
+        CustomLetterSpacingSpan.class,
+        (span) -> span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing());
 
     stripSpansOfKind(
         sb,
         CustomStyleSpan.class,
-        new SpanPredicate<CustomStyleSpan>() {
-          @Override
-          public boolean test(CustomStyleSpan span) {
-            return span.getStyle() == mFontStyle
-                && Objects.equals(span.getFontFamily(), mFontFamily)
-                && span.getWeight() == mFontWeight
-                && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
-          }
+        (span) -> {
+          return span.getStyle() == mFontStyle
+              && Objects.equals(span.getFontFamily(), mFontFamily)
+              && span.getWeight() == mFontWeight
+              && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
         });
   }
 
   private <T> void stripSpansOfKind(
-      SpannableStringBuilder sb, Class<T> clazz, SpanPredicate<T> shouldStrip) {
+      SpannableStringBuilder sb, Class<T> clazz, Predicate<T> shouldStrip) {
     T[] spans = sb.getSpans(0, sb.length(), clazz);
 
     for (T span : spans) {
@@ -808,15 +767,10 @@ public class ReactEditText extends AppCompatEditText
       workingText.setSpan(new ReactUnderlineSpan(), 0, workingText.length(), spanFlags);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)) {
-        workingText.setSpan(
-            new CustomLetterSpacingSpan(effectiveLetterSpacing),
-            0,
-            workingText.length(),
-            spanFlags);
-      }
+    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+    if (!Float.isNaN(effectiveLetterSpacing)) {
+      workingText.setSpan(
+          new CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length(), spanFlags);
     }
 
     if (mFontStyle != UNSET
@@ -1126,9 +1080,7 @@ public class ReactEditText extends AppCompatEditText
 
     float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
     if (!Float.isNaN(effectiveLetterSpacing)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        setLetterSpacing(effectiveLetterSpacing);
-      }
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 

@@ -20,8 +20,7 @@
 #include <react/renderer/imagemanager/primitives.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TextInputProps final : public ViewProps, public BaseTextProps {
  public:
@@ -78,5 +77,4 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   ParagraphAttributes getEffectiveParagraphAttributes() const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

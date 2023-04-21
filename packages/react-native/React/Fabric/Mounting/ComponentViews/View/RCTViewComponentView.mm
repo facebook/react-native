@@ -205,11 +205,6 @@ using namespace facebook::react;
     needsInvalidateLayer = YES;
   }
 
-  // `foregroundColor`
-  if (oldViewProps.foregroundColor != newViewProps.foregroundColor) {
-    self.foregroundColor = RCTUIColorFromSharedColor(newViewProps.foregroundColor);
-  }
-
   // `shadowColor`
   if (oldViewProps.shadowColor != newViewProps.shadowColor) {
     CGColorRef shadowColor = RCTCreateCGColorRefFromSharedColor(newViewProps.shadowColor);

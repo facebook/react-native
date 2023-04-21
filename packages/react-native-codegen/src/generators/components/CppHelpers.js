@@ -9,7 +9,11 @@
  */
 
 'use strict';
-import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
+import type {
+  EventTypeAnnotation,
+  NamedShape,
+  PropTypeAnnotation,
+} from '../../CodegenSchema';
 
 const {getEnumName, toSafeCppString} = require('../Utils');
 
@@ -23,7 +27,8 @@ function getCppTypeForAnnotation(
     | 'StringTypeAnnotation'
     | 'Int32TypeAnnotation'
     | 'DoubleTypeAnnotation'
-    | 'FloatTypeAnnotation',
+    | 'FloatTypeAnnotation'
+    | 'MixedTypeAnnotation',
 ): string {
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -36,6 +41,8 @@ function getCppTypeForAnnotation(
       return 'double';
     case 'FloatTypeAnnotation':
       return 'Float';
+    case 'MixedTypeAnnotation':
+      return 'folly::dynamic';
     default:
       (type: empty);
       throw new Error(`Received invalid typeAnnotation ${type}`);
@@ -43,7 +50,9 @@ function getCppTypeForAnnotation(
 }
 
 function getImports(
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  properties:
+    | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
+    | $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -91,6 +100,10 @@ function getImports(
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
 
+    if (typeAnnotation.type === 'MixedTypeAnnotation') {
+      imports.add('#include <folly/dynamic.h>');
+    }
+
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -102,8 +115,7 @@ function getImports(
 }
 
 function generateEventStructName(parts: $ReadOnlyArray<string> = []): string {
-  const additional = parts.map(toSafeCppString).join('');
-  return `${additional}`;
+  return parts.map(toSafeCppString).join('');
 }
 
 function generateStructName(

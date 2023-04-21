@@ -9,7 +9,6 @@
  */
 
 import type {
-  AttributeConfiguration,
   HostComponent,
   INativeMethods,
   InternalInstanceHandle,
@@ -24,6 +23,7 @@ import TextInputState from '../../Components/TextInput/TextInputState';
 import {getNodeFromInternalInstanceHandle} from '../../Renderer/shims/ReactFabric';
 import {getFabricUIManager} from '../FabricUIManager';
 import {create} from './ReactNativeAttributePayload';
+import warnForStyleProps from './warnForStyleProps';
 import nullthrows from 'nullthrows';
 
 const {
@@ -146,27 +146,6 @@ export default class ReactFabricHostComponent implements INativeMethods {
     );
     if (node != null && updatePayload != null) {
       setNativeProps(node, updatePayload);
-    }
-  }
-}
-
-function warnForStyleProps(
-  props: {...},
-  validAttributes: AttributeConfiguration,
-): void {
-  if (__DEV__) {
-    for (const key in validAttributes.style) {
-      if (!(validAttributes[key] || props[key] === undefined)) {
-        console.error(
-          'You are setting the style `{ %s' +
-            ': ... }` as a prop. You ' +
-            'should nest it in a style object. ' +
-            'E.g. `{ style: { %s' +
-            ': ... } }`',
-          key,
-          key,
-        );
-      }
     }
   }
 }

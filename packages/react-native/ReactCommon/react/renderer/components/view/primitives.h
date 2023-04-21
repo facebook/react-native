@@ -16,8 +16,7 @@
 #include <cmath>
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
@@ -320,5 +319,4 @@ struct NativeDrawable {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

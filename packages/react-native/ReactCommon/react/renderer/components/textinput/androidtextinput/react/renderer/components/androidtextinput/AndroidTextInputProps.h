@@ -24,8 +24,7 @@
 #include <cinttypes>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct AndroidTextInputSelectionStruct {
   int start;
@@ -190,5 +189,4 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -122,6 +122,14 @@ YOGA_EXPORT void YGNodeSetContext(YGNodeRef node, void* context) {
   return node->setContext(context);
 }
 
+YOGA_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node) {
+  return node->getConfig();
+}
+
+YOGA_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config) {
+  node->setConfig(config);
+}
+
 YOGA_EXPORT bool YGNodeHasMeasureFunc(YGNodeRef node) {
   return node->hasMeasureFunc();
 }

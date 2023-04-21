@@ -15,8 +15,7 @@
 #include <react/renderer/core/ReactEventPriority.h>
 #include <react/renderer/core/ValueFactory.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using EventPipe = std::function<void(
     jsi::Runtime &runtime,
@@ -25,5 +24,4 @@ using EventPipe = std::function<void(
     ReactEventPriority priority,
     const ValueFactory &payloadFactory)>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

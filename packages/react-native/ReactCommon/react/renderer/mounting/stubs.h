@@ -11,8 +11,7 @@
 #include "StubView.h"
 #include "StubViewTree.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Builds a ShadowView tree from given root ShadowNode using custom built-in
@@ -28,5 +27,4 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
 StubViewTree buildStubViewTreeUsingDifferentiator(
     ShadowNode const &rootShadowNode);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -30,8 +30,7 @@
 #include <mutex>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Instance::~Instance() {
   if (nativeToJsBridge_) {
@@ -292,5 +291,4 @@ void Instance::JSCallInvoker::scheduleAsync(std::function<void()> &&work) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

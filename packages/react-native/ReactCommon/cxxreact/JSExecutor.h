@@ -17,8 +17,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSBigString;
 class JSExecutor;
@@ -142,5 +141,4 @@ class RN_EXPORT JSExecutor {
   static double performanceNow();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

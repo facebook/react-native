@@ -388,14 +388,11 @@ static Class getFallbackClassFromName(const char *name)
     /**
      * Step 2a: Resolve platform-specific class.
      */
-
-    if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-      if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-        moduleClass = [_delegate getModuleClassFromName:moduleName];
-      } else {
-        std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-        moduleClass = [_delegate getModuleClassFromName:moduleName];
-      }
+    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
+    } else {
+      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+      moduleClass = [_delegate getModuleClassFromName:moduleName];
     }
 
     if (!moduleClass) {
@@ -481,27 +478,13 @@ static Class getFallbackClassFromName(const char *name)
    */
 
   TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
-  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-      module = [_delegate getModuleInstanceFromClass:moduleClass];
-    } else {
-      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-      module = [_delegate getModuleInstanceFromClass:moduleClass];
-    }
-
-    /**
-     * If the application is unable to create the TurboModule object from its class:
-     * abort TurboModule creation, and early return nil.
-     */
-    if (!module) {
-      RCTLogError(
-          @"TurboModuleManager delegate %@ returned nil TurboModule object for module with name=\"%s\" and class=%@",
-          NSStringFromClass([_delegate class]),
-          moduleName,
-          NSStringFromClass(moduleClass));
-      return nil;
-    }
+  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+    module = [_delegate getModuleInstanceFromClass:moduleClass];
   } else {
+    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+    module = [_delegate getModuleInstanceFromClass:moduleClass];
+  }
+  if (!module) {
     module = [moduleClass new];
   }
   TurboModulePerfLogger::moduleCreateConstructEnd(moduleName, moduleId);
@@ -773,24 +756,6 @@ static Class getFallbackClassFromName(const char *name)
 {
   std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
   return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
-}
-
-- (NSArray<NSString *> *)eagerInitModuleNames
-{
-  if ([_delegate respondsToSelector:@selector(getEagerInitModuleNames)]) {
-    return [_delegate getEagerInitModuleNames];
-  }
-
-  return @[];
-}
-
-- (NSArray<NSString *> *)eagerInitMainQueueModuleNames
-{
-  if ([_delegate respondsToSelector:@selector(getEagerInitMainQueueModuleNames)]) {
-    return [_delegate getEagerInitMainQueueModuleNames];
-  }
-
-  return @[];
 }
 
 #pragma mark Invalidation logic

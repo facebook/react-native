@@ -123,7 +123,7 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
               },
             },
             {
-              name: 'onDire tChange',
+              name: 'onDirectChange',
               paperTopLevelNameDeprecated: 'paperDirectChange',
               optional: true,
               bubblingType: 'direct',
@@ -1253,6 +1253,26 @@ const EVENT_PROPS: SchemaType = {
               bubblingType: 'bubble',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
+              },
+            },
+            {
+              name: 'onEventWithMixedPropAttribute',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'value',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'MixedTypeAnnotation',
+                      },
+                    },
+                  ],
+                },
               },
             },
           ],

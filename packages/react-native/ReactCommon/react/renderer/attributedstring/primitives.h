@@ -10,8 +10,7 @@
 #include <functional>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class FontStyle { Normal, Italic, Oblique };
 
@@ -151,8 +150,7 @@ enum class HyphenationFrequency {
   Full // Standard amount of hyphenation.
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>

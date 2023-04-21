@@ -8,15 +8,24 @@
  * @flow strict-local
  */
 
+import type ReactNativeElement from '../../DOM/Nodes/ReactNativeElement';
+import type ReadOnlyText from '../../DOM/Nodes/ReadOnlyText';
 import typeof ReactFabricType from '../../Renderer/shims/ReactFabric';
 import type {
   InternalInstanceHandle,
+  Node,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
-import type ReactFabricHostComponentType from './ReactFabricHostComponent';
+import type ReactFabricHostComponent from './ReactFabricHostComponent';
+
+import ReactNativeFeatureFlags from '../ReactNativeFeatureFlags';
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
-let ReactFabricHostComponent: Class<ReactFabricHostComponentType>;
+let PublicInstanceClass:
+  | Class<ReactFabricHostComponent>
+  | Class<ReactNativeElement>;
+let ReadOnlyTextClass: Class<ReadOnlyText>;
+
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let ReactFabric: ReactFabricType;
 
@@ -24,29 +33,40 @@ export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
-): ReactFabricHostComponentType {
-  if (ReactFabricHostComponent == null) {
-    ReactFabricHostComponent = require('./ReactFabricHostComponent').default;
+): ReactFabricHostComponent | ReactNativeElement {
+  if (PublicInstanceClass == null) {
+    // We don't use inline requires in react-native, so this forces lazy loading
+    // the right module to avoid eagerly loading both.
+    if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
+      PublicInstanceClass =
+        require('../../DOM/Nodes/ReactNativeElement').default;
+    } else {
+      PublicInstanceClass = require('./ReactFabricHostComponent').default;
+    }
   }
-  return new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
+
+  return new PublicInstanceClass(tag, viewConfig, internalInstanceHandle);
 }
 
-export function createPublicTextInstance(internalInstanceHandle: mixed): {} {
-  // React will call this method to create text instances but we'll return an
-  // empty object for now. These instances are only created lazily when
-  // traversing the tree, and that's not enabled yet.
-  return {};
+export function createPublicTextInstance(
+  internalInstanceHandle: InternalInstanceHandle,
+): ReadOnlyText {
+  if (ReadOnlyTextClass == null) {
+    ReadOnlyTextClass = require('../../DOM/Nodes/ReadOnlyText').default;
+  }
+
+  return new ReadOnlyTextClass(internalInstanceHandle);
 }
 
 export function getNativeTagFromPublicInstance(
-  publicInstance: ReactFabricHostComponentType,
+  publicInstance: ReactFabricHostComponent | ReactNativeElement,
 ): number {
   return publicInstance.__nativeTag;
 }
 
 export function getNodeFromPublicInstance(
-  publicInstance: ReactFabricHostComponentType,
-): mixed {
+  publicInstance: ReactFabricHostComponent | ReactNativeElement,
+): ?Node {
   // Avoid loading ReactFabric if using an instance from the legacy renderer.
   if (publicInstance.__internalInstanceHandle == null) {
     return null;
@@ -55,7 +75,6 @@ export function getNodeFromPublicInstance(
   if (ReactFabric == null) {
     ReactFabric = require('../../Renderer/shims/ReactFabric');
   }
-
   return ReactFabric.getNodeFromInternalInstanceHandle(
     publicInstance.__internalInstanceHandle,
   );

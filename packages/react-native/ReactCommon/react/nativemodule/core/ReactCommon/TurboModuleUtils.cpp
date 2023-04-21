@@ -7,8 +7,7 @@
 
 #include "TurboModuleUtils.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value deepCopyJSIValue(jsi::Runtime &rt, const jsi::Value &value) {
   if (value.isNull()) {
@@ -101,5 +100,4 @@ jsi::Value createPromiseAsJSIValue(
   return JSPromise.callAsConstructor(rt, fn);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

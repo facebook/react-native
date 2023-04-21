@@ -642,40 +642,6 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
-  if (methodName == "getBoundingClientRect") {
-    // This is similar to `measureInWindow`, except it's explicitly synchronous
-    // (returns the result instead of passing it to a callback).
-    // The behavior is similar to `Element.prototype.getBoundingClientRect` from
-    // Web.
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        1,
-        [uiManager](
-            jsi::Runtime &runtime,
-            jsi::Value const & /*thisValue*/,
-            jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
-          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *shadowNodeFromValue(runtime, arguments[0]),
-              nullptr,
-              {/* .includeTransform = */ true,
-               /* .includeViewportOffset = */ true});
-
-          if (layoutMetrics == EmptyLayoutMetrics) {
-            return jsi::Value::undefined();
-          }
-
-          auto frame = layoutMetrics.frame;
-          return jsi::Array::createWithElements(
-              runtime,
-              jsi::Value{runtime, (double)frame.origin.x},
-              jsi::Value{runtime, (double)frame.origin.y},
-              jsi::Value{runtime, (double)frame.size.width},
-              jsi::Value{runtime, (double)frame.size.height});
-        });
-  }
-
   if (methodName == "sendAccessibilityEvent") {
     return jsi::Function::createFromHostFunction(
         runtime,
@@ -754,6 +720,296 @@ jsi::Value UIManagerBinding::get(
           }
 
           return valueFromShadowNode(runtime, shadowNode);
+        });
+  }
+
+  /**
+   * DOM traversal and layout APIs
+   */
+
+  if (methodName == "getBoundingClientRect") {
+    // This is a React Native implementation of
+    // `Element.prototype.getBoundingClientRect` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect).
+
+    // This is similar to `measureInWindow`, except it's explicitly synchronous
+    // (returns the result instead of passing it to a callback).
+
+    // getBoundingClientRect(shadowNode: ShadowNode):
+    //   [
+    //     /* x: */ number,
+    //     /* y: */ number,
+    //     /* width: */ number,
+    //     /* height: */ number
+    //   ]
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              nullptr,
+              {/* .includeTransform = */ true,
+               /* .includeViewportOffset = */ true});
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto frame = layoutMetrics.frame;
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{runtime, (double)frame.origin.x},
+              jsi::Value{runtime, (double)frame.origin.y},
+              jsi::Value{runtime, (double)frame.size.width},
+              jsi::Value{runtime, (double)frame.size.height});
+        });
+  }
+
+  if (methodName == "getParentNode") {
+    // This is a React Native implementation of `Node.prototype.parentNode`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/parentNode).
+
+    // If a version of the given shadow node is present in the current revision
+    // of an active shadow tree, it returns the instance handle of its parent.
+    // Otherwise, it returns null.
+
+    // getParent(shadowNode: ShadowNode): ?InstanceHandle
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto parentShadowNode =
+              uiManager->getNewestParentOfShadowNode(*shadowNode);
+
+          // shadowNode is a RootShadowNode
+          if (!parentShadowNode) {
+            return jsi::Value::null();
+          }
+
+          return getInstanceHandleFromShadowNode(parentShadowNode, runtime);
+        });
+  }
+
+  if (methodName == "getChildNodes") {
+    // This is a React Native implementation of `Node.prototype.childNodes`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/childNodes).
+
+    // If a version of the given shadow node is present in the current revision
+    // of an active shadow tree, it returns an array of instance handles of its
+    // children. Otherwise, it returns an empty array.
+
+    // getChildren(shadowNode: ShadowNode): Array<InstanceHandle>
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          // There's no version of this node in the current shadow tree
+          if (newestCloneOfShadowNode == nullptr) {
+            return jsi::Array(runtime, 0);
+          }
+
+          auto childShadowNodes = newestCloneOfShadowNode->getChildren();
+          return getArrayOfInstanceHandlesFromShadowNodes(
+              childShadowNodes, runtime);
+        });
+  }
+
+  if (methodName == "isConnected") {
+    // This is a React Native implementation of `Node.prototype.isConnected`
+    // (see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected).
+
+    // Indicates whether a version of the given shadow node is present in
+    // the current revision of an active shadow tree.
+
+    // isConnected(shadowNode: ShadowNode): boolean
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+
+          return jsi::Value(newestCloneOfShadowNode != nullptr);
+        });
+  }
+
+  if (methodName == "compareDocumentPosition") {
+    // This is a React Native implementation of
+    // `Node.prototype.compareDocumentPosition` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition).
+
+    // It uses the version of the shadow nodes that are present in the current
+    // revision of the shadow tree (if any). If any of the nodes is not present,
+    // it just indicates they are disconnected.
+
+    // compareDocumentPosition(shadowNode: ShadowNode, otherShadowNode:
+    // ShadowNode): number
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+          auto otherShadowNode = shadowNodeFromValue(runtime, arguments[1]);
+
+          auto documentPosition =
+              uiManager->compareDocumentPosition(*shadowNode, *otherShadowNode);
+
+          return jsi::Value(documentPosition);
+        });
+  }
+
+  if (methodName == "getTextContent") {
+    // This is a React Native implementation of
+    // `Element.prototype.textContent` (see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/textContent).
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree.
+    // If the version is present, is traverses all its children in DFS and
+    // concatenates all the text contents. Otherwise, it returns an empty
+    // string.
+
+    // This is also used to access the text content of text nodes, which does
+    // not need any traversal.
+
+    // getTextContent(shadowNode: ShadowNode): string
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto textContent =
+              uiManager->getTextContentInNewestCloneOfShadowNode(*shadowNode);
+
+          return jsi::Value(
+              runtime, jsi::String::createFromUtf8(runtime, textContent));
+        });
+  }
+
+  if (methodName == "getOffset") {
+    // This is a method to access offset information for React Native nodes, to
+    // implement these methods:
+    // * `HTMLElement.prototype.offsetParent`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent.
+    // * `HTMLElement.prototype.offsetTop`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop.
+    // * `HTMLElement.prototype.offsetLeft`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetLeft.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present or is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // it returns undefined. Otherwise, it returns its parent (as all nodes in
+    // React Native are currently "positioned") and its offset relative to its
+    // parent.
+
+    // getOffset(shadowNode: ShadowNode):
+    //   ?[
+    //     /* parent: */ InstanceHandle,
+    //     /* top: */ number,
+    //     /* left: */ number,
+    //   ]
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+          auto newestParentOfShadowNode =
+              uiManager->getNewestParentOfShadowNode(*shadowNode);
+          // The node is no longer part of an active shadow tree, or it is the
+          // root node
+          if (newestCloneOfShadowNode == nullptr ||
+              newestParentOfShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none", it returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          // This should never happen
+          if (layoutableShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableParentShadowNode =
+              traitCast<LayoutableShadowNode const *>(
+                  newestParentOfShadowNode.get());
+          // This should never happen
+          if (layoutableParentShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto originRelativeToParentOuterBorder =
+              layoutableShadowNode->getLayoutMetrics().frame.origin;
+
+          // On the Web, offsets are computed from the inner border of the
+          // parent.
+          auto offsetTop = originRelativeToParentOuterBorder.y -
+              layoutableParentShadowNode->getLayoutMetrics().borderWidth.top;
+          auto offsetLeft = originRelativeToParentOuterBorder.x -
+              layoutableParentShadowNode->getLayoutMetrics().borderWidth.left;
+
+          return jsi::Array::createWithElements(
+              runtime,
+              getInstanceHandleFromShadowNode(
+                  newestParentOfShadowNode, runtime),
+              jsi::Value{runtime, (double)offsetTop},
+              jsi::Value{runtime, (double)offsetLeft});
         });
   }
 

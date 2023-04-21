@@ -9,8 +9,7 @@
 
 #include <cstdint>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A set of predefined traits associated with a particular `ShadowNode` class
@@ -119,5 +118,4 @@ class ShadowNodeTraits {
   Trait traits_{Trait::None};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -7,8 +7,7 @@
 
 #include "JRuntimeScheduler.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JRuntimeScheduler::JRuntimeScheduler(
     std::weak_ptr<RuntimeScheduler> runtimeScheduler)
@@ -18,5 +17,4 @@ std::weak_ptr<RuntimeScheduler> JRuntimeScheduler::get() {
   return runtimeScheduler_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,8 +10,7 @@
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowNodeFamily;
 
@@ -51,5 +50,4 @@ class ShadowNodeFamilyFragment final {
   };
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -9,8 +9,7 @@
 
 #import <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * State for <LegacyViewManagerInterop> component.
@@ -20,5 +19,4 @@ class LegacyViewManagerInteropState final {
   std::shared_ptr<void> coordinator;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

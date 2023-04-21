@@ -11,8 +11,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 WritableNativeArray::WritableNativeArray()
     : HybridBase(folly::dynamic::array()) {}
@@ -89,5 +88,4 @@ void WritableNativeArray::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

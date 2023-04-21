@@ -10,8 +10,7 @@
 #include <folly/Hash.h>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Type used to represent an index of some stored values in small arrays.
@@ -51,5 +50,4 @@ constexpr static auto kNumberOfPropsPerComponentSoftCap = 150;
  */
 constexpr static auto kPropNameLengthHardCap = 64;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

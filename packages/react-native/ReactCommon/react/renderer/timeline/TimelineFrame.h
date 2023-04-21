@@ -11,8 +11,7 @@
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents a reference to a commit from the past.
@@ -42,5 +41,4 @@ class TimelineFrame final {
   TelemetryTimePoint timePoint_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

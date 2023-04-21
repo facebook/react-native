@@ -9,8 +9,7 @@
 
 #include "CxxModuleWrapperBase.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CxxModuleWrapper
     : public jni::HybridClass<CxxModuleWrapper, CxxModuleWrapperBase> {
@@ -46,5 +45,4 @@ class CxxModuleWrapper
   std::unique_ptr<xplat::module::CxxModule> module_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

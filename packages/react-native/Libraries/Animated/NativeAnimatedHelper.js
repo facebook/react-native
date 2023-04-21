@@ -425,6 +425,9 @@ const SUPPORTED_TRANSFORMS = {
   rotateY: true,
   rotateZ: true,
   perspective: true,
+  skewX: true,
+  skewY: true,
+  matrix: ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform(),
 };
 
 const SUPPORTED_INTERPOLATION_PARAMS = {
@@ -451,19 +454,19 @@ function addWhitelistedInterpolationParam(param: string): void {
 }
 
 function isSupportedColorStyleProp(prop: string): boolean {
-  return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
+  return SUPPORTED_COLOR_STYLES[prop] === true;
 }
 
 function isSupportedStyleProp(prop: string): boolean {
-  return SUPPORTED_STYLES.hasOwnProperty(prop);
+  return SUPPORTED_STYLES[prop] === true;
 }
 
 function isSupportedTransformProp(prop: string): boolean {
-  return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
+  return SUPPORTED_TRANSFORMS[prop] === true;
 }
 
 function isSupportedInterpolationParam(param: string): boolean {
-  return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
+  return SUPPORTED_INTERPOLATION_PARAMS[param] === true;
 }
 
 function validateTransform(

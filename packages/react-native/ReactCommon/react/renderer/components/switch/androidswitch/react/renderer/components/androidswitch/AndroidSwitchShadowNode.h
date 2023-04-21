@@ -13,8 +13,7 @@
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidSwitchComponentName[];
 
@@ -43,5 +42,4 @@ class AndroidSwitchShadowNode final : public ConcreteViewShadowNode<
   std::shared_ptr<AndroidSwitchMeasurementsManager> measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -16,8 +16,7 @@
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptorProviderRegistry;
 class ComponentDescriptorRegistry;
@@ -91,5 +90,4 @@ class ComponentDescriptorRegistry {
   ContextContainer::Shared contextContainer_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

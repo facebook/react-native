@@ -616,7 +616,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         ),
       };
     } else {
-      // If we have a non-zero initialScrollIndex and run this before we've scrolled,
+      // If we have a positive non-zero initialScrollIndex and run this before we've scrolled,
       // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
       // So let's wait until we've scrolled the view to the right place. And until then,
       // we will trust the initialScrollIndex suggestion.
@@ -627,7 +627,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
       //   where the list is shorter than the visible area)
       if (
-        props.initialScrollIndex &&
+        props.initialScrollIndex != null &&
+        props.initialScrollIndex > 0 &&
         !this._scrollMetrics.offset &&
         Math.abs(distanceFromEnd) >= Number.EPSILON
       ) {

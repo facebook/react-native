@@ -9,8 +9,7 @@
 
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 constexpr MapBuffer::Key VP_BACKFACE_VISIBILITY = 9;
@@ -45,12 +44,10 @@ constexpr MapBuffer::Key VP_POINTER_OVER_CAPTURE = 42;
 constexpr MapBuffer::Key VP_POINTER_OUT = 43;
 constexpr MapBuffer::Key VP_POINTER_OUT_CAPTURE = 44;
 constexpr MapBuffer::Key VP_BORDER_CURVES = 45;
-constexpr MapBuffer::Key VP_FG_COLOR = 46;
 
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
 constexpr MapBuffer::Key YG_OVERFLOW = 101;
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

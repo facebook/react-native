@@ -11,8 +11,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 local_ref<jstring> NativeMap::toString() {
   throwIfConsumed();
@@ -35,5 +34,4 @@ void NativeMap::throwIfConsumed() {
   exceptions::throwIfObjectAlreadyConsumed(this, "Map already consumed");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

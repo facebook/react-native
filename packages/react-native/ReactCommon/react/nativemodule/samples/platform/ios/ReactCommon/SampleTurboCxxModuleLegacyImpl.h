@@ -9,8 +9,7 @@
 
 #import <cxxreact/CxxModule.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A sample CxxModule (legacy system) implementation.
@@ -44,5 +43,4 @@ class SampleTurboCxxModuleLegacyImpl
       const facebook::xplat::module::CxxModule::Callback &reject);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

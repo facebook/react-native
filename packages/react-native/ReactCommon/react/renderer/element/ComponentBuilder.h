@@ -18,8 +18,7 @@
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/ElementFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Build `ShadowNode` trees with a given given `Element` trees.
@@ -55,5 +54,4 @@ class ComponentBuilder final {
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

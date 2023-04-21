@@ -15,8 +15,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Scheduler;
 class ShadowTree;
@@ -206,5 +205,4 @@ class SurfaceHandler {
   mutable Parameters parameters_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

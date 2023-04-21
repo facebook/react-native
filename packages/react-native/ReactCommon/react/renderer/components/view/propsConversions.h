@@ -13,8 +13,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
@@ -779,5 +778,4 @@ static inline void fromRawValue(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

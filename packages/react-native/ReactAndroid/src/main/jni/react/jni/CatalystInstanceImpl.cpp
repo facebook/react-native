@@ -43,8 +43,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -418,5 +417,4 @@ CatalystInstanceImpl::getRuntimeScheduler() {
   return runtimeScheduler_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

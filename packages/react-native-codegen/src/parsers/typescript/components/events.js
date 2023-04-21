@@ -86,7 +86,6 @@ function getPropertyType(
           properties: typeAnnotation.members.map(buildPropertiesForEvent),
         },
       };
-
     case 'TSUnionType':
       return {
         name,
@@ -94,6 +93,14 @@ function getPropertyType(
         typeAnnotation: {
           type: 'StringEnumTypeAnnotation',
           options: typeAnnotation.types.map(option => option.literal.value),
+        },
+      };
+    case 'UnsafeMixed':
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
         },
       };
     default:

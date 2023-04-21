@@ -16,8 +16,7 @@
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventEmitter;
 
@@ -55,6 +54,8 @@ class EventEmitter {
    * `DispatchMutex` must be acquired before calling.
    */
   void setEnabled(bool enabled) const;
+
+  SharedEventTarget const &getEventTarget() const;
 
  protected:
 #ifdef ANDROID
@@ -100,5 +101,4 @@ class EventEmitter {
   mutable bool isEnabled_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

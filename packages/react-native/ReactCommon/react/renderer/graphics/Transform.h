@@ -21,8 +21,7 @@
 #include <folly/dynamic.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline bool isZero(Float n) {
   // We use this ternary expression instead of abs, fabsf, etc, because
@@ -206,8 +205,7 @@ EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
 
 Vector operator*(Transform const &transform, Vector const &vector);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

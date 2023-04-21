@@ -87,6 +87,10 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
     getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),
+    getCustomHostObject: () =>
+      NativeCxxModuleExample?.consumeCustomHostObject(
+        NativeCxxModuleExample?.getCustomHostObject(),
+      ),
     getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
     getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),

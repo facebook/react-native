@@ -11,8 +11,7 @@
 #include <glog/logging.h>
 #include <mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JReactMarker::setLogPerfMarkerIfNeeded() {
   static std::once_flag flag{};
@@ -110,5 +109,4 @@ double JReactMarker::getAppStartTime() {
   return meth(cls);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

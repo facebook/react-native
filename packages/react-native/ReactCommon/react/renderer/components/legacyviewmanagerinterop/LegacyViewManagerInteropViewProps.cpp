@@ -8,8 +8,7 @@
 #include "LegacyViewManagerInteropViewProps.h"
 #include <react/renderer/core/DynamicPropsUtilities.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
     const PropsParserContext &context,
@@ -20,5 +19,4 @@ LegacyViewManagerInteropViewProps::LegacyViewManagerInteropViewProps(
           mergeDynamicProps(sourceProps.otherProps, (folly::dynamic)rawProps)) {
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

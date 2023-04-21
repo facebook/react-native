@@ -15,8 +15,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void ViewProps::propsDiffMapBuffer(
@@ -54,10 +53,6 @@ void ViewProps::propsDiffMapBuffer(
 
   if (oldProps.backgroundColor != newProps.backgroundColor) {
     builder.putInt(VP_BG_COLOR, toAndroidRepr(newProps.backgroundColor));
-  }
-
-  if (oldProps.foregroundColor != newProps.foregroundColor) {
-    builder.putInt(VP_FG_COLOR, toAndroidRepr(newProps.foregroundColor));
   }
 
   if (oldProps.borderCurves != newProps.borderCurves) {
@@ -196,7 +191,6 @@ void ViewProps::propsDiffMapBuffer(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

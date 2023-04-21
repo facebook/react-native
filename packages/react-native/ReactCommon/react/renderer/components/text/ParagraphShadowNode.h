@@ -16,8 +16,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern char const ParagraphComponentName[];
 
@@ -101,5 +100,4 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   mutable std::optional<Content> content_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

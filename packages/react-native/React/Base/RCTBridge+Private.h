@@ -70,6 +70,9 @@ RCT_EXTERN void RCTRegisterModule(Class);
  */
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 
+@property (nonatomic, copy, readwrite) NSArray<NSString *> *eagerInitModuleNames_DO_NOT_USE;
+@property (nonatomic, copy, readwrite) NSArray<NSString *> *eagerInitMainQueueModuleNames_DO_NOT_USE;
+
 @end
 
 @interface RCTBridge (RCTCxxBridge)

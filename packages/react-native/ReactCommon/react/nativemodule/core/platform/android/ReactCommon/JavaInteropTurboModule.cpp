@@ -7,8 +7,7 @@
 
 #include "JavaInteropTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -188,5 +187,4 @@ std::vector<facebook::jsi::PropNameID> JavaInteropTurboModule::getPropertyNames(
   return propNames;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

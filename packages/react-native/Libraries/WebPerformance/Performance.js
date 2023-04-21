@@ -157,7 +157,7 @@ export default class Performance {
     const mark = new PerformanceMark(markName, markOptions);
 
     if (NativePerformance?.mark) {
-      NativePerformance.mark(markName, mark.startTime, mark.duration);
+      NativePerformance.mark(markName, mark.startTime);
     } else {
       warnNoNativePerformance();
     }

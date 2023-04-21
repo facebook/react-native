@@ -11,8 +11,7 @@
 #include <functional>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 namespace ReactMarker {
 
 enum ReactMarkerId {
@@ -87,5 +86,4 @@ class StartupLogger {
 };
 
 } // namespace ReactMarker
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

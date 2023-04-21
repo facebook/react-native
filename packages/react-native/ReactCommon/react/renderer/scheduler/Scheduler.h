@@ -28,8 +28,7 @@
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
@@ -40,7 +39,7 @@ class Scheduler final : public UIManagerDelegate {
       SchedulerToolbox const &schedulerToolbox,
       UIManagerAnimationDelegate *animationDelegate,
       SchedulerDelegate *delegate);
-  ~Scheduler();
+  ~Scheduler() override;
 
 #pragma mark - Surface Management
 
@@ -147,5 +146,4 @@ class Scheduler final : public UIManagerDelegate {
   bool reduceDeleteCreateMutationLayoutAnimation_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

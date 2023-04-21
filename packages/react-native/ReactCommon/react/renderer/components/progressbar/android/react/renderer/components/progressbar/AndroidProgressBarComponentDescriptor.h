@@ -11,8 +11,7 @@
 #include "AndroidProgressBarMeasurementsManager.h"
 #include "AndroidProgressBarShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <AndroidProgressBar> component.
@@ -48,5 +47,4 @@ class AndroidProgressBarComponentDescriptor final
       measurementsManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

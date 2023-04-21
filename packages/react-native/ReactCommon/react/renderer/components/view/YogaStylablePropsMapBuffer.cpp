@@ -14,8 +14,7 @@
 
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
   MapBufferBuilder builder(7);
@@ -81,7 +80,6 @@ void YogaStylableProps::propsDiffMapBuffer(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

@@ -9,8 +9,7 @@
 
 #include <ReactCommon/SampleTurboModuleSpec.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static facebook::jsi::Value
 __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(
@@ -361,5 +360,4 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

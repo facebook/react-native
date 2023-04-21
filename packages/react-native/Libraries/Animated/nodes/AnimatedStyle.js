@@ -31,13 +31,13 @@ function createAnimatedStyle(
   for (const key in style) {
     const value = style[key];
     if (key === 'transform') {
-      animatedStyles[key] = new AnimatedTransform(value);
+      animatedStyles[key] =
+        ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
+          ? new AnimatedObject(value)
+          : new AnimatedTransform(value);
     } else if (value instanceof AnimatedNode) {
       animatedStyles[key] = value;
-    } else if (
-      ReactNativeFeatureFlags.isAnimatedObjectEnabled &&
-      hasAnimatedNode(value)
-    ) {
+    } else if (hasAnimatedNode(value)) {
       animatedStyles[key] = new AnimatedObject(value);
     } else if (keepUnanimatedValues) {
       animatedStyles[key] = value;

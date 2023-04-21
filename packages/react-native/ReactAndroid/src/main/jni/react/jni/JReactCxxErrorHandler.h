@@ -10,8 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactCxxErrorHandler : public jni::JavaClass<JReactCxxErrorHandler> {
  public:
@@ -21,5 +20,4 @@ class JReactCxxErrorHandler : public jni::JavaClass<JReactCxxErrorHandler> {
   static void handleError(std::string message);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
