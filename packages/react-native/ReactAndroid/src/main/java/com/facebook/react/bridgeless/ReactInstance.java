@@ -198,7 +198,7 @@ public final class ReactInstance {
 
     // Eagerly initialize TurboModules
     for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-      mTurboModuleManager.getNativeModule(moduleName);
+      mTurboModuleManager.getModule(moduleName);
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
@@ -290,14 +290,14 @@ public final class ReactInstance {
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     ReactModule annotation = nativeModuleInterface.getAnnotation(ReactModule.class);
     if (annotation != null) {
-      return mTurboModuleManager.hasNativeModule(annotation.name());
+      return mTurboModuleManager.hasModule(annotation.name());
     }
     return false;
   }
 
   public Collection<NativeModule> getNativeModules() {
     Collection<NativeModule> nativeModules = new ArrayList<>();
-    for (NativeModule module : mTurboModuleManager.getNativeModules()) {
+    for (NativeModule module : mTurboModuleManager.getModules()) {
       nativeModules.add(module);
     }
     return nativeModules;
@@ -313,7 +313,7 @@ public final class ReactInstance {
 
   public @Nullable NativeModule getNativeModule(String nativeModuleName) {
     synchronized (mTurboModuleManager) {
-      return mTurboModuleManager.getNativeModule(nativeModuleName);
+      return mTurboModuleManager.getModule(nativeModuleName);
     }
   }
 
