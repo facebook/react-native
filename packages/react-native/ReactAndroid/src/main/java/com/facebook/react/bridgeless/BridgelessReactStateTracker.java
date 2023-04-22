@@ -15,21 +15,18 @@ import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class BridgelessReactStateTracker {
-  final List<String> mStates = Collections.synchronizedList(new ArrayList<String>());
-  final boolean mShouldTrackStates;
+  private static final String TAG = "BridgelessReact";
+  private final List<String> mStates = Collections.synchronizedList(new ArrayList<>());
+  private final boolean mShouldTrackStates;
 
   BridgelessReactStateTracker(boolean shouldTrackStates) {
     mShouldTrackStates = shouldTrackStates;
   }
 
-  public void enterState(String state) {
-    FLog.w("BridgelessReact", state);
+  void enterState(String state) {
+    FLog.w(TAG, state);
     if (mShouldTrackStates) {
       mStates.add(state);
     }
-  }
-
-  public void assertStateOrder(String... expectedStates) {
-    // TODO: Implement
   }
 }
