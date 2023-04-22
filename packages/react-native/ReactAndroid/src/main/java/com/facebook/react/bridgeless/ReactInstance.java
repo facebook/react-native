@@ -9,6 +9,7 @@ package com.facebook.react.bridgeless;
 
 import android.content.res.AssetManager;
 import android.view.View;
+import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -175,7 +176,7 @@ final class ReactInstance {
               @Override
               public String[] getComponentNames() {
                 Collection<String> viewManagerNames = getViewManagerNames();
-                if (viewManagerNames == null) {
+                if (viewManagerNames.size() < 1) {
                   FLog.e(TAG, "No ViewManager names found");
                   return new String[0];
                 }
@@ -296,11 +297,7 @@ final class ReactInstance {
   }
 
   public Collection<NativeModule> getNativeModules() {
-    Collection<NativeModule> nativeModules = new ArrayList<>();
-    for (NativeModule module : mTurboModuleManager.getModules()) {
-      nativeModules.add(module);
-    }
-    return nativeModules;
+    return new ArrayList<>(mTurboModuleManager.getModules());
   }
 
   public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
@@ -340,11 +337,10 @@ final class ReactInstance {
           "Starting surface without a view is not supported, use prerenderSurface instead.");
     }
 
-    /**
-     * This is a temporary mitigation for 646912b2590a6d5e760316cc064d1e27,
-     *
-     * <p>TODO T83828172 investigate why surface.getView() has id NOT equal to View.NO_ID
-     */
+    /*
+     This is a temporary mitigation for 646912b2590a6d5e760316cc064d1e27,
+     <p>TODO T83828172 investigate why surface.getView() has id NOT equal to View.NO_ID
+    */
     if (view.getId() != View.NO_ID) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -467,7 +463,7 @@ final class ReactInstance {
     return null;
   }
 
-  private Collection<String> getViewManagerNames() {
+  private @NonNull Collection<String> getViewManagerNames() {
     Set<String> uniqueNames = new HashSet<>();
     if (mDelegate != null) {
       List<ReactPackage> packages = mDelegate.getReactPackages();
