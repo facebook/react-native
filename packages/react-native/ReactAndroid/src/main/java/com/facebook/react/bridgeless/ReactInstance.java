@@ -68,7 +68,7 @@ import javax.annotation.Nullable;
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
-public final class ReactInstance {
+final class ReactInstance {
 
   private static final String TAG = ReactInstance.class.getSimpleName();
 
