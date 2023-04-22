@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class BridgelessAtomicRef<T> {
+class BridgelessAtomicRef<T> {
 
   interface Provider<T> {
     T get();
