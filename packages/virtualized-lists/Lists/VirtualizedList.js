@@ -891,6 +891,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           cellKey={this._getCellKey() + '-header'}
           key="$header">
           <View
+            // We expect that header component will be a single native view so make it
+            // not collapsable to avoid this view being flattened and make this assumption
+            // no longer true.
+            collapsable={false}
             onLayout={this._onLayoutHeader}
             style={StyleSheet.compose(
               inversionStyle,
