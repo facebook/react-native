@@ -462,7 +462,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this.props.getItemCount(this.props.data) > minIndexForVisible
           ? VirtualizedList._getItemKey(this.props, minIndexForVisible)
           : null,
-      pendingScrollUpdateCount: 0,
+      // When we have a non-zero initialScrollIndex, we will receive a
+      // scroll event later so this will prevent the window from updating
+      // until we get a valid offset.
+      pendingScrollUpdateCount:
+        this.props.initialScrollIndex != null &&
+        this.props.initialScrollIndex > 0
+          ? 1
+          : 0,
     };
   }
 
@@ -631,6 +638,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _adjustCellsAroundViewport(
     props: Props,
     cellsAroundViewport: {first: number, last: number},
+    pendingScrollUpdateCount: number,
   ): {first: number, last: number} {
     const {data, getItemCount} = props;
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
@@ -662,22 +670,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         ),
       };
     } else {
-      // If we have a positive non-zero initialScrollIndex and run this before we've scrolled,
-      // we'll wipe out the initialNumToRender rendered elements starting at initialScrollIndex.
-      // So let's wait until we've scrolled the view to the right place. And until then,
-      // we will trust the initialScrollIndex suggestion.
-
-      // Thus, we want to recalculate the windowed render limits if any of the following hold:
-      // - initialScrollIndex is undefined or is 0
-      // - initialScrollIndex > 0 AND scrolling is complete
-      // - initialScrollIndex > 0 AND the end of the list is visible (this handles the case
-      //   where the list is shorter than the visible area)
-      if (
-        props.initialScrollIndex != null &&
-        props.initialScrollIndex > 0 &&
-        !this._scrollMetrics.offset &&
-        Math.abs(distanceFromEnd) >= Number.EPSILON
-      ) {
+      // If we have a pending scroll update, we should not adjust the render window as it
+      // might override the correct window.
+      if (pendingScrollUpdateCount > 0) {
         return cellsAroundViewport.last >= getItemCount(data)
           ? VirtualizedList._constrainToItemCount(cellsAroundViewport, props)
           : cellsAroundViewport;
@@ -1561,7 +1556,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onStartReachedThreshold,
       onEndReached,
       onEndReachedThreshold,
-      initialScrollIndex,
     } = this.props;
     // If we have any pending scroll updates it means that the scroll metrics
     // are out of date and we should not call any of the edge reached callbacks.
@@ -1620,14 +1614,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       isWithinStartThreshold &&
       this._scrollMetrics.contentLength !== this._sentStartForContentLength
     ) {
-      // On initial mount when using initialScrollIndex the offset will be 0 initially
-      // and will trigger an unexpected onStartReached. To avoid this we can use
-      // timestamp to differentiate between the initial scroll metrics and when we actually
-      // received the first scroll event.
-      if (!initialScrollIndex || this._scrollMetrics.timestamp !== 0) {
-        this._sentStartForContentLength = this._scrollMetrics.contentLength;
-        onStartReached({distanceFromStart});
-      }
+      this._sentStartForContentLength = this._scrollMetrics.contentLength;
+      onStartReached({distanceFromStart});
     }
 
     // If the user scrolls away from the start or end and back again,
@@ -1868,16 +1856,13 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
-    if (this.state.pendingScrollUpdateCount > 0) {
-      return;
-    }
-
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
 
     this.setState((state, props) => {
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
         state.cellsAroundViewport,
+        state.pendingScrollUpdateCount,
       );
       const renderMask = VirtualizedList._createRenderMask(
         props,
@@ -2051,6 +2036,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     props: FrameMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
+    // If we have any pending scroll updates it means that the scroll metrics
+    // are out of date and we should not call any of the visibility callbacks.
+    if (this.state.pendingScrollUpdateCount > 0) {
+      return;
+    }
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.onUpdate(
         props,

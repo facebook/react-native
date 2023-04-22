@@ -1837,45 +1837,12 @@ exports[`adjusts render area with non-zero initialScrollIndex 1`] = `
       />
     </View>
     <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={15}
-      />
-    </View>
-    <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={16}
-      />
-    </View>
-    <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={17}
-      />
-    </View>
-    <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={18}
-      />
-    </View>
-    <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={19}
-      />
-    </View>
+      style={
+        Object {
+          "height": 50,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;
@@ -3628,10 +3595,18 @@ exports[`handles maintainVisibleContentPosition 3`] = `
     <View
       style={
         Object {
-          "height": 90,
+          "height": 80,
         }
       }
     />
+    <View
+      onFocusCapture={[Function]}
+      style={null}
+    >
+      <MockCellItem
+        value={29}
+      />
+    </View>
     <View
       onFocusCapture={[Function]}
       style={null}
@@ -4623,21 +4598,12 @@ exports[`renders new items when data is updated with non-zero initialScrollIndex
       />
     </View>
     <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={2}
-      />
-    </View>
-    <View
-      onFocusCapture={[Function]}
-      style={null}
-    >
-      <MockCellItem
-        value={3}
-      />
-    </View>
+      style={
+        Object {
+          "height": 20,
+        }
+      }
+    />
   </View>
 </RCTScrollView>
 `;
