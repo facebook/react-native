@@ -502,6 +502,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
+  static _getItemKey(
+    props: {
+      data: Props['data'],
+      getItem: Props['getItem'],
+      keyExtractor: Props['keyExtractor'],
+      ...
+    },
+    index: number,
+  ): string {
+    const item = props.getItem(props.data, index);
+    return VirtualizedList._keyExtractor(item, index, props);
+  }
+
   static _createRenderMask(
     props: Props,
     cellsAroundViewport: {first: number, last: number},
@@ -752,7 +765,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = this._keyExtractor(item, ii, this.props);
+      const key = VirtualizedList._keyExtractor(item, ii, this.props);
 
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
@@ -825,15 +838,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _getSpacerKey = (isVertical: boolean): string =>
     isVertical ? 'height' : 'width';
 
-  _keyExtractor(
+  static _keyExtractor(
     item: Item,
     index: number,
     props: {
       keyExtractor?: ?(item: Item, index: number) => string,
       ...
     },
-    // $FlowFixMe[missing-local-annot]
-  ) {
+  ): string {
     if (props.keyExtractor != null) {
       return props.keyExtractor(item, index);
     }
@@ -1789,7 +1801,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     return {
       index,
       item,
-      key: this._keyExtractor(item, index, props),
+      key: VirtualizedList._keyExtractor(item, index, props),
       isViewable,
     };
   };
@@ -1850,13 +1862,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     inLayout?: boolean,
     ...
   } => {
-    const {data, getItem, getItemCount, getItemLayout} = props;
+    const {data, getItemCount, getItemLayout} = props;
     invariant(
       index >= 0 && index < getItemCount(data),
       'Tried to get frame for out of range index ' + index,
     );
-    const item = getItem(data, index);
-    const frame = this._frames[this._keyExtractor(item, index, props)];
+    const frame = this._frames[VirtualizedList._getItemKey(props, index)];
     if (!frame || frame.index !== index) {
       if (getItemLayout) {
         /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
@@ -1891,11 +1902,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // where it is.
     if (
       focusedCellIndex >= itemCount ||
-      this._keyExtractor(
-        props.getItem(props.data, focusedCellIndex),
-        focusedCellIndex,
-        props,
-      ) !== this._lastFocusedCellKey
+      VirtualizedList._getItemKey(props, focusedCellIndex) !==
+        this._lastFocusedCellKey
     ) {
       return [];
     }
