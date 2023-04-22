@@ -73,6 +73,10 @@ type ViewabilityHelperCallbackTuple = {
 type State = {
   renderMask: CellRenderMask,
   cellsAroundViewport: {first: number, last: number},
+  // Used to track items added at the start of the list for maintainVisibleContentPosition.
+  firstVisibleItemKey: ?string,
+  // When > 0 the scroll position available in JS is considered stale and should not be used.
+  pendingScrollUpdateCount: number,
 };
 
 /**
@@ -448,9 +452,17 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     const initialRenderRegion = VirtualizedList._initialRenderRegion(props);
 
+    const minIndexForVisible =
+      this.props.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
+
     this.state = {
       cellsAroundViewport: initialRenderRegion,
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
+      firstVisibleItemKey:
+        this.props.getItemCount(this.props.data) > minIndexForVisible
+          ? VirtualizedList._getItemKey(this.props, minIndexForVisible)
+          : null,
+      pendingScrollUpdateCount: 0,
     };
   }
 
@@ -500,6 +512,27 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         this._hasWarned.flexWrap = true;
       }
     }
+  }
+
+  static _findItemIndexWithKey(
+    props: Props,
+    key: string,
+    hint: ?number,
+  ): ?number {
+    const itemCount = props.getItemCount(props.data);
+    if (hint != null && hint >= 0 && hint < itemCount) {
+      const curKey = VirtualizedList._getItemKey(props, hint);
+      if (curKey === key) {
+        return hint;
+      }
+    }
+    for (let ii = 0; ii < itemCount; ii++) {
+      const curKey = VirtualizedList._getItemKey(props, ii);
+      if (curKey === key) {
+        return ii;
+      }
+    }
+    return null;
   }
 
   static _getItemKey(
@@ -726,14 +759,59 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       return prevState;
     }
 
+    let maintainVisibleContentPositionAdjustment: ?number = null;
+    const prevFirstVisibleItemKey = prevState.firstVisibleItemKey;
+    const minIndexForVisible =
+      newProps.maintainVisibleContentPosition?.minIndexForVisible ?? 0;
+    const newFirstVisibleItemKey =
+      newProps.getItemCount(newProps.data) > minIndexForVisible
+        ? VirtualizedList._getItemKey(newProps, minIndexForVisible)
+        : null;
+    if (
+      newProps.maintainVisibleContentPosition != null &&
+      prevFirstVisibleItemKey != null &&
+      newFirstVisibleItemKey != null
+    ) {
+      if (newFirstVisibleItemKey !== prevFirstVisibleItemKey) {
+        // Fast path if items were added at the start of the list.
+        const hint =
+          itemCount - prevState.renderMask.numCells() + minIndexForVisible;
+        const firstVisibleItemIndex = VirtualizedList._findItemIndexWithKey(
+          newProps,
+          prevFirstVisibleItemKey,
+          hint,
+        );
+        maintainVisibleContentPositionAdjustment =
+          firstVisibleItemIndex != null
+            ? firstVisibleItemIndex - minIndexForVisible
+            : null;
+      } else {
+        maintainVisibleContentPositionAdjustment = null;
+      }
+    }
+
     const constrainedCells = VirtualizedList._constrainToItemCount(
-      prevState.cellsAroundViewport,
+      maintainVisibleContentPositionAdjustment != null
+        ? {
+            first:
+              prevState.cellsAroundViewport.first +
+              maintainVisibleContentPositionAdjustment,
+            last:
+              prevState.cellsAroundViewport.last +
+              maintainVisibleContentPositionAdjustment,
+          }
+        : prevState.cellsAroundViewport,
       newProps,
     );
 
     return {
       cellsAroundViewport: constrainedCells,
       renderMask: VirtualizedList._createRenderMask(newProps, constrainedCells),
+      firstVisibleItemKey: newFirstVisibleItemKey,
+      pendingScrollUpdateCount:
+        maintainVisibleContentPositionAdjustment != null
+          ? prevState.pendingScrollUpdateCount + 1
+          : prevState.pendingScrollUpdateCount,
     };
   }
 
@@ -1052,6 +1130,16 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
+      maintainVisibleContentPosition:
+        this.props.maintainVisibleContentPosition != null
+          ? {
+              ...this.props.maintainVisibleContentPosition,
+              // Adjust index to account for ListHeaderComponent.
+              minIndexForVisible:
+                this.props.maintainVisibleContentPosition.minIndexForVisible +
+                (this.props.ListHeaderComponent ? 1 : 0),
+            }
+          : undefined,
     };
 
     this._hasMore = this.state.cellsAroundViewport.last < itemCount - 1;
@@ -1475,6 +1563,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onEndReachedThreshold,
       initialScrollIndex,
     } = this.props;
+    // If we have any pending scroll updates it means that the scroll metrics
+    // are out of date and we should not call any of the edge reached callbacks.
+    if (this.state.pendingScrollUpdateCount > 0) {
+      return;
+    }
+
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
     let distanceFromStart = offset;
     let distanceFromEnd = contentLength - visibleLength - offset;
@@ -1660,6 +1754,11 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       visibleLength,
       zoomScale,
     };
+    if (this.state.pendingScrollUpdateCount > 0) {
+      this.setState(state => ({
+        pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
+      }));
+    }
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
     if (!this.props) {
       return;
@@ -1769,6 +1868,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
+    if (this.state.pendingScrollUpdateCount > 0) {
+      return;
+    }
+
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
 
     this.setState((state, props) => {
