@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * APIs for asynchronously loading the JS bundle.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class BridgelessDevSupportManager extends DevSupportManagerBase {
+class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   private final ReactHost mReactHost;
 
