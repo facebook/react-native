@@ -1398,7 +1398,7 @@ public class ReactHost {
 
         // Noop on redundant calls to destroyReactInstance()
         if (instance == null) {
-          log(method, "ReactInstance nil");
+          log(method, "ReactInstance is null");
           return;
         }
 
