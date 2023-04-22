@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class BridgelessReactStateTracker {
+class BridgelessReactStateTracker {
   final List<String> mStates = Collections.synchronizedList(new ArrayList<String>());
   final boolean mShouldTrackStates;
 
