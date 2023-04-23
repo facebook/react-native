@@ -9,17 +9,17 @@
  */
 
 'use strict';
+
 const {getSchemaInfo, getTypeAnnotation} = require('./componentsUtils.js');
 
 import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../../utils';
+import type {TypeDeclarationMap, PropAST} from '../../utils';
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
 
 const {flattenProperties} = require('./componentsUtils.js');
 const {parseTopLevelType} = require('../parseTopLevelType');
-
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-type PropAST = Object;
+const {extendsForProp} = require('../../parsers-commons');
 
 function buildPropSchema(
   property: PropAST,
@@ -59,32 +59,10 @@ function isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
   return !isStyle;
 }
 
-function extendsForProp(prop: PropAST, types: TypeDeclarationMap) {
-  if (!prop.expression) {
-    console.log('null', prop);
-  }
-  const name = prop.expression.name;
-
-  if (types[name] != null) {
-    // This type is locally defined in the file
-    return null;
-  }
-
-  switch (name) {
-    case 'ViewProps':
-      return {
-        type: 'ReactNativeBuiltInType',
-        knownTypeName: 'ReactNativeCoreViewProps',
-      };
-    default: {
-      throw new Error(`Unable to handle prop spread: ${name}`);
-    }
-  }
-}
-
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): {
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
@@ -96,7 +74,7 @@ function getProps(
   for (const prop of typeDefinition) {
     // find extends
     if (prop.type === 'TSExpressionWithTypeArguments') {
-      const extend = extendsForProp(prop, types);
+      const extend = extendsForProp(prop, types, parser);
       if (extend) {
         extendsProps.push(extend);
         continue;

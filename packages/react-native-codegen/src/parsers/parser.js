@@ -22,7 +22,7 @@ import type {
   NativeModuleEnumMap,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -255,4 +255,18 @@ export interface Parser {
    * @returns: converted TypeAnnotation to Keywords
    */
   convertKeywordToTypeAnnotation(keyword: string): string;
+
+  /**
+   * Given a prop return its arguments.
+   * @parameter prop
+   * @returns: Arguments of the prop
+   */
+  argumentForProp(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a prop return its name.
+   * @parameter prop
+   * @returns: name property
+   */
+  nameForArgument(prop: PropAST): $FlowFixMe;
 }

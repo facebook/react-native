@@ -23,7 +23,7 @@ import type {
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
-import type {ParserErrorCapturer, TypeDeclarationMap} from '../utils';
+import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from '../utils';
 
 const {typeScriptTranslateTypeAnnotation} = require('./modules');
 
@@ -327,6 +327,14 @@ class TypeScriptParser implements Parser {
     }
 
     return keyword;
+  }
+
+  argumentForProp(prop: PropAST): $FlowFixMe {
+    return prop.expression;
+  }
+
+  nameForArgument(prop: PropAST): $FlowFixMe {
+    return prop.expression.name;
   }
 }
 

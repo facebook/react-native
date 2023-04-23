@@ -27,7 +27,7 @@ import type {
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
@@ -68,6 +68,11 @@ export type CommandOptions = $ReadOnly<{
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type OptionsAST = Object;
+
+type ExtendedPropResult = {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+} | null;
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -817,6 +822,36 @@ function propertyNames(
     .filter(Boolean);
 }
 
+function extendsForProp(
+  prop: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): ExtendedPropResult {
+  const argument = parser.argumentForProp(prop);
+
+  if (!argument) {
+    console.log('null', prop);
+  }
+
+  const name = parser.nameForArgument(prop);
+
+  if (types[name] != null) {
+    // This type is locally defined in the file
+    return null;
+  }
+
+  switch (name) {
+    case 'ViewProps':
+      return {
+        type: 'ReactNativeBuiltInType',
+        knownTypeName: 'ReactNativeCoreViewProps',
+      };
+    default: {
+      throw new Error(`Unable to handle prop spread: ${name}`);
+    }
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -836,4 +871,5 @@ module.exports = {
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
+  extendsForProp,
 };

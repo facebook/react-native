@@ -13,7 +13,7 @@
 import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
-import type {TypeDeclarationMap} from '../../utils';
+import type {TypeDeclarationMap, PropAST} from '../../utils';
 
 function getProperties(
   typeName: string,
@@ -498,9 +498,6 @@ function getSchemaInfo(
     withNullDefault,
   };
 }
-
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-type PropAST = Object;
 
 module.exports = {
   getProperties,

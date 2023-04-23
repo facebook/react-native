@@ -15,7 +15,7 @@ const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
-import type {TypeDeclarationMap} from '../../utils';
+import type {TypeDeclarationMap, PropAST} from '../../utils';
 
 function getProperties(
   typeName: string,
@@ -462,9 +462,6 @@ function getSchemaInfo(
     defaultValue: topLevelType.defaultValue,
   };
 }
-
-// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
-type PropAST = Object;
 
 function verifyPropNotAlreadyDefined(
   props: $ReadOnlyArray<PropAST>,
