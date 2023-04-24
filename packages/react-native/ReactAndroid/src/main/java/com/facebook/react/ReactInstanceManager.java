@@ -92,7 +92,6 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
-import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
@@ -102,6 +101,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
@@ -855,7 +855,10 @@ public class ReactInstanceManager {
    * with the provided reactRoot reactRoot will be started asynchronously, i.e this method won't
    * block. This reactRoot will then be tracked by this manager and in case of catalyst instance
    * restart it will be re-attached.
+   *
+   * @deprecated This method should be internal to ReactRootView and ReactInstanceManager
    */
+  @Deprecated
   @ThreadConfined(UI)
   public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
@@ -865,6 +868,8 @@ public class ReactInstanceManager {
     // Ideally reactRoot should be initialized with id == NO_ID
     if (mAttachedReactRoots.add(reactRoot)) {
       clearReactRoot(reactRoot);
+    } else {
+      FLog.e(ReactConstants.TAG, "ReactRoot was attached multiple times");
     }
 
     // If react context is being created in the background, JS application will be started
@@ -872,9 +877,7 @@ public class ReactInstanceManager {
     // reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
-        attachRootViewToInstance(reactRoot);
-      }
+      attachRootViewToInstance(reactRoot);
     }
   }
 
@@ -882,18 +885,20 @@ public class ReactInstanceManager {
    * Detach given {@param reactRoot} from current catalyst instance. It's safe to call this method
    * multiple times on the same {@param reactRoot} - in that case view will be detached with the
    * first call.
+   *
+   * @deprecated This method should be internal to ReactRootView and ReactInstanceManager
    */
+  @Deprecated
   @ThreadConfined(UI)
   public void detachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    synchronized (mAttachedReactRoots) {
-      if (mAttachedReactRoots.contains(reactRoot)) {
-        ReactContext currentContext = getCurrentReactContext();
-        mAttachedReactRoots.remove(reactRoot);
-        if (currentContext != null && currentContext.hasActiveReactInstance()) {
-          detachViewFromInstance(reactRoot, currentContext.getCatalystInstance());
-        }
-      }
+    if (!mAttachedReactRoots.remove(reactRoot)) {
+      return;
+    }
+
+    ReactContext reactContext = mCurrentReactContext;
+    if (reactContext != null && reactContext.hasActiveReactInstance()) {
+      detachRootViewFromInstance(reactRoot, reactContext);
     }
   }
 
@@ -1150,9 +1155,7 @@ public class ReactInstanceManager {
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        if (reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
-          attachRootViewToInstance(reactRoot);
-        }
+        attachRootViewToInstance(reactRoot);
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
@@ -1194,6 +1197,11 @@ public class ReactInstanceManager {
 
   private void attachRootViewToInstance(final ReactRoot reactRoot) {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
+    if (!reactRoot.getState().compareAndSet(ReactRoot.STATE_STOPPED, ReactRoot.STATE_STARTED)) {
+      // Already started
+      return;
+    }
+
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
 
     @Nullable
@@ -1210,7 +1218,6 @@ public class ReactInstanceManager {
     @Nullable Bundle initialProperties = reactRoot.getAppProperties();
 
     final int rootTag;
-
     if (reactRoot.getUIManagerType() == FABRIC) {
       rootTag =
           uiManager.startSurface(
@@ -1245,18 +1252,48 @@ public class ReactInstanceManager {
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
-  private void detachViewFromInstance(ReactRoot reactRoot, CatalystInstance catalystInstance) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.detachViewFromInstance()");
+  private void detachRootViewFromInstance(ReactRoot reactRoot, ReactContext reactContext) {
+    FLog.d(ReactConstants.TAG, "ReactInstanceManager.detachRootViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
-    if (reactRoot.getUIManagerType() == FABRIC) {
-      catalystInstance
-          .getJSModule(ReactFabric.class)
-          .unmountComponentAtNode(reactRoot.getRootViewTag());
+
+    if (!reactRoot.getState().compareAndSet(ReactRoot.STATE_STARTED, ReactRoot.STATE_STOPPED)) {
+      // ReactRoot was already stopped
+      return;
+    }
+
+    @UIManagerType int uiManagerType = reactRoot.getUIManagerType();
+    if (uiManagerType == UIManagerType.FABRIC) {
+      // Stop surface in Fabric.
+      // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
+      // to be called synchronously over the JNI, which causes an empty tree
+      // to be committed via the Scheduler, which will cause mounting instructions
+      // to be queued up and synchronously executed to delete and remove
+      // all the views in the hierarchy.
+      final int surfaceId = reactRoot.getRootViewTag();
+      if (surfaceId != View.NO_ID) {
+        UIManager uiManager = UIManagerHelper.getUIManager(reactContext, uiManagerType);
+        if (uiManager != null) {
+          uiManager.stopSurface(surfaceId);
+        } else {
+          FLog.w(ReactConstants.TAG, "Failed to stop surface, UIManager has already gone away");
+          reactRoot.getRootViewGroup().removeAllViews();
+        }
+      } else {
+        ReactSoftExceptionLogger.logSoftException(
+            TAG,
+            new RuntimeException(
+                "detachRootViewFromInstance called with ReactRootView with invalid id"));
+        reactRoot.getRootViewGroup().removeAllViews();
+      }
     } else {
-      catalystInstance
+      reactContext
+          .getCatalystInstance()
           .getJSModule(AppRegistry.class)
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
+
+    // The view is no longer attached, so mark it as such by resetting its ID.
+    reactRoot.getRootViewGroup().setId(View.NO_ID);
   }
 
   @ThreadConfined(UI)
@@ -1269,7 +1306,11 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedReactRoots) {
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        clearReactRoot(reactRoot);
+        if (ReactFeatureFlags.unmountApplicationOnInstanceDetach) {
+          detachRootViewFromInstance(reactRoot, reactContext);
+        } else {
+          clearReactRoot(reactRoot);
+        }
       }
     }
 
