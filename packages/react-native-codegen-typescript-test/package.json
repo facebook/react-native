@@ -8,6 +8,9 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/react-native-codegen-typescript-test"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "build": "yarn clean && node scripts/build.js --verbose && tsc",
     "clean": "rimraf lib && rimraf __generated__/*.ts",

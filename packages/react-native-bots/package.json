@@ -2,6 +2,9 @@
   "name": "@react-native/bots",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": ">=16"
+  },
   "devDependencies": {
     "@rnx-kit/rn-changelog-generator": "^0.4.0",
     "@seadub/danger-plugin-eslint": "^3.0.2",

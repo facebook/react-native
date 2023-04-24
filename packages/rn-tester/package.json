@@ -10,6 +10,9 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/rn-tester"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "start": "react-native start",
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",

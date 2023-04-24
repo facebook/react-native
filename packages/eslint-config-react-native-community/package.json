@@ -10,6 +10,9 @@
     "directory": "packages/eslint-config-react-native-community"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community#readme",
+  "engines": {
+    "node": ">=16"
+  },
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.19.0",

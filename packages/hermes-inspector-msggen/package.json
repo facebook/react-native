@@ -6,6 +6,9 @@
   "bin": {
     "msggen": "./bin/index.js"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "flow": "flow",
     "build": "babel src --out-dir bin --source-maps",

@@ -7,5 +7,8 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/assets"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  }
 }

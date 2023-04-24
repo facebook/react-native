@@ -8,6 +8,9 @@
     "directory": "packages/metro-config"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
   "exports": "./index.js",
   "dependencies": {
     "@react-native/js-polyfills": "^0.73.0",
