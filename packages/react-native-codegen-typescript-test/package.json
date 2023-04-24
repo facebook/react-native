@@ -1,13 +1,14 @@
 {
   "name": "@react-native/codegen-typescript-test",
   "version": "0.0.1",
-  "description": "⚛️ TypeScript related unit test for @react-native/codegen",
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-typescript-test",
+  "description": "TypeScript related unit test for @react-native/codegen",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/react-native-codegen-typescript-test"
   },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-typescript-test",
   "engines": {
     "node": ">=16"
   },
@@ -16,7 +17,6 @@
     "clean": "rimraf lib && rimraf __generated__/*.ts",
     "prepare": "yarn run build"
   },
-  "license": "MIT",
   "dependencies": {
     "@react-native/codegen": "*"
   },

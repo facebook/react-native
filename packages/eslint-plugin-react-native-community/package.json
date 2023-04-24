@@ -2,14 +2,17 @@
   "name": "@react-native/eslint-plugin",
   "version": "0.73.0",
   "description": "ESLint rules for @react-native/eslint-config",
-  "main": "index.js",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/eslint-plugin-react-native-community"
   },
-  "license": "MIT",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-react-native-community#readme",
+  "keywords": ["eslint", "rules", "eslint-config", "react-native"],
+  "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=16"
-  }
+  },
+  "main": "index.js"
 }

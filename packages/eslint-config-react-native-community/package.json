@@ -2,17 +2,19 @@
   "name": "@react-native/eslint-config",
   "version": "0.73.0",
   "description": "ESLint config for React Native",
-  "main": "index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/eslint-config-react-native-community"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community#readme",
+  "keywords": ["eslint", "config", "react-native"],
+  "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=16"
   },
+  "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.20.0",
     "@babel/eslint-parser": "^7.19.0",
