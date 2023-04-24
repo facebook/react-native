@@ -56,12 +56,6 @@ Object.defineProperties(global, {
   },
 });
 
-// there's a __mock__ for it.
-jest.setMock(
-  '../Libraries/vendor/core/ErrorUtils',
-  require('../Libraries/vendor/core/ErrorUtils'),
-);
-
 jest
   .mock('../Libraries/Core/InitializeCore', () => {})
   .mock('../Libraries/Core/NativeExceptionsManager', () => ({
