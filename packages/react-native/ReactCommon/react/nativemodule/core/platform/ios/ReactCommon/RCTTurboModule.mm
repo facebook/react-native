@@ -213,6 +213,30 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
 
 namespace facebook::react {
 
+static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
+{
+  return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
+}
+
+/**
+ * Creates JSError with current JS runtime and NSException stack trace.
+ */
+static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception)
+{
+  std::string reason = [exception.reason UTF8String];
+
+  jsi::Object cause(runtime);
+  cause.setProperty(runtime, "name", [exception.name UTF8String]);
+  cause.setProperty(runtime, "message", reason);
+  cause.setProperty(runtime, "stackSymbols", convertNSArrayToJSIArray(runtime, exception.callStackSymbols));
+  cause.setProperty(
+      runtime, "stackReturnAddresses", convertNSArrayToJSIArray(runtime, exception.callStackReturnAddresses));
+
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
+}
+
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
 {
   if (!invoke) {
@@ -376,9 +400,13 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    // TODO(T66699874) Should we guard this with a try/catch?
-    [inv invokeWithTarget:strongModule];
-    [retainedObjectsForInvocation removeAllObjects];
+    @try {
+      [inv invokeWithTarget:strongModule];
+    } @catch (NSException *exception) {
+      throw convertNSExceptionToJSError(runtime, exception);
+    } @finally {
+      [retainedObjectsForInvocation removeAllObjects];
+    }
 
     if (!wasMethodSync) {
       TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);

@@ -1240,6 +1240,11 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
         exceptionString += ex.what();
         *exception = makeError(rt, exceptionString);
         res = JSValueMakeUndefined(ctx);
+      } catch (const std::string &ex) {
+        std::string exceptionString("Exception in HostFunction: ");
+        exceptionString += ex;
+        *exception = makeError(rt, exceptionString);
+        res = JSValueMakeUndefined(ctx);
       } catch (...) {
         std::string exceptionString("Exception in HostFunction: <unknown>");
         *exception = makeError(rt, exceptionString);
