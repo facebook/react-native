@@ -1,3 +1,5 @@
+# It is expected that a `latestStableBranch` variable is set in the pipeline's settings:
+
 # This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
@@ -125,6 +127,8 @@ jobs:
         lfs: false # whether to download Git-LFS files
         submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
         persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      - template: apple-tools-setup.yml
 
       - template: templates/apple-install-dependencies.yml
 

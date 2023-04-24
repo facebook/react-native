@@ -2,4 +2,3 @@ variables:
   VmImageApple: internal-macos12
   slice_name: 'Xcode_14.2'
   xcode_version: '/Applications/Xcode_14.2.app'
-  latestStableBranch: '0.71-stable'
