@@ -141,4 +141,10 @@ public class ReactFeatureFlags {
    * HostObject pattern
    */
   public static boolean useNativeState = false;
+
+  /**
+   * Unmount React application on ReactInstance detach. Controls rollout of change to align React
+   * application lifecycle with React Native instance.
+   */
+  public static boolean unmountApplicationOnInstanceDetach = false;
 }
