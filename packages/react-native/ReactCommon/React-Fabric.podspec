@@ -120,14 +120,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "components" do |ss|
-    ss.subspec "activityindicator" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/activityindicator/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/activityindicator/tests"
-      sss.header_dir           = "react/renderer/components/activityindicator"
-    end
-
     ss.subspec "image" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
