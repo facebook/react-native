@@ -345,13 +345,16 @@ public class DevServerHelper {
 
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
+    boolean dev = getDevMode();
+    boolean lazy = dev;
     return String.format(
         Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+        "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
         host,
         mainModuleID,
         type.typeID(),
-        getDevMode(),
+        dev,
+        lazy,
         getJSMinifyMode(),
         mPackageName,
         modulesOnly ? "true" : "false",

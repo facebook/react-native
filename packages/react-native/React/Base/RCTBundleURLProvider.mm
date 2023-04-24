@@ -265,10 +265,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                           runModule:(BOOL)runModule
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-
+  BOOL lazy = enableDev;
   // When we support only iOS 8 and above, use queryItems for a better API.
-  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@&modulesOnly=%@&runModule=%@",
+  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&lazy=%@&minify=%@&modulesOnly=%@&runModule=%@",
                                                enableDev ? @"true" : @"false",
+                                               lazy ? @"true" : @"false",
                                                enableMinification ? @"true" : @"false",
                                                modulesOnly ? @"true" : @"false",
                                                runModule ? @"true" : @"false"];
