@@ -15,21 +15,46 @@ const mockComponent = jest.requireActual('./mockComponent');
 jest.requireActual('@react-native/js-polyfills/Object.es8');
 jest.requireActual('@react-native/js-polyfills/error-guard');
 
-global.__DEV__ = true;
-
-global.performance = {
-  now: jest.fn(Date.now),
-};
-
-global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
-global.window = global;
-
-global.requestAnimationFrame = function (callback) {
-  return setTimeout(() => callback(jest.now()), 0);
-};
-global.cancelAnimationFrame = function (id) {
-  clearTimeout(id);
-};
+Object.defineProperties(global, {
+  __DEV__: {
+    configurable: true,
+    enumerable: true,
+    value: true,
+    writable: true,
+  },
+  cancelAnimationFrame: {
+    configurable: true,
+    enumerable: true,
+    value: id => clearTimeout(id),
+    writable: true,
+  },
+  performance: {
+    configurable: true,
+    enumerable: true,
+    value: {
+      now: jest.fn(Date.now),
+    },
+    writable: true,
+  },
+  regeneratorRuntime: {
+    configurable: true,
+    enumerable: true,
+    value: jest.requireActual('regenerator-runtime/runtime'),
+    writable: true,
+  },
+  requestAnimationFrame: {
+    configurable: true,
+    enumerable: true,
+    value: callback => setTimeout(() => callback(jest.now()), 0),
+    writable: true,
+  },
+  window: {
+    configurable: true,
+    enumerable: true,
+    value: global,
+    writable: true,
+  },
+});
 
 // there's a __mock__ for it.
 jest.setMock(
