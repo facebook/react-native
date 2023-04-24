@@ -41,7 +41,7 @@
   <a href="https://github.com/facebook/react-native/blob/HEAD/.github/SUPPORT.md">Support</a>
 </h3>
 
-React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
+React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you can use native UI controls and have full access to the native platform.
 
 - **Declarative.** React makes it painless to create interactive UIs. Declarative views make your code more predictable and easier to debug.
 - **Component-Based.** Build encapsulated components that manage their state, then compose them to make complex UIs.
