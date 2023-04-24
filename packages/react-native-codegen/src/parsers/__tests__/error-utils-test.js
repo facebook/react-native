@@ -33,6 +33,7 @@ const {
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
+  throwIfEventHasNoName,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -902,6 +903,50 @@ describe('throwIfMoreThanOneConfig', () => {
     ];
     expect(() => {
       throwIfMoreThanOneConfig(configs);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfEventHasNoName', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
+  it('throws an error if typeAnnotation of event have no name in Flow', () => {
+    const typeAnnotation = {};
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, flowParser);
+    }).toThrowError(`typeAnnotation of event doesn't have a name`);
+  });
+
+  it('does not throw an error if typeAnnotation of event have a name in Flow', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'BubblingEventHandler',
+      },
+    };
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, flowParser);
+    }).not.toThrow();
+  });
+
+  it('throws an error if typeAnnotation of event have no name in TypeScript', () => {
+    const typeAnnotation = {};
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, typescriptParser);
+    }).toThrowError(`typeAnnotation of event doesn't have a name`);
+  });
+
+  it('does not throw an error if typeAnnotation of event have a name in TypeScript', () => {
+    const typeAnnotation = {
+      typeName: {
+        name: 'BubblingEventHandler',
+      },
+    };
+
+    expect(() => {
+      throwIfEventHasNoName(typeAnnotation, typescriptParser);
     }).not.toThrow();
   });
 });

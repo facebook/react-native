@@ -310,6 +310,15 @@ function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
   }
 }
 
+function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
+  const name =
+    parser.language() === 'Flow' ? typeAnnotation.id : typeAnnotation.typeName;
+
+  if (!name) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -330,4 +339,5 @@ module.exports = {
   throwIfMoreThanOneCodegenNativecommands,
   throwIfConfigNotfound,
   throwIfMoreThanOneConfig,
+  throwIfEventHasNoName,
 };
