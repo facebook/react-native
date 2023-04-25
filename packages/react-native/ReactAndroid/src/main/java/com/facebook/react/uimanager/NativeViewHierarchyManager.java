@@ -860,12 +860,7 @@ public class NativeViewHierarchyManager {
               + commandId);
     }
     ViewManager viewManager = resolveViewManager(reactTag);
-    ViewManagerDelegate delegate = viewManager.getDelegate();
-    if (delegate != null) {
-      delegate.receiveCommand(view, commandId, args);
-    } else {
-      viewManager.receiveCommand(view, commandId, args);
-    }
+    viewManager.receiveCommand(view, commandId, args);
   }
 
   /**
