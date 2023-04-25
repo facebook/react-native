@@ -18,6 +18,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,6 +58,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
+  private float mFontSize = Float.NaN;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
@@ -389,6 +391,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           (int) Math.floor(paddingBottom));
     }
 
+    // This is required to workaround the problem in Android here it
+    // can cut the ellipsis on cut text in certain font sizes and paddings
+    if (!Float.isNaN(mFontSize)) {
+      setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
+    }
+
     int nextTextAlign = update.getTextAlign();
     if (nextTextAlign != getGravityHorizontal()) {
       setGravityHorizontal(nextTextAlign);
@@ -580,6 +588,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
     mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+  }
+
+  public void setFontSize(float fontSize) {
+    mFontSize =
+      mAdjustsFontSizeToFit
+        ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+        : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
   }
 
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
