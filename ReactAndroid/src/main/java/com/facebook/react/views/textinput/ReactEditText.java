@@ -11,6 +11,8 @@ import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -50,15 +52,20 @@ import com.facebook.react.views.text.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.CustomLineHeightSpan;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
+import com.facebook.react.views.text.ReactBackgroundColorSpan;
+import com.facebook.react.views.text.ReactForegroundColorSpan;
 import com.facebook.react.views.text.ReactSpan;
+import com.facebook.react.views.text.ReactStrikethroughSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
+import com.facebook.react.views.text.ReactUnderlineSpan;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -477,6 +484,14 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
+  @Override
+  public void setFontFeatureSettings(String fontFeatureSettings) {
+    if (!Objects.equals(fontFeatureSettings, getFontFeatureSettings())) {
+      super.setFontFeatureSettings(fontFeatureSettings);
+      mTypefaceDirty = true;
+    }
+  }
+
   public void maybeUpdateTypeface() {
     if (!mTypefaceDirty) {
       return;
@@ -488,6 +503,17 @@ public class ReactEditText extends AppCompatEditText
         ReactTypefaceUtils.applyStyles(
             getTypeface(), mFontStyle, mFontWeight, mFontFamily, getContext().getAssets());
     setTypeface(newTypeface);
+
+    // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
+    // nonstandard
+    if (mFontStyle != UNSET
+        || mFontWeight != UNSET
+        || mFontFamily != null
+        || getFontFeatureSettings() != null) {
+      setPaintFlags(getPaintFlags() | Paint.SUBPIXEL_TEXT_FLAG);
+    } else {
+      setPaintFlags(getPaintFlags() & (~Paint.SUBPIXEL_TEXT_FLAG));
+    }
   }
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
@@ -550,9 +576,7 @@ public class ReactEditText extends AppCompatEditText
         new SpannableStringBuilder(reactTextUpdate.getText());
 
     manageSpans(spannableStringBuilder, reactTextUpdate.mContainsMultipleFragments);
-
-    // Mitigation for https://github.com/facebook/react-native/issues/35936 (S318090)
-    stripAbsoluteSizeSpans(spannableStringBuilder);
+    stripStyleEquivalentSpans(spannableStringBuilder);
 
     mContainsImages = reactTextUpdate.containsImages();
 
@@ -627,24 +651,163 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  private void stripAbsoluteSizeSpans(SpannableStringBuilder sb) {
-    // We have already set a font size on the EditText itself. We can safely remove sizing spans
-    // which are the same as the set font size, and not otherwise overlapped.
-    final int effectiveFontSize = mTextAttributes.getEffectiveFontSize();
-    ReactAbsoluteSizeSpan[] spans = sb.getSpans(0, sb.length(), ReactAbsoluteSizeSpan.class);
+  // TODO: Replace with Predicate<T> and lambdas once Java 8 builds in OSS
+  interface SpanPredicate<T> {
+    boolean test(T span);
+  }
 
-    outerLoop:
-    for (ReactAbsoluteSizeSpan span : spans) {
-      ReactAbsoluteSizeSpan[] overlappingSpans =
-          sb.getSpans(sb.getSpanStart(span), sb.getSpanEnd(span), ReactAbsoluteSizeSpan.class);
+  /**
+   * Remove spans from the SpannableStringBuilder which can be represented by TextAppearance
+   * attributes on the underlying EditText. This works around instability on Samsung devices with
+   * the presence of spans https://github.com/facebook/react-native/issues/35936 (S318090)
+   */
+  private void stripStyleEquivalentSpans(SpannableStringBuilder sb) {
+    stripSpansOfKind(
+        sb,
+        ReactAbsoluteSizeSpan.class,
+        new SpanPredicate<ReactAbsoluteSizeSpan>() {
+          @Override
+          public boolean test(ReactAbsoluteSizeSpan span) {
+            return span.getSize() == mTextAttributes.getEffectiveFontSize();
+          }
+        });
 
-      for (ReactAbsoluteSizeSpan overlappingSpan : overlappingSpans) {
-        if (span.getSize() != effectiveFontSize) {
-          continue outerLoop;
-        }
+    stripSpansOfKind(
+        sb,
+        ReactBackgroundColorSpan.class,
+        new SpanPredicate<ReactBackgroundColorSpan>() {
+          @Override
+          public boolean test(ReactBackgroundColorSpan span) {
+            return span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor();
+          }
+        });
+
+    stripSpansOfKind(
+        sb,
+        ReactForegroundColorSpan.class,
+        new SpanPredicate<ReactForegroundColorSpan>() {
+          @Override
+          public boolean test(ReactForegroundColorSpan span) {
+            return span.getForegroundColor() == getCurrentTextColor();
+          }
+        });
+
+    stripSpansOfKind(
+        sb,
+        ReactStrikethroughSpan.class,
+        new SpanPredicate<ReactStrikethroughSpan>() {
+          @Override
+          public boolean test(ReactStrikethroughSpan span) {
+            return (getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0;
+          }
+        });
+
+    stripSpansOfKind(
+        sb,
+        ReactUnderlineSpan.class,
+        new SpanPredicate<ReactUnderlineSpan>() {
+          @Override
+          public boolean test(ReactUnderlineSpan span) {
+            return (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0;
+          }
+        });
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      stripSpansOfKind(
+          sb,
+          CustomLetterSpacingSpan.class,
+          new SpanPredicate<CustomLetterSpacingSpan>() {
+            @Override
+            public boolean test(CustomLetterSpacingSpan span) {
+              return span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing();
+            }
+          });
+    }
+
+    stripSpansOfKind(
+        sb,
+        CustomStyleSpan.class,
+        new SpanPredicate<CustomStyleSpan>() {
+          @Override
+          public boolean test(CustomStyleSpan span) {
+            return span.getStyle() == mFontStyle
+                && Objects.equals(span.getFontFamily(), mFontFamily)
+                && span.getWeight() == mFontWeight
+                && Objects.equals(span.getFontFeatureSettings(), getFontFeatureSettings());
+          }
+        });
+  }
+
+  private <T> void stripSpansOfKind(
+      SpannableStringBuilder sb, Class<T> clazz, SpanPredicate<T> shouldStrip) {
+    T[] spans = sb.getSpans(0, sb.length(), clazz);
+
+    for (T span : spans) {
+      if (shouldStrip.test(span)) {
+        sb.removeSpan(span);
       }
+    }
+  }
 
-      sb.removeSpan(span);
+  /**
+   * Copy back styles represented as attributes to the underlying span, for later measurement
+   * outside the ReactEditText.
+   */
+  private void restoreStyleEquivalentSpans(SpannableStringBuilder workingText) {
+    int spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
+
+    // Set all bits for SPAN_PRIORITY so that this span has the highest possible priority
+    // (least precedence). This ensures the span is behind any overlapping spans.
+    spanFlags |= Spannable.SPAN_PRIORITY;
+
+    workingText.setSpan(
+        new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
+        0,
+        workingText.length(),
+        spanFlags);
+
+    workingText.setSpan(
+        new ReactForegroundColorSpan(getCurrentTextColor()), 0, workingText.length(), spanFlags);
+
+    int backgroundColor = mReactBackgroundManager.getBackgroundColor();
+    if (backgroundColor != Color.TRANSPARENT) {
+      workingText.setSpan(
+          new ReactBackgroundColorSpan(backgroundColor), 0, workingText.length(), spanFlags);
+    }
+
+    if ((getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) != 0) {
+      workingText.setSpan(new ReactStrikethroughSpan(), 0, workingText.length(), spanFlags);
+    }
+
+    if ((getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0) {
+      workingText.setSpan(new ReactUnderlineSpan(), 0, workingText.length(), spanFlags);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        workingText.setSpan(
+            new CustomLetterSpacingSpan(effectiveLetterSpacing),
+            0,
+            workingText.length(),
+            spanFlags);
+      }
+    }
+
+    if (mFontStyle != UNSET
+        || mFontWeight != UNSET
+        || mFontFamily != null
+        || getFontFeatureSettings() != null) {
+      workingText.setSpan(
+          new CustomStyleSpan(
+              mFontStyle,
+              mFontWeight,
+              getFontFeatureSettings(),
+              mFontFamily,
+              getContext().getAssets()),
+          0,
+          workingText.length(),
+          spanFlags);
     }
   }
 
@@ -994,7 +1157,9 @@ public class ReactEditText extends AppCompatEditText
 
     float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
     if (!Float.isNaN(effectiveLetterSpacing)) {
-      setLetterSpacing(effectiveLetterSpacing);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        setLetterSpacing(effectiveLetterSpacing);
+      }
     }
   }
 
@@ -1067,6 +1232,7 @@ public class ReactEditText extends AppCompatEditText
       // - android.app.Activity.dispatchKeyEvent (Activity.java:3447)
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
+        restoreStyleEquivalentSpans(sb);
       } catch (IndexOutOfBoundsException e) {
         ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
