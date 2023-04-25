@@ -48,96 +48,93 @@ const yargs = require('yargs');
 
 const RN_PACKAGE_DIR = path.join(__dirname, '..', 'packages', 'react-native');
 
-function publishNpm(buildType) {
-  // 34c034298dc9cad5a4553964a5a324450fda0385
+function getNpmInfo(buildType) {
   const currentCommit = getCurrentCommit();
   const shortCommit = currentCommit.slice(0, 9);
 
-  const rawVersion =
-    // 0.0.0 triggers issues with cocoapods for codegen when building template project.
-    buildType === 'dry-run'
-      ? '1000.0.0'
-      : // For nightly we continue to use 0.0.0 for clarity for npm
-      buildType === 'nightly'
-      ? '0.0.0'
-      : // For pre-release and stable releases, we use the git tag of the version we're releasing (set in bump-oss-version)
-        process.env.CIRCLE_TAG;
-
-  let version,
-    major,
-    minor,
-    prerelease = null;
-  try {
-    ({version, major, minor, prerelease} = parseVersion(rawVersion, buildType));
-  } catch (e) {
-    echo(e.message);
-    return exit(1);
+  if (buildType === 'dry-run') {
+    return {
+      version: `1000.0.0-${shortCommit}`,
+      tag: null, // We never end up publishing this
+    };
   }
 
-  let releaseVersion;
-  if (buildType === 'dry-run') {
-    releaseVersion = `${version}-${shortCommit}`;
-  } else if (buildType === 'nightly') {
-    // 2021-09-28T05:38:40.669Z -> 20210928-0538
+  if (buildType === 'nightly') {
     const dateIdentifier = new Date()
       .toISOString()
       .slice(0, -8)
       .replace(/[-:]/g, '')
       .replace(/[T]/g, '-');
-    releaseVersion = `${version}-${dateIdentifier}-${shortCommit}`;
-  } else {
-    releaseVersion = version;
+    return {
+      version: `0.0.0-${dateIdentifier}-${shortCommit}`,
+      tag: 'nightly',
+    };
   }
 
-  // Bump version number in various files (package.json, gradle.properties etc)
-  // For stable, pre-release releases, we rely on CircleCI job `prepare_package_for_release` to handle this
+  const {version, major, minor, prerelease} = parseVersion(
+    process.env.CIRCLE_TAG,
+    buildType,
+  );
+
+  // See if releaser indicated that this version should be tagged "latest"
+  // Set in `bump-oss-version`
+  const isLatest = exitIfNotOnGit(
+    () => isTaggedLatest(currentCommit),
+    'Not in git. We do not want to publish anything',
+  );
+
+  const releaseBranchTag = `${major}.${minor}-stable`;
+
+  // npm will automatically tag the version as `latest` if no tag is set when we publish
+  // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
+  const tag =
+    prerelease != null ? 'next' : isLatest ? 'latest' : releaseBranchTag;
+
+  return {
+    version,
+    tag,
+  };
+}
+
+function publishNpm(buildType) {
+  let version,
+    tag = null;
+  try {
+    ({version, tag} = getNpmInfo(buildType));
+  } catch (e) {
+    echo(e.message);
+    return exit(1);
+  }
+
+  // Set version number in various files (package.json, gradle.properties etc)
+  // For non-nightly, non-dry-run, CircleCI job `prepare_package_for_release` does this
   if (buildType === 'nightly' || buildType === 'dry-run') {
     if (
       exec(
-        `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+        `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
       ).code
     ) {
-      echo(`Failed to set version number to ${releaseVersion}`);
+      echo(`Failed to set version number to ${version}`);
       return exit(1);
     }
   }
 
-  generateAndroidArtifacts(releaseVersion);
+  generateAndroidArtifacts(version);
 
   // Write version number to the build folder
-  const releaseVersionFile = path.join('build', '.version');
-  fs.writeFileSync(releaseVersionFile, releaseVersion);
+  const versionFile = path.join('build', '.version');
+  fs.writeFileSync(versionFile, version);
 
   if (buildType === 'dry-run') {
     echo('Skipping `npm publish` because --dry-run is set.');
     return exit(0);
   }
 
-  // Running to see if this commit has been git tagged as `latest`
-  const isLatest = exitIfNotOnGit(
-    () => isTaggedLatest(currentCommit),
-    'Not in git. We do not want to publish anything',
-  );
-
   // We first publish on Maven Central all the necessary artifacts.
   // NPM publishing is done just after.
-  publishAndroidArtifactsToMaven(releaseVersion, buildType === 'nightly');
+  publishAndroidArtifactsToMaven(version, buildType === 'nightly');
 
-  const releaseBranch = `${major}.${minor}-stable`;
-
-  // Set the right tag for nightly and prerelease builds
-  // If a release is not git-tagged as `latest` we use `releaseBranch` to prevent
-  // npm from overriding the current `latest` version tag, which it will do if no tag is set.
-  const tagFlag =
-    buildType === 'nightly'
-      ? '--tag nightly'
-      : prerelease != null
-      ? '--tag next'
-      : isLatest
-      ? '--tag latest'
-      : `--tag ${releaseBranch}`;
-
-  // use otp from envvars if available
+  const tagFlag = `--tag ${tag}`;
   const otp = process.env.NPM_CONFIG_OTP;
   const otpFlag = otp ? ` --otp ${otp}` : '';
 
@@ -145,7 +142,7 @@ function publishNpm(buildType) {
     echo('Failed to publish package to npm');
     return exit(1);
   } else {
-    echo(`Published to npm ${releaseVersion}`);
+    echo(`Published to npm ${version}`);
     return exit(0);
   }
 }
