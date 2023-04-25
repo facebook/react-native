@@ -136,7 +136,7 @@ function buildComponentSchema(
   const componentEventAsts: Array<PropsAST> = [];
   categorizeProps(propProperties, types, componentEventAsts);
   const {props, extendsProps} = getProps(propProperties, types);
-  const events = getEvents(componentEventAsts, types);
+  const events = getEvents(componentEventAsts, types, parser);
   const commands = getCommands(commandProperties, types);
 
   return {

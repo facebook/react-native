@@ -129,7 +129,7 @@ function buildComponentSchema(
   const {extendsProps, props} = getProps(propProperties, types);
 
   const options = getOptions(optionsExpression);
-  const events = getEvents(propProperties, types);
+  const events = getEvents(propProperties, types, parser);
   const commands = getCommands(commandProperties, types);
 
   return {
