@@ -80,7 +80,7 @@ const ClassTemplate = ({
   `
 ${enums}
 ${structs}
-class JSI_EXPORT ${className} final${extendClasses} {
+class ${className} final${extendClasses} {
  public:
   ${className}() = default;
   ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
@@ -478,7 +478,6 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
-  imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {

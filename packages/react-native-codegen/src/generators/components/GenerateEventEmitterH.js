@@ -54,7 +54,6 @@ const FileTemplate = ({
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 ${[...extraIncludes].join('\n')}
 
 namespace facebook {
@@ -74,7 +73,7 @@ const ComponentTemplate = ({
   events: string,
 }) =>
   `
-class JSI_EXPORT ${className}EventEmitter : public ViewEventEmitter {
+class ${className}EventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
