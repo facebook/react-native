@@ -13,6 +13,27 @@
 using namespace facebook;
 using facebook::yoga::detail::CompactValue;
 
+YGNode::YGNode(const YGConfigRef config) : config_{config} {
+  YGAssert(
+      config != nullptr, "Attempting to construct YGNode with null config");
+
+  flags_.hasNewLayout = true;
+  if (config->useWebDefaults) {
+    useWebDefaults();
+  }
+};
+
+YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
+  YGAssert(
+      config != nullptr, "Attempting to construct YGNode with null config");
+
+  config_ = config;
+  flags_.hasNewLayout = true;
+  if (config->useWebDefaults) {
+    useWebDefaults();
+  }
+}
+
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
   flags_ = node.flags_;
@@ -29,13 +50,6 @@ YGNode::YGNode(YGNode&& node) {
   resolvedDimensions_ = node.resolvedDimensions_;
   for (auto c : children_) {
     c->setOwner(this);
-  }
-}
-
-YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
-  config_ = config;
-  if (config->useWebDefaults) {
-    useWebDefaults();
   }
 }
 
@@ -260,6 +274,15 @@ void YGNode::insertChild(YGNodeRef child, uint32_t index) {
   children_.insert(children_.begin() + index, child);
 }
 
+void YGNode::setConfig(YGConfigRef config) {
+  YGAssert(config != nullptr, "Attempting to set a null config on a YGNode");
+  YGAssertWithConfig(
+      config,
+      config->useWebDefaults == config_->useWebDefaults,
+      "UseWebDefaults may not be changed after constructing a YGNode");
+  config_ = config;
+}
+
 void YGNode::setDirty(bool isDirty) {
   if (isDirty == flags_.isDirty) {
     return;
@@ -407,7 +430,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return flags_.useWebDefaults ? YGValueAuto : YGValueZero;
+    return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -483,11 +506,11 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!flags_.useWebDefaults && !style_.flex().isUndefined() &&
+  if (!config_->useWebDefaults && !style_.flex().isUndefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return flags_.useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {
@@ -563,11 +586,5 @@ void YGNode::reset() {
   YGAssertWithNode(
       this, owner_ == nullptr, "Cannot reset a node still attached to a owner");
 
-  clearChildren();
-
-  auto webDefaults = flags_.useWebDefaults;
   *this = YGNode{getConfig()};
-  if (webDefaults) {
-    useWebDefaults();
-  }
 }

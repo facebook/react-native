@@ -103,10 +103,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNodeFragment const &fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
       yogaConfig_(FabricDefaultYogaLog),
-      yogaNode_(
-          static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
-              .yogaNode_,
-          &initializeYogaConfig(yogaConfig_)) {
+      yogaNode_(static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+                    .yogaNode_) {
   // Note, cloned `YGNode` instance (copied using copy-constructor) inherits
   // dirty flag, measure function, and other properties being set originally in
   // the `YogaLayoutableShadowNode` constructor above.
@@ -124,6 +122,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
 
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
+  yogaNode_.setConfig(&initializeYogaConfig(yogaConfig_));
   updateYogaChildrenOwnersIfNeeded();
 
   // This is the only legit place where we can dirty cloned Yoga node.

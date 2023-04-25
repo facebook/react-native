@@ -29,7 +29,6 @@ struct YGNodeFlags {
   bool measureUsesContext : 1;
   bool baselineUsesContext : 1;
   bool printUsesContext : 1;
-  bool useWebDefaults : 1;
 };
 #pragma pack(pop)
 
@@ -72,7 +71,6 @@ private:
   void setBaselineFunc(decltype(baseline_));
 
   void useWebDefaults() {
-    flags_.useWebDefaults = true;
     style_.flexDirection() = YGFlexDirectionRow;
     style_.alignContent() = YGAlignStretch;
   }
@@ -87,14 +85,8 @@ private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  YGNode() : YGNode{YGConfigGetDefault()} {}
-  explicit YGNode(const YGConfigRef config) : config_{config} {
-    flags_.hasNewLayout = true;
-
-    if (config->useWebDefaults) {
-      useWebDefaults();
-    }
-  };
+  YGNode() : YGNode{YGConfigGetDefault()} { flags_.hasNewLayout = true; }
+  explicit YGNode(const YGConfigRef config);
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
   YGNode(YGNode&&);
@@ -103,8 +95,9 @@ public:
   // Should we remove this?
   YGNode(const YGNode& node) = default;
 
-  // for RB fabric
-  YGNode(const YGNode& node, YGConfigRef config);
+  [[deprecated("Will be removed imminently")]] YGNode(
+      const YGNode& node,
+      YGConfigRef config);
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
@@ -300,7 +293,7 @@ public:
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(YGConfigRef config) { config_ = config; }
+  void setConfig(YGConfigRef config);
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
