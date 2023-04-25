@@ -113,22 +113,22 @@ init_template_app(){
 
     success "Preparing version $PACKAGE_VERSION"
 
-    npm pack
-
     TIMESTAMP=$(date +%s)
     PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz
-    success "Package bundled ($PACKAGE)"
-
-    mv "$(pwd)/react-native-$PACKAGE_VERSION.tgz" "$PACKAGE"
 
     node scripts/set-rn-template-version.js "file:$PACKAGE"
     success "React Native version changed in the template"
+
+    npm pack
+    success "Package bundled ($PACKAGE)"
+
+    mv "$(pwd)/react-native-$PACKAGE_VERSION.tgz" "$PACKAGE"
 
     project_name="RNTestProject"
 
     cd /tmp/ || exit
     rm -rf "$project_name"
-    node "$repo_root/cli.js" init "$project_name" --template "$repo_root"
+    node "$repo_root/cli.js" init "$project_name" --template "$PACKAGE"
 
     info "Double checking the versions in package.json are correct:"
     grep "\"react-native\": \".*react-native-$PACKAGE_VERSION-$TIMESTAMP.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
