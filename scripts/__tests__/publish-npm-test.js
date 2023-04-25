@@ -113,6 +113,17 @@ describe('publish-npm', () => {
   });
 
   describe('release', () => {
+    it('should fail with invalid release version', () => {
+      process.env.CIRCLE_TAG = '1.0.1';
+      publishNpm('release');
+      expect(echoMock).toHaveBeenCalledWith(
+        'Version 1.0.1 is not valid for Release',
+      );
+      expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
+      expect(exitMock).toHaveBeenCalledWith(1);
+      expect(execMock).not.toBeCalled();
+    });
+
     it('should publish non-latest', () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(false);
