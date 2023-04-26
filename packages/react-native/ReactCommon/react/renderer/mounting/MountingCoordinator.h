@@ -8,6 +8,7 @@
 #pragma once
 
 #include <chrono>
+#include <condition_variable>
 #include <optional>
 
 #include <react/renderer/debug/flags.h>
