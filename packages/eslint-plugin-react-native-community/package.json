@@ -8,5 +8,8 @@
     "url": "git@github.com:facebook/react-native.git",
     "directory": "packages/eslint-plugin-react-native-community"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  }
 }
