@@ -78,7 +78,7 @@ export default {
   title: 'SectionList Content Inset',
   platform: 'ios',
   name: 'SectionList-contentInset',
-  render: function (): React.Element<typeof SectionList_contentInset> {
+  render: function (): React.MixedElement {
     return <SectionList_contentInset />;
   },
 };
