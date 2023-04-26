@@ -34,7 +34,7 @@ class AndroidTextInputComponentDescriptor final
   }
 
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamily::Shared const &family) const override {
     int surfaceId = family->getSurfaceId();
 
