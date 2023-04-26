@@ -1289,8 +1289,6 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 ### Fixed
 
-#### iOS
-
 - Use logical operator instead of bit operation in Yoga ([c3ad8](https://github.com/facebook/react-native/commit/c3ad8ec7eb01b7236e0081ac7c7f888630caac21) by [@cuva](https://github.com/cuva))
 
 #### Android specific
