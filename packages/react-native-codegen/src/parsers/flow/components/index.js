@@ -126,7 +126,7 @@ function buildComponentSchema(
 
   const propProperties = getProperties(propsTypeName, types);
   const commandProperties = getCommandProperties(ast, parser);
-  const {extendsProps, props} = getProps(propProperties, types);
+  const {extendsProps, props} = getProps(propProperties, types, parser);
 
   const options = getOptions(optionsExpression);
   const events = getEvents(propProperties, types, parser);

@@ -23,7 +23,7 @@ import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
 } from '../CodegenSchema';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, PropAST, TypeDeclarationMap} from './utils';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -242,5 +242,13 @@ export class MockedParser implements Parser {
 
   convertKeywordToTypeAnnotation(keyword: string): string {
     return keyword;
+  }
+
+  argumentForProp(prop: PropAST): $FlowFixMe {
+    return prop.expression;
+  }
+
+  nameForArgument(prop: PropAST): $FlowFixMe {
+    return prop.expression.name;
   }
 }

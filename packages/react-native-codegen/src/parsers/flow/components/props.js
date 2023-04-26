@@ -15,16 +15,14 @@ import type {
   NamedShape,
   PropTypeAnnotation,
 } from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../../utils';
+import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {Parser} from '../../parser';
 
 const {
   flattenProperties,
   getSchemaInfo,
   getTypeAnnotation,
 } = require('./componentsUtils.js');
-
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-type PropAST = Object;
 
 type ExtendsForProp = null | {
   type: 'ReactNativeBuiltInType',
@@ -58,11 +56,13 @@ function buildPropSchema(
 function extendsForProp(
   prop: PropAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): ExtendsForProp {
-  if (!prop.argument) {
+  const argument = parser.argumentForProp(prop);
+  if (!argument) {
     console.log('null', prop);
   }
-  const name = prop.argument.id.name;
+  const name = parser.nameForArgument(prop);
 
   if (types[name] != null) {
     // This type is locally defined in the file
@@ -84,21 +84,23 @@ function extendsForProp(
 function removeKnownExtends(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition.filter(
     prop =>
       prop.type !== 'ObjectTypeSpreadProperty' ||
-      extendsForProp(prop, types) === null,
+      extendsForProp(prop, types, parser) === null,
   );
 }
 
 function getExtendsProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<ExtendsPropsShape> {
   return typeDefinition
     .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
-    .map(prop => extendsForProp(prop, types))
+    .map(prop => extendsForProp(prop, types, parser))
     .filter(Boolean);
 }
 /**
@@ -108,18 +110,19 @@ function getExtendsProps(
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): {
   props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
   extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
 } {
-  const nonExtendsProps = removeKnownExtends(typeDefinition, types);
+  const nonExtendsProps = removeKnownExtends(typeDefinition, types, parser);
   const props = flattenProperties(nonExtendsProps, types)
     .map(property => buildPropSchema(property, types))
     .filter(Boolean);
 
   return {
     props,
-    extendsProps: getExtendsProps(typeDefinition, types),
+    extendsProps: getExtendsProps(typeDefinition, types, parser),
   };
 }
 
