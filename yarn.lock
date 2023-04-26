@@ -2659,10 +2659,6 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
-"@reactions/component@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
-
 "@rnx-kit/rn-changelog-generator@^0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@rnx-kit/rn-changelog-generator/-/rn-changelog-generator-0.4.0.tgz#637d87bcf8de6e87599930ed88d9375010277660"
