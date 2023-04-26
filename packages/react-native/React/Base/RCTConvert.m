@@ -83,13 +83,30 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     return nil;
   }
 
-  @try { // NSURL has a history of crashing with bad input, so let's be
+  @try { // NSURL has a history of crashing with bad input, so let's be safe
 
-    NSURLComponents *urlComponents = [NSURLComponents componentsWithString:path]; //[NSURL URLWithString:path];
-    if (urlComponents.scheme) {
-      return [self _preprocessURLComponents:urlComponents from:path].URL;
+    NSURL *URL = [NSURL URLWithString:path];
+    if (URL.scheme) { // Was a well-formed absolute URL
+      return URL;
     }
 
+    // Check if it has a scheme
+    if ([path rangeOfString:@"://"].location != NSNotFound) {
+      NSMutableCharacterSet *urlAllowedCharacterSet = [NSMutableCharacterSet new];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLHostAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPathAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+      path = [path stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedCharacterSet];
+      URL = [NSURL URLWithString:path];
+      if (URL) {
+        return URL;
+      }
+    }
+
+    // Assume that it's a local path
     path = path.stringByRemovingPercentEncoding;
     if ([path hasPrefix:@"~"]) {
       // Path is inside user directory
@@ -98,8 +115,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
       // Assume it's a resource path
       path = [[NSBundle mainBundle].resourcePath stringByAppendingPathComponent:path];
     }
-    NSURL *URL = [NSURL fileURLWithPath:path];
-    if (!URL) {
+    if (!(URL = [NSURL fileURLWithPath:path])) {
       RCTLogConvertError(json, @"a valid URL");
     }
     return URL;
@@ -107,39 +123,6 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
     RCTLogConvertError(json, @"a valid URL");
     return nil;
   }
-}
-
-// This function preprocess the URLComponents received to make sure that we decode it properly
-// handling all the use cases.
-// See the `RCTConvert_NSURLTests` file for a list of use cases that we want to support:
-// To achieve that, we are currently splitting the url, extracting the fragment, so we can
-// decode and encode everything but the fragment (which has to be left unmodified)
-+ (NSURLComponents *)_preprocessURLComponents:(NSURLComponents *)urlComponents from:(NSString *)path
-{
-  // https://developer.apple.com/documentation/foundation/nsurlcomponents
-  // "[NSURLComponents's] behavior differs subtly from the NSURL class, which conforms to older RFCs"
-  // Specifically, NSURL rejects some URLs that NSURLComponents will handle
-  // gracefully.
-  NSRange fragmentRange = urlComponents.rangeOfFragment;
-
-  if (fragmentRange.length == 0) {
-    // No fragment, pre-remove all escaped characters so we can encode them once if they are present.
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"%[0-90-9]" options:0 error:&error];
-    NSTextCheckingResult *match = [regex firstMatchInString:path options:0 range:NSMakeRange(0, path.length)];
-    if (match) {
-      return [NSURLComponents componentsWithString:path.stringByRemovingPercentEncoding];
-    }
-    return [NSURLComponents componentsWithString:path];
-  }
-  // Pre-remove all escaped characters (excluding the fragment) to handle partially encoded strings
-  NSString *baseUrlString = [path substringToIndex:fragmentRange.location].stringByRemovingPercentEncoding;
-  // Fragment must be kept as they are passed. We don't have to escape them
-  NSString *unmodifiedFragment = [path substringFromIndex:fragmentRange.location];
-
-  // Recreate the url by using a decoded base and an unmodified fragment.
-  NSString *preprocessedURL = [NSString stringWithFormat:@"%@%@", baseUrlString, unmodifiedFragment];
-  return [NSURLComponents componentsWithString:preprocessedURL];
 }
 
 RCT_ENUM_CONVERTER(
