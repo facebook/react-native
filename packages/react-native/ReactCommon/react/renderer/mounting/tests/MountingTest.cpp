@@ -31,7 +31,10 @@ static SharedViewProps nonFlattenedDefaultProps(
   dynamic["nativeId"] = "NativeId";
   dynamic["accessible"] = true;
 
-  ContextContainer contextContainer{};
+  ContextContainer contextContainer;
+  contextContainer.insert(
+      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
+
   PropsParserContext parserContext{-1, contextContainer};
 
   return std::static_pointer_cast<ViewProps const>(
@@ -64,7 +67,11 @@ static ShadowNode::Shared makeNode(
  */
 TEST(MountingTest, testReorderingInstructionGeneration) {
   auto eventDispatcher = EventDispatcher::Shared{};
+
   auto contextContainer = std::make_shared<ContextContainer>();
+  contextContainer->insert(
+      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
+
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -373,6 +380,9 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
 TEST(MountingTest, testViewReparentingInstructionGeneration) {
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
+  contextContainer->insert(
+      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
+
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
