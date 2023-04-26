@@ -27,6 +27,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/DoubleConversion\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
   "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
 

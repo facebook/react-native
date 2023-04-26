@@ -82,6 +82,7 @@ Pod::Spec.new do |s|
       "\"$(PODS_ROOT)/boost\"",
       "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
       "\"$(PODS_ROOT)/RCT-Folly\"",
+      "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     ]
 
     if ENV['USE_FRAMEWORKS']
@@ -220,7 +221,7 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/view/tests"
       sss.header_dir           = "react/renderer/components/view"
-
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
   end
 

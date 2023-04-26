@@ -36,7 +36,8 @@ header_search_paths = [
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
-  "$(PODS_ROOT)/Headers/Public/React-RCTFabric"
+  "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
+  "$(PODS_ROOT)/Headers/Private/Yoga",
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
@@ -54,7 +55,7 @@ Pod::Spec.new do |s|
   s.version                = version
   s.summary                = "An utility library to simplify common operations for the New Architecture"
   s.homepage               = "https://reactnative.dev/"
-  s.documentation_url      = "https://reactnative.dev/docs/actionsheetios"
+  s.documentation_url      = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }

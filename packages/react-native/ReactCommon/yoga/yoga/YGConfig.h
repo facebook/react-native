@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
@@ -77,5 +75,3 @@ public:
     setCloneNodeCallback(YGCloneNodeFunc{nullptr});
   }
 };
-
-#endif
