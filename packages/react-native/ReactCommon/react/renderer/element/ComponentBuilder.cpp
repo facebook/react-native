@@ -31,8 +31,8 @@ ShadowNode::Unshared ComponentBuilder::build(
           elementFragment.tag, elementFragment.surfaceId, nullptr},
       nullptr);
 
-  auto initialState = componentDescriptor.createInitialState(
-      ShadowNodeFragment{elementFragment.props}, family);
+  auto initialState =
+      componentDescriptor.createInitialState(elementFragment.props, family);
 
   auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{

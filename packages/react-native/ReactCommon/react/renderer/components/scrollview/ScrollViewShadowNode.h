@@ -29,7 +29,7 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   static ScrollViewState initialStateData(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor);
 
