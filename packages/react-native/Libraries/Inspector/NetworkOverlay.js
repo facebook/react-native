@@ -88,7 +88,7 @@ function keyExtractor(request: NetworkRequestInfo): string {
  * Show all the intercepted network requests over the InspectorPanel.
  */
 class NetworkOverlay extends React.Component<Props, State> {
-  _requestsListView: ?React.ElementRef<typeof FlatList>;
+  _requestsListView: ?React.ElementRef<Class<FlatList<NetworkRequestInfo>>>;
   _detailScrollView: ?React.ElementRef<typeof ScrollView>;
 
   // Metrics are used to decide when if the request list should be sticky, and
