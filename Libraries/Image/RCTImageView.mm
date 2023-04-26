@@ -653,6 +653,28 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     [self reloadImage];
   }
 }
+    
+#if TARGET_OS_OSX // [macOS
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification
+{
+  [self reloadImage];
+}
+  
+- (RCTPlatformView *)reactAccessibilityElement
+{
+  return _imageView;
+}
+
+- (NSColor *)tintColor
+{
+  return _imageView.contentTintColor;
+}
+
+- (void)setTintColor:(NSColor *)tintColor
+{
+  _imageView.contentTintColor = tintColor;
+}
+#endif // macOS]
 
 - (void)dealloc
 {
