@@ -14,6 +14,7 @@
 #include <memory>
 #include <random>
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
@@ -237,7 +238,10 @@ static inline ShadowNode::Unshared messWithYogaStyles(
     }
   }
 
-  ContextContainer contextContainer{};
+  ContextContainer contextContainer;
+  contextContainer.insert(
+      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
+
   PropsParserContext parserContext{-1, contextContainer};
 
   auto oldProps = shadowNode.getProps();
