@@ -23,17 +23,6 @@ YGNode::YGNode(const YGConfigRef config) : config_{config} {
   }
 };
 
-YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
-  YGAssert(
-      config != nullptr, "Attempting to construct YGNode with null config");
-
-  config_ = config;
-  flags_.hasNewLayout = true;
-  if (config->useWebDefaults) {
-    useWebDefaults();
-  }
-}
-
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
   flags_ = node.flags_;
