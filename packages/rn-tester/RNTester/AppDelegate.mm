@@ -226,7 +226,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
 #endif
-      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge, turboModuleManager](
+                                                          facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;
         }
