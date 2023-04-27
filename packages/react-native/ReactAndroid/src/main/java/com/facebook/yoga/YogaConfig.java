@@ -25,6 +25,10 @@ public abstract class YogaConfig {
    */
   public abstract void setUseLegacyStretchBehaviour(boolean useLegacyStretchBehaviour);
 
+  public abstract void setErrata(YogaErrata errata);
+
+  public abstract YogaErrata getErrata();
+
   public abstract void setLogger(YogaLogger logger);
 
   public abstract YogaLogger getLogger();

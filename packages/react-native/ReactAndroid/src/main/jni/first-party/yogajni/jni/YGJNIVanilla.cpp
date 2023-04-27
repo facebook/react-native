@@ -105,6 +105,23 @@ static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
 }
 
+static void jni_YGConfigSetErrataJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer,
+    jint errata) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetErrata(config, static_cast<YGErrata>(errata));
+}
+
+static jint jni_YGConfigGetErrataJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  return static_cast<jint>(YGConfigGetErrata(config));
+}
+
 static jlong jni_YGNodeNewJNI(JNIEnv* env, jobject obj) {
   const YGNodeRef node = YGNodeNew();
   node->setContext(YGNodeContext{}.asVoidPtr);
@@ -764,6 +781,8 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetUseLegacyStretchBehaviourJNI",
      "(JZ)V",
      (void*) jni_YGConfigSetUseLegacyStretchBehaviourJNI},
+    {"jni_YGConfigSetErrataJNI", "(JI)V", (void*) jni_YGConfigSetErrataJNI},
+    {"jni_YGConfigGetErrataJNI", "(J)I", (void*) jni_YGConfigGetErrataJNI},
     {"jni_YGConfigSetLoggerJNI",
      "(JLcom/facebook/yoga/YogaLogger;)V",
      (void*) jni_YGConfigSetLoggerJNI},
