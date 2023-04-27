@@ -127,6 +127,7 @@ YG_ENUM_DECL(
     YGPrintOptionsLayout = 1,
     YGPrintOptionsStyle = 2,
     YGPrintOptionsChildren = 4)
+YG_DEFINE_ENUM_FLAG_OPERATORS(YGPrintOptions)
 
 YG_ENUM_SEQ_DECL(
     YGUnit,
