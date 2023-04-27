@@ -87,6 +87,20 @@ const char* YGEdgeToString(const YGEdge value) {
   return "unknown";
 }
 
+const char* YGErrataToString(const YGErrata value) {
+  switch (value) {
+    case YGErrataNone:
+      return "none";
+    case YGErrataStretchFlexBasis:
+      return "stretch-flex-basis";
+    case YGErrataAll:
+      return "all";
+    case YGErrataClassic:
+      return "classic";
+  }
+  return "unknown";
+}
+
 const char* YGExperimentalFeatureToString(const YGExperimentalFeature value) {
   switch (value) {
     case YGExperimentalFeatureWebFlexBasis:
