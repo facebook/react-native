@@ -488,7 +488,7 @@ void YogaLayoutableShadowNode::layoutTree(
    * the only value in the config of the root node is taken into account
    * (and this is by design).
    */
-  yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
+  YGConfigSetPointScaleFactor(&yogaConfig_, layoutContext.pointScaleFactor);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -743,11 +743,11 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
 }
 
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.setCloneNodeCallback(
-      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
-  config.useLegacyStretchBehaviour = true;
+  YGConfigSetCloneNodeFunc(
+      &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
+  YGConfigSetUseLegacyStretchBehaviour(&config, true);
 #ifdef RN_DEBUG_YOGA_LOGGER
-  config.printTree = true;
+  YGConfigSetPrintTreeFlag(&config, true);
 #endif
   return config;
 }
