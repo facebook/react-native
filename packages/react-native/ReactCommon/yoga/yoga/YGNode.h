@@ -93,10 +93,6 @@ public:
   // Should we remove this?
   YGNode(const YGNode& node) = default;
 
-  [[deprecated("Will be removed imminently")]] YGNode(
-      const YGNode& node,
-      YGConfigRef config);
-
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
   YGNode& operator=(const YGNode&) = delete;
