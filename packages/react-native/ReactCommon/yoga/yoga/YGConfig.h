@@ -9,69 +9,91 @@
 
 #include "Yoga-internal.h"
 #include "Yoga.h"
+#include "BitUtils.h"
+
+namespace facebook {
+namespace yoga {
+namespace detail {
+
+using LogWithContextFn = int (*)(
+    YGConfigRef config,
+    YGNodeRef node,
+    YGLogLevel level,
+    void* context,
+    const char* format,
+    va_list args);
+using CloneWithContextFn = YGNodeRef (*)(
+    YGNodeRef node,
+    YGNodeRef owner,
+    int childIndex,
+    void* cloneContext);
+
+#pragma pack(push)
+#pragma pack(1)
+struct YGConfigFlags {
+  bool useWebDefaults : 1;
+  bool printTree : 1;
+  bool cloneNodeUsesContext : 1;
+  bool loggerUsesContext : 1;
+};
+#pragma pack(pop)
+
+} // namespace detail
+} // namespace yoga
+} // namespace facebook
 
 struct YOGA_EXPORT YGConfig {
-  using LogWithContextFn = int (*)(
-      YGConfigRef config,
-      YGNodeRef node,
-      YGLogLevel level,
-      void* context,
-      const char* format,
-      va_list args);
-  using CloneWithContextFn = YGNodeRef (*)(
-      YGNodeRef node,
-      YGNodeRef owner,
-      int childIndex,
-      void* cloneContext);
-
-private:
-  union {
-    CloneWithContextFn withContext;
-    YGCloneNodeFunc noContext;
-  } cloneNodeCallback_;
-  union {
-    LogWithContextFn withContext;
-    YGLogger noContext;
-  } logger_;
-  bool cloneNodeUsesContext_;
-  bool loggerUsesContext_;
-
-public:
-  bool useWebDefaults = false;
-  bool useLegacyStretchBehaviour = false;
-  bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
-  bool printTree = false;
-  float pointScaleFactor = 1.0f;
-  std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
-      experimentalFeatures = {};
-  void* context = nullptr;
-
   YGConfig(YGLogger logger);
-  void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list);
-  void setLogger(YGLogger logger) {
-    logger_.noContext = logger;
-    loggerUsesContext_ = false;
-  }
-  void setLogger(LogWithContextFn logger) {
-    logger_.withContext = logger;
-    loggerUsesContext_ = true;
-  }
-  void setLogger(std::nullptr_t) { setLogger(YGLogger{nullptr}); }
 
+  void setUseWebDefaults(bool useWebDefaults);
+  bool useWebDefaults() const;
+
+  void setShouldPrintTree(bool printTree);
+  bool shouldPrintTree() const;
+
+  void setExperimentalFeatureEnabled(
+      YGExperimentalFeature feature,
+      bool enabled);
+  bool isExperimentalFeatureEnabled(YGExperimentalFeature feature) const;
+
+  void setErrata(YGErrata errata);
+  YGErrata getErrata() const;
+
+  void setPointScaleFactor(float pointScaleFactor);
+  float getPointScaleFactor() const;
+
+  void setContext(void* context);
+  void* getContext() const;
+
+  void setLogger(YGLogger logger);
+  void setLogger(facebook::yoga::detail::LogWithContextFn logger);
+  void setLogger(std::nullptr_t);
+  void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list) const;
+
+  void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
+  void setCloneNodeCallback(
+      facebook::yoga::detail::CloneWithContextFn cloneNode);
+  void setCloneNodeCallback(std::nullptr_t);
   YGNodeRef cloneNode(
       YGNodeRef node,
       YGNodeRef owner,
       int childIndex,
-      void* cloneContext);
-  void setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
-    cloneNodeCallback_.noContext = cloneNode;
-    cloneNodeUsesContext_ = false;
-  }
-  void setCloneNodeCallback(CloneWithContextFn cloneNode) {
-    cloneNodeCallback_.withContext = cloneNode;
-    cloneNodeUsesContext_ = true;
-  }
-  void setCloneNodeCallback(std::nullptr_t) {
-    setCloneNodeCallback(YGCloneNodeFunc{nullptr});
-  }
+      void* cloneContext) const;
+
+private:
+  union {
+    facebook::yoga::detail::CloneWithContextFn withContext;
+    YGCloneNodeFunc noContext;
+  } cloneNodeCallback_;
+  union {
+    facebook::yoga::detail::LogWithContextFn withContext;
+    YGLogger noContext;
+  } logger_;
+
+  facebook::yoga::detail::YGConfigFlags flags_{};
+  facebook::yoga::detail::EnumBitset<YGExperimentalFeature>
+      experimentalFeatures_{};
+  YGErrata errata_ = YGErrataNone;
+  float pointScaleFactor_ = 1.0f;
+  void* context_ = nullptr;
 };
