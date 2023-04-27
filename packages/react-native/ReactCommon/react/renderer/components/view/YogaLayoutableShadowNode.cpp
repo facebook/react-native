@@ -745,7 +745,7 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
-  YGConfigSetUseLegacyStretchBehaviour(&config, true);
+  YGConfigSetErrata(&config, YGErrataAll);
 #ifdef RN_DEBUG_YOGA_LOGGER
   YGConfigSetPrintTreeFlag(&config, true);
 #endif
