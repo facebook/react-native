@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #if defined(__has_include) && __has_include(<version>)
 // needed to be able to evaluate defined(__cpp_lib_bit_cast)
 #include <version>
@@ -212,5 +210,3 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
-
-#endif

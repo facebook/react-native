@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include "BitUtils.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
@@ -63,5 +61,3 @@ public:
   bool operator==(YGLayout layout) const;
   bool operator!=(YGLayout layout) const { return !(*this == layout); }
 };
-
-#endif

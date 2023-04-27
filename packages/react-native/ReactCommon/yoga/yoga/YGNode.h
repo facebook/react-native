@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include <cstdint>
 #include <stdio.h>
 #include "CompactValue.h"
@@ -337,5 +335,3 @@ public:
   bool isNodeFlexible();
   void reset();
 };
-
-#endif

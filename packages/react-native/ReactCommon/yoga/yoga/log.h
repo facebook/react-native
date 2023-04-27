@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include "YGEnums.h"
 
 struct YGNode;
@@ -38,5 +36,3 @@ struct Log {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
-
-#endif

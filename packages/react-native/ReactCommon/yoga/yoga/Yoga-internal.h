@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -154,5 +152,3 @@ static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
-
-#endif
