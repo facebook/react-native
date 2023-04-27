@@ -169,7 +169,7 @@ YOGA_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node) {
 }
 
 YOGA_EXPORT void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
-  config->printTree = enabled;
+  config->setShouldPrintTree(enabled);
 }
 
 YOGA_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
@@ -464,8 +464,8 @@ YOGA_EXPORT float YGNodeStyleGetFlexGrow(const YGNodeConstRef node) {
 
 YOGA_EXPORT float YGNodeStyleGetFlexShrink(const YGNodeConstRef node) {
   return node->getStyle().flexShrink().isUndefined()
-      ? (node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
-                                           : kDefaultFlexShrink)
+      ? (node->getConfig()->useWebDefaults() ? kWebDefaultFlexShrink
+                                             : kDefaultFlexShrink)
       : node->getStyle().flexShrink().unwrap();
 }
 
@@ -1240,8 +1240,8 @@ static void YGNodeComputeFlexBasisForChild(
 
   if (!resolvedFlexBasis.isUndefined() && !YGFloatIsUndefined(mainAxisSize)) {
     if (child->getLayout().computedFlexBasis.isUndefined() ||
-        (YGConfigIsExperimentalFeatureEnabled(
-             child->getConfig(), YGExperimentalFeatureWebFlexBasis) &&
+        (child->getConfig()->isExperimentalFeatureEnabled(
+             YGExperimentalFeatureWebFlexBasis) &&
          child->getLayout().computedFlexBasisGeneration != generationCount)) {
       const YGFloatOptional paddingAndBorder = YGFloatOptional(
           YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth));
@@ -1548,8 +1548,7 @@ static void YGNodeAbsoluteLayoutChild(
       generationCount);
 
   auto trailingMarginOuterSize =
-      YGConfigIsExperimentalFeatureEnabled(
-          node->getConfig(),
+      node->getConfig()->isExperimentalFeatureEnabled(
           YGExperimentalFeatureFixAbsoluteTrailingColumnMargin)
       ? isMainAxisRow ? height : width
       : width;
@@ -1581,8 +1580,7 @@ static void YGNodeAbsoluteLayoutChild(
          child->getLayout().measuredDimensions[dim[mainAxis]]),
         leading[mainAxis]);
   } else if (
-      YGConfigIsExperimentalFeatureEnabled(
-          node->getConfig(),
+      node->getConfig()->isExperimentalFeatureEnabled(
           YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
       child->isLeadingPositionDefined(mainAxis)) {
     child->setLayoutPosition(
@@ -1628,8 +1626,7 @@ static void YGNodeAbsoluteLayoutChild(
          child->getLayout().measuredDimensions[dim[crossAxis]]),
         leading[crossAxis]);
   } else if (
-      YGConfigIsExperimentalFeatureEnabled(
-          node->getConfig(),
+      node->getConfig()->isExperimentalFeatureEnabled(
           YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
       child->isLeadingPositionDefined(crossAxis)) {
     child->setLayoutPosition(
@@ -2990,7 +2987,10 @@ static void YGNodelayoutImpl(
               maxInnerMainDim) {
         availableInnerMainDim = maxInnerMainDim;
       } else {
-        if (!node->getConfig()->useLegacyStretchBehaviour &&
+        bool useLegacyStretchBehaviour =
+            node->getConfig()->getErrata() & YGErrataStretchFlexBasis;
+
+        if (!useLegacyStretchBehaviour &&
             ((!YGFloatIsUndefined(
                   collectedFlexItemsValues.totalFlexGrowFactors) &&
               collectedFlexItemsValues.totalFlexGrowFactors == 0) ||
@@ -3003,7 +3003,7 @@ static void YGNodelayoutImpl(
               collectedFlexItemsValues.sizeConsumedOnCurrentLine;
         }
 
-        sizeBasedOnContent = !node->getConfig()->useLegacyStretchBehaviour;
+        sizeBasedOnContent = !useLegacyStretchBehaviour;
       }
     }
 
@@ -3557,18 +3557,18 @@ static void YGNodelayoutImpl(
           child->getStyle().positionType() != YGPositionTypeAbsolute) {
         continue;
       }
+      const bool absolutePercentageAgainstPaddingEdge =
+          node->getConfig()->isExperimentalFeatureEnabled(
+              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge);
+
       YGNodeAbsoluteLayoutChild(
           node,
           child,
-          YGConfigIsExperimentalFeatureEnabled(
-              node->getConfig(),
-              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
+          absolutePercentageAgainstPaddingEdge
               ? node->getLayout().measuredDimensions[YGDimensionWidth]
               : availableInnerWidth,
           isMainAxisRow ? measureModeMainDim : measureModeCrossDim,
-          YGConfigIsExperimentalFeatureEnabled(
-              node->getConfig(),
-              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
+          absolutePercentageAgainstPaddingEdge
               ? node->getLayout().measuredDimensions[YGDimensionHeight]
               : availableInnerHeight,
           direction,
@@ -3735,20 +3735,22 @@ YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
     return false;
   }
   bool useRoundedComparison =
-      config != nullptr && config->pointScaleFactor != 0;
+      config != nullptr && config->getPointScaleFactor() != 0;
   const float effectiveWidth = useRoundedComparison
-      ? YGRoundValueToPixelGrid(width, config->pointScaleFactor, false, false)
+      ? YGRoundValueToPixelGrid(
+            width, config->getPointScaleFactor(), false, false)
       : width;
   const float effectiveHeight = useRoundedComparison
-      ? YGRoundValueToPixelGrid(height, config->pointScaleFactor, false, false)
+      ? YGRoundValueToPixelGrid(
+            height, config->getPointScaleFactor(), false, false)
       : height;
   const float effectiveLastWidth = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            lastWidth, config->pointScaleFactor, false, false)
+            lastWidth, config->getPointScaleFactor(), false, false)
       : lastWidth;
   const float effectiveLastHeight = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            lastHeight, config->pointScaleFactor, false, false)
+            lastHeight, config->getPointScaleFactor(), false, false)
       : lastHeight;
 
   const bool hasSameWidthSpec = lastWidthMode == widthMode &&
@@ -4075,9 +4077,9 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
   // We store points for Pixel as we will use it for rounding
   if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    config->pointScaleFactor = 0.0f;
+    config->setPointScaleFactor(0.0f);
   } else {
-    config->pointScaleFactor = pixelsInPoint;
+    config->setPointScaleFactor(pixelsInPoint);
   }
 }
 
@@ -4227,10 +4229,11 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
           gCurrentGenerationCount.load(std::memory_order_relaxed))) {
     node->setPosition(
         node->getLayout().direction(), ownerWidth, ownerHeight, ownerWidth);
-    YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
+    YGRoundToPixelGrid(
+        node, node->getConfig()->getPointScaleFactor(), 0.0f, 0.0f);
 
 #ifdef DEBUG
-    if (node->getConfig()->printTree) {
+    if (node->getConfig()->shouldPrintTree()) {
       YGNodePrint(
           node,
           (YGPrintOptions) (YGPrintOptionsLayout | YGPrintOptionsChildren | YGPrintOptionsStyle));
@@ -4293,42 +4296,54 @@ YOGA_EXPORT void YGConfigSetExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature,
     const bool enabled) {
-  config->experimentalFeatures[feature] = enabled;
+  config->setExperimentalFeatureEnabled(feature, enabled);
 }
 
 YOGA_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature) {
-  return config->experimentalFeatures[feature];
+  return config->isExperimentalFeatureEnabled(feature);
 }
 
 YOGA_EXPORT void YGConfigSetUseWebDefaults(
     const YGConfigRef config,
     const bool enabled) {
-  config->useWebDefaults = enabled;
+  config->setUseWebDefaults(enabled);
 }
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
     const YGConfigRef config) {
-  return config->useLegacyStretchBehaviour;
+  return config->getErrata() & YGErrataStretchFlexBasis;
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
-  config->useLegacyStretchBehaviour = useLegacyStretchBehaviour;
+  if (useLegacyStretchBehaviour) {
+    config->setErrata(config->getErrata() | YGErrataStretchFlexBasis);
+  } else {
+    config->setErrata(config->getErrata() & ~YGErrataStretchFlexBasis);
+  }
 }
 
 bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
-  return config->useWebDefaults;
+  return config->useWebDefaults();
 }
 
 YOGA_EXPORT void YGConfigSetContext(const YGConfigRef config, void* context) {
-  config->context = context;
+  config->setContext(context);
 }
 
 YOGA_EXPORT void* YGConfigGetContext(const YGConfigRef config) {
-  return config->context;
+  return config->getContext();
+}
+
+YOGA_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata) {
+  config->setErrata(errata);
+}
+
+YOGA_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config) {
+  return config->getErrata();
 }
 
 YOGA_EXPORT void YGConfigSetCloneNodeFunc(

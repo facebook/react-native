@@ -357,6 +357,9 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 WIN_EXPORT void* YGConfigGetContext(YGConfigRef config);
 
+WIN_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata);
+WIN_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config);
+
 WIN_EXPORT float YGRoundValueToPixelGrid(
     double value,
     double pointScaleFactor,
