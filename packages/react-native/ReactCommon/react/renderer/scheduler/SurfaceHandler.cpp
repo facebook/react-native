@@ -112,6 +112,7 @@ void SurfaceHandler::stop() const noexcept {
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
+  auto parameters = Parameters{};
   {
     std::unique_lock lock(parametersMutex_);
     if (parameters_.displayMode == displayMode) {
@@ -119,6 +120,7 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     parameters_.displayMode = displayMode;
+    parameters = parameters_;
   }
 
   {
@@ -129,10 +131,10 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     link_.uiManager->setSurfaceProps(
-        parameters_.surfaceId,
-        parameters_.moduleName,
-        parameters_.props,
-        parameters_.displayMode);
+        parameters.surfaceId,
+        parameters.moduleName,
+        parameters.props,
+        parameters.displayMode);
 
     applyDisplayMode(displayMode);
   }
