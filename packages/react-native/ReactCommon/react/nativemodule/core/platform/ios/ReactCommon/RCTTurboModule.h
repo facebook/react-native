@@ -86,9 +86,10 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       TurboModuleMethodValueKind returnType,
       const char *methodName,
       NSInvocation *inv,
-      NSMutableArray *retainedObjectsForInvocation);
+      NSMutableArray *retainedObjectsForInvocation,
+      RCTInternalPromiseRejectBlock optionalInternalRejectBlock);
 
-  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
+  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper, RCTInternalPromiseRejectBlock internalRejectWrapper);
   jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
 };
 

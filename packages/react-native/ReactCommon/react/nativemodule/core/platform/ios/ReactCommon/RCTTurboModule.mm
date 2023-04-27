@@ -356,8 +356,50 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
           rejectWasCalled = YES;
         };
+            
+        RCTInternalPromiseRejectBlock internalRejectBlock = ^(NSException *exception) {
+          if (resolveWasCalled) {
+            RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+            return;
+          }
 
-        invokeCopy(resolveBlock, rejectBlock);
+          if (rejectWasCalled) {
+            RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+            return;
+          }
+
+          auto strongResolveWrapper = weakResolveWrapper.lock();
+          auto strongRejectWrapper = weakRejectWrapper.lock();
+          if (!strongResolveWrapper || !strongRejectWrapper) {
+            return;
+          }
+
+          NSDictionary *jsError = @{
+            @"name": exception.name,
+            @"message": exception.reason,
+            @"stackSymbols": exception.callStackSymbols,
+            @"stackReturnAddresses": exception.callStackReturnAddresses,
+          };
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError, blockGuard]() {
+            auto strongResolveWrapper2 = weakResolveWrapper.lock();
+            auto strongRejectWrapper2 = weakRejectWrapper.lock();
+            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
+              return;
+            }
+
+            jsi::Runtime &rt = strongRejectWrapper2->runtime();
+            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
+            strongRejectWrapper2->callback().call(rt, arg);
+
+            strongResolveWrapper2->destroy();
+            strongRejectWrapper2->destroy();
+            (void)blockGuard;
+          });
+
+          rejectWasCalled = YES;
+        };
+
+        invokeCopy(resolveBlock, rejectBlock, internalRejectBlock);
         return jsi::Value::undefined();
       });
 
@@ -378,7 +420,8 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     TurboModuleMethodValueKind returnType,
     const char *methodName,
     NSInvocation *inv,
-    NSMutableArray *retainedObjectsForInvocation)
+    NSMutableArray *retainedObjectsForInvocation,
+    RCTInternalPromiseRejectBlock optionalInternalRejectBlock)
 {
   __block id result;
   jsi::Runtime *rt = &runtime;
@@ -403,7 +446,13 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      if (wasMethodSync) {
+        throw convertNSExceptionToJSError(runtime, exception);
+      } else {
+        if (optionalInternalRejectBlock != nil) {
+          optionalInternalRejectBlock(exception);
+        }
+      }
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
@@ -695,18 +744,19 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
       ? createPromise(
             runtime,
             methodNameStr,
-            ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+            ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTInternalPromiseRejectBlock internalRejectBlock) {
               RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
               RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-
+              RCTInternalPromiseRejectBlock internalRejectCopy = [internalRejectBlock copy];
+              
               [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
               [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
               [retainedObjectsForInvocation addObject:resolveCopy];
               [retainedObjectsForInvocation addObject:rejectCopy];
               // The return type becomes void in the ObjC side.
-              performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation);
+              performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation, internalRejectCopy);
             })
-      : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation);
+      : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation, nil);
 
   if (isMethodSync(returnType)) {
     TurboModulePerfLogger::syncMethodCallEnd(moduleName, methodName);
