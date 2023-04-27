@@ -16,6 +16,7 @@
 #include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
@@ -257,24 +258,15 @@ jni::local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    const MountingCoordinator::Shared &mountingCoordinator) {
+    const MountingTransaction &transaction) {
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
-
-  SystraceSection s(
-      "FabricUIManagerBinding::schedulerDidFinishTransactionIntBuffer");
   auto finishTransactionStartTime = telemetryTimePointNow();
-
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
-
-  if (!mountingTransaction.has_value()) {
-    return;
-  }
 
   auto env = jni::Environment::current();
 
-  auto telemetry = mountingTransaction->getTelemetry();
-  auto surfaceId = mountingTransaction->getSurfaceId();
-  auto &mutations = mountingTransaction->getMutations();
+  auto telemetry = transaction.getTelemetry();
+  auto surfaceId = transaction.getSurfaceId();
+  auto &mutations = transaction.getMutations();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
