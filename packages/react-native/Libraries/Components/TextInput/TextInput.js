@@ -1517,6 +1517,8 @@ function InternalTextInput(props: Props): React.Node {
           style,
         )}
         text={text}
+        caretYOffset={props.caretYOffset}
+        caretHeight={props.caretHeight}
       />
     );
   } else if (Platform.OS === 'android') {
