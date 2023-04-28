@@ -32,6 +32,7 @@ function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   annotation,
+  parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
@@ -88,7 +89,9 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.members.map(buildPropertiesForEvent),
+          properties: typeAnnotation.members.map(member =>
+            buildPropertiesForEvent(member, parser),
+          ),
         },
       };
     case 'TSUnionType':
@@ -112,7 +115,7 @@ function getPropertyType(
       return {
         name,
         optional,
-        typeAnnotation: extractArrayElementType(typeAnnotation, name),
+        typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
       };
     default:
       (type: empty);
@@ -123,12 +126,17 @@ function getPropertyType(
 function extractArrayElementType(
   typeAnnotation: $FlowFixMe,
   name: string,
+  parser: Parser,
 ): EventTypeAnnotation {
   const type = extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'TSParenthesizedType':
-      return extractArrayElementType(typeAnnotation.typeAnnotation, name);
+      return extractArrayElementType(
+        typeAnnotation.typeAnnotation,
+        name,
+        parser,
+      );
     case 'TSBooleanKeyword':
       return {type: 'BooleanTypeAnnotation'};
     case 'TSStringKeyword':
@@ -154,12 +162,18 @@ function extractArrayElementType(
     case 'TSTypeLiteral':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.members.map(buildPropertiesForEvent),
+        properties: typeAnnotation.members.map(member =>
+          buildPropertiesForEvent(member, parser),
+        ),
       };
     case 'TSArrayType':
       return {
         type: 'ArrayTypeAnnotation',
-        elementType: extractArrayElementType(typeAnnotation.elementType, name),
+        elementType: extractArrayElementType(
+          typeAnnotation.elementType,
+          name,
+          parser,
+        ),
       };
     default:
       throw new Error(
@@ -260,14 +274,17 @@ function findEventArgumentsAndType(
   }
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
+function buildPropertiesForEvent(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
+  property,
+  parser: Parser,
+): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
-  const optional = property.optional || false;
+  const optional = parser.isOptionalProperty(property);
   let typeAnnotation = property.typeAnnotation.typeAnnotation;
 
-  return getPropertyType(name, optional, typeAnnotation);
+  return getPropertyType(name, optional, typeAnnotation, parser);
 }
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
@@ -303,7 +320,11 @@ function buildEventSchema(
         paperTopLevelNameDeprecated,
         typeAnnotation: {
           type: 'EventTypeAnnotation',
-          argument: getEventArgument(argumentProps, buildPropertiesForEvent),
+          argument: getEventArgument(
+            argumentProps,
+            buildPropertiesForEvent,
+            parser,
+          ),
         },
       };
     }
@@ -314,7 +335,11 @@ function buildEventSchema(
       bubblingType,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, buildPropertiesForEvent),
+        argument: getEventArgument(
+          argumentProps,
+          buildPropertiesForEvent,
+          parser,
+        ),
       },
     };
   }

@@ -860,11 +860,15 @@ function getEventArgument(
   argumentProps: PropAST,
   buildPropertiesForEvent: (
     property: PropAST,
+    parser: Parser,
   ) => NamedShape<EventTypeAnnotation>,
+  parser: Parser,
 ): ObjectTypeAnnotation<EventTypeAnnotation> {
   return {
     type: 'ObjectTypeAnnotation',
-    properties: argumentProps.map(buildPropertiesForEvent),
+    properties: argumentProps.map(member =>
+      buildPropertiesForEvent(member, parser),
+    ),
   };
 }
 
