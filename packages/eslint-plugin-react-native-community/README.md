@@ -25,3 +25,10 @@ Add to your eslint config (`.eslintrc`, or `eslintConfig` field in `package.json
 ### `platform-colors`
 
 Enforces that calls to `PlatformColor` and `DynamicColorIOS` are statically analyzable to enable performance optimizations.
+
+## Testing
+
+To run the tests in this package, run the following commands from the React Native root folder:
+
+1. `yarn` to install the dependencies. You just need to run this once
+2. `yarn jest packages/eslint-plugin-react-native-community`.
