@@ -5,12 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @noflow
+ * @flow strict-local
  */
 
 'use strict';
 
 const ToastAndroid = {
+  // These values are arbitrary defaults since Toast is not supported in iOS.
+  SHORT: 1,
+  LONG: 2,
+  TOP: 10,
+  BOTTOM: 90,
+  CENTER: 50,
+
   show: function (message: string, duration: number): void {
     console.warn('ToastAndroid is not supported on this platform.');
   },
