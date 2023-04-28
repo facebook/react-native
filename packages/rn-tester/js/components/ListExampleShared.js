@@ -38,7 +38,7 @@ function genItemData(i: number): Item {
   const itemHash = Math.abs(hashCode('Item ' + i));
   return {
     title: 'Item ' + i,
-    text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
+    text: LOREM_IPSUM.slice(0, (itemHash % 301) + 20),
     key: String(i),
     pressed: false,
   };
