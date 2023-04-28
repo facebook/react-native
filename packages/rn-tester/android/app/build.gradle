@@ -173,8 +173,6 @@ dependencies {
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
