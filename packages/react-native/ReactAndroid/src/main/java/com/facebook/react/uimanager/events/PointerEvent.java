@@ -356,6 +356,10 @@ public class PointerEvent extends Event<PointerEvent> {
       return mHoveringPointerIds.contains(pointerId);
     }
 
+    public Set<Integer> getHoveringPointerIds() {
+      return mHoveringPointerIds;
+    }
+
     public final Map<Integer, float[]> getOffsetByPointerId() {
       return mOffsetByPointerId;
     }
