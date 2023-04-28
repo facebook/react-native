@@ -588,30 +588,4 @@ public class TextLayoutManagerMapBuffer {
             hyphenationFrequency);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
-
-  // TODO T31905686: This class should be private
-  public static class SetSpanOperation {
-    protected int start, end;
-    protected ReactSpan what;
-
-    public SetSpanOperation(int start, int end, ReactSpan what) {
-      this.start = start;
-      this.end = end;
-      this.what = what;
-    }
-
-    public void execute(Spannable sb, int priority) {
-      // All spans will automatically extend to the right of the text, but not the left - except
-      // for spans that start at the beginning of the text.
-      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
-      if (start == 0) {
-        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
-      }
-
-      spanFlags &= ~Spannable.SPAN_PRIORITY;
-      spanFlags |= (priority << Spannable.SPAN_PRIORITY_SHIFT) & Spannable.SPAN_PRIORITY;
-
-      sb.setSpan(what, start, end, spanFlags);
-    }
-  }
 }
