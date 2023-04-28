@@ -118,8 +118,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
     std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems,
-    ShadowViewMutationList &cppViewMutations) {
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (auto const &mountItem : cppCommonMountItems) {
@@ -178,11 +177,6 @@ static inline void computeBufferSizes(
       cppDeleteMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
-
-  if (cppViewMutations.size() > 0) {
-    batchMountItemIntsSize++;
-    batchMountItemObjectsSize++;
-  }
 }
 
 static inline void writeIntBufferTypePreamble(
@@ -278,7 +272,7 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
-  auto cppViewMutations = ShadowViewMutationList();
+
   {
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
@@ -497,8 +491,7 @@ void FabricMountingManager::executeMount(
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
       cppUpdateOverflowInsetMountItems,
-      cppUpdateEventEmitterMountItems,
-      cppViewMutations);
+      cppUpdateEventEmitterMountItems);
 
   static auto createMountItemsIntBufferBatchContainer =
       JFabricUIManager::javaClassStatic()
