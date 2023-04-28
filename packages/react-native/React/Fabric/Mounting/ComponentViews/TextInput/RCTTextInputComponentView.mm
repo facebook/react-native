@@ -151,6 +151,14 @@ using namespace facebook::react;
     _backedTextInputView.caretHidden = newTextInputProps.traits.caretHidden;
   }
 
+  if(newTextInputProps.traits.caretYOffset != oldTextInputProps.traits.caretYOffset) {
+    _backedTextInputView.caretYOffset = newTextInputProps.traits.caretYOffset;
+  }
+
+  if(newTextInputProps.traits.caretHeight != oldTextInputProps.traits.caretHeight) {
+    _backedTextInputView.caretHeight = newTextInputProps.traits.caretHeight;
+  }
+
   if (newTextInputProps.traits.clearButtonMode != oldTextInputProps.traits.clearButtonMode) {
     _backedTextInputView.clearButtonMode =
         RCTUITextFieldViewModeFromTextInputAccessoryVisibilityMode(newTextInputProps.traits.clearButtonMode);

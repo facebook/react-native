@@ -156,6 +156,19 @@ class TextInputTraits final {
   bool caretHidden{false};
 
   /*
+   * iOS-only (inherently iOS-specific)
+   * Default value: 0 with a default font.
+   */
+
+  int caretHeight{0};
+
+  /*
+   * iOS-only (inherently iOS-specific)
+   * Default value: 0 means that the caret offset will have the default value
+   */
+  int caretYOffset{0};
+
+  /*
    * Controls the visibility of a `Clean` button.
    * iOS-only (implemented only on iOS for now)
    * Default value: `Never`.

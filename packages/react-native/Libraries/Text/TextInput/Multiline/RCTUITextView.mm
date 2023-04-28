@@ -13,6 +13,41 @@
 #import <React/RCTBackedTextInputDelegateAdapter.h>
 #import <React/RCTTextAttributes.h>
 
+//the UITextSelectionRect subclass needs to be created because the original version is not writable
+@interface CustomTextSelectionRect : UITextSelectionRect
+
+@property (nonatomic) CGRect _rect;
+@property (nonatomic) NSWritingDirection _writingDirection;
+@property (nonatomic) BOOL _containsStart; // Returns YES if the rect contains the start of the selection.
+@property (nonatomic) BOOL _containsEnd; // Returns YES if the rect contains the end of the selection.
+@property (nonatomic) BOOL _isVertical; // Returns YES if the rect is for vertically oriented text.
+
+@end
+
+@implementation CustomTextSelectionRect
+
+- (CGRect)rect {
+    return __rect;
+}
+
+- (NSWritingDirection)writingDirection {
+    return __writingDirection;
+}
+
+- (BOOL)containsStart {
+    return __containsStart;
+}
+
+- (BOOL)containsEnd {
+    return __containsEnd;
+}
+
+- (BOOL)isVertical {
+    return __isVertical;
+}
+
+@end
+
 @implementation RCTUITextView {
   UILabel *_placeholderView;
   UITextView *_detachedTextView;
@@ -307,11 +342,43 @@ static UIColor *defaultPlaceholderColor(void)
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
 {
+  CGRect originalRect = [super caretRectForPosition:position];
+
   if (_caretHidden) {
     return CGRectZero;
   }
 
-  return [super caretRectForPosition:position];
+  if(_caretYOffset != 0) {
+    originalRect.origin.y += _caretYOffset;
+  }
+
+    if(_caretHeight != 0) {
+    originalRect.size.height = _caretHeight;
+  }
+    return originalRect;
+}
+
+- (NSArray *)selectionRectsForRange:(UITextRange *)range {
+  NSArray *superRects = [super selectionRectsForRange:range];
+  if(_caretYOffset != 0 && _caretHeight != 0) {
+    NSMutableArray *customTextSelectionRects = [NSMutableArray array];
+
+    for (UITextSelectionRect *rect in superRects) {
+        CustomTextSelectionRect *customTextRect = [[CustomTextSelectionRect alloc] init];
+
+        customTextRect._rect = CGRectMake(rect.rect.origin.x, rect.rect.origin.y + _caretYOffset, rect.rect.size.width, _caretHeight);
+        customTextRect._writingDirection = rect.writingDirection;
+        customTextRect._containsStart = rect.containsStart;
+        customTextRect._containsEnd = rect.containsEnd;
+        customTextRect._isVertical = rect.isVertical;
+        [customTextSelectionRects addObject:customTextRect];
+    }
+
+    return customTextSelectionRects;
+
+  }
+  return superRects;
+
 }
 
 #pragma mark - Utility Methods

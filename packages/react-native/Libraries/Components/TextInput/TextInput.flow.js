@@ -591,6 +591,18 @@ export type Props = $ReadOnly<{|
    */
   caretHidden?: ?boolean,
 
+  /**
+   * Allows to adjust caret height.
+   * The default value is 0, which means the height of the caret will be calculated automatically
+   */
+
+  caretYOffset?: ?number,
+  /**
+   * Allows to adjust caret postiion relative to the Y axis
+   * The default value is 0.
+   */
+  caretYHeight?: ?number,
+
   /*
    * If `true`, contextMenuHidden is hidden. The default value is `false`.
    */

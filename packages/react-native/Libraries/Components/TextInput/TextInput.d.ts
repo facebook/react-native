@@ -669,6 +669,18 @@ export interface TextInputProps
   caretHidden?: boolean | undefined;
 
   /**
+   * Allows to adjust caret height.
+   * The default value is 0, which means the height of the caret will be calculated automatically
+   */
+  caretHeight?: number | undefined;
+
+  /**
+   * Allows to adjust caret postiion relative to the Y axis
+   * The default value is 0.
+   */
+  caretYOffset?: number | undefined;
+
+  /**
    * If true, context menu is hidden. The default value is false.
    */
   contextMenuHidden?: boolean | undefined;

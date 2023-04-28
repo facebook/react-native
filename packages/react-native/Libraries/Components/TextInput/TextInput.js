@@ -365,6 +365,18 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   smartInsertDelete?: ?boolean,
+
+  /**
+   * Allows to adjust caret height.
+   * The default value is 0, which means the height of the caret will be calculated automatically
+   */
+  caretYOffset?: ?number,
+
+  /**
+   * Allows to adjust caret postiion relative to the Y axis
+   * The default value is 0.
+   */
+  caretHeight?: ?number,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -1503,6 +1515,8 @@ function InternalTextInput(props: Props): React.Node {
           style,
         )}
         text={text}
+        caretYOffset={props.caretYOffset}
+        caretHeight={props.caretHeight}
       />
     );
   } else if (Platform.OS === 'android') {
