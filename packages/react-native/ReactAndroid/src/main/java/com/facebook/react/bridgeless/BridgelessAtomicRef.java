@@ -12,6 +12,7 @@ import static com.facebook.infer.annotation.Assertions.assertNotNull;
 import android.annotation.SuppressLint;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import java.util.Objects;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
 class BridgelessAtomicRef<T> {
@@ -30,8 +31,8 @@ class BridgelessAtomicRef<T> {
     Failure
   }
 
-  volatile State state;
-  volatile String failureMessage;
+  private volatile State state;
+  private volatile String failureMessage;
 
   public BridgelessAtomicRef(@Nullable T initialValue) {
     mValue = initialValue;
@@ -77,7 +78,7 @@ class BridgelessAtomicRef<T> {
         synchronized (this) {
           state = State.Failure;
           String message = ex.getMessage();
-          failureMessage = message != null ? message : "null";
+          failureMessage = Objects.toString(message, "null");
           notifyAll();
         }
 
