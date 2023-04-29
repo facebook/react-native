@@ -697,8 +697,6 @@ public class ReactHost {
    *
    * <p>If the ReactInstance is reloading, will return the reload task. If the ReactInstance is
    * destroying, will wait until destroy is finished, before creating.
-   *
-   * @return
    */
   private Task<ReactInstance> getOrCreateReactInstanceTask() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
