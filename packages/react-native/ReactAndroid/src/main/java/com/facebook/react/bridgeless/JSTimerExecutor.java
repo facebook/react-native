@@ -16,24 +16,24 @@ import com.facebook.react.modules.core.JavaScriptTimerExecutor;
 import com.facebook.soloader.SoLoader;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class JSTimerExecutor implements JavaScriptTimerExecutor {
+class JSTimerExecutor implements JavaScriptTimerExecutor {
 
   static {
     SoLoader.loadLibrary("rninstance");
   }
 
-  @DoNotStrip private HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
   public JSTimerExecutor(HybridData hybridData) {
     mHybridData = hybridData;
   }
 
+  private native void callTimers(WritableNativeArray timerIDs);
+
   @Override
   public void callTimers(WritableArray timerIDs) {
     callTimers((WritableNativeArray) timerIDs);
   }
-
-  private native void callTimers(WritableNativeArray timerIDs);
 
   @Override
   public void callIdleCallbacks(double frameTime) {
