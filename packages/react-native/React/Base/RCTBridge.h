@@ -56,6 +56,10 @@ RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
 RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
 
+// Turn on TurboModule interop
+RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
+
 typedef enum {
   kRCTGlobalScope,
   kRCTGlobalScopeUsingRetainJSCallback,
