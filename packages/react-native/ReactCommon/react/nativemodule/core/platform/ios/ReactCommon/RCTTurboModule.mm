@@ -531,7 +531,7 @@ NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argInde
 
 NSInvocation *ObjCTurboModule::getMethodInvocation(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind returnType,
+    bool isSync,
     const char *methodName,
     SEL selector,
     const jsi::Value *args,
@@ -541,7 +541,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
   const char *moduleName = name_.c_str();
   const id<RCTTurboModule> module = instance_;
 
-  if (isMethodSync(returnType)) {
+  if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
   } else {
     TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
@@ -648,7 +648,7 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     }
   }
 
-  if (isMethodSync(returnType)) {
+  if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionEnd(moduleName, methodName);
   } else {
     TurboModulePerfLogger::asyncMethodCallArgConversionEnd(moduleName, methodName);
@@ -688,8 +688,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   }
 
   NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
-  NSInvocation *inv =
-      getMethodInvocation(runtime, returnType, methodName, selector, args, count, retainedObjectsForInvocation);
+  NSInvocation *inv = getMethodInvocation(
+      runtime, isMethodSync(returnType), methodName, selector, args, count, retainedObjectsForInvocation);
 
   jsi::Value returnValue = returnType == PromiseKind
       ? createPromise(
