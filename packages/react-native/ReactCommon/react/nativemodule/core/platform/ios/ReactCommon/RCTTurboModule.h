@@ -75,7 +75,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   NSString *getArgumentTypeName(NSString *methodName, int argIndex);
   NSInvocation *getMethodInvocation(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind returnType,
+      bool isSync,
       const char *methodName,
       SEL selector,
       const jsi::Value *args,
