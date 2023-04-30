@@ -541,6 +541,106 @@ NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argInde
   return nil;
 }
 
+void ObjCTurboModule::setInvocationArg(
+    jsi::Runtime &runtime,
+    const char *methodName,
+    const std::string &objCArgType,
+    const jsi::Value &arg,
+    size_t i,
+    NSInvocation *inv,
+    NSMutableArray *retainedObjectsForInvocation)
+{
+  if (arg.isBool()) {
+    bool v = arg.getBool();
+
+    /**
+     * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
+     */
+    if (objCArgType == @encode(id)) {
+      id objCArg = [NSNumber numberWithBool:v];
+      [inv setArgument:(void *)&objCArg atIndex:i + 2];
+      [retainedObjectsForInvocation addObject:objCArg];
+    } else {
+      [inv setArgument:(void *)&v atIndex:i + 2];
+    }
+
+    return;
+  }
+
+  if (arg.isNumber()) {
+    double v = arg.getNumber();
+
+    /**
+     * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+     */
+    if (objCArgType == @encode(id)) {
+      id objCArg = [NSNumber numberWithDouble:v];
+      [inv setArgument:(void *)&objCArg atIndex:i + 2];
+      [retainedObjectsForInvocation addObject:objCArg];
+    } else {
+      [inv setArgument:(void *)&v atIndex:i + 2];
+    }
+
+    return;
+  }
+
+  /**
+   * Convert arg to ObjC objects.
+   */
+  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_);
+  if (objCArg) {
+    NSString *methodNameNSString = @(methodName);
+
+    /**
+     * Convert objects using RCTConvert.
+     */
+    if (objCArgType == @encode(id)) {
+      NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
+      if (argumentType != nil) {
+        NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+        SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+
+        if ([RCTConvert respondsToSelector:rctConvertSelector]) {
+          // Message dispatch logic from old infra
+          id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+          id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+
+          [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+          if (convertedObjCArg) {
+            [retainedObjectsForInvocation addObject:convertedObjCArg];
+          }
+          return;
+        }
+      }
+    }
+
+    /**
+     * Convert objects using RCTCxxConvert to structs.
+     */
+    if ([objCArg isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameNSString, i)) {
+      SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameNSString, i);
+
+      // Message dispatch logic from old infra (link:
+      // https://github.com/facebook/react-native/commit/6783694158057662fd7b11fc123c339b2b21bfe6#diff-263fc157dfce55895cdc16495b55d190R350)
+      RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+      RCTManagedPointer *box = convert([RCTCxxConvert class], methodArgConversionSelector, objCArg);
+
+      void *pointer = box.voidPointer;
+      [inv setArgument:&pointer atIndex:i + 2];
+      [retainedObjectsForInvocation addObject:box];
+      return;
+    }
+  }
+
+  /**
+   * Insert converted args unmodified.
+   */
+  [inv setArgument:(void *)&objCArg atIndex:i + 2];
+  if (objCArg) {
+    [retainedObjectsForInvocation addObject:objCArg];
+  }
+}
+
 NSInvocation *ObjCTurboModule::createMethodInvocation(
     jsi::Runtime &runtime,
     bool isSync,
@@ -566,98 +666,10 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
   NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
 
   for (size_t i = 0; i < count; i++) {
-    const jsi::Value *arg = &args[i];
+    const jsi::Value &arg = args[i];
     const std::string objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
 
-    if (arg->isBool()) {
-      bool v = arg->getBool();
-
-      /**
-       * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
-       */
-      if (objCArgType == @encode(id)) {
-        id objCArg = [NSNumber numberWithBool:v];
-        [inv setArgument:(void *)&objCArg atIndex:i + 2];
-        [retainedObjectsForInvocation addObject:objCArg];
-      } else {
-        [inv setArgument:(void *)&v atIndex:i + 2];
-      }
-
-      continue;
-    }
-
-    if (arg->isNumber()) {
-      double v = arg->getNumber();
-
-      /**
-       * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
-       */
-      if (objCArgType == @encode(id)) {
-        id objCArg = [NSNumber numberWithDouble:v];
-        [inv setArgument:(void *)&objCArg atIndex:i + 2];
-        [retainedObjectsForInvocation addObject:objCArg];
-      } else {
-        [inv setArgument:(void *)&v atIndex:i + 2];
-      }
-
-      continue;
-    }
-
-    /**
-     * Convert arg to ObjC objects.
-     */
-    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker_);
-    if (objCArg) {
-      NSString *methodNameNSString = @(methodName);
-
-      /**
-       * Convert objects using RCTConvert.
-       */
-      if (objCArgType == @encode(id)) {
-        NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
-        if (argumentType != nil) {
-          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
-          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
-
-          if ([RCTConvert respondsToSelector:rctConvertSelector]) {
-            // Message dispatch logic from old infra
-            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
-
-            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
-            if (convertedObjCArg) {
-              [retainedObjectsForInvocation addObject:convertedObjCArg];
-            }
-            continue;
-          }
-        }
-      }
-
-      /**
-       * Convert objects using RCTCxxConvert to structs.
-       */
-      if ([objCArg isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameNSString, i)) {
-        SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameNSString, i);
-
-        // Message dispatch logic from old infra (link:
-        // https://github.com/facebook/react-native/commit/6783694158057662fd7b11fc123c339b2b21bfe6#diff-263fc157dfce55895cdc16495b55d190R350)
-        RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-        RCTManagedPointer *box = convert([RCTCxxConvert class], methodArgConversionSelector, objCArg);
-
-        void *pointer = box.voidPointer;
-        [inv setArgument:&pointer atIndex:i + 2];
-        [retainedObjectsForInvocation addObject:box];
-        continue;
-      }
-    }
-
-    /**
-     * Insert converted args unmodified.
-     */
-    [inv setArgument:(void *)&objCArg atIndex:i + 2];
-    if (objCArg) {
-      [retainedObjectsForInvocation addObject:objCArg];
-    }
+    setInvocationArg(runtime, methodName, objCArgType, arg, i, inv, retainedObjectsForInvocation);
   }
 
   if (isSync) {
