@@ -81,7 +81,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   bool isMethodSync(TurboModuleMethodValueKind returnType);
   BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
   SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
-  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
+  NSString *getArgumentTypeName(jsi::Runtime &runtime, NSString *methodName, int argIndex);
   NSInvocation *createMethodInvocation(
       jsi::Runtime &runtime,
       bool isSync,

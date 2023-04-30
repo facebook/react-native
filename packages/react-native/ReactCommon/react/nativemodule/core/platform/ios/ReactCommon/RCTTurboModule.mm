@@ -494,7 +494,7 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
  * Note: This is only being introduced for backward compatibility. It will be removed
  *       in the future.
  */
-NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argIndex)
+NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *methodName, int argIndex)
 {
   if (!methodArgumentTypeNames_) {
     NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
@@ -595,7 +595,7 @@ void ObjCTurboModule::setInvocationArg(
      * Convert objects using RCTConvert.
      */
     if (objCArgType == @encode(id)) {
-      NSString *argumentType = getArgumentTypeName(methodNameNSString, i);
+      NSString *argumentType = getArgumentTypeName(runtime, methodNameNSString, i);
       if (argumentType != nil) {
         NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
         SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
