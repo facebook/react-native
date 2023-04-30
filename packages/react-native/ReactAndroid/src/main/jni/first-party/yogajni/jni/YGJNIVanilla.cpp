@@ -102,7 +102,10 @@ static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
     jlong nativePointer,
     jboolean useLegacyStretchBehaviour) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+#pragma clang diagnostic pop
 }
 
 static void jni_YGConfigSetErrataJNI(
