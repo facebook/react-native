@@ -28,9 +28,7 @@ import invariant from 'invariant';
 
 // TODO T69437152 @petetheheat - Delete this fork when Fabric ships to 100%.
 const NativeAnimatedModule =
-  Platform.OS === 'ios' && global.RN$Bridgeless === true
-    ? NativeAnimatedTurboModule
-    : NativeAnimatedNonTurboModule;
+  NativeAnimatedNonTurboModule ?? NativeAnimatedTurboModule;
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
