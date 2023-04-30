@@ -29,6 +29,7 @@
 
 using namespace facebook;
 using namespace facebook::react;
+using namespace facebook::react::TurboModuleConvertUtils;
 
 static int32_t getUniqueId()
 {
@@ -36,6 +37,10 @@ static int32_t getUniqueId()
   return counter++;
 }
 
+namespace facebook {
+namespace react {
+
+namespace TurboModuleConvertUtils {
 /**
  * All static helper functions are ObjC++ specific.
  */
@@ -54,7 +59,7 @@ static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *v
   return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
 }
 
-static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
+jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
 {
   jsi::Object result = jsi::Object(runtime);
@@ -82,7 +87,7 @@ static std::vector<jsi::Value> convertNSArrayToStdVector(jsi::Runtime &runtime, 
   return result;
 }
 
-static jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
+jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 {
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);
@@ -211,8 +216,6 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   return [callback copy];
 }
 
-namespace facebook::react {
-
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
 {
   return runtime.global().getPropertyAsFunction(runtime, "Error").call(runtime, message);
@@ -235,6 +238,8 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return {runtime, std::move(error)};
+}
+
 }
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
@@ -771,4 +776,5 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int a
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+}
 } // namespace facebook::react
