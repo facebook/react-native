@@ -57,6 +57,11 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
+  virtual jsi::Value convertReturnIdToJSIValue(
+      jsi::Runtime &runtime,
+      const char *methodName,
+      TurboModuleMethodValueKind returnType,
+      id result);
 
  private:
   // Does the NativeModule dispatch async methods to the JS thread?
@@ -81,9 +86,9 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t count,
       NSMutableArray *retainedObjectsForInvocation);
-  jsi::Value performMethodInvocation(
+  id performMethodInvocation(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind returnType,
+      bool isSync,
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);
