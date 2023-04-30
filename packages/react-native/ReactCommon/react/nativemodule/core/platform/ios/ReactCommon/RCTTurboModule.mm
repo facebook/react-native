@@ -541,7 +541,7 @@ NSString *ObjCTurboModule::getArgumentTypeName(NSString *methodName, int argInde
   return nil;
 }
 
-NSInvocation *ObjCTurboModule::getMethodInvocation(
+NSInvocation *ObjCTurboModule::createMethodInvocation(
     jsi::Runtime &runtime,
     bool isSync,
     const char *methodName,
@@ -700,7 +700,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   }
 
   NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
-  NSInvocation *inv = getMethodInvocation(
+  NSInvocation *inv = createMethodInvocation(
       runtime, isMethodSync(returnType), methodName, selector, args, count, retainedObjectsForInvocation);
 
   jsi::Value returnValue = jsi::Value::undefined();
