@@ -130,6 +130,16 @@ void RCTEnableTurboModuleInterop(BOOL enabled)
   turboModuleInteropEnabled = enabled;
 }
 
+static BOOL useTurboModuleInteropForAllTurboModules = NO;
+BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
+{
+  return useTurboModuleInteropForAllTurboModules;
+}
+void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
+{
+  useTurboModuleInteropForAllTurboModules = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
