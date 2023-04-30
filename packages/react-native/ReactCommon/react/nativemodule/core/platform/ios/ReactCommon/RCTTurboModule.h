@@ -90,6 +90,14 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t count,
       NSMutableArray *retainedObjectsForInvocation);
+  void setInvocationArg(
+      jsi::Runtime &runtime,
+      const char *methodName,
+      const std::string &objCArgType,
+      const jsi::Value &arg,
+      size_t i,
+      NSInvocation *inv,
+      NSMutableArray *retainedObjectsForInvocation);
   id performMethodInvocation(
       jsi::Runtime &runtime,
       bool isSync,
