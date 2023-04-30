@@ -82,7 +82,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
   SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
   NSString *getArgumentTypeName(NSString *methodName, int argIndex);
-  NSInvocation *getMethodInvocation(
+  NSInvocation *createMethodInvocation(
       jsi::Runtime &runtime,
       bool isSync,
       const char *methodName,
