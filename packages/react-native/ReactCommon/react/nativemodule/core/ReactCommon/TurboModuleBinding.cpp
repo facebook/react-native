@@ -68,6 +68,12 @@ static void defineReadOnlyGlobal(
     jsi::Runtime &runtime,
     std::string propName,
     jsi::Value &&value) {
+  if (runtime.global().hasProperty(runtime, propName.c_str())) {
+    throw jsi::JSError(
+        runtime,
+        "Tried to redefine read-only global \"" + propName +
+            "\", but read-only globals can only be defined once.");
+  }
   jsi::Object jsObject =
       runtime.global().getProperty(runtime, "Object").asObject(runtime);
   jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
