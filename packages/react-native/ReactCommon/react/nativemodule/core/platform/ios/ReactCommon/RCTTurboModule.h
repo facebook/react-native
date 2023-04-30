@@ -28,6 +28,10 @@ namespace facebook::react {
 class CallbackWrapper;
 class Instance;
 
+namespace TurboModuleConvertUtils {
+jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
+}
+
 /**
  * ObjC++ specific TurboModule base class.
  */
