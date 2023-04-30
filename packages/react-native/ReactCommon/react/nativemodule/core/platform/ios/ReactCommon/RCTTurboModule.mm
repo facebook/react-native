@@ -373,20 +373,18 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-jsi::Value ObjCTurboModule::performMethodInvocation(
+id ObjCTurboModule::performMethodInvocation(
     jsi::Runtime &runtime,
-    TurboModuleMethodValueKind returnType,
+    bool isSync,
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
-  jsi::Runtime *rt = &runtime;
   __weak id<RCTTurboModule> weakModule = instance_;
   const char *moduleName = name_.c_str();
   std::string methodNameStr{methodName};
   __block int32_t asyncCallCounter = 0;
-  bool wasMethodSync = isMethodSync(returnType);
 
   void (^block)() = ^{
     id<RCTTurboModule> strongModule = weakModule;
@@ -394,7 +392,7 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       return;
     }
 
-    if (wasMethodSync) {
+    if (isSync) {
       TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
     } else {
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
@@ -408,25 +406,35 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       [retainedObjectsForInvocation removeAllObjects];
     }
 
-    if (!wasMethodSync) {
+    if (!isSync) {
       TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
       return;
     }
 
-    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
-    TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodNameStr.c_str());
-
     void *rawResult;
     [inv getReturnValue:&rawResult];
     result = (__bridge id)rawResult;
+    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
   };
 
-  if (wasMethodSync) {
+  if (isSync) {
     block();
+    return result;
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeInvoker_->invokeAsync([block]() -> void { block(); });
+    return nil;
+  }
+}
+
+jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
+    jsi::Runtime &runtime,
+    const char *methodName,
+    TurboModuleMethodValueKind returnType,
+    id result)
+{
+  if (returnType == VoidKind) {
     return jsi::Value::undefined();
   }
 
@@ -442,32 +450,31 @@ jsi::Value ObjCTurboModule::performMethodInvocation(
       break;
     }
     case BooleanKind: {
-      returnValue = convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
+      returnValue = convertNSNumberToJSIBoolean(runtime, (NSNumber *)result);
       break;
     }
     case NumberKind: {
-      returnValue = convertNSNumberToJSINumber(*rt, (NSNumber *)result);
+      returnValue = convertNSNumberToJSINumber(runtime, (NSNumber *)result);
       break;
     }
     case StringKind: {
-      returnValue = convertNSStringToJSIString(*rt, (NSString *)result);
+      returnValue = convertNSStringToJSIString(runtime, (NSString *)result);
       break;
     }
     case ObjectKind: {
-      returnValue = convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
+      returnValue = convertNSDictionaryToJSIObject(runtime, (NSDictionary *)result);
       break;
     }
     case ArrayKind: {
-      returnValue = convertNSArrayToJSIArray(*rt, (NSArray *)result);
+      returnValue = convertNSArrayToJSIArray(runtime, (NSArray *)result);
       break;
     }
     case FunctionKind:
-      throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
+      throw std::runtime_error("convertReturnIdToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
-      throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
+      throw std::runtime_error("convertReturnIdToJSIValue: PromiseKind wasn't handled properly.");
   }
 
-  TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
   return returnValue;
 }
 
@@ -691,22 +698,35 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
   NSInvocation *inv = getMethodInvocation(
       runtime, isMethodSync(returnType), methodName, selector, args, count, retainedObjectsForInvocation);
 
-  jsi::Value returnValue = returnType == PromiseKind
-      ? createPromise(
-            runtime,
-            methodNameStr,
-            ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
-              RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
-              RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
+  jsi::Value returnValue = jsi::Value::undefined();
 
-              [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
-              [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
-              [retainedObjectsForInvocation addObject:resolveCopy];
-              [retainedObjectsForInvocation addObject:rejectCopy];
-              // The return type becomes void in the ObjC side.
-              performMethodInvocation(runtime, VoidKind, methodName, inv, retainedObjectsForInvocation);
-            })
-      : performMethodInvocation(runtime, returnType, methodName, inv, retainedObjectsForInvocation);
+  if (returnType == PromiseKind) {
+    returnValue = createPromise(
+        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock) {
+          RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
+          RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
+
+          [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
+          [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
+          [retainedObjectsForInvocation addObject:resolveCopy];
+          [retainedObjectsForInvocation addObject:rejectCopy];
+          // The return type becomes void in the ObjC side.
+          performMethodInvocation(runtime, isMethodSync(VoidKind), methodName, inv, retainedObjectsForInvocation);
+        });
+  } else {
+    id result =
+        performMethodInvocation(runtime, isMethodSync(returnType), methodName, inv, retainedObjectsForInvocation);
+
+    if (isMethodSync(returnType)) {
+      TurboModulePerfLogger::syncMethodCallReturnConversionStart(moduleName, methodName);
+    }
+
+    returnValue = convertReturnIdToJSIValue(runtime, methodName, returnType, result);
+
+    if (isMethodSync(returnType)) {
+      TurboModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
+    }
+  }
 
   if (isMethodSync(returnType)) {
     TurboModulePerfLogger::syncMethodCallEnd(moduleName, methodName);
