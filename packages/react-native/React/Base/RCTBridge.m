@@ -120,6 +120,16 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
+static BOOL turboModuleInteropEnabled = YES;
+BOOL RCTTurboModuleInteropEnabled(void)
+{
+  return turboModuleInteropEnabled;
+}
+void RCTEnableTurboModuleInterop(BOOL enabled)
+{
+  turboModuleInteropEnabled = enabled;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
