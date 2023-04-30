@@ -49,7 +49,7 @@ int32_t getUniqueId()
   return counter++;
 }
 
-class TurboModuleHolder {
+class ModuleHolder {
  private:
   const int32_t moduleId_;
   id<RCTTurboModule> module_;
@@ -59,8 +59,7 @@ class TurboModuleHolder {
   std::condition_variable cv_;
 
  public:
-  TurboModuleHolder()
-      : moduleId_(getUniqueId()), module_(nil), isTryingToCreateModule_(false), isDoneCreatingModule_(false)
+  ModuleHolder() : moduleId_(getUniqueId()), module_(nil), isTryingToCreateModule_(false), isDoneCreatingModule_(false)
   {
   }
 
@@ -167,17 +166,17 @@ static Class getFallbackClassFromName(const char *name)
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
    *
-   * All instances of TurboModuleHolder are owned by the _turboModuleHolders map.
-   * We only reference TurboModuleHolders via pointers to entries in the _turboModuleHolders map.
+   * All instances of ModuleHolder are owned by the _moduleHolders map.
+   * We only reference ModuleHolders via pointers to entries in the _moduleHolders map.
    */
-  std::unordered_map<std::string, TurboModuleHolder> _turboModuleHolders;
+  std::unordered_map<std::string, ModuleHolder> _moduleHolders;
   std::unordered_map<std::string, std::shared_ptr<TurboModule>> _turboModuleCache;
 
   // Enforce synchronous access into _delegate
   std::mutex _turboModuleManagerDelegateMutex;
 
-  // Enforce synchronous access to _invalidating and _turboModuleHolders
-  std::mutex _turboModuleHoldersMutex;
+  // Enforce synchronous access to _invalidating and _moduleHolders
+  std::mutex _moduleHoldersMutex;
   std::atomic<bool> _invalidating;
 }
 
@@ -318,14 +317,14 @@ static Class getFallbackClassFromName(const char *name)
   return turboModule;
 }
 
-- (TurboModuleHolder *)_getOrCreateTurboModuleHolder:(const char *)moduleName
+- (ModuleHolder *)_getOrCreateModuleHolder:(const char *)moduleName
 {
-  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+  std::lock_guard<std::mutex> guard(_moduleHoldersMutex);
   if (_invalidating) {
     return nullptr;
   }
 
-  return &_turboModuleHolders[moduleName];
+  return &_moduleHolders[moduleName];
 }
 
 /**
@@ -342,7 +341,7 @@ static Class getFallbackClassFromName(const char *name)
     moduleName = [[[NSString stringWithUTF8String:moduleName] substringFromIndex:3] UTF8String];
   }
 
-  TurboModuleHolder *moduleHolder = [self _getOrCreateTurboModuleHolder:moduleName];
+  ModuleHolder *moduleHolder = [self _getOrCreateModuleHolder:moduleName];
 
   if (!moduleHolder) {
     return nil;
@@ -361,7 +360,7 @@ static Class getFallbackClassFromName(const char *name)
 }
 
 - (id<RCTTurboModule>)_provideRCTTurboModule:(const char *)moduleName
-                                moduleHolder:(TurboModuleHolder *)moduleHolder
+                                moduleHolder:(ModuleHolder *)moduleHolder
                                shouldPerfLog:(BOOL)shouldPerfLog
 {
   bool shouldCreateModule = false;
@@ -754,8 +753,8 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
-  std::unique_lock<std::mutex> guard(_turboModuleHoldersMutex);
-  return _turboModuleHolders.find(moduleName) != _turboModuleHolders.end();
+  std::unique_lock<std::mutex> guard(_moduleHoldersMutex);
+  return _moduleHolders.find(moduleName) != _moduleHolders.end();
 }
 
 #pragma mark Invalidation logic
@@ -788,8 +787,8 @@ static Class getFallbackClassFromName(const char *name)
 
 - (void)_enterInvalidatingState
 {
-  // This should halt all insertions into _turboModuleHolders
-  std::lock_guard<std::mutex> guard(_turboModuleHoldersMutex);
+  // This should halt all insertions into _moduleHolders
+  std::lock_guard<std::mutex> guard(_moduleHoldersMutex);
   _invalidating = true;
 }
 
@@ -798,9 +797,9 @@ static Class getFallbackClassFromName(const char *name)
   // Backward-compatibility: RCTInvalidating handling.
   dispatch_group_t moduleInvalidationGroup = dispatch_group_create();
 
-  for (auto &pair : _turboModuleHolders) {
+  for (auto &pair : _moduleHolders) {
     std::string moduleName = pair.first;
-    TurboModuleHolder *moduleHolder = &pair.second;
+    ModuleHolder *moduleHolder = &pair.second;
 
     /**
      * We could start tearing down ReactNative before a TurboModule is fully initialized. In this case, we should wait
@@ -844,7 +843,7 @@ static Class getFallbackClassFromName(const char *name)
     RCTLogError(@"TurboModuleManager: Timed out waiting for modules to be invalidated");
   }
 
-  _turboModuleHolders.clear();
+  _moduleHolders.clear();
   _turboModuleCache.clear();
 }
 
