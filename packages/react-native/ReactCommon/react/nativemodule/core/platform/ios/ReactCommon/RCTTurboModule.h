@@ -46,7 +46,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind valueKind,
+      TurboModuleMethodValueKind returnType,
       const std::string &methodName,
       SEL selector,
       const jsi::Value *args,
