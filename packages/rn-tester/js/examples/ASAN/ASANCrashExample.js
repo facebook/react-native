@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {Node} from 'React';
+import type {Node} from 'react';
 import {NativeModules, Button} from 'react-native';
 import React from 'react';
 
