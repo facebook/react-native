@@ -18,7 +18,7 @@ public abstract class JSEngineInstance {
     SoLoader.loadLibrary("rninstance");
   }
 
-  @DoNotStrip private HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
   protected JSEngineInstance(HybridData hybridData) {
     mHybridData = hybridData;
