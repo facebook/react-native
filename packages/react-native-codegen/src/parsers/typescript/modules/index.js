@@ -36,6 +36,7 @@ const {
   emitArrayType,
   emitFunction,
   emitGenericObject,
+  emitDictionary,
   emitPromise,
   emitRootTag,
   emitUnion,
@@ -309,7 +310,7 @@ function translateTypeAnnotation(
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
           const propertyType = indexSignatures[0].typeAnnotation;
-          translateTypeAnnotation(
+          const valueType = translateTypeAnnotation(
             hasteModuleName,
             propertyType,
             types,
@@ -320,7 +321,7 @@ function translateTypeAnnotation(
             parser,
           );
           // no need to do further checking
-          return emitGenericObject(nullable);
+          return emitDictionary(nullable, valueType);
         }
       }
 
