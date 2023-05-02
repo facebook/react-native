@@ -43,11 +43,6 @@ class YogaStylableProps : public Props {
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"
-  CompactValue inset;
-  CompactValue insetInline;
-  CompactValue insetInlineEnd;
-  CompactValue insetInlineStart;
-
   CompactValue marginInline;
   CompactValue marginInlineStart;
   CompactValue marginInlineEnd;
@@ -61,10 +56,6 @@ class YogaStylableProps : public Props {
   // BlockEnd/BlockStart map to top/bottom (no writing mode), but we preserve
   // Yoga's precedence and prefer specific edges (e.g. top) to ones which are
   // flow relative (e.g. blockStart).
-  CompactValue insetBlock;
-  CompactValue insetBlockEnd;
-  CompactValue insetBlockStart;
-
   CompactValue marginBlockStart;
   CompactValue marginBlockEnd;
 

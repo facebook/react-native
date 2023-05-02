@@ -258,14 +258,6 @@ const validAttributesForNonEventProps = {
   top: true,
   bottom: true,
 
-  inset: true,
-  insetBlock: true,
-  insetBlockEnd: true,
-  insetBlockStart: true,
-  insetInline: true,
-  insetInlineEnd: true,
-  insetInlineStart: true,
-
   position: true,
 
   style: ReactNativeStyleAttributes,
