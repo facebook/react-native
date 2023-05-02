@@ -114,8 +114,8 @@ function toDomainAndId(
     domain = curDomain;
     id = absOrRelRef;
   } else {
-    domain = absOrRelRef.substr(0, i);
-    id = absOrRelRef.substr(i + 1);
+    domain = absOrRelRef.slice(0, i);
+    id = absOrRelRef.slice(i + 1);
   }
 
   return [domain, id];
