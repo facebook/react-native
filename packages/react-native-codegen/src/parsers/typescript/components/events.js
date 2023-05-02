@@ -19,7 +19,10 @@ import type {TypeDeclarationMap} from '../../utils';
 import type {Parser} from '../../parser';
 const {flattenProperties} = require('./componentsUtils');
 const {parseTopLevelType} = require('../parseTopLevelType');
-const {throwIfEventHasNoName} = require('../../error-utils');
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+} = require('../../error-utils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -219,7 +222,7 @@ function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
   parser: Parser,
-): EventTypeShape {
+): ?EventTypeShape {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
@@ -235,7 +238,7 @@ function buildEventSchema(
   if (!argumentProps) {
     throw new Error(`Unable to determine event arguments for "${name}"`);
   } else if (!bubblingType) {
-    throw new Error(`Unable to determine event bubbling type for "${name}"`);
+    throwIfBubblingTypeIsNull(bubblingType, name);
   } else {
     if (paperTopLevelNameDeprecated != null) {
       return {
@@ -267,9 +270,9 @@ function getEvents(
   types: TypeDeclarationMap,
   parser: Parser,
 ): $ReadOnlyArray<EventTypeShape> {
-  return eventTypeAST.map(property =>
-    buildEventSchema(types, property, parser),
-  );
+  return eventTypeAST
+    .map(property => buildEventSchema(types, property, parser))
+    .filter(Boolean);
 }
 
 module.exports = {
