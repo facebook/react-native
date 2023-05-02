@@ -455,18 +455,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     YGFloatOptional &result) {
-  if (value.hasType<float>()) {
-    result = YGFloatOptional((float)value);
-    return;
-  } else if (value.hasType<std::string>()) {
-    const auto stringValue = (std::string)value;
-    if (stringValue == "auto") {
-      result = YGFloatOptional();
-      return;
-    }
-  }
-  LOG(ERROR) << "Could not parse YGFloatOptional";
-  react_native_expect(false);
+  result = value.hasType<float>() ? YGFloatOptional((float)value)
+                                  : YGFloatOptional();
 }
 
 inline Float toRadians(
