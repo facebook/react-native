@@ -59,7 +59,6 @@ static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *v
   return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
 }
 
-jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
 {
   jsi::Object result = jsi::Object(runtime);
