@@ -202,7 +202,7 @@
           }
           [newMutableAttributedString addAttribute:NSAttachmentAttributeName value:attachment range:range];
         }];
-        baseTextInputView.attributedText = newAttributedText;
+        baseTextInputView.attributedText = newMutableAttributedString;
       } else {
         baseTextInputView.attributedText = nil;
       }
