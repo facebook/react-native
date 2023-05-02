@@ -16,7 +16,10 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
-const {throwIfEventHasNoName} = require('../../error-utils');
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+} = require('../../error-utils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -245,9 +248,7 @@ function buildEventSchema(
     throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 
-  if (bubblingType === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
+  throwIfBubblingTypeIsNull(bubblingType, name);
 }
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
