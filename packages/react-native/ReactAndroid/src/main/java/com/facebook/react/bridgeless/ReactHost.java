@@ -54,6 +54,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,7 +94,7 @@ public class ReactHost {
   private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
   private final Set<ReactSurface> mAttachedSurfaces = Collections.synchronizedSet(new HashSet<>());
   private final MemoryPressureRouter mMemoryPressureRouter;
-  private final MemoryPressureListener mMemoryPressureListener;
+  private MemoryPressureListener mMemoryPressureListener;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
@@ -167,6 +168,19 @@ public class ReactHost {
       mDevSupportManager = new DisabledDevSupportManager();
     }
     mUseDevSupport = useDevSupport;
+  }
+
+  private MemoryPressureListener createMemoryPressureListener(ReactInstance reactInstance) {
+    WeakReference<ReactInstance> weakReactInstance = new WeakReference<>(reactInstance);
+    return (level) -> {
+      mBGExecutor.execute(
+          () -> {
+            @Nullable ReactInstance strongReactInstance = weakReactInstance.get();
+            if (strongReactInstance != null) {
+              strongReactInstance.handleMemoryPressure(level);
+            }
+          });
+    };
   }
 
   public LifecycleState getLifecycleState() {
@@ -772,6 +786,10 @@ public class ReactHost {
                             mReactJsExceptionHandler,
                             mUseDevSupport);
 
+                    if (ReactFeatureFlags
+                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
+                      mMemoryPressureListener = createMemoryPressureListener(instance);
+                    }
                     mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
 
                     log(method, "Loading JS Bundle");
@@ -862,6 +880,10 @@ public class ReactHost {
                             mReactJsExceptionHandler,
                             mUseDevSupport);
 
+                    if (ReactFeatureFlags
+                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
+                      mMemoryPressureListener = createMemoryPressureListener(instance);
+                    }
                     mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
 
                     log(method, "Loading JS Bundle");
