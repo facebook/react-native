@@ -183,6 +183,25 @@
       // Don't set `attributedText` if length equal to zero, otherwise it would shrink when attributes contain like
       // `lineHeight`.
       if (newAttributedText.length != 0) {
+      	// When we start using the dictation on the keyboard, the system will automatically
+        // generate a `_UITextPlaceholderAttachment`, when the speech recognition ends,
+        // the system will delete `_UITextPlaceholderAttachment` and replace it with the recognized text,
+        // but when we pass `_UITextPlaceholderAttachment` to Javascript,
+        // we will force convert `_UITextPlaceholderAttachment` object to `\uFFFC`,
+        // so after the system speech recognition is completed, the `_UITextPlaceholderAttachment` cannot be found.
+
+        // So: We reverse `\uFFFC` to private class `_UITextPlaceholderAttachment` object
+
+        NSMutableAttributedString *newMutableAttributedString = [newAttributedText mutableCopy];
+        [baseTextInputView.attributedText enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, baseTextInputView.attributedText.length) options:kNilOptions usingBlock:^(id _Nullable attachment, NSRange range, BOOL * _Nonnull stop) {
+          if (![[[baseTextInputView.attributedText attributedSubstringFromRange:range] string] isEqualToString:[[newMutableAttributedString attributedSubstringFromRange:range] string]]) {
+            return;
+          }
+          if (!attachment || ![NSStringFromClass([attachment class]) isEqualToString:@"_UITextPlaceholderAttachment"]) {
+            return;
+          }
+          [newMutableAttributedString addAttribute:NSAttachmentAttributeName value:attachment range:range];
+        }];
         baseTextInputView.attributedText = newAttributedText;
       } else {
         baseTextInputView.attributedText = nil;
