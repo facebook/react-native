@@ -311,7 +311,7 @@ function emitGenericObject(
 
 function emitDictionary(
   nullable: boolean,
-  valueType: NativeModuleBaseTypeAnnotation
+  valueType: NativeModuleBaseTypeAnnotation,
 ): Nullable<NativeModuleGenericObjectTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'GenericObjectTypeAnnotation',
