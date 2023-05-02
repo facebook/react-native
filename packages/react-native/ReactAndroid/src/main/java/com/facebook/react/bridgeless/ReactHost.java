@@ -221,7 +221,7 @@ public class ReactHost {
                                 destroy(
                                     "old_preload() failure: " + task.getError().getMessage(),
                                     task.getError());
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactInstanceDelegate.handleTaskFault(task.getError());
                               }
 
                               return task;
@@ -246,7 +246,7 @@ public class ReactHost {
                         .continueWithTask(
                             (task) -> {
                               if (task.isFaulted()) {
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactInstanceDelegate.handleTaskFault(task.getError());
                                 // Wait for destroy to finish
                                 return new_getOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
@@ -571,7 +571,7 @@ public class ReactHost {
     log(method);
 
     destroy(method, e);
-    mReactInstanceDelegate.handleException(e);
+    mReactInstanceDelegate.handleTaskFault(e);
   }
 
   /**

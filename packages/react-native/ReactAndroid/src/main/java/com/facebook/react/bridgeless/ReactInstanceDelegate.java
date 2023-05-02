@@ -32,7 +32,7 @@ public interface ReactInstanceDelegate {
 
   JSEngineInstance getJSEngineInstance(ReactApplicationContext context);
 
-  void handleException(Exception e);
+  void handleTaskFault(Exception e);
 
   ReactNativeConfig getReactNativeConfig(TurboModuleManager turboModuleManager);
 
