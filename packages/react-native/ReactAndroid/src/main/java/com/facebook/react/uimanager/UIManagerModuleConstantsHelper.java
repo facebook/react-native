@@ -15,6 +15,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -187,6 +188,11 @@ import java.util.Set;
       Object sourceValue = source.get(key);
       Object destValue = dest.get(key);
       if (destValue != null && (sourceValue instanceof Map) && (destValue instanceof Map)) {
+        // Since event maps are client based Map interface, it could be immutable
+        if (!(destValue instanceof HashMap)) {
+          destValue = new HashMap((Map) destValue);
+          dest.replace(key, (Map) destValue);
+        }
         recursiveMerge((Map) destValue, (Map) sourceValue);
       } else {
         dest.put(key, sourceValue);

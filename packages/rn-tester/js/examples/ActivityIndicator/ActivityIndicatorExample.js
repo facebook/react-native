@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {Node} from 'React';
+import type {Node} from 'react';
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';

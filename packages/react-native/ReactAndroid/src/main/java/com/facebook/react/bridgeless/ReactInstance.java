@@ -73,7 +73,7 @@ final class ReactInstance {
 
   private static final String TAG = ReactInstance.class.getSimpleName();
 
-  @DoNotStrip private HybridData mHybridData;
+  @DoNotStrip private final HybridData mHybridData;
 
   private final ReactInstanceDelegate mDelegate;
   private final BridgelessReactContext mBridgelessReactContext;
@@ -172,17 +172,15 @@ final class ReactInstance {
         new ComponentNameResolverManager(
             // Use unbuffered RuntimeExecutor to install binding
             unbufferedRuntimeExecutor,
-            new ComponentNameResolver() {
-              @Override
-              public String[] getComponentNames() {
-                Collection<String> viewManagerNames = getViewManagerNames();
-                if (viewManagerNames.size() < 1) {
-                  FLog.e(TAG, "No ViewManager names found");
-                  return new String[0];
-                }
-                return viewManagerNames.toArray(new String[0]);
-              }
-            });
+            (ComponentNameResolver)
+                () -> {
+                  Collection<String> viewManagerNames = getViewManagerNames();
+                  if (viewManagerNames.size() < 1) {
+                    FLog.e(TAG, "No ViewManager names found");
+                    return new String[0];
+                  }
+                  return viewManagerNames.toArray(new String[0]);
+                });
 
     // Set up TurboModules
     Systrace.beginSection(

@@ -7,18 +7,19 @@
 
 #include "jni.h"
 #include "YGJNIVanilla.h"
-#include <yoga/YGNode.h>
 #include <cstring>
 #include "YGJNI.h"
 #include "common.h"
 #include "YGJTypesVanilla.h"
-#include <yoga/log.h>
 #include <iostream>
 #include <memory>
 #include "YogaJniException.h"
 
+// TODO: Reconcile missing layoutContext functionality from callbacks in the C
+// API and use that
+#include <yoga/YGNode.h>
+
 using namespace facebook::yoga::vanillajni;
-using facebook::yoga::detail::Log;
 
 static inline ScopedLocalRef<jobject> YGNodeJobject(
     YGNodeRef node,
@@ -84,25 +85,16 @@ static void jni_YGConfigSetPointScaleFactorJNI(
   YGConfigSetPointScaleFactor(config, pixelsInPoint);
 }
 
-static void YGPrint(YGNodeRef node, void* layoutContext) {
-  if (auto obj = YGNodeJobject(node, layoutContext)) {
-    // TODO cout << obj.get()->toString() << endl;
-  } else {
-    Log::log(
-        node,
-        YGLogLevelError,
-        nullptr,
-        "Java YGNode was GCed during layout calculation\n");
-  }
-}
-
 static void jni_YGConfigSetUseLegacyStretchBehaviourJNI(
     JNIEnv* env,
     jobject obj,
     jlong nativePointer,
     jboolean useLegacyStretchBehaviour) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
+#pragma clang diagnostic pop
 }
 
 static void jni_YGConfigSetErrataJNI(
@@ -124,8 +116,7 @@ static jint jni_YGConfigGetErrataJNI(
 
 static jlong jni_YGNodeNewJNI(JNIEnv* env, jobject obj) {
   const YGNodeRef node = YGNodeNew();
-  node->setContext(YGNodeContext{}.asVoidPtr);
-  node->setPrintFunc(YGPrint);
+  YGNodeSetContext(node, YGNodeContext{}.asVoidPtr);
   return reinterpret_cast<jlong>(node);
 }
 
@@ -134,7 +125,7 @@ static jlong jni_YGNodeNewWithConfigJNI(
     jobject obj,
     jlong configPointer) {
   const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
-  node->setContext(YGNodeContext{}.asVoidPtr);
+  YGNodeSetContext(node, YGNodeContext{}.asVoidPtr);
   return reinterpret_cast<jlong>(node);
 }
 
@@ -218,9 +209,9 @@ static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
 
 static void jni_YGNodeResetJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  void* context = node->getContext();
+  void* context = YGNodeGetContext(node);
   YGNodeReset(node);
-  node->setContext(context);
+  YGNodeSetContext(node, context);
 }
 
 static void jni_YGNodeInsertChildJNI(
@@ -259,12 +250,12 @@ static jboolean jni_YGNodeIsReferenceBaselineJNI(
   return YGNodeIsReferenceBaseline(_jlong2YGNodeRef(nativePointer));
 }
 
-static void jni_YGNodeClearChildrenJNI(
+static void jni_YGNodeRemoveAllChildrenJNI(
     JNIEnv* env,
     jobject obj,
     jlong nativePointer) {
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  node->clearChildren();
+  YGNodeRemoveAllChildren(node);
 }
 
 static void jni_YGNodeRemoveChildJNI(
@@ -281,16 +272,11 @@ static void YGTransferLayoutOutputsRecursive(
     jobject thiz,
     YGNodeRef root,
     void* layoutContext) {
-  if (!root->getHasNewLayout()) {
+  if (!YGNodeGetHasNewLayout(root)) {
     return;
   }
   auto obj = YGNodeJobject(root, layoutContext);
   if (!obj) {
-    Log::log(
-        root,
-        YGLogLevelError,
-        nullptr,
-        "Java YGNode was GCed during layout calculation\n");
     return;
   }
 
@@ -351,7 +337,7 @@ static void YGTransferLayoutOutputsRecursive(
   env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
   env->SetObjectField(obj.get(), arrField, arrFinal.get());
 
-  root->setHasNewLayout(false);
+  YGNodeSetHasNewLayout(root, false);
 
   for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
     YGTransferLayoutOutputsRecursive(
@@ -417,7 +403,7 @@ static jboolean jni_YGNodeIsDirtyJNI(
     JNIEnv* env,
     jobject obj,
     jlong nativePointer) {
-  return (jboolean) _jlong2YGNodeRef(nativePointer)->isDirty();
+  return (jboolean) YGNodeIsDirty(_jlong2YGNodeRef(nativePointer));
 }
 
 static void jni_YGNodeCopyStyleJNI(
@@ -674,11 +660,6 @@ static YGSize YGJNIMeasureFunc(
 
     return YGSize{*measuredWidth, *measuredHeight};
   } else {
-    Log::log(
-        node,
-        YGLogLevelError,
-        nullptr,
-        "Java YGNode was GCed during layout calculation\n");
     return YGSize{
         widthMode == YGMeasureModeUndefined ? 0 : width,
         heightMode == YGMeasureModeUndefined ? 0 : height,
@@ -734,7 +715,7 @@ static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
 static jlong jni_YGNodeCloneJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
   auto node = _jlong2YGNodeRef(nativePointer);
   const YGNodeRef clonedYogaNode = YGNodeClone(node);
-  clonedYogaNode->setContext(node->getContext());
+  YGNodeSetContext(clonedYogaNode, YGNodeGetContext(node));
 
   return reinterpret_cast<jlong>(clonedYogaNode);
 }
@@ -798,7 +779,9 @@ static JNINativeMethod methods[] = {
     {"jni_YGNodeIsReferenceBaselineJNI",
      "(J)Z",
      (void*) jni_YGNodeIsReferenceBaselineJNI},
-    {"jni_YGNodeClearChildrenJNI", "(J)V", (void*) jni_YGNodeClearChildrenJNI},
+    {"jni_YGNodeRemoveAllChildrenJNI",
+     "(J)V",
+     (void*) jni_YGNodeRemoveAllChildrenJNI},
     {"jni_YGNodeRemoveChildJNI", "(JJ)V", (void*) jni_YGNodeRemoveChildJNI},
     {"jni_YGNodeCalculateLayoutJNI",
      "(JFF[J[Lcom/facebook/yoga/YogaNodeJNIBase;)V",

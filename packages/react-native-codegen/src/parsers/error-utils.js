@@ -319,6 +319,17 @@ function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
   }
 }
 
+function throwIfBubblingTypeIsNull(
+  bubblingType: ?('direct' | 'bubble'),
+  eventName: string,
+) {
+  if (!bubblingType) {
+    throw new Error(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -340,4 +351,5 @@ module.exports = {
   throwIfConfigNotfound,
   throwIfMoreThanOneConfig,
   throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
 };

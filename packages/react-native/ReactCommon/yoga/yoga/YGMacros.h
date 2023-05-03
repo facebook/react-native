@@ -19,6 +19,14 @@
 #define YG_EXTERN_C_END
 #endif
 
+#if defined(__cplusplus)
+#define YG_DEPRECATED(message) [[deprecated(message)]]
+#elif defined(_MSC_VER)
+#define YG_DEPRECATED(message) __declspec(deprecated(message))
+#else
+#define YG_DEPRECATED(message) __attribute__((deprecated(message)))
+#endif
+
 #ifdef _WINDLL
 #define WIN_EXPORT __declspec(dllexport)
 #else

@@ -123,14 +123,6 @@ android {
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
-    signingConfigs {
-        release {
-            storeFile file(MYAPP_RELEASE_STORE_FILE)
-            storePassword MYAPP_RELEASE_STORE_PASSWORD
-            keyAlias MYAPP_RELEASE_KEY_ALIAS
-            keyPassword MYAPP_RELEASE_KEY_PASSWORD
-        }
-    }
     externalNativeBuild {
         cmake {
             version cmakeVersion
@@ -145,15 +137,10 @@ android {
         }
     }
     buildTypes {
-        debug {
-            debuggable true
-            signingConfig signingConfigs.release
-        }
         release {
-            debuggable false
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.debug
         }
     }
     sourceSets.main {
@@ -172,8 +159,6 @@ dependencies {
 
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
-
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")

@@ -47,7 +47,7 @@ class TokenizedTextExample extends React.Component {
       if (token[0].length === 0) {
         index = 1;
       }
-      parts.push(_text.substr(0, index));
+      parts.push(_text.slice(0, index));
       parts.push(token[0]);
       index = index + token[0].length;
       _text = _text.slice(index);

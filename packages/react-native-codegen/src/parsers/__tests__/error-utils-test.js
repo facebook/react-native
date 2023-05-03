@@ -34,6 +34,7 @@ const {
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
   throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -947,6 +948,28 @@ describe('throwIfEventHasNoName', () => {
 
     expect(() => {
       throwIfEventHasNoName(typeAnnotation, typescriptParser);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfBubblingTypeIsNull', () => {
+  it('throw an error if unable to determine event bubbling type', () => {
+    const bubblingType = null;
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfBubblingTypeIsNull(bubblingType, eventName);
+    }).toThrowError(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  });
+
+  it('does not throw an error if able to determine event bubbling type', () => {
+    const bubblingType = 'direct';
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfBubblingTypeIsNull(bubblingType, eventName);
     }).not.toThrow();
   });
 });
