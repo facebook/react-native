@@ -13,6 +13,8 @@ import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
+internal const val DEFAULT_GROUP_STRING = "com.facebook.react"
+
 internal object DependencyUtils {
 
   /**
@@ -46,7 +48,7 @@ internal object DependencyUtils {
    * - Forcing the react-android/hermes-android version to the one specified in the package.json
    * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
    */
-  fun configureDependencies(project: Project, versionString: String, groupString: String = defaultGroupString) {
+  fun configureDependencies(project: Project, versionString: String, groupString: String = DEFAULT_GROUP_STRING) {
     if (versionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
       eachProject.configurations.all { configuration ->
@@ -72,23 +74,19 @@ internal object DependencyUtils {
     }
   }
 
-  fun readVersionString(propertiesFile: File): String {
+  fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    val versionString = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
+    val versionStringFromFile = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
-    return if (versionString.startsWith("0.0.0")) {
-      "$versionString-SNAPSHOT"
+    val versionString = if (versionStringFromFile.startsWith("0.0.0")) {
+      "$versionStringFromFile-SNAPSHOT"
     } else {
-      versionString
+      versionStringFromFile
     }
-  }
-
-  // Allows react-native-tvos to get its dependencies correctly with its custom Maven group name
-  fun readGroupString(propertiesFile: File): String {
-    val reactAndroidProperties = Properties()
-    propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    return reactAndroidProperties["GROUP"] as? String ?: defaultGroupString
+    // Returns Maven group for repos using different group for Maven artifacts
+    val groupString = reactAndroidProperties["GROUP"] as? String ?: DEFAULT_GROUP_STRING
+    return Pair(versionString, groupString)
   }
 
   fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =
@@ -97,5 +95,5 @@ internal object DependencyUtils {
   fun Project.mavenRepoFromURI(uri: URI): MavenArtifactRepository =
       project.repositories.maven { it.url = uri }
 
-  val defaultGroupString = "com.facebook.react"
+
 }

@@ -12,8 +12,7 @@ import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
-import com.facebook.react.utils.DependencyUtils.readGroupString
-import com.facebook.react.utils.DependencyUtils.readVersionString
+import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import java.net.URI
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.testfixtures.ProjectBuilder
@@ -257,7 +256,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
 
     assertEquals("1000.0.0", versionString)
   }
@@ -274,7 +273,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
 
     assertEquals("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT", versionString)
   }
@@ -290,7 +289,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
     assertEquals("", versionString)
   }
 
@@ -306,7 +305,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
     assertEquals("", versionString)
   }
 
@@ -322,7 +321,7 @@ class DependencyUtilsTest {
             .trimIndent())
       }
 
-    val groupString = readGroupString(propertiesFile)
+    val groupString = readVersionAndGroupStrings(propertiesFile).second
 
     assertEquals("io.github.test", groupString)
   }
@@ -338,7 +337,7 @@ class DependencyUtilsTest {
             .trimIndent())
       }
 
-    val groupString = readGroupString(propertiesFile)
+    val groupString = readVersionAndGroupStrings(propertiesFile).second
 
     assertEquals("com.facebook.react", groupString)
   }
