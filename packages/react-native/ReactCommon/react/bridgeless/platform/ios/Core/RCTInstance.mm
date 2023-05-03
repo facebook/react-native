@@ -327,7 +327,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 #endif
 
-  __weak RCTPerformanceLogger *weakPerformanceLogger = _performanceLogger;
   __weak __typeof(self) weakSelf = self;
   [RCTJavaScriptLoader loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
@@ -359,7 +358,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
         [strongSelf loadScriptFromSource:source];
         // Set up hot module reloading in Dev only.
-        [weakPerformanceLogger markStopForTag:RCTPLScriptDownload];
+        [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
       }];
 }
