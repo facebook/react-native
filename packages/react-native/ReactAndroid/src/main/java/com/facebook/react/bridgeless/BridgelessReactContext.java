@@ -151,7 +151,7 @@ public class BridgelessReactContext extends ReactApplicationContext
 
   @Override
   public void handleException(Exception e) {
-    mReactHost.handleException(e);
+    mReactHost.handleHostException(e);
   }
 
   public DefaultHardwareBackBtnHandler getDefaultHardwareBackBtnHandler() {

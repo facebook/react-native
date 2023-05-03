@@ -152,7 +152,7 @@ public class ReactHost {
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
     mReactJsExceptionHandler = reactJsExceptionHandler;
-    mQueueThreadExceptionHandler = ReactHost.this::handleException;
+    mQueueThreadExceptionHandler = ReactHost.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mMemoryPressureListener =
         level ->
@@ -221,7 +221,7 @@ public class ReactHost {
                                 destroy(
                                     "old_preload() failure: " + task.getError().getMessage(),
                                     task.getError());
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactInstanceDelegate.handleInstanceException(task.getError());
                               }
 
                               return task;
@@ -246,7 +246,7 @@ public class ReactHost {
                         .continueWithTask(
                             (task) -> {
                               if (task.isFaulted()) {
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactInstanceDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
                                 return new_getOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
@@ -566,12 +566,12 @@ public class ReactHost {
         });
   }
 
-  /* package */ void handleException(Exception e) {
-    final String method = "handleException(message = \"" + e.getMessage() + "\")";
+  /* package */ void handleHostException(Exception e) {
+    final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
     destroy(method, e);
-    mReactInstanceDelegate.handleException(e);
+    mReactInstanceDelegate.handleInstanceException(e);
   }
 
   /**
@@ -690,7 +690,7 @@ public class ReactHost {
         .continueWith(
             task -> {
               if (task.isFaulted()) {
-                handleException(task.getError());
+                handleHostException(task.getError());
               }
               return null;
             },
