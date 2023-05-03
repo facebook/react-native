@@ -35,9 +35,6 @@ static RCTFontProperties RCTResolveFontProperties(
 {
   fontProperties.family = fontProperties.family.length ? fontProperties.family : baseFontProperties.family;
   fontProperties.size = !isnan(fontProperties.size) ? fontProperties.size : baseFontProperties.size;
-  fontProperties.weight = !isnan(fontProperties.weight) ? fontProperties.weight : baseFontProperties.weight;
-  fontProperties.style =
-      fontProperties.style != RCTFontStyleUndefined ? fontProperties.style : baseFontProperties.style;
   fontProperties.variant =
       fontProperties.variant != RCTFontVariantUndefined ? fontProperties.variant : baseFontProperties.variant;
   return fontProperties;
@@ -116,9 +113,15 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
   if ([fontProperties.family isEqualToString:defaultFontProperties.family]) {
     // Handle system font as special case. This ensures that we preserve
     // the specific metrics of the standard system font as closely as possible.
+    fontProperties.weight = !isnan(fontProperties.weight) ? fontProperties.weight : defaultFontProperties.weight;
+    fontProperties.style =
+        fontProperties.style != RCTFontStyleUndefined ? fontProperties.style : defaultFontProperties.style;
+
     font = RCTDefaultFontWithFontProperties(fontProperties);
   } else {
     NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
+    UIFontWeight fontWeight = fontProperties.weight;
+    RCTFontStyle fontStyle = fontProperties.style;
 
     if (fontNames.count == 0) {
       // Gracefully handle being given a font name rather than font family, for
@@ -129,18 +132,24 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
       }
-    } else {
+
+      fontNames = [UIFont fontNamesForFamilyName:font.familyName];
+      fontWeight = isnan(fontWeight) ? RCTGetFontWeight(font) : fontWeight;
+      fontStyle = fontStyle == RCTFontStyleUndefined ? RCTGetFontStyle(font) : fontStyle;
+    }
+
+    if (fontNames.count != 0) {
       // Get the closest font that matches the given weight for the fontFamily
       CGFloat closestWeight = INFINITY;
       for (NSString *name in fontNames) {
         UIFont *fontMatch = [UIFont fontWithName:name size:effectiveFontSize];
 
-        if (RCTGetFontStyle(fontMatch) != fontProperties.style) {
+        if (RCTGetFontStyle(fontMatch) != fontStyle) {
           continue;
         }
 
         CGFloat testWeight = RCTGetFontWeight(fontMatch);
-        if (ABS(testWeight - fontProperties.weight) < ABS(closestWeight - fontProperties.weight)) {
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = fontMatch;
           closestWeight = testWeight;
         }
