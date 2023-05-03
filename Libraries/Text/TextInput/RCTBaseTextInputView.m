@@ -109,6 +109,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
   // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
   // text view handles showing the last character for a split second.
+  __block BOOL isDictationRunning = false;;
+  [oldText enumerateAttribute:NSAttachmentAttributeName
+                      inRange:NSMakeRange(0, oldText.length)
+                      options:kNilOptions
+                   usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+                      if (value && [@"\uFFFC" isEqualToString:[oldText attributedSubstringFromRange:range].string]) {
+                        isDictationRunning = true;
+                        *stop = true;
+                      }
+                   }];
   __block BOOL fontHasBeenUpdatedBySystem = false;
   [oldText enumerateAttribute:@"NSOriginalFont"
                       inRange:NSMakeRange(0, oldText.length)
@@ -120,7 +130,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                    }];
 
   BOOL shouldFallbackToBareTextComparison =
-      [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+      isDictationRunning ||
       [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       self.backedTextInputView.markedTextRange || self.backedTextInputView.isSecureTextEntry ||
       fontHasBeenUpdatedBySystem;
