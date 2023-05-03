@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
 
 @ThreadSafe
@@ -27,8 +26,6 @@ public interface ReactInstanceDelegate {
   BindingsInstaller getBindingsInstaller();
 
   TurboModuleManagerDelegate getTurboModuleManagerDelegate(ReactApplicationContext context);
-
-  List<ViewManager> getViewManagers(ReactApplicationContext context);
 
   JSEngineInstance getJSEngineInstance(ReactApplicationContext context);
 
