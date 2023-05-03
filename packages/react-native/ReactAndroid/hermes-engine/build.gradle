@@ -139,7 +139,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdk = 21
 
         externalNativeBuild {
             cmake {
