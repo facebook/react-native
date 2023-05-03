@@ -17,7 +17,7 @@ class JJSEngineInstance : public jni::HybridClass<JJSEngineInstance>,
                           public JSEngineInstance {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/JSEngineInstance;";
+      "Lcom/facebook/react/runtime/JSEngineInstance;";
 
  private:
   friend HybridBase;

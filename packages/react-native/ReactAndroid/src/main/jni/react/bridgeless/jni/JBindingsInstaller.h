@@ -20,7 +20,7 @@ class JBindingsInstaller : public jni::HybridClass<JBindingsInstaller>,
                            public BindingsInstaller {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/BindingsInstaller;";
+      "Lcom/facebook/react/runtime/BindingsInstaller;";
 
   ~JBindingsInstaller() {}
 

@@ -17,7 +17,7 @@ class JReactExceptionManager
     : public facebook::jni::JavaClass<JReactExceptionManager> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/exceptionmanager/ReactJsExceptionHandler;";
+      "Lcom/facebook/react/runtime/exceptionmanager/ReactJsExceptionHandler;";
 
   void reportJsException(const JReadableMapBuffer::javaobject errorMapBuffer);
 };

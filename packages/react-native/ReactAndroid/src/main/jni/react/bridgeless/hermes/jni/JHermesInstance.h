@@ -23,7 +23,7 @@ class JHermesInstance
     : public jni::HybridClass<JHermesInstance, JJSEngineInstance> {
  public:
   static constexpr auto kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/hermes/HermesInstance;";
+      "Lcom/facebook/react/runtime/hermes/HermesInstance;";
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject>);
 

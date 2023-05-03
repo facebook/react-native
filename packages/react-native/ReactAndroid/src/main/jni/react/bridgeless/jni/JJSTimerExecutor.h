@@ -20,7 +20,7 @@ class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
   JJSTimerExecutor() = default;
 
   constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/JSTimerExecutor;";
+      "Lcom/facebook/react/runtime/JSTimerExecutor;";
 
   static void registerNatives();
 
