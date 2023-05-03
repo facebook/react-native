@@ -136,13 +136,6 @@ void YogaStylableProps::setProp(
     static const auto defaults = YogaStylableProps{};
 
     // Aliases
-    RAW_SET_PROP_SWITCH_CASE(inset, "inset");
-    RAW_SET_PROP_SWITCH_CASE(insetBlock, "insetBlock");
-    RAW_SET_PROP_SWITCH_CASE(insetBlockEnd, "insetBlockEnd");
-    RAW_SET_PROP_SWITCH_CASE(insetBlockStart, "insetBlockStart");
-    RAW_SET_PROP_SWITCH_CASE(insetInline, "insetInline");
-    RAW_SET_PROP_SWITCH_CASE(insetInlineEnd, "insetInlineEnd");
-    RAW_SET_PROP_SWITCH_CASE(insetInlineStart, "insetInlineStart");
     RAW_SET_PROP_SWITCH_CASE(marginInline, "marginInline");
     RAW_SET_PROP_SWITCH_CASE(marginInlineStart, "marginInlineStart");
     RAW_SET_PROP_SWITCH_CASE(marginInlineEnd, "marginInlineEnd");
@@ -242,48 +235,6 @@ void YogaStylableProps::convertRawPropAliases(
     const PropsParserContext &context,
     YogaStylableProps const &sourceProps,
     RawProps const &rawProps) {
-  inset = convertRawProp(
-      context,
-      rawProps,
-      "inset",
-      sourceProps.inset,
-      CompactValue::ofUndefined());
-  insetBlock = convertRawProp(
-      context,
-      rawProps,
-      "insetBlock",
-      sourceProps.insetBlock,
-      CompactValue::ofUndefined());
-  insetBlockEnd = convertRawProp(
-      context,
-      rawProps,
-      "insetBlockEnd",
-      sourceProps.insetBlockEnd,
-      CompactValue::ofUndefined());
-  insetBlockStart = convertRawProp(
-      context,
-      rawProps,
-      "insetBlockStart",
-      sourceProps.insetBlockStart,
-      CompactValue::ofUndefined());
-  insetInline = convertRawProp(
-      context,
-      rawProps,
-      "insetInline",
-      sourceProps.insetInline,
-      CompactValue::ofUndefined());
-  insetInlineEnd = convertRawProp(
-      context,
-      rawProps,
-      "insetInlineEnd",
-      sourceProps.insetInlineEnd,
-      CompactValue::ofUndefined());
-  insetInlineStart = convertRawProp(
-      context,
-      rawProps,
-      "insetInlineStart",
-      sourceProps.insetInlineStart,
-      CompactValue::ofUndefined());
   marginInline = convertRawProp(
       context,
       rawProps,

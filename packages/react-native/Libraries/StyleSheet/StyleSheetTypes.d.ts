@@ -69,13 +69,6 @@ export interface FlexStyle {
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   height?: DimensionValue | undefined;
-  inset?: DimensionValue | undefined;
-  insetBlock?: DimensionValue | undefined;
-  insetBlockEnd?: DimensionValue | undefined;
-  insetBlockStart?: DimensionValue | undefined;
-  insetInline?: DimensionValue | undefined;
-  insetInlineEnd?: DimensionValue | undefined;
-  insetInlineStart?: DimensionValue | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
