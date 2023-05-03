@@ -116,8 +116,8 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdk = 21
+        targetSdk = 33
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
