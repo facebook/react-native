@@ -77,7 +77,7 @@ def flipper_post_install(installer)
             end
         end
 
-        # Enable flipper for React-Core Debug configuration
+        # Enable flipper for React-RCTAppDelegate Debug configuration
         if target.name == 'React-RCTAppDelegate'
             target.build_configurations.each do |config|
                 if config.debug?
