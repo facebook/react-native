@@ -114,7 +114,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                       inRange:NSMakeRange(0, oldText.length)
                       options:kNilOptions
                    usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-                      if (value && [@"\uFFFC" isEqualToString:[oldText attributedSubstringFromRange:range].string]) {
+                      if ([value respondsToSelector:NSSelectorFromString(@"typingAttributesBeforeInsertion")]) {
                         isDictationRunning = true;
                         *stop = true;
                       }
