@@ -17,8 +17,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.WindowInsets;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.JavaOnlyArray;
@@ -47,6 +50,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
@@ -217,10 +221,12 @@ public class RootViewTest {
   @Test
   public void testCheckForKeyboardEvents() {
     ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
+    Activity mActivity = Robolectric.buildActivity(Activity.class).create().get();
 
     when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
+
     ReactRootView rootView =
-        new ReactRootView(mReactContext) {
+        new ReactRootView(mActivity) {
           @Override
           public void getWindowVisibleDisplayFrame(Rect outRect) {
             if (outRect.bottom == 0) {
@@ -229,6 +235,14 @@ public class RootViewTest {
             } else {
               outRect.bottom += 370;
             }
+          }
+
+          @Override
+          public WindowInsets getRootWindowInsets() {
+            return new WindowInsets.Builder()
+                .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 370))
+                .setVisible(WindowInsets.Type.ime(), true)
+                .build();
           }
         };
 
