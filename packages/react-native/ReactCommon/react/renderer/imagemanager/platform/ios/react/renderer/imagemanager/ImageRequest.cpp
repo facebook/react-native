@@ -19,7 +19,8 @@ ImageRequest::ImageRequest(
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
       telemetry_(std::move(other.telemetry_)),
-      coordinator_(std::move(other.coordinator_)) {
+      coordinator_(std::move(other.coordinator_)),
+      cancelRequest_(std::move(other.cancelRequest_)) {
   other.coordinator_ = nullptr;
   other.cancelRequest_ = nullptr;
   other.telemetry_ = nullptr;
