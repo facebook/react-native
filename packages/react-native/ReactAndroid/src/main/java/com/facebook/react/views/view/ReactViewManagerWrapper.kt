@@ -63,6 +63,7 @@ interface ReactViewManagerWrapper {
               stateWrapper,
               jsResponderHandler)
       // Throwing to try capture information about the cause of T151032868, remove after.
+      @Suppress("SENSELESS_COMPARISON")
       if (manager == null) {
         throw ReactViewReturnTypeException(
             "DefaultViewManagerWrapper::createView(${viewManager.getName()}, ${viewManager::class.java}) can't return null")
