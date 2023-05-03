@@ -70,8 +70,6 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
                                 initialProperties:(NSDictionary *)properties FB_OBJC_DIRECT;
 
-- (RCTJSThreadManager *)getJSThreadManager FB_OBJC_DIRECT;
-
 - (RCTModuleRegistry *)getModuleRegistry FB_OBJC_DIRECT;
 
 - (RCTPerformanceLogger *)getPerformanceLogger FB_OBJC_DIRECT;

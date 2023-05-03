@@ -76,6 +76,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
+  RCTJSThreadManager *_jsThreadManager;
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
