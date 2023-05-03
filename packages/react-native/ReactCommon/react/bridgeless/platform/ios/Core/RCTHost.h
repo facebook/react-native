@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTJSThreadManager;
 @class RCTModuleRegistry;
-@class RCTPerformanceLogger;
 @protocol RCTInstanceDelegate;
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
@@ -74,7 +73,7 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 
 - (RCTModuleRegistry *)getModuleRegistry FB_OBJC_DIRECT;
 
-- (RCTPerformanceLogger *)getPerformanceLogger FB_OBJC_DIRECT;
+- (NSArray *)getLoggingData FB_OBJC_DIRECT;
 
 - (RCTSurfacePresenter *)getSurfacePresenter FB_OBJC_DIRECT;
 

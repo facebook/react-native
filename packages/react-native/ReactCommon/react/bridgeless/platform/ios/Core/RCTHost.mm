@@ -14,6 +14,7 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
+#import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
 
 using namespace facebook::react;
@@ -201,9 +202,9 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return _moduleRegistry;
 }
 
-- (RCTPerformanceLogger *)getPerformanceLogger
+- (NSArray *)getLoggingData
 {
-  return [_instance performanceLogger];
+  return [[_instance performanceLogger] valuesForTags];
 }
 
 - (RCTSurfacePresenter *)getSurfacePresenter
