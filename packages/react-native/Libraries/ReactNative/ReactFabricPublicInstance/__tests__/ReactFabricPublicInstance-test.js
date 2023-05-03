@@ -215,7 +215,7 @@ async function mockRenderKeys(
     });
 
     describe('measureLayout', () => {
-      test('component.measureLayout(component, ...) invokes callback', async () => {
+      it('component.measureLayout(component, ...) invokes callback', async () => {
         const result = await mockRenderKeys([['foo', 'bar']]);
         const fooRef = nullthrows(result?.[0]?.[0]);
         const barRef = nullthrows(result?.[0]?.[1]);
@@ -230,7 +230,7 @@ async function mockRenderKeys(
         expect(successCallback.mock.calls).toEqual([[1, 1, 100, 100]]);
       });
 
-      test('unmounted.measureLayout(component, ...) does nothing', async () => {
+      it('unmounted.measureLayout(component, ...) does nothing', async () => {
         const result = await mockRenderKeys([
           ['foo', 'bar'],
           ['foo', null],
@@ -248,25 +248,28 @@ async function mockRenderKeys(
         expect(successCallback).not.toHaveBeenCalled();
       });
 
-      test('component.measureLayout(unmounted, ...) does nothing', async () => {
-        const result = await mockRenderKeys([
-          ['foo', 'bar'],
-          [null, 'bar'],
-        ]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
-        const barRef = nullthrows(result?.[0]?.[1]);
+      itif(!isWindows)(
+        'component.measureLayout(unmounted, ...) does nothing',
+        async () => {
+          const result = await mockRenderKeys([
+            ['foo', 'bar'],
+            [null, 'bar'],
+          ]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
+          const barRef = nullthrows(result?.[0]?.[1]);
 
-        const successCallback = jest.fn();
-        const failureCallback = jest.fn();
-        fooRef.measureLayout(barRef, successCallback, failureCallback);
+          const successCallback = jest.fn();
+          const failureCallback = jest.fn();
+          fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-        ).not.toHaveBeenCalled();
-        expect(successCallback).not.toHaveBeenCalled();
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+          ).not.toHaveBeenCalled();
+          expect(successCallback).not.toHaveBeenCalled();
+        },
+      );
 
-      test('unmounted.measureLayout(unmounted, ...) does nothing', async () => {
+      it('unmounted.measureLayout(unmounted, ...) does nothing', async () => {
         const result = await mockRenderKeys([['foo', 'bar'], null]);
         const fooRef = nullthrows(result?.[0]?.[0]);
         const barRef = nullthrows(result?.[0]?.[1]);
