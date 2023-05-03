@@ -32,7 +32,6 @@ const {
 const {
   emitArrayType,
   emitFunction,
-  emitGenericObject,
   emitDictionary,
   emitPromise,
   emitRootTag,

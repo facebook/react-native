@@ -35,7 +35,6 @@ const {parseObjectProperty} = require('../../parsers-commons');
 const {
   emitArrayType,
   emitFunction,
-  emitGenericObject,
   emitDictionary,
   emitPromise,
   emitRootTag,
