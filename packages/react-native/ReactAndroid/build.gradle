@@ -657,6 +657,12 @@ android {
             includeBuildTypeValues('debug', 'release')
         }
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
