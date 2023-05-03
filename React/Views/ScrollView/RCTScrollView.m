@@ -24,6 +24,7 @@
 #if !TARGET_OS_OSX // [macOS]
 #import "RCTRefreshControl.h"
 #else // [macOS
+#import "RCTI18nUtil.h"
 #import "RCTViewKeyboardEvent.h"
 #endif // macOS]
 
@@ -263,6 +264,11 @@
     [NSAnimationContext beginGrouping];
     [[NSAnimationContext currentContext] setDuration:0.3];
     [[self.contentView animator] setBoundsOrigin:contentOffset];
+    // Handling a weird bug where setBoundsOrigin doesn't actually update view bounds
+    if ([[RCTI18nUtil sharedInstance] isRTL] && contentOffset.y < 1) {
+        [self.contentView scrollToPoint:contentOffset];
+        [self reflectScrolledClipView:self.contentView];
+    }
     [NSAnimationContext endGrouping];
   } else {
     self.contentOffset = contentOffset;
