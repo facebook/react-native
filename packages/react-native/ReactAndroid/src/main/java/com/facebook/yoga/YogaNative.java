@@ -38,7 +38,7 @@ public class YogaNative {
   static native void jni_YGNodeSwapChildJNI(long nativePointer, long childPointer, int index);
   static native void jni_YGNodeSetIsReferenceBaselineJNI(long nativePointer, boolean isReferenceBaseline);
   static native boolean jni_YGNodeIsReferenceBaselineJNI(long nativePointer);
-  static native void jni_YGNodeClearChildrenJNI(long nativePointer);
+  static native void jni_YGNodeRemoveAllChildrenJNI(long nativePointer);
   static native void jni_YGNodeRemoveChildJNI(long nativePointer, long childPointer);
   static native void jni_YGNodeCalculateLayoutJNI(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   static native void jni_YGNodeMarkDirtyJNI(long nativePointer);
