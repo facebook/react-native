@@ -192,11 +192,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return [self createSurfaceWithModuleName:moduleName mode:DisplayMode::Visible initialProperties:properties];
 }
 
-- (RCTJSThreadManager *)getJSThreadManager
-{
-  return [_instance jsThreadManager];
-}
-
 - (RCTModuleRegistry *)getModuleRegistry
 {
   return _moduleRegistry;
