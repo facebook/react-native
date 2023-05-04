@@ -19,6 +19,7 @@ import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibili
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.readVersionString
+import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
@@ -63,6 +64,7 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFields(project)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
+      configureJavaToolChains(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
