@@ -109,7 +109,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   // If the user added an emoji, the system adds a font attribute for the emoji and stores the original font in
   // NSOriginalFont. Lastly, when entering a password, etc., there will be additional styling on the field as the native
   // text view handles showing the last character for a split second.
-  __block BOOL isDictationRunning = false;;
+  __block BOOL isDictationRunning = false;
   [oldText enumerateAttribute:NSAttachmentAttributeName
                       inRange:NSMakeRange(0, oldText.length)
                       options:kNilOptions
