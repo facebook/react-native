@@ -391,8 +391,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           (int) Math.floor(paddingBottom));
     }
 
-    // This is required to workaround the problem in Android where it
-    // can cut the ellipsis on cut text in certain font sizes and paddings
+    // Workaround for an issue where text can be cut off with an ellipsis when
+    // using certain font sizes and padding. Sets the provided text size
+    // (mFontSize) to ensure consistent rendering and prevent cut-off.
     if (!Float.isNaN(mFontSize)) {
       setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
     }
