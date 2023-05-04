@@ -25,7 +25,7 @@ using namespace facebook::react;
 @interface RCTDevLoadingView () <NativeDevLoadingViewSpec>
 @end
 
-#if RCT_DEV | RCT_ENABLE_LOADING_VIEW
+#if RCT_DEV_MENU
 
 @implementation RCTDevLoadingView {
   UIWindow *_window;
