@@ -391,7 +391,6 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 - (void)layoutIfNeeded;
 
 - (void)layoutSubviews;
-- (NSArray<RCTUIView *> *)reactZIndexSortedSubviews; // [macOS]
 
 - (void)setNeedsDisplay;
 
@@ -414,10 +413,6 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
  * Specifies whether focus ring should be drawn when the view has the first responder status.
  */
 @property (nonatomic, assign) BOOL enableFocusRing;
-/**
- * The z-index of the view.
- */
-@property (nonatomic, assign) NSInteger reactZIndex;
 
 @end
 
