@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include "Yoga-internal.h"
-#include "Yoga.h"
+#include <yoga/Yoga.h>
+
 #include "BitUtils.h"
+#include "Yoga-internal.h"
 
 namespace facebook {
 namespace yoga {

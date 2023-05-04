@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "Yoga.h"
+#include <yoga/Yoga.h>
 
 namespace facebook {
 namespace yoga {

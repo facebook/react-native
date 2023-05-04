@@ -10,7 +10,8 @@
 #include <bitset>
 #include <cstdio>
 #include <cstdint>
-#include "YGEnums.h"
+
+#include <yoga/YGEnums.h>
 
 namespace facebook {
 namespace yoga {

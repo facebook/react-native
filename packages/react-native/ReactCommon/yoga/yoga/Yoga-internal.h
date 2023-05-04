@@ -11,8 +11,10 @@
 #include <array>
 #include <cmath>
 #include <vector>
+
+#include <yoga/Yoga.h>
+
 #include "CompactValue.h"
-#include "Yoga.h"
 
 using YGVector = std::vector<YGNodeRef>;
 
