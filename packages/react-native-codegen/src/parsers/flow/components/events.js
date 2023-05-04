@@ -19,6 +19,7 @@ import type {Parser} from '../../parser';
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
 
@@ -297,11 +298,11 @@ function buildEventSchema(
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
   if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
+    throwIfArgumentPropsAreNull(argumentProps, name);
   }
 
   if (!bubblingType) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
+    throwIfBubblingTypeIsNull(bubblingType, name);
   }
 
   if (paperTopLevelNameDeprecated != null) {
@@ -320,12 +321,6 @@ function buildEventSchema(
       },
     };
   }
-
-  if (argumentProps === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  throwIfBubblingTypeIsNull(bubblingType, name);
 
   return {
     name,

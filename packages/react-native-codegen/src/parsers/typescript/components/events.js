@@ -22,6 +22,7 @@ const {parseTopLevelType} = require('../parseTopLevelType');
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
 function getPropertyType(
@@ -308,7 +309,7 @@ function buildEventSchema(
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
   if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
+    throwIfArgumentPropsAreNull(argumentProps, name);
   } else if (!bubblingType) {
     throwIfBubblingTypeIsNull(bubblingType, name);
   } else {

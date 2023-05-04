@@ -330,6 +330,15 @@ function throwIfBubblingTypeIsNull(
   }
 }
 
+function throwIfArgumentPropsAreNull(
+  argumentProps: $FlowFixMe,
+  eventName: string,
+) {
+  if (!argumentProps) {
+    throw new Error(`Unable to determine event arguments for "${eventName}"`);
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -352,4 +361,5 @@ module.exports = {
   throwIfMoreThanOneConfig,
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 };
