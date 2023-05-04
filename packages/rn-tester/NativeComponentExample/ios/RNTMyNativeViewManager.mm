@@ -18,6 +18,10 @@ RCT_EXPORT_MODULE(RNTMyNativeView)
 
 RCT_EXPORT_VIEW_PROPERTY(backgroundColor, UIColor)
 
+RCT_EXPORT_VIEW_PROPERTY(onIntArrayChanged, RCTBubblingEventBlock)
+
+RCT_EXPORT_VIEW_PROPERTY(values, NSArray *)
+
 RCT_EXPORT_METHOD(callNativeMethodToChangeBackgroundColor : (nonnull NSNumber *)reactTag color : (NSString *)color)
 {
   [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
