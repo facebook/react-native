@@ -43,6 +43,10 @@ class CoreFeatures {
   // This flag enables a caching mechanism to avoid subsequents measurements
   // of the same Text with the same constrainst.
   static bool cacheLastTextMeasurement;
+
+  // Fabric was not cancelling image downloads when <ImageView /> was removed
+  // from view hierarchy. This feature flag enables this feature.
+  static bool cancelImageDownloadsOnRecycle;
 };
 
 } // namespace facebook::react
