@@ -177,6 +177,9 @@ function generateSetters(
             typeAnnotation,
             extraIncludes,
           );
+        case 'ArrayTypeAnnotation':
+          // TODO: implement this in the next diff
+          break;
         default:
           (typeAnnotation.type: empty);
           throw new Error(

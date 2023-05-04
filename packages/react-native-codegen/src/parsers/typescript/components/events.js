@@ -108,10 +108,74 @@ function getPropertyType(
           type: 'MixedTypeAnnotation',
         },
       };
+    case 'TSArrayType':
+      return {
+        name,
+        optional,
+        typeAnnotation: extractArrayElementType(typeAnnotation, name),
+      };
     default:
       (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
   }
+}
+
+function extractArrayElementType(
+  typeAnnotation: $FlowFixMe,
+  name: string,
+): EventTypeAnnotation {
+  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+
+  switch (type) {
+    case 'TSParenthesizedType':
+      return extractArrayElementType(typeAnnotation.typeAnnotation, name);
+    case 'TSBooleanKeyword':
+      return {type: 'BooleanTypeAnnotation'};
+    case 'TSStringKeyword':
+      return {type: 'StringTypeAnnotation'};
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'TSNumberKeyword':
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'TSUnionType':
+      return {
+        type: 'StringEnumTypeAnnotation',
+        options: typeAnnotation.types.map(option => option.literal.value),
+      };
+    case 'TSTypeLiteral':
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: typeAnnotation.members.map(buildPropertiesForEvent),
+      };
+    case 'TSArrayType':
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: extractArrayElementType(typeAnnotation.elementType, name),
+      };
+    default:
+      throw new Error(
+        `Unrecognized ${type} for Array ${name} in events.\n${JSON.stringify(
+          typeAnnotation,
+          null,
+          2,
+        )}`,
+      );
+  }
+}
+
+function extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  return typeAnnotation.type === 'TSTypeReference'
+    ? typeAnnotation.typeName.name
+    : typeAnnotation.type;
 }
 
 function findEventArgumentsAndType(
