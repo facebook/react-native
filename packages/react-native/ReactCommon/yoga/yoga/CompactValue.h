@@ -7,6 +7,13 @@
 
 #pragma once
 
+#include <cmath>
+#include <cstdint>
+#include <limits>
+
+#include <yoga/YGMacros.h>
+#include <yoga/YGValue.h>
+
 #if defined(__has_include) && __has_include(<version>)
 // needed to be able to evaluate defined(__cpp_lib_bit_cast)
 #include <version>
@@ -20,11 +27,6 @@
 #else
 #include <cstring>
 #endif
-#include "YGValue.h"
-#include "YGMacros.h"
-#include <cmath>
-#include <cstdint>
-#include <limits>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,

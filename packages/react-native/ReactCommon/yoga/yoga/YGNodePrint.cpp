@@ -6,9 +6,12 @@
  */
 
 #ifdef DEBUG
-#include "YGNodePrint.h"
+
 #include <stdarg.h>
-#include "YGEnums.h"
+
+#include <yoga/YGEnums.h>
+
+#include "YGNodePrint.h"
 #include "YGNode.h"
 #include "Yoga-internal.h"
 #include "Utils.h"
