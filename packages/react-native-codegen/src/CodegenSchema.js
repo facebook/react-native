@@ -128,7 +128,11 @@ export type EventTypeAnnotation =
   | Int32TypeAnnotation
   | MixedTypeAnnotation
   | StringEnumTypeAnnotation
-  | ObjectTypeAnnotation<EventTypeAnnotation>;
+  | ObjectTypeAnnotation<EventTypeAnnotation>
+  | $ReadOnly<{
+      type: 'ArrayTypeAnnotation',
+      elementType: EventTypeAnnotation,
+    }>;
 
 export type PropTypeAnnotation =
   | $ReadOnly<{
