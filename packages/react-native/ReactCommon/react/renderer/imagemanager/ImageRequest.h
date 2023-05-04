@@ -34,7 +34,7 @@ class ImageRequest final {
   /*
    * The move constructor.
    */
-  ImageRequest(ImageRequest &&other) noexcept;
+  ImageRequest(ImageRequest &&other) noexcept = default;
 
   /*
    * `ImageRequest` does not support copying by design.
