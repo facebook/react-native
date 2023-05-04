@@ -385,13 +385,13 @@ id ObjCTurboModule::performMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
-  __weak id<RCTTurboModule> weakModule = instance_;
+  __weak id<RCTBridgeModule> weakModule = instance_;
   const char *moduleName = name_.c_str();
   std::string methodNameStr{methodName};
   __block int32_t asyncCallCounter = 0;
 
   void (^block)() = ^{
-    id<RCTTurboModule> strongModule = weakModule;
+    id<RCTBridgeModule> strongModule = weakModule;
     if (!strongModule) {
       return;
     }
@@ -650,7 +650,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   const char *moduleName = name_.c_str();
-  const id<RCTTurboModule> module = instance_;
+  const id<RCTBridgeModule> module = instance_;
 
   if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
