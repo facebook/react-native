@@ -220,13 +220,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.enable_hermes_profiler(installer, enable_hermes_profiler: false)
-        return if !enable_hermes_profiler
-
-        Pod::UI.puts "[Hermes Profiler] Enable Hermes Sample profiler"
-        self.add_compiler_flag_to_pods(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
-    end
-
     # ========= #
     # Utilities #
     # ========= #
