@@ -444,6 +444,11 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     defaultConfig {
         minSdk = 21
         targetSdk = 33
@@ -718,11 +723,14 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 tasks.withType(Test).all {
     // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
         jvmArgs += [
-            "-XX:+AllowRedefinitionToAddDeleteMethods",
             "--illegal-access=permit",
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",

@@ -14,5 +14,5 @@ plugins {
   id("com.android.library") version "7.4.2" apply false
   id("com.android.application") version "7.4.2" apply false
   id("de.undercouch.download") version "5.0.1" apply false
-  kotlin("android") version "1.7.22" apply false
+  kotlin("android") version "1.8.0" apply false
 }
