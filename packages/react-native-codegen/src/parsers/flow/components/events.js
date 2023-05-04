@@ -20,6 +20,7 @@ const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
 } = require('../../error-utils');
+const {getEventArgument} = require('../../parsers-commons');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -257,15 +258,6 @@ function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
   return getPropertyType(name, optional, typeAnnotation);
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function getEventArgument(argumentProps, name: $FlowFixMe) {
-  return {
-    type: 'ObjectTypeAnnotation',
-    properties: argumentProps.map(buildPropertiesForEvent),
-  };
-}
-
 function buildEventSchema(
   types: TypeMap,
   property: EventTypeAST,
@@ -307,7 +299,7 @@ function buildEventSchema(
       paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, name),
+        argument: getEventArgument(argumentProps, buildPropertiesForEvent),
       },
     };
   }
@@ -324,7 +316,7 @@ function buildEventSchema(
     bubblingType,
     typeAnnotation: {
       type: 'EventTypeAnnotation',
-      argument: getEventArgument(argumentProps, name),
+      argument: getEventArgument(argumentProps, buildPropertiesForEvent),
     },
   };
 }
