@@ -84,6 +84,57 @@ const EVENT_DEFINITION = `
   object_readonly_optional_both?: Readonly<{
     int32_optional_both?: Int32 | null | undefined;
   }> | null | undefined;
+
+  boolean_array_required: boolean[];
+  boolean_array_optional_key?: boolean[];
+  boolean_array_optional_value: boolean[] | null | undefined;
+  boolean_array_optional_both?: boolean[] | null | undefined;
+
+  string_array_required: string[];
+  string_array_optional_key?: (string[]);
+  string_array_optional_value: (string[]) | null | undefined;
+  string_array_optional_both?: (string[] | null | undefined);
+
+  double_array_required: Double[];
+  double_array_optional_key?: Double[];
+  double_array_optional_value: Double[] | null | undefined;
+  double_array_optional_both?: Double[] | null | undefined;
+
+  float_array_required: Float[];
+  float_array_optional_key?: Float[];
+  float_array_optional_value: Float[] | null | undefined;
+  float_array_optional_both?: Float[] | null | undefined;
+
+  int32_array_required: Int32[];
+  int32_array_optional_key?: Int32[];
+  int32_array_optional_value: Int32[] | null | undefined;
+  int32_array_optional_both?: Int32[] | null | undefined;
+
+  enum_array_required: ('small' | 'large')[];
+  enum_array_optional_key?: ('small' | 'large')[];
+  enum_array_optional_value: ('small' | 'large')[] | null | undefined;
+  enum_array_optional_both?: ('small' | 'large')[] | null | undefined;
+
+  object_array_required: {
+    boolean_required: boolean;
+  }[];
+
+  object_array_optional_key?: {
+    string_optional_key?: string;
+  }[];
+
+  object_array_optional_value: {
+    float_optional_value: Float | null | undefined;
+  }[] | null | undefined;
+
+  object_array_optional_both?: {
+    int32_optional_both?: Int32 | null | undefined;
+  }[] | null | undefined;
+
+  int32_array_array_required: Int32[][];
+  int32_array_array_optional_key?: Int32[][];
+  int32_array_array_optional_value: Int32[][] | null | undefined;
+  int32_array_array_optional_both?: Int32[][] | null | undefined;
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
