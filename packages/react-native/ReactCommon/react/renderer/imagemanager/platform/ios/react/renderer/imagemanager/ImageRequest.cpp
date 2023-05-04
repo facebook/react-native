@@ -16,12 +16,6 @@ ImageRequest::ImageRequest(
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
-ImageRequest::~ImageRequest() {
-  if (cancelRequest_) {
-    cancelRequest_();
-  }
-}
-
 void ImageRequest::setCancelationFunction(
     std::function<void(void)> cancelationFunction) {
   cancelRequest_ = cancelationFunction;

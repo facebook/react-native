@@ -18,10 +18,6 @@ ImageRequest::ImageRequest(
   // Not implemented.
 }
 
-ImageRequest::~ImageRequest() {
-  // Not implemented.
-}
-
 const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
     const {
   // Not implemented
