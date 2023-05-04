@@ -53,9 +53,8 @@ export class HeaderWriter {
 
       #include <hermes/inspector/chrome/MessageInterfaces.h>
 
+      #include <optional>
       #include <vector>
-
-      #include <folly/Optional.h>
 
       namespace facebook {
       namespace hermes {
@@ -63,6 +62,8 @@ export class HeaderWriter {
       namespace chrome {
       namespace message {
 
+template<typename T>
+void deleter(T* p);
     `);
   }
 
@@ -223,8 +224,12 @@ export function emitTypeDecl(stream: Writable, type: PropsType) {
 
   stream.write(`struct ${cppNs}::${cppType} : public Serializable {
     ${cppType}() = default;
+    ${cppType}(${cppType}&&) = default;
+    ${cppType}(const ${cppType}&) = delete;
     explicit ${cppType}(const folly::dynamic &obj);
     folly::dynamic toDynamic() const override;
+    ${cppType}& operator=(const ${cppType}&) = delete;
+    ${cppType}& operator=(${cppType}&&) = default;
   `);
 
   if (type instanceof PropsType) {
@@ -242,7 +247,7 @@ function emitUnknownRequestDecl(stream: Writable) {
     folly::dynamic toDynamic() const override;
     void accept(RequestHandler &handler) const override;
 
-    folly::Optional<folly::dynamic> params;
+    std::optional<folly::dynamic> params;
   };
 
   `);
@@ -273,7 +278,7 @@ function emitErrorResponseDecl(stream: Writable) {
 
     int code;
     std::string message;
-    folly::Optional<folly::dynamic> data;
+    std::optional<folly::dynamic> data;
   };
 
   `);

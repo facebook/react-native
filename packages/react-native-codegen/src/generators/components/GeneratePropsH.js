@@ -19,11 +19,11 @@ const {
 const {
   convertDefaultTypeToString,
   getEnumMaskName,
-  getEnumName,
-  toSafeCppString,
   generateStructName,
   toIntEnumValueName,
 } = require('./CppHelpers.js');
+
+const {getEnumName, toSafeCppString} = require('../Utils');
 
 import type {
   ExtendsPropsShape,
@@ -80,7 +80,7 @@ const ClassTemplate = ({
   `
 ${enums}
 ${structs}
-class JSI_EXPORT ${className} final${extendClasses} {
+class ${className} final${extendClasses} {
  public:
   ${className}() = default;
   ${className}(const PropsParserContext& context, const ${className} &sourceProps, const RawProps &rawProps);
@@ -478,7 +478,6 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
-  imports.add('#include <jsi/jsi.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -667,8 +666,6 @@ function generateStruct(
         return;
       case 'Int32EnumTypeAnnotation':
         return;
-      case 'DoubleTypeAnnotation':
-        return;
       case 'ObjectTypeAnnotation':
         const props = property.typeAnnotation.properties;
         if (props == null) {
@@ -677,6 +674,8 @@ function generateStruct(
           );
         }
         generateStruct(structs, componentName, nameParts.concat([name]), props);
+        return;
+      case 'MixedTypeAnnotation':
         return;
       default:
         (property.typeAnnotation.type: empty);

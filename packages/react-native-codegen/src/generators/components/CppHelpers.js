@@ -9,19 +9,13 @@
  */
 
 'use strict';
-import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
+import type {
+  EventTypeAnnotation,
+  NamedShape,
+  PropTypeAnnotation,
+} from '../../CodegenSchema';
 
-function upperCaseFirst(inString: string): string {
-  if (inString.length === 0) {
-    return inString;
-  }
-
-  return inString[0].toUpperCase() + inString.slice(1);
-}
-
-function toSafeCppString(input: string): string {
-  return input.split('-').map(upperCaseFirst).join('');
-}
+const {getEnumName, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
@@ -33,7 +27,8 @@ function getCppTypeForAnnotation(
     | 'StringTypeAnnotation'
     | 'Int32TypeAnnotation'
     | 'DoubleTypeAnnotation'
-    | 'FloatTypeAnnotation',
+    | 'FloatTypeAnnotation'
+    | 'MixedTypeAnnotation',
 ): string {
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -46,6 +41,8 @@ function getCppTypeForAnnotation(
       return 'double';
     case 'FloatTypeAnnotation':
       return 'Float';
+    case 'MixedTypeAnnotation':
+      return 'folly::dynamic';
     default:
       (type: empty);
       throw new Error(`Received invalid typeAnnotation ${type}`);
@@ -53,7 +50,9 @@ function getCppTypeForAnnotation(
 }
 
 function getImports(
-  properties: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  properties:
+    | $ReadOnlyArray<NamedShape<PropTypeAnnotation>>
+    | $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
 ): Set<string> {
   const imports: Set<string> = new Set();
 
@@ -63,7 +62,8 @@ function getImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageRequestPrimitive'
       | 'ImageSourcePrimitive'
-      | 'PointPrimitive',
+      | 'PointPrimitive'
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -76,6 +76,9 @@ function getImports(
         return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/renderer/components/image/conversions.h>');
+        return;
+      case 'DimensionPrimitive':
+        imports.add('#include <react/renderer/components/view/conversions.h>');
         return;
       default:
         (name: empty);
@@ -97,6 +100,10 @@ function getImports(
       addImportsForNativeName(typeAnnotation.elementType.name);
     }
 
+    if (typeAnnotation.type === 'MixedTypeAnnotation') {
+      imports.add('#include <folly/dynamic.h>');
+    }
+
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       const objectImports = getImports(typeAnnotation.properties);
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -108,8 +115,7 @@ function getImports(
 }
 
 function generateEventStructName(parts: $ReadOnlyArray<string> = []): string {
-  const additional = parts.map(toSafeCppString).join('');
-  return `${additional}`;
+  return parts.map(toSafeCppString).join('');
 }
 
 function generateStructName(
@@ -118,11 +124,6 @@ function generateStructName(
 ): string {
   const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;
-}
-
-function getEnumName(componentName: string, propName: string): string {
-  const uppercasedPropName = toSafeCppString(propName);
-  return `${componentName}${uppercasedPropName}`;
 }
 
 function getEnumMaskName(enumName: string): string {
@@ -172,6 +173,8 @@ function convertDefaultTypeToString(
           return '';
         case 'EdgeInsetsPrimitive':
           return '';
+        case 'DimensionPrimitive':
+          return '';
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -209,6 +212,8 @@ function convertDefaultTypeToString(
         prop.name,
         typeAnnotation.default,
       )}`;
+    case 'MixedTypeAnnotation':
+      return '';
     default:
       (typeAnnotation: empty);
       throw new Error(`Unsupported type annotation: ${typeAnnotation.type}`);
@@ -218,10 +223,8 @@ function convertDefaultTypeToString(
 module.exports = {
   convertDefaultTypeToString,
   getCppTypeForAnnotation,
-  getEnumName,
   getEnumMaskName,
   getImports,
-  toSafeCppString,
   toIntEnumValueName,
   generateStructName,
   generateEventStructName,

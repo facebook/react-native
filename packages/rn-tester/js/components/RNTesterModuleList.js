@@ -122,8 +122,7 @@ const RNTesterModuleList: React$AbstractComponent<any, void> = React.memo(
   ({sections, toggleBookmark, handleModuleCardPress}) => {
     const filter = ({example, filterRegex, category}: any) =>
       filterRegex.test(example.module.title) &&
-      (!category || example.category === category) &&
-      (!Platform.isTV || example.supportsTVOS);
+      (!category || example.category === category);
 
     /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
      * Flow's LTI update could not be added via codemod */

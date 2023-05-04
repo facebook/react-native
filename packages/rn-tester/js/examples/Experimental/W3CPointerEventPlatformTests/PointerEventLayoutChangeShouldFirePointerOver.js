@@ -53,7 +53,7 @@ function PointerEventLayoutShouldFirePointerOverTestCase(
 
   const [showBlue, setShowBlue] = useState(false);
 
-  const eventListRef = useRef([]);
+  const eventListRef = useRef<Array<string>>([]);
 
   const checkEventSequence = useCallback(() => {
     testMouseOver.step(({assert_equals}) => {

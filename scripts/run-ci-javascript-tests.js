@@ -53,6 +53,33 @@ try {
     throw Error(exitCode);
   }
 
+  /*
+   * Build @react-native/codegen and  @react-native/codegen-typescript-test
+   *
+   * The typescript-test project use TypeScript to write test cases
+   * In order to make these tests discoverable to jest
+   * *-test.ts must be compiled to *-test.js before running jest
+   */
+
+  describe('Test: Build @react-native/codegen');
+  if (
+    exec(`${YARN_BINARY} --cwd ./packages/react-native-codegen run build`).code
+  ) {
+    echo('Failed to build @react-native/codegen.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+  describe('Test: Build @react-native/codegen-typescript-test');
+  if (
+    exec(
+      `${YARN_BINARY} --cwd ./packages/react-native-codegen-typescript-test run build`,
+    ).code
+  ) {
+    echo('Failed to build @react-native/codegen-typescript-test.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: Jest');
   if (
     exec(
@@ -61,6 +88,13 @@ try {
   ) {
     echo('Failed to run JavaScript tests.');
     echo('Most likely the code is broken.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
+  describe('Test: TypeScript tests');
+  if (exec(`${YARN_BINARY} run test-typescript-offline`).code) {
+    echo('Failed to run TypeScript tests.');
     exitCode = 1;
     throw Error(exitCode);
   }

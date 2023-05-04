@@ -29,16 +29,25 @@ abstract class ReactExtension @Inject constructor(project: Project) {
       objects.directoryProperty().convention(project.rootProject.layout.projectDirectory.dir("../"))
 
   /**
+   * The path to the react-native NPM package folder.
+   *
+   * Default: ${rootProject.dir}/../node_modules/react-native
+   */
+  val reactNativeDir: DirectoryProperty =
+      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
+
+  /**
    * The path to the JS entry file. If not specified, the plugin will try to resolve it using a list
    * of known locations (e.g. `index.android.js`, `index.js`, etc.).
    */
   val entryFile: RegularFileProperty = objects.fileProperty()
 
   /**
-   * The path to the React Native CLI. If not specified, the plugin will try to resolve it looking
-   * for `react-native` CLI inside `node_modules` in [root].
+   * The reference to the React Native CLI. If not specified, the plugin will try to resolve it
+   * looking for `react-native` CLI inside `node_modules` in [root].
    */
-  val cliPath: Property<String> = objects.property(String::class.java)
+  val cliFile: RegularFileProperty =
+      objects.fileProperty().convention(reactNativeDir.file("cli.js"))
 
   /**
    * The path to the Node executable and extra args. By default it assumes that you have `node`
@@ -80,7 +89,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * will:
    * - Not be bundled (the bundle file will not be created and won't be copied over).
    * - Have the Hermes Debug flags set. That's useful if you have another variant (say `canary`)
-   * where you want dev mode to be enabled. Default: ['debug']
+   *   where you want dev mode to be enabled. Default: ['debug']
    */
   val debuggableVariants: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("debug"))
@@ -107,39 +116,22 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   val hermesFlags: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("-O", "-output-source-map"))
 
-  /**
-   * The path to the Compose Source Map script. Default:
-   * "node_modules/react-native/scripts/compose-source-maps.js"
-   */
-  val composeSourceMapsPath: Property<String> =
-      objects
-          .property(String::class.java)
-          .convention("node_modules/react-native/scripts/compose-source-maps.js")
-
   /** Codegen Config */
 
   /**
    * The path to the react-native-codegen NPM package folder.
    *
-   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
+   * Default: ${rootProject.dir}/../node_modules/@react-native/codegen
    */
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/react-native-codegen"))
-
-  /**
-   * The path to the react-native NPM package folder.
-   *
-   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
-   */
-  val reactNativeDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/react-native"))
+      objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 
   /**
    * The root directory for all JS files for the app.
    *
-   * Default: [root] (i.e. ${rootProject.dir}/../)
+   * Default: the parent folder of the `/android` folder.
    */
-  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(root.get())
+  val jsRootDir: DirectoryProperty = objects.directoryProperty()
 
   /**
    * The library name that will be used for the codegen artifacts.
@@ -156,11 +148,4 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    */
   val codegenJavaPackageName: Property<String> =
       objects.property(String::class.java).convention("com.facebook.fbreact.specs")
-
-  /**
-   * Toggles the Codegen for App modules. By default we enable the codegen only for library modules.
-   * If you want to enable codegen in your app, you will have to set this to true. Default: false
-   */
-  val enableCodegenInApps: Property<Boolean> =
-      objects.property(Boolean::class.java).convention(false)
 }

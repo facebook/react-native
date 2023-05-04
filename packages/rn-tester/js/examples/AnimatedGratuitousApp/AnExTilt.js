@@ -60,7 +60,7 @@ class AnExTilt extends React.Component<Object, any> {
           useNativeDriver: false,
         }).start();
         this.state.panX.removeAllListeners();
-        const id = this.state.panX.addListener(({value}) => {
+        const id: any = this.state.panX.addListener(({value}) => {
           // listen until offscreen
           if (Math.abs(value) > 400) {
             this.state.panX.removeListener(id); // offscreen, so stop listening

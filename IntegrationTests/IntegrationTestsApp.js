@@ -20,7 +20,6 @@ const {AppRegistry, ScrollView, StyleSheet, Text, TouchableOpacity, View} =
 const TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
-  require('./AsyncStorageTest'),
   require('./LayoutEventsTest'),
   require('./AppEventsTest'),
   require('./SimpleSnapshotTest'),

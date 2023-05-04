@@ -8,17 +8,21 @@
  * @flow strict-local
  */
 
-import type {PointValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
-import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
+import type {
+  DimensionValue,
+  EdgeInsetsValue,
+  PointValue,
+} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
 import type {
   Int32,
   Float,
   WithDefault,
-} from '../../../../../Libraries/Types/CodegenTypes';
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+} from 'react-native/Libraries/Types/CodegenTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
@@ -31,10 +35,11 @@ type NativeProps = $ReadOnly<{|
   colors?: $ReadOnlyArray<ColorValue>,
   srcs?: $ReadOnlyArray<ImageSource>,
   points?: $ReadOnlyArray<PointValue>,
-  // TODO(T104760003) Fix EdgeInsetsValue in codegen
-  // edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+  edgeInsets?: $ReadOnlyArray<EdgeInsetsValue>,
+  dimensions?: $ReadOnlyArray<DimensionValue>,
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{|prop: string|}>>,
+  arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{|prop1: Float, prop2: Int32|}>>,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>(

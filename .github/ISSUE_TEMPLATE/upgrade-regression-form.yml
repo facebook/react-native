@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please use this form to file an issue if you have upgarded or are upgrading to [latest stable release](https://github.com/facebook/react-native/releases/latest) and have experienced a regression (something that used to work in previous version).
+        Please use this form to file an issue if you have upgraded or are upgrading to [latest stable release](https://github.com/facebook/react-native/releases/latest) and have experienced a regression (something that used to work in previous version).
   - type: input
     id: new-version
     attributes:

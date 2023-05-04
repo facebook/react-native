@@ -15,15 +15,18 @@ import type {
   NativeModuleParamTypeAnnotation,
 } from '../../../../CodegenSchema';
 
-const {parseString} = require('../../index.js');
+const invariant = require('invariant');
+
 const {unwrapNullable} = require('../../../parsers-commons');
 const {
   UnsupportedGenericParserError,
   UnsupportedTypeAnnotationParserError,
   UnnamedFunctionParamParserError,
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
 } = require('../../../errors');
-const invariant = require('invariant');
+const {FlowParser} = require('../../parser');
+
+const flowParser = new FlowParser();
 
 type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
@@ -57,7 +60,7 @@ type AnimalPointer = Animal;
 `;
 
 function expectAnimalTypeAliasToExist(module: NativeModuleSchema) {
-  const animalAlias = module.aliases.Animal;
+  const animalAlias = module.aliasMap.Animal;
 
   expect(animalAlias).not.toBe(null);
   invariant(animalAlias != null, '');
@@ -212,7 +215,7 @@ describe('Flow Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter of type 'Array'`, () => {
               expect(() => parseParamType('arg', 'Array')).toThrow(
-                IncorrectlyParameterizedGenericParserError,
+                MissingTypeParameterGenericParserError,
               );
             });
 
@@ -510,7 +513,7 @@ describe('Flow Module Parser', () => {
                   it(`should not parse methods that have ${PARAM_TYPE_DESCRIPTION} parameter type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                     expect(() =>
                       parseParamTypeObjectLiteralProp('prop', 'Array'),
-                    ).toThrow(IncorrectlyParameterizedGenericParserError);
+                    ).toThrow(MissingTypeParameterGenericParserError);
                   });
 
                   function parseArrayElementType(
@@ -782,7 +785,7 @@ describe('Flow Module Parser', () => {
           describe('Array Types', () => {
             it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return of type 'Array'`, () => {
               expect(() => parseReturnType('Array')).toThrow(
-                IncorrectlyParameterizedGenericParserError,
+                MissingTypeParameterGenericParserError,
               );
             });
 
@@ -1050,7 +1053,7 @@ describe('Flow Module Parser', () => {
                     it(`should not parse methods that have ${RETURN_TYPE_DESCRIPTION} return type of an object literal with ${PROP_TYPE_DESCRIPTION} prop of type 'Array`, () => {
                       expect(() =>
                         parseObjectLiteralReturnTypeProp('prop', 'Array'),
-                      ).toThrow(IncorrectlyParameterizedGenericParserError);
+                      ).toThrow(MissingTypeParameterGenericParserError);
                     });
 
                     function parseArrayElementType(
@@ -1229,7 +1232,7 @@ describe('Flow Module Parser', () => {
 });
 
 function parseModule(source: string) {
-  const schema = parseString(source, `${MODULE_NAME}.js`);
+  const schema = flowParser.parseString(source, `${MODULE_NAME}.js`);
   const module = schema.modules.NativeFoo;
   invariant(
     module.type === 'NativeModule',

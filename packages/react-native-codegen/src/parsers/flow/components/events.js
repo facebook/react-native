@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -15,6 +15,11 @@ import type {
   NamedShape,
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+} = require('../../error-utils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -93,6 +98,14 @@ function getPropertyType(
           options: typeAnnotation.types.map(option => option.value),
         },
       };
+    case 'UnsafeMixed':
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
     default:
       (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
@@ -100,14 +113,17 @@ function getPropertyType(
 }
 
 function findEventArgumentsAndType(
+  parser: Parser,
   typeAnnotation: $FlowFixMe,
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-) {
-  if (!typeAnnotation.id) {
-    throw new Error("typeAnnotation of event doesn't have a name");
-  }
+): {
+  argumentProps: $FlowFixMe,
+  bubblingType: ?('direct' | 'bubble'),
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+} {
+  throwIfEventHasNoName(typeAnnotation, parser);
   const name = typeAnnotation.id.name;
   if (name === '$ReadOnly') {
     return {
@@ -132,6 +148,7 @@ function findEventArgumentsAndType(
       };
     }
     return findEventArgumentsAndType(
+      parser,
       typeAnnotation.typeParameters.params[0],
       types,
       eventType,
@@ -139,6 +156,7 @@ function findEventArgumentsAndType(
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
+      parser,
       types[name].right,
       types,
       bubblingType,
@@ -179,6 +197,7 @@ function getEventArgument(argumentProps, name: $FlowFixMe) {
 function buildEventSchema(
   types: TypeMap,
   property: EventTypeAST,
+  parser: Parser,
 ): ?EventTypeShape {
   const name = property.key.name;
   const optional =
@@ -198,7 +217,7 @@ function buildEventSchema(
   }
 
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
-    findEventArgumentsAndType(typeAnnotation, types);
+    findEventArgumentsAndType(parser, typeAnnotation, types);
 
   if (bubblingType && argumentProps) {
     if (paperTopLevelNameDeprecated != null) {
@@ -229,9 +248,7 @@ function buildEventSchema(
     throw new Error(`Unable to determine event arguments for "${name}"`);
   }
 
-  if (bubblingType === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
+  throwIfBubblingTypeIsNull(bubblingType, name);
 }
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
@@ -246,10 +263,11 @@ type TypeMap = {
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeMap,
+  parser: Parser,
 ): $ReadOnlyArray<EventTypeShape> {
   return eventTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildEventSchema(types, property))
+    .map(property => buildEventSchema(types, property, parser))
     .filter(Boolean);
 }
 

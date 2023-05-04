@@ -4,13 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 'use strict';
 
+import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {Parser} from './parser';
+import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -20,11 +23,14 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
   MoreThanOneModuleInterfaceParserError,
-} = require('./errors.js');
+  UnsupportedFunctionParamTypeAnnotationParserError,
+  UnsupportedArrayElementTypeAnnotationParserError,
+} = require('./errors');
 
 function throwIfModuleInterfaceIsMisnamed(
   nativeModuleName: string,
@@ -59,14 +65,12 @@ function throwIfMoreThanOneModuleRegistryCalls(
   hasteModuleName: string,
   callExpressions: $FlowFixMe,
   callExpressionsLength: number,
-  language: ParserType,
 ) {
   if (callExpressions.length > 1) {
     throw new MoreThanOneModuleRegistryCallsParserError(
       hasteModuleName,
       callExpressions,
       callExpressionsLength,
-      language,
     );
   }
 }
@@ -75,14 +79,9 @@ function throwIfUnusedModuleInterfaceParserError(
   nativeModuleName: string,
   moduleSpec: $FlowFixMe,
   callExpressions: $FlowFixMe,
-  language: ParserType,
 ) {
   if (callExpressions.length === 0) {
-    throw new UnusedModuleInterfaceParserError(
-      nativeModuleName,
-      moduleSpec,
-      language,
-    );
+    throw new UnusedModuleInterfaceParserError(nativeModuleName, moduleSpec);
   }
 }
 
@@ -91,7 +90,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
   flowCallExpression: $FlowFixMe,
   methodName: string,
   numberOfCallExpressionArgs: number,
-  language: ParserType,
 ) {
   if (numberOfCallExpressionArgs !== 1) {
     throw new IncorrectModuleRegistryCallArityParserError(
@@ -99,7 +97,6 @@ function throwIfWrongNumberOfCallExpressionArgs(
       flowCallExpression,
       methodName,
       numberOfCallExpressionArgs,
-      language,
     );
   }
 }
@@ -109,7 +106,7 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
   typeArguments: $FlowFixMe,
   methodName: string,
   moduleName: string,
-  language: ParserType,
+  parser: Parser,
 ) {
   function throwError() {
     throw new IncorrectModuleRegistryCallTypeParameterParserError(
@@ -117,28 +114,11 @@ function throwIfIncorrectModuleRegistryCallTypeParameterParserError(
       typeArguments,
       methodName,
       moduleName,
-      language,
     );
   }
 
-  if (language === 'Flow') {
-    if (
-      typeArguments.type !== 'TypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'GenericTypeAnnotation' ||
-      typeArguments.params[0].id.name !== 'Spec'
-    ) {
-      throwError();
-    }
-  } else if (language === 'TypeScript') {
-    if (
-      typeArguments.type !== 'TSTypeParameterInstantiation' ||
-      typeArguments.params.length !== 1 ||
-      typeArguments.params[0].type !== 'TSTypeReference' ||
-      typeArguments.params[0].typeName.name !== 'Spec'
-    ) {
-      throwError();
-    }
+  if (parser.checkIfInvalidModule(typeArguments)) {
+    throwError();
   }
 }
 
@@ -146,7 +126,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
   nativeModuleName: string,
   returnTypeAnnotation: $FlowFixMe,
   invalidReturnType: string,
-  language: ParserType,
   cxxOnly: boolean,
   returnType: string,
 ) {
@@ -155,7 +134,6 @@ function throwIfUnsupportedFunctionReturnTypeAnnotationParserError(
       nativeModuleName,
       returnTypeAnnotation.returnType,
       'FunctionTypeAnnotation',
-      language,
     );
   }
 }
@@ -165,16 +143,14 @@ function throwIfUntypedModule(
   hasteModuleName: string,
   callExpression: $FlowFixMe,
   methodName: string,
-  $moduleName: string,
-  language: ParserType,
+  moduleName: string,
 ) {
   if (typeArguments == null) {
     throw new UntypedModuleRegistryCallParserError(
       hasteModuleName,
       callExpression,
       methodName,
-      $moduleName,
-      language,
+      moduleName,
     );
   }
 }
@@ -184,27 +160,15 @@ function throwIfModuleTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyName: string,
   propertyValueType: string,
-  language: ParserType,
+  parser: Parser,
 ) {
-  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+  if (!parser.functionTypeAnnotation(propertyValueType)) {
     throw new UnsupportedModulePropertyParserError(
       nativeModuleName,
       propertyValue,
       propertyName,
       propertyValueType,
-      language,
-    );
-  } else if (
-    language === 'TypeScript' &&
-    propertyValueType !== 'TSFunctionType' &&
-    propertyValueType !== 'TSMethodSignature'
-  ) {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
+      parser.language(),
     );
   }
 }
@@ -220,7 +184,6 @@ function throwIfPropertyValueTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyKey: string,
   type: string,
-  language: ParserType,
 ) {
   const invalidPropertyValueType =
     UnsupportedObjectPropertyTypeToInvalidPropertyValueTypeMap[type];
@@ -230,7 +193,6 @@ function throwIfPropertyValueTypeIsUnsupported(
     propertyValue,
     propertyKey,
     invalidPropertyValueType,
-    language,
   );
 }
 
@@ -249,6 +211,125 @@ function throwIfMoreThanOneModuleInterfaceParserError(
   }
 }
 
+function throwIfUnsupportedFunctionParamTypeAnnotationParserError(
+  nativeModuleName: string,
+  languageParamTypeAnnotation: $FlowFixMe,
+  paramName: string,
+  paramTypeAnnotationType: NativeModuleTypeAnnotation['type'],
+) {
+  throw new UnsupportedFunctionParamTypeAnnotationParserError(
+    nativeModuleName,
+    languageParamTypeAnnotation,
+    paramName,
+    paramTypeAnnotationType,
+  );
+}
+
+function throwIfArrayElementTypeAnnotationIsUnsupported(
+  hasteModuleName: string,
+  flowElementType: $FlowFixMe,
+  flowArrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
+  type: string,
+) {
+  const TypeMap = {
+    FunctionTypeAnnotation: 'FunctionTypeAnnotation',
+    VoidTypeAnnotation: 'void',
+    PromiseTypeAnnotation: 'Promise',
+    // TODO: Added as a work-around for now until TupleTypeAnnotation are fully supported in both flow and TS
+    // Right now they are partially treated as UnionTypeAnnotation
+    UnionTypeAnnotation: 'UnionTypeAnnotation',
+  };
+
+  if (type in TypeMap) {
+    throw new UnsupportedArrayElementTypeAnnotationParserError(
+      hasteModuleName,
+      flowElementType,
+      flowArrayType,
+      TypeMap[type],
+    );
+  }
+}
+
+function throwIfIncorrectModuleRegistryCallArgument(
+  nativeModuleName: string,
+  callExpressionArg: $FlowFixMe,
+  methodName: string,
+) {
+  if (
+    callExpressionArg.type !== 'StringLiteral' &&
+    callExpressionArg.type !== 'Literal'
+  ) {
+    const {type} = callExpressionArg;
+    throw new IncorrectModuleRegistryCallArgumentTypeParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      type,
+    );
+  }
+}
+
+function throwIfPartialNotAnnotatingTypeParameter(
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) {
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+
+  if (!annotatedElement) {
+    throw new Error('Partials only support annotating a type parameter.');
+  }
+}
+
+function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.typeParameters.params.length !== 1) {
+    throw new Error('Partials only support annotating exactly one parameter.');
+  }
+}
+
+function throwIfMoreThanOneCodegenNativecommands(
+  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+) {
+  if (commandsTypeNames.length > 1) {
+    throw new Error('codegenNativeCommands may only be called once in a file');
+  }
+}
+
+function throwIfConfigNotfound(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length === 0) {
+    throw new Error('Could not find component config for native component');
+  }
+}
+
+function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length > 1) {
+    throw new Error('Only one component is supported per file');
+  }
+}
+
+function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
+  const name =
+    parser.language() === 'Flow' ? typeAnnotation.id : typeAnnotation.typeName;
+
+  if (!name) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
+}
+
+function throwIfBubblingTypeIsNull(
+  bubblingType: ?('direct' | 'bubble'),
+  eventName: string,
+) {
+  if (!bubblingType) {
+    throw new Error(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -261,4 +342,14 @@ module.exports = {
   throwIfUntypedModule,
   throwIfModuleTypeIsUnsupported,
   throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfUnsupportedFunctionParamTypeAnnotationParserError,
+  throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
 };

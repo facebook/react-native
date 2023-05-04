@@ -37,6 +37,25 @@ function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
     }),
   );
 
+  const animatedBaseValue = new Animated.Value(0);
+  const interpolationAnimatedStyle = {
+    backgroundColor: animatedBaseValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['blue', 'red'],
+    }),
+    borderColor: animatedBaseValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: ['orange', 'purple'],
+    }),
+  };
+  animations.push(
+    Animated.timing(animatedBaseValue, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver,
+    }),
+  );
+
   const animatedFirstSpanTextStyle = {
     color: new Animated.Color('blue'),
   };
@@ -81,7 +100,12 @@ function AnimatedView({useNativeDriver}: {useNativeDriver: boolean}) {
         }}>
         Press to animate
       </RNTesterButton>
-      <Animated.View style={[styles.animatedView, animatedViewStyle]} />
+      <View style={styles.boxes}>
+        <Animated.View style={[styles.animatedView, animatedViewStyle]} />
+        <Animated.View
+          style={[styles.animatedView, interpolationAnimatedStyle]}
+        />
+      </View>
       <Text style={styles.animatedText}>
         <Text>The </Text>
         <Animated.Text style={animatedFirstSpanTextStyle}>quick</Animated.Text>
@@ -121,6 +145,7 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderWidth: 10,
+    marginRight: 10,
   },
   animatedText: {
     fontSize: 20,
@@ -129,6 +154,9 @@ const styles = StyleSheet.create({
   animatedImage: {
     height: 100,
     width: 100,
+  },
+  boxes: {
+    flexDirection: 'row',
   },
 });
 

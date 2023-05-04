@@ -16,11 +16,9 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {exec, exit, pushd, popd, pwd, cd} = require('shelljs');
+const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
 const yargs = require('yargs');
 const fs = require('fs');
-const path = require('path');
-const os = require('os');
 
 const {
   launchAndroidEmulator,
@@ -30,8 +28,13 @@ const {
 
 const {
   generateAndroidArtifacts,
-  saveFilesToRestore,
+  generateiOSArtifacts,
 } = require('./release-utils');
+
+const {
+  downloadHermesSourceTarball,
+  expandHermesSourceTarball,
+} = require('react-native/scripts/hermes/hermes-utils.js');
 
 const argv = yargs
   .option('t', {
@@ -65,10 +68,17 @@ if (isPackagerRunning() === 'running') {
   exec("lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill");
 }
 
+const onReleaseBranch = exec('git rev-parse --abbrev-ref HEAD', {
+  silent: true,
+})
+  .stdout.trim()
+  .endsWith('-stable');
+
 if (argv.target === 'RNTester') {
   // FIXME: make sure that the commands retains colors
   // (--ansi) doesn't always work
   // see also https://github.com/shelljs/shelljs/issues/86
+  pushd('packages/rn-tester');
 
   if (argv.platform === 'iOS') {
     console.info(
@@ -76,20 +86,23 @@ if (argv.target === 'RNTester') {
         argv.hermes ? 'Hermes' : 'JSC'
       } version of RNTester iOS with the new Architecture enabled`,
     );
+
+    // remember that for this to be successful
+    // you should have run bundle install once
+    // in your local setup - also: if I'm on release branch, I pick the
+    // hermes ref from the hermes ref file (see hermes-engine.podspec)
     exec(
-      `cd packages/rn-tester && USE_HERMES=${
+      `USE_HERMES=${
         argv.hermes ? 1 : 0
-      } RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      } CI=${onReleaseBranch} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
+    launchPackagerInSeparateWindow(pwd());
 
     // launch the app on iOS simulator
-    pushd('packages/rn-tester');
-    exec('npx react-native run-ios --scheme RNTester');
-    popd();
+    exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
   } else {
     // we do the android path here
 
@@ -101,7 +114,7 @@ if (argv.target === 'RNTester') {
       } version of RNTester Android with the new Architecture enabled`,
     );
     exec(
-      `./gradlew :packages:rn-tester:android:app:${
+      `../../gradlew :packages:rn-tester:android:app:${
         argv.hermes ? 'installHermesDebug' : 'installJscDebug'
       } --quiet`,
     );
@@ -112,29 +125,30 @@ if (argv.target === 'RNTester') {
 
     // if everything succeeded so far, we can launch Metro and the app
     // start the Metro server in a separate window
-    launchPackagerInSeparateWindow();
-    // just to make sure that the Android up won't have troubles finding the Metro server
-    exec('adb reverse tcp:8081 tcp:8081');
+    launchPackagerInSeparateWindow(pwd());
+
     // launch the app
     exec(
       'adb shell am start -n com.facebook.react.uiapp/com.facebook.react.uiapp.RNTesterActivity',
     );
+
+    // just to make sure that the Android up won't have troubles finding the Metro server
+    exec('adb reverse tcp:8081 tcp:8081');
   }
+  popd();
 } else {
   console.info("We're going to test a fresh new RN project");
 
   // create the local npm package to feed the CLI
 
   // base setup required (specular to publish-npm.js)
-  const tmpPublishingFolder = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-publish-'),
-  );
-  console.info(`The temp publishing folder is ${tmpPublishingFolder}`);
-
-  saveFilesToRestore(tmpPublishingFolder);
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
-  const baseVersion = require('../package.json').version;
+  const baseVersion = require('../packages/react-native/package.json').version;
+
+  // in local testing, 1000.0.0 mean we are on main, every other case means we are
+  // working on a release version
+  const buildType = baseVersion !== '1000.0.0' ? 'release' : 'dry-run';
 
   const dateIdentifier = new Date()
     .toISOString()
@@ -145,61 +159,92 @@ if (argv.target === 'RNTester') {
   const releaseVersion = `${baseVersion}-${dateIdentifier}`;
 
   // this is needed to generate the Android artifacts correctly
-  exec(`node scripts/set-rn-version.js --to-version ${releaseVersion}`).code;
+  const exitCode = exec(
+    `node scripts/set-rn-version.js --to-version ${releaseVersion} --build-type ${buildType}`,
+  ).code;
 
-  // Generate native files (Android only for now)
-  generateAndroidArtifacts(releaseVersion, tmpPublishingFolder);
+  if (exitCode !== 0) {
+    console.error(
+      `Failed to set the RN version. Version ${releaseVersion} is not valid for ${buildType}`,
+    );
+    process.exit(exitCode);
+  }
 
-  // create locally the node module
-  exec('npm pack');
+  // Generate native files for Android
+  generateAndroidArtifacts(releaseVersion);
 
-  const localNodeTGZPath = `${pwd()}/react-native-${releaseVersion}.tgz`;
+  // Setting up generating native iOS (will be done later)
+  const repoRoot = pwd();
+  const reactNativePackagePath = `${repoRoot}/packages/react-native`;
+  const jsiFolder = `${reactNativePackagePath}/ReactCommon/jsi`;
+  const hermesCoreSourceFolder = `${reactNativePackagePath}/sdks/hermes`;
+
+  if (!fs.existsSync(hermesCoreSourceFolder)) {
+    console.info('The Hermes source folder is missing. Downloading...');
+    downloadHermesSourceTarball();
+    expandHermesSourceTarball();
+  }
+
+  // need to move the scripts inside the local hermes cloned folder
+  // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
+  cp(
+    `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
+    `${reactNativePackagePath}/sdks/hermes/utils/.`,
+  );
+
+  // for this scenario, we only need to create the debug build
+  // (env variable PRODUCTION defines that podspec side)
+  const buildTypeiOSArtifacts = 'Debug';
+
+  // the android ones get set into /private/tmp/maven-local
+  const localMavenPath = '/private/tmp/maven-local';
+
+  // Generate native files for iOS
+  const tarballOutputPath = generateiOSArtifacts(
+    jsiFolder,
+    hermesCoreSourceFolder,
+    buildTypeiOSArtifacts,
+    localMavenPath,
+  );
+
+  const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
   exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
 
-  const repoRoot = pwd();
+  // create locally the node module
+  exec('npm pack', {cwd: reactNativePackagePath});
 
   pushd('/tmp/');
-  // need to avoid the pod install step because it will fail! (see above)
+  // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${repoRoot}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${localNodeTGZPath} --skip-install`,
   );
 
   cd('RNTestProject');
   exec('yarn install');
 
+  // need to do this here so that Android will be properly setup either way
+  exec(
+    'echo "REACT_NATIVE_MAVEN_LOCAL_REPO=/private/tmp/maven-local" >> android/gradle.properties',
+  );
+
+  // doing the pod install here so that it's easier to play around RNTestProject
+  cd('ios');
+  exec('bundle install');
+  exec(
+    `HERMES_ENGINE_TARBALL_PATH=${tarballOutputPath} USE_HERMES=${
+      argv.hermes ? 1 : 0
+    } bundle exec pod install --ansi`,
+  );
+
+  cd('..');
+
   if (argv.platform === 'iOS') {
-    // if we want iOS, we need to do pod install - but with a trick
-    cd('ios');
-    exec('bundle install');
-
-    // TODO: we should be able to also use HERMES_ENGINE_TARBALL_PATH
-    // if we can make RNTester step generate it already so that it gets reused
-
-    // need to discern if it's main branch or release branch
-    if (baseVersion === '1000.0.0') {
-      // main branch
-      exec(`USE_HERMES=${argv.hermes ? 1 : 0} bundle exec pod install --ansi`);
-    } else {
-      // TODO: to test this, I need to apply changes on top of a release branch
-      // a release branch
-      // copy over the .hermesversion file from react-native core into the RNTestProject
-      exec(`cp -f ${repoRoot}/sdks/.hermesversion .`);
-      exec(
-        `CI=true USE_HERMES=${
-          argv.hermes ? 1 : 0
-        } bundle exec pod install --ansi`,
-      );
-    }
-    cd('..');
     exec('yarn ios');
   } else {
     // android
     exec('yarn android');
   }
   popd();
-
-  // just cleaning up the temp folder, the rest is done by the test clean script
-  exec(`rm -rf ${tmpPublishingFolder}`);
 }
 
 exit(0);

@@ -74,10 +74,6 @@ function AnimatedView({
   );
 }
 
-function notSupportedByNativeDriver(property: string) {
-  return property === 'skewX' || property === 'skewY';
-}
-
 function AnimatedTransformStyleExample(): React.Node {
   const [properties, setProperties] = React.useState(transformProperties);
   const [useNativeDriver, setUseNativeDriver] = React.useState(false);
@@ -109,9 +105,6 @@ function AnimatedTransformStyleExample(): React.Node {
                 key={property}
                 label={property}
                 multiSelect
-                disabled={
-                  notSupportedByNativeDriver(property) && useNativeDriver
-                }
                 selected={properties[property].selected}
                 onPress={() => {
                   onToggle(property);
@@ -125,10 +118,9 @@ function AnimatedTransformStyleExample(): React.Node {
       <AnimatedView
         key={`animated-view-use-${useNativeDriver ? 'native' : 'js'}-driver`}
         useNativeDriver={useNativeDriver}
+        // $FlowFixMe[incompatible-call]
         properties={Object.keys(properties).filter(
-          property =>
-            properties[property].selected &&
-            !(useNativeDriver && notSupportedByNativeDriver(property)),
+          property => properties[property].selected,
         )}
       />
     </View>
@@ -162,7 +154,6 @@ const styles = StyleSheet.create({
 export default ({
   title: 'Transform Styles',
   name: 'transformStyles',
-  description:
-    'Variations of transform styles. `skewX` and `skewY` are not supported on native driver.',
+  description: 'Variations of transform styles.',
   render: () => <AnimatedTransformStyleExample />,
 }: RNTesterModuleExample);

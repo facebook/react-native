@@ -10,14 +10,13 @@
 
 'use strict';
 import type {
-  PropTypeAnnotation,
-  EventTypeShape,
   ComponentShape,
+  EventTypeShape,
+  PropTypeAnnotation,
 } from '../../CodegenSchema';
+import type {SchemaType} from '../../CodegenSchema';
 
 const j = require('jscodeshift');
-
-import type {SchemaType} from '../../CodegenSchema';
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -61,12 +60,13 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
     case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':
     case 'Int32EnumTypeAnnotation':
+    case 'MixedTypeAnnotation':
       return j.literal(true);
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return j.template
-            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor') }`;
+            .expression`{ process: require('react-native/Libraries/StyleSheet/processColor').default }`;
         case 'ImageSourcePrimitive':
           return j.template
             .expression`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`;
@@ -78,6 +78,8 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         case 'EdgeInsetsPrimitive':
           return j.template
             .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
+        case 'DimensionPrimitive':
+          return j.literal(true);
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -91,8 +93,9 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
             return j.template
               .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
           case 'ImageSourcePrimitive':
-            return j.literal(true);
           case 'PointPrimitive':
+          case 'EdgeInsetsPrimitive':
+          case 'DimensionPrimitive':
             return j.literal(true);
           default:
             throw new Error(
@@ -277,7 +280,7 @@ function buildViewConfig(
 
   const bubblingEventNames = component.events
     .filter(event => event.bubblingType === 'bubble')
-    .reduce((bubblingEvents, event) => {
+    .reduce((bubblingEvents: Array<any>, event) => {
       // We add in the deprecated paper name so that it is in the view config.
       // This means either the old event name or the new event name can fire
       // and be sent to the listener until the old top level name is removed.
@@ -302,7 +305,7 @@ function buildViewConfig(
 
   const directEventNames = component.events
     .filter(event => event.bubblingType === 'direct')
-    .reduce((directEvents, event) => {
+    .reduce((directEvents: Array<any>, event) => {
       // We add in the deprecated paper name so that it is in the view config.
       // This means either the old event name or the new event name can fire
       // and be sent to the listener until the old top level name is removed.

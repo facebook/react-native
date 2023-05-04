@@ -13,6 +13,7 @@ jobs:
       issues: write  # for react-native-community/actions-apply-version-label to label issues
     runs-on: ubuntu-latest
     continue-on-error: true
+    if: github.repository == 'facebook/react-native'
 
     steps:
       - uses: react-native-community/actions-apply-version-label@v0.0.3

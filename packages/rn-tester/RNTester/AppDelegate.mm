@@ -15,6 +15,12 @@
 #endif
 #endif
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#ifndef RN_FABRIC_ENABLED
+#define RN_FABRIC_ENABLED
+#endif
+#endif
+
 #if RCT_USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
 #else
@@ -47,7 +53,11 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <react/config/ReactNativeConfig.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #endif
 
 #if DEBUG
@@ -70,15 +80,26 @@
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 #endif
-
-  RCTTurboModuleManager *_turboModuleManager;
 }
 @end
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
+
+#ifdef RN_FABRIC_ENABLED
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+    _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
+    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
+  }
+  return self;
+}
+#endif
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -90,11 +111,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   NSDictionary *initProps = [self prepareInitialProps];
 
 #ifdef RN_FABRIC_ENABLED
-  _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-  _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
-
-  _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
-
   _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:_contextContainer];
 
   _bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
@@ -102,6 +118,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge
                                                                        moduleName:@"RNTesterApp"
                                                                 initialProperties:initProps];
+
+  [self registerPaperComponents:@[ @"RNTMyLegacyNativeView" ]];
 #else
   UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
 #endif
@@ -112,6 +130,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [self initializeFlipper:application];
+
   return YES;
 }
 
@@ -130,7 +149,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     initProps[@"exampleFromAppetizeParams"] = [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri];
   }
 
-#ifdef RCT_NEW_ARCH_ENABLED
+#ifdef RN_FABRIC_ENABLED
   initProps[kRNConcurrentRoot] = @([self concurrentRootEnabled]);
 #endif
 
@@ -139,7 +158,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"packages/rn-tester/js/RNTesterApp.ios"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
 }
 
 - (void)initializeFlipper:(UIApplication *)application
@@ -174,41 +193,59 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 #pragma mark - RCTCxxBridgeDelegate
 
+// This function is called during
+// `[[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                             delegate:self
-                                                            jsInvoker:bridge.jsCallInvoker];
-  [bridge setRCTTurboModuleRegistry:_turboModuleManager];
+  std::shared_ptr<facebook::react::CallInvoker> callInvoker = bridge.jsCallInvoker;
+
+#ifdef RN_FABRIC_ENABLED
+  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
+  _contextContainer->erase("RuntimeScheduler");
+  _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
+  callInvoker = std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
+#endif
+
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
+  [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
   /**
    * Eagerly initialize RCTDevMenu so CMD + d, CMD + i, and CMD + r work.
    * This is a stop gap until we have a system to eagerly init Turbo Modules.
    */
-  [_turboModuleManager moduleForName:"RCTDevMenu"];
+  [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif
 
   __weak __typeof(self) weakSelf = self;
+
 #if RCT_USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
 #endif
-      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge, turboModuleManager](
+                                                          facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;
         }
+
+#if RN_FABRIC_ENABLED
         __typeof(self) strongSelf = weakSelf;
-        if (strongSelf) {
-          facebook::react::RuntimeExecutor syncRuntimeExecutor =
-              [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-          [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+        if (strongSelf && strongSelf->_runtimeScheduler) {
+          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, strongSelf->_runtimeScheduler);
         }
+#endif
+
+        facebook::react::RuntimeExecutor syncRuntimeExecutor =
+            [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
+        [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
       }));
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -226,24 +263,34 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   // Set up the default RCTImageLoader and RCTNetworking modules.
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
-        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
+        loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
           return @[ [RCTLocalAssetImageLoader new] ];
         }
-        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
+        decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
           return @[ [RCTGIFImageDecoder new] ];
         }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc]
-        initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[
-            [RCTHTTPRequestHandler new],
-            [RCTDataRequestHandler new],
-            [RCTFileRequestHandler new],
-          ];
-        }];
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *) {
+      return @[
+        [RCTHTTPRequestHandler new],
+        [RCTDataRequestHandler new],
+        [RCTFileRequestHandler new],
+      ];
+    }];
   }
   // No custom initializer here.
   return [moduleClass new];
+}
+
+#pragma mark - Interop layer
+
+- (void)registerPaperComponents:(NSArray<NSString *> *)components
+{
+#if RCT_NEW_ARCH_ENABLED
+  for (NSString *component in components) {
+    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:component];
+  }
+#endif
 }
 
 #pragma mark - Push Notifications

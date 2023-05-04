@@ -16,7 +16,6 @@ const {
   createParserErrorCapturer,
   verifyPlatforms,
   visit,
-  buildSchemaFromConfigType,
 } = require('../utils.js');
 const {ParserError} = require('../errors');
 
@@ -125,64 +124,67 @@ describe('createParserErrorCapturer', () => {
 
 describe('verifyPlatforms', () => {
   it('exclude android given an iOS only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleIOS',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
-      'SampleTurboModule',
-    ]);
+    result = verifyPlatforms('NativeSampleTurboModuleIOS', 'SampleTurboModule');
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleIOS', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleIOS',
       'SampleTurboModuleIOS',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['android']);
   });
 
   it('exclude iOS given an android only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleAndroid',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleAndroid',
       'SampleTurboModule',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleAndroid', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleAndroid',
       'SampleTurboModuleAndroid',
-    ]);
+    );
     expect(result.cxxOnly).toBe(false);
     expect(result.excludedPlatforms).toEqual(['iOS']);
   });
 
   it('exclude iOS and android given a Cxx only module', () => {
-    let result = verifyPlatforms('NativeSampleTurboModule', [
+    let result = verifyPlatforms(
+      'NativeSampleTurboModule',
       'SampleTurboModuleCxx',
-    ]);
+    );
 
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
-      'SampleTurboModule',
-    ]);
+    result = verifyPlatforms('NativeSampleTurboModuleCxx', 'SampleTurboModule');
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
 
-    result = verifyPlatforms('NativeSampleTurboModuleCxx', [
+    result = verifyPlatforms(
+      'NativeSampleTurboModuleCxx',
       'SampleTurboModuleCxx',
-    ]);
+    );
     expect(result.cxxOnly).toBe(true);
     expect(result.excludedPlatforms).toEqual(['iOS', 'android']);
   });
@@ -288,151 +290,6 @@ describe('visit', () => {
       visit(astNode, visitor);
 
       expect(visitorFunction).toHaveBeenCalledTimes(2);
-    });
-  });
-});
-
-describe('buildSchemaFromConfigType', () => {
-  const astMock = {
-    type: 'Program',
-    loc: {
-      source: null,
-      start: {line: 2, column: 10},
-      end: {line: 16, column: 62},
-    },
-    range: [11, 373],
-    body: [],
-    comments: [],
-    errors: [],
-  };
-
-  const componentSchemaMock = {
-    filename: 'filename',
-    componentName: 'componentName',
-    extendsProps: [],
-    events: [],
-    props: [],
-    commands: [],
-  };
-
-  const moduleSchemaMock = {
-    type: 'NativeModule',
-    aliases: {},
-    spec: {properties: []},
-    moduleNames: [],
-  };
-
-  const wrapComponentSchemaMock = jest.fn();
-  const buildComponentSchemaMock = jest.fn(() => componentSchemaMock);
-  const wrapModuleSchemaMock = jest.spyOn(
-    require('../parsers-commons'),
-    'wrapModuleSchema',
-  );
-  const buildModuleSchemaMock = jest.fn(() => moduleSchemaMock);
-
-  const buildSchemaFromConfigTypeHelper = (
-    configType: 'module' | 'component' | 'none',
-    filename: ?string,
-  ) =>
-    buildSchemaFromConfigType(
-      configType,
-      filename,
-      astMock,
-      wrapComponentSchemaMock,
-      buildComponentSchemaMock,
-      buildModuleSchemaMock,
-    );
-
-  describe('when configType is none', () => {
-    it('returns an empty schema', () => {
-      const schema = buildSchemaFromConfigTypeHelper('none');
-
-      expect(schema).toEqual({modules: {}});
-    });
-  });
-
-  describe('when configType is component', () => {
-    it('calls buildComponentSchema with ast and wrapComponentSchema with the result', () => {
-      buildSchemaFromConfigTypeHelper('component');
-
-      expect(buildComponentSchemaMock).toHaveBeenCalledTimes(1);
-      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock);
-      expect(wrapComponentSchemaMock).toHaveBeenCalledTimes(1);
-      expect(wrapComponentSchemaMock).toHaveBeenCalledWith(componentSchemaMock);
-
-      expect(buildModuleSchemaMock).not.toHaveBeenCalled();
-      expect(wrapModuleSchemaMock).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('when configType is module', () => {
-    describe('when filename is undefined', () => {
-      it('throws an error', () => {
-        expect(() => buildSchemaFromConfigTypeHelper('module')).toThrow(
-          'Filepath expected while parasing a module',
-        );
-      });
-    });
-
-    describe('when filename is null', () => {
-      it('throws an error', () => {
-        expect(() => buildSchemaFromConfigTypeHelper('module', null)).toThrow(
-          'Filepath expected while parasing a module',
-        );
-      });
-    });
-
-    describe('when filename is defined and not null', () => {
-      describe('when buildModuleSchema throws', () => {
-        it('throws the error', () => {
-          const parserError = new ParserError(
-            'moduleName',
-            astMock,
-            'Something went wrong',
-          );
-          buildModuleSchemaMock.mockImplementationOnce(() => {
-            throw parserError;
-          });
-
-          expect(() =>
-            buildSchemaFromConfigTypeHelper('module', 'filename'),
-          ).toThrow(parserError);
-        });
-      });
-
-      describe('when buildModuleSchema returns null', () => {
-        it('throws an error', () => {
-          // $FlowIgnore[incompatible-call] - This is to test an invariant
-          buildModuleSchemaMock.mockReturnValueOnce(null);
-
-          expect(() =>
-            buildSchemaFromConfigTypeHelper('module', 'filename'),
-          ).toThrow(
-            'When there are no parsing errors, the schema should not be null',
-          );
-        });
-      });
-
-      describe('when buildModuleSchema returns a schema', () => {
-        it('calls buildModuleSchema with ast and wrapModuleSchema with the result', () => {
-          buildSchemaFromConfigTypeHelper('module', 'filename');
-
-          expect(buildModuleSchemaMock).toHaveBeenCalledTimes(1);
-          expect(buildModuleSchemaMock).toHaveBeenCalledWith(
-            'filename',
-            astMock,
-            expect.any(Function),
-          );
-          expect(wrapModuleSchemaMock).toHaveBeenCalledTimes(1);
-          expect(wrapModuleSchemaMock).toHaveBeenCalledWith(
-            moduleSchemaMock,
-            'filename',
-          );
-
-          expect(buildComponentSchemaMock).not.toHaveBeenCalled();
-          expect(wrapComponentSchemaMock).not.toHaveBeenCalled();
-        });
-      });
     });
   });
 });

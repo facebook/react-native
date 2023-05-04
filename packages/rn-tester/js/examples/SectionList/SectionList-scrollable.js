@@ -22,7 +22,7 @@ const {
   PlainInput,
   SeparatorComponent,
   Spindicator,
-  genItemData,
+  genNewerItems,
   pressItem,
   renderSmallSwitchOption,
   renderStackedItem,
@@ -170,7 +170,7 @@ export function SectionList_scrollable(Props: {
   const [logViewable, setLogViewable] = React.useState(false);
   const [debug, setDebug] = React.useState(false);
   const [inverted, setInverted] = React.useState(false);
-  const [data, setData] = React.useState(genItemData(1000));
+  const [data, setData] = React.useState(genNewerItems(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
   const filter = (item: Item) =>
@@ -181,6 +181,7 @@ export function SectionList_scrollable(Props: {
   let startIndex = 0;
   const endIndex = filteredData.length - 1;
   for (let ii = 10; ii <= endIndex + 10; ii += 10) {
+    // $FlowFixMe[incompatible-call]
     filteredSectionData.push({
       key: `${filteredData[startIndex].key} - ${
         filteredData[Math.min(ii - 1, endIndex)].key
@@ -231,7 +232,7 @@ export function SectionList_scrollable(Props: {
   };
 
   return (
-    <RNTesterPage noSpacer={true} noScroll={true}>
+    <RNTesterPage noScroll={true}>
       <View style={styles.searchRow}>
         <PlainInput
           onChangeText={text => setFilterText(text)}
@@ -280,11 +281,11 @@ export function SectionList_scrollable(Props: {
         ref={ref}
         ListHeaderComponent={HeaderComponent}
         ListFooterComponent={FooterComponent}
-        // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         SectionSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="SECTION SEPARATOR" />
         )}
-        // eslint-disable-next-line react/no-unstable-nested-components
+        // $FlowFixMe[missing-local-annot]
         ItemSeparatorComponent={info => (
           <CustomSeparatorComponent {...info} text="ITEM SEPARATOR" />
         )}
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList scrollable',
   name: 'SectionList-scrollable',
-  render: function (): React.Element<typeof SectionList_scrollable> {
+  render: function (): React.MixedElement {
     return <SectionList_scrollable />;
   },
 };

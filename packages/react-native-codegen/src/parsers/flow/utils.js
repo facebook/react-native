@@ -4,50 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 'use strict';
 
-import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
-
-/**
- * This FlowFixMe is supposed to refer to an InterfaceDeclaration or TypeAlias
- * declaration type. Unfortunately, we don't have those types, because flow-parser
- * generates them, and flow-parser is not type-safe. In the future, we should find
- * a way to get these types from our flow parser library.
- *
- * TODO(T71778680): Flow type AST Nodes
- */
-
-function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    if (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') {
-      if (
-        node.declaration != null &&
-        (node.declaration.type === 'TypeAlias' ||
-          node.declaration.type === 'InterfaceDeclaration')
-      ) {
-        types[node.declaration.id.name] = node.declaration;
-      }
-    } else if (
-      node.type === 'ExportNamedDeclaration' &&
-      node.exportKind === 'value' &&
-      node.declaration &&
-      node.declaration.type === 'EnumDeclaration'
-    ) {
-      types[node.declaration.id.name] = node.declaration;
-    } else if (
-      node.type === 'TypeAlias' ||
-      node.type === 'InterfaceDeclaration' ||
-      node.type === 'EnumDeclaration'
-    ) {
-      types[node.id.name] = node;
-    }
-    return types;
-  }, {});
-}
+import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs
 export type ASTNode = Object;
@@ -61,7 +24,7 @@ function resolveTypeAnnotation(
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
-  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+  typeResolutionStatus: TypeResolutionStatus,
 } {
   invariant(
     typeAnnotation != null,
@@ -70,7 +33,7 @@ function resolveTypeAnnotation(
 
   let node = typeAnnotation;
   let nullable = false;
-  let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
+  let typeResolutionStatus: TypeResolutionStatus = {
     successful: false,
   };
 
@@ -78,34 +41,49 @@ function resolveTypeAnnotation(
     if (node.type === 'NullableTypeAnnotation') {
       nullable = true;
       node = node.typeAnnotation;
-    } else if (node.type === 'GenericTypeAnnotation') {
-      typeAliasResolutionStatus = {
-        successful: true,
-        aliasName: node.id.name,
-      };
-      const resolvedTypeAnnotation = types[node.id.name];
-      if (
-        resolvedTypeAnnotation == null ||
-        resolvedTypeAnnotation.type === 'EnumDeclaration'
-      ) {
+      continue;
+    }
+
+    if (node.type !== 'GenericTypeAnnotation') {
+      break;
+    }
+
+    const resolvedTypeAnnotation = types[node.id.name];
+    if (resolvedTypeAnnotation == null) {
+      break;
+    }
+
+    switch (resolvedTypeAnnotation.type) {
+      case 'TypeAlias': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.id.name,
+        };
+        node = resolvedTypeAnnotation.right;
         break;
       }
-
-      invariant(
-        resolvedTypeAnnotation.type === 'TypeAlias',
-        `GenericTypeAnnotation '${node.id.name}' must resolve to a TypeAlias. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
-      );
-
-      node = resolvedTypeAnnotation.right;
-    } else {
-      break;
+      case 'EnumDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'enum',
+          name: node.id.name,
+        };
+        node = resolvedTypeAnnotation.body;
+        break;
+      }
+      default: {
+        throw new TypeError(
+          `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+        );
+      }
     }
   }
 
   return {
     nullable: nullable,
     typeAnnotation: node,
-    typeAliasResolutionStatus,
+    typeResolutionStatus,
   };
 }
 
@@ -116,48 +94,7 @@ function getValueFromTypes(value: ASTNode, types: TypeDeclarationMap): ASTNode {
   return value;
 }
 
-// TODO(T71778680): Flow-type ASTNodes.
-function isModuleRegistryCall(node: $FlowFixMe): boolean {
-  if (node.type !== 'CallExpression') {
-    return false;
-  }
-
-  const callExpression = node;
-
-  if (callExpression.callee.type !== 'MemberExpression') {
-    return false;
-  }
-
-  const memberExpression = callExpression.callee;
-  if (
-    !(
-      memberExpression.object.type === 'Identifier' &&
-      memberExpression.object.name === 'TurboModuleRegistry'
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      memberExpression.property.type === 'Identifier' &&
-      (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
-    )
-  ) {
-    return false;
-  }
-
-  if (memberExpression.computed) {
-    return false;
-  }
-
-  return true;
-}
-
 module.exports = {
   getValueFromTypes,
   resolveTypeAnnotation,
-  getTypes,
-  isModuleRegistryCall,
 };

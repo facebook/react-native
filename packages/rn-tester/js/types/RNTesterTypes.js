@@ -37,7 +37,6 @@ export type RNTesterModuleInfo = $ReadOnly<{|
   key: string,
   module: RNTesterModule,
   category?: string,
-  supportsTVOS?: boolean,
   documentationURL?: string,
   isBookmarked?: boolean,
   exampleType?: 'components' | 'apis',

@@ -4,46 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 'use strict';
 
-import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
-
-/**
- * TODO(T108222691): Use flow-types for @babel/parser
- */
-
-function getTypes(ast: $FlowFixMe): TypeDeclarationMap {
-  return ast.body.reduce((types, node) => {
-    switch (node.type) {
-      case 'ExportNamedDeclaration': {
-        if (node.declaration) {
-          switch (node.declaration.type) {
-            case 'TSTypeAliasDeclaration':
-            case 'TSInterfaceDeclaration':
-            case 'TSEnumDeclaration': {
-              types[node.declaration.id.name] = node.declaration;
-              break;
-            }
-          }
-        }
-        break;
-      }
-      case 'TSTypeAliasDeclaration':
-      case 'TSInterfaceDeclaration':
-      case 'TSEnumDeclaration': {
-        types[node.id.name] = node;
-        break;
-      }
-    }
-    return types;
-  }, {});
-}
 
 // $FlowFixMe[unclear-type] Use flow-types for @babel/parser
 export type ASTNode = Object;
@@ -57,7 +26,7 @@ function resolveTypeAnnotation(
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
-  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+  typeResolutionStatus: TypeResolutionStatus,
 } {
   invariant(
     typeAnnotation != null,
@@ -69,7 +38,7 @@ function resolveTypeAnnotation(
       ? typeAnnotation.typeAnnotation
       : typeAnnotation;
   let nullable = false;
-  let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
+  let typeResolutionStatus: TypeResolutionStatus = {
     successful: false,
   };
 
@@ -78,78 +47,58 @@ function resolveTypeAnnotation(
     nullable = nullable || topLevelType.optional;
     node = topLevelType.type;
 
-    if (node.type === 'TSTypeReference') {
-      typeAliasResolutionStatus = {
-        successful: true,
-        aliasName: node.typeName.name,
-      };
-      const resolvedTypeAnnotation = types[node.typeName.name];
-      if (
-        resolvedTypeAnnotation == null ||
-        resolvedTypeAnnotation.type === 'TSEnumDeclaration'
-      ) {
+    if (node.type !== 'TSTypeReference') {
+      break;
+    }
+
+    const resolvedTypeAnnotation = types[node.typeName.name];
+    if (resolvedTypeAnnotation == null) {
+      break;
+    }
+
+    switch (resolvedTypeAnnotation.type) {
+      case 'TSTypeAliasDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation.typeAnnotation;
         break;
       }
-
-      invariant(
-        resolvedTypeAnnotation.type === 'TSTypeAliasDeclaration',
-        `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
-      );
-
-      node = resolvedTypeAnnotation.typeAnnotation;
-    } else {
-      break;
+      case 'TSInterfaceDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation;
+        break;
+      }
+      case 'TSEnumDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'enum',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation;
+        break;
+      }
+      default: {
+        throw new TypeError(
+          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('TSInterfaceDeclaration'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+        );
+      }
     }
   }
 
   return {
     nullable: nullable,
     typeAnnotation: node,
-    typeAliasResolutionStatus,
+    typeResolutionStatus,
   };
-}
-
-// TODO(T108222691): Use flow-types for @babel/parser
-function isModuleRegistryCall(node: $FlowFixMe): boolean {
-  if (node.type !== 'CallExpression') {
-    return false;
-  }
-
-  const callExpression = node;
-
-  if (callExpression.callee.type !== 'MemberExpression') {
-    return false;
-  }
-
-  const memberExpression = callExpression.callee;
-  if (
-    !(
-      memberExpression.object.type === 'Identifier' &&
-      memberExpression.object.name === 'TurboModuleRegistry'
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !(
-      memberExpression.property.type === 'Identifier' &&
-      (memberExpression.property.name === 'get' ||
-        memberExpression.property.name === 'getEnforcing')
-    )
-  ) {
-    return false;
-  }
-
-  if (memberExpression.computed) {
-    return false;
-  }
-
-  return true;
 }
 
 module.exports = {
   resolveTypeAnnotation,
-  getTypes,
-  isModuleRegistryCall,
 };

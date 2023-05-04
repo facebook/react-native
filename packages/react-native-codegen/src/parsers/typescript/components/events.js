@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -16,8 +16,13 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
+import type {Parser} from '../../parser';
 const {flattenProperties} = require('./componentsUtils');
 const {parseTopLevelType} = require('../parseTopLevelType');
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+} = require('../../error-utils');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -86,7 +91,6 @@ function getPropertyType(
           properties: typeAnnotation.members.map(buildPropertiesForEvent),
         },
       };
-
     case 'TSUnionType':
       return {
         name,
@@ -96,6 +100,14 @@ function getPropertyType(
           options: typeAnnotation.types.map(option => option.literal.value),
         },
       };
+    case 'UnsafeMixed':
+      return {
+        name,
+        optional,
+        typeAnnotation: {
+          type: 'MixedTypeAnnotation',
+        },
+      };
     default:
       (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
@@ -103,11 +115,16 @@ function getPropertyType(
 }
 
 function findEventArgumentsAndType(
+  parser: Parser,
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-) {
+): {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+} {
   if (typeAnnotation.type === 'TSInterfaceDeclaration') {
     return {
       argumentProps: flattenProperties([typeAnnotation], types),
@@ -124,12 +141,11 @@ function findEventArgumentsAndType(
     };
   }
 
-  if (!typeAnnotation.typeName) {
-    throw new Error("typeAnnotation of event doesn't have a name");
-  }
+  throwIfEventHasNoName(typeAnnotation, parser);
   const name = typeAnnotation.typeName.name;
   if (name === 'Readonly') {
     return findEventArgumentsAndType(
+      parser,
       typeAnnotation.typeParameters.params[0],
       types,
       bubblingType,
@@ -152,6 +168,7 @@ function findEventArgumentsAndType(
         };
       default:
         return findEventArgumentsAndType(
+          parser,
           typeAnnotation.typeParameters.params[0],
           types,
           eventType,
@@ -164,6 +181,7 @@ function findEventArgumentsAndType(
       elementType = elementType.typeAnnotation;
     }
     return findEventArgumentsAndType(
+      parser,
       elementType,
       types,
       bubblingType,
@@ -203,7 +221,8 @@ type EventTypeAST = Object;
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
-): EventTypeShape {
+  parser: Parser,
+): ?EventTypeShape {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
@@ -214,12 +233,12 @@ function buildEventSchema(
   const typeAnnotation = topLevelType.type;
   const optional = property.optional || topLevelType.optional;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
-    findEventArgumentsAndType(typeAnnotation, types);
+    findEventArgumentsAndType(parser, typeAnnotation, types);
 
   if (!argumentProps) {
     throw new Error(`Unable to determine event arguments for "${name}"`);
   } else if (!bubblingType) {
-    throw new Error(`Unable to determine event bubbling type for "${name}"`);
+    throwIfBubblingTypeIsNull(bubblingType, name);
   } else {
     if (paperTopLevelNameDeprecated != null) {
       return {
@@ -249,8 +268,11 @@ function buildEventSchema(
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<EventTypeShape> {
-  return eventTypeAST.map(property => buildEventSchema(types, property));
+  return eventTypeAST
+    .map(property => buildEventSchema(types, property, parser))
+    .filter(Boolean);
 }
 
 module.exports = {

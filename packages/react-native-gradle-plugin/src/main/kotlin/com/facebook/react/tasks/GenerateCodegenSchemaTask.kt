@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -37,13 +38,10 @@ abstract class GenerateCodegenSchemaTask : Exec() {
         // Those are known build paths where the source map or other
         // .js files could be stored/generated. We want to make sure we don't pick them up
         // for execution avoidance.
-        it.exclude("**/generated/source/codegen/**/*")
         it.exclude("**/build/ASSETS/**/*")
         it.exclude("**/build/RES/**/*")
-        it.exclude("**/build/generated/assets/react/**/*")
-        it.exclude("**/build/generated/res/react/**/*")
-        it.exclude("**/build/generated/sourcemaps/react/**/*")
-        it.exclude("**/build/intermediates/sourcemaps/react/**/*")
+        it.exclude("**/build/generated/**/*")
+        it.exclude("**/build/intermediates/**/*")
       }
 
   @get:OutputFile
@@ -63,7 +61,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   }
 
   internal fun setupCommandLine() {
-    // TODO: restore the --platform android parameters as soon as we publish the codegen package.
+    val workingDir = project.projectDir
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),
@@ -71,11 +69,11 @@ abstract class GenerateCodegenSchemaTask : Exec() {
                 .file("lib/cli/combine/combine-js-to-schema-cli.js")
                 .get()
                 .asFile
-                .absolutePath,
-            // "--platform",
-            // "android",
-            generatedSchemaFile.get().asFile.absolutePath,
-            jsRootDir.asFile.get().absolutePath,
+                .cliPath(workingDir),
+            "--platform",
+            "android",
+            generatedSchemaFile.get().asFile.cliPath(workingDir),
+            jsRootDir.asFile.get().cliPath(workingDir),
         ))
   }
 }

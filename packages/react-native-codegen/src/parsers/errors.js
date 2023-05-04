@@ -10,7 +10,8 @@
 
 'use strict';
 
-const invariant = require('invariant');
+import type {UnionTypeAnnotationMemberType} from '../CodegenSchema';
+
 import type {Parser} from './parser';
 export type ParserType = 'Flow' | 'TypeScript';
 
@@ -129,45 +130,38 @@ class UnsupportedGenericParserError extends ParserError {
   }
 }
 
-class IncorrectlyParameterizedGenericParserError extends ParserError {
-  +genericName: string;
-  +numTypeParameters: number;
-
-  // $FlowFixMe[missing-local-annot]
+class MissingTypeParameterGenericParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     genericTypeAnnotation: $FlowFixMe,
-    language: ParserType,
+    parser: Parser,
   ) {
-    const genericName =
-      language === 'TypeScript'
-        ? genericTypeAnnotation.typeName.name
-        : genericTypeAnnotation.id.name;
-    if (genericTypeAnnotation.typeParameters == null) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation,
-        `Generic '${genericName}' must have type parameters.`,
-      );
-      return;
-    }
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
 
-    if (
-      genericTypeAnnotation.typeParameters.type ===
-        'TypeParameterInstantiation' &&
-      genericTypeAnnotation.typeParameters.params.length !== 1
-    ) {
-      super(
-        nativeModuleName,
-        genericTypeAnnotation.typeParameters,
-        `Generic '${genericName}' must have exactly one type parameter.`,
-      );
-      return;
-    }
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have type parameters.`,
+    );
+  }
+}
 
-    invariant(
-      false,
-      "Couldn't create IncorrectlyParameterizedGenericParserError",
+class MoreThanOneTypeParameterGenericParserError extends ParserError {
+  constructor(
+    nativeModuleName: string,
+    genericTypeAnnotation: $FlowFixMe,
+    parser: Parser,
+  ) {
+    const genericName = parser.nameForGenericTypeAnnotation(
+      genericTypeAnnotation,
+    );
+
+    super(
+      nativeModuleName,
+      genericTypeAnnotation,
+      `Generic '${genericName}' must have exactly one type parameter.`,
     );
   }
 }
@@ -182,7 +176,6 @@ class UnsupportedArrayElementTypeAnnotationParserError extends ParserError {
     arrayElementTypeAST: $FlowFixMe,
     arrayType: 'Array' | '$ReadOnlyArray' | 'ReadonlyArray',
     invalidArrayElementType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -222,7 +215,6 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
     propertyValueAST: $FlowFixMe,
     propertyName: string,
     invalidPropertyValueType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -237,11 +229,7 @@ class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserErro
  */
 
 class UnnamedFunctionParamParserError extends ParserError {
-  constructor(
-    functionParam: $FlowFixMe,
-    nativeModuleName: string,
-    language: ParserType,
-  ) {
+  constructor(functionParam: $FlowFixMe, nativeModuleName: string) {
     super(
       nativeModuleName,
       functionParam,
@@ -256,7 +244,6 @@ class UnsupportedFunctionParamTypeAnnotationParserError extends ParserError {
     flowParamTypeAnnotation: $FlowFixMe,
     paramName: string,
     invalidParamType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -271,7 +258,6 @@ class UnsupportedFunctionReturnTypeAnnotationParserError extends ParserError {
     nativeModuleName: string,
     flowReturnTypeAnnotation: $FlowFixMe,
     invalidReturnType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -290,7 +276,6 @@ class UnsupportedEnumDeclarationParserError extends ParserError {
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
     memberType: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -308,8 +293,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
   constructor(
     nativeModuleName: string,
     arrayElementTypeAST: $FlowFixMe,
-    types: string[],
-    language: ParserType,
+    types: UnionTypeAnnotationMemberType[],
   ) {
     super(
       nativeModuleName,
@@ -326,11 +310,7 @@ class UnsupportedUnionTypeAnnotationParserError extends ParserError {
  */
 
 class UnusedModuleInterfaceParserError extends ParserError {
-  constructor(
-    nativeModuleName: string,
-    flowInterface: $FlowFixMe,
-    language: ParserType,
-  ) {
+  constructor(nativeModuleName: string, flowInterface: $FlowFixMe) {
     super(
       nativeModuleName,
       flowInterface,
@@ -344,7 +324,6 @@ class MoreThanOneModuleRegistryCallsParserError extends ParserError {
     nativeModuleName: string,
     flowCallExpressions: $FlowFixMe,
     numCalls: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -360,7 +339,6 @@ class UntypedModuleRegistryCallParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -376,7 +354,6 @@ class IncorrectModuleRegistryCallTypeParameterParserError extends ParserError {
     flowTypeArguments: $FlowFixMe,
     methodName: string,
     moduleName: string,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -392,7 +369,6 @@ class IncorrectModuleRegistryCallArityParserError extends ParserError {
     flowCallExpression: $FlowFixMe,
     methodName: string,
     incorrectArity: number,
-    language: ParserType,
   ) {
     super(
       nativeModuleName,
@@ -408,7 +384,6 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
     flowArgument: $FlowFixMe,
     methodName: string,
     type: string,
-    language: ParserType,
   ) {
     const a = /[aeiouy]/.test(type.toLowerCase()) ? 'an' : 'a';
     super(
@@ -421,7 +396,8 @@ class IncorrectModuleRegistryCallArgumentTypeParserError extends ParserError {
 
 module.exports = {
   ParserError,
-  IncorrectlyParameterizedGenericParserError,
+  MissingTypeParameterGenericParserError,
+  MoreThanOneTypeParameterGenericParserError,
   MisnamedModuleInterfaceParserError,
   ModuleInterfaceNotFoundParserError,
   MoreThanOneModuleInterfaceParserError,

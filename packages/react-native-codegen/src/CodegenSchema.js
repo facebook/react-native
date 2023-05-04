@@ -53,6 +53,13 @@ export type VoidTypeAnnotation = $ReadOnly<{
 export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
+
+  // metadata for objects that generated from interfaces
+  baseTypes?: $ReadOnlyArray<string>,
+}>;
+
+export type MixedTypeAnnotation = $ReadOnly<{
+  type: 'MixedTypeAnnotation',
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
@@ -119,6 +126,7 @@ export type EventTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  | MixedTypeAnnotation
   | StringEnumTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>;
 
@@ -174,7 +182,8 @@ export type PropTypeAnnotation =
             type: 'ArrayTypeAnnotation',
             elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
           }>,
-    }>;
+    }>
+  | MixedTypeAnnotation;
 
 export type ReservedPropTypeAnnotation = $ReadOnly<{
   type: 'ReservedPropTypeAnnotation',
@@ -183,7 +192,8 @@ export type ReservedPropTypeAnnotation = $ReadOnly<{
     | 'ImageSourcePrimitive'
     | 'PointPrimitive'
     | 'EdgeInsetsPrimitive'
-    | 'ImageRequestPrimitive',
+    | 'ImageRequestPrimitive'
+    | 'DimensionPrimitive',
 }>;
 
 export type CommandTypeAnnotation = FunctionTypeAnnotation<
@@ -218,9 +228,10 @@ export type NullableTypeAnnotation<+T: NativeModuleTypeAnnotation> = $ReadOnly<{
 
 export type NativeModuleSchema = $ReadOnly<{
   type: 'NativeModule',
-  aliases: NativeModuleAliasMap,
+  aliasMap: NativeModuleAliasMap,
+  enumMap: NativeModuleEnumMap,
   spec: NativeModuleSpec,
-  moduleNames: $ReadOnlyArray<string>,
+  moduleName: string,
   // Use for modules that are not used on other platforms.
   // TODO: It's clearer to define `restrictedToPlatforms` instead, but
   // `excludedPlatforms` is used here to be consistent with ComponentSchema.
@@ -234,6 +245,10 @@ type NativeModuleSpec = $ReadOnly<{
 export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>,
 >;
+
+export type NativeModuleEnumMap = $ReadOnly<{
+  [enumName: string]: NativeModuleEnumDeclarationWithMembers,
+}>;
 
 export type NativeModuleAliasMap = $ReadOnly<{
   [aliasName: string]: NativeModuleObjectTypeAnnotation,
@@ -283,10 +298,29 @@ export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
   type: 'BooleanTypeAnnotation',
 }>;
 
+export type NativeModuleEnumMembers = $ReadOnlyArray<
+  $ReadOnly<{
+    name: string,
+    value: string,
+  }>,
+>;
+
+export type NativeModuleEnumMemberType =
+  | 'NumberTypeAnnotation'
+  | 'StringTypeAnnotation';
+
 export type NativeModuleEnumDeclaration = $ReadOnly<{
+  name: string,
   type: 'EnumDeclaration',
-  memberType: 'NumberTypeAnnotation' | 'StringTypeAnnotation',
+  memberType: NativeModuleEnumMemberType,
 }>;
+
+export type NativeModuleEnumDeclarationWithMembers = {
+  name: string,
+  type: 'EnumDeclarationWithMembers',
+  memberType: NativeModuleEnumMemberType,
+  members: NativeModuleEnumMembers,
+};
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
@@ -299,6 +333,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
+  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =

@@ -34,12 +34,14 @@ Class<RCTComponentViewProtocol> ColorPropNativeComponentCls(void) __attribute__(
 Class<RCTComponentViewProtocol> ImagePropNativeComponentCls(void) __attribute__((used)); // IMAGE_PROP
 Class<RCTComponentViewProtocol> PointPropNativeComponentCls(void) __attribute__((used)); // POINT_PROP
 Class<RCTComponentViewProtocol> InsetsPropNativeComponentCls(void) __attribute__((used)); // INSETS_PROP
+Class<RCTComponentViewProtocol> DimensionPropNativeComponentCls(void) __attribute__((used)); // DIMENSION_PROP
 Class<RCTComponentViewProtocol> ArrayPropsNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS
 Class<RCTComponentViewProtocol> ArrayPropsNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_NESTED_OBJECT
 Class<RCTComponentViewProtocol> ObjectPropsCls(void) __attribute__((used)); // OBJECT_PROPS
 Class<RCTComponentViewProtocol> ImageColorPropNativeComponentCls(void) __attribute__((used)); // MULTI_NATIVE_PROP
 Class<RCTComponentViewProtocol> StringEnumPropsNativeComponentCls(void) __attribute__((used)); // STRING_ENUM_PROP
 Class<RCTComponentViewProtocol> Int32EnumPropsNativeComponentCls(void) __attribute__((used)); // INT32_ENUM_PROP
+Class<RCTComponentViewProtocol> MixedPropNativeComponentCls(void) __attribute__((used)); // MIXED_PROP
 Class<RCTComponentViewProtocol> EventsNativeComponentCls(void) __attribute__((used)); // EVENT_PROPS
 Class<RCTComponentViewProtocol> InterfaceOnlyComponentCls(void) __attribute__((used)); // EVENTS_WITH_PAPER_NAME
 Class<RCTComponentViewProtocol> EventsNestedObjectNativeComponentCls(void) __attribute__((used)); // EVENT_NESTED_OBJECT_PROPS

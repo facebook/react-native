@@ -23,10 +23,7 @@ const {
   Animated,
   StyleSheet,
   TouchableWithoutFeedback,
-  Slider,
 } = require('react-native');
-
-const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
 class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state: any | {js: AnimatedValue, native: AnimatedValue} = {
@@ -237,13 +234,6 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
             <Text>Scroll me sideways!</Text>
           </View>
         </Animated.ScrollView>
-        <AnimatedSlider
-          maximumValue={200}
-          onValueChange={Animated.event(
-            [{nativeEvent: {value: this.state.anim}}],
-            {useNativeDriver: true},
-          )}
-        />
       </View>
     );
   }
@@ -633,16 +623,6 @@ exports.examples = [
               ]}
             />
           )}
-        </Tester>
-      );
-    },
-  },
-  {
-    title: 'Drive custom property (tap to animate)',
-    render: function (): React.Node {
-      return (
-        <Tester type="timing" config={{duration: 1000}}>
-          {anim => <AnimatedSlider style={{}} value={anim} />}
         </Tester>
       );
     },

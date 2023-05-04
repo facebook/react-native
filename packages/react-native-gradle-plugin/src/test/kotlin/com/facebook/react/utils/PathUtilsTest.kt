@@ -58,83 +58,45 @@ class PathUtilsTest {
   }
 
   @Test
-  fun detectedCliPath_withCliPathFromExtensionAbsolute() {
-    val project = ProjectBuilder.builder().build()
-    val extension = TestReactExtension(project)
-    val expected =
-        File(project.projectDir, "abs/fake-cli.sh").apply {
-          parentFile.mkdirs()
-          writeText("<!-- nothing to see here -->")
-        }
-    extension.cliPath.set(project.projectDir.toString() + "/abs/fake-cli.sh")
+  fun detectedEntryFile_withEnvironmentVariable() {
+    val extension = TestReactExtension(ProjectBuilder.builder().build())
+    val expected = tempFolder.newFile("./fromenv.index.js")
+    // As we can't override env variable for tests, we're going to emulate them here.
+    val envVariable = "./fromenv.index.js"
 
-    val actual = detectedCliPath(project.projectDir, extension)
+    extension.root.set(tempFolder.root)
 
-    assertEquals(expected.toString(), actual)
+    val actual = detectedEntryFile(extension, envVariable)
+
+    assertEquals(expected, actual)
   }
 
   @Test
-  fun detectedCliPath_withCliPathFromExtensionInReactFolder() {
+  fun detectedCliPath_withCliPathFromExtensionAndFileExists_returnsIt() {
     val project = ProjectBuilder.builder().build()
+    val cliFile = tempFolder.newFile("cli.js").apply { createNewFile() }
     val extension = TestReactExtension(project)
-    val expected =
-        File(project.projectDir, "/react-root/fake-cli.sh").apply {
-          parentFile.mkdirs()
-          writeText("<!-- nothing to see here -->")
-        }
-    extension.cliPath.set("fake-cli.sh")
-    extension.root.set(File(project.projectDir.toString(), "react-root"))
+    extension.cliFile.set(cliFile)
 
-    val actual = detectedCliPath(project.projectDir, extension)
+    val actual = detectedCliFile(extension)
 
-    assertEquals(expected.toString(), actual)
-  }
-
-  @Test
-  fun detectedCliPath_withCliPathFromExtensionInProjectFolder() {
-    val project = ProjectBuilder.builder().build()
-    val extension = TestReactExtension(project)
-    val expected =
-        File(project.projectDir, "fake-cli.sh").apply {
-          parentFile.mkdirs()
-          writeText("<!-- nothing to see here -->")
-        }
-    extension.cliPath.set("fake-cli.sh")
-
-    val actual = detectedCliPath(project.projectDir, extension)
-
-    assertEquals(expected.toString(), actual)
-  }
-
-  @Test
-  fun detectedCliPath_withCliPathFromExtensionInParentFolder() {
-    val rootProject = ProjectBuilder.builder().build()
-    val project = ProjectBuilder.builder().withParent(rootProject).build()
-    project.projectDir.mkdirs()
-    val extension = TestReactExtension(project)
-    val expected = File(rootProject.projectDir, "cli-in-root.sh").apply { writeText("#!/bin/bash") }
-    extension.cliPath.set("../cli-in-root.sh")
-
-    val actual = detectedCliPath(project.projectDir, extension)
-
-    assertEquals(expected.canonicalPath, File(actual).canonicalPath)
+    assertEquals(cliFile, actual)
   }
 
   @Test
   fun detectedCliPath_withCliFromNodeModules() {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
-    val expected =
-        File(tempFolder.root, "node_modules/react-native/cli.js").apply {
-          parentFile.mkdirs()
-          writeText("<!-- nothing to see here -->")
-        }
+    File(tempFolder.root, "node_modules/react-native/cli.js").apply {
+      parentFile.mkdirs()
+      writeText("<!-- nothing to see here -->")
+    }
     val locationToResolveFrom = File(tempFolder.root, "a-subdirectory").apply { mkdirs() }
     extension.root.set(locationToResolveFrom)
 
-    val actual = detectedCliPath(project.projectDir, extension)
+    val actual = detectedCliFile(extension)
 
-    assertEquals(expected.canonicalPath, actual)
+    assertEquals("<!-- nothing to see here -->", actual.readText())
   }
 
   @Test(expected = IllegalStateException::class)
@@ -142,7 +104,12 @@ class PathUtilsTest {
     val project = ProjectBuilder.builder().build()
     val extension = TestReactExtension(project)
 
-    detectedCliPath(project.projectDir, extension)
+    // Because react-native is now a package, it is always
+    // accessible from <root>/node_modules/react-native
+    // We need to provide location where cli.js file won't be resolved
+    extension.root.set(tempFolder.root)
+
+    detectedCliFile(extension)
   }
 
   @Test
@@ -283,7 +250,7 @@ class PathUtilsTest {
     project.plugins.apply("com.facebook.react")
     val extension = project.extensions.getByType(ReactExtension::class.java)
 
-    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension))
+    assertEquals(project.file("../package.json"), findPackageJsonFile(project, extension.root))
   }
 
   @Test
@@ -297,6 +264,62 @@ class PathUtilsTest {
     val extension =
         project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
 
-    assertEquals(localFile, findPackageJsonFile(project, extension))
+    assertEquals(localFile, findPackageJsonFile(project, extension.root))
+  }
+
+  @Test
+  fun readPackageJsonFile_withMissingFile_returnsNull() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension.root)
+
+    assertNull(actual)
+  }
+
+  @Test
+  fun readPackageJsonFile_withFileConfiguredInExtension_andMissingCodegenConfig_returnsNullCodegenConfig() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    File(moduleFolder, "package.json").apply { writeText("{}") }
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension.root)
+
+    assertNotNull(actual)
+    assertNull(actual!!.codegenConfig)
+  }
+
+  @Test
+  fun readPackageJsonFile_withFileConfiguredInExtension_andHavingCodegenConfig_returnsValidCodegenConfig() {
+    val moduleFolder = tempFolder.newFolder("awesome-module")
+    File(moduleFolder, "package.json").apply {
+      writeText(
+          // language=json
+          """
+      {
+        "name": "a-library",
+        "codegenConfig": {}
+      }
+      """
+              .trimIndent())
+    }
+    val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
+    project.plugins.apply("com.android.library")
+    project.plugins.apply("com.facebook.react")
+    val extension =
+        project.extensions.getByType(ReactExtension::class.java).apply { root.set(moduleFolder) }
+
+    val actual = readPackageJsonFile(project, extension.root)
+
+    assertNotNull(actual)
+    assertNotNull(actual!!.codegenConfig)
   }
 }

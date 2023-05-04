@@ -9,47 +9,41 @@
  */
 
 import * as React from 'react';
-import {Appearance, Text, useColorScheme, View} from 'react-native';
-import type {AppearancePreferences} from 'react-native/Libraries/Utilities/NativeAppearance';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import {useState, useEffect} from 'react';
+import {Appearance, Text, useColorScheme, View, Button} from 'react-native';
+import type {
+  AppearancePreferences,
+  ColorSchemeName,
+} from 'react-native/Libraries/Utilities/NativeAppearance';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';
 
-class ColorSchemeSubscription extends React.Component<
-  {...},
-  {colorScheme: ?string, ...},
-> {
-  _subscription: ?EventSubscription;
+function ColorSchemeSubscription() {
+  const [colorScheme, setScheme] = useState<?ColorSchemeName | string>(
+    Appearance.getColorScheme(),
+  );
 
-  state: {colorScheme: ?string, ...} = {
-    colorScheme: Appearance.getColorScheme(),
-  };
-
-  componentDidMount() {
-    this._subscription = Appearance.addChangeListener(
+  useEffect(() => {
+    const subscription = Appearance.addChangeListener(
       (preferences: AppearancePreferences) => {
-        const {colorScheme} = preferences;
-        this.setState({colorScheme});
+        const {colorScheme: scheme} = preferences;
+        setScheme(scheme);
       },
     );
-  }
 
-  componentWillUnmount() {
-    this._subscription?.remove();
-  }
+    return () => subscription?.remove();
+  }, [setScheme]);
 
-  render(): React.Node {
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <ThemedContainer>
-              <ThemedText>{this.state.colorScheme}</ThemedText>
-            </ThemedContainer>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
+  return (
+    <RNTesterThemeContext.Consumer>
+      {theme => {
+        return (
+          <ThemedContainer>
+            <ThemedText>{colorScheme}</ThemedText>
+          </ThemedContainer>
+        );
+      }}
+    </RNTesterThemeContext.Consumer>
+  );
 }
 
 const ThemedContainer = (props: {children: React.Node}) => (
@@ -69,7 +63,7 @@ const ThemedContainer = (props: {children: React.Node}) => (
   </RNTesterThemeContext.Consumer>
 );
 
-const ThemedText = (props: {children: React.Node}) => (
+const ThemedText = (props: {children: React.Node | string}) => (
   <RNTesterThemeContext.Consumer>
     {theme => {
       return <Text style={{color: theme.LabelColor}}>{props.children}</Text>;
@@ -140,6 +134,32 @@ const ColorShowcase = (props: {themeName: string}) => (
     }}
   </RNTesterThemeContext.Consumer>
 );
+
+const ToggleNativeAppearance = () => {
+  const [nativeColorScheme, setNativeColorScheme] =
+    useState<ColorSchemeName | null>(null);
+  const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    Appearance.setColorScheme(nativeColorScheme);
+  }, [nativeColorScheme]);
+
+  return (
+    <View>
+      <Text>Native colorScheme: {nativeColorScheme}</Text>
+      <Text>Current colorScheme: {colorScheme}</Text>
+      <Button
+        title="Set to light"
+        onPress={() => setNativeColorScheme('light')}
+      />
+      <Button
+        title="Set to dark"
+        onPress={() => setNativeColorScheme('dark')}
+      />
+      <Button title="Unset" onPress={() => setNativeColorScheme(null)} />
+    </View>
+  );
+};
 
 exports.title = 'Appearance';
 exports.category = 'UI';
@@ -218,6 +238,13 @@ exports.examples = [
           </RNTesterThemeContext.Provider>
         </View>
       );
+    },
+  },
+  {
+    title: 'Toggle native appearance',
+    description: 'Overwrite application-level appearance mode',
+    render(): React.Element<any> {
+      return <ToggleNativeAppearance />;
     },
   },
 ];

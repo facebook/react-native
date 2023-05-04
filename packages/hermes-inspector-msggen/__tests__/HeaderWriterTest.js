@@ -45,7 +45,7 @@ test('emits type decl', () => {
 
       runtime::ScriptId scriptId{};
       int lineNumber{};
-      folly::Optional<int> columnNumber;
+      std::optional<int> columnNumber;
     };
   `);
 });

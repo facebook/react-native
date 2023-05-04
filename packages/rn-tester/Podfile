@@ -1,24 +1,25 @@
-require_relative '../../scripts/react_native_pods'
+require_relative '../react-native/scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
 platform :ios, min_ios_version_supported
 
 prepare_react_native_project!
 
-USE_FRAMEWORKS = ENV['USE_FRAMEWORKS'] == '1'
 IN_CI = ENV['CI'] == 'true'
 
-@prefix_path = "../.."
+@prefix_path = "../react-native"
 
+linkage = ENV['USE_FRAMEWORKS']
+USE_FRAMEWORKS = linkage != nil
 if USE_FRAMEWORKS
-  puts "Installing pods with use_frameworks!"
-  use_frameworks!
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
 end
 
 def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
   project 'RNTesterPods.xcodeproj'
 
-  fabric_enabled = true
+  fabric_enabled = ENV['USE_FRAMEWORKS'] == 'dynamic' ? false : true
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
@@ -37,9 +38,10 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
     flipper_configuration: use_flipper ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
-    production: !ENV['PRODUCTION'].nil?
+    production: !ENV['PRODUCTION'].nil?,
+    ios_folder: '.',
   )
-  pod 'ReactCommon/turbomodule/samples', :path => "#{@prefix_path}/ReactCommon"
+  pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 
   # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
@@ -48,6 +50,9 @@ def pods(target_name, options = {}, use_flipper: !IN_CI && !USE_FRAMEWORKS)
 
   # RNTester native modules and components
   pod 'ScreenshotManager', :path => "NativeModuleExample"
+  if ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+    pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  end
 end
 
 target 'RNTester' do
@@ -57,6 +62,7 @@ end
 target 'RNTesterUnitTests' do
   pods('RNTesterUnitTests')
   pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'OCMock', '~> 3.9.1'
 end
 
 target 'RNTesterIntegrationTests' do
@@ -66,5 +72,5 @@ end
 
 post_install do |installer|
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
-  __apply_Xcode_12_5_M1_post_install_workaround(installer)
+  __fix_double_definition_of_clockid_in_folly()
 end

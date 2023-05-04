@@ -9,13 +9,15 @@
 
 'use strict';
 
+const {defaults} = require('jest-config');
+
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
-      '<rootDir>/jest/assetFileTransformer.js',
-    '.*': './jest/private/preprocessor.js',
+      '<rootDir>/packages/react-native/jest/assetFileTransformer.js',
+    '.*': './jest/preprocessor.js',
   },
-  setupFiles: ['./jest/setup.js'],
+  setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
     legacyFakeTimers: true,
@@ -24,31 +26,39 @@ module.exports = {
     escapeString: true,
     printBasicPrototype: true,
   },
-  testRegex: '/__tests__/.*-test\\.js$',
+  // This allows running Meta-internal tests with the `-test.fb.js` suffix.
+  testRegex: '/__tests__/.*-test(\\.fb)?\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',
-    '<rootDir>/template',
-    'Libraries/Renderer',
-    'packages/rn-tester/e2e',
+    '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/Libraries/Renderer',
+    '<rootDir>/packages/rn-tester/e2e',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
     defaultPlatform: 'ios',
     platforms: ['ios', 'android'],
   },
+  moduleNameMapper: {
+    // This module is internal to Meta and used by their custom React renderer.
+    // In tests, we can just use a mock.
+    '^ReactNativeInternalFeatureFlags$':
+      '<rootDir>/packages/react-native/jest/ReactNativeInternalFeatureFlagsMock.js',
+  },
+  moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
   unmockedModulePathPatterns: [
     'node_modules/react/',
-    'Libraries/Renderer',
+    'packages/react-native/Libraries/Renderer',
     'promise',
     'source-map',
     'fastpath',
     'denodeify',
   ],
   testEnvironment: 'node',
-  collectCoverageFrom: ['Libraries/**/*.js'],
+  collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',
-    '<rootDir>/Libraries/react-native/',
+    '<rootDir>/packages/react-native/Libraries/react-native/',
   ],
 };

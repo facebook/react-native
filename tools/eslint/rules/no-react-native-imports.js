@@ -13,6 +13,11 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const RN_ROOT_DIRECTORY = path.resolve(__dirname, '..', '..', '..');
+const RN_PACKAGE_DIRECTORY = path.resolve(
+  RN_ROOT_DIRECTORY,
+  'packages',
+  'react-native',
+);
 const RN_IMPORT_PATTERN = /^react-native(?:\/(?<relativeImport>.+))?$/;
 const RN_IMPORT_EXTS = ['.android.js', '.ios.js', '.js'];
 
@@ -79,7 +84,7 @@ module.exports = {
     }
 
     function resolveRelativeImport(relativeImport) {
-      const importPath = path.resolve(RN_ROOT_DIRECTORY, relativeImport);
+      const importPath = path.resolve(RN_PACKAGE_DIRECTORY, relativeImport);
       if (!isValidImportPath(importPath)) {
         return null;
       }
