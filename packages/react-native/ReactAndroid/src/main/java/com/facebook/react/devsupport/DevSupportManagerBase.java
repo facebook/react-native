@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.util.Pair;
@@ -498,23 +497,21 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       return;
     }
 
-    final LinearLayout header = new LinearLayout(getApplicationContext());
+    final LinearLayout header = new LinearLayout(context);
     header.setOrientation(LinearLayout.VERTICAL);
 
-    final TextView title = new TextView(getApplicationContext());
+    final TextView title = new TextView(context);
     title.setText(context.getString(R.string.catalyst_dev_menu_header, getUniqueTag()));
     title.setPadding(0, 50, 0, 0);
     title.setGravity(Gravity.CENTER);
-    title.setTextColor(Color.DKGRAY);
     title.setTextSize(16);
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
 
-    final TextView jsExecutorLabel = new TextView(getApplicationContext());
+    final TextView jsExecutorLabel = new TextView(context);
     jsExecutorLabel.setText(
         context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
     jsExecutorLabel.setPadding(0, 20, 0, 0);
     jsExecutorLabel.setGravity(Gravity.CENTER);
-    jsExecutorLabel.setTextColor(Color.GRAY);
     jsExecutorLabel.setTextSize(14);
 
     header.addView(title);
