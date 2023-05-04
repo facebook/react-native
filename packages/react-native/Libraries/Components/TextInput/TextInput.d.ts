@@ -671,12 +671,14 @@ export interface TextInputProps
   /**
    * Allows to adjust caret height.
    * The default value is 0, which means the height of the caret will be calculated automatically
+   * @platform ios
    */
   caretHeight?: number | undefined;
 
   /**
-   * Allows to adjust caret postiion relative to the Y axis
+   * Allows to adjust caret position relative to the Y axis
    * The default value is 0.
+   * @platform ios
    */
   caretYOffset?: number | undefined;
 

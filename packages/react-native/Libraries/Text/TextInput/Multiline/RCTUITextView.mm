@@ -352,10 +352,11 @@ static UIColor *defaultPlaceholderColor(void)
     originalRect.origin.y += _caretYOffset;
   }
 
-    if(_caretHeight != 0) {
+  if(_caretHeight != 0) {
     originalRect.size.height = _caretHeight;
   }
-    return originalRect;
+
+  return originalRect;
 }
 
 - (NSArray *)selectionRectsForRange:(UITextRange *)range {

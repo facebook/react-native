@@ -39,7 +39,7 @@ void RCTCopyBackedTextInput(
   toTextInput.spellCheckingType = fromTextInput.spellCheckingType;
   toTextInput.caretHidden = fromTextInput.caretHidden;
   toTextInput.caretYOffset = fromTextInput.caretYOffset;
-  toTextInput.caretHeight = toTextInput.caretHeight;
+  toTextInput.caretHeight = fromTextInput.caretHeight;
   toTextInput.clearButtonMode = fromTextInput.clearButtonMode;
   toTextInput.scrollEnabled = fromTextInput.scrollEnabled;
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;

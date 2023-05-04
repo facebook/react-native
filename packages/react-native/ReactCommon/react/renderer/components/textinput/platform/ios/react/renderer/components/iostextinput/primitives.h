@@ -159,7 +159,6 @@ class TextInputTraits final {
    * iOS-only (inherently iOS-specific)
    * Default value: 0 with a default font.
    */
-
   int caretHeight{0};
 
   /*
