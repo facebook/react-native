@@ -42,8 +42,6 @@ class ImageRequest final {
    */
   ImageRequest(const ImageRequest &other) = delete;
 
-  ~ImageRequest();
-
   /**
    * Set cancelation function.
    */
