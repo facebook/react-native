@@ -295,6 +295,7 @@ export interface NativeModuleEnumDeclarationWithMembers {
 
 export interface NativeModuleGenericObjectTypeAnnotation {
   readonly type: 'GenericObjectTypeAnnotation';
+  readonly dictionaryValueType?: Nullable<NativeModuleTypeAnnotation> | undefined;
 }
 
 export interface NativeModuleTypeAliasTypeAnnotation {

@@ -328,6 +328,11 @@ export type NativeModuleEnumDeclarationWithMembers = {
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
+
+  // a dictionary type is codegen as "Object"
+  // but we know all its members are in the same type
+  // when it happens, the following field is non-null
+  dictionaryValueType?: Nullable<NativeModuleTypeAnnotation>,
 }>;
 
 export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
