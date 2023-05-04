@@ -254,38 +254,34 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   @Override
   public Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo) {
-    if (mErrorCustomizers == null) {
-      return errorInfo;
-    } else {
+    if (mErrorCustomizers != null) {
       for (ErrorCustomizer errorCustomizer : mErrorCustomizers) {
         Pair<String, StackFrame[]> result = errorCustomizer.customizeErrorInfo(errorInfo);
         if (result != null) {
           errorInfo = result;
         }
       }
-      return errorInfo;
     }
+    return errorInfo;
   }
 
   @Override
   public void updateJSError(
       final String message, final ReadableArray details, final int errorCookie) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Since we only show the first JS error in a succession of JS errors, make sure we only
-            // update the error message for that error message. This assumes that updateJSError
-            // belongs to the most recent showNewJSError
-            if (!mRedBoxSurfaceDelegate.isShowing() || errorCookie != mLastErrorCookie) {
-              return;
-            }
-
-            // The RedBox surface delegate will always show the latest error
-            updateLastErrorInfo(
-                message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
-            mRedBoxSurfaceDelegate.show();
+        () -> {
+          // Since we only show the first JS error in a succession of JS errors, make sure we only
+          // update the error message for that error message. This assumes that updateJSError
+          // belongs to the most recent showNewJSError
+          if ((mRedBoxSurfaceDelegate != null && !mRedBoxSurfaceDelegate.isShowing())
+              || errorCookie != mLastErrorCookie) {
+            return;
           }
+
+          // The RedBox surface delegate will always show the latest error
+          updateLastErrorInfo(
+              message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
+          mRedBoxSurfaceDelegate.show();
         });
   }
 
@@ -319,32 +315,28 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       final int errorCookie,
       final ErrorType errorType) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            // Keep a copy of the latest error to be shown by the RedBoxSurface
-            updateLastErrorInfo(message, stack, errorCookie, errorType);
+        () -> {
+          // Keep a copy of the latest error to be shown by the RedBoxSurface
+          updateLastErrorInfo(message, stack, errorCookie, errorType);
 
-            if (mRedBoxSurfaceDelegate == null) {
-              @Nullable SurfaceDelegate redBoxSurfaceDelegate = createSurfaceDelegate("RedBox");
-              if (redBoxSurfaceDelegate != null) {
-                mRedBoxSurfaceDelegate = redBoxSurfaceDelegate;
-              } else {
-                mRedBoxSurfaceDelegate =
-                    new RedBoxDialogSurfaceDelegate(DevSupportManagerBase.this);
-              }
-
-              mRedBoxSurfaceDelegate.createContentView("RedBox");
+          if (mRedBoxSurfaceDelegate == null) {
+            @Nullable SurfaceDelegate redBoxSurfaceDelegate = createSurfaceDelegate("RedBox");
+            if (redBoxSurfaceDelegate != null) {
+              mRedBoxSurfaceDelegate = redBoxSurfaceDelegate;
+            } else {
+              mRedBoxSurfaceDelegate = new RedBoxDialogSurfaceDelegate(DevSupportManagerBase.this);
             }
 
-            if (mRedBoxSurfaceDelegate.isShowing()) {
-              // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
-              // show the first and most actionable one.
-              return;
-            }
-
-            mRedBoxSurfaceDelegate.show();
+            mRedBoxSurfaceDelegate.createContentView("RedBox");
           }
+
+          if (mRedBoxSurfaceDelegate.isShowing()) {
+            // Sometimes errors cause multiple errors to be thrown in JS in quick succession. Only
+            // show the first and most actionable one.
+            return;
+          }
+
+          mRedBoxSurfaceDelegate.show();
         });
   }
 
@@ -385,62 +377,50 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       }
       options.put(
           mApplicationContext.getString(R.string.catalyst_debug_open),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
+          () ->
               mDevServerHelper.openUrl(
                   mCurrentContext,
                   FLIPPER_DEBUGGER_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error));
-            }
-          });
+                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
       options.put(
           mApplicationContext.getString(R.string.catalyst_devtools_open),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
+          () ->
               mDevServerHelper.openUrl(
                   mCurrentContext,
                   FLIPPER_DEVTOOLS_URL,
-                  mApplicationContext.getString(R.string.catalyst_open_flipper_error));
-            }
-          });
+                  mApplicationContext.getString(R.string.catalyst_open_flipper_error)));
     }
 
     options.put(
         mApplicationContext.getString(R.string.catalyst_change_bundle_location),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            Activity context = mReactInstanceDevHelper.getCurrentActivity();
-            if (context == null || context.isFinishing()) {
-              FLog.e(
-                  ReactConstants.TAG,
-                  "Unable to launch change bundle location because react activity is not available");
-              return;
-            }
-
-            final EditText input = new EditText(context);
-            input.setHint("localhost:8081");
-
-            AlertDialog bundleLocationDialog =
-                new AlertDialog.Builder(context)
-                    .setTitle(
-                        mApplicationContext.getString(R.string.catalyst_change_bundle_location))
-                    .setView(input)
-                    .setPositiveButton(
-                        android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                            String host = input.getText().toString();
-                            mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
-                            handleReloadJS();
-                          }
-                        })
-                    .create();
-            bundleLocationDialog.show();
+        () -> {
+          Activity context = mReactInstanceDevHelper.getCurrentActivity();
+          if (context == null || context.isFinishing()) {
+            FLog.e(
+                ReactConstants.TAG,
+                "Unable to launch change bundle location because react activity is not available");
+            return;
           }
+
+          final EditText input = new EditText(context);
+          input.setHint("localhost:8081");
+
+          AlertDialog bundleLocationDialog =
+              new AlertDialog.Builder(context)
+                  .setTitle(mApplicationContext.getString(R.string.catalyst_change_bundle_location))
+                  .setView(input)
+                  .setPositiveButton(
+                      android.R.string.ok,
+                      new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                          String host = input.getText().toString();
+                          mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
+                          handleReloadJS();
+                        }
+                      })
+                  .create();
+          bundleLocationDialog.show();
         });
 
     options.put(
@@ -459,27 +439,24 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         mDevSettings.isHotModuleReplacementEnabled()
             ? mApplicationContext.getString(R.string.catalyst_hot_reloading_stop)
             : mApplicationContext.getString(R.string.catalyst_hot_reloading),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            boolean nextEnabled = !mDevSettings.isHotModuleReplacementEnabled();
-            mDevSettings.setHotModuleReplacementEnabled(nextEnabled);
-            if (mCurrentContext != null) {
-              if (nextEnabled) {
-                mCurrentContext.getJSModule(HMRClient.class).enable();
-              } else {
-                mCurrentContext.getJSModule(HMRClient.class).disable();
-              }
+        () -> {
+          boolean nextEnabled = !mDevSettings.isHotModuleReplacementEnabled();
+          mDevSettings.setHotModuleReplacementEnabled(nextEnabled);
+          if (mCurrentContext != null) {
+            if (nextEnabled) {
+              mCurrentContext.getJSModule(HMRClient.class).enable();
+            } else {
+              mCurrentContext.getJSModule(HMRClient.class).disable();
             }
-            if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
-              Toast.makeText(
-                      mApplicationContext,
-                      mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
-                      Toast.LENGTH_LONG)
-                  .show();
-              mDevSettings.setJSDevModeEnabled(true);
-              handleReloadJS();
-            }
+          }
+          if (nextEnabled && !mDevSettings.isJSDevModeEnabled()) {
+            Toast.makeText(
+                    mApplicationContext,
+                    mApplicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
+                    Toast.LENGTH_LONG)
+                .show();
+            mDevSettings.setJSDevModeEnabled(true);
+            handleReloadJS();
           }
         });
 
@@ -487,30 +464,24 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         mDevSettings.isFpsDebugEnabled()
             ? mApplicationContext.getString(R.string.catalyst_perf_monitor_stop)
             : mApplicationContext.getString(R.string.catalyst_perf_monitor),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            if (!mDevSettings.isFpsDebugEnabled()) {
-              // Request overlay permission if needed when "Show Perf Monitor" option is selected
-              Context context = mReactInstanceDevHelper.getCurrentActivity();
-              if (context == null) {
-                FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
-              } else {
-                DebugOverlayController.requestPermission(context);
-              }
+        () -> {
+          if (!mDevSettings.isFpsDebugEnabled()) {
+            // Request overlay permission if needed when "Show Perf Monitor" option is selected
+            Context context = mReactInstanceDevHelper.getCurrentActivity();
+            if (context == null) {
+              FLog.e(ReactConstants.TAG, "Unable to get reference to react activity");
+            } else {
+              DebugOverlayController.requestPermission(context);
             }
-            mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
           }
+          mDevSettings.setFpsDebugEnabled(!mDevSettings.isFpsDebugEnabled());
         });
     options.put(
         mApplicationContext.getString(R.string.catalyst_settings),
-        new DevOptionHandler() {
-          @Override
-          public void onOptionSelected() {
-            Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApplicationContext.startActivity(intent);
-          }
+        () -> {
+          Intent intent = new Intent(mApplicationContext, DevSettingsActivity.class);
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          mApplicationContext.startActivity(intent);
         });
 
     if (mCustomDevOptions.size() > 0) {
@@ -531,7 +502,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     header.setOrientation(LinearLayout.VERTICAL);
 
     final TextView title = new TextView(getApplicationContext());
-    title.setText("React Native Dev Menu (" + getUniqueTag() + ")");
+    title.setText(context.getString(R.string.catalyst_dev_menu_header, getUniqueTag()));
     title.setPadding(0, 50, 0, 0);
     title.setGravity(Gravity.CENTER);
     title.setTextColor(Color.DKGRAY);
@@ -539,7 +510,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
 
     final TextView jsExecutorLabel = new TextView(getApplicationContext());
-    jsExecutorLabel.setText(getJSExecutorDescription());
+    jsExecutorLabel.setText(
+        context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
     jsExecutorLabel.setPadding(0, 20, 0, 0);
     jsExecutorLabel.setGravity(Gravity.CENTER);
     jsExecutorLabel.setTextColor(Color.GRAY);
@@ -566,13 +538,13 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private String getJSExecutorDescription() {
-    return "Running " + getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
   }
 
   /**
-   * {@link ReactInstanceDevCommandsHandler} is responsible for enabling/disabling dev support when
-   * a React view is attached/detached or when application state changes (e.g. the application is
-   * backgrounded).
+   * {@link com.facebook.react.ReactInstanceManager} is responsible for enabling/disabling dev
+   * support when a React view is attached/detached or when application state changes (e.g. the
+   * application is backgrounded).
    */
   @Override
   public void setDevSupportEnabled(boolean isDevSupportEnabled) {
@@ -707,13 +679,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     if (UiThreadUtil.isOnUiThread()) {
       reload();
     } else {
-      UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              reload();
-            }
-          });
+      UiThreadUtil.runOnUiThread(this::reload);
     }
   }
 
@@ -783,50 +749,42 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     final File bundleFile =
         new File(mJSSplitBundlesDir, bundlePath.replaceAll("/", "_") + ".jsbundle");
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            showSplitBundleDevLoadingView(bundleUrl);
-            mDevServerHelper.downloadBundleFromURL(
-                new DevBundleDownloadListener() {
-                  @Override
-                  public void onSuccess() {
-                    UiThreadUtil.runOnUiThread(
-                        new Runnable() {
-                          @Override
-                          public void run() {
-                            hideSplitBundleDevLoadingView();
-                          }
-                        });
+        () -> {
+          showSplitBundleDevLoadingView(bundleUrl);
+          mDevServerHelper.downloadBundleFromURL(
+              new DevBundleDownloadListener() {
+                @Override
+                public void onSuccess() {
+                  UiThreadUtil.runOnUiThread(() -> hideSplitBundleDevLoadingView());
 
-                    @Nullable ReactContext context = mCurrentContext;
-                    if (context == null || !context.hasActiveReactInstance()) {
-                      return;
-                    }
-
-                    JSBundleLoader bundleLoader =
-                        JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
-                            bundleUrl, bundleFile.getAbsolutePath());
-
-                    callback.onSuccess(bundleLoader);
+                  @Nullable ReactContext context = mCurrentContext;
+                  if (context == null || !context.hasActiveReactInstance()) {
+                    return;
                   }
 
-                  @Override
-                  public void onProgress(
-                      @Nullable String status, @Nullable Integer done, @Nullable Integer total) {
-                    mDevLoadingViewManager.updateProgress(status, done, total);
-                  }
+                  JSBundleLoader bundleLoader =
+                      JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
+                          bundleUrl, bundleFile.getAbsolutePath());
 
-                  @Override
-                  public void onFailure(Exception cause) {
-                    UiThreadUtil.runOnUiThread(() -> hideSplitBundleDevLoadingView());
-                    callback.onError(bundleUrl, cause);
-                  }
-                },
-                bundleFile,
-                bundleUrl,
-                null);
-          }
+                  callback.onSuccess(bundleLoader);
+                }
+
+                @Override
+                public void onProgress(
+                    @Nullable String status, @Nullable Integer done, @Nullable Integer total) {
+                  mDevLoadingViewManager.updateProgress(status, done, total);
+                }
+
+                @Override
+                public void onFailure(Exception cause) {
+                  UiThreadUtil.runOnUiThread(
+                      DevSupportManagerBase.this::hideSplitBundleDevLoadingView);
+                  callback.onError(bundleUrl, cause);
+                }
+              },
+              bundleFile,
+              bundleUrl,
+              null);
         });
   }
 
@@ -916,8 +874,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   public void reloadJSFromServer(final String bundleURL) {
     reloadJSFromServer(
         bundleURL,
-        () ->
-            UiThreadUtil.runOnUiThread(() -> mReactInstanceDevHelper.onJSBundleLoadedFromServer()));
+        () -> UiThreadUtil.runOnUiThread(mReactInstanceDevHelper::onJSBundleLoadedFromServer));
   }
 
   public void reloadJSFromServer(final String bundleURL, final BundleLoadCallback callback) {
@@ -974,16 +931,12 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
   private void reportBundleLoadingFailure(final Exception cause) {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            if (cause instanceof DebugServerException) {
-              DebugServerException debugServerException = (DebugServerException) cause;
-              showNewJavaError(debugServerException.getMessage(), cause);
-            } else {
-              showNewJavaError(
-                  mApplicationContext.getString(R.string.catalyst_reload_error), cause);
-            }
+        () -> {
+          if (cause instanceof DebugServerException) {
+            DebugServerException debugServerException = (DebugServerException) cause;
+            showNewJavaError(debugServerException.getMessage(), cause);
+          } else {
+            showNewJavaError(mApplicationContext.getString(R.string.catalyst_reload_error), cause);
           }
         });
   }
