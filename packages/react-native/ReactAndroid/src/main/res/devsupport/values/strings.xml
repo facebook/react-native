@@ -26,4 +26,6 @@
   <string name="catalyst_loading_from_url" project="catalyst" translatable="false">Loading from %1$s…</string>
   <string name="catalyst_sample_profiler_disable" project="catalyst" translatable="false">Disable Sampling Profiler</string>
   <string name="catalyst_sample_profiler_enable" project="catalyst" translatable="false">Enable Sampling Profiler</string>
+  <string name="catalyst_dev_menu_header">React Native Dev Menu (%1$s)</string>
+  <string name="catalyst_dev_menu_sub_header">Running %1$s</string>
 </resources>
