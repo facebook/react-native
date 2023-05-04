@@ -133,6 +133,9 @@ function getNativeTypeFromAnnotation(
     case 'StringEnumTypeAnnotation':
     case 'ObjectTypeAnnotation':
       return generateEventStructName([...nameParts, eventProperty.name]);
+    case 'ArrayTypeAnnotation':
+      // TODO: implement this in the next diff
+      return '';
     default:
       (type: empty);
       throw new Error(`Received invalid event property type ${type}`);
@@ -205,6 +208,9 @@ function generateStruct(
       case 'StringEnumTypeAnnotation':
         generateEnum(structs, typeAnnotation.options, nameParts.concat([name]));
         return;
+      case 'ArrayTypeAnnotation':
+        //TODO: implement this in the next diff
+        break;
       default:
         (typeAnnotation.type: empty);
         throw new Error(
