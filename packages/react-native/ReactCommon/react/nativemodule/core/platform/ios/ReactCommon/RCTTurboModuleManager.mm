@@ -307,7 +307,7 @@ static Class getFallbackClassFromName(const char *name)
   if ([module respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
-        .instance = (id<RCTTurboModule>)module,
+        .instance = module,
         .jsInvoker = _jsInvoker,
         .nativeInvoker = nativeInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
