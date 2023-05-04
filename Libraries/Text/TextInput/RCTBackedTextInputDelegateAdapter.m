@@ -198,7 +198,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   // enter/return
   if (commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:)) {
     [self textFieldDidEndEditingOnExit];
-    if ([textInputDelegate textInputShouldReturn]) {
+    if ([textInputDelegate textInputShouldSubmitOnReturn]) {
       [[_backedTextInputView window] makeFirstResponder:nil];
     }
     commandHandled = YES;
@@ -434,7 +434,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   id<RCTBackedTextInputDelegate> textInputDelegate = [_backedTextInputView textInputDelegate];
   // enter/return
   if ((commandSelector == @selector(insertNewline:) || commandSelector == @selector(insertNewlineIgnoringFieldEditor:))) {
-    if (textInputDelegate.textInputShouldReturn) {
+    if ([textInputDelegate textInputShouldSubmitOnReturn]) {
       [_backedTextInputView.window makeFirstResponder:nil];
       commandHandled = YES;
     }

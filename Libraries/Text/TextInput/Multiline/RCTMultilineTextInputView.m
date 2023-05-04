@@ -142,6 +142,8 @@
 
 - (void)textInputDidChange
 {
+  [super textInputDidChange];
+
   [_scrollView setHasVerticalScroller:[self shouldShowVerticalScrollbar]];
 }
 
