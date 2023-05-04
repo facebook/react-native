@@ -47,6 +47,12 @@ class ImageRequest final {
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
+   * Calls cancel function if one is defined. Should be when downloading
+   * image isn't needed anymore. E.g. <ImageView /> was removed.
+   */
+  void cancel() const;
+
+  /*
    * Returns the Image Source associated with the request.
    */
   const ImageSource &getImageSource() const;

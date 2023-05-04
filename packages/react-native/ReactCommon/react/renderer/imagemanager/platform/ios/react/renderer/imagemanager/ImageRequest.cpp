@@ -21,6 +21,12 @@ void ImageRequest::setCancelationFunction(
   cancelRequest_ = cancelationFunction;
 }
 
+void ImageRequest::cancel() const {
+  if (cancelRequest_) {
+    cancelRequest_();
+  }
+}
+
 const ImageSource &ImageRequest::getImageSource() const {
   return imageSource_;
 }
