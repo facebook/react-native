@@ -9,6 +9,7 @@ package com.facebook.react.devsupport;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -64,10 +65,6 @@ public class DevServerHelper {
 
   private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
 
-  public interface OnServerContentChangeListener {
-    void onServerContentChanged();
-  }
-
   public interface PackagerCommandListener {
     void onPackagerConnected();
 
@@ -83,8 +80,6 @@ public class DevServerHelper {
     @Nullable
     Map<String, RequestHandler> customCommandHandlers();
   }
-
-  public interface PackagerCustomCommandProvider {}
 
   private enum BundleType {
     BUNDLE("bundle"),
@@ -112,7 +107,7 @@ public class DevServerHelper {
 
   private @Nullable JSPackagerClient mPackagerClient;
   private @Nullable InspectorPackagerConnection mInspectorPackagerConnection;
-  private InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
+  private final InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
@@ -349,15 +344,14 @@ public class DevServerHelper {
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
     boolean dev = getDevMode();
-    boolean lazy = dev;
     return String.format(
         Locale.US,
         "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
         host,
         mainModuleID,
         type.typeID(),
-        dev,
-        lazy,
+        dev, // dev
+        dev, // lazy
         getJSMinifyMode(),
         mPackageName,
         modulesOnly ? "true" : "false",
@@ -405,14 +399,13 @@ public class DevServerHelper {
         .enqueue(
             new Callback() {
               @Override
-              public void onFailure(Call call, IOException e) {
+              public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 // ignore HTTP call response, this is just to open a debugger page and there is no
-                // reason
-                // to report failures from here
+                // reason to report failures from here
               }
 
               @Override
-              public void onResponse(Call call, Response response) throws IOException {
+              public void onResponse(@NonNull Call call, @NonNull Response response) {
                 // ignore HTTP call response - see above
               }
             });
@@ -449,15 +442,9 @@ public class DevServerHelper {
       if (!response.isSuccessful()) {
         return null;
       }
-      Sink output = null;
 
-      try {
-        output = Okio.sink(outputFile);
+      try (Sink output = Okio.sink(outputFile)) {
         Okio.buffer(response.body().source()).readAll(output);
-      } finally {
-        if (output != null) {
-          output.close();
-        }
       }
 
       return outputFile;
