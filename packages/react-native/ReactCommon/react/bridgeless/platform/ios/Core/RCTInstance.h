@@ -52,11 +52,6 @@ FB_RUNTIME_PROTOCOL
 - (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 
 /**
- * Loads the JS bundle asynchronously.
- */
-- (void)loadScript:(RCTSource *)source;
-
-/**
  * Registers a new JS segment.
  */
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
