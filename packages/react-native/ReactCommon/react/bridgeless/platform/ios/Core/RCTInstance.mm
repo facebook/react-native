@@ -261,7 +261,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   __weak RCTInstance *weakInstance = self;
   if ([module respondsToSelector:@selector(setLoadScript:)]) {
     ((id<RCTJSScriptLoaderModule>)module).loadScript = ^(RCTSource *source) {
-      [weakInstance loadScript:(source)];
+      [weakInstance loadScriptFromSource:(source)];
     };
   }
 
@@ -301,11 +301,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _reactInstance->callFunctionOnModule(
         [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
   }
-}
-
-- (void)loadScript:(RCTSource *)source
-{
-  [self loadScriptFromSource:source];
 }
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
