@@ -737,15 +737,15 @@ jobs:
       - report_bundle_size:
           platform: android
 
+      - store_test_results:
+          path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
+      
+      - store_test_results:
+          path: ~/react-native/packages/react-native/ReactAndroid/build/test-results
+
       - store_artifacts:
           path: ~/react-native/packages/rn-tester/android/app/build/outputs/apk/
           destination: rntester-apk
-
-      - store_test_results:
-          path: ~/react-native/packages/react-native-gradle-plugin/build/test-results/test
-
-      - store_test_results:
-          path: ~/react-native/packages/react-native/ReactAndroid/build/test-results/testDebugUnitTest
 
   # -------------------------
   #    JOBS: Test Android Docker Image
