@@ -16,10 +16,12 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.FileIoHandler;
 import com.facebook.react.packagerconnection.JSPackagerClient;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
@@ -99,7 +101,10 @@ public class DevServerHelper {
     }
   }
 
-  private final DevInternalSettings mSettings;
+  private final DeveloperSettings mSettings;
+
+  private final PackagerConnectionSettings mPackagerConnectionSettings;
+
   private final OkHttpClient mClient;
   private final BundleDownloader mBundleDownloader;
   private final PackagerStatusCheck mPackagerStatusCheck;
@@ -110,10 +115,12 @@ public class DevServerHelper {
   private InspectorPackagerConnection.BundleStatusProvider mBundlerStatusProvider;
 
   public DevServerHelper(
-      DevInternalSettings settings,
+      DeveloperSettings developerSettings,
       String packageName,
-      InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider) {
-    mSettings = settings;
+      InspectorPackagerConnection.BundleStatusProvider bundleStatusProvider,
+      PackagerConnectionSettings packagerConnectionSettings) {
+    mSettings = developerSettings;
+    mPackagerConnectionSettings = packagerConnectionSettings;
     mBundlerStatusProvider = bundleStatusProvider;
     mClient =
         new OkHttpClient.Builder()
@@ -181,10 +188,7 @@ public class DevServerHelper {
 
         mPackagerClient =
             new JSPackagerClient(
-                clientId,
-                mSettings.getPackagerConnectionSettings(),
-                handlers,
-                onPackagerConnectedCallback);
+                clientId, mPackagerConnectionSettings, handlers, onPackagerConnectedCallback);
         mPackagerClient.init();
 
         return null;
@@ -277,14 +281,14 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         "ws://%s/debugger-proxy?role=client",
-        mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        mPackagerConnectionSettings.getDebugServerHost());
   }
 
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
         "http://%s/inspector/device?name=%s&app=%s",
-        mSettings.getPackagerConnectionSettings().getInspectorServerHost(),
+        mPackagerConnectionSettings.getInspectorServerHost(),
         AndroidInfoHelpers.getFriendlyDeviceName(),
         mPackageName);
   }
@@ -315,8 +319,7 @@ public class DevServerHelper {
   /** @return the host to use when connecting to the bundle server from the host itself. */
   private String getHostForJSProxy() {
     // Use custom port if configured. Note that host stays "localhost".
-    String host =
-        Assertions.assertNotNull(mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    String host = Assertions.assertNotNull(mPackagerConnectionSettings.getDebugServerHost());
     int portOffset = host.lastIndexOf(':');
     if (portOffset > -1) {
       return "localhost" + host.substring(portOffset);
@@ -362,8 +365,7 @@ public class DevServerHelper {
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
-    return createBundleURL(
-        mainModuleID, type, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return createBundleURL(mainModuleID, type, mPackagerConnectionSettings.getDebugServerHost());
   }
 
   private static String createResourceURL(String host, String resourcePath) {
@@ -372,18 +374,15 @@ public class DevServerHelper {
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
-        jsModulePath,
-        BundleType.BUNDLE,
-        mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        jsModulePath, BundleType.BUNDLE, mPackagerConnectionSettings.getDebugServerHost());
   }
 
   public String getDevServerSplitBundleURL(String jsModulePath) {
-    return createSplitBundleURL(
-        jsModulePath, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    return createSplitBundleURL(jsModulePath, mPackagerConnectionSettings.getDebugServerHost());
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
-    String host = mSettings.getPackagerConnectionSettings().getDebugServerHost();
+    String host = mPackagerConnectionSettings.getDebugServerHost();
     if (host == null) {
       FLog.w(ReactConstants.TAG, "No packager host configured.");
       callback.onPackagerStatusFetched(false);
@@ -396,7 +395,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         "http://%s/launch-js-devtools",
-        mSettings.getPackagerConnectionSettings().getDebugServerHost());
+        mPackagerConnectionSettings.getDebugServerHost());
   }
 
   public void launchJSDevtools() {
@@ -443,8 +442,7 @@ public class DevServerHelper {
   public @Nullable File downloadBundleResourceFromUrlSync(
       final String resourcePath, final File outputFile) {
     final String resourceURL =
-        createResourceURL(
-            mSettings.getPackagerConnectionSettings().getDebugServerHost(), resourcePath);
+        createResourceURL(mPackagerConnectionSettings.getDebugServerHost(), resourcePath);
     final Request request = new Request.Builder().url(resourceURL).build();
 
     try (Response response = mClient.newCall(request).execute()) {
