@@ -632,7 +632,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     RCTBorderColors borderColors = RCTCreateRCTBorderColorsFromBorderColors(borderMetrics.borderColors);
 
 #if TARGET_OS_OSX // [macOS
-  CGFloat scaleFactor = self.window.backingScaleFactor;
+  CGFloat scaleFactor = _layoutMetrics.pointScaleFactor;
 #else
   // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
   CGFloat scaleFactor = 0.0;
@@ -657,13 +657,13 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       CGRect contentsCenter = CGRect{
           CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
           CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
-        
+
 #if !TARGET_OS_OSX // [macOS]
         _borderLayer.contents = (id)image.CGImage;
         _borderLayer.contentsScale = image.scale;
 #else // [macOS
         _borderLayer.contents = [image layerContentsForContentsScale:scaleFactor];
-        _borderLayer.contentsScale = RCTScreenScale();
+        _borderLayer.contentsScale = scaleFactor;
 #endif // macOS]
 
       BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
