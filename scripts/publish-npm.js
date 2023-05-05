@@ -9,6 +9,21 @@
 
 'use strict';
 
+const {exec, echo, exit} = require('shelljs');
+const {parseVersion} = require('./version-utils');
+const {
+  exitIfNotOnGit,
+  getCurrentCommit,
+  isTaggedLatest,
+} = require('./scm-utils');
+const {
+  generateAndroidArtifacts,
+  publishAndroidArtifactsToMaven,
+} = require('./release-utils');
+const fs = require('fs');
+const path = require('path');
+const yargs = require('yargs');
+
 /**
  * This script prepares a release version of react-native and may publish to NPM.
  * It is supposed to run in CI environment, not on a developer's machine.
@@ -31,22 +46,45 @@
  *     * or otherwise `{major}.{minor}-stable`
  */
 
-const {exec, echo, exit} = require('shelljs');
-const {parseVersion} = require('./version-utils');
-const {
-  exitIfNotOnGit,
-  getCurrentCommit,
-  isTaggedLatest,
-} = require('./scm-utils');
-const {
-  generateAndroidArtifacts,
-  publishAndroidArtifactsToMaven,
-} = require('./release-utils');
-const fs = require('fs');
-const path = require('path');
-const yargs = require('yargs');
+if (require.main === module) {
+  const argv = yargs
+    .option('n', {
+      alias: 'nightly',
+      type: 'boolean',
+      default: false,
+    })
+    .option('d', {
+      alias: 'dry-run',
+      type: 'boolean',
+      default: false,
+    })
+    .option('r', {
+      alias: 'release',
+      type: 'boolean',
+      default: false,
+    })
+    .strict().argv;
 
-const RN_PACKAGE_DIR = path.join(__dirname, '..', 'packages', 'react-native');
+  const buildType = argv.release
+    ? 'release'
+    : argv.nightly
+    ? 'nightly'
+    : 'dry-run';
+
+  publishNpm(buildType);
+}
+
+// Get `next` version from npm and +1 on the minor for `main` version
+function getMainVersion() {
+  const cmd = 'npm view react-native dist-tags.next';
+  echo(cmd);
+  const result = exec(cmd);
+  if (result.code) {
+    throw 'Failed to get next version from npm';
+  }
+  const {major, minor} = parseVersion(result.stdout.trim(), 'release');
+  return `${major}.${parseInt(minor, 10) + 1}.0`;
+}
 
 function getNpmInfo(buildType) {
   const currentCommit = getCurrentCommit();
@@ -60,13 +98,13 @@ function getNpmInfo(buildType) {
   }
 
   if (buildType === 'nightly') {
+    const mainVersion = getMainVersion();
     const dateIdentifier = new Date()
       .toISOString()
-      .slice(0, -8)
-      .replace(/[-:]/g, '')
-      .replace(/[T]/g, '-');
+      .slice(0, -14)
+      .replace(/[-]/g, '');
     return {
-      version: `0.0.0-${dateIdentifier}-${shortCommit}`,
+      version: `${mainVersion}-nightly-${dateIdentifier}-${shortCommit}`,
       tag: 'nightly',
     };
   }
@@ -97,14 +135,7 @@ function getNpmInfo(buildType) {
 }
 
 function publishNpm(buildType) {
-  let version,
-    tag = null;
-  try {
-    ({version, tag} = getNpmInfo(buildType));
-  } catch (e) {
-    echo(e.message);
-    return exit(1);
-  }
+  const {version, tag} = getNpmInfo(buildType);
 
   // Set version number in various files (package.json, gradle.properties etc)
   // For non-nightly, non-dry-run, CircleCI job `prepare_package_for_release` does this
@@ -138,41 +169,14 @@ function publishNpm(buildType) {
   const otp = process.env.NPM_CONFIG_OTP;
   const otpFlag = otp ? ` --otp ${otp}` : '';
 
-  if (exec(`npm publish ${tagFlag}${otpFlag}`, {cwd: RN_PACKAGE_DIR}).code) {
+  const packageDirPath = path.join(__dirname, '..', 'packages', 'react-native');
+  if (exec(`npm publish ${tagFlag}${otpFlag}`, {cwd: packageDirPath}).code) {
     echo('Failed to publish package to npm');
     return exit(1);
   } else {
     echo(`Published to npm ${version}`);
     return exit(0);
   }
-}
-
-if (require.main === module) {
-  const argv = yargs
-    .option('n', {
-      alias: 'nightly',
-      type: 'boolean',
-      default: false,
-    })
-    .option('d', {
-      alias: 'dry-run',
-      type: 'boolean',
-      default: false,
-    })
-    .option('r', {
-      alias: 'release',
-      type: 'boolean',
-      default: false,
-    })
-    .strict().argv;
-
-  const buildType = argv.release
-    ? 'release'
-    : argv.nightly
-    ? 'nightly'
-    : 'dry-run';
-
-  publishNpm(buildType);
 }
 
 module.exports = publishNpm;

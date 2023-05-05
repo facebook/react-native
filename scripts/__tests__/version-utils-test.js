@@ -11,6 +11,7 @@ const {
   parseVersion,
   isReleaseBranch,
   validateBuildType,
+  isNightly,
 } = require('../version-utils');
 
 let execResult = null;
@@ -297,6 +298,32 @@ describe('version-utils', () => {
       expect(minor).toBe('0');
       expect(patch).toBe('0');
       expect(prerelease).toBeUndefined();
+    });
+  });
+
+  describe('isNightly', () => {
+    it('should match old version of nightlies', () => {
+      expect(
+        isNightly({
+          version: '0.0.0-20230420-2108-f84256a92',
+          major: '0',
+          minor: '0',
+          patch: '0',
+          prerelease: '20230420-2108-f84256a92',
+        }),
+      ).toBe(true);
+    });
+
+    it('should match nightlies', () => {
+      expect(
+        isNightly({
+          version: '0.81.0-nightly-20230420-f84256a92',
+          major: '0',
+          minor: '81',
+          patch: '0',
+          prerelease: 'nightly-20230420-f84256a92',
+        }),
+      ).toBe(true);
     });
   });
 

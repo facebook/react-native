@@ -75,53 +75,62 @@ describe('publish-npm', () => {
 
   describe('nightly', () => {
     it('should publish', () => {
-      execMock.mockReturnValueOnce({code: 0}).mockReturnValueOnce({code: 0});
+      execMock
+        .mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0})
+        .mockReturnValueOnce({code: 0})
+        .mockReturnValueOnce({code: 0});
+      const expectedVersion = '0.82.0-nightly-20230420-currentco';
 
       publishNpm('nightly');
 
-      const expectedVersion = '0.0.0-20230420-2352-currentco';
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         true,
       );
       expect(execMock.mock.calls[0][0]).toBe(
+        `npm view react-native dist-tags.next`,
+      );
+      expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,
       );
-      expect(execMock.mock.calls[1][0]).toBe('npm publish --tag nightly');
+      expect(execMock.mock.calls[2][0]).toBe('npm publish --tag nightly');
       expect(echoMock).toHaveBeenCalledWith(
         `Published to npm ${expectedVersion}`,
       );
       expect(exitMock).toHaveBeenCalledWith(0);
-      expect(execMock.mock.calls).toHaveLength(2);
+      expect(execMock.mock.calls).toHaveLength(3);
     });
+
     it('should fail to set version', () => {
-      execMock.mockReturnValueOnce({code: 1});
+      execMock
+        .mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0})
+        .mockReturnValueOnce({code: 1});
+      const expectedVersion = '0.82.0-nightly-20230420-currentco';
 
       publishNpm('nightly');
 
-      const expectedVersion = '0.0.0-20230420-2352-currentco';
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
       expect(execMock.mock.calls[0][0]).toBe(
+        `npm view react-native dist-tags.next`,
+      );
+      expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,
       );
       expect(echoMock).toHaveBeenCalledWith(
         `Failed to set version number to ${expectedVersion}`,
       );
       expect(exitMock).toHaveBeenCalledWith(1);
-      expect(execMock.mock.calls).toHaveLength(1);
+      expect(execMock.mock.calls).toHaveLength(2);
     });
   });
 
   describe('release', () => {
     it('should fail with invalid release version', () => {
       process.env.CIRCLE_TAG = '1.0.1';
-      publishNpm('release');
-      expect(echoMock).toHaveBeenCalledWith(
-        'Version 1.0.1 is not valid for Release',
-      );
+      expect(() => {
+        publishNpm('release');
+      }).toThrow('Version 1.0.1 is not valid for Release');
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
-      expect(exitMock).toHaveBeenCalledWith(1);
-      expect(execMock).not.toBeCalled();
     });
 
     it('should publish non-latest', () => {
