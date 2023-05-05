@@ -242,11 +242,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   [_instance callFunctionOnModule:moduleName method:method args:args];
 }
 
-- (void)loadScript:(RCTSource *)source
-{
-  [_instance loadScript:source];
-}
-
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {
   [_instance registerSegmentWithId:segmentId path:path];
