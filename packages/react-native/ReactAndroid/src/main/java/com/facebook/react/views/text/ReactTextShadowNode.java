@@ -15,7 +15,9 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
@@ -32,6 +34,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.views.view.MeasureUtil;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -59,6 +62,121 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   private boolean mShouldNotifyOnTextLayout;
 
+  private TextView mInternalView = null;
+
+  @Override
+  public void setThemedContext(ThemedReactContext themedContext) {
+    super.setThemedContext(themedContext);
+
+    mInternalView = new TextView(themedContext);
+    mInternalView.setPadding(0, 0, 0, 0);
+    // This is needed to fix an android bug since 4.4.3 which will throw an NPE in measure,
+    // setting the layoutParams fixes it: https://code.google.com/p/android/issues/detail?id=75877
+    mInternalView.setLayoutParams(
+      new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+  }
+
+  private long measureWithView(Spannable text, TextView textView, float width,
+    YogaMeasureMode widthMode, float height, YogaMeasureMode heightMode) {
+    textView.setText(text);
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
+
+    textView.setGravity(getTextAlign());
+    textView.setIncludeFontPadding(mIncludeFontPadding);
+    float paddingLeft = getPadding(Spacing.START);
+    float paddingTop = getPadding(Spacing.TOP);
+    float paddingRight = getPadding(Spacing.END);
+    float paddingBottom = getPadding(Spacing.BOTTOM);
+
+    if (paddingLeft != UNSET
+      && paddingTop != UNSET
+      && paddingRight != UNSET
+      && paddingBottom != UNSET) {
+
+      textView.setPadding(
+        (int) Math.floor(paddingLeft),
+        (int) Math.floor(paddingTop),
+        (int) Math.floor(paddingRight),
+        (int) Math.floor(paddingBottom));
+    }
+    if (mNumberOfLines != UNSET) {
+      textView.setLines(mNumberOfLines);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+      && textView.getBreakStrategy() != mTextBreakStrategy) {
+      textView.setBreakStrategy(mTextBreakStrategy);
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+      textView.getJustificationMode() != mJustificationMode) {
+      textView.setJustificationMode(mJustificationMode);
+    }
+    if (textView.getHyphenationFrequency() != mHyphenationFrequency) {
+      textView.setHyphenationFrequency(mHyphenationFrequency);
+    }
+
+    textView.measure(
+      MeasureUtil.getMeasureSpec(width, widthMode),
+      MeasureUtil.getMeasureSpec(height, heightMode));
+
+    Layout layout = textView.getLayout();
+
+    if (mAdjustsFontSizeToFit) {
+      int initialFontSize = mTextAttributes.getEffectiveFontSize();
+      int currentFontSize = mTextAttributes.getEffectiveFontSize();
+      // Minimum font size is 4pts to match the iOS implementation.
+      int minimumFontSize =
+        (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
+      while (currentFontSize > minimumFontSize
+        && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
+        || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
+        // TODO: We could probably use a smarter algorithm here. This will require 0(n)
+        // measurements
+        // based on the number of points the font size needs to be reduced by.
+        currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
+
+        float ratio = (float) currentFontSize / (float) initialFontSize;
+        ReactAbsoluteSizeSpan[] sizeSpans =
+          text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+        for (ReactAbsoluteSizeSpan span : sizeSpans) {
+          text.setSpan(
+            new ReactAbsoluteSizeSpan(
+              (int) Math.max((span.getSize() * ratio), minimumFontSize)),
+            text.getSpanStart(span),
+            text.getSpanEnd(span),
+            text.getSpanFlags(span));
+          text.removeSpan(span);
+        }
+        // make sure the placeholder content is also being measured
+        textView.setText(text);
+        textView.measure(
+          MeasureUtil.getMeasureSpec(width, widthMode),
+          MeasureUtil.getMeasureSpec(height, heightMode));
+        layout = textView.getLayout();
+      }
+    }
+
+    if (mShouldNotifyOnTextLayout) {
+      ThemedReactContext themedReactContext = getThemedContext();
+      WritableArray lines =
+        FontMetricsUtil.getFontMetrics(
+          text, layout, textView.getPaint(), themedReactContext);
+      WritableMap event = Arguments.createMap();
+      event.putArray("lines", lines);
+      if (themedReactContext.hasActiveCatalystInstance()) {
+        themedReactContext
+          .getJSModule(RCTEventEmitter.class)
+          .receiveEvent(getReactTag(), "topTextLayout", event);
+      } else {
+        ReactSoftExceptionLogger.logSoftException(
+          "ReactTextShadowNode",
+          new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
+      }
+    }
+
+    return YogaMeasureOutput.make(textView.getMeasuredWidth(), textView.getMeasuredHeight());
+  }
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
         @Override
@@ -73,90 +191,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   mPreparedSpannableText,
                   "Spannable element has not been prepared in onBeforeLayout");
 
-          Layout layout = measureSpannedText(text, width, widthMode);
+          TextView textView =
+            Assertions.assertNotNull(mInternalView, "mInternalView cannot be null");
 
-          if (mAdjustsFontSizeToFit) {
-            int initialFontSize = mTextAttributes.getEffectiveFontSize();
-            int currentFontSize = mTextAttributes.getEffectiveFontSize();
-            // Minimum font size is 4pts to match the iOS implementation.
-            int minimumFontSize =
-                (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
-            while (currentFontSize > minimumFontSize
-                && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
-                    || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
-              // TODO: We could probably use a smarter algorithm here. This will require 0(n)
-              // measurements
-              // based on the number of points the font size needs to be reduced by.
-              currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
-
-              float ratio = (float) currentFontSize / (float) initialFontSize;
-              ReactAbsoluteSizeSpan[] sizeSpans =
-                  text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
-              for (ReactAbsoluteSizeSpan span : sizeSpans) {
-                text.setSpan(
-                    new ReactAbsoluteSizeSpan(
-                        (int) Math.max((span.getSize() * ratio), minimumFontSize)),
-                    text.getSpanStart(span),
-                    text.getSpanEnd(span),
-                    text.getSpanFlags(span));
-                text.removeSpan(span);
-              }
-              layout = measureSpannedText(text, width, widthMode);
-            }
-          }
-
-          if (mShouldNotifyOnTextLayout) {
-            ThemedReactContext themedReactContext = getThemedContext();
-            WritableArray lines =
-                FontMetricsUtil.getFontMetrics(
-                    text, layout, sTextPaintInstance, themedReactContext);
-            WritableMap event = Arguments.createMap();
-            event.putArray("lines", lines);
-            if (themedReactContext.hasActiveReactInstance()) {
-              themedReactContext
-                  .getJSModule(RCTEventEmitter.class)
-                  .receiveEvent(getReactTag(), "topTextLayout", event);
-            } else {
-              ReactSoftExceptionLogger.logSoftException(
-                  "ReactTextShadowNode",
-                  new ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"));
-            }
-          }
-
-          final int lineCount =
-              mNumberOfLines == UNSET
-                  ? layout.getLineCount()
-                  : Math.min(mNumberOfLines, layout.getLineCount());
-
-          // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
-          // text that is wrapping), compute width using the longest line.
-          float layoutWidth = 0;
-          if (widthMode == YogaMeasureMode.EXACTLY) {
-            layoutWidth = width;
-          } else {
-            for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              float lineWidth = layout.getLineWidth(lineIndex);
-              if (lineWidth > layoutWidth) {
-                layoutWidth = lineWidth;
-              }
-            }
-            if (widthMode == YogaMeasureMode.AT_MOST && layoutWidth > width) {
-              layoutWidth = width;
-            }
-          }
-
-          if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
-            layoutWidth = (float) Math.ceil(layoutWidth);
-          }
-          float layoutHeight = height;
-          if (heightMode != YogaMeasureMode.EXACTLY) {
-            layoutHeight = layout.getLineBottom(lineCount - 1);
-            if (heightMode == YogaMeasureMode.AT_MOST && layoutHeight > height) {
-              layoutHeight = height;
-            }
-          }
-
-          return YogaMeasureOutput.make(layoutWidth, layoutHeight);
+          return measureWithView(text, textView, width, widthMode, height, heightMode);
         }
       };
 
