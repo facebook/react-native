@@ -13,6 +13,8 @@ import java.util.*
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
+internal const val DEFAULT_GROUP_STRING = "com.facebook.react"
+
 internal object DependencyUtils {
 
   /**
@@ -43,7 +45,11 @@ internal object DependencyUtils {
    * - Forcing the react-android/hermes-android version to the one specified in the package.json
    * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
    */
-  fun configureDependencies(project: Project, versionString: String) {
+  fun configureDependencies(
+      project: Project,
+      versionString: String,
+      groupString: String = DEFAULT_GROUP_STRING
+  ) {
     if (versionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
       eachProject.configurations.all { configuration ->
@@ -53,32 +59,36 @@ internal object DependencyUtils {
         // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
         configuration.resolutionStrategy.dependencySubstitution {
           it.substitute(it.module("com.facebook.react:react-native"))
-              .using(it.module("com.facebook.react:react-android:${versionString}"))
+              .using(it.module("${groupString}:react-android:${versionString}"))
               .because(
                   "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
           it.substitute(it.module("com.facebook.react:hermes-engine"))
-              .using(it.module("com.facebook.react:hermes-android:${versionString}"))
+              .using(it.module("${groupString}:hermes-android:${versionString}"))
               .because(
                   "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
         }
         configuration.resolutionStrategy.force(
-            "com.facebook.react:react-android:${versionString}",
-            "com.facebook.react:hermes-android:${versionString}",
+            "${groupString}:react-android:${versionString}",
+            "${groupString}:hermes-android:${versionString}",
         )
       }
     }
   }
 
-  fun readVersionString(propertiesFile: File): String {
+  fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
-    val versionString = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
+    val versionStringFromFile = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
-    return if (versionString.startsWith("0.0.0")) {
-      "$versionString-SNAPSHOT"
-    } else {
-      versionString
-    }
+    val versionString =
+        if (versionStringFromFile.startsWith("0.0.0")) {
+          "$versionStringFromFile-SNAPSHOT"
+        } else {
+          versionStringFromFile
+        }
+    // Returns Maven group for repos using different group for Maven artifacts
+    val groupString = reactAndroidProperties["GROUP"] as? String ?: DEFAULT_GROUP_STRING
+    return Pair(versionString, groupString)
   }
 
   fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =

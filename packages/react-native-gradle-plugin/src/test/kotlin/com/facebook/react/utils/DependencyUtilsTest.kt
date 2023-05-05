@@ -12,7 +12,7 @@ import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
-import com.facebook.react.utils.DependencyUtils.readVersionString
+import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import java.net.URI
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.testfixtures.ProjectBuilder
@@ -227,6 +227,24 @@ class DependencyUtilsTest {
   }
 
   @Test
+  fun configureDependencies_withVersionStringAndGroupString_appliesOnAllProjects() {
+    val rootProject = ProjectBuilder.builder().build()
+    val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
+    val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
+    appProject.plugins.apply("com.android.application")
+    libProject.plugins.apply("com.android.library")
+
+    configureDependencies(appProject, "1.2.3", "io.github.test")
+
+    val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
+    val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
+    assertTrue(appForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
+    assertTrue(appForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
+    assertTrue(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
+    assertTrue(libForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
+  }
+
+  @Test
   fun readVersionString_withCorrectVersionString_returnsIt() {
     val propertiesFile =
         tempFolder.newFile("gradle.properties").apply {
@@ -238,7 +256,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
 
     assertEquals("1000.0.0", versionString)
   }
@@ -255,7 +273,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
 
     assertEquals("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT", versionString)
   }
@@ -271,7 +289,7 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
     assertEquals("", versionString)
   }
 
@@ -287,8 +305,41 @@ class DependencyUtilsTest {
                   .trimIndent())
         }
 
-    val versionString = readVersionString(propertiesFile)
+    val versionString = readVersionAndGroupStrings(propertiesFile).first
     assertEquals("", versionString)
+  }
+
+  @Test
+  fun readGroupString_withCorrectGroupString_returnsIt() {
+    val propertiesFile =
+        tempFolder.newFile("gradle.properties").apply {
+          writeText(
+              """
+        GROUP=io.github.test
+        ANOTHER_PROPERTY=true
+      """
+                  .trimIndent())
+        }
+
+    val groupString = readVersionAndGroupStrings(propertiesFile).second
+
+    assertEquals("io.github.test", groupString)
+  }
+
+  @Test
+  fun readGroupString_withEmptyGroupString_returnsDefault() {
+    val propertiesFile =
+        tempFolder.newFile("gradle.properties").apply {
+          writeText(
+              """
+        ANOTHER_PROPERTY=true
+      """
+                  .trimIndent())
+        }
+
+    val groupString = readVersionAndGroupStrings(propertiesFile).second
+
+    assertEquals("com.facebook.react", groupString)
   }
 
   @Test
