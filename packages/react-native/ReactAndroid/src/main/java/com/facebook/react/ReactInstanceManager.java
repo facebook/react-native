@@ -96,7 +96,6 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIManagerHelper;
@@ -1374,11 +1373,9 @@ public class ReactInstanceManager {
 
       catalystInstance.setTurboModuleManager(turboModuleManager);
 
-      TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
-
       // Eagerly initialize TurboModules
-      for (String moduleName : registry.getEagerInitModuleNames()) {
-        registry.getModule(moduleName);
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
       }
     }
 
