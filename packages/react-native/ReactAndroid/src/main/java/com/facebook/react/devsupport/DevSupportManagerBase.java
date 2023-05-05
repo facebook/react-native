@@ -138,7 +138,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     mBundleStatus = new InspectorPackagerConnection.BundleStatus();
     mDevServerHelper =
         new DevServerHelper(
-            mDevSettings, mApplicationContext.getPackageName(), () -> mBundleStatus);
+            mDevSettings,
+            mApplicationContext.getPackageName(),
+            () -> mBundleStatus,
+            mDevSettings.getPackagerConnectionSettings());
     mBundleDownloadListener = devBundleDownloadListener;
 
     // Prepare shake gesture detector (will be started/stopped from #reload)
