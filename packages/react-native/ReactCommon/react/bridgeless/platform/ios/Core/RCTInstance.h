@@ -36,8 +36,6 @@ FB_RUNTIME_PROTOCOL
 // TODO (T74233481) - Delete this. Communication between Product Code <> RCTInstance should go through RCTHost.
 @protocol RCTInstanceDelegate <NSObject>
 
-@required
-
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
 @end

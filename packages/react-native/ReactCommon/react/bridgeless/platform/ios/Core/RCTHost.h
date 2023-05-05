@@ -38,6 +38,7 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 
 - (std::shared_ptr<facebook::react::JSEngineInstance>)getJSEngine;
 - (NSURL *)getBundleURL;
+- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
 @end
 
@@ -49,7 +50,6 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 @interface RCTHost : NSObject <ReactInstanceForwarding>
 
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-                    instanceDelegate:(id<RCTInstanceDelegate>)instanceDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                  jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
