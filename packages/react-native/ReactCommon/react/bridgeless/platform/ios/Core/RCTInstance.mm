@@ -19,7 +19,6 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJSScriptLoaderModule.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
@@ -259,12 +258,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
 {
   __weak RCTInstance *weakInstance = self;
-  if ([module respondsToSelector:@selector(setLoadScript:)]) {
-    ((id<RCTJSScriptLoaderModule>)module).loadScript = ^(RCTSource *source) {
-      [weakInstance loadScriptFromSource:(source)];
-    };
-  }
-
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
     ((id<RCTJSDispatcherModule>)module).dispatchToJSThread = ^(dispatch_block_t block) {
       __strong __typeof(self) strongSelf = weakInstance;
