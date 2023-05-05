@@ -215,9 +215,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module
+- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
 {
-  [self.batchedBridge attachBridgeAPIsToObjCModule:module];
+  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
 }
 
 - (void)didReceiveReloadCommand

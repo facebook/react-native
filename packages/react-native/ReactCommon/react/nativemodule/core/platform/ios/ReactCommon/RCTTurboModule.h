@@ -40,7 +40,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   // TODO(T65603471): Should we unify this with a Fabric abstraction?
   struct InitParams {
     std::string moduleName;
-    id<RCTBridgeModule> instance;
+    id<RCTTurboModule> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<CallInvoker> nativeInvoker;
     bool isSyncModule;
@@ -56,7 +56,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const jsi::Value *args,
       size_t count);
 
-  id<RCTBridgeModule> instance_;
+  id<RCTTurboModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
 
  protected:
