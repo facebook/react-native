@@ -784,6 +784,7 @@ public class SurfaceMountingManager {
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
+    UiThreadUtil.assertOnUiThread();
     if (isStopped()) {
       return;
     }
@@ -822,6 +823,7 @@ public class SurfaceMountingManager {
       @Nullable StateWrapper stateWrapper,
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
+    UiThreadUtil.assertOnUiThread();
     View view = null;
     ReactViewManagerWrapper viewManager = null;
 
