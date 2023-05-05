@@ -190,11 +190,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return _moduleRegistry;
 }
 
-- (NSArray *)getLoggingData
-{
-  return [[_instance performanceLogger] valuesForTags];
-}
-
 - (RCTSurfacePresenter *)getSurfacePresenter
 {
   return [_instance surfacePresenter];
