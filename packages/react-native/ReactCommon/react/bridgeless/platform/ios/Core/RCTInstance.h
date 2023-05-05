@@ -79,8 +79,6 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 
 - (void)invalidate;
 
-@property (nonatomic, readonly, strong) RCTPerformanceLogger *performanceLogger;
-
 @property (nonatomic, readonly, strong) RCTSurfacePresenter *surfacePresenter;
 
 @end

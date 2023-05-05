@@ -68,6 +68,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   __weak id<RCTTurboModuleManagerDelegate> _appTMMDelegate;
   __weak id<RCTInstanceDelegate> _delegate;
   RCTSurfacePresenter *_surfacePresenter;
+  RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   ReactInstance::BindingsInstallFunc _bindingsInstallFunc;

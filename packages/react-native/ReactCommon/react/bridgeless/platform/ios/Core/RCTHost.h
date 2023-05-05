@@ -71,8 +71,6 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 
 - (RCTModuleRegistry *)getModuleRegistry FB_OBJC_DIRECT;
 
-- (NSArray *)getLoggingData FB_OBJC_DIRECT;
-
 - (RCTSurfacePresenter *)getSurfacePresenter FB_OBJC_DIRECT;
 
 @end
