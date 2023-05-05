@@ -264,6 +264,70 @@ $payload.setProperty(runtime, \\"scale\\", $event.scale);
 }
 
 
+void EventsNativeComponentEventEmitter::onArrayEventType(OnArrayEventType $event) const {
+  dispatchEvent(\\"arrayEventType\\", [$event=std::move($event)](jsi::Runtime &runtime) {
+    auto $payload = jsi::Object(runtime);
+    
+    auto bool_array_event_prop = jsi::Array(runtime, $event.bool_array_event_prop.size());
+    size_t bool_array_event_propIndex = 0;
+    for (auto bool_array_event_propValue : $event.bool_array_event_prop) {
+      bool_array_event_prop.setValueAtIndex(runtime, bool_array_event_propIndex++, (bool)bool_array_event_propValue);
+    }
+    $payload.setProperty(runtime, \\"bool_array_event_prop\\", bool_array_event_prop);
+  
+
+    auto string_enum_event_prop = jsi::Array(runtime, $event.string_enum_event_prop.size());
+    size_t string_enum_event_propIndex = 0;
+    for (auto string_enum_event_propValue : $event.string_enum_event_prop) {
+      string_enum_event_prop.setValueAtIndex(runtime, string_enum_event_propIndex++, toString(string_enum_event_propValue));
+    }
+    $payload.setProperty(runtime, \\"string_enum_event_prop\\", string_enum_event_prop);
+  
+
+    auto array_array_event_prop = jsi::Array(runtime, $event.array_array_event_prop.size());
+    size_t array_array_event_propIndex = 0;
+    for (auto array_array_event_propValue : $event.array_array_event_prop) {
+      auto array_array_event_propArray = jsi::Array(runtime, array_array_event_propValue.size());
+      size_t array_array_event_propIndexInternal = 0;
+      for (auto array_array_event_propValueInternal : array_array_event_propValue) {
+        array_array_event_propArray.setValueAtIndex(runtime, array_array_event_propIndexInternal++, array_array_event_propValueInternal);
+      }
+      array_array_event_prop.setValueAtIndex(runtime, array_array_event_propIndex++, array_array_event_propArray);
+    }
+    $payload.setProperty(runtime, \\"array_array_event_prop\\", array_array_event_prop);
+  
+
+    auto array_object_event_prop = jsi::Array(runtime, $event.array_object_event_prop.size());
+    size_t array_object_event_propIndex = 0;
+    for (auto array_object_event_propValue : $event.array_object_event_prop) {
+      auto array_object_event_propObject = jsi::Object(runtime);
+      array_object_event_propObject.setProperty(runtime, \\"lat\\", array_object_event_propValue.lat);
+array_object_event_propObject.setProperty(runtime, \\"lon\\", array_object_event_propValue.lon);
+
+    auto names = jsi::Array(runtime, array_object_event_propValue.names.size());
+    size_t namesIndex = 0;
+    for (auto namesValue : array_object_event_propValue.names) {
+      names.setValueAtIndex(runtime, namesIndex++, namesValue);
+    }
+    array_object_event_propObject.setProperty(runtime, \\"names\\", names);
+  
+      array_object_event_prop.setValueAtIndex(runtime, array_object_event_propIndex++, array_object_event_propObject);
+    }
+    $payload.setProperty(runtime, \\"array_object_event_prop\\", array_object_event_prop);
+  
+
+    auto array_mixed_event_prop = jsi::Array(runtime, $event.array_mixed_event_prop.size());
+    size_t array_mixed_event_propIndex = 0;
+    for (auto array_mixed_event_propValue : $event.array_mixed_event_prop) {
+      array_mixed_event_prop.setValueAtIndex(runtime, array_mixed_event_propIndex++, jsi::valueFromDynamic(runtime, array_mixed_event_propValue));
+    }
+    $payload.setProperty(runtime, \\"array_mixed_event_prop\\", array_mixed_event_prop);
+  
+    return $payload;
+  });
+}
+
+
 void EventsNativeComponentEventEmitter::onEventDirect(OnEventDirect $event) const {
   dispatchEvent(\\"eventDirect\\", [$event=std::move($event)](jsi::Runtime &runtime) {
     auto $payload = jsi::Object(runtime);

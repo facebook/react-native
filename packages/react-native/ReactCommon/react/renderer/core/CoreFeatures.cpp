@@ -15,5 +15,6 @@ bool CoreFeatures::blockPaintForUseLayoutEffect = false;
 bool CoreFeatures::useNativeState = false;
 bool CoreFeatures::cacheNSTextStorage = false;
 bool CoreFeatures::cacheLastTextMeasurement = false;
+bool CoreFeatures::cancelImageDownloadsOnRecycle = false;
 
 } // namespace facebook::react

@@ -38,7 +38,7 @@
 #import "RCTJSThreadManager.h"
 #import "RCTPerformanceLoggerUtils.h"
 
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
 #import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
@@ -76,6 +76,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
+  RCTJSThreadManager *_jsThreadManager;
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
@@ -318,7 +319,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)loadJSBundle:(NSURL *)sourceURL FB_OBJC_DIRECT
 {
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
     id<RCTDevLoadingViewProtocol> loadingView =
         (id<RCTDevLoadingViewProtocol>)[_turboModuleManager moduleForName:"DevLoadingView"];
@@ -326,7 +327,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 #endif
 
-  __weak RCTPerformanceLogger *weakPerformanceLogger = _performanceLogger;
   __weak __typeof(self) weakSelf = self;
   [RCTJavaScriptLoader loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
@@ -335,7 +335,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           return;
         }
 
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
         id<RCTDevLoadingViewProtocol> loadingView =
             (id<RCTDevLoadingViewProtocol>)[strongSelf->_turboModuleManager moduleForName:"DevLoadingView"];
         [loadingView updateProgress:progressData];
@@ -358,7 +358,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
             (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
         [strongSelf loadScriptFromSource:source];
         // Set up hot module reloading in Dev only.
-        [weakPerformanceLogger markStopForTag:RCTPLScriptDownload];
+        [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
       }];
 }

@@ -166,7 +166,7 @@ public class ReactSurfaceView extends ReactRootView {
     if (reactHost != null) {
       String errorMessage = Objects.toString(t.getMessage(), "");
       Exception e = new IllegalViewOperationException(errorMessage, this, t);
-      reactHost.handleException(e);
+      reactHost.handleHostException(e);
     }
   }
 

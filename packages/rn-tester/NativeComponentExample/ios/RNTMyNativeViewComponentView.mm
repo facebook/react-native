@@ -58,6 +58,44 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
+  const auto &oldViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(_props);
+  const auto &newViewProps = *std::static_pointer_cast<RNTMyNativeViewProps const>(props);
+
+  if (oldViewProps.values != newViewProps.values) {
+    if (_eventEmitter) {
+      std::vector<int> newVector = {};
+      std::vector<bool> newBoolVector = {};
+      std::vector<Float> newFloatVector = {};
+      std::vector<double> newDoubleVector = {};
+      std::vector<RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos> newYesNoVector = {};
+      std::vector<std::string> newStringVector = {};
+      std::vector<RNTMyNativeViewEventEmitter::OnIntArrayChangedLatLons> newLatLonVector = {};
+      std::vector<std::vector<int>> newIntVectorVector = {};
+      for (auto val : newViewProps.values) {
+        newVector.push_back(val * 2);
+        newBoolVector.push_back(val % 2 ? true : false);
+        newFloatVector.push_back(val * 3.14);
+        newDoubleVector.push_back(val / 3.14);
+        newYesNoVector.push_back(
+            val % 2 ? RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos::Yep
+                    : RNTMyNativeViewEventEmitter::OnIntArrayChangedYesNos::Nope);
+        newStringVector.push_back(std::to_string(val));
+        newLatLonVector.push_back({-1.0 * val, 2.0 * val});
+        newIntVectorVector.push_back({val, val, val});
+      }
+      RNTMyNativeViewEventEmitter::OnIntArrayChanged value = {
+          newVector,
+          newBoolVector,
+          newFloatVector,
+          newDoubleVector,
+          newYesNoVector,
+          newStringVector,
+          newLatLonVector,
+          newIntVectorVector};
+      std::static_pointer_cast<RNTMyNativeViewEventEmitter const>(_eventEmitter)->onIntArrayChanged(value);
+    }
+  }
+
   [super updateProps:props oldProps:oldProps];
 }
 

@@ -285,6 +285,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::cacheNSTextStorage = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
+    CoreFeatures::cancelImageDownloadsOnRecycle = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
