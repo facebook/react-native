@@ -406,7 +406,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       CallInvokerHolderImpl nativeCallInvokerHolder,
-      TurboModuleManagerDelegate tmmDelegate);
+      @Nullable TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings(boolean shouldCreateLegacyModules);
 
