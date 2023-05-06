@@ -407,7 +407,7 @@ static Class getFallbackClassFromName(const char *name)
 
     __block id<RCTBridgeModule> module = nil;
 
-    if ([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)]) {
+    if ([moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
       __weak __typeof(self) weakSelf = self;
       dispatch_block_t work = ^{
         auto strongSelf = weakSelf;
