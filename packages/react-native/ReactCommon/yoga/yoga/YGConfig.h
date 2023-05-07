@@ -14,8 +14,13 @@
 
 namespace facebook {
 namespace yoga {
-namespace detail {
 
+// Whether moving a node from config "a" to config "b" should dirty previously
+// calculated layout results.
+bool configUpdateInvalidatesLayout(YGConfigRef a, YGConfigRef b);
+
+// Internal variants of log functions, currently used only by JNI bindings.
+// TODO: Reconcile this with the public API
 using LogWithContextFn = int (*)(
     YGConfigRef config,
     YGNodeRef node,
@@ -29,8 +34,12 @@ using CloneWithContextFn = YGNodeRef (*)(
     int childIndex,
     void* cloneContext);
 
+using ExperimentalFeatureSet =
+    facebook::yoga::detail::EnumBitset<YGExperimentalFeature>;
+
 #pragma pack(push)
 #pragma pack(1)
+// Packed structure of <32-bit options to miminize size per node.
 struct YGConfigFlags {
   bool useWebDefaults : 1;
   bool printTree : 1;
@@ -39,7 +48,6 @@ struct YGConfigFlags {
 };
 #pragma pack(pop)
 
-} // namespace detail
 } // namespace yoga
 } // namespace facebook
 
@@ -56,6 +64,7 @@ struct YOGA_EXPORT YGConfig {
       YGExperimentalFeature feature,
       bool enabled);
   bool isExperimentalFeatureEnabled(YGExperimentalFeature feature) const;
+  facebook::yoga::ExperimentalFeatureSet getEnabledExperiments() const;
 
   void setErrata(YGErrata errata);
   YGErrata getErrata() const;
@@ -67,13 +76,12 @@ struct YOGA_EXPORT YGConfig {
   void* getContext() const;
 
   void setLogger(YGLogger logger);
-  void setLogger(facebook::yoga::detail::LogWithContextFn logger);
+  void setLogger(facebook::yoga::LogWithContextFn logger);
   void setLogger(std::nullptr_t);
   void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list) const;
 
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode);
-  void setCloneNodeCallback(
-      facebook::yoga::detail::CloneWithContextFn cloneNode);
+  void setCloneNodeCallback(facebook::yoga::CloneWithContextFn cloneNode);
   void setCloneNodeCallback(std::nullptr_t);
   YGNodeRef cloneNode(
       YGNodeRef node,
@@ -83,17 +91,16 @@ struct YOGA_EXPORT YGConfig {
 
 private:
   union {
-    facebook::yoga::detail::CloneWithContextFn withContext;
+    facebook::yoga::CloneWithContextFn withContext;
     YGCloneNodeFunc noContext;
   } cloneNodeCallback_;
   union {
-    facebook::yoga::detail::LogWithContextFn withContext;
+    facebook::yoga::LogWithContextFn withContext;
     YGLogger noContext;
   } logger_;
 
-  facebook::yoga::detail::YGConfigFlags flags_{};
-  facebook::yoga::detail::EnumBitset<YGExperimentalFeature>
-      experimentalFeatures_{};
+  facebook::yoga::YGConfigFlags flags_{};
+  facebook::yoga::ExperimentalFeatureSet experimentalFeatures_{};
   YGErrata errata_ = YGErrataNone;
   float pointScaleFactor_ = 1.0f;
   void* context_ = nullptr;

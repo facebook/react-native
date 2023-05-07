@@ -7,7 +7,18 @@
 
 #include "YGConfig.h"
 
-using namespace facebook::yoga::detail;
+using namespace facebook::yoga;
+
+namespace facebook {
+namespace yoga {
+bool configUpdateInvalidatesLayout(YGConfigRef a, YGConfigRef b) {
+  return a->getErrata() != b->getErrata() ||
+      a->getEnabledExperiments() != b->getEnabledExperiments() ||
+      a->getPointScaleFactor() != b->getPointScaleFactor() ||
+      a->useWebDefaults() != b->useWebDefaults();
+}
+} // namespace yoga
+} // namespace facebook
 
 YGConfig::YGConfig(YGLogger logger) : cloneNodeCallback_{nullptr} {
   setLogger(logger);
@@ -38,6 +49,10 @@ void YGConfig::setExperimentalFeatureEnabled(
 bool YGConfig::isExperimentalFeatureEnabled(
     YGExperimentalFeature feature) const {
   return experimentalFeatures_.test(feature);
+}
+
+ExperimentalFeatureSet YGConfig::getEnabledExperiments() const {
+  return experimentalFeatures_;
 }
 
 void YGConfig::setErrata(YGErrata errata) {
