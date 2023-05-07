@@ -65,10 +65,6 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
       Integer firstVisibleIndex = null;
       Integer lastVisibleIndex = null;
 
-      if (!(contentView instanceof ViewGroup)) {
-        return;
-      }
-
       for (int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
         View nextChild = ((ViewGroup) contentView).getChildAt(index);
         boolean isVisible;
@@ -105,7 +101,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
           }
         }
 
-        if (isVisible == true && accessibilityCollectionItem != null) {
+        if (isVisible && accessibilityCollectionItem != null) {
           if (firstVisibleIndex == null) {
             firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
           }
