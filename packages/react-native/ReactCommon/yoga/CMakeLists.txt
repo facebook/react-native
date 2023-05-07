@@ -6,17 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -O3
-        -Wall
-        -Wpedantic
-        -Wno-gnu-zero-variadic-macro-arguments)
+add_subdirectory(yoga)
 
-file(GLOB_RECURSE yogacore_SRC CONFIGURE_DEPENDS yoga/*.cpp)
-add_library(yogacore STATIC ${yogacore_SRC})
-
+# Allow RN Fabric to include private Yoga APIs for now
 target_include_directories(yogacore PUBLIC .)
-
-target_link_libraries(yogacore android log)

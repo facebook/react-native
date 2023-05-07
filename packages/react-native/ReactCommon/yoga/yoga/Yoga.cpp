@@ -14,11 +14,11 @@
 #include <yoga/Yoga.h>
 
 #include "log.h"
+#include "Event.h"
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
-#include "event/event.h"
 
 using namespace facebook::yoga;
 using detail::Log;

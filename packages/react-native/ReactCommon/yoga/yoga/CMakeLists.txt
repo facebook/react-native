@@ -15,7 +15,7 @@ endif()
 include(CheckIPOSupported)
 
 set(YOGA_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
-include(${YOGA_ROOT}/cmake/project-defaults.cmake)
+include(cmake/project-defaults.cmake)
 
 
 file(GLOB SOURCES CONFIGURE_DEPENDS
@@ -37,5 +37,5 @@ endif()
 
 target_include_directories(yogacore
     PUBLIC
-    $<BUILD_INTERFACE:${YOGA_ROOT}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/yoga>)

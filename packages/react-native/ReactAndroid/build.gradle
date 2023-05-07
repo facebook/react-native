@@ -144,6 +144,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "yoga",
                 [
                     new Pair("../ReactCommon/yoga/", ""),
+                    new Pair("../ReactCommon/yoga/include/", ""),
                     new Pair("src/main/jni/first-party/yogajni/jni", "")
                 ]
             ),
