@@ -65,6 +65,10 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
       Integer firstVisibleIndex = null;
       Integer lastVisibleIndex = null;
 
+      if (!(contentView instanceof ViewGroup)) {
+        return;
+      }
+
       for (int index = 0; index < ((ViewGroup) contentView).getChildCount(); index++) {
         View nextChild = ((ViewGroup) contentView).getChildAt(index);
         boolean isVisible;
