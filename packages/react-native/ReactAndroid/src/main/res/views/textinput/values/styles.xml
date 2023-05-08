@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="Theme.ReactNative.TextInput.DefaultBackground" parent="android:Widget.EditText">
+
+    <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+
+  </style>
+
+  <style name="TextInput">
+
+    <item name="rnTextInputStyle">@style/Theme.ReactNative.TextInput.DefaultBackground</item>
+
+  </style>
+
+</resources>
