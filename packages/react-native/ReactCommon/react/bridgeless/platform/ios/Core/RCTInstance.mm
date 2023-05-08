@@ -82,6 +82,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 }
 
+#pragma mark - Public
+
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
                    bundleManager:(RCTBundleManager *)bundleManager
@@ -118,16 +120,95 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(notifyEventDispatcherObserversOfEvent_DEPRECATED:)
+                                             selector:@selector(_notifyEventDispatcherObserversOfEvent_DEPRECATED:)
                                                  name:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
                                                object:nil];
 
-    [self start];
+    [self _start];
   }
   return self;
 }
 
-- (void)start
+- (void)invalidate
+{
+  std::lock_guard<std::mutex> lock(self->_invalidationMutex);
+  self->_valid = false;
+
+  [_surfacePresenter suspend];
+  [_jsThreadManager dispatchToJSThread:^{
+    /**
+     * Every TurboModule is invalidated on its own method queue.
+     * TurboModuleManager invalidate blocks the calling thread until all TurboModules are invalidated.
+     */
+    [self->_turboModuleManager invalidate];
+
+    // Clean up all the Resources
+    self->_reactInstance = nullptr;
+    self->_jsEngineInstance = nullptr;
+    self->_appTMMDelegate = nil;
+    self->_delegate = nil;
+    self->_displayLink = nil;
+
+    self->_turboModuleManager = nil;
+    self->_performanceLogger = nil;
+
+    // Terminate the JavaScript thread, so that no other work executes after this block.
+    self->_jsThreadManager = nil;
+  }];
+}
+
+#pragma mark - RCTTurboModuleManagerDelegate
+
+- (Class)getModuleClassFromName:(const char *)name
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getModuleClassFromName:)]) {
+    return [_appTMMDelegate getModuleClassFromName:name];
+  }
+
+  return nil;
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
+    id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
+    [self _attachBridgelessAPIsToModule:module];
+    return module;
+  }
+
+  return nil;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getTurboModule:jsInvoker:)]) {
+    return [_appTMMDelegate getTurboModule:name jsInvoker:jsInvoker];
+  }
+
+  return nullptr;
+}
+
+#pragma mark - ReactInstanceForwarding
+
+- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  if (_valid) {
+    _reactInstance->callFunctionOnModule(
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+  }
+}
+
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
+{
+  if (_valid) {
+    self->_reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
+  }
+}
+
+#pragma mark - Private
+
+- (void)_start
 {
   // Set up timers
   auto objCTimerRegistry = std::make_unique<ObjCTimerRegistry>();
@@ -219,41 +300,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
     // Attempt to load bundle synchronously, fallback to asynchronously.
     [strongSelf->_performanceLogger markStartForTag:RCTPLScriptDownload];
-    [strongSelf loadJSBundle:[strongSelf->_bridgeModuleDecorator.bundleManager bundleURL]];
+    [strongSelf _loadJSBundle:[strongSelf->_bridgeModuleDecorator.bundleManager bundleURL]];
   });
 
   [_performanceLogger markStopForTag:RCTPLReactInstanceInit];
-}
-
-#pragma mark - RCTTurboModuleManagerDelegate
-- (Class)getModuleClassFromName:(const char *)name
-{
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    return [_appTMMDelegate getModuleClassFromName:name];
-  }
-
-  return nil;
-}
-
-- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
-{
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
-    [self _attachBridgelessAPIsToModule:module];
-    return module;
-  }
-
-  return nil;
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-{
-  if ([_appTMMDelegate respondsToSelector:@selector(getTurboModule:jsInvoker:)]) {
-    return [_appTMMDelegate getTurboModule:name jsInvoker:jsInvoker];
-  }
-
-  return nullptr;
 }
 
 - (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
@@ -287,26 +337,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [_bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
 }
 
-#pragma mark - ReactInstanceForwarding
-
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
-{
-  if (_valid) {
-    _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
-  }
-}
-
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
-{
-  if (_valid) {
-    self->_reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
-  }
-}
-
-#pragma mark - Private
-
-- (void)loadJSBundle:(NSURL *)sourceURL FB_OBJC_DIRECT
+- (void)_loadJSBundle:(NSURL *)sourceURL FB_OBJC_DIRECT
 {
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
@@ -342,17 +373,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           [strongSelf invalidate];
           return;
         }
-        // DevSettings module is needed by loadScriptFromSource's callback so prior initialization is required
+        // DevSettings module is needed by _loadScriptFromSource's callback so prior initialization is required
         RCTDevSettings *const devSettings =
             (RCTDevSettings *)[strongSelf->_turboModuleManager moduleForName:"DevSettings"];
-        [strongSelf loadScriptFromSource:source];
+        [strongSelf _loadScriptFromSource:source];
         // Set up hot module reloading in Dev only.
         [strongSelf->_performanceLogger markStopForTag:RCTPLScriptDownload];
         [devSettings setupHMRClientWithBundleURL:sourceURL];
       }];
 }
 
-- (void)loadScriptFromSource:(RCTSource *)source FB_OBJC_DIRECT
+- (void)_loadScriptFromSource:(RCTSource *)source FB_OBJC_DIRECT
 {
   std::lock_guard<std::mutex> lock(self->_invalidationMutex);
   if (!_valid) {
@@ -370,7 +401,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
-- (void)notifyEventDispatcherObserversOfEvent_DEPRECATED:(NSNotification *)notification
+- (void)_notifyEventDispatcherObserversOfEvent_DEPRECATED:(NSNotification *)notification
 {
   NSDictionary *userInfo = notification.userInfo;
   id<RCTEvent> event = [userInfo objectForKey:@"event"];
@@ -381,34 +412,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                    lazilyLoadIfNecessary:YES];
     [legacyEventDispatcher notifyObserversOfEvent:event];
   }
-}
-
-- (void)invalidate
-{
-  std::lock_guard<std::mutex> lock(self->_invalidationMutex);
-  self->_valid = false;
-
-  [_surfacePresenter suspend];
-  [_jsThreadManager dispatchToJSThread:^{
-    /**
-     * Every TurboModule is invalidated on its own method queue.
-     * TurboModuleManager invalidate blocks the calling thread until all TurboModules are invalidated.
-     */
-    [self->_turboModuleManager invalidate];
-
-    // Clean up all the Resources
-    self->_reactInstance = nullptr;
-    self->_jsEngineInstance = nullptr;
-    self->_appTMMDelegate = nil;
-    self->_delegate = nil;
-    self->_displayLink = nil;
-
-    self->_turboModuleManager = nil;
-    self->_performanceLogger = nil;
-
-    // Terminate the JavaScript thread, so that no other work executes after this block.
-    self->_jsThreadManager = nil;
-  }];
 }
 
 @end
