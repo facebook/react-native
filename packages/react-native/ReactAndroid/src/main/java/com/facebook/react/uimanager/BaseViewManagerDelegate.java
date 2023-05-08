@@ -89,6 +89,9 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
       case ViewProps.IMPORTANT_FOR_ACCESSIBILITY:
         mViewManager.setImportantForAccessibility(view, (String) value);
         break;
+      case ViewProps.ROLE:
+        mViewManager.setRole(view, (String) value);
+        break;
       case ViewProps.NATIVE_ID:
         mViewManager.setNativeId(view, (String) value);
         break;
