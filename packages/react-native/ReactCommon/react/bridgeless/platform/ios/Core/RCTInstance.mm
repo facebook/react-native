@@ -131,8 +131,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)invalidate
 {
-  std::lock_guard<std::mutex> lock(self->_invalidationMutex);
-  self->_valid = false;
+  std::lock_guard<std::mutex> lock(_invalidationMutex);
+  _valid = false;
 
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
@@ -202,7 +202,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {
   if (_valid) {
-    self->_reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
+    _reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
   }
 }
 
@@ -320,7 +320,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   if ([module respondsToSelector:@selector(setSurfacePresenter:)]) {
-    [module performSelector:@selector(setSurfacePresenter:) withObject:self->_surfacePresenter];
+    [module performSelector:@selector(setSurfacePresenter:) withObject:_surfacePresenter];
   }
 
   // Replaces bridge.isInspectable
@@ -385,14 +385,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)_loadScriptFromSource:(RCTSource *)source FB_OBJC_DIRECT
 {
-  std::lock_guard<std::mutex> lock(self->_invalidationMutex);
+  std::lock_guard<std::mutex> lock(_invalidationMutex);
   if (!_valid) {
     return;
   }
 
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-  self->_reactInstance->loadScript(std::move(script), url);
+  _reactInstance->loadScript(std::move(script), url);
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
 
   if (_onInitialBundleLoad) {
