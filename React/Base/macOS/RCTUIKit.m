@@ -441,6 +441,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 {
   if (self = [super initWithFrame:frame]) {
     self.scrollEnabled = YES;
+    self.drawsBackground = NO;
   }
   
   return self;
