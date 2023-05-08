@@ -135,6 +135,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.window.autorecalculatesKeyViewLoop = YES;
   NSViewController *rootViewController = [NSViewController new];
   rootViewController.view = rootView;
+  rootView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
   rootView.frame = frame;
   self.window.contentViewController = rootViewController;
   [self.window makeKeyAndOrderFront:self];
