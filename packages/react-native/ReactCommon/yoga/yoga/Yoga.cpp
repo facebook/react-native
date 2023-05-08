@@ -4075,6 +4075,10 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
   }
 }
 
+YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigRef config) {
+  return config->getPointScaleFactor();
+}
+
 static void YGRoundToPixelGrid(
     const YGNodeRef node,
     const double pointScaleFactor,
