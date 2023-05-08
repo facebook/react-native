@@ -27,14 +27,14 @@ type RequiredProps<ItemT> = {|
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
    */
-  data: ?$ReadOnlyArray<ItemT>,
+  data: ?$ReadOnly<$ArrayLike<ItemT>>,
 |};
 type OptionalProps<ItemT> = {|
   renderItem?: ?RenderItemType<ItemT>,
   columnWrapperStyle?: ViewStyleProp,
   extraData?: any,
   getItemLayout?: (
-    data: ?Array<ItemT>,
+    data: ?$ReadOnly<$ArrayLike<ItemT>>,
     index: number,
   ) => {
     length: number,
