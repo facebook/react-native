@@ -21,9 +21,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@UnstableReactNativeAPI
+@OptIn(UnstableReactNativeAPI::class)
 @Config(shadows = [ShadowSoLoader::class])
 class ReactInstanceDelegateTest {
+
+  /** Mock test for ReactInstanceDelegate, used to setup the process to create a stable API */
   @Test
   fun testReactInstanceDelegateCreation() {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
