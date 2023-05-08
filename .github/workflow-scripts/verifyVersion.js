@@ -23,7 +23,7 @@ module.exports = async (github, context) => {
   if (reportedVersionIsNightly(issueVersionUnparsed, issueVersion)) return;
 
   if (!issueVersion) {
-    return 'Needs: Version Info';
+    return {label: 'Needs: Version Info'};
   }
 
   // Ensure the version matches one we support
@@ -43,7 +43,7 @@ module.exports = async (github, context) => {
   const latestVersion = parseVersionFromString(latestRelease.name);
 
   if (!isVersionSupported(issueVersion, latestVersion)) {
-    return 'Type: Unsupported Version';
+    return {label: 'Type: Unsupported Version'};
   }
 
   // We want to encourage users to repro the issue on the highest available patch for the given minor.
@@ -52,7 +52,10 @@ module.exports = async (github, context) => {
     recentReleases,
   );
   if (latestPatchForVersion > issueVersion.patch) {
-    return 'Needs: Verify on Latest Version';
+    return {
+      label: 'Newer Patch Available',
+      newestPatch: `${issueVersion.major}.${issueVersion.minor}.${latestPatchForVersion}`,
+    };
   }
 };
 
