@@ -23,7 +23,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @OptIn(UnstableReactNativeAPI::class)
 @Config(shadows = [ShadowSoLoader::class])
-class ReactInstanceDelegateTest {
+class ReactHostDelegateTest {
 
   /** Mock test for ReactInstanceDelegate, used to setup the process to create a stable API */
   @Test
@@ -38,7 +38,7 @@ class ReactInstanceDelegateTest {
     val reactPackages = listOf(reactPackage)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
     val delegate =
-        ReactInstanceDelegate.ReactInstanceDelegateBase(
+        ReactHostDelegate.ReactHostDelegateBase(
             jsMainModulePathMocked,
             jsBundleLoader = jsBundleLoader,
             reactPackages = reactPackages,

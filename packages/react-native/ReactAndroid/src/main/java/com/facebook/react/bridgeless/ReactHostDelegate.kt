@@ -20,7 +20,7 @@ import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 /** TODO: add javadoc for class and methods */
 @ThreadSafe
 @UnstableReactNativeAPI
-interface ReactInstanceDelegate {
+interface ReactHostDelegate {
   val jSMainModulePath: String
 
   val bindingsInstaller: BindingsInstaller
@@ -38,7 +38,7 @@ interface ReactInstanceDelegate {
   fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig
 
   @UnstableReactNativeAPI
-  class ReactInstanceDelegateBase(
+  class ReactHostDelegateBase(
       override val jSMainModulePath: String,
       override val bindingsInstaller: BindingsInstaller,
       override val reactPackages: List<ReactPackage>,
@@ -47,7 +47,7 @@ interface ReactInstanceDelegate {
       private val jsEngineInstance: JSEngineInstance,
       private val reactNativeConfig: ReactNativeConfig,
       private val exceptionHandler: (Exception) -> Unit = {}
-  ) : ReactInstanceDelegate {
+  ) : ReactHostDelegate {
     override fun getJSBundleLoader(context: Context) = jsBundleLoader
 
     override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
