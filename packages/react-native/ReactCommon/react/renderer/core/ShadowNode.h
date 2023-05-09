@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <butter/small_vector.h>
@@ -224,5 +225,9 @@ class ShadowNode : public Sealable,
    */
   ShadowNodeTraits traits_;
 };
+
+static_assert(
+    std::has_virtual_destructor<ShadowNode>::value,
+    "ShadowNode must have a virtual destructor");
 
 } // namespace facebook::react
