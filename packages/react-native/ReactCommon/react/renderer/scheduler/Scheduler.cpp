@@ -131,6 +131,9 @@ Scheduler::Scheduler(
   CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
       "react_fabric:block_paint_for_use_layout_effect");
 
+  CoreFeatures::cacheLastTextMeasurement =
+      reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");
+
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
         componentDescriptorRegistry_);
