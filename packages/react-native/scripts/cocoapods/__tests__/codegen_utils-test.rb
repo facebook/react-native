@@ -544,6 +544,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             [
               "\"$(PODS_ROOT)/boost\"",
               "\"$(PODS_ROOT)/RCT-Folly\"",
+              "\"$(PODS_ROOT)/DoubleConversion\"",
               "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
               "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
               "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
@@ -551,6 +552,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             ].join(' ')
           },
           'dependencies': {
+            "DoubleConversion": [],
             "FBReactNativeSpec":  [],
             "RCT-Folly": [],
             "RCTRequired": [],
@@ -563,7 +565,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
             "React-NativeModulesApple": [],
-            "glog": []
+            "glog": [],
           }
         }
     end

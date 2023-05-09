@@ -137,6 +137,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             [
                 { :dependency_name => "React-Core" },
                 { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+                { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "React-Codegen" },
                 { :dependency_name => "RCTRequired" },
@@ -144,6 +145,9 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "ReactCommon/turbomodule/bridging" },
                 { :dependency_name => "ReactCommon/turbomodule/core" },
                 { :dependency_name => "React-NativeModulesApple" },
+                { :dependency_name => "Yoga" },
+                { :dependency_name => "React-Fabric" },
+                { :dependency_name => "React-graphics" },
                 { :dependency_name => "hermes-engine" }
         ])
     end
@@ -169,6 +173,7 @@ class NewArchitectureTests < Test::Unit::TestCase
             [
                 { :dependency_name => "React-Core" },
                 { :dependency_name => "RCT-Folly", "version"=>"2021.07.22.00" },
+                { :dependency_name => "glog" }
             ]
         )
     end

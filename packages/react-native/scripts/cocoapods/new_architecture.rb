@@ -108,6 +108,7 @@ class NewArchitectureHelper
 
         spec.dependency "React-Core"
         spec.dependency "RCT-Folly", '2021.07.22.00'
+        spec.dependency "glog"
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
@@ -119,6 +120,9 @@ class NewArchitectureHelper
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
             spec.dependency "React-NativeModulesApple"
+            spec.dependency "Yoga"
+            spec.dependency "React-Fabric"
+            spec.dependency "React-graphics"
 
             if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
                 spec.dependency "hermes-engine"

@@ -80,6 +80,7 @@ class CodegenUtils
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
+          "\"$(PODS_ROOT)/DoubleConversion\"",
           "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
@@ -129,8 +130,9 @@ class CodegenUtils
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
-            "React-NativeModulesApple": [],
+            "React-NativeModulesApple": [], 
             "glog": [],
+            "DoubleConversion": [],
           }
         }
 
