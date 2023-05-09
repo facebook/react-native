@@ -84,7 +84,7 @@ internal object DependencyUtils {
     val versionStringFromFile = reactAndroidProperties["VERSION_NAME"] as? String ?: ""
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
-        if (versionStringFromFile.startsWith("0.0.0")) {
+        if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
           "$versionStringFromFile-SNAPSHOT"
         } else {
           versionStringFromFile
