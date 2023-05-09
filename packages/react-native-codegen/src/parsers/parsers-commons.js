@@ -337,7 +337,11 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(
+    value,
+    types,
+    parser,
+  ));
 
   throwIfModuleTypeIsUnsupported(
     hasteModuleName,

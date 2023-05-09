@@ -60,7 +60,7 @@ function translateTypeAnnotation(
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(flowTypeAnnotation, types);
+    resolveTypeAnnotation(flowTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {

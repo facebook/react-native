@@ -73,6 +73,11 @@ export interface Parser {
   typeParameterInstantiation: string;
 
   /**
+   * TypeAlias property of the Parser
+   */
+  typeAlias: string;
+
+  /**
    * Given a declaration, it returns true if it is a property
    */
   isProperty(property: $FlowFixMe): boolean;

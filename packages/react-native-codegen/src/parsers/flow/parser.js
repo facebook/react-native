@@ -50,6 +50,7 @@ const {
 
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
+  typeAlias: string = 'TypeAlias';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
