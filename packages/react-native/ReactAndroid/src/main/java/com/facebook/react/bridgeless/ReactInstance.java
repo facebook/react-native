@@ -75,7 +75,7 @@ final class ReactInstance {
 
   @DoNotStrip private final HybridData mHybridData;
 
-  private final ReactInstanceDelegate mDelegate;
+  private final ReactHostDelegate mDelegate;
   private final BridgelessReactContext mBridgelessReactContext;
 
   private final ReactQueueConfiguration mQueueConfiguration;
@@ -89,7 +89,7 @@ final class ReactInstance {
 
   /* package */ ReactInstance(
       BridgelessReactContext bridgelessReactContext,
-      ReactInstanceDelegate delegate,
+      ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       DevSupportManager devSupportManager,
       QueueThreadExceptionHandler exceptionHandler,
