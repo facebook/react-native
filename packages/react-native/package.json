@@ -9,7 +9,16 @@
     "directory": "packages/react-native"
   },
   "homepage": "https://reactnative.dev/",
-  "keywords": ["react", "react-native", "android", "ios", "mobile", "cross-platform", "app-framework", "mobile-development"],
+  "keywords": [
+    "react",
+    "react-native",
+    "android",
+    "ios",
+    "mobile",
+    "cross-platform",
+    "app-framework",
+    "mobile-development"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=16"
@@ -111,7 +120,7 @@
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
     "promise": "^8.3.0",
-    "react-devtools-core": "^4.27.2",
+    "react-devtools-core": "^4.27.7",
     "react-refresh": "^0.4.0",
     "react-shallow-renderer": "^16.15.0",
     "regenerator-runtime": "^0.13.2",
