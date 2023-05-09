@@ -354,6 +354,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
         ])
@@ -377,6 +378,7 @@ class ReactNativePodsUtils
             "React-Core",
             "React-CoreModules",
             "React-Fabric",
+            "React-FabricImage",
             "React-ImageManager",
             "React-RCTActionSheet",
             "React-RCTAnimation",
