@@ -34,6 +34,8 @@ RCT_EXTERN NSString *const RCTHostWillReloadNotification;
  */
 RCT_EXTERN NSString *const RCTHostDidReloadNotification;
 
+typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProvider)(void);
+
 @protocol RCTHostDelegate <NSObject>
 
 - (std::shared_ptr<facebook::react::JSEngineInstance>)getJSEngine;
@@ -53,7 +55,8 @@ RCT_EXTERN NSString *const RCTHostDidReloadNotification;
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                  jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
-    NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
+                    jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER
+    FB_OBJC_DIRECT;
 
 /**
  * This function initializes an RCTInstance if one does not yet exist.  This function is currently only called on the
