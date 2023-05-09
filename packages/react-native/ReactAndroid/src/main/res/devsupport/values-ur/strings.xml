@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: ur_PK -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">مقامی دیو مینو پر ردعمل ظاہر کریں (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">چل رہا ہے %1$s</string>
 </resources>
