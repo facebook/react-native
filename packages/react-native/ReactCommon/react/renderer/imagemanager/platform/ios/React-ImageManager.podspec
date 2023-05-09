@@ -61,4 +61,5 @@ Pod::Spec.new do |s|
   s.dependency "React-Fabric"
   s.dependency "React-Core/Default"
   s.dependency "React-RCTImage"
+  s.dependency "glog"
 end
