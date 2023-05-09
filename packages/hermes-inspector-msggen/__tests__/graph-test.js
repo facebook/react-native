@@ -25,8 +25,8 @@ beforeEach(() => {
 
 // checks id1 occurs after id2 in arr
 function expectOccursAfter(arr, id1, id2) {
-  let idx1 = arr.indexOf(id1);
-  let idx2 = arr.indexOf(id2);
+  const idx1 = arr.indexOf(id1);
+  const idx2 = arr.indexOf(id2);
 
   expect(idx1).not.toBe(-1);
   expect(idx2).not.toBe(-1);
@@ -35,7 +35,9 @@ function expectOccursAfter(arr, id1, id2) {
 
 test('detects cycle', () => {
   graph.addEdge('C2', 'A1');
-  expect(() => graph.traverse(['A2'])).toThrow(/^Not a DAG/);
+
+  const {cycles} = graph.traverse(['A2']);
+  expect(cycles).toContainEqual({from: 'A1', to: 'B1'});
 });
 
 test('checks for presence of root', () => {
@@ -43,10 +45,10 @@ test('checks for presence of root', () => {
 });
 
 test('traverses partial graph', () => {
-  let ids = graph.traverse(['B1', 'A3']);
+  const {nodes: ids} = graph.traverse(['B1', 'A3']);
 
   // Check that expected nodes are there
-  let sortedIds = ids.slice().sort();
+  const sortedIds = ids.slice().sort();
   expect(sortedIds).toEqual(['A3', 'B1', 'B2', 'C1', 'C2', 'C3']);
 
   // Check that the result is topologically sorted
@@ -59,10 +61,10 @@ test('traverses partial graph', () => {
 });
 
 test('traverses complete graph', () => {
-  let ids = graph.traverse(['A1', 'A2', 'A3']);
+  const {nodes: ids} = graph.traverse(['A1', 'A2', 'A3']);
 
   // Check that expected nodes are there
-  let sortedIds = ids.slice().sort();
+  const sortedIds = ids.slice().sort();
   expect(sortedIds).toEqual(['A1', 'A2', 'A3', 'B1', 'B2', 'C1', 'C2', 'C3']);
 
   // Check that the result is topologically sorted
