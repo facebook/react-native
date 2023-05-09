@@ -28,6 +28,7 @@ function getPropertyType(
   name,
   optional: boolean,
   typeAnnotation: $FlowFixMe,
+  parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
   const type = extractTypeFromTypeAnnotation(typeAnnotation);
 
@@ -77,6 +78,7 @@ function getPropertyType(
         name,
         optional,
         typeAnnotation.typeParameters.params[0],
+        parser,
       );
     case 'ObjectTypeAnnotation':
       return {
@@ -84,7 +86,9 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+          properties: typeAnnotation.properties.map(member =>
+            buildPropertiesForEvent(member, parser),
+          ),
         },
       };
     case 'UnionTypeAnnotation':
@@ -109,7 +113,7 @@ function getPropertyType(
       return {
         name,
         optional,
-        typeAnnotation: extractArrayElementType(typeAnnotation, name),
+        typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
       };
     default:
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
@@ -119,6 +123,7 @@ function getPropertyType(
 function extractArrayElementType(
   typeAnnotation: $FlowFixMe,
   name: string,
+  parser: Parser,
 ): EventTypeAnnotation {
   const type = extractTypeFromTypeAnnotation(typeAnnotation);
 
@@ -146,12 +151,18 @@ function extractArrayElementType(
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.properties.map(buildPropertiesForEvent),
+        properties: typeAnnotation.properties.map(member =>
+          buildPropertiesForEvent(member, parser),
+        ),
       };
     case 'ArrayTypeAnnotation':
       return {
         type: 'ArrayTypeAnnotation',
-        elementType: extractArrayElementType(typeAnnotation.elementType, name),
+        elementType: extractArrayElementType(
+          typeAnnotation.elementType,
+          name,
+          parser,
+        ),
       };
     case '$ReadOnlyArray':
       const genericParams = typeAnnotation.typeParameters.params;
@@ -164,7 +175,7 @@ function extractArrayElementType(
       }
       return {
         type: 'ArrayTypeAnnotation',
-        elementType: extractArrayElementType(genericParams[0], name),
+        elementType: extractArrayElementType(genericParams[0], name, parser),
       };
     default:
       throw new Error(
@@ -244,18 +255,20 @@ function findEventArgumentsAndType(
   }
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
+function buildPropertiesForEvent(
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
+  property,
+  parser: Parser,
+): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
-  const optional =
-    property.value.type === 'NullableTypeAnnotation' || property.optional;
+  const optional = parser.isOptionalProperty(property);
   let typeAnnotation =
     property.value.type === 'NullableTypeAnnotation'
       ? property.value.typeAnnotation
       : property.value;
 
-  return getPropertyType(name, optional, typeAnnotation);
+  return getPropertyType(name, optional, typeAnnotation, parser);
 }
 
 function buildEventSchema(
@@ -299,7 +312,11 @@ function buildEventSchema(
       paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, buildPropertiesForEvent),
+        argument: getEventArgument(
+          argumentProps,
+          buildPropertiesForEvent,
+          parser,
+        ),
       },
     };
   }
@@ -316,7 +333,11 @@ function buildEventSchema(
     bubblingType,
     typeAnnotation: {
       type: 'EventTypeAnnotation',
-      argument: getEventArgument(argumentProps, buildPropertiesForEvent),
+      argument: getEventArgument(
+        argumentProps,
+        buildPropertiesForEvent,
+        parser,
+      ),
     },
   };
 }
