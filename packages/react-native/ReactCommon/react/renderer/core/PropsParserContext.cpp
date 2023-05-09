@@ -13,10 +13,11 @@ namespace facebook::react {
 
 bool PropsParserContext::treatAutoAsYGValueUndefined() const {
   if (treatAutoAsYGValueUndefined_ == std::nullopt) {
-    auto config = contextContainer.at<std::shared_ptr<const ReactNativeConfig>>(
-        "ReactNativeConfig");
-    treatAutoAsYGValueUndefined_ = config
-        ? config->getBool("react_fabric:treat_auto_as_undefined")
+    auto config =
+        contextContainer.find<std::shared_ptr<const ReactNativeConfig>>(
+            "ReactNativeConfig");
+    treatAutoAsYGValueUndefined_ = config && *config != nullptr
+        ? (*config)->getBool("react_fabric:treat_auto_as_undefined")
         : false;
   }
 
