@@ -103,12 +103,16 @@ const findAndPublishAllBumpedPackages = () => {
 
       const npmOTPFlag = NPM_CONFIG_OTP ? `--otp ${NPM_CONFIG_OTP}` : '';
 
-      const {status, stderr} = spawnSync('npm', ['publish', `${npmOTPFlag}`], {
-        cwd: packageAbsolutePath,
-        shell: true,
-        stdio: 'pipe',
-        encoding: 'utf-8',
-      });
+      const {status, stderr} = spawnSync(
+        'npm',
+        ['publish', '--access', 'public', `${npmOTPFlag}`],
+        {
+          cwd: packageAbsolutePath,
+          shell: true,
+          stdio: 'pipe',
+          encoding: 'utf-8',
+        },
+      );
       if (status !== 0) {
         console.log(
           `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. npm publish exited with code ${status}:`,
