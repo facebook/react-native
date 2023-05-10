@@ -112,7 +112,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       textView.getJustificationMode() != mJustificationMode) {
       textView.setJustificationMode(mJustificationMode);
     }
-    if (textView.getHyphenationFrequency() != mHyphenationFrequency) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+      textView.getHyphenationFrequency() != mHyphenationFrequency) {
       textView.setHyphenationFrequency(mHyphenationFrequency);
     }
 
