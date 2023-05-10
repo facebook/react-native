@@ -105,8 +105,6 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   return jsi::Value::undefined();
 }
 
-static id
-convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
@@ -144,8 +142,7 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, 
 
 static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
-static id
-convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
