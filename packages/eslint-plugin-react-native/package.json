@@ -6,9 +6,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/facebook/react-native.git",
-    "directory": "packages/eslint-plugin-react-native-community"
+    "directory": "packages/eslint-plugin-react-native"
   },
-  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-react-native-community#readme",
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-react-native#readme",
   "keywords": ["eslint", "rules", "eslint-config", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {

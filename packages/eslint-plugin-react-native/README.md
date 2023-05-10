@@ -1,6 +1,6 @@
 # @react-native/eslint-plugin
 
-This plugin is intended to be used in [`@react-native/eslint-config`](https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native-community). You probably want to install that package instead.
+This plugin is intended to be used in [`@react-native/eslint-config`](https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native). You probably want to install that package instead.
 
 ## Installation
 
@@ -31,4 +31,4 @@ Enforces that calls to `PlatformColor` and `DynamicColorIOS` are statically anal
 To run the tests in this package, run the following commands from the React Native root folder:
 
 1. `yarn` to install the dependencies. You just need to run this once
-2. `yarn jest packages/eslint-plugin-react-native-community`.
+2. `yarn jest packages/eslint-plugin-react-native`.
