@@ -28,7 +28,7 @@
     "metro-react-native-babel-preset": "0.76.2",
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
-    "typescript": "4.8.4"
+    "typescript": "5.0.4"
   },
   "engines": {
     "node": ">=16"
