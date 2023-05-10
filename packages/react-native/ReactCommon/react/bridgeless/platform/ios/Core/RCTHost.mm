@@ -34,6 +34,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   RCTBundleManager *_bundleManager;
   facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
+  RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
   NSMutableArray<RCTFabricSurface *> *_surfaceStartBuffer;
@@ -57,7 +58,8 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                 jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc;
+                 jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
+                    jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -67,6 +69,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
     _jsErrorHandlingFunc = jsErrorHandlingFunc;
+    _jsEngineProvider = [jsEngineProvider copy];
 
     __weak RCTHost *weakHost = self;
 
@@ -148,14 +151,15 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
   [self _refreshBundleURL];
   RCTReloadCommandSetBundleURL(_bundleURL);
-  _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[_hostDelegate getJSEngine]
-                                      bundleManager:_bundleManager
-                         turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
-                                     moduleRegistry:_moduleRegistry
-                                jsErrorHandlingFunc:_jsErrorHandlingFunc];
+  _instance =
+      [[RCTInstance alloc] initWithDelegate:self
+                           jsEngineInstance:_jsEngineProvider ? _jsEngineProvider() : [_hostDelegate getJSEngine]
+                              bundleManager:_bundleManager
+                 turboModuleManagerDelegate:_turboModuleManagerDelegate
+                        onInitialBundleLoad:_onInitialBundleLoad
+                        bindingsInstallFunc:_bindingsInstallFunc
+                             moduleRegistry:_moduleRegistry
+                        jsErrorHandlingFunc:_jsErrorHandlingFunc];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -212,14 +216,15 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _surfaceStartBuffer = [NSMutableArray arrayWithArray:[self _getAttachedSurfaces]];
   }
 
-  _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsEngineInstance:[_hostDelegate getJSEngine]
-                                      bundleManager:_bundleManager
-                         turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
-                                     moduleRegistry:_moduleRegistry
-                                jsErrorHandlingFunc:_jsErrorHandlingFunc];
+  _instance =
+      [[RCTInstance alloc] initWithDelegate:self
+                           jsEngineInstance:_jsEngineProvider ? _jsEngineProvider() : [_hostDelegate getJSEngine]
+                              bundleManager:_bundleManager
+                 turboModuleManagerDelegate:_turboModuleManagerDelegate
+                        onInitialBundleLoad:_onInitialBundleLoad
+                        bindingsInstallFunc:_bindingsInstallFunc
+                             moduleRegistry:_moduleRegistry
+                        jsErrorHandlingFunc:_jsErrorHandlingFunc];
   [[NSNotificationCenter defaultCenter]
       postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
 
