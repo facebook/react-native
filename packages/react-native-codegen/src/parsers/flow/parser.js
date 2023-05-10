@@ -50,6 +50,7 @@ const {
 
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
+  enumDeclaration: string = 'EnumDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';

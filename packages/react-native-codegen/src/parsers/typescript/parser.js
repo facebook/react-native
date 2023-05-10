@@ -49,6 +49,7 @@ const {
 
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
+  enumDeclaration: string = 'TSEnumDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'TSPropertySignature';

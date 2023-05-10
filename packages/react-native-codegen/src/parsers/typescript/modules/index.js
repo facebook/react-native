@@ -190,7 +190,7 @@ function translateTypeAnnotation(
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(typeScriptTypeAnnotation, types);
+    resolveTypeAnnotation(typeScriptTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'TSArrayType': {

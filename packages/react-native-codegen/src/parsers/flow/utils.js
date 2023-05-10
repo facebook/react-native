@@ -11,6 +11,7 @@
 'use strict';
 
 import type {TypeResolutionStatus, TypeDeclarationMap, ASTNode} from '../utils';
+import type {Parser} from '../../parsers/parser';
 
 const invariant = require('invariant');
 
@@ -18,6 +19,7 @@ function resolveTypeAnnotation(
   // TODO(T71778680): This is an Flow TypeAnnotation. Flow-type this
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
@@ -60,7 +62,7 @@ function resolveTypeAnnotation(
         node = resolvedTypeAnnotation.right;
         break;
       }
-      case 'EnumDeclaration': {
+      case parser.enumDeclaration: {
         typeResolutionStatus = {
           successful: true,
           type: 'enum',
@@ -71,7 +73,7 @@ function resolveTypeAnnotation(
       }
       default: {
         throw new TypeError(
-          `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
         );
       }
     }
