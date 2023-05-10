@@ -35,6 +35,7 @@ header_search_paths = [
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/textlayoutmanager/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/textinput/iostextinput\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
@@ -59,7 +60,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.module_name            = "RCTFabric"
-  s.framework              = "JavaScriptCore"
+  s.framework              = ["JavaScriptCore", "MobileCoreServices"]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
@@ -72,7 +73,18 @@ Pod::Spec.new do |s|
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
   s.dependency "React-ImageManager"
+  s.dependency "React-graphics"
   s.dependency "RCT-Folly/Fabric", folly_version
+  s.dependency "glog"
+  s.dependency "Yoga"
+  s.dependency "React-RCTText"
+  s.dependency "React-FabricImage"
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsi"
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = "Tests/**/*.{mm}"

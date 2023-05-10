@@ -337,6 +337,12 @@ class FlowParser implements Parser {
   nameForArgument(prop: PropAST): $FlowFixMe {
     return prop.argument.id.name;
   }
+
+  isOptionalProperty(property: $FlowFixMe): boolean {
+    return (
+      property.value.type === 'NullableTypeAnnotation' || property.optional
+    );
+  }
 }
 
 module.exports = {

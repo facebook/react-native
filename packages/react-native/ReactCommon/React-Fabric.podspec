@@ -47,6 +47,16 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+  s.dependency "React-logger"
+  s.dependency "glog"
+  s.dependency "DoubleConversion"
+  s.dependency "React-Core"
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsi"
+  end
 
   s.subspec "animations" do |ss|
     ss.dependency             folly_dep_name, folly_version
@@ -83,11 +93,11 @@ Pod::Spec.new do |s|
       "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
       "\"$(PODS_ROOT)/RCT-Folly\"",
       "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+      "\"$(PODS_TARGET_SRCROOT)\"",
     ]
 
     if ENV['USE_FRAMEWORKS']
       header_search_path = header_search_path + [
-        "\"$(PODS_TARGET_SRCROOT)\"",
         "\"$(PODS_ROOT)/DoubleConversion\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
@@ -121,13 +131,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "components" do |ss|
-    ss.subspec "image" do |sss|
-      sss.dependency             folly_dep_name, folly_version
-      sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/image/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/image/tests"
-      sss.header_dir           = "react/renderer/components/image"
-    end
 
     ss.subspec "inputaccessory" do |sss|
       sss.dependency             folly_dep_name, folly_version

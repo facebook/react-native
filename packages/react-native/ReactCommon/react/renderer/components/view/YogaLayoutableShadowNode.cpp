@@ -120,9 +120,13 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
 
+  YGConfigRef previousConfig = YGNodeGetConfig(
+      &static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+           .yogaNode_);
+
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
-  yogaNode_.setConfig(&initializeYogaConfig(yogaConfig_));
+  yogaNode_.setConfig(&initializeYogaConfig(yogaConfig_, previousConfig));
   updateYogaChildrenOwnersIfNeeded();
 
   // This is the only legit place where we can dirty cloned Yoga node.
@@ -742,10 +746,17 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
       *static_cast<ShadowNode *>(yogaNode->getContext()));
 }
 
-YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
+YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(
+    YGConfig &config,
+    const YGConfigRef previousConfig) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
   YGConfigSetErrata(&config, YGErrataAll);
+  if (previousConfig != nullptr) {
+    YGConfigSetPointScaleFactor(
+        &config, YGConfigGetPointScaleFactor(previousConfig));
+  }
+
 #ifdef RN_DEBUG_YOGA_LOGGER
   YGConfigSetPrintTreeFlag(&config, true);
 #endif

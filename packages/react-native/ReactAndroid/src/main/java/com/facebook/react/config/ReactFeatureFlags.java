@@ -97,9 +97,6 @@ public class ReactFeatureFlags {
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
 
-  /** Feature Flag to enable caching mechanism of text measurement at shadow node level */
-  public static boolean enableTextMeasureCachePerShadowNode = false;
-
   /**
    * Feature flag that controls how turbo modules are exposed to JS
    *
