@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -268,6 +269,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     // background drawable instance from that on the UI Thread, which maybe has a default background
     // drawable instance.
     // Otherwise, DrawableContainer is not a thread safe class, and it caused the npe in #29452.
-    return new EditText(getThemedContext(), null, R.attr.rnTextInputStyle);
+    ContextThemeWrapper context = new ContextThemeWrapper(getThemedContext(),
+      R.style.Theme_ReactNative_TextInput_DefaultBackground);
+    return new EditText(context);
   }
 }

@@ -7,10 +7,4 @@
 
   </style>
 
-  <style name="TextInput">
-
-    <item name="rnTextInputStyle">@style/Theme.ReactNative.TextInput.DefaultBackground</item>
-
-  </style>
-
 </resources>
