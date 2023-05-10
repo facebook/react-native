@@ -5333,10 +5333,10 @@ flow-bin@^0.205.1:
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.205.1.tgz#5faf24e60df8d36f4deafef20e44863c5b295315"
   integrity sha512-pGQ/ZFr9hnbhRmc+K3K1Ui9BwDivlesNEd2mZbm5pCnxEUvbbj9nXHlTD4s4qO0k+LBKYLMZzQwBVYyRUE380g==
 
-flow-enums-runtime@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/flow-enums-runtime/-/flow-enums-runtime-0.0.5.tgz#95884bfcc82edaf27eef7e1dd09732331cfbafbc"
-  integrity sha512-PSZF9ZuaZD03sT9YaIs0FrGJ7lSUw7rHZIex+73UYVXg46eL/wxN5PaVcPJFudE2cJu5f0fezitV5aBkLHPUOQ==
+flow-enums-runtime@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/flow-enums-runtime/-/flow-enums-runtime-0.0.6.tgz#5bb0cd1b0a3e471330f4d109039b7eba5cb3e787"
+  integrity sha512-3PYnM29RFXwvAN6Pc/scUfkI7RwhQ/xqyLUyPNlXUp9S40zI8nup9tUSrTLSVnWGBN38FNiGWbwZOB6uR4OGdw==
 
 flow-parser@0.*, flow-parser@^0.185.0:
   version "0.185.0"
