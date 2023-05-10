@@ -16,7 +16,7 @@ import EventEmitter, {
  * Deprecated - subclass NativeEventEmitter to create granular event modules instead of
  * adding all event listeners directly to RCTDeviceEventEmitter.
  */
-export default interface DeviceEventEmitter extends EventEmitter {
+export default interface DeviceEventEmitterStatic extends EventEmitter {
   sharedSubscriber: EventSubscriptionVendor;
   new (): DeviceEventEmitterStatic;
   addListener(
@@ -25,3 +25,5 @@ export default interface DeviceEventEmitter extends EventEmitter {
     context?: any,
   ): EmitterSubscription;
 }
+
+export const DeviceEventEmitter: DeviceEventEmitterStatic;

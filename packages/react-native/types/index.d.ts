@@ -106,6 +106,7 @@ export * from '../Libraries/Components/Button';
 export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
+export {default as DeviceEventEmitterStatic} from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
 export * from '../Libraries/Image/Image';
 export * from '../Libraries/Image/ImageResizeMode';
