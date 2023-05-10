@@ -259,6 +259,9 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return [_hostDelegate createContextContainer];
 }
 
+- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
+{}
+
 #pragma mark - Private
 - (void)_refreshBundleURL FB_OBJC_DIRECT
 {

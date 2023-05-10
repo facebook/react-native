@@ -11,6 +11,7 @@
 #import <React/RCTDefines.h>
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/bridgeless/ReactInstance.h>
+#import <react/renderer/mapbuffer/MapBuffer.h>
 #import <react/utils/ContextContainer.h>
 
 /**
@@ -24,6 +25,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags);
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTBundleManager;
+@class RCTInstance;
 @class RCTJSThreadManager;
 @class RCTModuleRegistry;
 @class RCTPerformanceLogger;
@@ -33,10 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-// TODO (T74233481) - Delete this. Communication between Product Code <> RCTInstance should go through RCTHost.
 @protocol RCTInstanceDelegate <NSObject>
 
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
+
+- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
 
 @end
 
