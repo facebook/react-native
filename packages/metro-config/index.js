@@ -35,6 +35,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 /**
  * Get the base Metro configuration for a React Native project.
  */
+
 function getDefaultConfig(
   projectRoot /*: string */
 ) /*: MetroConfig */ {
