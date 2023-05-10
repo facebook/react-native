@@ -308,42 +308,42 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (!argumentProps) {
-    throwIfArgumentPropsAreNull(argumentProps, name);
-  } else if (!bubblingType) {
-    throwIfBubblingTypeIsNull(bubblingType, name);
-  } else {
-    if (paperTopLevelNameDeprecated != null) {
-      return {
-        name,
-        optional,
-        bubblingType,
-        paperTopLevelNameDeprecated,
-        typeAnnotation: {
-          type: 'EventTypeAnnotation',
-          argument: getEventArgument(
-            argumentProps,
-            buildPropertiesForEvent,
-            parser,
-          ),
-        },
-      };
-    }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
+  if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
-      bubblingType,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
-          argumentProps,
+          nonNullableArgumentProps,
           buildPropertiesForEvent,
           parser,
         ),
       },
     };
   }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: getEventArgument(
+        nonNullableArgumentProps,
+        buildPropertiesForEvent,
+        parser,
+      ),
+    },
+  };
 }
 
 function getEvents(

@@ -986,7 +986,7 @@ describe('throwIfArgumentPropsAreNull', () => {
   });
 
   it('does not throw an error if able to determine event arguments', () => {
-    const argumentProps = {};
+    const argumentProps = [{}];
     const eventName = 'Event';
 
     expect(() => {

@@ -297,24 +297,22 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (!argumentProps) {
-    throwIfArgumentPropsAreNull(argumentProps, name);
-  }
-
-  if (!bubblingType) {
-    throwIfBubblingTypeIsNull(bubblingType, name);
-  }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
   if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
-      bubblingType,
+      bubblingType: nonNullableBubblingType,
       paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
-          argumentProps,
+          nonNullableArgumentProps,
           buildPropertiesForEvent,
           parser,
         ),
@@ -325,11 +323,11 @@ function buildEventSchema(
   return {
     name,
     optional,
-    bubblingType,
+    bubblingType: nonNullableBubblingType,
     typeAnnotation: {
       type: 'EventTypeAnnotation',
       argument: getEventArgument(
-        argumentProps,
+        nonNullableArgumentProps,
         buildPropertiesForEvent,
         parser,
       ),

@@ -322,21 +322,25 @@ function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
 function throwIfBubblingTypeIsNull(
   bubblingType: ?('direct' | 'bubble'),
   eventName: string,
-) {
+): 'direct' | 'bubble' {
   if (!bubblingType) {
     throw new Error(
       `Unable to determine event bubbling type for "${eventName}"`,
     );
   }
+
+  return bubblingType;
 }
 
 function throwIfArgumentPropsAreNull(
-  argumentProps: $FlowFixMe,
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
   eventName: string,
-) {
+): $ReadOnlyArray<$FlowFixMe> {
   if (!argumentProps) {
     throw new Error(`Unable to determine event arguments for "${eventName}"`);
   }
+
+  return argumentProps;
 }
 
 module.exports = {
