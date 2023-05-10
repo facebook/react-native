@@ -11,6 +11,7 @@
 'use strict';
 
 import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
+import type {Parser} from '../../parsers/parser';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
 
@@ -20,6 +21,7 @@ function resolveTypeAnnotation(
   // TODO(T108222691): Use flow-types for @babel/parser
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
@@ -63,7 +65,7 @@ function resolveTypeAnnotation(
         node = resolvedTypeAnnotation.typeAnnotation;
         break;
       }
-      case 'TSInterfaceDeclaration': {
+      case parser.interfaceDelcaration: {
         typeResolutionStatus = {
           successful: true,
           type: 'alias',
@@ -83,7 +85,7 @@ function resolveTypeAnnotation(
       }
       default: {
         throw new TypeError(
-          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('TSInterfaceDeclaration'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('${parser.interfaceDelcaration}'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
         );
       }
     }

@@ -49,6 +49,7 @@ const {
 
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
+  interfaceDelcaration: string = 'TSInterfaceDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'TSPropertySignature';

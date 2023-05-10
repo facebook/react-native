@@ -305,6 +305,12 @@ describe('FlowParser', () => {
       expect(parser.isOptionalProperty(property)).toEqual(true);
     });
   });
+
+  describe('interfaceDelcaration', () => {
+    it('returns interfaceDelcaration Property', () => {
+      expect(parser.interfaceDelcaration).toEqual('InterfaceDeclaration');
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -580,6 +586,12 @@ describe('TypeScriptParser', () => {
         optional: false,
       };
       expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+  });
+
+  describe('interfaceDelcaration', () => {
+    it('returns interfaceDelcaration Property', () => {
+      expect(parser.interfaceDelcaration).toEqual('TSInterfaceDeclaration');
     });
   });
 });
