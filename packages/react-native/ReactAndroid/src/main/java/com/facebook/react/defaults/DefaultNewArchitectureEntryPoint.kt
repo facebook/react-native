@@ -31,6 +31,7 @@ object DefaultNewArchitectureEntryPoint {
   ) {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
+    ReactFeatureFlags.unstable_useFabricInterop = fabricEnabled
 
     this.privateFabricEnabled = fabricEnabled
     this.privateTurboModulesEnabled = turboModulesEnabled

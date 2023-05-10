@@ -49,7 +49,7 @@ void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime)
     return [[RCTComponentViewFactory currentComponentViewFactory]
         registerComponentIfPossible:componentNameByReactViewName(name)];
   };
-  NativeComponentRegistryBinding::install(runtime, std::move(hasComponentProvider));
+  bindHasComponentProvider(runtime, std::move(hasComponentProvider));
 }
 
 static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char *componentName)

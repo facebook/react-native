@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include <cstdint>
 #include <stdio.h>
 #include "CompactValue.h"
@@ -94,10 +92,6 @@ public:
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
   YGNode(const YGNode& node) = default;
-
-  [[deprecated("Will be removed imminently")]] YGNode(
-      const YGNode& node,
-      YGConfigRef config);
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
@@ -337,5 +331,3 @@ public:
   bool isNodeFlexible();
   void reset();
 };
-
-#endif

@@ -35,7 +35,7 @@ import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class ReactSurfaceTest {
-  @Mock ReactInstanceDelegate mReactInstanceDelegate;
+  @Mock ReactHostDelegate mReactHostDelegate;
   @Mock EventDispatcher mEventDispatcher;
 
   private ReactHost mReactHost;
@@ -49,7 +49,7 @@ public class ReactSurfaceTest {
 
     mContext = Robolectric.buildActivity(Activity.class).create().get();
 
-    mReactHost = spy(new ReactHost(mContext, mReactInstanceDelegate, null, false, null, false));
+    mReactHost = spy(new ReactHost(mContext, mReactHostDelegate, null, false, null, false));
     doAnswer(mockedStartSurface()).when(mReactHost).startSurface(any(ReactSurface.class));
     doAnswer(mockedStartSurface()).when(mReactHost).prerenderSurface(any(ReactSurface.class));
     doAnswer(mockedStopSurface()).when(mReactHost).stopSurface(any(ReactSurface.class));

@@ -269,4 +269,11 @@ export interface Parser {
    * @returns: name property
    */
   nameForArgument(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a property return if it is optional.
+   * @parameter property
+   * @returns: a boolean specifying if the Property is optional
+   */
+  isOptionalProperty(property: $FlowFixMe): boolean;
 }

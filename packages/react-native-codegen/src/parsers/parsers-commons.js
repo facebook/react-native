@@ -24,6 +24,8 @@ import type {
   NativeModuleEnumMap,
   OptionsShape,
   PropTypeAnnotation,
+  EventTypeAnnotation,
+  ObjectTypeAnnotation,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -902,6 +904,24 @@ function buildPropSchema(
       withNullDefault,
       types,
       wrappedBuildSchema,
+      ),
+  };
+}
+
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function getEventArgument(
+  argumentProps: PropAST,
+  buildPropertiesForEvent: (
+    property: PropAST,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+  parser: Parser,
+): ObjectTypeAnnotation<EventTypeAnnotation> {
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties: argumentProps.map(member =>
+      buildPropertiesForEvent(member, parser),
     ),
   };
 }
@@ -927,4 +947,5 @@ module.exports = {
   getCommandTypeNameAndOptionsExpression,
   extendsForProp,
   buildPropSchema,
+  getEventArgument,
 };

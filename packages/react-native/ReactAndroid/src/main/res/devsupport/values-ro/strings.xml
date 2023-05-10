@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: ro_RO -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">Meniu dezvoltare React Native (%1$s)</string>
 </resources>

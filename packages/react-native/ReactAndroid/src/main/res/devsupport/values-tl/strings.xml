@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: tl_PH -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">Tumatakbong %1$s</string>
 </resources>

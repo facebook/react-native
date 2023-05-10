@@ -54,6 +54,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,13 +81,11 @@ public class ReactHost {
 
   // TODO T61403233 Make this configurable by product code
   private static final boolean DEV = ReactBuildConfig.DEBUG;
-
+  private static final String TAG = "ReactHost";
   private static final int BRIDGELESS_MARKER_INSTANCE_KEY = 1;
 
-  public static final String TAG = "ReactHost";
-
   private final Context mContext;
-  private final ReactInstanceDelegate mReactInstanceDelegate;
+  private final ReactHostDelegate mReactHostDelegate;
   private final ComponentFactory mComponentFactory;
   private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
@@ -95,11 +94,11 @@ public class ReactHost {
   private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
   private final Set<ReactSurface> mAttachedSurfaces = Collections.synchronizedSet(new HashSet<>());
   private final MemoryPressureRouter mMemoryPressureRouter;
-  private final MemoryPressureListener mMemoryPressureListener;
+  private MemoryPressureListener mMemoryPressureListener;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
   private final Collection<ReactInstanceEventListener> mReactInstanceEventListeners =
-      Collections.synchronizedList(new ArrayList<ReactInstanceEventListener>());
+      Collections.synchronizedList(new ArrayList<>());
 
   private final BridgelessAtomicRef<Task<ReactInstance>> mReactInstanceTaskRef =
       new BridgelessAtomicRef<>(
@@ -108,7 +107,7 @@ public class ReactHost {
                   null, "forResult parameter supports null, but is not annotated as @Nullable")));
 
   private final BridgelessAtomicRef<BridgelessReactContext> mBridgelessReactContextRef =
-      new BridgelessAtomicRef<>(null);
+      new BridgelessAtomicRef<>();
 
   private final AtomicReference<Activity> mActivity = new AtomicReference<>();
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
@@ -122,7 +121,7 @@ public class ReactHost {
 
   public ReactHost(
       Context context,
-      ReactInstanceDelegate delegate,
+      ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
       ReactJsExceptionHandler reactJsExceptionHandler,
@@ -140,7 +139,7 @@ public class ReactHost {
 
   public ReactHost(
       Context context,
-      ReactInstanceDelegate delegate,
+      ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
@@ -148,12 +147,12 @@ public class ReactHost {
       boolean allowPackagerServerAccess,
       boolean useDevSupport) {
     mContext = context;
-    mReactInstanceDelegate = delegate;
+    mReactHostDelegate = delegate;
     mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
     mReactJsExceptionHandler = reactJsExceptionHandler;
-    mQueueThreadExceptionHandler = ReactHost.this::handleException;
+    mQueueThreadExceptionHandler = ReactHost.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mMemoryPressureListener =
         level ->
@@ -164,11 +163,24 @@ public class ReactHost {
     if (DEV) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
-              ReactHost.this, mContext, mReactInstanceDelegate.getJSMainModulePath());
+              ReactHost.this, mContext, mReactHostDelegate.getJSMainModulePath());
     } else {
       mDevSupportManager = new DisabledDevSupportManager();
     }
     mUseDevSupport = useDevSupport;
+  }
+
+  private MemoryPressureListener createMemoryPressureListener(ReactInstance reactInstance) {
+    WeakReference<ReactInstance> weakReactInstance = new WeakReference<>(reactInstance);
+    return (level) -> {
+      mBGExecutor.execute(
+          () -> {
+            @Nullable ReactInstance strongReactInstance = weakReactInstance.get();
+            if (strongReactInstance != null) {
+              strongReactInstance.handleMemoryPressure(level);
+            }
+          });
+    };
   }
 
   public LifecycleState getLifecycleState() {
@@ -209,7 +221,7 @@ public class ReactHost {
                                 destroy(
                                     "old_preload() failure: " + task.getError().getMessage(),
                                     task.getError());
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactHostDelegate.handleInstanceException(task.getError());
                               }
 
                               return task;
@@ -234,7 +246,7 @@ public class ReactHost {
                         .continueWithTask(
                             (task) -> {
                               if (task.isFaulted()) {
-                                mReactInstanceDelegate.handleException(task.getError());
+                                mReactHostDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
                                 return new_getOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
@@ -401,7 +413,7 @@ public class ReactHost {
    *
    * @return The {@link BridgelessReactContext} associated with ReactInstance.
    */
-  public @Nullable BridgelessReactContext getCurrentReactContext() {
+  public @Nullable ReactContext getCurrentReactContext() {
     return mBridgelessReactContextRef.getNullable();
   }
 
@@ -409,7 +421,8 @@ public class ReactHost {
     return assertNotNull(mDevSupportManager);
   }
 
-  public @Nullable Activity getCurrentActivity() {
+  @Nullable
+  /* package */ Activity getCurrentActivity() {
     return mActivity.get();
   }
 
@@ -421,7 +434,7 @@ public class ReactHost {
    * @return The real {@link EventDispatcher} if the instance is alive; otherwise, a {@link
    *     BlackHoleEventDispatcher}.
    */
-  public EventDispatcher getEventDispatcher() {
+  /* package */ EventDispatcher getEventDispatcher() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance == null) {
       return BlackHoleEventDispatcher.get();
@@ -430,7 +443,8 @@ public class ReactHost {
     return reactInstance.getEventDispatcher();
   }
 
-  public @Nullable FabricUIManager getUIManager() {
+  /* package */ @Nullable
+  FabricUIManager getUIManager() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance == null) {
       return null;
@@ -482,7 +496,7 @@ public class ReactHost {
     return mMemoryPressureRouter;
   }
 
-  public boolean isInstanceInitialized() {
+  /* package */ boolean isInstanceInitialized() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     return reactInstance != null;
   }
@@ -552,12 +566,12 @@ public class ReactHost {
         });
   }
 
-  /*package */ void handleException(Exception e) {
-    final String method = "handleException(message = \"" + e.getMessage() + "\")";
+  /* package */ void handleHostException(Exception e) {
+    final String method = "handleHostException(message = \"" + e.getMessage() + "\")";
     log(method);
 
     destroy(method, e);
-    mReactInstanceDelegate.handleException(e);
+    mReactHostDelegate.handleInstanceException(e);
   }
 
   /**
@@ -596,13 +610,13 @@ public class ReactHost {
     }
   }
 
-  boolean isSurfaceAttached(ReactSurface surface) {
+  /* package */ boolean isSurfaceAttached(ReactSurface surface) {
     synchronized (mAttachedSurfaces) {
       return mAttachedSurfaces.contains(surface);
     }
   }
 
-  boolean isSurfaceWithModuleNameAttached(String moduleName) {
+  /* package */ boolean isSurfaceWithModuleNameAttached(String moduleName) {
     synchronized (mAttachedSurfaces) {
       for (ReactSurface surface : mAttachedSurfaces) {
         if (surface.getModuleName().equals(moduleName)) {
@@ -613,7 +627,7 @@ public class ReactHost {
     }
   }
 
-  interface VeniceThenable<T> {
+  /* package */ interface VeniceThenable<T> {
     void then(T t);
   }
 
@@ -676,7 +690,7 @@ public class ReactHost {
         .continueWith(
             task -> {
               if (task.isFaulted()) {
-                handleException(task.getError());
+                handleHostException(task.getError());
               }
               return null;
             },
@@ -697,8 +711,6 @@ public class ReactHost {
    *
    * <p>If the ReactInstance is reloading, will return the reload task. If the ReactInstance is
    * destroying, will wait until destroy is finished, before creating.
-   *
-   * @return
    */
   private Task<ReactInstance> getOrCreateReactInstanceTask() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
@@ -767,13 +779,17 @@ public class ReactHost {
                     final ReactInstance instance =
                         new ReactInstance(
                             reactContext,
-                            mReactInstanceDelegate,
+                            mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
                             mUseDevSupport);
 
+                    if (ReactFeatureFlags
+                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
+                      mMemoryPressureListener = createMemoryPressureListener(instance);
+                    }
                     mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
 
                     log(method, "Loading JS Bundle");
@@ -857,13 +873,17 @@ public class ReactHost {
                     final ReactInstance instance =
                         new ReactInstance(
                             reactContext,
-                            mReactInstanceDelegate,
+                            mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
                             mReactJsExceptionHandler,
                             mUseDevSupport);
 
+                    if (ReactFeatureFlags
+                        .unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix) {
+                      mMemoryPressureListener = createMemoryPressureListener(instance);
+                    }
                     mMemoryPressureRouter.addMemoryPressureListener(mMemoryPressureListener);
 
                     log(method, "Loading JS Bundle");
@@ -925,7 +945,7 @@ public class ReactHost {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
                 }
-                return Task.forResult(mReactInstanceDelegate.getJSBundleLoader(mContext));
+                return Task.forResult(mReactHostDelegate.getJSBundleLoader(mContext));
               },
               mBGExecutor);
     } else {
@@ -940,7 +960,7 @@ public class ReactHost {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactInstanceDelegate.getJSBundleLoader(mContext));
+      return Task.call(() -> mReactHostDelegate.getJSBundleLoader(mContext));
     }
   }
 

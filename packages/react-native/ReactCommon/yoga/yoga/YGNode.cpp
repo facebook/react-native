@@ -18,21 +18,10 @@ YGNode::YGNode(const YGConfigRef config) : config_{config} {
       config != nullptr, "Attempting to construct YGNode with null config");
 
   flags_.hasNewLayout = true;
-  if (config->useWebDefaults) {
+  if (config->useWebDefaults()) {
     useWebDefaults();
   }
 };
-
-YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
-  YGAssert(
-      config != nullptr, "Attempting to construct YGNode with null config");
-
-  config_ = config;
-  flags_.hasNewLayout = true;
-  if (config->useWebDefaults) {
-    useWebDefaults();
-  }
-}
 
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
@@ -278,8 +267,13 @@ void YGNode::setConfig(YGConfigRef config) {
   YGAssert(config != nullptr, "Attempting to set a null config on a YGNode");
   YGAssertWithConfig(
       config,
-      config->useWebDefaults == config_->useWebDefaults,
+      config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a YGNode");
+
+  if (yoga::configUpdateInvalidatesLayout(config_, config)) {
+    markDirtyAndPropagate();
+  }
+
   config_ = config;
 }
 
@@ -430,7 +424,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults ? YGValueAuto : YGValueZero;
+    return config_->useWebDefaults() ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -506,11 +500,11 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!config_->useWebDefaults && !style_.flex().isUndefined() &&
+  if (!config_->useWebDefaults() && !style_.flex().isUndefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return config_->useWebDefaults() ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {

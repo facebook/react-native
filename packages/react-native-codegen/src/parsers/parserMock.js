@@ -251,4 +251,8 @@ export class MockedParser implements Parser {
   nameForArgument(prop: PropAST): $FlowFixMe {
     return prop.expression.name;
   }
+
+  isOptionalProperty(property: $FlowFixMe): boolean {
+    return property.optional || false;
+  }
 }

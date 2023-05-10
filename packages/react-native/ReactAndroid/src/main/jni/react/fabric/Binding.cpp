@@ -421,8 +421,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  CoreFeatures::cacheLastTextMeasurement =
-      getFeatureFlagValue("enableTextMeasureCachePerShadowNode");
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
@@ -485,7 +483,12 @@ void Binding::schedulerDidFinishTransaction(
   if (!mountingManager) {
     return;
   }
-  mountingManager->executeMount(mountingCoordinator);
+
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+  mountingManager->executeMount(*mountingTransaction);
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(

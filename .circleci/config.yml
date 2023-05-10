@@ -724,10 +724,6 @@ jobs:
   # -------------------------
   test_android:
     executor: reactnativeandroid
-    parameters:
-      run_disabled_tests:
-        type: boolean
-        default: false
     steps:
       - checkout
       - setup_artifacts
@@ -741,17 +737,15 @@ jobs:
       - report_bundle_size:
           platform: android
 
+      - store_test_results:
+          path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
+      
+      - store_test_results:
+          path: ~/react-native/packages/react-native/ReactAndroid/build/test-results
+
       - store_artifacts:
           path: ~/react-native/packages/rn-tester/android/app/build/outputs/apk/
           destination: rntester-apk
-
-      # Optionally, run disabled tests
-      - when:
-          condition: << parameters.run_disabled_tests >>
-          steps:
-            - run: echo "Failing tests may be moved here temporarily."
-            - run_e2e:
-                platform: android
 
   # -------------------------
   #    JOBS: Test Android Docker Image
@@ -1602,8 +1596,7 @@ workflows:
             - build_hermesc_windows
       - test_js:
           run_disabled_tests: false
-      - test_android:
-          run_disabled_tests: false
+      - test_android
       - test_android_docker_image
       - test_android_template:
           requires:

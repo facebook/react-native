@@ -270,6 +270,41 @@ describe('FlowParser', () => {
       ).toEqual(expected);
     });
   });
+
+  describe('isOptionalProperty', () => {
+    it('when property is optional', () => {
+      const property = {
+        value: {
+          type: 'TypeAnnotation',
+        },
+        optional: true,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+
+    it('when property is not optional', () => {
+      const property = {
+        value: {
+          type: 'TypeAnnotation',
+        },
+        optional: false,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+
+    it('when property value type is NullableTypeAnnotation', () => {
+      const property = {
+        value: {
+          type: 'NullableTypeAnnotation',
+        },
+        optional: false,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -529,6 +564,22 @@ describe('TypeScriptParser', () => {
       expect(
         parser.getNativeComponentType(typeArgumentParams, funcArgumentParams),
       ).toEqual(expected);
+    });
+  });
+
+  describe('isOptionalProperty', () => {
+    it('when property is optional', () => {
+      const property = {
+        optional: true,
+      };
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+
+    it('when property is undefined or not optional', () => {
+      const property = {
+        optional: false,
+      };
+      expect(parser.isOptionalProperty(property)).toEqual(false);
     });
   });
 });

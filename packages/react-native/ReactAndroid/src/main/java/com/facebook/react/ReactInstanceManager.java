@@ -555,6 +555,7 @@ public class ReactInstanceManager {
    * @deprecated Use {@link #onHostPause(Activity)} instead.
    */
   @ThreadConfined(UI)
+  @Deprecated
   public void onHostPause() {
     UiThreadUtil.assertOnUiThread();
 
@@ -669,6 +670,7 @@ public class ReactInstanceManager {
    * @deprecated use {@link #onHostDestroy(Activity)} instead
    */
   @ThreadConfined(UI)
+  @Deprecated
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
 
