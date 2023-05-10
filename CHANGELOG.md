@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.71.8
+
+### Fixed
+
+#### Android specific
+
+- Read GROUP name in gradle-plugin dependency code ([615d9aefc4](https://github.com/facebook/react-native/commit/615d9aefc4274ed7a193c0410ed7f86e90ad1bff) by [@douglowder](https://github.com/douglowder))
+- Bump RNGP to 0.71.18 ([4bf4c470fe](https://github.com/facebook/react-native/commit/4bf4c470fe4996af02f45c9a9d77c6a790a95362) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Do not send extra onChangeText even wnen instantianting multiline TextView ([a804c0f22b](https://github.com/facebook/react-native/commit/a804c0f22b4b11b3d9632dc59a6da14f6c4325e3) by [@dmytrorykun](https://github.com/dmytrorykun))
+
 ## v0.71.7
 
 ### Fixed
