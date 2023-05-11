@@ -165,6 +165,13 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }];
 }
 
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
+{
+  if (_valid) {
+    _reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
+  }
+}
+
 #pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
@@ -195,15 +202,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   return nullptr;
-}
-
-#pragma mark - ReactInstanceForwarding
-
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
-{
-  if (_valid) {
-    _reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
-  }
 }
 
 #pragma mark - Private

@@ -49,7 +49,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
  * RCTHost is long lived, while an instance may be deallocated and re-initialized. Some examples of when this happens:
  * CMD+R reload in DEV or a JS crash. The host should be the single owner of an RCTInstance.
  */
-@interface RCTHost : NSObject <ReactInstanceForwarding>
+@interface RCTHost : NSObject
 
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate

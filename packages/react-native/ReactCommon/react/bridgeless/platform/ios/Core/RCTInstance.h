@@ -40,18 +40,6 @@ FB_RUNTIME_PROTOCOL
 
 @end
 
-/**
- * A set of functions which are forwarded through RCTHost, RCTInstance to ReactInstance.
- */
-@protocol ReactInstanceForwarding
-
-/**
- * Registers a new JS segment.
- */
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
-
-@end
-
 typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
 
 /**
@@ -59,7 +47,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
  * Native. RCTInstance should never be instantiated in product code, but rather accessed through RCTHost. The host
  * ensures that any access to the instance is safe, and manages instance lifecycle.
  */
-@interface RCTInstance : NSObject <ReactInstanceForwarding>
+@interface RCTInstance : NSObject
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
@@ -72,6 +60,8 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
     FB_OBJC_DIRECT;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
+
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 
 - (void)invalidate;
 
