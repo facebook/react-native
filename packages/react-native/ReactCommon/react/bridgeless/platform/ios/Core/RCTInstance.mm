@@ -115,7 +115,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
             // TODO: Make RCTInstance call onComplete
-            [weakInstance callFunctionOnModule:moduleName method:methodName args:args];
+            [weakInstance callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
 
@@ -127,6 +127,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [self _start];
   }
   return self;
+}
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  if (_valid) {
+    _reactInstance->callFunctionOnModule(
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+  }
 }
 
 - (void)invalidate
@@ -190,14 +198,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 }
 
 #pragma mark - ReactInstanceForwarding
-
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
-{
-  if (_valid) {
-    _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
-  }
-}
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {
