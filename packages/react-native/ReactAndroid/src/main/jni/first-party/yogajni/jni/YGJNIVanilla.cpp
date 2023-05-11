@@ -199,7 +199,10 @@ static void jni_YGConfigSetLoggerJNI(
   }
 }
 
-static void jni_YGNodeFreeJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+static void jni_YGNodeDeallocateJNI(
+    JNIEnv* env,
+    jobject obj,
+    jlong nativePointer) {
   if (nativePointer == 0) {
     return;
   }
@@ -769,7 +772,7 @@ static JNINativeMethod methods[] = {
      (void*) jni_YGConfigSetLoggerJNI},
     {"jni_YGNodeNewJNI", "()J", (void*) jni_YGNodeNewJNI},
     {"jni_YGNodeNewWithConfigJNI", "(J)J", (void*) jni_YGNodeNewWithConfigJNI},
-    {"jni_YGNodeFreeJNI", "(J)V", (void*) jni_YGNodeFreeJNI},
+    {"jni_YGNodeDeallocateJNI", "(J)V", (void*) jni_YGNodeDeallocateJNI},
     {"jni_YGNodeResetJNI", "(J)V", (void*) jni_YGNodeResetJNI},
     {"jni_YGNodeInsertChildJNI", "(JJI)V", (void*) jni_YGNodeInsertChildJNI},
     {"jni_YGNodeSwapChildJNI", "(JJI)V", (void*) jni_YGNodeSwapChildJNI},
