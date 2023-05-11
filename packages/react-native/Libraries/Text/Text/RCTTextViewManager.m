@@ -32,7 +32,7 @@ RCT_REMAP_SHADOW_PROPERTY(adjustsFontSizeToFit, adjustsFontSizeToFit, BOOL)
 RCT_REMAP_SHADOW_PROPERTY(minimumFontScale, minimumFontScale, CGFloat)
 
 RCT_EXPORT_SHADOW_PROPERTY(onTextLayout, RCTDirectEventBlock)
-RCT_EXPORT_SHADOW_PROPERTY(textLayoutConfig, NSArray)
+RCT_EXPORT_SHADOW_PROPERTY(textLayoutRegions, NSArray)
 
 RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 

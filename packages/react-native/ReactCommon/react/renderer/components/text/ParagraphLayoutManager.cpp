@@ -76,9 +76,9 @@ SegmentedMeasurements ParagraphLayoutManager::measureLines(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     Size size,
-    std::vector<int> textLayoutConfig) const {
+    std::vector<int> textLayoutRegions) const {
   return textLayoutManager_->measureLines(
-      attributedString, paragraphAttributes, size, textLayoutConfig);
+      attributedString, paragraphAttributes, size, textLayoutRegions);
 }
 
 void ParagraphLayoutManager::setTextLayoutManager(

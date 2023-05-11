@@ -164,7 +164,7 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
         content.attributedString,
         content.paragraphAttributes,
         measurement.size,
-        getConcreteProps().textLayoutConfig);
+        getConcreteProps().textLayoutRegions);
     
     getConcreteEventEmitter().onTextLayout(segmentedMeasurements.linesMeasurements, segmentedMeasurements.regionsMeasurements);
   }

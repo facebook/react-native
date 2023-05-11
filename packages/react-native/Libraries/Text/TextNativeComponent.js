@@ -43,7 +43,7 @@ const textViewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
-    textLayoutConfig: true,
+    textLayoutRegions: true,
     onInlineViewLayout: true,
     dataDetectorType: true,
     android_hyphenationFrequency: true,

@@ -123,7 +123,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 - (SegmentedMeasurements)getLinesForAttributedString:(AttributedString)attributedString
                                  paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                 size:(CGSize)size
-                                    textLayoutConfig:(NSArray*)textLayoutConfig
+                                    textLayoutRegions:(NSArray*)textLayoutRegions
 {
   NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
                                                 paragraphAttributes:paragraphAttributes
@@ -157,8 +157,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
                                                 
                                             NSRange lineRange = NSIntersectionRange(lineGlyphRange, NSMakeRange(
-                                                [[textLayoutConfig firstObject] integerValue],
-                                                [[textLayoutConfig firstObject] integerValue]));
+                                                [[textLayoutRegions firstObject] integerValue],
+                                                [[textLayoutRegions firstObject] integerValue]));
 
                                             [layoutManager enumerateEnclosingRectsForGlyphRange:lineRange
                                                                         withinSelectedGlyphRange:lineRange

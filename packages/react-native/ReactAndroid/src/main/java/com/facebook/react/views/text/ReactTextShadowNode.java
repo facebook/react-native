@@ -60,7 +60,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private @Nullable Spannable mPreparedSpannableText;
 
   private boolean mShouldNotifyOnTextLayout;
-  private ReadableArray mTextLayoutConfig;
+  private ReadableArray mTextLayoutRegions;
 
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
@@ -360,9 +360,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
     mShouldNotifyOnTextLayout = shouldNotifyOnTextLayout;
   }
 
-  @ReactProp(name = "textLayoutConfig")
-  public void setTextLayoutConfig(ReadableArray textLayoutConfig) {
-    mTextLayoutConfig = textLayoutConfig;
+  @ReactProp(name = "textLayoutRegions")
+  public void setTextLayoutRegions(ReadableArray textLayoutRegions) {
+    mTextLayoutRegions = textLayoutRegions;
   }
 
   @Override

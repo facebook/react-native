@@ -171,7 +171,7 @@ export type TextProps = $ReadOnly<{|
   /**
    * Regions for text layout tracking
    */
-  textLayoutConfig?: ?$ReadOnlyArray<number>,
+  textLayoutRegions?: ?$ReadOnlyArray<number>,
 
   /**
    * Defines how far your touch may move off of the button, before

@@ -54,7 +54,7 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
   /*
    * Defines text layout tracking strategy.
    */
-  std::vector<int> textLayoutConfig{};
+  std::vector<int> textLayoutRegions{};
 
   bool onTextLayout{};
 

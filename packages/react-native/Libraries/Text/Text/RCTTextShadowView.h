@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL adjustsFontSizeToFit;
 @property (nonatomic, assign) CGFloat minimumFontScale;
 @property (nonatomic, copy) RCTDirectEventBlock onTextLayout;
-@property (nonatomic, copy) NSArray *textLayoutConfig;
+@property (nonatomic, copy) NSArray *textLayoutRegions;
 
 - (void)uiManagerWillPerformMounting;
 
