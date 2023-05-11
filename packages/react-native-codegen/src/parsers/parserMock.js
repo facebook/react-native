@@ -23,7 +23,13 @@ import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
 } from '../CodegenSchema';
-import type {ParserErrorCapturer, PropAST, TypeDeclarationMap} from './utils';
+import type {
+  ParserErrorCapturer,
+  PropAST,
+  TypeDeclarationMap,
+  TypeResolutionStatus,
+} from './utils';
+import invariant from 'invariant';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -271,6 +277,75 @@ export class MockedParser implements Parser {
         defaultValue: false,
         withNullDefault: false,
       };
+    };
+  }
+
+  getResolvedTypeAnnotation(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): {
+    nullable: boolean,
+    typeAnnotation: $FlowFixMe,
+    typeResolutionStatus: TypeResolutionStatus,
+  } {
+    invariant(
+      typeAnnotation != null,
+      'resolveTypeAnnotation(): typeAnnotation cannot be null',
+    );
+
+    let node = typeAnnotation;
+    let nullable = false;
+    let typeResolutionStatus: TypeResolutionStatus = {
+      successful: false,
+    };
+
+    for (;;) {
+      if (node.type === 'NullableTypeAnnotation') {
+        nullable = true;
+        node = node.typeAnnotation;
+        continue;
+      }
+
+      if (node.type !== 'GenericTypeAnnotation') {
+        break;
+      }
+
+      const resolvedTypeAnnotation = types[node.id.name];
+      if (resolvedTypeAnnotation == null) {
+        break;
+      }
+
+      switch (resolvedTypeAnnotation.type) {
+        case 'TypeAlias': {
+          typeResolutionStatus = {
+            successful: true,
+            type: 'alias',
+            name: node.id.name,
+          };
+          node = resolvedTypeAnnotation.right;
+          break;
+        }
+        case 'EnumDeclaration': {
+          typeResolutionStatus = {
+            successful: true,
+            type: 'enum',
+            name: node.id.name,
+          };
+          node = resolvedTypeAnnotation.body;
+          break;
+        }
+        default: {
+          throw new TypeError(
+            `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          );
+        }
+      }
+    }
+
+    return {
+      nullable: nullable,
+      typeAnnotation: node,
+      typeResolutionStatus,
     };
   }
 }
