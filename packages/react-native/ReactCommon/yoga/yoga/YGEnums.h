@@ -58,6 +58,7 @@ YG_ENUM_DECL(
     YGErrata,
     YGErrataNone = 0,
     YGErrataStretchFlexBasis = 1,
+    YGErrataPercentAbsoluteOmitsPadding = 2,
     YGErrataAll = 2147483647,
     YGErrataClassic = 2147483646)
 YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
@@ -65,7 +66,6 @@ YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
 YG_ENUM_SEQ_DECL(
     YGExperimentalFeature,
     YGExperimentalFeatureWebFlexBasis,
-    YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge,
     YGExperimentalFeatureFixAbsoluteTrailingColumnMargin)
 
 YG_ENUM_SEQ_DECL(

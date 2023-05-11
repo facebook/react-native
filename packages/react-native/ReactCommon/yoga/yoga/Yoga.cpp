@@ -1575,21 +1575,21 @@ static void YGNodeAbsoluteLayoutChild(
         (node->getLayout().measuredDimensions[dim[mainAxis]] -
          child->getLayout().measuredDimensions[dim[mainAxis]]),
         leading[mainAxis]);
-  } else if (
-      node->getConfig()->isExperimentalFeatureEnabled(
-          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
-      child->isLeadingPositionDefined(mainAxis)) {
-    child->setLayoutPosition(
-        child->getLeadingPosition(
-                 mainAxis, node->getLayout().measuredDimensions[dim[mainAxis]])
-                .unwrap() +
-            node->getLeadingBorder(mainAxis) +
-            child
-                ->getLeadingMargin(
-                    mainAxis,
-                    node->getLayout().measuredDimensions[dim[mainAxis]])
-                .unwrap(),
-        leading[mainAxis]);
+  } else if (child->isLeadingPositionDefined(mainAxis)) {
+    if (!child->hasErrata(YGErrataPercentAbsoluteOmitsPadding)) {
+      child->setLayoutPosition(
+          child->getLeadingPosition(
+                   mainAxis,
+                   node->getLayout().measuredDimensions[dim[mainAxis]])
+                  .unwrap() +
+              node->getLeadingBorder(mainAxis) +
+              child
+                  ->getLeadingMargin(
+                      mainAxis,
+                      node->getLayout().measuredDimensions[dim[mainAxis]])
+                  .unwrap(),
+          leading[mainAxis]);
+    }
   }
 
   if (child->isTrailingPosDefined(crossAxis) &&
@@ -1621,22 +1621,21 @@ static void YGNodeAbsoluteLayoutChild(
         (node->getLayout().measuredDimensions[dim[crossAxis]] -
          child->getLayout().measuredDimensions[dim[crossAxis]]),
         leading[crossAxis]);
-  } else if (
-      node->getConfig()->isExperimentalFeatureEnabled(
-          YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge) &&
-      child->isLeadingPositionDefined(crossAxis)) {
-    child->setLayoutPosition(
-        child->getLeadingPosition(
-                 crossAxis,
-                 node->getLayout().measuredDimensions[dim[crossAxis]])
-                .unwrap() +
-            node->getLeadingBorder(crossAxis) +
-            child
-                ->getLeadingMargin(
-                    crossAxis,
-                    node->getLayout().measuredDimensions[dim[crossAxis]])
-                .unwrap(),
-        leading[crossAxis]);
+  } else if (child->isLeadingPositionDefined(crossAxis)) {
+    if (!child->hasErrata(YGErrataPercentAbsoluteOmitsPadding)) {
+      child->setLayoutPosition(
+          child->getLeadingPosition(
+                   crossAxis,
+                   node->getLayout().measuredDimensions[dim[crossAxis]])
+                  .unwrap() +
+              node->getLeadingBorder(crossAxis) +
+              child
+                  ->getLeadingMargin(
+                      crossAxis,
+                      node->getLayout().measuredDimensions[dim[crossAxis]])
+                  .unwrap(),
+          leading[crossAxis]);
+    }
   }
 }
 
@@ -3553,20 +3552,23 @@ static void YGNodelayoutImpl(
           child->getStyle().positionType() != YGPositionTypeAbsolute) {
         continue;
       }
-      const bool absolutePercentageAgainstPaddingEdge =
-          node->getConfig()->isExperimentalFeatureEnabled(
-              YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge);
+      const bool percentAbsoluteOmitsPadding =
+          child->hasErrata(YGErrataPercentAbsoluteOmitsPadding);
+
+      const float width = percentAbsoluteOmitsPadding
+          ? availableInnerWidth
+          : node->getLayout().measuredDimensions[YGDimensionWidth];
+
+      const float height = percentAbsoluteOmitsPadding
+          ? availableInnerHeight
+          : node->getLayout().measuredDimensions[YGDimensionHeight];
 
       YGNodeAbsoluteLayoutChild(
           node,
           child,
-          absolutePercentageAgainstPaddingEdge
-              ? node->getLayout().measuredDimensions[YGDimensionWidth]
-              : availableInnerWidth,
+          width,
           isMainAxisRow ? measureModeMainDim : measureModeCrossDim,
-          absolutePercentageAgainstPaddingEdge
-              ? node->getLayout().measuredDimensions[YGDimensionHeight]
-              : availableInnerHeight,
+          height,
           direction,
           config,
           layoutMarkerData,

@@ -93,6 +93,8 @@ const char* YGErrataToString(const YGErrata value) {
       return "none";
     case YGErrataStretchFlexBasis:
       return "stretch-flex-basis";
+    case YGErrataPercentAbsoluteOmitsPadding:
+      return "percent-absolute-omits-padding";
     case YGErrataAll:
       return "all";
     case YGErrataClassic:
@@ -105,8 +107,6 @@ const char* YGExperimentalFeatureToString(const YGExperimentalFeature value) {
   switch (value) {
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
-    case YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge:
-      return "absolute-percentage-against-padding-edge";
     case YGExperimentalFeatureFixAbsoluteTrailingColumnMargin:
       return "fix-absolute-trailing-column-margin";
   }
