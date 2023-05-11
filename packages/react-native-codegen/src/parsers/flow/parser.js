@@ -22,8 +22,13 @@ import type {
   NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
-import type {Parser} from '../parser';
+import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from '../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from '../utils';
+
+const {
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./components/componentsUtils');
 
 const {flowTranslateTypeAnnotation} = require('./modules');
 
@@ -342,6 +347,14 @@ class FlowParser implements Parser {
     return (
       property.value.type === 'NullableTypeAnnotation' || property.optional
     );
+  }
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN {
+    return getSchemaInfo;
+  }
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN {
+    return getTypeAnnotation;
   }
 }
 

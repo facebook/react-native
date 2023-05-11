@@ -22,7 +22,7 @@ import type {
   NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
-import type {Parser} from '../parser';
+import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from '../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from '../utils';
 
 const {typeScriptTranslateTypeAnnotation} = require('./modules');
@@ -36,6 +36,10 @@ const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('../parsers-commons.js');
 const {resolveTypeAnnotation} = require('./utils');
+const {
+  getSchemaInfo,
+  getTypeAnnotation,
+} = require('./components/componentsUtils');
 
 const fs = require('fs');
 
@@ -339,6 +343,14 @@ class TypeScriptParser implements Parser {
 
   isOptionalProperty(property: $FlowFixMe): boolean {
     return property.optional || false;
+  }
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN {
+    return getSchemaInfo;
+  }
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN {
+    return getTypeAnnotation;
   }
 }
 
