@@ -84,6 +84,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self setNeedsLayout];
 }
 
+- (void)setReactTextInsets:(CGRect)reactTextInsets
+{
+  _reactTextInsets = reactTextInsets;
+  self.backedTextInputView.reactTextInsets = reactTextInsets;
+  [self setNeedsLayout];
+}
+
+- (void)setReactEditingInsets:(CGRect)reactEditingInsets
+{
+  _reactEditingInsets = reactEditingInsets;
+  self.backedTextInputView.reactEditingInsets = reactEditingInsets;
+  [self setNeedsLayout];
+}
+
 - (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
 {
   _reactBorderInsets = reactBorderInsets;

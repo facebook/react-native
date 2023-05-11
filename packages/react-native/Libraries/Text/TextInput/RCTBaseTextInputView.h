@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) RCTTextAttributes *textAttributes;
 @property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, assign) CGRect reactTextInsets;
+@property (nonatomic, assign) CGRect reactEditingInsets;
 
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;

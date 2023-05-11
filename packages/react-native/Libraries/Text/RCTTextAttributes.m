@@ -145,7 +145,6 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes = [NSMutableDictionary dictionaryWithCapacity:10];
-
   // Font
   UIFont *font = self.effectiveFont;
   if (font) {
@@ -172,6 +171,21 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   NSParagraphStyle *paragraphStyle = [self effectiveParagraphStyle];
   if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+    if(!isnan(paragraphStyle.maximumLineHeight)) {
+      if (paragraphStyle.maximumLineHeight > font.lineHeight) {
+        CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
+        // ORIGINAL API ---> COMMENT HERE
+        attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
+      } else {
+        // attributes[NSBaselineOffsetAttributeName] = @(50);
+        if (paragraphStyle.maximumLineHeight < font.lineHeight) {
+          //
+        }
+        // CGFloat baseLineOffset = paragraphStyle.maximumLineHeight - font.lineHeight;
+        // CGFloat previousBaseline = [attributes[NSBaselineOffsetAttributeName] floatValue];
+        // attributes[NSBaselineOffsetAttributeName] = @(previousBaseline - baseLineOffset);
+      }
+    }
   }
 
   // Decoration

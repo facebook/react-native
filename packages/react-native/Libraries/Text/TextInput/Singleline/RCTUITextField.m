@@ -12,6 +12,42 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+//the UITextSelectionRect subclass needs to be created because the original version is not writable
+@interface CustomTextSelectionRect : UITextSelectionRect
+
+@property (nonatomic) CGRect _rect;
+@property (nonatomic) NSWritingDirection _writingDirection;
+@property (nonatomic) BOOL _containsStart; // Returns YES if the rect contains the start of the selection.
+@property (nonatomic) BOOL _containsEnd; // Returns YES if the rect contains the end of the selection.
+@property (nonatomic) BOOL _isVertical; // Returns YES if the rect is for vertically oriented text.
+
+@end
+
+@implementation CustomTextSelectionRect
+
+- (CGRect)rect {
+  return __rect;
+}
+
+- (NSWritingDirection)writingDirection {
+  return __writingDirection;
+}
+
+- (BOOL)containsStart {
+  return __containsStart;
+}
+
+- (BOOL)containsEnd {
+  return __containsEnd;
+}
+
+- (BOOL)isVertical {
+  return __isVertical;
+}
+
+@end
+
+
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
@@ -121,7 +157,10 @@
 {
   NSMutableDictionary<NSAttributedStringKey, id> *textAttributes =
       [_defaultTextAttributes mutableCopy] ?: [NSMutableDictionary new];
-
+  CGFloat baseLineOffset = [[textAttributes objectForKey:NSBaselineOffsetAttributeName] floatValue];
+  if (baseLineOffset > 0) {
+    // [textAttributes setValue:@(baseLineOffset / 2.0) forKey:NSBaselineOffsetAttributeName];
+  }
   if (self.placeholderColor) {
     [textAttributes setValue:self.placeholderColor forKey:NSForegroundColorAttributeName];
   } else {
@@ -146,23 +185,67 @@
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
 {
+  CGRect originalRect = [super caretRectForPosition:position];
+  
   if (_caretHidden) {
     return CGRectZero;
   }
-
-  return [super caretRectForPosition:position];
+  
+  // NSNumber *baseLineOffset = [self.attributedText valueForKey:NSBaselineOffsetAttributeName];
+  // CGFloat baseLineOffset = 0;
+  // CGFloat zero = 0;
+  // search how to do this in objc with float
+  // if (![baseLineOffset isEqual:0]) {
+  // originalRect.origin.y -= [[self.defaultTextAttributes valueForKey:NSBaselineOffsetAttributeName] floatValue] / 2.0;
+  // }
+  
+  return originalRect;
 }
+
+/*
+- (NSArray *)selectionRectsForRange:(UITextRange *)range {
+  NSArray *superRects = [super selectionRectsForRange:range];
+    NSMutableArray *customTextSelectionRects = [NSMutableArray array];
+    
+    for (UITextSelectionRect *rect in superRects) {
+      CustomTextSelectionRect *customTextRect = [[CustomTextSelectionRect alloc] init];
+      
+      customTextRect._rect = CGRectMake(rect.rect.origin.x, rect.rect.origin.y - [self.defaultTextAttributes[NSBaselineOffsetAttributeName] floatValue] / 2 , rect.rect.size.width, rect.rect.size.height);
+      customTextRect._writingDirection = rect.writingDirection;
+      customTextRect._containsStart = rect.containsStart;
+      customTextRect._containsEnd = rect.containsEnd;
+      customTextRect._isVertical = rect.isVertical;
+      [customTextSelectionRects addObject:customTextRect];
+    }
+    
+  return customTextSelectionRects;
+  
+}
+ */
 
 #pragma mark - Positioning Overrides
 
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
-  return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
+  if (self.reactTextInsets.size.height > 0) {
+    return self.reactTextInsets;
+  } else {
+    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
+  }
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
-  return [self textRectForBounds:bounds];
+  if (self.reactEditingInsets.size.height > 0) {
+    return self.reactEditingInsets;
+  } else {
+    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
+  }
+}
+
+- (CGRect)placeholderRectForBounds:(CGRect)bounds
+{
+  return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
 }
 
 #pragma mark - Overrides
