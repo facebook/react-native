@@ -42,8 +42,8 @@ static int YGDefaultLog(
 #ifdef ANDROID
 #include <android/log.h>
 static int YGAndroidLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigRef /*config*/,
+    const YGNodeRef /*node*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
