@@ -2984,7 +2984,7 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         bool useLegacyStretchBehaviour =
-            node->getConfig()->getErrata() & YGErrataStretchFlexBasis;
+            node->hasErrata(YGErrataStretchFlexBasis);
 
         if (!useLegacyStretchBehaviour &&
             ((!YGFloatIsUndefined(
@@ -4313,16 +4313,16 @@ YOGA_EXPORT void YGConfigSetUseWebDefaults(
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
     const YGConfigRef config) {
-  return config->getErrata() & YGErrataStretchFlexBasis;
+  return config->hasErrata(YGErrataStretchFlexBasis);
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
   if (useLegacyStretchBehaviour) {
-    config->setErrata(config->getErrata() | YGErrataStretchFlexBasis);
+    config->addErrata(YGErrataStretchFlexBasis);
   } else {
-    config->setErrata(config->getErrata() & ~YGErrataStretchFlexBasis);
+    config->removeErrata(YGErrataStretchFlexBasis);
   }
 }
 
