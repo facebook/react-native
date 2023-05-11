@@ -9,7 +9,6 @@
 
 import EventEmitter, {
   EmitterSubscription,
-  EventSubscriptionVendor,
 } from '../vendor/emitter/EventEmitter';
 
 /**
@@ -17,7 +16,6 @@ import EventEmitter, {
  * adding all event listeners directly to RCTDeviceEventEmitter.
  */
 export default interface DeviceEventEmitterStatic extends EventEmitter {
-  sharedSubscriber: EventSubscriptionVendor;
   new (): DeviceEventEmitterStatic;
   addListener(
     type: string,
