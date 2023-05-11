@@ -11,7 +11,8 @@
     "outputName": "js-test-results.xml"
   },
   "scripts": {
-    "start": "react-native start",
+    "start": "cd packages/rn-tester && npm run start",
+    "android": "cd packages/rn-tester && npm run android",
     "test": "jest",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",
