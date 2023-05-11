@@ -210,7 +210,7 @@ static void jni_YGNodeDeallocateJNI(
     return;
   }
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  YGNodeFree(node);
+  YGNodeDeallocate(node);
 }
 
 static void jni_YGNodeResetJNI(
