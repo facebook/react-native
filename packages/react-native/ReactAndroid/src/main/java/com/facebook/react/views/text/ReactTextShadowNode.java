@@ -176,7 +176,12 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       }
     }
 
-    return YogaMeasureOutput.make(textView.getMeasuredWidth(), textView.getMeasuredHeight());
+    if (mNumberOfLines != UNSET && mNumberOfLines < layout.getLineCount()) {
+      return YogaMeasureOutput.make(
+        layout.getWidth(), layout.getLineBottom(mNumberOfLines - 1));
+    } else {
+      return YogaMeasureOutput.make(layout.getWidth(), layout.getHeight());
+    }
   }
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
