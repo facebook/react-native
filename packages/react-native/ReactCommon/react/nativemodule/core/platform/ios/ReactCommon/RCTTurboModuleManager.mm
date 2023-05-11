@@ -420,7 +420,7 @@ static Class getFallbackClassFromName(const char *name)
 
     __block id<RCTBridgeModule> module = nil;
 
-    if ([self _shouldCreateObjCModule:moduleClass]) {
+    if ([moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
       __weak __typeof(self) weakSelf = self;
       dispatch_block_t work = ^{
         auto strongSelf = weakSelf;
@@ -476,15 +476,6 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   return moduleHolder->getModule();
-}
-
-- (BOOL)_shouldCreateObjCModule:(Class)moduleClass
-{
-  if (RCTTurboModuleInteropEnabled()) {
-    return [moduleClass conformsToProtocol:@protocol(RCTBridgeModule)];
-  }
-
-  return [moduleClass conformsToProtocol:@protocol(RCTTurboModule)];
 }
 
 /**
