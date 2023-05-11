@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fvisibility=hidden -fexceptions -frtti)
+add_compile_options(-fvisibility=hidden -fexceptions -fno-rtti)
 
 file(GLOB jscexecutor_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(jscexecutor SHARED ${jscexecutor_SRC})

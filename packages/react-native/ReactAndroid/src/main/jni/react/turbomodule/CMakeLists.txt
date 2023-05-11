@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
         -fexceptions
-        -frtti
+        -fno-rtti
         -Wno-unused-lambda-capture
         -std=c++17)
 

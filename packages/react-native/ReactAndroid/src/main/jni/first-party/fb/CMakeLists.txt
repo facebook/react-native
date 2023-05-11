@@ -16,7 +16,7 @@ add_compile_options(
         -DDISABLE_CPUCAP
         -DDISABLE_XPLAT
         -fexceptions
-        -frtti
+        -fno-rtti
         -Wno-unused-parameter
         -Wno-error=unused-but-set-variable
         -DHAVE_POSIX_CLOCKS

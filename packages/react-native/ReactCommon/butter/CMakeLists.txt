@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -DLOG_TAG=\"Butter\"
         -fexceptions
-        -frtti
+        -fno-rtti
         -std=c++17
         -Wall
         -Wpedantic

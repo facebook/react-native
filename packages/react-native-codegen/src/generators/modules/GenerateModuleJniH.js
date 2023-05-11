@@ -108,7 +108,7 @@ target_compile_options(
   PRIVATE
   -DLOG_TAG=\\"ReactNative\\"
   -fexceptions
-  -frtti
+  -fno-rtti
   -std=c++17
   -Wall
 )

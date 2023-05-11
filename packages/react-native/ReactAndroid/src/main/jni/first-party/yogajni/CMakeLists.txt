@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
         -fvisibility=hidden
         -fexceptions
-        -frtti
+        -fno-rtti
         -O3)
 
 file(GLOB yoga_SRC CONFIGURE_DEPENDS jni/*.cpp)

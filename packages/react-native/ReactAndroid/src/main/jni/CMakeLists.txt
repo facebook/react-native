@@ -166,17 +166,17 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
-  
+
   ########## (COMPILE BUT FAIL ON ASSERTS) ###########
   # ${REACT_COMMON_DIR}/react/renderer/animations/tests/LayoutAnimationTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/MountingTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
-  
+
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
   # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionDemuxTests.cpp
   # ${REACT_COMMON_DIR}/hermes/inspector/detail/tests/SerialExecutorTests.cpp
   # ${REACT_COMMON_DIR}/hermes/inspector/tests/InspectorTests.cpp
-  
+
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
@@ -196,7 +196,7 @@ add_executable(reactnative_unittest
   target_link_libraries(reactnative_unittest
   folly_runtime
   folly_futures
-  glog  
+  glog
   glog_init
   gtest
   hermes-engine::libhermes

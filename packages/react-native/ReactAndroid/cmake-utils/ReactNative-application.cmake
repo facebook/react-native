@@ -46,7 +46,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/rncli/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -frtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Werror -fexceptions -fno-rtti -std=c++17 -DWITH_INSPECTOR=1 -DLOG_TAG=\"ReactNative\")
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)

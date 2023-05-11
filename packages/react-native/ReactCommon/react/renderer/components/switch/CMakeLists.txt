@@ -38,7 +38,7 @@ target_compile_options(
         PRIVATE
         -DLOG_TAG=\"Fabric\"
         -fexceptions
-        -frtti
+        -fno-rtti
         -std=c++17
         -Wall
         -Wpedantic

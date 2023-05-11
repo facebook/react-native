@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
         -fexceptions
-        -frtti
+        -fno-rtti
         -std=c++17
         -Wall
         -Wpedantic
@@ -26,4 +26,3 @@ target_link_libraries(react_render_element
         react_render_core
         react_render_componentregistry
 )
-
