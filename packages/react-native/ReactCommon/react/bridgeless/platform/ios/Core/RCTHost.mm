@@ -140,7 +140,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return self;
 }
 
-#pragma mark - Public API
+#pragma mark - Public
 
 - (void)preload
 {
@@ -199,6 +199,11 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return [_instance surfacePresenter];
 }
 
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  [_instance callFunctionOnJSModule:moduleName method:method args:args];
+}
+
 #pragma mark - RCTReloadListener
 
 - (void)didReceiveReloadCommand
@@ -236,11 +241,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 // TODO (T74233481) - Should raw instance be accessed in this class like this? These functions shouldn't be called very
 // early in startup, but could add some intelligent guards here.
 #pragma mark - ReactInstanceForwarding
-
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
-{
-  [_instance callFunctionOnModule:moduleName method:method args:args];
-}
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {

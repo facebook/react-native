@@ -46,12 +46,6 @@ FB_RUNTIME_PROTOCOL
 @protocol ReactInstanceForwarding
 
 /**
- * Calls a method on a JS module that has been registered with `registerCallableModule`. Used to invoke a JS function
- * from platform code.
- */
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
-
-/**
  * Registers a new JS segment.
  */
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
@@ -76,6 +70,8 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
              jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
     FB_OBJC_DIRECT;
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 
 - (void)invalidate;
 

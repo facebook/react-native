@@ -76,6 +76,12 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 
 - (RCTSurfacePresenter *)getSurfacePresenter FB_OBJC_DIRECT;
 
+/**
+ * Calls a method on a JS module that has been registered with `registerCallableModule`. Used to invoke a JS function
+ * from platform code.
+ */
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
+
 @end
 
 NS_ASSUME_NONNULL_END
