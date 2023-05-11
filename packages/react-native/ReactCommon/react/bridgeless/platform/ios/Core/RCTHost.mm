@@ -6,6 +6,7 @@
  */
 
 #import "RCTHost.h"
+#import "RCTHost+Internal.h"
 
 #import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTAssert.h>
@@ -238,15 +239,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
 }
 
-// TODO (T74233481) - Should raw instance be accessed in this class like this? These functions shouldn't be called very
-// early in startup, but could add some intelligent guards here.
-#pragma mark - ReactInstanceForwarding
-
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
-{
-  [_instance registerSegmentWithId:segmentId path:path];
-}
-
 - (void)dealloc
 {
   [_instance invalidate];
@@ -257,6 +249,13 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer
 {
   return [_hostDelegate createContextContainer];
+}
+
+#pragma mark - Internal
+
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
+{
+  [_instance registerSegmentWithId:segmentId path:path];
 }
 
 #pragma mark - Private
