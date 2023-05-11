@@ -32,7 +32,7 @@ public class YogaNative {
   // YGNode related
   static native long jni_YGNodeNewJNI();
   static native long jni_YGNodeNewWithConfigJNI(long configPointer);
-  static native void jni_YGNodeFreeJNI(long nativePointer);
+  static native void jni_YGNodeDeallocateJNI(long nativePointer);
   static native void jni_YGNodeResetJNI(long nativePointer);
   static native void jni_YGNodeInsertChildJNI(long nativePointer, long childPointer, int index);
   static native void jni_YGNodeSwapChildJNI(long nativePointer, long childPointer, int index);

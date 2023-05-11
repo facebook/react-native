@@ -230,6 +230,10 @@ YOGA_EXPORT void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+  YGNodeDeallocate(node);
+}
+
+YOGA_EXPORT void YGNodeDeallocate(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
   delete node;
 }
