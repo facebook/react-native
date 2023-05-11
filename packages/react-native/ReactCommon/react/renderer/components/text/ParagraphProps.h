@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/components/text/BaseTextProps.h>
@@ -49,6 +50,11 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
    * Defines can the text be selected (and copied) or not.
    */
   bool isSelectable{};
+
+  /*
+   * Defines text layout tracking strategy.
+   */
+  std::vector<int> textLayoutConfig{};
 
   bool onTextLayout{};
 

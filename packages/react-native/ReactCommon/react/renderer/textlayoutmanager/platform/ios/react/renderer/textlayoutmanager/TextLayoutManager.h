@@ -39,10 +39,11 @@ class TextLayoutManager {
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
-  LinesMeasurements measureLines(
+  SegmentedMeasurements measureLines(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
-      Size size) const;
+      Size size,
+      std::vector<int> textLayoutConfig) const;
 
   std::shared_ptr<void> getHostTextStorage(
       AttributedString attributedString,

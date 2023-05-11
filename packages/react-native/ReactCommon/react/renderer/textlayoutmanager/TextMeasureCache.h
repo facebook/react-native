@@ -38,6 +38,12 @@ struct LineMeasurement {
 };
 
 using LinesMeasurements = std::vector<LineMeasurement>;
+using RegionsMeasurements = std::vector<float>;
+
+struct SegmentedMeasurements {
+  LinesMeasurements linesMeasurements;
+  RegionsMeasurements regionsMeasurements;
+};
 
 /*
  * Describes a result of text measuring.

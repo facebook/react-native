@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -40,6 +41,7 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
+import com.facebook.common.logging.FLog;
 
 /**
  * {@link ReactBaseTextShadowNode} concrete class for anchor {@code Text} node.
@@ -58,6 +60,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private @Nullable Spannable mPreparedSpannableText;
 
   private boolean mShouldNotifyOnTextLayout;
+  private ReadableArray mTextLayoutConfig;
 
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
@@ -355,6 +358,11 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   @ReactProp(name = "onTextLayout")
   public void setShouldNotifyOnTextLayout(boolean shouldNotifyOnTextLayout) {
     mShouldNotifyOnTextLayout = shouldNotifyOnTextLayout;
+  }
+
+  @ReactProp(name = "textLayoutConfig")
+  public void setTextLayoutConfig(ReadableArray textLayoutConfig) {
+    mTextLayoutConfig = textLayoutConfig;
   }
 
   @Override

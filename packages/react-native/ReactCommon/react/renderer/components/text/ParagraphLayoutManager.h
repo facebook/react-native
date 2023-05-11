@@ -28,10 +28,11 @@ class ParagraphLayoutManager {
       ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
-  LinesMeasurements measureLines(
+  SegmentedMeasurements measureLines(
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
-      Size size) const;
+      Size size,
+      std::vector<int> textLayoutConfig) const;
 
   void setTextLayoutManager(
       std::shared_ptr<TextLayoutManager const> textLayoutManager) const;

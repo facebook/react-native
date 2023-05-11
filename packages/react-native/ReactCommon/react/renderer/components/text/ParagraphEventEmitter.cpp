@@ -11,9 +11,11 @@ namespace facebook::react {
 
 static jsi::Value linesMeasurementsPayload(
     jsi::Runtime &runtime,
-    LinesMeasurements const &linesMeasurements) {
+    LinesMeasurements const &linesMeasurements,
+    RegionsMeasurements const &regionsMeasurements) {
   auto payload = jsi::Object(runtime);
   auto lines = jsi::Array(runtime, linesMeasurements.size());
+  auto regions = jsi::Array(runtime, regionsMeasurements.size());
 
   for (size_t i = 0; i < linesMeasurements.size(); ++i) {
     auto const &lineMeasurement = linesMeasurements[i];
@@ -29,24 +31,32 @@ static jsi::Value linesMeasurementsPayload(
     jsiLine.setProperty(runtime, "xHeight", lineMeasurement.xHeight);
     lines.setValueAtIndex(runtime, i, jsiLine);
   }
+  
+  if (regionsMeasurements.size() == 2) {
+    regions.setValueAtIndex(runtime, 0, regionsMeasurements[0]);
+    regions.setValueAtIndex(runtime, 1, regionsMeasurements[1]);
+  }
 
   payload.setProperty(runtime, "lines", lines);
+  payload.setProperty(runtime, "regions", regions);
 
   return payload;
 }
 
 void ParagraphEventEmitter::onTextLayout(
-    LinesMeasurements const &linesMeasurements) const {
+    LinesMeasurements const &linesMeasurements,
+    RegionsMeasurements const &regionsMeasurements) const {
   {
     std::lock_guard<std::mutex> guard(linesMeasurementsMutex_);
     if (linesMeasurementsMetrics_ == linesMeasurements) {
       return;
     }
     linesMeasurementsMetrics_ = linesMeasurements;
+    regionsMeasurementsMetrics_ = regionsMeasurements;
   }
 
-  dispatchEvent("textLayout", [linesMeasurements](jsi::Runtime &runtime) {
-    return linesMeasurementsPayload(runtime, linesMeasurements);
+  dispatchEvent("textLayout", [linesMeasurements, regionsMeasurements](jsi::Runtime &runtime) {
+    return linesMeasurementsPayload(runtime, linesMeasurements, regionsMeasurements);
   });
 }
 

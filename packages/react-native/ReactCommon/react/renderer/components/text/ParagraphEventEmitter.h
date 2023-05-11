@@ -16,11 +16,12 @@ class ParagraphEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
-  void onTextLayout(LinesMeasurements const &linesMeasurements) const;
+  void onTextLayout(LinesMeasurements const &linesMeasurements, RegionsMeasurements const &regionsMeasurements) const;
 
  private:
   mutable std::mutex linesMeasurementsMutex_;
   mutable LinesMeasurements linesMeasurementsMetrics_;
+  mutable RegionsMeasurements regionsMeasurementsMetrics_;
 };
 
 } // namespace facebook::react

@@ -39,6 +39,14 @@ ParagraphProps::ParagraphProps(
                                                        "selectable",
                                                        sourceProps.isSelectable,
                                                        false)),
+      textLayoutConfig(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.textLayoutConfig
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "textLayoutConfig",
+                                                       sourceProps.textLayoutConfig,
+                                                       {})),
       onTextLayout(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.onTextLayout
                                                  : convertRawProp(
@@ -123,6 +131,7 @@ void ParagraphProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textLayoutConfig);
   }
 
   /*

@@ -120,9 +120,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 }
 
-- (LinesMeasurements)getLinesForAttributedString:(AttributedString)attributedString
-                             paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                            size:(CGSize)size
+- (SegmentedMeasurements)getLinesForAttributedString:(AttributedString)attributedString
+                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                size:(CGSize)size
+                                    textLayoutConfig:(NSArray*)textLayoutConfig
 {
   NSTextStorage *textStorage = [self textStorageForAttributesString:attributedString
                                                 paragraphAttributes:paragraphAttributes
@@ -133,7 +134,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
   std::vector<LineMeasurement> paragraphLines{};
+  std::vector<float> regionsMeasurements{};
   auto blockParagraphLines = &paragraphLines;
+  auto blockRegionsMeasurements = &regionsMeasurements;
 
   [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
                                           usingBlock:^(
@@ -152,6 +155,19 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                             auto rect = facebook::react::Rect{
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
+                                                
+                                            NSRange lineRange = NSIntersectionRange(lineGlyphRange, NSMakeRange(
+                                                [[textLayoutConfig firstObject] integerValue],
+                                                [[textLayoutConfig firstObject] integerValue]));
+
+                                            [layoutManager enumerateEnclosingRectsForGlyphRange:lineRange
+                                                                        withinSelectedGlyphRange:lineRange
+                                                                                 inTextContainer:usedTextContainer
+                                                                                      usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                                              blockRegionsMeasurements->push_back(enclosingRect.size.width);
+                                              blockRegionsMeasurements->push_back(enclosingRect.size.height);
+                                            }];
+
                                             auto line = LineMeasurement{
                                                 std::string([renderedString UTF8String]),
                                                 rect,
@@ -161,7 +177,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 font.xHeight};
                                             blockParagraphLines->push_back(line);
                                           }];
-  return paragraphLines;
+
+  SegmentedMeasurements segmentedMeasurements = {paragraphLines, regionsMeasurements};
+  
+  return segmentedMeasurements;
 }
 
 - (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString

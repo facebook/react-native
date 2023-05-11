@@ -169,6 +169,11 @@ export type TextProps = $ReadOnly<{|
   onTextLayout?: ?(event: TextLayoutEvent) => mixed,
 
   /**
+   * Regions for text layout tracking
+   */
+  textLayoutConfig?: ?$ReadOnlyArray<number>,
+
+  /**
    * Defines how far your touch may move off of the button, before
    * deactivating the button.
    *

@@ -104,15 +104,23 @@ TextMeasurement TextLayoutManager::measure(
   return measurement;
 }
 
-LinesMeasurements TextLayoutManager::measureLines(
+SegmentedMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
-    Size size) const
+    Size size,
+    std::vector<int> textLayoutConfig) const
 {
+  id chunks = [NSMutableArray new];
+  std::for_each(textLayoutConfig.begin(), textLayoutConfig.end(), ^(int chunk) {
+    id region = [NSNumber numberWithInteger:chunk];
+    [chunks addObject:region];
+  });
+  
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
   return [textLayoutManager getLinesForAttributedString:attributedString
                                     paragraphAttributes:paragraphAttributes
-                                                   size:{size.width, size.height}];
+                                                   size:{size.width, size.height}
+                                       textLayoutConfig:chunks];
 }
 
 } // namespace facebook::react
