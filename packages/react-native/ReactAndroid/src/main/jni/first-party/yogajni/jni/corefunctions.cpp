@@ -56,6 +56,7 @@ JNIEXPORT JNIEnv* getCurrentEnv() {
 }
 
 void logErrorMessageAndDie(const char* message) {
+  (void) message;
   VANILLAJNI_LOG_ERROR(
       "VanillaJni",
       "Aborting due to error detected in native code: %s",

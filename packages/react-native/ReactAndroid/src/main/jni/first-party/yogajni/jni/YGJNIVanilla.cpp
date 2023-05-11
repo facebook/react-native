@@ -424,73 +424,73 @@ static void jni_YGNodeCopyStyleJNI(
       _jlong2YGNodeRef(dstNativePointer), _jlong2YGNodeRef(srcNativePointer));
 }
 
-#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                         \
-  static javatype jni_YGNodeStyleGet##name##JNI(                             \
-      JNIEnv* env, jobject obj, jlong nativePointer) {                       \
-    return (javatype) YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)); \
+#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                           \
+  static javatype jni_YGNodeStyleGet##name##JNI(                               \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {                 \
+    return (javatype) YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer));   \
+  }                                                                            \
+                                                                               \
+  static void jni_YGNodeStyleSet##name##JNI(                                   \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, javatype value) { \
+    YGNodeStyleSet##name(                                                      \
+        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));            \
+  }
+
+#define YG_NODE_JNI_STYLE_UNIT_PROP(name)                                    \
+  static jlong jni_YGNodeStyleGet##name##JNI(                                \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {               \
+    return YogaValue::asJavaLong(                                            \
+        YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)));              \
   }                                                                          \
                                                                              \
   static void jni_YGNodeStyleSet##name##JNI(                                 \
-      JNIEnv* env, jobject obj, jlong nativePointer, javatype value) {       \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jfloat value) { \
     YGNodeStyleSet##name(                                                    \
-        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));          \
-  }
-
-#define YG_NODE_JNI_STYLE_UNIT_PROP(name)                            \
-  static jlong jni_YGNodeStyleGet##name##JNI(                        \
-      JNIEnv* env, jobject obj, jlong nativePointer) {               \
-    return YogaValue::asJavaLong(                                    \
-        YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)));      \
-  }                                                                  \
-                                                                     \
-  static void jni_YGNodeStyleSet##name##JNI(                         \
-      JNIEnv* env, jobject obj, jlong nativePointer, jfloat value) { \
-    YGNodeStyleSet##name(                                            \
-        _jlong2YGNodeRef(nativePointer), static_cast<float>(value)); \
-  }                                                                  \
-                                                                     \
-  static void jni_YGNodeStyleSet##name##PercentJNI(                  \
-      JNIEnv* env, jobject obj, jlong nativePointer, jfloat value) { \
-    YGNodeStyleSet##name##Percent(                                   \
-        _jlong2YGNodeRef(nativePointer), static_cast<float>(value)); \
+        _jlong2YGNodeRef(nativePointer), static_cast<float>(value));         \
+  }                                                                          \
+                                                                             \
+  static void jni_YGNodeStyleSet##name##PercentJNI(                          \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jfloat value) { \
+    YGNodeStyleSet##name##Percent(                                           \
+        _jlong2YGNodeRef(nativePointer), static_cast<float>(value));         \
   }
 
 #define YG_NODE_JNI_STYLE_UNIT_PROP_AUTO(name)                   \
   YG_NODE_JNI_STYLE_UNIT_PROP(name)                              \
   static void jni_YGNodeStyleSet##name##AutoJNI(                 \
-      JNIEnv* env, jobject obj, jlong nativePointer) {           \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer) {   \
     YGNodeStyleSet##name##Auto(_jlong2YGNodeRef(nativePointer)); \
   }
 
-#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                        \
-  static jlong jni_YGNodeStyleGet##name##JNI(                         \
-      JNIEnv* env, jobject obj, jlong nativePointer, jint edge) {     \
-    return YogaValue::asJavaLong(YGNodeStyleGet##name(                \
-        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge))); \
-  }                                                                   \
-                                                                      \
-  static void jni_YGNodeStyleSet##name##JNI(                          \
-      JNIEnv* env,                                                    \
-      jobject obj,                                                    \
-      jlong nativePointer,                                            \
-      jint edge,                                                      \
-      jfloat value) {                                                 \
-    YGNodeStyleSet##name(                                             \
-        _jlong2YGNodeRef(nativePointer),                              \
-        static_cast<YGEdge>(edge),                                    \
-        static_cast<float>(value));                                   \
-  }                                                                   \
-                                                                      \
-  static void jni_YGNodeStyleSet##name##PercentJNI(                   \
-      JNIEnv* env,                                                    \
-      jobject obj,                                                    \
-      jlong nativePointer,                                            \
-      jint edge,                                                      \
-      jfloat value) {                                                 \
-    YGNodeStyleSet##name##Percent(                                    \
-        _jlong2YGNodeRef(nativePointer),                              \
-        static_cast<YGEdge>(edge),                                    \
-        static_cast<float>(value));                                   \
+#define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                            \
+  static jlong jni_YGNodeStyleGet##name##JNI(                             \
+      JNIEnv* /*env*/, jobject /*obj*/, jlong nativePointer, jint edge) { \
+    return YogaValue::asJavaLong(YGNodeStyleGet##name(                    \
+        _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge)));     \
+  }                                                                       \
+                                                                          \
+  static void jni_YGNodeStyleSet##name##JNI(                              \
+      JNIEnv* /*env*/,                                                    \
+      jobject /*obj*/,                                                    \
+      jlong nativePointer,                                                \
+      jint edge,                                                          \
+      jfloat value) {                                                     \
+    YGNodeStyleSet##name(                                                 \
+        _jlong2YGNodeRef(nativePointer),                                  \
+        static_cast<YGEdge>(edge),                                        \
+        static_cast<float>(value));                                       \
+  }                                                                       \
+                                                                          \
+  static void jni_YGNodeStyleSet##name##PercentJNI(                       \
+      JNIEnv* /*env*/,                                                    \
+      jobject /*obj*/,                                                    \
+      jlong nativePointer,                                                \
+      jint edge,                                                          \
+      jfloat value) {                                                     \
+    YGNodeStyleSet##name##Percent(                                        \
+        _jlong2YGNodeRef(nativePointer),                                  \
+        static_cast<YGEdge>(edge),                                        \
+        static_cast<float>(value));                                       \
   }
 
 YG_NODE_JNI_STYLE_PROP(jint, YGDirection, Direction);
@@ -712,12 +712,17 @@ static void jni_YGNodeSetHasBaselineFuncJNI(
       ->setBaselineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 
-static void jni_YGNodePrintJNI(JNIEnv* env, jobject obj, jlong nativePointer) {
+static void jni_YGNodePrintJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer) {
 #ifdef DEBUG
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
       (YGPrintOptions) (YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+#else
+  (void) nativePointer;
 #endif
 }
 
