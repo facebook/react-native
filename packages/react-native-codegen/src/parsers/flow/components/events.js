@@ -223,7 +223,7 @@ function findEventArgumentsAndType(
         : null;
     if (
       typeAnnotation.typeParameters.params[0].type ===
-      'NullLiteralTypeAnnotation'
+      parser.nullLiteralTypeAnnotation
     ) {
       return {
         argumentProps: [],

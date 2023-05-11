@@ -237,7 +237,7 @@ function findEventArgumentsAndType(
         : null;
 
     switch (typeAnnotation.typeParameters.params[0].type) {
-      case 'TSNullKeyword':
+      case parser.nullLiteralTypeAnnotation:
       case 'TSUndefinedKeyword':
         return {
           argumentProps: [],

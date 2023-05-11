@@ -50,6 +50,8 @@ const {
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
 
+  nullLiteralTypeAnnotation: string = 'TSNullKeyword';
+
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'TSPropertySignature';
   }
