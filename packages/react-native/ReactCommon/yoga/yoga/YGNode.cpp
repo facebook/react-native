@@ -21,7 +21,7 @@ YGNode::YGNode(const YGConfigRef config) : config_{config} {
   if (config->useWebDefaults()) {
     useWebDefaults();
   }
-};
+}
 
 YGNode::YGNode(YGNode&& node) {
   context_ = node.context_;
