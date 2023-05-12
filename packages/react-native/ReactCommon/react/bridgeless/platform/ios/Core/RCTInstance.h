@@ -11,6 +11,7 @@
 #import <React/RCTDefines.h>
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/bridgeless/ReactInstance.h>
+#import <react/renderer/mapbuffer/MapBuffer.h>
 #import <react/utils/ContextContainer.h>
 
 /**
@@ -24,6 +25,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags);
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTBundleManager;
+@class RCTInstance;
 @class RCTJSThreadManager;
 @class RCTModuleRegistry;
 @class RCTPerformanceLogger;
@@ -33,28 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-// TODO (T74233481) - Delete this. Communication between Product Code <> RCTInstance should go through RCTHost.
 @protocol RCTInstanceDelegate <NSObject>
 
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
-@end
-
-/**
- * A set of functions which are forwarded through RCTHost, RCTInstance to ReactInstance.
- */
-@protocol ReactInstanceForwarding
-
-/**
- * Calls a method on a JS module that has been registered with `registerCallableModule`. Used to invoke a JS function
- * from platform code.
- */
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
-
-/**
- * Registers a new JS segment.
- */
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
+- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
 
 @end
 
@@ -65,7 +50,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
  * Native. RCTInstance should never be instantiated in product code, but rather accessed through RCTHost. The host
  * ensures that any access to the instance is safe, and manages instance lifecycle.
  */
-@interface RCTInstance : NSObject <ReactInstanceForwarding>
+@interface RCTInstance : NSObject
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
@@ -73,9 +58,11 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-             jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
-    FB_OBJC_DIRECT;
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry FB_OBJC_DIRECT;
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
+
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 
 - (void)invalidate;
 

@@ -118,6 +118,8 @@ public:
 
   float baseline(float width, float height, void* layoutContext);
 
+  bool hasErrata(YGErrata errata) const { return config_->hasErrata(errata); }
+
   YGDirtiedFunc getDirtied() const { return dirtied_; }
 
   // For Performance reasons passing as reference.

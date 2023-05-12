@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: af_ZA -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">Toestelspesifieke ontwikkelaarkieslys vir reaksies (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">Wys %1$s</string>
 </resources>

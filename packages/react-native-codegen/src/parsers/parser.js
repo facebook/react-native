@@ -22,7 +22,45 @@ import type {
   NativeModuleEnumMap,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  PropAST,
+  ASTNode,
+} from './utils';
+
+export type GetTypeAnnotationFN = (
+  name: string,
+  annotation: $FlowFixMe | ASTNode,
+  defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean,
+  types: TypeDeclarationMap,
+  parser: Parser,
+  buildSchema: (
+    property: PropAST,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ) => $FlowFixMe,
+) => $FlowFixMe;
+
+export type SchemaInfo = {
+  name: string,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe,
+  withNullDefault: boolean,
+};
+
+export type GetSchemaInfoFN = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+) => ?SchemaInfo;
+
+export type BuildSchemaFN<T> = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => ?NamedShape<T>;
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -269,4 +307,15 @@ export interface Parser {
    * @returns: name property
    */
   nameForArgument(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a property return if it is optional.
+   * @parameter property
+   * @returns: a boolean specifying if the Property is optional
+   */
+  isOptionalProperty(property: $FlowFixMe): boolean;
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN;
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN;
 }

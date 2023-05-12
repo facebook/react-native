@@ -10,10 +10,7 @@
 
 'use strict';
 
-import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
-
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-export type ASTNode = Object;
+import type {TypeResolutionStatus, TypeDeclarationMap, ASTNode} from '../utils';
 
 const invariant = require('invariant');
 

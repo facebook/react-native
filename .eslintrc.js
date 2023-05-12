@@ -21,7 +21,7 @@ module.exports = {
   plugins: ['@react-native/eslint-plugin-specs', 'lint'],
 
   overrides: [
-    // overriding the JS config from eslint-config-react-native-community config to ensure
+    // overriding the JS config from @react-native/eslint-config to ensure
     // that we use hermes-eslint for all js files
     {
       files: ['*.js'],

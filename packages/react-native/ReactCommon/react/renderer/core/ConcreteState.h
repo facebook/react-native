@@ -43,7 +43,7 @@ class ConcreteState : public State {
       ShadowNodeFamily::Shared const &family)
       : State(data, family) {}
 
-  virtual ~ConcreteState() = default;
+  ~ConcreteState() override = default;
 
   /*
    * Returns stored data.

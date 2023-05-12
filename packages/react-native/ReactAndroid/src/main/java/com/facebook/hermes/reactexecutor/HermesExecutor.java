@@ -26,11 +26,7 @@ public class HermesExecutor extends JavaScriptExecutor {
       SoLoader.loadLibrary("hermes");
       SoLoader.loadLibrary("hermes_executor");
       // libhermes_executor is built differently for Debug & Release so we load the proper mode.
-      if (ReactBuildConfig.DEBUG == true) {
-        mode_ = "Debug";
-      } else {
-        mode_ = "Release";
-      }
+      mode_ = ReactBuildConfig.DEBUG ? "Debug" : "Release";
     }
   }
 

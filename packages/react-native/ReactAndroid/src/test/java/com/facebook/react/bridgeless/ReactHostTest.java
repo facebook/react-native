@@ -55,7 +55,7 @@ import org.robolectric.android.controller.ActivityController;
 @Ignore("Ignore for now as these tests fail in OSS only")
 public class ReactHostTest {
 
-  private ReactInstanceDelegate mReactInstanceDelegate;
+  private ReactHostDelegate mReactHostDelegate;
   private ReactInstance mReactInstance;
   private MemoryPressureRouter mMemoryPressureRouter;
   private BridgelessDevSupportManager mDevSupportManager;
@@ -72,7 +72,7 @@ public class ReactHostTest {
 
     mActivityController = Robolectric.buildActivity(Activity.class).create().start().resume();
 
-    mReactInstanceDelegate = mock(ReactInstanceDelegate.class);
+    mReactHostDelegate = mock(ReactHostDelegate.class);
     mReactInstance = mock(ReactInstance.class);
     mMemoryPressureRouter = mock(MemoryPressureRouter.class);
     mDevSupportManager = mock(BridgelessDevSupportManager.class);
@@ -84,13 +84,13 @@ public class ReactHostTest {
     whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
 
     doReturn(mJSBundleLoader)
-        .when(mReactInstanceDelegate)
+        .when(mReactHostDelegate)
         .getJSBundleLoader(ArgumentMatchers.<ReactApplicationContext>any());
 
     mReactHost =
         new ReactHost(
             mActivityController.get().getApplication(),
-            mReactInstanceDelegate,
+            mReactHostDelegate,
             mComponentFactory,
             false,
             null,

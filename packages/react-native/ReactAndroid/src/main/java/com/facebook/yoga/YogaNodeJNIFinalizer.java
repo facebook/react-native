@@ -29,7 +29,7 @@ public class YogaNodeJNIFinalizer extends YogaNodeJNIBase {
     if (mNativePointer != 0) {
       long nativePointer = mNativePointer;
       mNativePointer = 0;
-      YogaNative.jni_YGNodeFreeJNI(nativePointer);
+      YogaNative.jni_YGNodeDeallocateJNI(nativePointer);
     }
   }
 }

@@ -12,13 +12,15 @@ import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
 /** TODO: add javadoc for class and methods */
 @ThreadSafe
-interface ReactInstanceDelegate {
+@UnstableReactNativeAPI
+interface ReactHostDelegate {
   val jSMainModulePath: String
 
   val bindingsInstaller: BindingsInstaller
@@ -35,7 +37,8 @@ interface ReactInstanceDelegate {
 
   fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig
 
-  class ReactInstanceDelegateBase(
+  @UnstableReactNativeAPI
+  class ReactHostDelegateBase(
       override val jSMainModulePath: String,
       override val bindingsInstaller: BindingsInstaller,
       override val reactPackages: List<ReactPackage>,
@@ -44,7 +47,7 @@ interface ReactInstanceDelegate {
       private val jsEngineInstance: JSEngineInstance,
       private val reactNativeConfig: ReactNativeConfig,
       private val exceptionHandler: (Exception) -> Unit = {}
-  ) : ReactInstanceDelegate {
+  ) : ReactHostDelegate {
     override fun getJSBundleLoader(context: Context) = jsBundleLoader
 
     override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =

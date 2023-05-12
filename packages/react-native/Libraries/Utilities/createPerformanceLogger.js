@@ -16,7 +16,6 @@ import type {
 } from './IPerformanceLogger';
 
 import * as Systrace from '../Performance/Systrace';
-import Performance from '../WebPerformance/Performance';
 import infoLog from './infoLog';
 
 const _cookies: {[key: string]: number, ...} = {};
@@ -26,9 +25,6 @@ const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally 
 // This is the prefix for optional logging points/timespans as marks/measures via Performance API,
 // used to separate these internally from other marks/measures
 const WEB_PERFORMANCE_PREFIX = 'global_perf_';
-
-// TODO: Remove once T143070419 is done
-const performance = new Performance();
 
 export const getCurrentTimestamp: () => number =
   global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
