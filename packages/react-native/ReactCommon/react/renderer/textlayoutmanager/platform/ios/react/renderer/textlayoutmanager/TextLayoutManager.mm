@@ -108,7 +108,7 @@ TextLayoutMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size,
-    std::vector<int> textLayoutRegions) const
+    TextLayoutRegions textLayoutRegions) const
 {
   id chunks = [NSMutableArray new];
   std::for_each(textLayoutRegions.begin(), textLayoutRegions.end(), ^(int chunk) {

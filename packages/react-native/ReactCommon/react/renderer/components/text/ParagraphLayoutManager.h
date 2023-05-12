@@ -32,7 +32,7 @@ class ParagraphLayoutManager {
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
       Size size,
-      std::vector<int> textLayoutRegions) const;
+      TextLayoutRegions textLayoutRegions) const;
 
   void setTextLayoutManager(
       std::shared_ptr<TextLayoutManager const> textLayoutManager) const;

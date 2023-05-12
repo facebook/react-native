@@ -16,6 +16,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 
 namespace facebook::react {
 
@@ -54,7 +55,7 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
   /*
    * Defines text layout tracking strategy.
    */
-  std::vector<int> textLayoutRegions{};
+  TextLayoutRegions textLayoutRegions{};
 
   bool onTextLayout{};
 
