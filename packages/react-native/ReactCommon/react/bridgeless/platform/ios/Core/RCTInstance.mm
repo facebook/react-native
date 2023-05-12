@@ -73,7 +73,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTTurboModuleManager *_turboModuleManager;
-  JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
@@ -91,7 +90,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
              bindingsInstallFunc:(ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-             jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc;
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -104,7 +102,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
     _bindingsInstallFunc = bindingsInstallFunc;
-    _jsErrorHandlingFunc = jsErrorHandlingFunc;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager

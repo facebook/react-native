@@ -34,7 +34,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
   facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
-  JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
   RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
@@ -59,7 +58,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                 jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
                     jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
@@ -69,7 +67,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _bundleManager = [RCTBundleManager new];
     _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
-    _jsErrorHandlingFunc = jsErrorHandlingFunc;
     _jsEngineProvider = [jsEngineProvider copy];
 
     __weak RCTHost *weakHost = self;
@@ -159,8 +156,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                  turboModuleManagerDelegate:_turboModuleManagerDelegate
                         onInitialBundleLoad:_onInitialBundleLoad
                         bindingsInstallFunc:_bindingsInstallFunc
-                             moduleRegistry:_moduleRegistry
-                        jsErrorHandlingFunc:_jsErrorHandlingFunc];
+                             moduleRegistry:_moduleRegistry];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -229,8 +225,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                  turboModuleManagerDelegate:_turboModuleManagerDelegate
                         onInitialBundleLoad:_onInitialBundleLoad
                         bindingsInstallFunc:_bindingsInstallFunc
-                             moduleRegistry:_moduleRegistry
-                        jsErrorHandlingFunc:_jsErrorHandlingFunc];
+                             moduleRegistry:_moduleRegistry];
   [[NSNotificationCenter defaultCenter]
       postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
 
@@ -256,7 +251,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
                                          encoding:[NSString defaultCStringEncoding]];
   std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
-  NSMutableArray *stack = [NSMutableArray new];
+  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
   for (facebook::react::MapBuffer const &mapBuffer : frames) {
     NSDictionary *frame = @{
       @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()

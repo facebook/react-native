@@ -58,9 +58,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-             jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
-    FB_OBJC_DIRECT;
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry FB_OBJC_DIRECT;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

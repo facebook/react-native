@@ -61,7 +61,6 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                 jsErrorHandlingFunc:(facebook::react::JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc
                     jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER
     FB_OBJC_DIRECT;
 
