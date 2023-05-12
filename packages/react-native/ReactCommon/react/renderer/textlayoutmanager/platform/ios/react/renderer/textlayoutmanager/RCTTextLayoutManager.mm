@@ -155,20 +155,23 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                             auto lineRect = facebook::react::Rect{
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
-                                                
-                                            NSRange lineRange = NSIntersectionRange(lineGlyphRange, NSMakeRange(
-                                                [[textLayoutRegions firstObject] integerValue],
-                                                [[textLayoutRegions firstObject] integerValue]));
+                                            
+                                            [textLayoutRegions enumerateObjectsUsingBlock:^(id _Nonnull textLayoutRegion, NSUInteger idx, BOOL * _Nonnull stop) {
+                                              auto from = [[textLayoutRegion firstObject] integerValue];
+                                              auto to = [[textLayoutRegion lastObject] integerValue];
+                                              NSRange lineRange = NSIntersectionRange(lineGlyphRange, NSMakeRange(from, to));
 
-                                            [layoutManager enumerateEnclosingRectsForGlyphRange:lineRange
-                                                                       withinSelectedGlyphRange:lineRange
-                                                                                inTextContainer:usedTextContainer
-                                                                                     usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-                                              auto regionRect = facebook::react::Rect{
-                                                  facebook::react::Point{enclosingRect.origin.x, enclosingRect.origin.y},
-                                                  facebook::react::Size{enclosingRect.size.width, enclosingRect.size.height}};
-                                              blockRegionsMeasurements->push_back(regionRect);
+                                              [layoutManager enumerateEnclosingRectsForGlyphRange:lineRange
+                                                                         withinSelectedGlyphRange:lineRange
+                                                                                  inTextContainer:usedTextContainer
+                                                                                       usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                                                auto regionRect = facebook::react::Rect{
+                                                    facebook::react::Point{enclosingRect.origin.x, enclosingRect.origin.y},
+                                                    facebook::react::Size{enclosingRect.size.width, enclosingRect.size.height}};
+                                                blockRegionsMeasurements->push_back(regionRect);
+                                              }];
                                             }];
+                                            
 
                                             auto line = LineMeasurement{
                                                 std::string([renderedString UTF8String]),

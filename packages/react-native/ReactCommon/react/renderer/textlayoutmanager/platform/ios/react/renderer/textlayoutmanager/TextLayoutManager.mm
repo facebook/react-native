@@ -110,17 +110,21 @@ TextLayoutMeasurements TextLayoutManager::measureLines(
     Size size,
     TextLayoutRegions textLayoutRegions) const
 {
-  id chunks = [NSMutableArray new];
-  std::for_each(textLayoutRegions.begin(), textLayoutRegions.end(), ^(int chunk) {
-    id region = [NSNumber numberWithInteger:chunk];
-    [chunks addObject:region];
-  });
-  
+  id regions = [NSMutableArray new];
+
+  for (auto const &textLayoutRegion : textLayoutRegions) {
+    id region = [NSMutableArray new];
+    for (auto const &chunk : textLayoutRegion) {
+      [region addObject:[NSNumber numberWithInteger:chunk]];
+    }
+    [regions addObject:region];
+  }
+
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
   return [textLayoutManager getLinesForAttributedString:attributedString
                                     paragraphAttributes:paragraphAttributes
                                                    size:{size.width, size.height}
-                                       textLayoutRegions:chunks];
+                                      textLayoutRegions:regions];
 }
 
 } // namespace facebook::react

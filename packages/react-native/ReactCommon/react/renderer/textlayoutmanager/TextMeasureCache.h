@@ -52,7 +52,8 @@ struct RegionMeasurement {
 using LinesMeasurements = std::vector<LineMeasurement>;
 using RegionsMeasurements = std::vector<RegionMeasurement>;
 
-using TextLayoutRegions = std::vector<int>;
+using TextLayoutRegion = std::vector<int>;
+using TextLayoutRegions = std::vector<TextLayoutRegion>;
 
 struct TextLayoutMeasurements {
   LinesMeasurements linesMeasurements;

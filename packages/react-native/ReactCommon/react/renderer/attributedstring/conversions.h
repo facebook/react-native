@@ -21,7 +21,9 @@
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <cmath>
+#include <vector>
 
 #ifdef ANDROID
 #include <react/renderer/mapbuffer/MapBuffer.h>
@@ -825,6 +827,31 @@ inline void fromRawValue(
   LOG(ERROR) << "Unsupported HyphenationFrequency type";
   react_native_expect(false);
   result = HyphenationFrequency::None;
+}
+
+inline std::string toString(const TextLayoutRegions &textLayoutRegions) {
+  LOG(ERROR) << "Unsupported HyphenationFrequency value";
+  react_native_expect(false);
+  return "none";
+}
+
+inline void fromRawValue(
+    const PropsParserContext &context,
+    const RawValue &value,
+    TextLayoutRegions &result) {
+  react_native_expect(value.hasType<std::vector<std::vector<int>>>());
+  if (value.hasType<std::vector<std::vector<int>>>()) {
+    auto regions = std::vector<std::vector<int>>{value};
+    for (const auto &region : regions) {
+      std::vector<int> chunks;
+      for (const auto &chunk : region) {
+        chunks.push_back(chunk);
+      }
+      result.push_back(chunks);
+    }
+  } else {
+    LOG(ERROR) << "Unsupported FontVariant type";
+  }
 }
 
 inline ParagraphAttributes convertRawProp(
