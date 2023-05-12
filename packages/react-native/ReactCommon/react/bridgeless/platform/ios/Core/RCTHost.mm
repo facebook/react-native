@@ -251,6 +251,10 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return [_hostDelegate createContextContainer];
 }
 
+- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
+{
+}
+
 #pragma mark - Internal
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path

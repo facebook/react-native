@@ -18,6 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
+@class RCTHost;
 @class RCTJSThreadManager;
 @class RCTModuleRegistry;
 @protocol RCTInstanceDelegate;
@@ -41,6 +42,12 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 - (std::shared_ptr<facebook::react::JSEngineInstance>)getJSEngine;
 - (NSURL *)getBundleURL;
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
+
+- (void)host:(RCTHost *)host
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal;
 
 @end
 

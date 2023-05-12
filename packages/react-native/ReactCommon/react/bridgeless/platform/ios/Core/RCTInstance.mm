@@ -412,4 +412,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)_handleJSErrorMap:(facebook::react::MapBuffer)errorMap
+{
+  [_delegate instance:self didReceiveErrorMap:std::move(errorMap)];
+}
+
 @end
