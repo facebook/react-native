@@ -158,7 +158,7 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   if (self.reactTextInsets.size.height > 0) {
-    return self.reactTextInsets;
+    return UIEdgeInsetsInsetRect(self.reactTextInsets, _textContainerInset);
   } else {
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }
@@ -167,7 +167,7 @@
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
   if (self.reactEditingInsets.size.height > 0) {
-    return self.reactEditingInsets;
+    return UIEdgeInsetsInsetRect(self.reactEditingInsets, _textContainerInset);
   } else {
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }

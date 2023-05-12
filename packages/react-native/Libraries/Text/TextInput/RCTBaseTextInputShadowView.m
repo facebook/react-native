@@ -180,14 +180,13 @@
     baseTextInputView.reactBorderInsets = borderInsets;
      
     // add logic when fontSize not provided
-    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
-      if (textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
-        CGFloat height = self.layoutMetrics.frame.size.height;
-        CGFloat width = self.layoutMetrics.frame.size.width;
-        CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
-        baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
-        baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
-      }
+    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
+      CGFloat height = self.layoutMetrics.frame.size.height;
+      CGFloat width = self.layoutMetrics.frame.size.width;
+      CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
+      baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
+      baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
+      baseTextInputView.reactPaddingInsets = paddingInsets;
     } else {
       baseTextInputView.reactPaddingInsets = paddingInsets;
     }

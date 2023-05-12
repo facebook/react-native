@@ -945,8 +945,8 @@ function LineHeightExample() {
 }
 
 function LineHeightExamples() {
+  const [text, setText] = React.useState();
   const textInputStyles = {
-    fontSize: 10,
     borderWidth: 1,
   };
 
@@ -954,76 +954,16 @@ function LineHeightExamples() {
   return (
     <ScrollView>
       <View style={container}>
-        <Text>lineHeight 10, height 8</Text>
+        <Text>lineHeight 80, height 80 (no fontSize)</Text>
         <TextInput
-          style={[textInputStyles, {lineHeight: 10, height: 8}]}
+          onChangeText={newText => setText(newText)}
+          style={{height: 80, lineHeight: 40, borderWidth: 1}}
           placeholder="Second Input"
-          value="Test Value"
+          value={text}
         />
       </View>
       <View style={container}>
-        <Text>lineHeight 10, height 10</Text>
-        <TextInput
-          style={[textInputStyles, {lineHeight: 10, height: 10}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>lineHeight 10, height 12</Text>
-        <TextInput
-          style={[textInputStyles, {lineHeight: 10, height: 12}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>lineHeight 10, height 80</Text>
-        <TextInput
-          style={[textInputStyles, {lineHeight: 10, height: 80}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>lineHeight 40, height 80</Text>
-        <TextInput
-          style={[textInputStyles, {lineHeight: 40, height: 80}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>lineHeight 80, height 80</Text>
-        <TextInput
-          style={[textInputStyles, {lineHeight: 80, height: 80}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>fontSize 25, lineHeight 10, height 80</Text>
-        <TextInput
-          style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 80}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>fontSize 25, lineHeight 10, height 180</Text>
-        <TextInput
-          style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 180}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
-      </View>
-      <View style={container}>
-        <Text>fontSize 15, lineHeight 10, height 200</Text>
-        <TextInput
-          style={[textInputStyles, {fontSize: 15, lineHeight: 10, height: 200}]}
-          placeholder="Second Input"
-          value="Test Value"
-        />
+        <TextInput style={{borderWidth: 1}} />
       </View>
     </ScrollView>
   );
