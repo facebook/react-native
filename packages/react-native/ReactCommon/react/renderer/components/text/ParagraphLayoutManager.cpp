@@ -72,7 +72,7 @@ bool ParagraphLayoutManager::shoudMeasureString(
   return false;
 }
 
-SegmentedMeasurements ParagraphLayoutManager::measureLines(
+TextLayoutMeasurements ParagraphLayoutManager::measureLines(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     Size size,

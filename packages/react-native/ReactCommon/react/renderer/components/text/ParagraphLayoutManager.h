@@ -28,7 +28,7 @@ class ParagraphLayoutManager {
       ParagraphAttributes const &paragraphAttributes,
       LayoutConstraints layoutConstraints) const;
 
-  SegmentedMeasurements measureLines(
+  TextLayoutMeasurements measureLines(
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
       Size size,

@@ -160,13 +160,13 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
       content.attributedString, content.paragraphAttributes, layoutConstraints);
   
   if (getConcreteProps().onTextLayout) {
-    auto segmentedMeasurements = getStateData().paragraphLayoutManager.measureLines(
+    auto textLayoutMeasurements = getStateData().paragraphLayoutManager.measureLines(
         content.attributedString,
         content.paragraphAttributes,
         measurement.size,
         getConcreteProps().textLayoutRegions);
     
-    getConcreteEventEmitter().onTextLayout(segmentedMeasurements.linesMeasurements, segmentedMeasurements.regionsMeasurements);
+    getConcreteEventEmitter().onTextLayout(textLayoutMeasurements.linesMeasurements, textLayoutMeasurements.regionsMeasurements);
   }
 
   if (content.attachments.empty()) {

@@ -104,7 +104,7 @@ TextMeasurement TextLayoutManager::measure(
   return measurement;
 }
 
-SegmentedMeasurements TextLayoutManager::measureLines(
+TextLayoutMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     Size size,

@@ -120,7 +120,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 }
 
-- (SegmentedMeasurements)getLinesForAttributedString:(AttributedString)attributedString
+- (TextLayoutMeasurements)getLinesForAttributedString:(AttributedString)attributedString
                                  paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                                 size:(CGSize)size
                                     textLayoutRegions:(NSArray*)textLayoutRegions
@@ -178,9 +178,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                             blockParagraphLines->push_back(line);
                                           }];
 
-  SegmentedMeasurements segmentedMeasurements = {paragraphLines, regionsMeasurements};
+  TextLayoutMeasurements textLayoutMeasurements = {paragraphLines, regionsMeasurements};
   
-  return segmentedMeasurements;
+  return textLayoutMeasurements;
 }
 
 - (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString
