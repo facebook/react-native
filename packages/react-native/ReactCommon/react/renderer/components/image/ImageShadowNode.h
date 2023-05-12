@@ -41,7 +41,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   void setImageManager(const SharedImageManager &imageManager);
 
   static ImageState initialStateData(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};

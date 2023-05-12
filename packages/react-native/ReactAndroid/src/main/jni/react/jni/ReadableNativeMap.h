@@ -16,8 +16,7 @@
 #include "NativeMap.h"
 #include "ReadableNativeArray.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct WritableNativeMap;
 
@@ -50,5 +49,4 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   friend struct WritableNativeMap;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -13,13 +13,13 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import androidx.annotation.UiThread;
-import bolts.Task;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
 public class ReactSurface {
-  private static final String TAG = "ReactSurface";
 
   private final AtomicReference<ReactSurfaceView> mSurfaceView = new AtomicReference<>(null);
 
@@ -180,14 +179,11 @@ public class ReactSurface {
 
   public void clear() {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            ReactSurfaceView view = getView();
-            if (view != null) {
-              view.removeAllViews();
-              view.setId(View.NO_ID);
-            }
+        () -> {
+          ReactSurfaceView view = getView();
+          if (view != null) {
+            view.removeAllViews();
+            view.setId(View.NO_ID);
           }
         });
   }

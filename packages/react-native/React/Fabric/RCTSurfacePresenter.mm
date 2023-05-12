@@ -281,8 +281,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::useNativeState = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_nstextstorage_caching")) {
-    CoreFeatures::cacheNSTextStorage = true;
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
+    CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
   auto componentRegistryFactory =

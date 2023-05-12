@@ -28,6 +28,10 @@ namespace facebook::react {
 class CallbackWrapper;
 class Instance;
 
+namespace TurboModuleConvertUtils {
+jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
+}
+
 /**
  * ObjC++ specific TurboModule base class.
  */
@@ -36,7 +40,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   // TODO(T65603471): Should we unify this with a Fabric abstraction?
   struct InitParams {
     std::string moduleName;
-    id<RCTTurboModule> instance;
+    id<RCTBridgeModule> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
     std::shared_ptr<CallInvoker> nativeInvoker;
     bool isSyncModule;
@@ -46,17 +50,22 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   jsi::Value invokeObjCMethod(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind valueKind,
+      TurboModuleMethodValueKind returnType,
       const std::string &methodName,
       SEL selector,
       const jsi::Value *args,
       size_t count);
 
-  id<RCTTurboModule> instance_;
+  id<RCTBridgeModule> instance_;
   std::shared_ptr<CallInvoker> nativeInvoker_;
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
+  virtual jsi::Value convertReturnIdToJSIValue(
+      jsi::Runtime &runtime,
+      const char *methodName,
+      TurboModuleMethodValueKind returnType,
+      id result);
 
  private:
   // Does the NativeModule dispatch async methods to the JS thread?
@@ -72,18 +81,26 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
   bool isMethodSync(TurboModuleMethodValueKind returnType);
   BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
   SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
-  NSString *getArgumentTypeName(NSString *methodName, int argIndex);
-  NSInvocation *getMethodInvocation(
+  NSString *getArgumentTypeName(jsi::Runtime &runtime, NSString *methodName, int argIndex);
+  NSInvocation *createMethodInvocation(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind returnType,
+      bool isSync,
       const char *methodName,
       SEL selector,
       const jsi::Value *args,
       size_t count,
       NSMutableArray *retainedObjectsForInvocation);
-  jsi::Value performMethodInvocation(
+  void setInvocationArg(
       jsi::Runtime &runtime,
-      TurboModuleMethodValueKind returnType,
+      const char *methodName,
+      const std::string &objCArgType,
+      const jsi::Value &arg,
+      size_t i,
+      NSInvocation *inv,
+      NSMutableArray *retainedObjectsForInvocation);
+  id performMethodInvocation(
+      jsi::Runtime &runtime,
+      bool isSync,
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation);

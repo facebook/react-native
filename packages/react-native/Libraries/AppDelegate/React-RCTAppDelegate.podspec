@@ -36,7 +36,8 @@ header_search_paths = [
   "$(PODS_ROOT)/RCT-Folly",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
-  "$(PODS_ROOT)/Headers/Public/React-RCTFabric"
+  "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
+  "$(PODS_ROOT)/Headers/Private/Yoga",
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
@@ -54,7 +55,7 @@ Pod::Spec.new do |s|
   s.version                = version
   s.summary                = "An utility library to simplify common operations for the New Architecture"
   s.homepage               = "https://reactnative.dev/"
-  s.documentation_url      = "https://reactnative.dev/docs/actionsheetios"
+  s.documentation_url      = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
@@ -75,8 +76,19 @@ Pod::Spec.new do |s|
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
+  s.dependency "React-RCTNetwork"
+  s.dependency "React-RCTImage"
+  s.dependency "React-NativeModulesApple"
+  s.dependency "React-CoreModules"
+
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency "React-hermes"
+  else
+    s.dependency "React-jsc"
+  end
 
   if is_new_arch_enabled
+    s.dependency "React-Fabric"
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
 

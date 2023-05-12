@@ -11,8 +11,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
 
@@ -74,5 +73,4 @@ JSModulesUnbundle *RAMBundleRegistry::getBundle(uint32_t bundleId) const {
   return m_bundles.at(bundleId).get();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

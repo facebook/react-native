@@ -31,12 +31,8 @@ public final class PerftestDevSupportManager extends DisabledDevSupportManager {
         new DevServerHelper(
             mDevSettings,
             applicationContext.getPackageName(),
-            new InspectorPackagerConnection.BundleStatusProvider() {
-              @Override
-              public InspectorPackagerConnection.BundleStatus getBundleStatus() {
-                return mBundleStatus;
-              }
-            });
+            (InspectorPackagerConnection.BundleStatusProvider) () -> mBundleStatus,
+            mDevSettings.getPackagerConnectionSettings());
   }
 
   @Override

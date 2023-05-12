@@ -43,10 +43,21 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application
+   * will behave so that it can accept non-Fabric components and render them on Fabric. This toggle
+   * is controlling extra logic such as custom event dispatching that are needed for the Fabric
+   * Interop Layer to work correctly.
+   */
+  public static volatile boolean unstable_useFabricInterop = false;
+
+  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   public static boolean enableBridgelessArchitecture = false;
+
+  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
+  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
 
   /**
    * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
@@ -85,9 +96,6 @@ public class ReactFeatureFlags {
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
-
-  /** Feature Flag to enable caching mechanism of text measurement at shadow node level */
-  public static boolean enableTextMeasureCachePerShadowNode = false;
 
   /**
    * Feature flag that controls how turbo modules are exposed to JS
@@ -141,4 +149,10 @@ public class ReactFeatureFlags {
    * HostObject pattern
    */
   public static boolean useNativeState = false;
+
+  /**
+   * Unmount React application on ReactInstance detach. Controls rollout of change to align React
+   * application lifecycle with React Native instance.
+   */
+  public static boolean unmountApplicationOnInstanceDetach = false;
 }

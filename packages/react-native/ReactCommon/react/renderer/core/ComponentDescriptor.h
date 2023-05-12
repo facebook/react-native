@@ -121,7 +121,7 @@ class ComponentDescriptor {
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamily::Shared const &family) const = 0;
 
   /*

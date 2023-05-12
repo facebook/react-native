@@ -10,7 +10,6 @@
 #import <UIKit/UIKit.h>
 
 @class RCTSurfacePresenterBridgeAdapter;
-@class RCTTurboModuleManager;
 
 /**
  * The RCTAppDelegate is an utility class that implements some base configurations for all the React Native apps.
@@ -95,9 +94,6 @@
 - (UIViewController *)createRootViewController;
 
 #if RCT_NEW_ARCH_ENABLED
-
-/// The TurboModule manager
-@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.

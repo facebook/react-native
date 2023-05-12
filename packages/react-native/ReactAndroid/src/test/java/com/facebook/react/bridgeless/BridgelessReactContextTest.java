@@ -14,16 +14,16 @@ import android.app.Activity;
 import android.content.Context;
 import com.facebook.react.bridge.JSIModuleType;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.testing.robolectric.v4.WithTestDefaultsRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 
 /** Tests {@link BridgelessReactContext} */
-@RunWith(WithTestDefaultsRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class BridgelessReactContextTest {
 
   private Context mContext;

@@ -82,7 +82,7 @@ class FlipperTests < Test::Unit::TestCase
             assert_equal(config.build_settings['SWIFT_VERSION'], '4.1')
         end
 
-        reactCore_target = installer.target_with_name("React-Core")
+        reactCore_target = installer.target_with_name("React-RCTAppDelegate")
         reactCore_target.build_configurations.each do |config|
             if config.name == 'Debug' || config.name == 'CustomConfig' then
                 assert_equal(config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'], ['$(inherited)', 'FB_SONARKIT_ENABLED=1'])
@@ -139,6 +139,14 @@ class FlipperTests < Test::Unit::TestCase
                     ),
                     TargetMock.new(
                         "React-Core",
+                        [
+                            BuildConfigurationMock.new("Debug", is_debug: true),
+                            BuildConfigurationMock.new("Release", is_debug: false),
+                            BuildConfigurationMock.new("CustomConfig", is_debug: true),
+                        ]
+                    ),
+                    TargetMock.new(
+                        "React-RCTAppDelegate",
                         [
                             BuildConfigurationMock.new("Debug", is_debug: true),
                             BuildConfigurationMock.new("Release", is_debug: false),

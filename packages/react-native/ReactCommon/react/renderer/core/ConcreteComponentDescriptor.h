@@ -151,7 +151,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   };
 
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamily::Shared const &family) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
@@ -161,7 +161,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return std::make_shared<ConcreteState>(
         std::make_shared<ConcreteStateData const>(
             ConcreteShadowNode::initialStateData(
-                fragment, ShadowNodeFamilyFragment::build(*family), *this)),
+                props, ShadowNodeFamilyFragment::build(*family), *this)),
         family);
   }
 

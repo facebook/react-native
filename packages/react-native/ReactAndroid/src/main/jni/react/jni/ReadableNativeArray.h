@@ -12,8 +12,7 @@
 #include "NativeCommon.h"
 #include "NativeMap.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct ReadableArray : jni::JavaClass<ReadableArray> {
   static auto constexpr kJavaDescriptor =
@@ -41,5 +40,4 @@ class ReadableNativeArray
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

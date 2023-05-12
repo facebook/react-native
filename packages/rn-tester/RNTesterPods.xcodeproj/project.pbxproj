@@ -842,6 +842,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -875,6 +879,10 @@
 				CODE_SIGN_ENTITLEMENTS = RNTester/RNTester.entitlements;
 				DEVELOPMENT_TEAM = "";
 				EXCLUDED_ARCHS = "";
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1084,6 +1092,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1122,6 +1134,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = RNTesterUnitTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1163,6 +1179,10 @@
 					"FB_REFERENCE_IMAGE_DIR=\"\\\"$(SOURCE_ROOT)/RNTesterIntegrationTests/ReferenceImages\\\"\"",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1198,6 +1218,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Private/Yoga",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = RNTesterIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (

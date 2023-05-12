@@ -105,7 +105,7 @@ public class ReactScrollViewAccessibilityDelegate extends AccessibilityDelegateC
           }
         }
 
-        if (isVisible == true && accessibilityCollectionItem != null) {
+        if (isVisible && accessibilityCollectionItem != null) {
           if (firstVisibleIndex == null) {
             firstVisibleIndex = accessibilityCollectionItem.getInt("itemIndex");
           }

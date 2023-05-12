@@ -10,8 +10,7 @@
 #include <jsi/jsi.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum JSErrorHandlerKey : uint16_t {
   kFrameFileName = 0,
@@ -37,5 +36,4 @@ class JsErrorHandler {
   JsErrorHandlingFunc _jsErrorHandlingFunc;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

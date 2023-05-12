@@ -67,6 +67,6 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
       );
     }
     let adjustedCount = count < 0 || count > data.length ? data.length : count;
-    return data.substr(offset, adjustedCount);
+    return data.slice(offset, offset + adjustedCount);
   }
 }

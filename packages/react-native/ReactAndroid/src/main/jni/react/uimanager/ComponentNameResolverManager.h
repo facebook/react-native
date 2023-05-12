@@ -13,8 +13,7 @@
 #include <react/jni/JRuntimeExecutor.h>
 #include <set>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentNameResolverManager
     : public facebook::jni::HybridClass<ComponentNameResolverManager> {
@@ -50,5 +49,4 @@ class ComponentNameResolverManager
       facebook::jni::alias_ref<jobject> componentNameResolver);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

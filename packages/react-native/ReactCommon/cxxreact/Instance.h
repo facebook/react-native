@@ -23,8 +23,7 @@ namespace folly {
 struct dynamic;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSBigString;
 class JSExecutorFactory;
@@ -172,5 +171,4 @@ class RN_EXPORT Instance {
       std::make_shared<JSCallInvoker>();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,7 +11,7 @@ import org.gradle.configurationcache.extensions.serviceOf
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.7.22"
+  kotlin("jvm") version "1.8.0"
   id("java-gradle-plugin")
 }
 
@@ -33,7 +33,12 @@ group = "com.facebook.react"
 
 dependencies {
   implementation(gradleApi())
+
+  // The KGP/AGP version is defined by React Native Gradle plugin.
+  // Therefore we specify an implementation dep rather than a compileOnly.
+  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
   implementation("com.android.tools.build:gradle:7.4.2")
+
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
   implementation("com.squareup:javapoet:1.13.0")
@@ -53,6 +58,8 @@ java {
   sourceCompatibility = JavaVersion.VERSION_11
   targetCompatibility = JavaVersion.VERSION_11
 }
+
+kotlin { jvmToolchain(11) }
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {

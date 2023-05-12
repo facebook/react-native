@@ -115,22 +115,6 @@ public final class BridgeDevSupportManager extends DevSupportManagerBase {
             toggleJSSamplingProfiler();
           }
         });
-
-    if (!getDevSettings().isDeviceDebugEnabled()) {
-      // For remote debugging, we open up Chrome running the app in a web worker.
-      // Note that this requires async communication, which will not work for Turbo Modules.
-      addCustomDevOption(
-          getDevSettings().isRemoteJSDebugEnabled()
-              ? applicationContext.getString(com.facebook.react.R.string.catalyst_debug_stop)
-              : applicationContext.getString(com.facebook.react.R.string.catalyst_debug),
-          new DevOptionHandler() {
-            @Override
-            public void onOptionSelected() {
-              getDevSettings().setRemoteJSDebugEnabled(!getDevSettings().isRemoteJSDebugEnabled());
-              handleReloadJS();
-            }
-          });
-    }
   }
 
   public DevLoadingViewManager getDevLoadingViewManager() {

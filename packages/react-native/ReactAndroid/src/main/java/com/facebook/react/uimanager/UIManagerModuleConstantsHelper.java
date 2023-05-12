@@ -10,11 +10,16 @@ package com.facebook.react.uimanager;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
@@ -113,6 +118,13 @@ import java.util.Map;
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
+
+      if (ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop) {
+        // For Fabric, events needs to be fired with a "top" prefix.
+        // For the sake of Fabric Interop, here we normalize events adding "top" in their
+        // name if the user hasn't provided it.
+        normalizeEventTypes(viewManagerBubblingEvents);
+      }
       recursiveMerge(cumulativeBubblingEventTypes, viewManagerBubblingEvents);
       recursiveMerge(viewManagerBubblingEvents, defaultBubblingEvents);
       viewManagerConstants.put(BUBBLING_EVENTS_KEY, viewManagerBubblingEvents);
@@ -145,6 +157,27 @@ import java.util.Map;
     return viewManagerConstants;
   }
 
+  @VisibleForTesting
+  /* package */ static void normalizeEventTypes(Map events) {
+    if (events == null) {
+      return;
+    }
+    Set<String> keysToNormalize = new HashSet<>();
+    for (Object key : events.keySet()) {
+      if (key instanceof String) {
+        String keyString = (String) key;
+        if (!keyString.startsWith("top")) {
+          keysToNormalize.add(keyString);
+        }
+      }
+    }
+    for (String oldKey : keysToNormalize) {
+      Object value = events.get(oldKey);
+      String newKey = "top" + oldKey.substring(0, 1).toUpperCase() + oldKey.substring(1);
+      events.put(newKey, value);
+    }
+  }
+
   /** Merges {@param source} map into {@param dest} map recursively */
   private static void recursiveMerge(@Nullable Map dest, @Nullable Map source) {
     if (dest == null || source == null || source.isEmpty()) {
@@ -155,6 +188,11 @@ import java.util.Map;
       Object sourceValue = source.get(key);
       Object destValue = dest.get(key);
       if (destValue != null && (sourceValue instanceof Map) && (destValue instanceof Map)) {
+        // Since event maps are client based Map interface, it could be immutable
+        if (!(destValue instanceof HashMap)) {
+          destValue = new HashMap((Map) destValue);
+          dest.replace(key, (Map) destValue);
+        }
         recursiveMerge((Map) destValue, (Map) sourceValue);
       } else {
         dest.put(key, sourceValue);

@@ -8,11 +8,23 @@
 #pragma once
 
 #ifdef __cplusplus
+#include <type_traits>
+#endif
+
+#ifdef __cplusplus
 #define YG_EXTERN_C_BEGIN extern "C" {
 #define YG_EXTERN_C_END }
 #else
 #define YG_EXTERN_C_BEGIN
 #define YG_EXTERN_C_END
+#endif
+
+#if defined(__cplusplus)
+#define YG_DEPRECATED(message) [[deprecated(message)]]
+#elif defined(_MSC_VER)
+#define YG_DEPRECATED(message) __declspec(deprecated(message))
+#else
+#define YG_DEPRECATED(message) __attribute__((deprecated(message)))
 #endif
 
 #ifdef _WINDLL
@@ -38,6 +50,48 @@
 #else
 #define YG_ENUM_BEGIN(name) enum name
 #define YG_ENUM_END(name) name
+#endif
+
+#ifdef __cplusplus
+#define YG_DEFINE_ENUM_FLAG_OPERATORS(name)                       \
+  extern "C++" {                                                  \
+  constexpr inline name operator~(name a) {                       \
+    return static_cast<name>(                                     \
+        ~static_cast<std::underlying_type<name>::type>(a));       \
+  }                                                               \
+  constexpr inline name operator|(name a, name b) {               \
+    return static_cast<name>(                                     \
+        static_cast<std::underlying_type<name>::type>(a) |        \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  constexpr inline name operator&(name a, name b) {               \
+    return static_cast<name>(                                     \
+        static_cast<std::underlying_type<name>::type>(a) &        \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  constexpr inline name operator^(name a, name b) {               \
+    return static_cast<name>(                                     \
+        static_cast<std::underlying_type<name>::type>(a) ^        \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  inline name& operator|=(name& a, name b) {                      \
+    return reinterpret_cast<name&>(                               \
+        reinterpret_cast<std::underlying_type<name>::type&>(a) |= \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  inline name& operator&=(name& a, name b) {                      \
+    return reinterpret_cast<name&>(                               \
+        reinterpret_cast<std::underlying_type<name>::type&>(a) &= \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  inline name& operator^=(name& a, name b) {                      \
+    return reinterpret_cast<name&>(                               \
+        reinterpret_cast<std::underlying_type<name>::type&>(a) ^= \
+        static_cast<std::underlying_type<name>::type>(b));        \
+  }                                                               \
+  }
+#else
+#define YG_DEFINE_ENUM_FLAG_OPERATORS(name)
 #endif
 
 #ifdef __cplusplus
@@ -81,16 +135,4 @@ constexpr int n() {
   YG_EXTERN_C_BEGIN
 #else
 #define YG_ENUM_SEQ_DECL YG_ENUM_DECL
-#endif
-
-#ifdef __GNUC__
-#define YG_DEPRECATED __attribute__((deprecated))
-#elif defined(_MSC_VER)
-#define YG_DEPRECATED __declspec(deprecated)
-#elif __cplusplus >= 201402L
-#if defined(__has_cpp_attribute)
-#if __has_cpp_attribute(deprecated)
-#define YG_DEPRECATED [[deprecated]]
-#endif
-#endif
 #endif

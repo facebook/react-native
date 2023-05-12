@@ -52,6 +52,14 @@ public abstract class YogaConfigJNIBase extends YogaConfig {
     YogaNative.jni_YGConfigSetUseLegacyStretchBehaviourJNI(mNativePointer, useLegacyStretchBehaviour);
   }
 
+  public void setErrata(YogaErrata errata) {
+    YogaNative.jni_YGConfigSetErrataJNI(mNativePointer, errata.intValue());
+  }
+
+  public YogaErrata getErrata() {
+    return YogaErrata.fromInt(YogaNative.jni_YGConfigGetErrataJNI(mNativePointer));
+  }
+
   public void setLogger(YogaLogger logger) {
     mLogger = logger;
     YogaNative.jni_YGConfigSetLoggerJNI(mNativePointer, logger);

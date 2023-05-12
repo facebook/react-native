@@ -13,8 +13,7 @@
 #include <folly/dynamic.h>
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct MethodDescriptor {
   std::string name;
@@ -41,5 +40,4 @@ class NativeModule {
       folly::dynamic &&args) = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

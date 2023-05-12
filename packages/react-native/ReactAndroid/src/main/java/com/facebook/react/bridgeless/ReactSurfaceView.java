@@ -25,6 +25,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.Objects;
 
 /** A view created by {@link ReactSurface} that's responsible for rendering a React component. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -161,10 +162,11 @@ public class ReactSurfaceView extends ReactRootView {
 
   @Override
   public void handleException(Throwable t) {
-    if (mSurface.getReactHost() != null) {
-      String errorMessage = t.getMessage() == null ? "" : t.getMessage();
+    ReactHost reactHost = mSurface.getReactHost();
+    if (reactHost != null) {
+      String errorMessage = Objects.toString(t.getMessage(), "");
       Exception e = new IllegalViewOperationException(errorMessage, this, t);
-      mSurface.getReactHost().handleException(e);
+      reactHost.handleHostException(e);
     }
   }
 

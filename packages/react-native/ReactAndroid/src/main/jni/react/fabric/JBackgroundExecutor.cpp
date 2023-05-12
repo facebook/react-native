@@ -10,8 +10,7 @@
 #include <fbjni/NativeRunnable.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using namespace facebook::jni;
 
@@ -26,5 +25,4 @@ BackgroundExecutor JBackgroundExecutor::create(const std::string &name) {
   };
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

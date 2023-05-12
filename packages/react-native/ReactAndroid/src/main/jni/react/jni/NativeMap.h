@@ -12,8 +12,7 @@
 
 #include "NativeCommon.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NativeMap : public jni::HybridClass<NativeMap> {
  public:
@@ -45,5 +44,4 @@ class NativeMap : public jni::HybridClass<NativeMap> {
   NativeMap &operator=(const NativeMap &) = delete;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

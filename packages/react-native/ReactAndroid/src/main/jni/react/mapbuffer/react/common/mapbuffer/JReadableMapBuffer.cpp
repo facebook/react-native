@@ -7,8 +7,7 @@
 
 #include "JReadableMapBuffer.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JReadableMapBuffer::registerNatives() {
   registerHybrid({
@@ -39,5 +38,4 @@ JReadableMapBuffer::JReadableMapBuffer(MapBuffer &&map)
       (serializedData_.size() != 0) && "Error no content in map");
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

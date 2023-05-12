@@ -400,6 +400,53 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
 
+jsi::Value createJSRuntimeError(
+    jsi::Runtime &runtime,
+    const std::string &message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+/**
+ * Creates JSError with current JS runtime stack and Throwable stack trace.
+ */
+jsi::JSError convertThrowableToJSError(
+    jsi::Runtime &runtime,
+    jni::local_ref<jni::JThrowable> throwable) {
+  auto stackTrace = throwable->getStackTrace();
+
+  jsi::Array stackElements(runtime, stackTrace->size());
+  for (int i = 0; i < stackTrace->size(); ++i) {
+    auto frame = stackTrace->getElement(i);
+
+    jsi::Object frameObject(runtime);
+    frameObject.setProperty(runtime, "className", frame->getClassName());
+    frameObject.setProperty(runtime, "fileName", frame->getFileName());
+    frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+    frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+    stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+  }
+
+  jsi::Object cause(runtime);
+  auto getName = throwable->getClass()
+                     ->getClass()
+                     ->getMethod<jni::local_ref<jni::JString>()>("getName");
+  auto getMessage =
+      throwable->getClass()->getMethod<jni::local_ref<jni::JString>()>(
+          "getMessage");
+  auto message = getMessage(throwable)->toStdString();
+  cause.setProperty(
+      runtime, "name", getName(throwable->getClass())->toStdString());
+  cause.setProperty(runtime, "message", message);
+  cause.setProperty(runtime, "stackElements", std::move(stackElements));
+
+  jsi::Value error =
+      createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
+}
+
 } // namespace
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
@@ -467,7 +514,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       } else {
         TMPL::asyncMethodCallFail(moduleName, methodName);
       }
-      throw;
+      auto exception = std::current_exception();
+      auto throwable = jni::getJavaExceptionForCppException(exception);
+      throw convertThrowableToJSError(runtime, throwable);
     }
   };
 

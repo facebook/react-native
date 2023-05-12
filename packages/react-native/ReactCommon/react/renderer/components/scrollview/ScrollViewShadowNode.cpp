@@ -48,6 +48,13 @@ void ScrollViewShadowNode::updateScrollContentOffsetIfNeeded() {
 #endif
 }
 
+ScrollViewState ScrollViewShadowNode::initialStateData(
+    Props::Shared const &props,
+    const ShadowNodeFamilyFragment & /*familyFragment*/,
+    const ComponentDescriptor & /*componentDescriptor*/) {
+  return {static_cast<ScrollViewProps const &>(*props).contentOffset, {}, 0};
+}
+
 #pragma mark - LayoutableShadowNode
 
 void ScrollViewShadowNode::layout(LayoutContext layoutContext) {

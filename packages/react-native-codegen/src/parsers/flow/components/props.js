@@ -10,49 +10,93 @@
 
 'use strict';
 
-const {
-  flattenProperties,
-  getSchemaInfo,
-  getTypeAnnotation,
-} = require('./componentsUtils.js');
+import type {
+  ExtendsPropsShape,
+  NamedShape,
+  PropTypeAnnotation,
+} from '../../../CodegenSchema.js';
+import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {Parser} from '../../parser';
 
-import type {NamedShape, PropTypeAnnotation} from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../../utils';
+const {flattenProperties} = require('./componentsUtils.js');
+const {buildPropSchema} = require('../../parsers-commons');
 
-// $FlowFixMe[unclear-type] there's no flowtype for ASTs
-type PropAST = Object;
+type ExtendsForProp = null | {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+};
 
-function buildPropSchema(
-  property: PropAST,
+function extendsForProp(
+  prop: PropAST,
   types: TypeDeclarationMap,
-): ?NamedShape<PropTypeAnnotation> {
-  const info = getSchemaInfo(property, types);
-  if (info == null) {
+  parser: Parser,
+): ExtendsForProp {
+  const argument = parser.argumentForProp(prop);
+  if (!argument) {
+    console.log('null', prop);
+  }
+  const name = parser.nameForArgument(prop);
+
+  if (types[name] != null) {
+    // This type is locally defined in the file
     return null;
   }
-  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
 
-  return {
-    name,
-    optional,
-    typeAnnotation: getTypeAnnotation(
-      name,
-      typeAnnotation,
-      defaultValue,
-      withNullDefault,
-      types,
-      buildPropSchema,
-    ),
-  };
+  switch (name) {
+    case 'ViewProps':
+      return {
+        type: 'ReactNativeBuiltInType',
+        knownTypeName: 'ReactNativeCoreViewProps',
+      };
+    default: {
+      throw new Error(`Unable to handle prop spread: ${name}`);
+    }
+  }
 }
 
+function removeKnownExtends(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): $ReadOnlyArray<PropAST> {
+  return typeDefinition.filter(
+    prop =>
+      prop.type !== 'ObjectTypeSpreadProperty' ||
+      extendsForProp(prop, types, parser) === null,
+  );
+}
+
+function getExtendsProps(
+  typeDefinition: $ReadOnlyArray<PropAST>,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): $ReadOnlyArray<ExtendsPropsShape> {
+  return typeDefinition
+    .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
+    .map(prop => extendsForProp(prop, types, parser))
+    .filter(Boolean);
+}
+/**
+ * Extracts the `props` and `extendsProps` (props with `extends` syntax)
+ * from a type definition AST.
+ */
 function getProps(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
-): $ReadOnlyArray<NamedShape<PropTypeAnnotation>> {
-  return flattenProperties(typeDefinition, types)
-    .map(property => buildPropSchema(property, types))
+  parser: Parser,
+): {
+  props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+  extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+} {
+  const nonExtendsProps = removeKnownExtends(typeDefinition, types, parser);
+  const props = flattenProperties(nonExtendsProps, types)
+    .map(property => buildPropSchema(property, types, parser))
     .filter(Boolean);
+
+  return {
+    props,
+    extendsProps: getExtendsProps(typeDefinition, types, parser),
+  };
 }
 
 module.exports = {

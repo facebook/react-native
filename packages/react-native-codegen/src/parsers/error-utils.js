@@ -310,6 +310,26 @@ function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
   }
 }
 
+function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
+  const name =
+    parser.language() === 'Flow' ? typeAnnotation.id : typeAnnotation.typeName;
+
+  if (!name) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
+}
+
+function throwIfBubblingTypeIsNull(
+  bubblingType: ?('direct' | 'bubble'),
+  eventName: string,
+) {
+  if (!bubblingType) {
+    throw new Error(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -330,4 +350,6 @@ module.exports = {
   throwIfMoreThanOneCodegenNativecommands,
   throwIfConfigNotfound,
   throwIfMoreThanOneConfig,
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
 };

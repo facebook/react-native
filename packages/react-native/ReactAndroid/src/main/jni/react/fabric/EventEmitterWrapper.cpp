@@ -10,8 +10,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void EventEmitterWrapper::dispatchEvent(
     std::string eventName,
@@ -51,5 +50,4 @@ void EventEmitterWrapper::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

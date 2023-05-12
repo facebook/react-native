@@ -13,8 +13,7 @@
 
 #include <cxxreact/CxxNativeModule.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::string ModuleHolder::getName() const {
   static auto method = getClass()->getMethod<jstring()>("getName");
@@ -68,5 +67,4 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
   return modules;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

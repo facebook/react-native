@@ -9,8 +9,7 @@
 
 #include <fb/log.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void reactAndroidLoggingHook(
     const std::string &message,
@@ -25,5 +24,4 @@ void reactAndroidLoggingHook(
       message, static_cast<android_LogPriority>(logLevel + ANDROID_LOG_DEBUG));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {Parser} from './parser';
+import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from './parser';
 import type {ParserType} from './errors';
 import type {
   UnionTypeAnnotationMemberType,
@@ -23,7 +23,7 @@ import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
 } from '../CodegenSchema';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, PropAST, TypeDeclarationMap} from './utils';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -242,5 +242,35 @@ export class MockedParser implements Parser {
 
   convertKeywordToTypeAnnotation(keyword: string): string {
     return keyword;
+  }
+
+  argumentForProp(prop: PropAST): $FlowFixMe {
+    return prop.expression;
+  }
+
+  nameForArgument(prop: PropAST): $FlowFixMe {
+    return prop.expression.name;
+  }
+
+  isOptionalProperty(property: $FlowFixMe): boolean {
+    return property.optional || false;
+  }
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN {
+    return () => {
+      return {};
+    };
+  }
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN {
+    return () => {
+      return {
+        name: 'MockedSchema',
+        optional: false,
+        typeAnnotation: 'BooleanTypeAnnotation',
+        defaultValue: false,
+        withNullDefault: false,
+      };
+    };
   }
 }

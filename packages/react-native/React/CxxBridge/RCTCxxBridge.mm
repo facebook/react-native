@@ -64,7 +64,7 @@
 #import <React/RCTFBSystrace.h>
 #endif
 
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
@@ -245,14 +245,14 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_objCModuleRegistry setTurboModuleRegistry:_turboModuleRegistry];
 }
 
-- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module
 {
   RCTBridgeModuleDecorator *bridgeModuleDecorator =
       [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
                                               moduleRegistry:_objCModuleRegistry
                                                bundleManager:_bundleManager
                                            callableJSModules:_callableJSModules];
-  [bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
+  [bridgeModuleDecorator attachInteropAPIsToModule:module];
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
@@ -476,7 +476,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   dispatch_group_enter(prepareBridge);
   __block NSData *sourceCode;
 
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
     id<RCTDevLoadingViewProtocol> loadingView = [self moduleForName:@"DevLoadingView" lazilyLoadIfNecessary:YES];
     [loadingView showWithURL:self.bundleURL];
@@ -493,7 +493,7 @@ struct RCTInstanceCallback : public InstanceCallback {
         dispatch_group_leave(prepareBridge);
       }
       onProgress:^(RCTLoadingProgress *progressData) {
-#if (RCT_DEV | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
         id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
                                                       lazilyLoadIfNecessary:YES];
         [loadingView updateProgress:progressData];
@@ -1092,7 +1092,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   __weak __typeof(self) weakSelf = self;
   [RCTJavaScriptLoader loadBundleAtURL:bundleURL
       onProgress:^(RCTLoadingProgress *progressData) {
-#if (RCT_DEV_MENU | RCT_ENABLE_LOADING_VIEW) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
+#if (RCT_DEV_MENU | RCT_DEV_MENU) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
         id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
                                                       lazilyLoadIfNecessary:YES];
         [loadingView updateProgress:progressData];

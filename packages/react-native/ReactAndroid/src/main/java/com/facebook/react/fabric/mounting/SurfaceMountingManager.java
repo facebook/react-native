@@ -103,7 +103,6 @@ public class SurfaceMountingManager {
       @NonNull MountItemExecutor mountItemExecutor,
       @NonNull ThemedReactContext reactContext) {
     mSurfaceId = surfaceId;
-
     mJSResponderHandler = jsResponderHandler;
     mViewManagerRegistry = viewManagerRegistry;
     mRootViewManager = rootViewManager;
@@ -196,42 +195,39 @@ public class SurfaceMountingManager {
             true));
 
     Runnable runnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            // The CPU has ticked since `addRootView` was called, so the surface could technically
-            // have already stopped here.
-            if (isStopped()) {
-              return;
-            }
-
-            if (rootView.getId() == mSurfaceId) {
-              ReactSoftExceptionLogger.logSoftException(
-                  TAG,
-                  new IllegalViewOperationException(
-                      "Race condition in addRootView detected. Trying to set an id of ["
-                          + mSurfaceId
-                          + "] on the RootView, but that id has already been set. "));
-            } else if (rootView.getId() != View.NO_ID) {
-              FLog.e(
-                  TAG,
-                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
-                  rootView.getId(),
-                  mSurfaceId);
-              throw new IllegalViewOperationException(
-                  "Trying to add a root view with an explicit id already set. React Native uses "
-                      + "the id field to track react tags and will overwrite this field. If that is fine, "
-                      + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
-            }
-            rootView.setId(mSurfaceId);
-
-            if (rootView instanceof ReactRoot) {
-              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
-            }
-            mRootViewAttached = true;
-
-            executeViewAttachMountItems();
+        () -> {
+          // The CPU has ticked since `addRootView` was called, so the surface could technically
+          // have already stopped here.
+          if (isStopped()) {
+            return;
           }
+
+          if (rootView.getId() == mSurfaceId) {
+            ReactSoftExceptionLogger.logSoftException(
+                TAG,
+                new IllegalViewOperationException(
+                    "Race condition in addRootView detected. Trying to set an id of ["
+                        + mSurfaceId
+                        + "] on the RootView, but that id has already been set. "));
+          } else if (rootView.getId() != View.NO_ID) {
+            FLog.e(
+                TAG,
+                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new tag: [%d]",
+                rootView.getId(),
+                mSurfaceId);
+            throw new IllegalViewOperationException(
+                "Trying to add a root view with an explicit id already set. React Native uses "
+                    + "the id field to track react tags and will overwrite this field. If that is fine, "
+                    + "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+          }
+          rootView.setId(mSurfaceId);
+
+          if (rootView instanceof ReactRoot) {
+            ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+          }
+          mRootViewAttached = true;
+
+          executeViewAttachMountItems();
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -1105,18 +1101,23 @@ public class SurfaceMountingManager {
       previousEventEmitterWrapper.destroy();
     }
 
-    if (viewState.mPendingEventQueue != null) {
+    Queue<ViewEvent> pendingEventQueue = viewState.mPendingEventQueue;
+    if (pendingEventQueue != null) {
       // Invoke pending event queued to the view state
-      for (ViewEvent viewEvent : viewState.mPendingEventQueue) {
-        if (viewEvent.canCoalesceEvent()) {
-          eventEmitter.dispatchUnique(
-              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
-        } else {
-          eventEmitter.dispatch(
-              viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
-        }
+      for (ViewEvent viewEvent : pendingEventQueue) {
+        dispatchEvent(eventEmitter, viewEvent);
       }
       viewState.mPendingEventQueue = null;
+    }
+  }
+
+  private void dispatchEvent(EventEmitterWrapper eventEmitter, ViewEvent viewEvent) {
+    if (viewEvent.canCoalesceEvent()) {
+      eventEmitter.dispatchUnique(
+          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getCustomCoalesceKey());
+    } else {
+      eventEmitter.dispatch(
+          viewEvent.getEventName(), viewEvent.getParams(), viewEvent.getEventCategory());
     }
   }
 
@@ -1301,9 +1302,18 @@ public class SurfaceMountingManager {
       // Cannot queue event without view state. Do nothing here.
       return;
     }
-    Assertions.assertCondition(
-        viewState.mEventEmitter == null,
-        "Only queue pending events when event emitter is null for the given view state");
+    EventEmitterWrapper eventEmitter = viewState.mEventEmitter;
+    if (eventEmitter != null) {
+      // TODO T152630743: Verify threading for mEventEmitter
+      FLog.i(
+          TAG,
+          "Queue pending events when event emitter is null for the given view state, this should be dispatched instead - surfaceId: "
+              + mSurfaceId
+              + " reactTag: "
+              + reactTag);
+      dispatchEvent(eventEmitter, viewEvent);
+      return;
+    }
 
     if (viewState.mPendingEventQueue == null) {
       viewState.mPendingEventQueue = new LinkedList<>();
@@ -1342,6 +1352,7 @@ public class SurfaceMountingManager {
       mViewManager = viewManager;
     }
 
+    @NonNull
     @Override
     public String toString() {
       boolean isLayoutOnly = mViewManager == null;

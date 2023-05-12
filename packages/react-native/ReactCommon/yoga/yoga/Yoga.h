@@ -18,9 +18,9 @@
 #include <stdbool.h>
 #endif
 
-#include "YGEnums.h"
-#include "YGMacros.h"
-#include "YGValue.h"
+#include <yoga/YGEnums.h>
+#include <yoga/YGMacros.h>
+#include <yoga/YGValue.h>
 
 YG_EXTERN_C_BEGIN
 
@@ -82,7 +82,7 @@ WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
 WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeRef node);
 WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef owner,
-    const YGNodeRef children[],
+    const YGNodeRef* children,
     uint32_t count);
 
 WIN_EXPORT void YGNodeSetIsReferenceBaseline(
@@ -134,6 +134,10 @@ WIN_EXPORT void YGNodeCopyStyle(YGNodeRef dstNode, YGNodeRef srcNode);
 
 WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
 WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
+
+WIN_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node);
+WIN_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config);
+
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 bool YGNodeHasMeasureFunc(YGNodeRef node);
 WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
@@ -313,14 +317,26 @@ WIN_EXPORT void YGAssertWithConfig(
 WIN_EXPORT void YGConfigSetPointScaleFactor(
     YGConfigRef config,
     float pixelsInPoint);
+WIN_EXPORT float YGConfigGetPointScaleFactor(YGConfigRef config);
 
 // Yoga previously had an error where containers would take the maximum space
 // possible instead of the minimum like they are supposed to. In practice this
 // resulted in implicit behaviour similar to align-self: stretch; Because this
 // was such a long-standing bug we must allow legacy users to switch back to
 // this behaviour.
-WIN_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef config);
-WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
+WIN_EXPORT YG_DEPRECATED(
+    "Please use "
+    "\"YGConfigGetErrata()\"") bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef
+                                                                             config);
+WIN_EXPORT
+YG_DEPRECATED(
+    "\"YGConfigSetUseLegacyStretchBehaviour\" will be removed in the next "
+    "release. Usage should be replaced with \"YGConfigSetErrata(YGErrataAll)\" "
+    "to opt out of all future breaking conformance fixes, or "
+    "\"YGConfigSetErrata(YGErrataStretchFlexBasis)\" to opt out of the "
+    "specific conformance fix previously disabled by "
+    "\"UseLegacyStretchBehaviour\".")
+void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);
 
@@ -353,6 +369,9 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 WIN_EXPORT void* YGConfigGetContext(YGConfigRef config);
 
+WIN_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata);
+WIN_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config);
+
 WIN_EXPORT float YGRoundValueToPixelGrid(
     double value,
     double pointScaleFactor,
@@ -360,17 +379,3 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     bool forceFloor);
 
 YG_EXTERN_C_END
-
-#ifdef __cplusplus
-
-#include <functional>
-#include <vector>
-
-// Calls f on each node in the tree including the given node argument.
-void YGTraversePreOrder(
-    YGNodeRef node,
-    std::function<void(YGNodeRef node)>&& f);
-
-void YGNodeSetChildren(YGNodeRef owner, const std::vector<YGNodeRef>& children);
-
-#endif

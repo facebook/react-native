@@ -130,13 +130,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  self.turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, _turboModuleManager, _runtimeScheduler);
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
