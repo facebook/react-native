@@ -116,6 +116,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
       textView.getHyphenationFrequency() != mHyphenationFrequency) {
       textView.setHyphenationFrequency(mHyphenationFrequency);
     }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      textView.setFallbackLineSpacing(true);
+    }
 
     textView.measure(
       MeasureUtil.getMeasureSpec(width, widthMode),
