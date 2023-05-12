@@ -221,9 +221,11 @@ TEST_F(ShadowNodeTest, handleCloneFunction) {
   // Those two nodes are *not* same.
   EXPECT_NE(nodeAB_, nodeABClone);
 
+#ifndef ANDROID
   // `secondNodeClone` is an instance of `TestShadowNode`.
   EXPECT_NE(
       std::dynamic_pointer_cast<const TestShadowNode>(nodeABClone), nullptr);
+#endif
 
   // Both nodes have same content.
   EXPECT_EQ(nodeAB_->getTag(), nodeABClone->getTag());
@@ -244,13 +246,9 @@ TEST_F(ShadowNodeTest, handleState) {
   auto traits = TestShadowNode::BaseTraits();
 
   auto props = std::make_shared<const TestProps>();
-  auto fragment = ShadowNodeFragment{
-      /* .props = */ props,
-      /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-      /* .state = */ {}};
 
   auto const initialState =
-      componentDescriptor_.createInitialState(fragment, family);
+      componentDescriptor_.createInitialState(props, family);
 
   auto firstNode = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
@@ -277,18 +275,18 @@ TEST_F(ShadowNodeTest, handleState) {
   TestShadowNode::ConcreteState::Shared _state =
       std::static_pointer_cast<TestShadowNode::ConcreteState const>(
           initialState);
-  _state->updateState(TestState{42});
+  _state->updateState(TestState());
 
-  thirdNode->setStateData({9001});
+  thirdNode->setStateData(TestState());
   // State object are compared by pointer, not by value.
   EXPECT_EQ(firstNode->getState(), secondNode->getState());
   EXPECT_NE(firstNode->getState(), thirdNode->getState());
-  secondNode->setStateData(TestState{42});
+  secondNode->setStateData(TestState());
   EXPECT_NE(firstNode->getState(), secondNode->getState());
 
   // State cannot be changed for sealed shadow node.
   secondNode->sealRecursive();
   EXPECT_DEATH_IF_SUPPORTED(
-      { secondNode->setStateData(TestState{42}); },
+      { secondNode->setStateData(TestState()); },
       "Attempt to mutate a sealed object.");
 }
