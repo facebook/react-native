@@ -842,13 +842,12 @@ function LineHeightExamples() {
 
   const container = {marginTop: 20};
   return (
-    <ScrollView>
+    <>
       <View style={container}>
         <Text>lineHeight 10, height 10</Text>
         <TextInput
           style={[textInputStyles, {lineHeight: 10, height: 10}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -856,7 +855,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {lineHeight: 10, height: 12}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -864,7 +862,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {lineHeight: 10, height: 80}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -872,7 +869,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {lineHeight: 40, height: 80}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -880,7 +876,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {lineHeight: 80, height: 80}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -888,7 +883,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 80}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -896,7 +890,6 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 180}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
       <View style={container}>
@@ -904,20 +897,13 @@ function LineHeightExamples() {
         <TextInput
           style={[textInputStyles, {fontSize: 15, lineHeight: 10, height: 200}]}
           placeholder="Second Input"
-          value="Test Value"
         />
       </View>
-    </ScrollView>
+    </>
   );
 }
 
 module.exports = ([
-  {
-    title: 'Line Height Examples',
-    render: function (): React.Node {
-      return <LineHeightExamples />;
-    },
-  },
   {
     title: 'Auto-focus',
     render: function (): React.Node {
@@ -928,6 +914,12 @@ module.exports = ([
           accessibilityLabel="I am the accessibility label for text input"
         />
       );
+    },
+  },
+  {
+    title: 'Line Height Examples',
+    render: function (): React.Node {
+      return <LineHeightExamples />;
     },
   },
   {
