@@ -7,7 +7,6 @@
 
 #include "ParagraphLayoutManager.h"
 #include <folly/Hash.h>
-#include <glog/logging.h>
 #include <react/renderer/core/CoreFeatures.h>
 
 namespace facebook::react {
