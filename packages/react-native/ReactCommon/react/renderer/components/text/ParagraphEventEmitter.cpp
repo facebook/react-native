@@ -32,11 +32,16 @@ static jsi::Value linesMeasurementsPayload(
     lines.setValueAtIndex(runtime, i, jsiLine);
   }
   
-  if (regionsMeasurements.size() == 2) {
-    regions.setValueAtIndex(runtime, 0, regionsMeasurements[0]);
-    regions.setValueAtIndex(runtime, 1, regionsMeasurements[1]);
+  for (size_t i = 0; i < regionsMeasurements.size(); ++i) {
+    auto const &regionMeasurement = regionsMeasurements[i];
+    auto jsiRegion = jsi::Object(runtime);
+    jsiRegion.setProperty(runtime, "x", regionMeasurement.frame.origin.x);
+    jsiRegion.setProperty(runtime, "y", regionMeasurement.frame.origin.y);
+    jsiRegion.setProperty(runtime, "width", regionMeasurement.frame.size.width);
+    jsiRegion.setProperty(runtime, "height", regionMeasurement.frame.size.height);
+    regions.setValueAtIndex(runtime, i, jsiRegion);
   }
-
+  
   payload.setProperty(runtime, "lines", lines);
   payload.setProperty(runtime, "regions", regions);
 

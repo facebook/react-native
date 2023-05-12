@@ -37,8 +37,20 @@ struct LineMeasurement {
   bool operator==(LineMeasurement const &rhs) const;
 };
 
+struct RegionMeasurement {
+  Rect frame;
+
+  RegionMeasurement(
+      Rect frame
+  );
+
+  RegionMeasurement(folly::dynamic const &data);
+
+  bool operator==(RegionMeasurement const &rhs) const;
+};
+
 using LinesMeasurements = std::vector<LineMeasurement>;
-using RegionsMeasurements = std::vector<float>;
+using RegionsMeasurements = std::vector<RegionMeasurement>;
 
 struct TextLayoutMeasurements {
   LinesMeasurements linesMeasurements;

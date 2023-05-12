@@ -65,4 +65,18 @@ bool LineMeasurement::operator==(LineMeasurement const &rhs) const {
              rhs.xHeight);
 }
 
+RegionMeasurement::RegionMeasurement(
+    Rect frame)
+    : frame(frame) {}
+
+RegionMeasurement::RegionMeasurement(folly::dynamic const &data)
+    : frame(rectFromDynamic(data)) {}
+
+bool RegionMeasurement::operator==(RegionMeasurement const &rhs) const {
+  return std::tie(
+             this->frame) ==
+      std::tie(
+             rhs.frame);
+}
+
 } // namespace facebook::react
