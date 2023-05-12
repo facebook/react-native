@@ -216,9 +216,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto timerManager = std::make_shared<TimerManager>(std::move(objCTimerRegistry));
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
+  __weak __typeof(self) weakSelf = self;
+  auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
+
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsEngineInstance->createJSRuntime(), _jsThreadManager.jsMessageThread, timerManager, _jsErrorHandlingFunc);
+      _jsEngineInstance->createJSRuntime(), _jsThreadManager.jsMessageThread, timerManager, jsErrorHandlingFunc);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
@@ -263,8 +266,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // DisplayLink is used to call timer callbacks.
   _displayLink = [RCTDisplayLink new];
-
-  __weak __typeof(self) weakSelf = self;
 
   ReactInstance::JSRuntimeFlags options = {
       .isProfiling = false, .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};

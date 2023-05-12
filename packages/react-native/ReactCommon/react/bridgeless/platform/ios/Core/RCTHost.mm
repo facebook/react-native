@@ -253,6 +253,26 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
 {
+  NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
+                                         encoding:[NSString defaultCStringEncoding]];
+  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
+  NSMutableArray *stack = [NSMutableArray new];
+  for (facebook::react::MapBuffer const &mapBuffer : frames) {
+    NSDictionary *frame = @{
+      @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
+                                   encoding:[NSString defaultCStringEncoding]],
+      @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
+                                         encoding:[NSString defaultCStringEncoding]],
+      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
+      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
+    };
+    [stack addObject:frame];
+  }
+  [_hostDelegate host:self
+      didReceiveJSErrorStack:stack
+                     message:message
+                 exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
+                     isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
 }
 
 #pragma mark - Internal
