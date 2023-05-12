@@ -39,41 +39,6 @@ export {};
 declare module '.' {
   export interface FlexStyle {
     /**
-     * Equivalent to `top`, `bottom`, `right` and `left`
-     */
-    inset?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `top`, `bottom`
-     */
-    insetBlock?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `bottom`
-     */
-    insetBlockEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `top`
-     */
-    insetBlockStart?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` and `left`
-     */
-    insetInline?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` or `left`
-     */
-    insetInlineEnd?: DimensionValue | undefined;
-
-    /**
-     * Equivalent to `right` or `left`
-     */
-    insetInlineStart?: DimensionValue | undefined;
-
-    /**
      * Equivalent to `marginVertical`
      */
     marginBlock?: DimensionValue | undefined;
