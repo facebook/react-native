@@ -335,35 +335,41 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList LayoutableShadowNode::getDebugProps() const {
-  auto list = SharedDebugStringConvertibleList{};
+  auto list = ShadowNode::getDebugProps();
+
+  auto layoutInfo = SharedDebugStringConvertibleList{};
 
   if (!getIsLayoutClean()) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>("dirty"));
   }
 
   auto layoutMetrics = getLayoutMetrics();
   auto defaultLayoutMetrics = LayoutMetrics();
 
-  list.push_back(std::make_shared<DebugStringConvertibleItem>(
+  layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
       "frame", toString(layoutMetrics.frame)));
 
   if (layoutMetrics.borderWidth != defaultLayoutMetrics.borderWidth) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
         "borderWidth", toString(layoutMetrics.borderWidth)));
   }
 
   if (layoutMetrics.contentInsets != defaultLayoutMetrics.contentInsets) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>(
         "contentInsets", toString(layoutMetrics.contentInsets)));
   }
 
   if (layoutMetrics.displayType == DisplayType::None) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("hidden"));
+    layoutInfo.push_back(
+        std::make_shared<DebugStringConvertibleItem>("hidden"));
   }
 
   if (layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
-    list.push_back(std::make_shared<DebugStringConvertibleItem>("rtl"));
+    layoutInfo.push_back(std::make_shared<DebugStringConvertibleItem>("rtl"));
   }
+
+  list.push_back(
+      std::make_shared<DebugStringConvertibleItem>("layout", "", layoutInfo));
 
   return list;
 }
