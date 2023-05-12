@@ -137,6 +137,16 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  /**
+   * Notify manager that all ongoing interactions have been completed.
+   */
+  clearAllInteractionHandles() {
+    DEBUG && infoLog('InteractionManager: clear all interaction handles');
+    _scheduleUpdate();
+    _addInteractionSet.clear();
+    _interactionSet.forEach(handle => _deleteInteractionSet.add(handle));
+  },
+
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
   addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
 

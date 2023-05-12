@@ -64,6 +64,11 @@ export interface InteractionManagerStatic {
   clearInteractionHandle(handle: Handle): void;
 
   /**
+   * Notify manager that all ongoing interactions have been completed.
+   */
+  clearAllInteractionHandles(): void;
+
+  /**
    * A positive number will use setTimeout to schedule any tasks after
    * the eventLoopRunningTime hits the deadline value, otherwise all
    * tasks will be executed in one setImmediate batch (default).

@@ -154,6 +154,42 @@ describe('InteractionManager', () => {
     expect(task1).not.toBeCalled();
     expect(task2).toBeCalled();
   });
+
+  it('notifies when clearing all interactions', () => {
+    InteractionManager.createInteractionHandle();
+    InteractionManager.createInteractionHandle();
+    jest.runAllTimers();
+
+    interactionStart.mockClear();
+    interactionComplete.mockClear();
+
+    InteractionManager.clearAllInteractionHandles();
+    jest.runAllTimers();
+    expect(interactionComplete).toBeCalled();
+  });
+
+  it('does not notify when all interactions are started & stopped in the same event loop', () => {
+    InteractionManager.createInteractionHandle();
+    InteractionManager.createInteractionHandle();
+    InteractionManager.clearAllInteractionHandles();
+
+    jest.runAllTimers();
+    expect(interactionStart).not.toBeCalled();
+    expect(interactionComplete).not.toBeCalled();
+  });
+
+  it('does not notify after clearing a handle that is already cleared', () => {
+    const handle = InteractionManager.createInteractionHandle();
+    jest.runAllTimers();
+
+    InteractionManager.clearAllInteractionHandles();
+    jest.runAllTimers();
+    expect(interactionComplete).toBeCalled();
+
+    InteractionManager.clearInteractionHandle(handle);
+    jest.runAllTimers();
+    expectToBeCalledOnce(interactionComplete);
+  });
 });
 
 describe('promise tasks', () => {
