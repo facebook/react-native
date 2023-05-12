@@ -181,17 +181,26 @@
      
     // add logic when fontSize not provided
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
-      if (textAttributes.lineHeight > textAttributes.effectiveFont.lineHeight) {
+      NSLog(@"TESTING:: textAttributes.lineHeight is %f and textAttributes.effectiveFont.lineHeight is %f", textAttributes.lineHeight, textAttributes.effectiveFont.lineHeight);
+      if (textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
         CGFloat height = self.layoutMetrics.frame.size.height;
         CGFloat width = self.layoutMetrics.frame.size.width;
         CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
         baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
         baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
       } else {
-        baseTextInputView.reactPaddingInsets = paddingInsets;
+        /*
+        CGFloat height = self.layoutMetrics.frame.size.height;
+        CGFloat width = self.layoutMetrics.frame.size.width;
+        // not aligned with baseline because font bigger than baseline, so need to compensate
+        // attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
+        CGFloat padding = height / 2.0;
+        baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height);
+        baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
+         */
       }
     } else {
-      // add logic to handle textAttributes.effectiveFont.lineHeight > textAttributes.lineHeight
+      baseTextInputView.reactPaddingInsets = paddingInsets;
     }
     // ORIGINAL API ---> COMMENT HERE
     // baseTextInputView.reactPaddingInsets = paddingInsets;

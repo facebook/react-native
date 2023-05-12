@@ -129,10 +129,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   if (!isnan(_lineHeight)) {
-    CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
-    isParagraphStyleUsed = YES;
+    UIFont *font = self.effectiveFont;
+    if (font && font.lineHeight > _lineHeight) {
+      // don't apply lineHeight
+    } else {
+      CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
+      paragraphStyle.minimumLineHeight = lineHeight;
+      paragraphStyle.maximumLineHeight = lineHeight;
+      isParagraphStyleUsed = YES;
+    }
   }
 
   if (isParagraphStyleUsed) {
@@ -172,18 +177,13 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
     if(!isnan(paragraphStyle.maximumLineHeight)) {
-      if (paragraphStyle.maximumLineHeight > font.lineHeight) {
+      if (paragraphStyle.maximumLineHeight >= font.lineHeight) {
         CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
         // ORIGINAL API ---> COMMENT HERE
         attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
       } else {
-        // attributes[NSBaselineOffsetAttributeName] = @(50);
-        if (paragraphStyle.maximumLineHeight < font.lineHeight) {
-          //
-        }
-        // CGFloat baseLineOffset = paragraphStyle.maximumLineHeight - font.lineHeight;
-        // CGFloat previousBaseline = [attributes[NSBaselineOffsetAttributeName] floatValue];
-        // attributes[NSBaselineOffsetAttributeName] = @(previousBaseline - baseLineOffset);
+        // unset the lineHeight because lower then effective font lineHeight
+        
       }
     }
   }

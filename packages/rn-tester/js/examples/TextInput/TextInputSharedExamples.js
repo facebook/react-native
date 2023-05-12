@@ -19,6 +19,7 @@ import {
   TextInput,
   View,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
@@ -951,7 +952,7 @@ function LineHeightExamples() {
 
   const container = {marginTop: 20};
   return (
-    <View>
+    <ScrollView>
       <View style={container}>
         <Text>lineHeight 10, height 80</Text>
         <TextInput
@@ -984,7 +985,23 @@ function LineHeightExamples() {
           value="Test Value"
         />
       </View>
-    </View>
+      <View style={container}>
+        <Text>fontSize 25, lineHeight 10, height 180</Text>
+        <TextInput
+          style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 180}]}
+          placeholder="Second Input"
+          value="Test Value"
+        />
+      </View>
+      <View style={container}>
+        <Text>fontSize 15, lineHeight 10, height 200</Text>
+        <TextInput
+          style={[textInputStyles, {fontSize: 15, lineHeight: 10, height: 200}]}
+          placeholder="Second Input"
+          value="Test Value"
+        />
+      </View>
+    </ScrollView>
   );
 }
 
