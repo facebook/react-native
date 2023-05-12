@@ -181,27 +181,17 @@
      
     // add logic when fontSize not provided
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
-      NSLog(@"TESTING:: textAttributes.lineHeight is %f and textAttributes.effectiveFont.lineHeight is %f", textAttributes.lineHeight, textAttributes.effectiveFont.lineHeight);
       if (textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
         CGFloat height = self.layoutMetrics.frame.size.height;
         CGFloat width = self.layoutMetrics.frame.size.width;
         CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
         baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
         baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
-      } else {
-        /*
-        CGFloat height = self.layoutMetrics.frame.size.height;
-        CGFloat width = self.layoutMetrics.frame.size.width;
-        // not aligned with baseline because font bigger than baseline, so need to compensate
-        // attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
-        CGFloat padding = height / 2.0;
-        baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height);
-        baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
-         */
       }
     } else {
       baseTextInputView.reactPaddingInsets = paddingInsets;
     }
+    
     // ORIGINAL API ---> COMMENT HERE
     // baseTextInputView.reactPaddingInsets = paddingInsets;
 
@@ -281,53 +271,7 @@
                             }
                           }];
 
-  return size.height + maximumDescender + 100;
-}
-
-- (void)postprocessAttributedText:(NSMutableAttributedString *)attributedText
-{
-  __block CGFloat maximumLineHeight = 0;
-  
-  [attributedText enumerateAttribute:NSParagraphStyleAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
-    if (!paragraphStyle) {
-      return;
-    }
-    
-    maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
-  }];
-  
-  if (maximumLineHeight == 0) {
-    // `lineHeight` was not specified, nothing to do.
-    return;
-  }
-  
-  __block CGFloat maximumFontLineHeight = 0;
-  
-  [attributedText enumerateAttribute:NSFontAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
-                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                          usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
-    if (!font) {
-      return;
-    }
-    
-    if (maximumFontLineHeight <= font.lineHeight) {
-      maximumFontLineHeight = font.lineHeight;
-    }
-  }];
-  
-  if (maximumLineHeight < maximumFontLineHeight) {
-    return;
-  }
-  
-  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
-  
-  [attributedText addAttribute:NSBaselineOffsetAttributeName
-                         value:@(baseLineOffset)
-                         range:NSMakeRange(0, attributedText.length)];
+  return size.height + maximumDescender;
 }
 
 static YGSize RCTBaseTextInputShadowViewMeasure(

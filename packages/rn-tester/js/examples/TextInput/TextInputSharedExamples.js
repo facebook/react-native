@@ -954,6 +954,30 @@ function LineHeightExamples() {
   return (
     <ScrollView>
       <View style={container}>
+        <Text>lineHeight 10, height 8</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 10, height: 8}]}
+          placeholder="Second Input"
+          value="Test Value"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 10, height 10</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 10, height: 10}]}
+          placeholder="Second Input"
+          value="Test Value"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 10, height 12</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 10, height: 12}]}
+          placeholder="Second Input"
+          value="Test Value"
+        />
+      </View>
+      <View style={container}>
         <Text>lineHeight 10, height 80</Text>
         <TextInput
           style={[textInputStyles, {lineHeight: 10, height: 80}]}
