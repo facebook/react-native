@@ -130,7 +130,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
   if (!isnan(_lineHeight)) {
     UIFont *font = self.effectiveFont;
-    // don't apply lineHeight, causes issues with vertical alignment
+    // apply lineHeight only when higher then font.lineHeight
+    // lineHeight causes text to not align correctly
     if (!(font && font.lineHeight > _lineHeight)) {
       CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
       paragraphStyle.minimumLineHeight = lineHeight;
@@ -176,12 +177,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   NSParagraphStyle *paragraphStyle = [self effectiveParagraphStyle];
   if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
-    if(!isnan(paragraphStyle.maximumLineHeight)) {
-      if (paragraphStyle.maximumLineHeight >= font.lineHeight) {
-        CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
-        // ORIGINAL API ---> COMMENT HERE
-        attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
-      } 
+    if(!isnan(paragraphStyle.maximumLineHeight) && paragraphStyle.maximumLineHeight >= font.lineHeight) {
+      CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
+      attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
     }
   }
 

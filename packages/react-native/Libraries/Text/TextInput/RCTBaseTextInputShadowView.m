@@ -59,7 +59,6 @@
 - (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
 {
   // Do nothing.
-  // add your logic here
 }
 
 - (void)setLocalData:(NSObject *)localData
@@ -178,21 +177,16 @@
 
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
-     
-    // add logic when fontSize not provided
+
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
       CGFloat height = self.layoutMetrics.frame.size.height;
-      CGFloat width = self.layoutMetrics.frame.size.width;
+      CGFloat width =  self.layoutMetrics.frame.size.width;
       CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
+      // fixes text alignment when using lineHeight see issue #28012
       baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
       baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
-      baseTextInputView.reactPaddingInsets = paddingInsets;
-    } else {
-      baseTextInputView.reactPaddingInsets = paddingInsets;
     }
-    
-    // ORIGINAL API ---> COMMENT HERE
-    // baseTextInputView.reactPaddingInsets = paddingInsets;
+    baseTextInputView.reactPaddingInsets = paddingInsets;
 
     if (newAttributedText) {
       // Don't set `attributedText` if length equal to zero, otherwise it would shrink when attributes contain like
@@ -258,7 +252,7 @@
 - (CGFloat)lastBaselineForSize:(CGSize)size
 {
   NSAttributedString *attributedText = [self measurableAttributedText];
-  
+
   __block CGFloat maximumDescender = 0.0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
