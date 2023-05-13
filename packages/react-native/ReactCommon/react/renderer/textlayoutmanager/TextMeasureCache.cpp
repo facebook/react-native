@@ -66,17 +66,32 @@ bool LineMeasurement::operator==(LineMeasurement const &rhs) const {
 }
 
 RegionMeasurement::RegionMeasurement(
-    Rect frame)
-    : frame(frame) {}
+    std::string text,
+    Rect frame,
+    int region,
+    int line)
+    : text(std::move(text)),
+      frame(frame),
+      region(region),
+      line(line) {}
 
 RegionMeasurement::RegionMeasurement(folly::dynamic const &data)
-    : frame(rectFromDynamic(data)) {}
+    : text(data.getDefault("text", "").getString()),
+      frame(rectFromDynamic(data)),
+      region(data.getDefault("region", 0).getInt()),
+      line(data.getDefault("line", 0).getInt()){}
 
 bool RegionMeasurement::operator==(RegionMeasurement const &rhs) const {
   return std::tie(
-             this->frame) ==
+             this->text,
+             this->frame,
+             this->region,
+             this->line) ==
       std::tie(
-             rhs.frame);
+             rhs.text,
+             rhs.frame,
+             rhs.region,
+             rhs.line);
 }
 
 } // namespace facebook::react

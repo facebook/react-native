@@ -133,6 +133,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
 
+  __block int currentLine = 0;
   std::vector<LineMeasurement> paragraphLines{};
   std::vector<RegionMeasurement> regionsMeasurements{};
   auto blockParagraphLines = &paragraphLines;
@@ -147,7 +148,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                               BOOL *_Nonnull stop) {
                                             NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
                                                                                       actualGlyphRange:nil];
-                                            NSString *renderedString = [textStorage.string substringWithRange:range];
+                                            NSString *renderedLineString = [textStorage.string substringWithRange:range];
                                             UIFont *font = [[textStorage attributedSubstringFromRange:range]
                                                      attribute:NSFontAttributeName
                                                        atIndex:0
@@ -156,31 +157,42 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
                                             
-                                            [textLayoutRegions enumerateObjectsUsingBlock:^(id _Nonnull textLayoutRegion, NSUInteger idx, BOOL * _Nonnull stop) {
+                                            [textLayoutRegions enumerateObjectsUsingBlock:^(id _Nonnull textLayoutRegion, NSUInteger regionIdx, BOOL * _Nonnull stop) {
                                               auto from = [[textLayoutRegion firstObject] integerValue];
-                                              auto to = [[textLayoutRegion lastObject] integerValue];
+                                              auto to = [[textLayoutRegion lastObject] integerValue] - from;
                                               NSRange lineRange = NSIntersectionRange(lineGlyphRange, NSMakeRange(from, to));
 
+                                              if (lineRange.location == 0 && lineRange.length == 0) {
+                                                return;
+                                              }
+                                              
                                               [layoutManager enumerateEnclosingRectsForGlyphRange:lineRange
                                                                          withinSelectedGlyphRange:lineRange
                                                                                   inTextContainer:usedTextContainer
                                                                                        usingBlock:^(CGRect enclosingRect, __unused BOOL *anotherStop) {
+                                                NSString *renderedRegionString = [textStorage.string substringWithRange:lineRange];
                                                 auto regionRect = facebook::react::Rect{
                                                     facebook::react::Point{enclosingRect.origin.x, enclosingRect.origin.y},
                                                     facebook::react::Size{enclosingRect.size.width, enclosingRect.size.height}};
-                                                blockRegionsMeasurements->push_back(regionRect);
+                                                auto region = RegionMeasurement{
+                                                  std::string([renderedRegionString UTF8String]),
+                                                  regionRect,
+                                                  (int)regionIdx,
+                                                  currentLine
+                                                };
+                                                blockRegionsMeasurements->push_back(region);
                                               }];
                                             }];
-                                            
 
                                             auto line = LineMeasurement{
-                                                std::string([renderedString UTF8String]),
+                                                std::string([renderedLineString UTF8String]),
                                                 lineRect,
                                                 -font.descender,
                                                 font.capHeight,
                                                 font.ascender,
                                                 font.xHeight};
                                             blockParagraphLines->push_back(line);
+                                            currentLine += 1;
                                           }];
 
   TextLayoutMeasurements textLayoutMeasurements = {paragraphLines, regionsMeasurements};

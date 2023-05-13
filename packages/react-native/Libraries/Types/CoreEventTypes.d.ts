@@ -33,11 +33,22 @@ interface TextLayoutLine {
   y: number;
 }
 
+interface TextLayoutRegion {
+  text: string;
+  height: number;
+  width: number;
+  x: number;
+  y: number;
+  line: number;
+  region: number;
+}
+
 /**
  * @see TextProps.onTextLayout
  */
 export interface TextLayoutEventData extends TargetedEvent {
   lines: TextLayoutLine[];
+  regions: TextLayoutRegion[];
 }
 
 // Similar to React.SyntheticEvent except for nativeEvent

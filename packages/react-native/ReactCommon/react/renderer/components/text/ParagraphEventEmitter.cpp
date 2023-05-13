@@ -35,10 +35,13 @@ static jsi::Value linesMeasurementsPayload(
   for (size_t i = 0; i < regionsMeasurements.size(); ++i) {
     auto const &regionMeasurement = regionsMeasurements[i];
     auto jsiRegion = jsi::Object(runtime);
+    jsiRegion.setProperty(runtime, "text", regionMeasurement.text);
     jsiRegion.setProperty(runtime, "x", regionMeasurement.frame.origin.x);
     jsiRegion.setProperty(runtime, "y", regionMeasurement.frame.origin.y);
     jsiRegion.setProperty(runtime, "width", regionMeasurement.frame.size.width);
     jsiRegion.setProperty(runtime, "height", regionMeasurement.frame.size.height);
+    jsiRegion.setProperty(runtime, "region", regionMeasurement.region);
+    jsiRegion.setProperty(runtime, "line", regionMeasurement.line);
     regions.setValueAtIndex(runtime, i, jsiRegion);
   }
   

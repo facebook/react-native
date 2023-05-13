@@ -38,10 +38,16 @@ struct LineMeasurement {
 };
 
 struct RegionMeasurement {
+  std::string text;
   Rect frame;
+  int region;
+  int line;
 
   RegionMeasurement(
-      Rect frame
+      std::string text,
+      Rect frame,
+      int region,
+      int line
   );
 
   RegionMeasurement(folly::dynamic const &data);
