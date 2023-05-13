@@ -843,14 +843,19 @@ inline void fromRawValue(
   if (value.hasType<std::vector<std::vector<int>>>()) {
     auto regions = std::vector<std::vector<int>>{value};
     for (const auto &region : regions) {
-      std::vector<int> chunks;
-      for (const auto &chunk : region) {
-        chunks.push_back(chunk);
+      if (region.size() == 2) {
+        std::vector<int> chunks;
+        for (const auto &chunk : region) {
+          chunks.push_back(chunk);
+        }
+        result.push_back(chunks);
+      } else {
+        LOG(ERROR) << "Unsupported TextLayoutRegion value";
+        react_native_expect(false);
       }
-      result.push_back(chunks);
     }
   } else {
-    LOG(ERROR) << "Unsupported FontVariant type";
+    LOG(ERROR) << "Unsupported TextLayoutRegions type";
   }
 }
 
