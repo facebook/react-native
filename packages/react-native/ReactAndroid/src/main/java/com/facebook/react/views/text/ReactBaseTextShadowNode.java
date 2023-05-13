@@ -26,6 +26,8 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -36,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * {@link ReactShadowNode} abstract class for spannable text nodes.
@@ -180,7 +181,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
-      if (textShadowNode.mIsAccessibilityLink) {
+      boolean roleIsLink =
+          textShadowNode.mRole != null
+              ? textShadowNode.mRole == Role.LINK
+              : textShadowNode.mAccessibilityRole == AccessibilityRole.LINK;
+      if (roleIsLink) {
         ops.add(
             new SetSpanOperation(start, end, new ReactClickableSpan(textShadowNode.getReactTag())));
       }
@@ -325,7 +330,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
-  protected boolean mIsAccessibilityLink = false;
+
+  protected @Nullable AccessibilityRole mAccessibilityRole = null;
+  protected @Nullable Role mRole = null;
 
   protected int mNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
@@ -499,9 +506,17 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
-  public void setIsAccessibilityLink(@Nullable String accessibilityRole) {
+  public void setAccessibilityRole(@Nullable String accessibilityRole) {
     if (isVirtual()) {
-      mIsAccessibilityLink = Objects.equals(accessibilityRole, "link");
+      mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.ROLE)
+  public void setRole(@Nullable String role) {
+    if (isVirtual()) {
+      mRole = Role.fromValue(role);
       markUpdated();
     }
   }

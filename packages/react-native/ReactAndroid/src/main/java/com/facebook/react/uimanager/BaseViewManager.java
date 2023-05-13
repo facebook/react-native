@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -234,9 +235,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
-      return;
+      view.setTag(R.id.accessibility_role, null);
+    } else {
+      view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
     }
-    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @Override
@@ -377,6 +379,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
       ViewCompat.setImportantForAccessibility(
           view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ROLE)
+  public void setRole(@NonNull T view, @Nullable String role) {
+    if (role == null) {
+      view.setTag(R.id.role, null);
+    } else {
+      view.setTag(R.id.role, Role.fromValue(role));
     }
   }
 

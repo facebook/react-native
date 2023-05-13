@@ -97,6 +97,87 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   /**
+   * An ARIA Role representable by View's `role` prop. Ordinals should be kept in sync with
+   * `facebook::react::Role`.
+   */
+  public enum Role {
+    ALERT,
+    ALERTDIALOG,
+    APPLICATION,
+    ARTICLE,
+    BANNER,
+    BUTTON,
+    CELL,
+    CHECKBOX,
+    COLUMNHEADER,
+    COMBOBOX,
+    COMPLEMENTARY,
+    CONTENTINFO,
+    DEFINITION,
+    DIALOG,
+    DIRECTORY,
+    DOCUMENT,
+    FEED,
+    FIGURE,
+    FORM,
+    GRID,
+    GROUP,
+    HEADING,
+    IMG,
+    LINK,
+    LIST,
+    LISTITEM,
+    LOG,
+    MAIN,
+    MARQUEE,
+    MATH,
+    MENU,
+    MENUBAR,
+    MENUITEM,
+    METER,
+    NAVIGATION,
+    NONE,
+    NOTE,
+    OPTION,
+    PRESENTATION,
+    PROGRESSBAR,
+    RADIO,
+    RADIOGROUP,
+    REGION,
+    ROW,
+    ROWGROUP,
+    ROWHEADER,
+    SCROLLBAR,
+    SEARCHBOX,
+    SEPARATOR,
+    SLIDER,
+    SPINBUTTON,
+    STATUS,
+    SUMMARY,
+    SWITCH,
+    TAB,
+    TABLE,
+    TABLIST,
+    TABPANEL,
+    TERM,
+    TIMER,
+    TOOLBAR,
+    TOOLTIP,
+    TREE,
+    TREEGRID,
+    TREEITEM;
+
+    public static @Nullable Role fromValue(@Nullable String value) {
+      for (Role role : Role.values()) {
+        if (role.name().equalsIgnoreCase(value)) {
+          return role;
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
    * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
    * date with their implementation. Details can be seen in their source code here:
    *
@@ -221,6 +302,75 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       }
       throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
+
+    public static @Nullable AccessibilityRole fromRole(Role role) {
+      switch (role) {
+        case ALERT:
+          return AccessibilityRole.ALERT;
+        case BUTTON:
+          return AccessibilityRole.BUTTON;
+        case CHECKBOX:
+          return AccessibilityRole.CHECKBOX;
+        case COMBOBOX:
+          return AccessibilityRole.COMBOBOX;
+        case GRID:
+          return AccessibilityRole.GRID;
+        case HEADING:
+          return AccessibilityRole.HEADER;
+        case IMG:
+          return AccessibilityRole.IMAGE;
+        case LINK:
+          return AccessibilityRole.LINK;
+        case LIST:
+          return AccessibilityRole.LIST;
+        case MENU:
+          return AccessibilityRole.MENU;
+        case MENUBAR:
+          return AccessibilityRole.MENUBAR;
+        case MENUITEM:
+          return AccessibilityRole.MENUITEM;
+        case NONE:
+          return AccessibilityRole.NONE;
+        case PROGRESSBAR:
+          return AccessibilityRole.PROGRESSBAR;
+        case RADIO:
+          return AccessibilityRole.RADIO;
+        case RADIOGROUP:
+          return AccessibilityRole.RADIOGROUP;
+        case SCROLLBAR:
+          return AccessibilityRole.SCROLLBAR;
+        case SEARCHBOX:
+          return AccessibilityRole.SEARCH;
+        case SLIDER:
+          return AccessibilityRole.ADJUSTABLE;
+        case SPINBUTTON:
+          return AccessibilityRole.SPINBUTTON;
+        case SUMMARY:
+          return AccessibilityRole.SUMMARY;
+        case SWITCH:
+          return AccessibilityRole.SWITCH;
+        case TAB:
+          return AccessibilityRole.TAB;
+        case TABLIST:
+          return AccessibilityRole.TABLIST;
+        case TIMER:
+          return AccessibilityRole.TIMER;
+        case TOOLBAR:
+          return AccessibilityRole.TOOLBAR;
+        default:
+          // No mapping from ARIA role to AccessibilityRole
+          return null;
+      }
+    }
+
+    public static @Nullable AccessibilityRole fromViewTag(View view) {
+      Role role = (Role) view.getTag(R.id.role);
+      if (role != null) {
+        return AccessibilityRole.fromRole(role);
+      } else {
+        return (AccessibilityRole) view.getTag(R.id.accessibility_role);
+      }
+    }
   }
 
   private final HashMap<Integer, String> mAccessibilityActionsMap;
@@ -267,8 +417,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
               ? AccessibilityNodeInfoCompat.ACTION_COLLAPSE
               : AccessibilityNodeInfoCompat.ACTION_EXPAND);
     }
-    final AccessibilityRole accessibilityRole =
-        (AccessibilityRole) host.getTag(R.id.accessibility_role);
+    final AccessibilityRole accessibilityRole = AccessibilityRole.fromViewTag(host);
     final String accessibilityHint = (String) host.getTag(R.id.accessibility_hint);
     if (accessibilityRole != null) {
       setRole(info, accessibilityRole, host.getContext());
@@ -551,7 +700,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
             || view.getTag(R.id.accessibility_collection_item) != null
-            || view.getTag(R.id.accessibility_links) != null)) {
+            || view.getTag(R.id.accessibility_links) != null
+            || view.getTag(R.id.role) != null)) {
       ViewCompat.setAccessibilityDelegate(
           view,
           new ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility));
