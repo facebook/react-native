@@ -49,7 +49,7 @@ const schemaMock = {
 
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
-  interfaceDelcaration: string = 'InterfaceDelcaration';
+  interfaceDeclaration: string = 'InterfaceDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';

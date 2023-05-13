@@ -65,7 +65,7 @@ function resolveTypeAnnotation(
         node = resolvedTypeAnnotation.typeAnnotation;
         break;
       }
-      case parser.interfaceDelcaration: {
+      case parser.interfaceDeclaration: {
         typeResolutionStatus = {
           successful: true,
           type: 'alias',
@@ -85,7 +85,7 @@ function resolveTypeAnnotation(
       }
       default: {
         throw new TypeError(
-          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('${parser.interfaceDelcaration}'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('${parser.interfaceDeclaration}'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
         );
       }
     }

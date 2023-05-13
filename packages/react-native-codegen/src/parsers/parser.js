@@ -73,9 +73,9 @@ export interface Parser {
   typeParameterInstantiation: string;
 
   /**
-   * InterfaceDelcaration property of the Parser
+   * InterfaceDeclaration property of the Parser
    */
-  interfaceDelcaration: string;
+  interfaceDeclaration: string;
 
   /**
    * Given a declaration, it returns true if it is a property
