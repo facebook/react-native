@@ -39,7 +39,6 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 
 @protocol RCTHostDelegate <NSObject>
 
-- (std::shared_ptr<facebook::react::JSEngineInstance>)getJSEngine;
 - (NSURL *)getBundleURL;
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
@@ -61,8 +60,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER
-    FB_OBJC_DIRECT;
+                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
 
 /**
  * This function initializes an RCTInstance if one does not yet exist.  This function is currently only called on the
