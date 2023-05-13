@@ -3,7 +3,7 @@
     "display": "React Native",
     "compilerOptions": {
       "target": "esnext",
-      "module": "commonjs",
+      "module": "es2015",
       "types": ["react-native", "jest"],
       "lib": [
         "es2019",
@@ -25,8 +25,12 @@
       "noEmit": true,
       "isolatedModules": true,
       "strict": true,
-      "moduleResolution": "nodenext",
+      "moduleResolution": "bundler",
+      "customConditions": ["react-native"],
+      "allowImportingTsExtensions": true,
+      "allowArbitraryExtensions": true,
       "resolveJsonModule": true,
+      "resolvePackageJsonImports": false,
       "allowSyntheticDefaultImports": true,
       "esModuleInterop": true,
       "skipLibCheck": true,
