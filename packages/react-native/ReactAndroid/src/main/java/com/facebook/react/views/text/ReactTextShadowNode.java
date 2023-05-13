@@ -41,7 +41,6 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
-import com.facebook.common.logging.FLog;
 
 /**
  * {@link ReactBaseTextShadowNode} concrete class for anchor {@code Text} node.

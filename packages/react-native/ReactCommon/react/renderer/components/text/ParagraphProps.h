@@ -9,7 +9,6 @@
 
 #include <limits>
 #include <memory>
-#include <vector>
 
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/components/text/BaseTextProps.h>
