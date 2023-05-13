@@ -198,6 +198,7 @@ const validAttributesForNonEventProps = {
   nativeID: true,
   pointerEvents: true,
   removeClippedSubviews: true,
+  role: true,
   borderRadius: true,
   borderColor: {process: require('../StyleSheet/processColor').default},
   borderCurve: true,
