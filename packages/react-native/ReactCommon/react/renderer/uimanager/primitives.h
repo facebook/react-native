@@ -61,10 +61,11 @@ inline static ShadowNode::Shared shadowNodeFromValue(
   }
 
   if (CoreFeatures::useNativeState) {
-    return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
+    return std::static_pointer_cast<ShadowNode>(
+        value.getObject(runtime).getNativeState(runtime));
   } else {
-    return value.getObject(runtime)
-        .getHostObject<ShadowNodeWrapper>(runtime)
+    return std::static_pointer_cast<ShadowNodeWrapper>(
+               value.getObject(runtime).getHostObject(runtime))
         ->shadowNode;
   }
 }
@@ -88,12 +89,12 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     jsi::Runtime &runtime,
     const jsi::Value &value) {
   if (CoreFeatures::useNativeState) {
-    return value.getObject(runtime)
-        .getNativeState<ShadowNodeListWrapper>(runtime)
+    return std::static_pointer_cast<ShadowNodeListWrapper>(
+               value.getObject(runtime).getNativeState(runtime))
         ->shadowNodeList;
   } else {
-    return value.getObject(runtime)
-        .getHostObject<ShadowNodeListWrapper>(runtime)
+    return std::static_pointer_cast<ShadowNodeListWrapper>(
+               value.getObject(runtime).getHostObject(runtime))
         ->shadowNodeList;
   }
 }

@@ -39,7 +39,8 @@ RuntimeSchedulerBinding::createAndInstallIfNeeded(
   // The global namespace already has an instance of the binding;
   // we need to return that.
   auto runtimeSchedulerObject = runtimeSchedulerValue.asObject(runtime);
-  return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
+  return std::static_pointer_cast<RuntimeSchedulerBinding>(
+      runtimeSchedulerObject.getHostObject(runtime));
 }
 
 std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
@@ -53,7 +54,8 @@ std::shared_ptr<RuntimeSchedulerBinding> RuntimeSchedulerBinding::getBinding(
   }
 
   auto runtimeSchedulerObject = runtimeSchedulerValue.asObject(runtime);
-  return runtimeSchedulerObject.getHostObject<RuntimeSchedulerBinding>(runtime);
+  return std::static_pointer_cast<RuntimeSchedulerBinding>(
+      runtimeSchedulerObject.getHostObject(runtime));
 }
 
 RuntimeSchedulerBinding::RuntimeSchedulerBinding(

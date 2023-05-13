@@ -50,7 +50,8 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
   }
 
   auto uiManagerObject = uiManagerValue.asObject(runtime);
-  return uiManagerObject.getHostObject<UIManagerBinding>(runtime);
+  return std::static_pointer_cast<UIManagerBinding>(
+      uiManagerObject.getHostObject(runtime));
 }
 
 UIManagerBinding::UIManagerBinding(std::shared_ptr<UIManager> uiManager)

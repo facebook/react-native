@@ -7,6 +7,16 @@
 
 #pragma once
 
+#ifndef JSI_HAS_RTTI
+#if defined(__clang__)
+#define JSI_HAS_RTTI __has_feature(cxx_rtti)
+#elif defined(_MSC_VER)
+#define JSI_HAS_RTTI _CPPRTTI
+#elif defined(__GNUG__)
+#define JSI_HAS_RTTI __GXX_RTTI
+#endif
+#endif
+
 namespace facebook {
 namespace jsi {
 namespace detail {
@@ -173,6 +183,9 @@ inline Function Object::getFunction(Runtime& runtime) && {
 
 template <typename T>
 inline bool Object::isHostObject(Runtime& runtime) const {
+  static_assert(
+      JSI_HAS_RTTI || std::is_same<T, HostObject>::value,
+      "Object::isHostObject<T> requires RTTI when T is not HostObject");
   return runtime.isHostObject(*this) &&
       std::dynamic_pointer_cast<T>(runtime.getHostObject(*this));
 }
@@ -184,6 +197,9 @@ inline bool Object::isHostObject<HostObject>(Runtime& runtime) const {
 
 template <typename T>
 inline std::shared_ptr<T> Object::getHostObject(Runtime& runtime) const {
+  static_assert(
+      JSI_HAS_RTTI || std::is_same<T, HostObject>::value,
+      "Object::getHostObject<T> requires RTTI when T is not HostObject");
   assert(isHostObject<T>(runtime));
   return std::static_pointer_cast<T>(runtime.getHostObject(*this));
 }
@@ -206,6 +222,9 @@ inline std::shared_ptr<HostObject> Object::getHostObject<HostObject>(
 
 template <typename T>
 inline bool Object::hasNativeState(Runtime& runtime) const {
+  static_assert(
+      JSI_HAS_RTTI || std::is_same<T, HostObject>::value,
+      "Object::hasNativeState<T> requires RTTI when T is not NativeState");
   return runtime.hasNativeState(*this) &&
       std::dynamic_pointer_cast<T>(runtime.getNativeState(*this));
 }
@@ -217,6 +236,9 @@ inline bool Object::hasNativeState<NativeState>(Runtime& runtime) const {
 
 template <typename T>
 inline std::shared_ptr<T> Object::getNativeState(Runtime& runtime) const {
+  static_assert(
+      JSI_HAS_RTTI || std::is_same<T, NativeState>::value,
+      "Object::getNativeState<T> requires RTTI when T is not NativeState");
   assert(hasNativeState<T>(runtime));
   return std::static_pointer_cast<T>(runtime.getNativeState(*this));
 }

@@ -32,7 +32,8 @@ class StubErrorUtils : public jsi::HostObject {
     }
 
     auto stubErrorUtilsObject = errorUtilsValue.asObject(runtime);
-    return stubErrorUtilsObject.getHostObject<StubErrorUtils>(runtime);
+    return std::static_pointer_cast<StubErrorUtils>(
+        stubErrorUtilsObject.getHostObject(runtime));
   }
 
   /*

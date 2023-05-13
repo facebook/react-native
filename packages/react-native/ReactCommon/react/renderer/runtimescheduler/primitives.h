@@ -41,9 +41,12 @@ inline static std::shared_ptr<Task> taskFromValue(
   }
 
   if (CoreFeatures::useNativeState) {
-    return value.getObject(runtime).getNativeState<Task>(runtime);
+    return std::static_pointer_cast<Task>(
+        value.getObject(runtime).getNativeState(runtime));
   } else {
-    return value.getObject(runtime).getHostObject<TaskWrapper>(runtime)->task;
+    return std::static_pointer_cast<TaskWrapper>(
+               value.getObject(runtime).getHostObject(runtime))
+        ->task;
   }
 }
 
