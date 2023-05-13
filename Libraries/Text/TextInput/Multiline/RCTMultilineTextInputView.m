@@ -149,7 +149,8 @@
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  [_backedTextInputView setAttributedText:attributedText];
+  [super setAttributedText:attributedText];
+  
   [_scrollView setHasVerticalScroller:[self shouldShowVerticalScrollbar]];
 }
 
