@@ -67,7 +67,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
  * main thread, but it should be threadsafe.
  * TODO T74233481 - Verify if this function is threadsafe.
  */
-- (void)preload;
+- (void)start;
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
                                              mode:(facebook::react::DisplayMode)displayMode

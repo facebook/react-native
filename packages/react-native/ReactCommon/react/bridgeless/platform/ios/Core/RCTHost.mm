@@ -140,7 +140,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 #pragma mark - Public
 
-- (void)preload
+- (void)start
 {
   if (_instance) {
     RCTLogWarn(
