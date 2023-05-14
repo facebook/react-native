@@ -43,7 +43,7 @@ class ConcreteState : public State {
       ShadowNodeFamily::Shared const &family)
       : State(data, family) {}
 
-  virtual ~ConcreteState() = default;
+  ~ConcreteState() override = default;
 
   /*
    * Returns stored data.
@@ -101,9 +101,10 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(getData(), data)));
+  void updateState(folly::dynamic &&data) const override {
+    updateState(Data(getData(), std::move(data)));
   }
+
   MapBuffer getMapBuffer() const override {
     return getData().getMapBuffer();
   }

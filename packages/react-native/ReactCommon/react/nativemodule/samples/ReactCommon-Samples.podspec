@@ -55,5 +55,7 @@ Pod::Spec.new do |s|
 
   if using_hermes
     s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsi"
   end
 end

@@ -269,6 +269,11 @@ void YGNode::setConfig(YGConfigRef config) {
       config,
       config->useWebDefaults() == config_->useWebDefaults(),
       "UseWebDefaults may not be changed after constructing a YGNode");
+
+  if (yoga::configUpdateInvalidatesLayout(config_, config)) {
+    markDirtyAndPropagate();
+  }
+
   config_ = config;
 }
 

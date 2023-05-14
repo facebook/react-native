@@ -76,8 +76,19 @@ Pod::Spec.new do |s|
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
+  s.dependency "React-RCTNetwork"
+  s.dependency "React-RCTImage"
+  s.dependency "React-NativeModulesApple"
+  s.dependency "React-CoreModules"
+
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency "React-hermes"
+  else
+    s.dependency "React-jsc"
+  end
 
   if is_new_arch_enabled
+    s.dependency "React-Fabric"
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
 

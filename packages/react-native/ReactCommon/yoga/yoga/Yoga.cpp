@@ -5,28 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "Yoga.h"
-#include "log.h"
 #include <float.h>
 #include <string.h>
 #include <algorithm>
 #include <atomic>
 #include <memory>
+
+#include <yoga/Yoga.h>
+
+#include "log.h"
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
 #include "event/event.h"
-#ifdef _MSC_VER
-#include <float.h>
-
-/* define fmaxf if < VC12 */
-#if _MSC_VER < 1800
-__forceinline const float fmaxf(const float a, const float b) {
-  return (a > b) ? a : b;
-}
-#endif
-#endif
 
 using namespace facebook::yoga;
 using detail::Log;
@@ -50,8 +42,8 @@ static int YGDefaultLog(
 #ifdef ANDROID
 #include <android/log.h>
 static int YGAndroidLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigRef /*config*/,
+    const YGNodeRef /*node*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -238,6 +230,10 @@ YOGA_EXPORT void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+  YGNodeDeallocate(node);
+}
+
+YOGA_EXPORT void YGNodeDeallocate(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
   delete node;
 }
@@ -2988,7 +2984,7 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         bool useLegacyStretchBehaviour =
-            node->getConfig()->getErrata() & YGErrataStretchFlexBasis;
+            node->hasErrata(YGErrataStretchFlexBasis);
 
         if (!useLegacyStretchBehaviour &&
             ((!YGFloatIsUndefined(
@@ -4083,6 +4079,10 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
   }
 }
 
+YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigRef config) {
+  return config->getPointScaleFactor();
+}
+
 static void YGRoundToPixelGrid(
     const YGNodeRef node,
     const double pointScaleFactor,
@@ -4313,16 +4313,16 @@ YOGA_EXPORT void YGConfigSetUseWebDefaults(
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
     const YGConfigRef config) {
-  return config->getErrata() & YGErrataStretchFlexBasis;
+  return config->hasErrata(YGErrataStretchFlexBasis);
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
   if (useLegacyStretchBehaviour) {
-    config->setErrata(config->getErrata() | YGErrataStretchFlexBasis);
+    config->addErrata(YGErrataStretchFlexBasis);
   } else {
-    config->setErrata(config->getErrata() & ~YGErrataStretchFlexBasis);
+    config->removeErrata(YGErrataStretchFlexBasis);
   }
 }
 

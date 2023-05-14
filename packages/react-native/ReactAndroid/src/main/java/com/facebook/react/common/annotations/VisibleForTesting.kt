@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.common.annotations;
+package com.facebook.react.common.annotations
 
 /**
  * Annotates a method that should have restricted visibility but it's required to be public for use
  * in test code only.
  */
-public @interface VisibleForTesting {}
+annotation class VisibleForTesting

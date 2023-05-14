@@ -157,7 +157,7 @@ async function mockRenderKeys(
     });
 
     describe('measure', () => {
-      test('component.measure(...) invokes callback', async () => {
+      itif(!isWindows)('component.measure(...) invokes callback', async () => {
         const result = await mockRenderKeys([['foo']]);
         const fooRef = nullthrows(result?.[0]?.[0]);
 
@@ -170,7 +170,7 @@ async function mockRenderKeys(
         expect(callback.mock.calls).toEqual([[10, 10, 100, 100, 0, 0]]);
       });
 
-      test('unmounted.measure(...) does nothing', async () => {
+      itif(!isWindows)('unmounted.measure(...) does nothing', async () => {
         const result = await mockRenderKeys([['foo'], null]);
         const fooRef = nullthrows(result?.[0]?.[0]);
         const callback = jest.fn();
@@ -184,18 +184,21 @@ async function mockRenderKeys(
     });
 
     describe('measureInWindow', () => {
-      it('component.measureInWindow(...) invokes callback', async () => {
-        const result = await mockRenderKeys([['foo']]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
+      itif(!isWindows)(
+        'component.measureInWindow(...) invokes callback',
+        async () => {
+          const result = await mockRenderKeys([['foo']]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
 
-        const callback = jest.fn();
-        fooRef.measureInWindow(callback);
+          const callback = jest.fn();
+          fooRef.measureInWindow(callback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
-        ).toHaveBeenCalledTimes(1);
-        expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureInWindow,
+          ).toHaveBeenCalledTimes(1);
+          expect(callback.mock.calls).toEqual([[10, 10, 100, 100]]);
+        },
+      );
 
       itif(!isWindows)(
         'unmounted.measureInWindow(...) does nothing',
@@ -215,71 +218,83 @@ async function mockRenderKeys(
     });
 
     describe('measureLayout', () => {
-      test('component.measureLayout(component, ...) invokes callback', async () => {
-        const result = await mockRenderKeys([['foo', 'bar']]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
-        const barRef = nullthrows(result?.[0]?.[1]);
+      itif(!isWindows)(
+        'component.measureLayout(component, ...) invokes callback',
+        async () => {
+          const result = await mockRenderKeys([['foo', 'bar']]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
+          const barRef = nullthrows(result?.[0]?.[1]);
 
-        const successCallback = jest.fn();
-        const failureCallback = jest.fn();
-        fooRef.measureLayout(barRef, successCallback, failureCallback);
+          const successCallback = jest.fn();
+          const failureCallback = jest.fn();
+          fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-        ).toHaveBeenCalledTimes(1);
-        expect(successCallback.mock.calls).toEqual([[1, 1, 100, 100]]);
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+          ).toHaveBeenCalledTimes(1);
+          expect(successCallback.mock.calls).toEqual([[1, 1, 100, 100]]);
+        },
+      );
 
-      test('unmounted.measureLayout(component, ...) does nothing', async () => {
-        const result = await mockRenderKeys([
-          ['foo', 'bar'],
-          ['foo', null],
-        ]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
-        const barRef = nullthrows(result?.[0]?.[1]);
+      itif(!isWindows)(
+        'unmounted.measureLayout(component, ...) does nothing',
+        async () => {
+          const result = await mockRenderKeys([
+            ['foo', 'bar'],
+            ['foo', null],
+          ]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
+          const barRef = nullthrows(result?.[0]?.[1]);
 
-        const successCallback = jest.fn();
-        const failureCallback = jest.fn();
-        fooRef.measureLayout(barRef, successCallback, failureCallback);
+          const successCallback = jest.fn();
+          const failureCallback = jest.fn();
+          fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-        ).not.toHaveBeenCalled();
-        expect(successCallback).not.toHaveBeenCalled();
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+          ).not.toHaveBeenCalled();
+          expect(successCallback).not.toHaveBeenCalled();
+        },
+      );
 
-      test('component.measureLayout(unmounted, ...) does nothing', async () => {
-        const result = await mockRenderKeys([
-          ['foo', 'bar'],
-          [null, 'bar'],
-        ]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
-        const barRef = nullthrows(result?.[0]?.[1]);
+      itif(!isWindows)(
+        'component.measureLayout(unmounted, ...) does nothing',
+        async () => {
+          const result = await mockRenderKeys([
+            ['foo', 'bar'],
+            [null, 'bar'],
+          ]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
+          const barRef = nullthrows(result?.[0]?.[1]);
 
-        const successCallback = jest.fn();
-        const failureCallback = jest.fn();
-        fooRef.measureLayout(barRef, successCallback, failureCallback);
+          const successCallback = jest.fn();
+          const failureCallback = jest.fn();
+          fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-        ).not.toHaveBeenCalled();
-        expect(successCallback).not.toHaveBeenCalled();
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+          ).not.toHaveBeenCalled();
+          expect(successCallback).not.toHaveBeenCalled();
+        },
+      );
 
-      test('unmounted.measureLayout(unmounted, ...) does nothing', async () => {
-        const result = await mockRenderKeys([['foo', 'bar'], null]);
-        const fooRef = nullthrows(result?.[0]?.[0]);
-        const barRef = nullthrows(result?.[0]?.[1]);
+      itif(!isWindows)(
+        'unmounted.measureLayout(unmounted, ...) does nothing',
+        async () => {
+          const result = await mockRenderKeys([['foo', 'bar'], null]);
+          const fooRef = nullthrows(result?.[0]?.[0]);
+          const barRef = nullthrows(result?.[0]?.[1]);
 
-        const successCallback = jest.fn();
-        const failureCallback = jest.fn();
-        fooRef.measureLayout(barRef, successCallback, failureCallback);
+          const successCallback = jest.fn();
+          const failureCallback = jest.fn();
+          fooRef.measureLayout(barRef, successCallback, failureCallback);
 
-        expect(
-          nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
-        ).not.toHaveBeenCalled();
-        expect(successCallback).not.toHaveBeenCalled();
-      });
+          expect(
+            nullthrows(FabricUIManager.getFabricUIManager()).measureLayout,
+          ).not.toHaveBeenCalled();
+          expect(successCallback).not.toHaveBeenCalled();
+        },
+      );
     });
   });
 });

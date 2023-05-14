@@ -83,23 +83,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return BaseShadowNode::getConcreteProps().transform;
   }
 
-#pragma mark - DebugStringConvertible
-
-#if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const override {
-    auto list = SharedDebugStringConvertibleList{};
-
-    auto basePropsList = ShadowNode::getDebugProps();
-    std::move(
-        basePropsList.begin(), basePropsList.end(), std::back_inserter(list));
-
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "layout", "", LayoutableShadowNode::getDebugProps()));
-
-    return list;
-  }
-#endif
-
  private:
   void initialize() noexcept {
     auto &props = BaseShadowNode::getConcreteProps();

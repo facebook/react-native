@@ -201,14 +201,26 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'GenericObjectTypeAnnotation'
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'NullableTypeAnnotation',
+                  'typeAnnotation': {
+                    'type': 'NumberTypeAnnotation'
+                  }
+                }
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'GenericObjectTypeAnnotation'
+                    'type': 'GenericObjectTypeAnnotation',
+                    'dictionaryValueType': {
+                      'type': 'NullableTypeAnnotation',
+                      'typeAnnotation': {
+                        'type': 'NumberTypeAnnotation'
+                      }
+                    }
                   }
                 }
               ]
@@ -220,14 +232,20 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'GenericObjectTypeAnnotation'
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'StringTypeAnnotation'
+                }
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'GenericObjectTypeAnnotation'
+                    'type': 'GenericObjectTypeAnnotation',
+                    'dictionaryValueType': {
+                      'type': 'StringTypeAnnotation'
+                    }
                   }
                 }
               ]
@@ -2165,7 +2183,11 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'returnTypeAnnotation': {
                 'type': 'PromiseTypeAnnotation',
                 'elementType': {
-                  'type': 'GenericObjectTypeAnnotation'
+                  'type': 'GenericObjectTypeAnnotation',
+                  'dictionaryValueType': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'CustomObject'
+                  }
                 }
               },
               'params': []

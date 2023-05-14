@@ -19,7 +19,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class TextAttributeProps {
   public static final short TA_KEY_IS_HIGHLIGHTED = 22;
   public static final short TA_KEY_LAYOUT_DIRECTION = 23;
   public static final short TA_KEY_ACCESSIBILITY_ROLE = 24;
+  public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
+  public static final short TA_KEY_ROLE = 26;
 
   public static final int UNSET = -1;
 
@@ -103,9 +106,8 @@ public class TextAttributeProps {
   protected boolean mIsLineThroughTextDecorationSet = false;
   protected boolean mIncludeFontPadding = true;
 
-  protected @Nullable ReactAccessibilityDelegate.AccessibilityRole mAccessibilityRole = null;
-  protected boolean mIsAccessibilityRoleSet = false;
-  protected boolean mIsAccessibilityLink = false;
+  protected @Nullable AccessibilityRole mAccessibilityRole = null;
+  protected @Nullable Role mRole = null;
 
   protected int mFontStyle = UNSET;
   protected int mFontWeight = UNSET;
@@ -214,6 +216,9 @@ public class TextAttributeProps {
         case TA_KEY_ACCESSIBILITY_ROLE:
           result.setAccessibilityRole(entry.getStringValue());
           break;
+        case TA_KEY_ROLE:
+          result.setRole(Role.values()[entry.getIntValue()]);
+          break;
       }
     }
 
@@ -254,6 +259,7 @@ public class TextAttributeProps {
     result.setTextTransform(getStringProp(props, PROP_TEXT_TRANSFORM));
     result.setLayoutDirection(getStringProp(props, ViewProps.LAYOUT_DIRECTION));
     result.setAccessibilityRole(getStringProp(props, ViewProps.ACCESSIBILITY_ROLE));
+    result.setRole(getStringProp(props, ViewProps.ROLE));
     return result;
   }
 
@@ -618,13 +624,23 @@ public class TextAttributeProps {
   }
 
   private void setAccessibilityRole(@Nullable String accessibilityRole) {
-    if (accessibilityRole != null) {
-      mIsAccessibilityRoleSet = true;
-      mAccessibilityRole =
-          ReactAccessibilityDelegate.AccessibilityRole.fromValue(accessibilityRole);
-      mIsAccessibilityLink =
-          mAccessibilityRole.equals(ReactAccessibilityDelegate.AccessibilityRole.LINK);
+    if (accessibilityRole == null) {
+      mAccessibilityRole = null;
+    } else {
+      mAccessibilityRole = AccessibilityRole.fromValue(accessibilityRole);
     }
+  }
+
+  private void setRole(@Nullable String role) {
+    if (role == null) {
+      mRole = null;
+    } else {
+      mRole = Role.fromValue(role);
+    }
+  }
+
+  private void setRole(Role role) {
+    mRole = role;
   }
 
   public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {

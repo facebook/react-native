@@ -171,6 +171,14 @@ AccessibilityProps::AccessibilityProps(
                     "importantForAccessibility",
                     sourceProps.importantForAccessibility,
                     ImportantForAccessibility::Auto)),
+      role(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.role
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "role",
+                                                       sourceProps.role,
+                                                       {})),
       testId(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.testId
                                                  : convertRawProp(
@@ -227,6 +235,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityEscape);
     RAW_SET_PROP_SWITCH_CASE_BASIC(onAccessibilityAction);
     RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAccessibility);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(role);
     RAW_SET_PROP_SWITCH_CASE(testId, "testID");
     case CONSTEXPR_RAW_PROPS_KEY_HASH("accessibilityRole"): {
       AccessibilityTraits traits = AccessibilityTraits::None;

@@ -93,6 +93,7 @@ class NewArchitectureHelper
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
@@ -107,6 +108,7 @@ class NewArchitectureHelper
 
         spec.dependency "React-Core"
         spec.dependency "RCT-Folly", '2021.07.22.00'
+        spec.dependency "glog"
 
         if new_arch_enabled
             current_config["OTHER_CPLUSPLUSFLAGS"] = @@new_arch_cpp_flags
@@ -118,6 +120,15 @@ class NewArchitectureHelper
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
             spec.dependency "React-NativeModulesApple"
+            spec.dependency "Yoga"
+            spec.dependency "React-Fabric"
+            spec.dependency "React-graphics"
+
+            if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+                spec.dependency "hermes-engine"
+            else
+                spec.dependency "React-jsi"
+            end
         end
 
         spec.pod_target_xcconfig = current_config

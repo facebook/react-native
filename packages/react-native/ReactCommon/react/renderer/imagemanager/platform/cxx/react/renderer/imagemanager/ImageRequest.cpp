@@ -18,17 +18,6 @@ ImageRequest::ImageRequest(
   // Not implemented.
 }
 
-ImageRequest::ImageRequest(ImageRequest &&other) noexcept
-    : imageSource_(std::move(other.imageSource_)),
-      telemetry_(std::move(other.telemetry_)),
-      coordinator_(std::move(other.coordinator_)) {
-  // Not implemented.
-}
-
-ImageRequest::~ImageRequest() {
-  // Not implemented.
-}
-
 const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
     const {
   // Not implemented

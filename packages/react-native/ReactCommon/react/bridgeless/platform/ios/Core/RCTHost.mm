@@ -6,6 +6,7 @@
  */
 
 #import "RCTHost.h"
+#import "RCTHost+Internal.h"
 
 #import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTAssert.h>
@@ -14,6 +15,7 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
+#import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
 
 using namespace facebook::react;
@@ -21,19 +23,18 @@ using namespace facebook::react;
 NSString *const RCTHostWillReloadNotification = @"RCTHostWillReloadNotification";
 NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
-@interface RCTHost () <RCTReloadListener>
+@interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
 @implementation RCTHost {
   RCTInstance *_instance;
-  __weak id<RCTInstanceDelegate> _instanceDelegate;
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
   facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
-  JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
+  RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
   NSMutableArray<RCTFabricSurface *> *_surfaceStartBuffer;
@@ -55,24 +56,18 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
  has been expressed.
  */
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-                    instanceDelegate:(id<RCTInstanceDelegate>)instanceDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                 jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc;
+                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
-  RCTAssert(
-      hostDelegate && instanceDelegate && turboModuleManagerDelegate,
-      @"RCTHost cannot be instantiated with any nil init params.");
-
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
-    _instanceDelegate = instanceDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _surfaceStartBuffer = [NSMutableArray new];
     _bundleManager = [RCTBundleManager new];
     _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
-    _jsErrorHandlingFunc = jsErrorHandlingFunc;
+    _jsEngineProvider = [jsEngineProvider copy];
 
     __weak RCTHost *weakHost = self;
 
@@ -143,9 +138,9 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return self;
 }
 
-#pragma mark - Public API
+#pragma mark - Public
 
-- (void)preload
+- (void)start
 {
   if (_instance) {
     RCTLogWarn(
@@ -154,14 +149,13 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
   [self _refreshBundleURL];
   RCTReloadCommandSetBundleURL(_bundleURL);
-  _instance = [[RCTInstance alloc] initWithDelegate:_instanceDelegate
-                                   jsEngineInstance:[_hostDelegate getJSEngine]
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
-                                     moduleRegistry:_moduleRegistry
-                                jsErrorHandlingFunc:_jsErrorHandlingFunc];
+                                     moduleRegistry:_moduleRegistry];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -191,24 +185,19 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   return [self createSurfaceWithModuleName:moduleName mode:DisplayMode::Visible initialProperties:properties];
 }
 
-- (RCTJSThreadManager *)getJSThreadManager
-{
-  return [_instance jsThreadManager];
-}
-
 - (RCTModuleRegistry *)getModuleRegistry
 {
   return _moduleRegistry;
 }
 
-- (RCTPerformanceLogger *)getPerformanceLogger
-{
-  return [_instance performanceLogger];
-}
-
 - (RCTSurfacePresenter *)getSurfacePresenter
 {
   return [_instance surfacePresenter];
+}
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  [_instance callFunctionOnJSModule:moduleName method:method args:args];
 }
 
 #pragma mark - RCTReloadListener
@@ -228,14 +217,13 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _surfaceStartBuffer = [NSMutableArray arrayWithArray:[self _getAttachedSurfaces]];
   }
 
-  _instance = [[RCTInstance alloc] initWithDelegate:_instanceDelegate
-                                   jsEngineInstance:[_hostDelegate getJSEngine]
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
-                                     moduleRegistry:_moduleRegistry
-                                jsErrorHandlingFunc:_jsErrorHandlingFunc];
+                                     moduleRegistry:_moduleRegistry];
   [[NSNotificationCenter defaultCenter]
       postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
 
@@ -244,31 +232,51 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
 }
 
-// TODO (T74233481) - Should raw instance be accessed in this class like this? These functions shouldn't be called very
-// early in startup, but could add some intelligent guards here.
-#pragma mark - ReactInstanceForwarding
-
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+- (void)dealloc
 {
-  [_instance callFunctionOnModule:moduleName method:method args:args];
+  [_instance invalidate];
 }
 
-- (void)loadScript:(RCTSource *)source
+#pragma mark - RCTInstanceDelegate
+
+- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer
 {
-  [_instance loadScript:source];
+  return [_hostDelegate createContextContainer];
 }
+
+- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
+{
+  NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
+                                         encoding:[NSString defaultCStringEncoding]];
+  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
+  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
+  for (facebook::react::MapBuffer const &mapBuffer : frames) {
+    NSDictionary *frame = @{
+      @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
+                                   encoding:[NSString defaultCStringEncoding]],
+      @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
+                                         encoding:[NSString defaultCStringEncoding]],
+      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
+      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
+    };
+    [stack addObject:frame];
+  }
+  [_hostDelegate host:self
+      didReceiveJSErrorStack:stack
+                     message:message
+                 exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
+                     isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+}
+
+#pragma mark - Internal
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {
   [_instance registerSegmentWithId:segmentId path:path];
 }
 
-- (void)dealloc
-{
-  [_instance invalidate];
-}
-
 #pragma mark - Private
+
 - (void)_refreshBundleURL FB_OBJC_DIRECT
 {
   // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
@@ -297,6 +305,15 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
 
   return surfaces;
+}
+
+- (std::shared_ptr<facebook::react::JSEngineInstance>)_provideJSEngine
+{
+  RCTAssert(_jsEngineProvider, @"_jsEngineProvider must be non-nil");
+  std::shared_ptr<facebook::react::JSEngineInstance> jsEngine = _jsEngineProvider();
+  RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
+
+  return jsEngine;
 }
 
 @end

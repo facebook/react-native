@@ -516,6 +516,7 @@ public class ReactContext extends ContextWrapper {
   }
 
   /** @deprecated DO NOT USE, this method will be removed in the near future. */
+  @Deprecated
   public boolean isBridgeless() {
     return false;
   }
