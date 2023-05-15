@@ -30,7 +30,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -525,7 +525,7 @@ public class TextLayoutManager {
     return YogaMeasureOutput.make(widthInSP, heightInSP);
   }
 
-  public static WritableArray measureLines(
+  public static WritableMap measureLines(
       @NonNull Context context,
       ReadableMap attributedString,
       ReadableMap paragraphAttributes,

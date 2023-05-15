@@ -443,9 +443,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @SuppressWarnings("unused")
-  private NativeArray measureLines(
+  private NativeMap measureLines(
       ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
-    return (NativeArray)
+    return (NativeMap)
         TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
@@ -454,12 +454,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @SuppressWarnings("unused")
-  private NativeArray measureLinesMapBuffer(
+  private NativeMap measureLinesMapBuffer(
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
       float width,
       float height) {
-    return (NativeArray)
+    return (NativeMap)
         TextLayoutManagerMapBuffer.measureLines(
             mReactApplicationContext,
             attributedString,

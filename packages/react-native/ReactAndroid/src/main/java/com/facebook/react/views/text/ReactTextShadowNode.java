@@ -109,15 +109,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           if (mShouldNotifyOnTextLayout) {
             ThemedReactContext themedReactContext = getThemedContext();
-            WritableArray lines =
+            WritableMap textLayoutMetrics =
                 FontMetricsUtil.getFontMetrics(
                     text, layout, sTextPaintInstance, themedReactContext);
-            WritableMap event = Arguments.createMap();
-            event.putArray("lines", lines);
+
             if (themedReactContext.hasActiveReactInstance()) {
               themedReactContext
                   .getJSModule(RCTEventEmitter.class)
-                  .receiveEvent(getReactTag(), "topTextLayout", event);
+                  .receiveEvent(getReactTag(), "topTextLayout", textLayoutMetrics);
             } else {
               ReactSoftExceptionLogger.logSoftException(
                   "ReactTextShadowNode",

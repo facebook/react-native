@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
-import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -551,7 +551,7 @@ public class TextLayoutManagerMapBuffer {
     return YogaMeasureOutput.make(widthInSP, heightInSP);
   }
 
-  public static WritableArray measureLines(
+  public static WritableMap measureLines(
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
@@ -580,6 +580,7 @@ public class TextLayoutManagerMapBuffer {
             includeFontPadding,
             textBreakStrategy,
             hyphenationFrequency);
+
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
   }
 

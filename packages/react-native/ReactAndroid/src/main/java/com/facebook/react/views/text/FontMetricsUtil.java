@@ -22,10 +22,11 @@ public class FontMetricsUtil {
   private static final String X_HEIGHT_MEASUREMENT_TEXT = "x";
   private static final float AMPLIFICATION_FACTOR = 100;
 
-  public static WritableArray getFontMetrics(
+  public static WritableMap getFontMetrics(
       CharSequence text, Layout layout, TextPaint paint, Context context) {
     DisplayMetrics dm = context.getResources().getDisplayMetrics();
     WritableArray lines = Arguments.createArray();
+    WritableArray regions = Arguments.createArray();
     // To calculate xHeight and capHeight we have to render an "x" and "T" and manually measure
     // their height.
     // In order to get more precision than Android offers, we blow up the text size by 100 and
@@ -41,6 +42,7 @@ public class FontMetricsUtil {
     paintCopy.getTextBounds(
         X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length(), xHeightBounds);
     double xHeight = xHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
+
     for (int i = 0; i < layout.getLineCount(); i++) {
       Rect bounds = new Rect();
       layout.getLineBounds(i, bounds);
@@ -56,8 +58,32 @@ public class FontMetricsUtil {
       line.putDouble("xHeight", xHeight);
       line.putString(
           "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
+
+      int start = 10;
+      int end = 40;
+      int lineStartIndex = layout.getLineStart(i);
+      int lineEndIndex = layout.getLineEnd(i);
+      int startIndex = Math.max(lineStartIndex, start);
+      int endIndex = Math.min(lineEndIndex, end);
+      layout.getLineBounds(i, bounds);
+      int xStart = (int) layout.getPrimaryHorizontal(startIndex);
+      int xEnd = (int) layout.getPrimaryHorizontal(endIndex);
+      int yStart = bounds.top;
+      int yEnd = bounds.bottom;
+      Rect charBounds = new Rect(xStart, yStart, xEnd, yEnd);
+
+      WritableMap region = Arguments.createMap();
+      region.putDouble("width", charBounds.width());
+      region.putDouble("height", charBounds.height());
+
       lines.pushMap(line);
+      regions.pushMap(region);
     }
-    return lines;
+
+    WritableMap textLayoutMetrics = Arguments.createMap();
+    textLayoutMetrics.putArray("lines", lines);
+    textLayoutMetrics.putArray("regions", regions);
+
+    return textLayoutMetrics;
   }
 }

@@ -226,15 +226,16 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   return TextMeasurement{size, attachments};
 }
 
-LinesMeasurements TextLayoutManager::measureLines(
+TextLayoutMeasurements TextLayoutManager::measureLines(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
-    Size size) const {
+    Size size,
+    TextLayoutRegions textLayoutRegions) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<NativeArray::javaobject(
+          ->getMethod<NativeMap::javaobject(
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
@@ -245,26 +246,37 @@ LinesMeasurements TextLayoutManager::measureLines(
   auto paragraphAttributesMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
 
-  auto array = measureLines(
+  auto object = measureLines(
       fabricUIManager,
       attributedStringMB.get(),
       paragraphAttributesMB.get(),
       size.width,
       size.height);
 
-  auto dynamicArray = cthis(array)->consume();
+  auto dynamicObject = cthis(object)->consume();
   LinesMeasurements lineMeasurements;
-  lineMeasurements.reserve(dynamicArray.size());
+  lineMeasurements.reserve(dynamicObject.getDefault("lines").size());
+  RegionsMeasurements regionsMeasurements;
+  regionsMeasurements.reserve(dynamicObject.getDefault("regions").size());
 
-  for (auto const &data : dynamicArray) {
+  for (auto const &data : dynamicObject.getDefault("lines")) {
     lineMeasurements.push_back(LineMeasurement(data));
+  }
+
+  for (auto const &data : dynamicObject.getDefault("regions")) {
+      regionsMeasurements.push_back(RegionMeasurement(data));
   }
 
   // Explicitly release smart pointers to free up space faster in JNI tables
   attributedStringMB.reset();
   paragraphAttributesMB.reset();
 
-  return lineMeasurements;
+  TextLayoutMeasurements textLayoutMeasurements = {
+      lineMeasurements,
+      regionsMeasurements,
+  };
+
+  return textLayoutMeasurements;
 }
 
 TextMeasurement TextLayoutManager::doMeasure(
