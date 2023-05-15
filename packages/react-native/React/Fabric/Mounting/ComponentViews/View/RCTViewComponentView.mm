@@ -18,6 +18,10 @@
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 
+#ifdef RCT_DYNAMIC_FRAMEWORKS
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 using namespace facebook::react;
 
 @implementation RCTViewComponentView {
@@ -29,6 +33,13 @@ using namespace facebook::react;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
+
+#ifdef RCT_DYNAMIC_FRAMEWORKS
++ (void)load
+{
+  [RCTComponentViewFactory.currentComponentViewFactory registerComponentViewClass:self];
+}
+#endif
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
