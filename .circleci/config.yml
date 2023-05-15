@@ -588,9 +588,6 @@ jobs:
   test_ios:
     executor: reactnativeios
     parameters:
-      use_frameworks:
-        type: boolean
-        default: false
       run_unit_tests:
         description: Specifies whether unit tests should run.
         type: boolean
@@ -646,13 +643,6 @@ jobs:
       - run:
           name: Configure Watchman
           command: echo "{}" > .watchmanconfig
-
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -931,6 +921,11 @@ jobs:
         description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
         type: enum
         enum: ["NewArch", "OldArch"]
+      use_frameworks:
+        default: "StaticLibraries"
+        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "StaticFrameworks", "DynamicFrameworks"
+        type: enum
+        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -963,6 +958,16 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
+                  fi
+
+                  if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
+                    export NO_FLIPPER=1
+                    export USE_FRAMEWORKS=static
+                  fi
+
+                  if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+                    export NO_FLIPPER=1
+                    export USE_FRAMEWORKS=dynamic
                   fi
 
                   cd packages/rn-tester
@@ -1648,11 +1653,6 @@ workflows:
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
@@ -1665,11 +1665,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
@@ -1728,18 +1723,8 @@ workflows:
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Debug"
@@ -1770,6 +1755,7 @@ workflows:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
+              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
       - test_ios:
           name: "Test iOS with Ruby 2.7.7"
           run_unit_tests: true
@@ -1789,13 +1775,6 @@ workflows:
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_frameworks
-      #     use_frameworks: true
-      #     run_unit_tests: true
-      #     requires:
-      #       - build_ios_frameworks
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
