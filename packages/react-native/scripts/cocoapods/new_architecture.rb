@@ -70,7 +70,6 @@ class NewArchitectureHelper
             # Set "RCT_DYNAMIC_FRAMEWORKS=1" if pod are installed with USE_FRAMEWORKS=dynamic
             # This helps with backward compatibility.
             if pod_name == 'React-RCTFabric' && ENV['USE_FRAMEWORKS'] == 'dynamic'
-                Pod::UI.puts "Adding RCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".yellow
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
                     prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
