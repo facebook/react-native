@@ -49,6 +49,7 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -58,6 +59,10 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#endif
+
+#if RCT_NEW_ARCH_ENABLED
+#import <RNTMyNativeViewComponentView.h>
 #endif
 
 #if DEBUG
@@ -85,6 +90,12 @@
 }
 @end
 
+#if RCT_NEW_ARCH_ENABLED
+/// Declare conformance to `RCTComponentViewFactoryComponentProvider`
+@interface AppDelegate () <RCTComponentViewFactoryComponentProvider>
+@end
+#endif
+
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
@@ -109,6 +120,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   // Appetizer.io params check
   NSDictionary *initProps = [self prepareInitialProps];
+
+#if RCT_NEW_ARCH_ENABLED
+  [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+#endif
 
 #ifdef RN_FABRIC_ENABLED
   _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:_contextContainer];
@@ -331,6 +346,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
 
+#endif
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+#if RCT_NEW_ARCH_ENABLED
+- (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
+}
 #endif
 
 @end
