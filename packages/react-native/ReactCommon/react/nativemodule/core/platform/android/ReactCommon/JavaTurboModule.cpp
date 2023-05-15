@@ -812,6 +812,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 promiseConstructorArgs[1].getObject(runtime).getFunction(
                     runtime);
 
+            auto rejectWeakWrapper =
+                  CallbackWrapper::createWeak(std::move(rejectJSIFn), runtime, jsInvoker_);
+
             auto resolve = createJavaCallbackFromJSIFunction(
                                std::move(resolveJSIFn), runtime, jsInvoker_)
                                .release();
@@ -843,12 +846,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
             nativeInvoker_->invokeAsync(
                 [jargs,
+                 rejectWeakWrapper = std::move(rejectWeakWrapper),
                  globalRefs,
                  methodID,
                  instance_ = jni::make_weak(instance_),
                  moduleNameStr,
                  methodNameStr,
                  id = getUniqueId()]() mutable -> void {
+                  auto rejectStrongWrapper = rejectWeakWrapper.lock();
                   auto instance = instance_.lockLocal();
 
                   if (!instance) {
@@ -871,7 +876,17 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   } catch (...) {
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                    throw;
+                    if (rejectStrongWrapper) {
+                      auto exception = std::current_exception();
+                      auto throwable = jni::getJavaExceptionForCppException(exception);
+                      auto jsError = convertThrowableToJSError(rejectStrongWrapper->runtime(), throwable);
+                      rejectStrongWrapper->callback().call(
+                        rejectStrongWrapper->runtime(),
+                        jsError.value(),
+                        1);
+                    } else {
+                      throw;
+                    }
                   }
 
                   for (auto globalRef : globalRefs) {

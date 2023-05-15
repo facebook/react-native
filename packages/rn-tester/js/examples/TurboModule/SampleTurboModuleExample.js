@@ -92,10 +92,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       }
     },
     promiseThrows: () => {
-      // $FlowFixMe[unused-promise]
       NativeSampleTurboModule.promiseThrows?.()
         .then(() => {})
-        .catch(e => this._setResult('promiseThrows', e.message))
+        .catch(e => this._setResult('promiseThrows', e.message));
     },
     voidFuncAssert: () => {
       try {
@@ -113,8 +112,9 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     },
     promiseAssert: () => {
       try {
-        // $FlowFixMe[unused-promise]
-        NativeSampleTurboModule.promiseAssert?.();
+        NativeSampleTurboModule.promiseAssert?.()
+          .then(() => {})
+          .catch(e => this._setResult('promiseAssert', e.message));
       } catch (e) {
         return e.message;
       }
