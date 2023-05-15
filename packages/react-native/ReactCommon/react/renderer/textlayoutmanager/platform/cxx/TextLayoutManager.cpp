@@ -28,10 +28,11 @@ TextMeasurement TextLayoutManager::measure(
   return TextMeasurement{{0, 0}, attachments};
 }
 
-LinesMeasurements TextLayoutManager::measureLines(
+TextLayoutMeasurements TextLayoutManager::measureLines(
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
-    Size size) const {
+    Size size,
+    TextLayoutRegions textLayoutRegions) const {
   return {};
 };
 

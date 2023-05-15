@@ -59,8 +59,8 @@ public class FontMetricsUtil {
       line.putString(
           "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
 
-      int start = 10;
-      int end = 40;
+      int start = 0;
+      int end = 5;
       int lineStartIndex = layout.getLineStart(i);
       int lineEndIndex = layout.getLineEnd(i);
       int startIndex = Math.max(lineStartIndex, start);
@@ -73,8 +73,12 @@ public class FontMetricsUtil {
       Rect charBounds = new Rect(xStart, yStart, xEnd, yEnd);
 
       WritableMap region = Arguments.createMap();
-      region.putDouble("width", charBounds.width());
-      region.putDouble("height", charBounds.height());
+      region.putDouble("x", charBounds.width() / dm.density);
+      region.putDouble("y", charBounds.height() / dm.density);
+      region.putDouble("width", 1.2);
+      region.putDouble("height", 1.2);
+      region.putString(
+          "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
 
       lines.pushMap(line);
       regions.pushMap(region);

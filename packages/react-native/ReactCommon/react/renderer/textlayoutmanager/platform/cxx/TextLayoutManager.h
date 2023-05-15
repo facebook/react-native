@@ -42,10 +42,11 @@ class TextLayoutManager {
    * Measures lines of `attributedString` using native text rendering
    * infrastructure.
    */
-  LinesMeasurements measureLines(
+  TextLayoutMeasurements measureLines(
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
-      Size size) const;
+      Size size,
+      TextLayoutRegions textLayoutRegions) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.

@@ -444,7 +444,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @SuppressWarnings("unused")
   private NativeMap measureLines(
-      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height) {
+      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height, ReadableArray textLayoutRegions) {
     return (NativeMap)
         TextLayoutManager.measureLines(
             mReactApplicationContext,

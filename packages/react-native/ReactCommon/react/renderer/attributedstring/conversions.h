@@ -859,6 +859,19 @@ inline void fromRawValue(
   }
 }
 
+inline MapBuffer toMapBuffer(const TextLayoutRegions &textLayoutRegions) {
+  auto builder = MapBufferBuilder();
+
+  return builder.build();
+}
+
+inline folly::dynamic toDynamic(
+    const TextLayoutRegions &textLayoutRegions) {
+  auto values = folly::dynamic::object();
+  
+  return values;
+}
+
 inline ParagraphAttributes convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
