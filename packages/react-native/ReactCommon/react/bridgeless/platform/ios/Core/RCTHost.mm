@@ -69,34 +69,34 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
 
-    __weak RCTHost *weakHost = self;
+    __weak RCTHost *weakSelf = self;
 
     auto bundleURLGetter = ^NSURL *()
     {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return nil;
       }
 
-      return strongHost->_bundleURL;
+      return strongSelf->_bundleURL;
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL) {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return;
       }
-      strongHost->_bundleURL = bundleURL;
+      strongSelf->_bundleURL = bundleURL;
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
     {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return nil;
       }
 
-      return [strongHost->_hostDelegate getBundleURL];
+      return [strongSelf->_hostDelegate getBundleURL];
     };
 
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
@@ -112,17 +112,17 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
      * JS calls before the main JSBundle finishes execution, and execute them after.
      */
     _onInitialBundleLoad = ^{
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return;
       }
 
       NSArray<RCTFabricSurface *> *unstartedSurfaces = @[];
 
       {
-        std::lock_guard<std::mutex> guard{strongHost->_surfaceStartBufferMutex};
-        unstartedSurfaces = [NSArray arrayWithArray:strongHost->_surfaceStartBuffer];
-        strongHost->_surfaceStartBuffer = nil;
+        std::lock_guard<std::mutex> guard{strongSelf->_surfaceStartBufferMutex};
+        unstartedSurfaces = [NSArray arrayWithArray:strongSelf->_surfaceStartBuffer];
+        strongSelf->_surfaceStartBuffer = nil;
       }
 
       for (RCTFabricSurface *surface in unstartedSurfaces) {
