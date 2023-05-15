@@ -120,7 +120,7 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
-static BOOL turboModuleInteropEnabled = YES;
+static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {
   return turboModuleInteropEnabled;
