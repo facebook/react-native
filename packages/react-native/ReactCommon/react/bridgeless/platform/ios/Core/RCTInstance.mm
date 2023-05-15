@@ -237,6 +237,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
   auto contextContainer = [_delegate createContextContainer];
+  if (!contextContainer) {
+    contextContainer = std::make_shared<ContextContainer>();
+  }
   contextContainer->insert(
       "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
