@@ -408,6 +408,10 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
+  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
+    return NO;
+  }
+
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return moduleClass != nil &&
       (RCT_IS_TURBO_MODULE_CLASS(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
@@ -415,6 +419,10 @@ static Class getFallbackClassFromName(const char *name)
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
 {
+  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
+    return YES;
+  }
+
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return moduleClass != nil &&
       (!RCT_IS_TURBO_MODULE_CLASS(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
