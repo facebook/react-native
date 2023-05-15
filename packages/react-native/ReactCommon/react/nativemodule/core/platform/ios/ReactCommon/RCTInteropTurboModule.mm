@@ -533,7 +533,7 @@ void ObjCInteropTurboModule::setInvocationArg(
         !jsiArg.asObject(runtime).isArray(runtime);
     if (!isPlainObject) {
       throw jsi::JSError(
-          runtime, errorPrefix + "JavaScript argument must be an object. Got " + getType(runtime, jsiArg));
+          runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
     }
 
     id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
