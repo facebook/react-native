@@ -178,6 +178,9 @@ static Class getFallbackClassFromName(const char *name)
   // Enforce synchronous access to _invalidating and _moduleHolders
   std::mutex _moduleHoldersMutex;
   std::atomic<bool> _invalidating;
+
+  NSDictionary<NSString *, id<RCTBridgeModule>> *_legacyEagerlyInitializedModules;
+  NSDictionary<NSString *, Class> *_legacyEagerlyRegisteredModuleClasses;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -189,6 +192,27 @@ static Class getFallbackClassFromName(const char *name)
     _delegate = delegate;
     _bridge = bridge;
     _invalidating = false;
+
+    if (RCTTurboModuleInteropEnabled()) {
+      NSMutableDictionary<NSString *, id<RCTBridgeModule>> *legacyInitializedModules = [NSMutableDictionary new];
+
+      if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+        for (id<RCTBridgeModule> module in [_delegate extraModulesForBridge:nil]) {
+          if (!RCT_IS_TURBO_MODULE_INSTANCE(module)) {
+            [legacyInitializedModules setObject:module forKey:RCTBridgeModuleNameForClass([module class])];
+          }
+        }
+      }
+      _legacyEagerlyInitializedModules = legacyInitializedModules;
+
+      NSMutableDictionary<NSString *, Class> *legacyEagerlyRegisteredModuleClasses = [NSMutableDictionary new];
+      for (Class moduleClass in RCTGetModuleClasses()) {
+        if (!RCT_IS_TURBO_MODULE_CLASS(moduleClass)) {
+          [legacyEagerlyRegisteredModuleClasses setObject:moduleClass forKey:RCTBridgeModuleNameForClass(moduleClass)];
+        }
+      }
+      _legacyEagerlyRegisteredModuleClasses = legacyEagerlyRegisteredModuleClasses;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
@@ -389,21 +413,10 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   if (shouldCreateModule) {
-    Class moduleClass;
-
     /**
      * Step 2a: Resolve platform-specific class.
      */
-    if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-      moduleClass = [_delegate getModuleClassFromName:moduleName];
-    } else {
-      std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-      moduleClass = [_delegate getModuleClassFromName:moduleName];
-    }
-
-    if (!moduleClass) {
-      moduleClass = getFallbackClassFromName(moduleName);
-    }
+    Class moduleClass = [self _getModuleClassFromName:moduleName];
 
     __block id<RCTBridgeModule> module = nil;
 
@@ -484,15 +497,7 @@ static Class getFallbackClassFromName(const char *name)
    */
 
   TurboModulePerfLogger::moduleCreateConstructStart(moduleName, moduleId);
-  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
-    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  }
-  if (!module) {
-    module = [moduleClass new];
-  }
+  module = [self _getModuleInstanceFromClass:moduleClass];
   TurboModulePerfLogger::moduleCreateConstructEnd(moduleName, moduleId);
 
   TurboModulePerfLogger::moduleCreateSetUpStart(moduleName, moduleId);
@@ -628,6 +633,56 @@ static Class getFallbackClassFromName(const char *name)
                   userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil([_bridge parentBridge])}];
 
   TurboModulePerfLogger::moduleCreateSetUpEnd(moduleName, moduleId);
+
+  return module;
+}
+
+- (Class)_getModuleClassFromName:(const char *)moduleName
+{
+  NSString *moduleNameStr = @(moduleName);
+  if (_legacyEagerlyInitializedModules && _legacyEagerlyInitializedModules[moduleNameStr]) {
+    return [_legacyEagerlyInitializedModules[moduleNameStr] class];
+  }
+
+  if (_legacyEagerlyRegisteredModuleClasses && _legacyEagerlyRegisteredModuleClasses[moduleNameStr]) {
+    return _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
+  }
+
+  Class moduleClass;
+  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+    moduleClass = [_delegate getModuleClassFromName:moduleName];
+  } else {
+    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+    moduleClass = [_delegate getModuleClassFromName:moduleName];
+  }
+
+  if (!moduleClass) {
+    moduleClass = getFallbackClassFromName(moduleName);
+  }
+  return moduleClass;
+}
+
+- (id<RCTBridgeModule>)_getModuleInstanceFromClass:(Class)moduleClass
+{
+  NSString *moduleNameStr = RCTBridgeModuleNameForClass(moduleClass);
+  if (_legacyEagerlyInitializedModules && _legacyEagerlyInitializedModules[moduleNameStr]) {
+    return _legacyEagerlyInitializedModules[moduleNameStr];
+  }
+
+  if (_legacyEagerlyRegisteredModuleClasses && _legacyEagerlyRegisteredModuleClasses[moduleNameStr]) {
+    return [_legacyEagerlyRegisteredModuleClasses[moduleNameStr] new];
+  }
+
+  id<RCTBridgeModule> module = nil;
+  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
+    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
+  } else {
+    std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
+    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
+  }
+  if (!module) {
+    module = [moduleClass new];
+  }
 
   return module;
 }
