@@ -131,19 +131,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return _contextContainer;
 }
 
-- (void)setContextContainer:(ContextContainer::Shared)contextContainer
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  _contextContainer = contextContainer;
-  _mountingManager.contextContainer = contextContainer;
-}
-
-- (RuntimeExecutor)runtimeExecutor
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  return _runtimeExecutor;
-}
-
 - (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
