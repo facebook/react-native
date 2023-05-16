@@ -239,6 +239,23 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   return {runtime, std::move(error)};
 }
 
+/**
+ * Creates JSErrorValue with given stack trace.
+ */
+static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::string jsStack) {
+  jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
+  jsi::Value error;
+  NSString *message = reason[@"message"];
+  if (message) {
+    error = createJSRuntimeError(runtime, "Exception in HostFunction: " + std::string([message UTF8String]));
+  } else {
+    error = createJSRuntimeError(runtime, "Exception in HostFunction: <unknown>");
+  }
+  error.asObject(runtime).setProperty(runtime, "stack", jsStack);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return error;
+}
+
 }
 
 jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
@@ -248,6 +265,14 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
+  std::string jsStack;
+  try {
+    jsStack = createJSRuntimeError(runtime, "")
+      .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
+  } catch (...) {
+    // Stack unavailable
+  }
+
   std::string moduleName = name_;
 
   // Note: the passed invoke() block is not retained by default, so let's retain it here to help keep it longer.
@@ -257,7 +282,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName](
+      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, jsStack](
           jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         std::string moduleMethod = moduleName + "." + methodName + "()";
 
@@ -324,7 +349,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           resolveWasCalled = YES;
         };
 
-        RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+        auto handlePromiseRejection = ^(NSDictionary *reason) {
           if (resolveWasCalled) {
             RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
             return;
@@ -341,8 +366,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             return;
           }
 
-          NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError, blockGuard]() {
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, blockGuard, reason, jsStack]() {
             auto strongResolveWrapper2 = weakResolveWrapper.lock();
             auto strongRejectWrapper2 = weakRejectWrapper.lock();
             if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -350,8 +374,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             }
 
             jsi::Runtime &rt = strongRejectWrapper2->runtime();
-            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-            strongRejectWrapper2->callback().call(rt, arg);
+            strongRejectWrapper2->callback().call(rt, createRejectJSErrorValue(rt, reason, jsStack));
 
             strongResolveWrapper2->destroy();
             strongRejectWrapper2->destroy();
@@ -360,47 +383,19 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
 
           rejectWasCalled = YES;
         };
-            
+
+        RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+          NSDictionary *reason = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+          handlePromiseRejection(reason);
+        };
+
         RCTInternalPromiseRejectBlock internalRejectBlock = ^(NSException *exception) {
-          if (resolveWasCalled) {
-            RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
-            return;
-          }
-
-          if (rejectWasCalled) {
-            RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
-            return;
-          }
-
-          auto strongResolveWrapper = weakResolveWrapper.lock();
-          auto strongRejectWrapper = weakRejectWrapper.lock();
-          if (!strongResolveWrapper || !strongRejectWrapper) {
-            return;
-          }
-
-          NSDictionary *jsError = @{
+          handlePromiseRejection(@{
             @"name": exception.name,
             @"message": exception.reason,
             @"stackSymbols": exception.callStackSymbols,
             @"stackReturnAddresses": exception.callStackReturnAddresses,
-          };
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError, blockGuard]() {
-            auto strongResolveWrapper2 = weakResolveWrapper.lock();
-            auto strongRejectWrapper2 = weakRejectWrapper.lock();
-            if (!strongResolveWrapper2 || !strongRejectWrapper2) {
-              return;
-            }
-
-            jsi::Runtime &rt = strongRejectWrapper2->runtime();
-            jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-            strongRejectWrapper2->callback().call(rt, arg);
-
-            strongResolveWrapper2->destroy();
-            strongRejectWrapper2->destroy();
-            (void)blockGuard;
           });
-
-          rejectWasCalled = YES;
         };
 
         invokeCopy(resolveBlock, rejectBlock, internalRejectBlock);
@@ -448,11 +443,14 @@ id ObjCTurboModule::performMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      if (wasMethodSync) {
+      if (isSync) {
         throw convertNSExceptionToJSError(runtime, exception);
       } else {
         if (optionalInternalRejectBlock != nil) {
           optionalInternalRejectBlock(exception);
+        } else {
+          // JSFunction returning void
+          throw;
         }
       }
     } @finally {
