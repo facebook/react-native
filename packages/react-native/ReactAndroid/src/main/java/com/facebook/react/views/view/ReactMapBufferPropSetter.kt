@@ -10,6 +10,7 @@ package com.facebook.react.views.view
 import android.graphics.Color
 import android.graphics.Rect
 import androidx.core.view.ViewCompat
+import com.facebook.react.R
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
@@ -17,6 +18,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PointerEvents
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role
 
 object ReactMapBufferPropSetter {
   // ViewProps values
@@ -64,6 +66,7 @@ object ReactMapBufferPropSetter {
   private const val VP_POINTER_OVER_CAPTURE = 44
   private const val VP_BORDER_CURVES = 45 // iOS only
   private const val VP_FG_COLOR = 46 // iOS only?
+  private const val VP_ROLE = 47
 
   // Yoga values
   private const val YG_BORDER_WIDTH = 100
@@ -179,6 +182,9 @@ object ReactMapBufferPropSetter {
         }
         VP_IMPORTANT_FOR_ACCESSIBILITY -> {
           view.importantForAccessibility(entry.intValue)
+        }
+        VP_ROLE -> {
+          view.role(entry.intValue)
         }
         VP_NATIVE_BACKGROUND -> {
           viewManager.nativeBackground(view, entry.mapBufferValue)
@@ -420,6 +426,10 @@ object ReactMapBufferPropSetter {
           else -> ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         }
     ViewCompat.setImportantForAccessibility(this, mode)
+  }
+
+  private fun ReactViewGroup.role(value: Int) {
+    setTag(R.id.role, Role.values()[value])
   }
 
   private fun ReactViewGroup.pointerEvents(value: Int) {

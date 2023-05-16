@@ -14,9 +14,6 @@ import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
 
-// $FlowFixMe[unclear-type] Use flow-types for @babel/parser
-export type ASTNode = Object;
-
 const invariant = require('invariant');
 
 function resolveTypeAnnotation(

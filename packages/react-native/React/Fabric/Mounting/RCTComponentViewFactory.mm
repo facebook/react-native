@@ -112,7 +112,19 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     return YES;
   }
 
-  // Fallback 2: Try to use Paper Interop.
+  // Fallback 2: Ask the provider and check in the dictionary provided
+  if (self.thirdPartyFabricComponentsProvider) {
+    // Test whether a provider has been passed to avoid potentially expensive conversions
+    // between C++ and ObjC strings.
+    NSString *objcName = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
+    klass = self.thirdPartyFabricComponentsProvider.thirdPartyFabricComponents[objcName];
+    if (klass) {
+      [self registerComponentViewClass:klass];
+      return YES;
+    }
+  }
+
+  // Fallback 3: Try to use Paper Interop.
   NSString *componentNameString = RCTNSStringFromString(name);
   if ([RCTLegacyViewManagerInteropComponentView isSupported:componentNameString]) {
     RCTLogNewArchitectureValidation(
@@ -136,7 +148,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     return YES;
   }
 
-  // Fallback 3: use <UnimplementedView> if component doesn't exist.
+  // Fallback 4: use <UnimplementedView> if component doesn't exist.
   auto flavor = std::make_shared<std::string const>(name);
   auto componentName = ComponentName{flavor->c_str()};
   auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);

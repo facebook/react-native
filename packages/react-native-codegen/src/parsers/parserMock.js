@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {Parser} from './parser';
+import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from './parser';
 import type {ParserType} from './errors';
 import type {
   UnionTypeAnnotationMemberType,
@@ -254,5 +254,23 @@ export class MockedParser implements Parser {
 
   isOptionalProperty(property: $FlowFixMe): boolean {
     return property.optional || false;
+  }
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN {
+    return () => {
+      return {};
+    };
+  }
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN {
+    return () => {
+      return {
+        name: 'MockedSchema',
+        optional: false,
+        typeAnnotation: 'BooleanTypeAnnotation',
+        defaultValue: false,
+        withNullDefault: false,
+      };
+    };
   }
 }

@@ -35,8 +35,6 @@ using namespace facebook::react;
   dispatch_block_t _initialMessageBlock;
 }
 
-@synthesize bundleManager = _bundleManager;
-
 RCT_EXPORT_MODULE()
 
 - (instancetype)init
@@ -83,25 +81,6 @@ RCT_EXPORT_MODULE()
   // If the progress beats this timer, this message is not shown.
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), self->_initialMessageBlock);
-}
-
-- (UIColor *)dimColor:(UIColor *)c
-{
-  // Given a color, return a slightly lighter or darker color for dim effect.
-  CGFloat h, s, b, a;
-  if ([c getHue:&h saturation:&s brightness:&b alpha:&a])
-    return [UIColor colorWithHue:h saturation:s brightness:b < 0.5 ? b * 1.25 : b * 0.75 alpha:a];
-  return nil;
-}
-
-- (NSString *)getTextForHost
-{
-  NSURL *bundleURL = _bundleManager.bundleURL;
-  if (bundleURL == nil || bundleURL.fileURL) {
-    return @"React Native";
-  }
-
-  return [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
 }
 
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor

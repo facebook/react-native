@@ -67,7 +67,10 @@ struct YOGA_EXPORT YGConfig {
   facebook::yoga::ExperimentalFeatureSet getEnabledExperiments() const;
 
   void setErrata(YGErrata errata);
+  void addErrata(YGErrata errata);
+  void removeErrata(YGErrata errata);
   YGErrata getErrata() const;
+  bool hasErrata(YGErrata errata) const;
 
   void setPointScaleFactor(float pointScaleFactor);
   float getPointScaleFactor() const;

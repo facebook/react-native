@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: ar_AR -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">التفاعل مع قائمة التطوير الأصلي (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">تشغيل %1$s</string>
 </resources>

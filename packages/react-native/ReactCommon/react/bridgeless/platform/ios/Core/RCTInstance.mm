@@ -73,7 +73,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTTurboModuleManager *_turboModuleManager;
-  JsErrorHandler::JsErrorHandlingFunc _jsErrorHandlingFunc;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
@@ -91,7 +90,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
              bindingsInstallFunc:(ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-             jsErrorHandlingFunc:(JsErrorHandler::JsErrorHandlingFunc)jsErrorHandlingFunc;
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -104,18 +102,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
     _bindingsInstallFunc = bindingsInstallFunc;
-    _jsErrorHandlingFunc = jsErrorHandlingFunc;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
     {
-      __weak __typeof(self) weakInstance = self;
+      __weak __typeof(self) weakSelf = self;
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
             // TODO: Make RCTInstance call onComplete
-            [weakInstance callFunctionOnModule:moduleName method:methodName args:args];
+            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
 
@@ -127,6 +124,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     [self _start];
   }
   return self;
+}
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  if (_valid) {
+    _reactInstance->callFunctionOnModule(
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+  }
 }
 
 - (void)invalidate
@@ -155,6 +160,13 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     // Terminate the JavaScript thread, so that no other work executes after this block.
     self->_jsThreadManager = nil;
   }];
+}
+
+- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
+{
+  if (_valid) {
+    _reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
+  }
 }
 
 #pragma mark - RCTTurboModuleManagerDelegate
@@ -189,23 +201,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return nullptr;
 }
 
-#pragma mark - ReactInstanceForwarding
-
-- (void)callFunctionOnModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
-{
-  if (_valid) {
-    _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
-  }
-}
-
-- (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
-{
-  if (_valid) {
-    _reactInstance->registerSegment(static_cast<uint32_t>([segmentId unsignedIntValue]), path.UTF8String);
-  }
-}
-
 #pragma mark - Private
 
 - (void)_start
@@ -218,9 +213,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto timerManager = std::make_shared<TimerManager>(std::move(objCTimerRegistry));
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
+  __weak __typeof(self) weakSelf = self;
+  auto jsErrorHandlingFunc = [=](MapBuffer errorMap) { [weakSelf _handleJSErrorMap:std::move(errorMap)]; };
+
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
-      _jsEngineInstance->createJSRuntime(), _jsThreadManager.jsMessageThread, timerManager, _jsErrorHandlingFunc);
+      _jsEngineInstance->createJSRuntime(), _jsThreadManager.jsMessageThread, timerManager, jsErrorHandlingFunc);
   _valid = true;
 
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
@@ -239,6 +237,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
   auto contextContainer = [_delegate createContextContainer];
+  if (!contextContainer) {
+    contextContainer = std::make_shared<ContextContainer>();
+  }
   contextContainer->insert(
       "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
@@ -265,8 +266,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // DisplayLink is used to call timer callbacks.
   _displayLink = [RCTDisplayLink new];
-
-  __weak __typeof(self) weakSelf = self;
 
   ReactInstance::JSRuntimeFlags options = {
       .isProfiling = false, .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};
@@ -308,10 +307,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
 {
-  __weak RCTInstance *weakInstance = self;
+  __weak RCTInstance *weakSelf = self;
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
     ((id<RCTJSDispatcherModule>)module).dispatchToJSThread = ^(dispatch_block_t block) {
-      __strong __typeof(self) strongSelf = weakInstance;
+      __strong __typeof(self) strongSelf = weakSelf;
 
       if (strongSelf && strongSelf->_valid) {
         strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
@@ -412,6 +411,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                    lazilyLoadIfNecessary:YES];
     [legacyEventDispatcher notifyObserversOfEvent:event];
   }
+}
+
+- (void)_handleJSErrorMap:(facebook::react::MapBuffer)errorMap
+{
+  [_delegate instance:self didReceiveErrorMap:std::move(errorMap)];
 }
 
 @end
