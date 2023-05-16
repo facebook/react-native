@@ -20,9 +20,6 @@
 
 using namespace facebook::react;
 
-NSString *const RCTHostWillReloadNotification = @"RCTHostWillReloadNotification";
-NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
-
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
@@ -156,6 +153,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
+  [_hostDelegate hostDidStart:self];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -204,8 +202,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 - (void)didReceiveReloadCommand
 {
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostWillReloadNotification object:nil]];
   [_instance invalidate];
   _instance = nil;
   [self _refreshBundleURL];
@@ -224,8 +220,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
+  [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
     [surface resetWithSurfacePresenter:[self getSurfacePresenter]];

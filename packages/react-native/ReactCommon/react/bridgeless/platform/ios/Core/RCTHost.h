@@ -25,16 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-/**
- * This notification fires just before RCTHost releases it's RCTInstance reference.
- */
-RCT_EXTERN NSString *const RCTHostWillReloadNotification;
-
-/**
- * This notification fires just after RCTHost releases it's RCTInstance reference.
- */
-RCT_EXTERN NSString *const RCTHostDidReloadNotification;
-
 typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProvider)(void);
 
 @protocol RCTHostDelegate <NSObject>
@@ -47,6 +37,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
                    message:(NSString *)message
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal;
+- (void)hostDidStart:(RCTHost *)host;
 
 @end
 
