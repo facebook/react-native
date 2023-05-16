@@ -859,24 +859,6 @@ inline void fromRawValue(
   }
 }
 
-inline MapBuffer toMapBuffer(const TextLayoutRegions &textLayoutRegions) {
-  auto regionsBuilder = MapBufferBuilder();
-  unsigned regionIdx = 0;
-
-  for (const auto &region : textLayoutRegions) {
-      unsigned chunkIdx = 0;
-      auto chunksBuilder = MapBufferBuilder();
-      for (const auto &chunk : region) {
-          chunksBuilder.putInt(chunkIdx, chunk);
-          ++chunkIdx;
-      }
-      regionsBuilder.putMapBuffer(regionIdx, chunksBuilder.build());
-      ++regionIdx;
-  }
-
-  return regionsBuilder.build();
-}
-
 inline folly::dynamic toDynamic(
     const TextLayoutRegions &textLayoutRegions) {
   auto values = folly::dynamic::object();
@@ -1358,6 +1340,24 @@ inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
   auto fragmentsMap = fragmentsBuilder.build();
   builder.putMapBuffer(AS_KEY_FRAGMENTS, fragmentsMap);
   return builder.build();
+}
+
+inline MapBuffer toMapBuffer(const TextLayoutRegions &textLayoutRegions) {
+  auto regionsBuilder = MapBufferBuilder();
+  unsigned regionIdx = 0;
+
+  for (const auto &region : textLayoutRegions) {
+      unsigned chunkIdx = 0;
+      auto chunksBuilder = MapBufferBuilder();
+      for (const auto &chunk : region) {
+          chunksBuilder.putInt(chunkIdx, chunk);
+          ++chunkIdx;
+      }
+      regionsBuilder.putMapBuffer(regionIdx, chunksBuilder.build());
+      ++regionIdx;
+  }
+
+  return regionsBuilder.build();
 }
 
 #endif
