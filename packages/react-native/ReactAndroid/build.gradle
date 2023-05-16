@@ -709,9 +709,6 @@ dependencies {
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 
-    api('com.parse.bolts:bolts-tasks:1.4.0')
-    api('com.parse.bolts:bolts-applinks:1.4.0')
-
     // This compileOnly dependency is needed to be able to update the offline
     // mirror from a non-linux machine, while still executing inside a Linux CI
     // as we declare a dependency on aap2 @linux so we're sure the linux artifact

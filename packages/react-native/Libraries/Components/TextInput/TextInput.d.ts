@@ -652,7 +652,7 @@ export interface TextInputProps
    * Sets the maximum number of lines for a TextInput.
    * Use it with multiline set to true to be able to fill the lines.
    */
-  maximumNumberOfLines?: number | undefined;
+  maxNumberOfLines?: number | undefined;
 
   /**
    * If true, the text input can be multiple lines. The default value is false.

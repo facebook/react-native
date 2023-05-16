@@ -242,7 +242,6 @@ const Text: React.AbstractComponent<
       isHighlighted={isHighlighted}
       isPressable={isPressable}
       nativeID={id ?? nativeID}
-      maximumNumberOfLines={numberOfLinesValue}
       ref={forwardedRef}
       selectable={_selectable}
       selectionColor={selectionColor}

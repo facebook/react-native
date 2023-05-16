@@ -622,7 +622,7 @@ export type Props = $ReadOnly<{|
    * Sets the maximum number of lines for a `TextInput`. Use it with multiline set to
    * `true` to be able to fill the lines.
    */
-  maximumNumberOfLines?: ?number,
+  maxNumberOfLines?: ?number,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
