@@ -50,6 +50,7 @@ import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
@@ -444,13 +445,18 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @SuppressWarnings("unused")
   private NativeMap measureLines(
-      ReadableMap attributedString, ReadableMap paragraphAttributes, float width, float height, ReadableArray textLayoutRegions) {
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
+      float width,
+      float height,
+      MapBuffer textLayoutRegions) {
     return (NativeMap)
         TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
+            PixelUtil.toPixelFromDIP(width),
+            textLayoutRegions);
   }
 
   @SuppressWarnings("unused")
@@ -458,13 +464,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReadableMapBuffer attributedString,
       ReadableMapBuffer paragraphAttributes,
       float width,
-      float height) {
+      float height,
+      ReadableMapBuffer textLayoutRegions) {
     return (NativeMap)
         TextLayoutManagerMapBuffer.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
-            PixelUtil.toPixelFromDIP(width));
+            PixelUtil.toPixelFromDIP(width),
+            textLayoutRegions);
   }
 
   @SuppressWarnings("unused")

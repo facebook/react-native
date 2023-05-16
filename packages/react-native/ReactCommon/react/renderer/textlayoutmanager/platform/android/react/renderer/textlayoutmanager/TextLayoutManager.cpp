@@ -239,19 +239,23 @@ TextLayoutMeasurements TextLayoutManager::measureLines(
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,
               jfloat,
-              jfloat)>("measureLinesMapBuffer");
+              jfloat,
+              JReadableMapBuffer::javaobject)>("measureLinesMapBuffer");
 
   auto attributedStringMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
   auto paragraphAttributesMB =
       JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+  auto textLayoutRegionsMB =
+      JReadableMapBuffer::createWithContents(toMapBuffer(textLayoutRegions));
 
   auto object = measureLines(
       fabricUIManager,
       attributedStringMB.get(),
       paragraphAttributesMB.get(),
       size.width,
-      size.height);
+      size.height,
+      textLayoutRegionsMB.get());
 
   auto dynamicObject = cthis(object)->consume();
   LinesMeasurements lineMeasurements;

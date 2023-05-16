@@ -860,9 +860,21 @@ inline void fromRawValue(
 }
 
 inline MapBuffer toMapBuffer(const TextLayoutRegions &textLayoutRegions) {
-  auto builder = MapBufferBuilder();
+  auto regionsBuilder = MapBufferBuilder();
+  unsigned regionIdx = 0;
 
-  return builder.build();
+  for (const auto &region : textLayoutRegions) {
+      unsigned chunkIdx = 0;
+      auto chunksBuilder = MapBufferBuilder();
+      for (const auto &chunk : region) {
+          chunksBuilder.putInt(chunkIdx, chunk);
+          ++chunkIdx;
+      }
+      regionsBuilder.putMapBuffer(regionIdx, chunksBuilder.build());
+      ++regionIdx;
+  }
+
+  return regionsBuilder.build();
 }
 
 inline folly::dynamic toDynamic(

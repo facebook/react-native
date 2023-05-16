@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
@@ -555,7 +556,8 @@ public class TextLayoutManagerMapBuffer {
       @NonNull Context context,
       MapBuffer attributedString,
       MapBuffer paragraphAttributes,
-      float width) {
+      float width,
+      MapBuffer textLayoutRegions) {
 
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
@@ -581,7 +583,7 @@ public class TextLayoutManagerMapBuffer {
             textBreakStrategy,
             hyphenationFrequency);
 
-    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
+    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context, textLayoutRegions);
   }
 
   // TODO T31905686: This class should be private

@@ -32,6 +32,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
@@ -529,7 +531,8 @@ public class TextLayoutManager {
       @NonNull Context context,
       ReadableMap attributedString,
       ReadableMap paragraphAttributes,
-      float width) {
+      float width,
+      MapBuffer textLayoutRegions) {
     Spannable text = getOrCreateSpannableForText(context, attributedString, null);
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
 
@@ -553,7 +556,7 @@ public class TextLayoutManager {
             includeFontPadding,
             textBreakStrategy,
             hyphenationFrequency);
-    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
+    return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context, textLayoutRegions);
   }
 
   // TODO T31905686: This class should be private

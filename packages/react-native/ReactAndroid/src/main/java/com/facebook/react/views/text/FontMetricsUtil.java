@@ -13,8 +13,10 @@ import android.text.Layout;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 
 public class FontMetricsUtil {
 
@@ -23,7 +25,7 @@ public class FontMetricsUtil {
   private static final float AMPLIFICATION_FACTOR = 100;
 
   public static WritableMap getFontMetrics(
-      CharSequence text, Layout layout, TextPaint paint, Context context) {
+      CharSequence text, Layout layout, TextPaint paint, Context context, MapBuffer textLayoutRegions) {
     DisplayMetrics dm = context.getResources().getDisplayMetrics();
     WritableArray lines = Arguments.createArray();
     WritableArray regions = Arguments.createArray();
@@ -59,29 +61,34 @@ public class FontMetricsUtil {
       line.putString(
           "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
 
-      int start = 0;
-      int end = 5;
-      int lineStartIndex = layout.getLineStart(i);
-      int lineEndIndex = layout.getLineEnd(i);
-      int startIndex = Math.max(lineStartIndex, start);
-      int endIndex = Math.min(lineEndIndex, end);
-      layout.getLineBounds(i, bounds);
-      int xStart = (int) layout.getPrimaryHorizontal(startIndex);
-      int xEnd = (int) layout.getPrimaryHorizontal(endIndex);
-      int yStart = bounds.top;
-      int yEnd = bounds.bottom;
-      Rect charBounds = new Rect(xStart, yStart, xEnd, yEnd);
+      for (int j = 0; j < textLayoutRegions.getCount(); j++) {
+        MapBuffer textLayoutRegion = textLayoutRegions.getMapBuffer(j);
 
-      WritableMap region = Arguments.createMap();
-      region.putDouble("x", charBounds.width() / dm.density);
-      region.putDouble("y", charBounds.height() / dm.density);
-      region.putDouble("width", 1.2);
-      region.putDouble("height", 1.2);
-      region.putString(
-          "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
+        int startIndex = Math.max(layout.getLineStart(i), textLayoutRegion.getInt(0));
+        int endIndex = Math.min(layout.getLineEnd(i), textLayoutRegion.getInt(1));
+
+        if (startIndex > endIndex) {
+          break;
+        }
+
+        Rect regionBounds = new Rect(
+          (int)layout.getPrimaryHorizontal(startIndex),
+          bounds.top,
+          (int)layout.getPrimaryHorizontal(endIndex - 1),
+          bounds.bottom);
+
+        WritableMap region = Arguments.createMap();
+        region.putDouble("x", regionBounds.left / dm.density);
+        region.putDouble("y", regionBounds.top / dm.density);
+        region.putDouble("width", regionBounds.width() / dm.density);
+        region.putDouble("height", regionBounds.height() / dm.density);
+        region.putString("text", text.subSequence(startIndex, endIndex).toString());
+        region.putInt("region", j);
+        region.putInt("line", i);
+        regions.pushMap(region);
+      }
 
       lines.pushMap(line);
-      regions.pushMap(region);
     }
 
     WritableMap textLayoutMetrics = Arguments.createMap();
