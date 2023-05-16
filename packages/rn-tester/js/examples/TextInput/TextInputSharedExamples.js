@@ -1153,13 +1153,13 @@ module.exports = ([
             placeholder="Five line input using rows prop"
           />
           <TextInput
-            maximumNumberOfLines={2}
+            maxNumberOfLines={2}
             multiline={true}
             style={[styles.textInputLines, {marginBottom: 10}]}
             placeholder="At most 2 lines"
           />
           <TextInput
-            maximumNumberOfLines={5}
+            maxNumberOfLines={5}
             multiline={true}
             style={styles.textInputLines}
             placeholder="At most 5 lines"
