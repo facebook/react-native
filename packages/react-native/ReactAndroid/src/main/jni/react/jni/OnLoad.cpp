@@ -31,8 +31,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -93,5 +92,4 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

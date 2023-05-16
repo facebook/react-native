@@ -9,8 +9,8 @@
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
-@class RCTTurboModuleManager;
 
 /**
  * The RCTAppDelegate is an utility class that implements some base configurations for all the React Native apps.
@@ -95,10 +95,15 @@
 - (UIViewController *)createRootViewController;
 
 #if RCT_NEW_ARCH_ENABLED
-
-/// The TurboModule manager
-@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+
+/// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
+/// new renderer. The Component Descriptor is a string which represent the name used in JS to refer to the native
+/// component. The default implementation returns an empty dictionary. Subclasses can override this method to register
+/// the required components.
+///
+/// @return a dictionary that associate a component for the new renderer with his descriptor.
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents;
 
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
 ///

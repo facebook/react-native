@@ -20,8 +20,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
  public:
@@ -43,7 +42,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   std::shared_ptr<CallInvoker> nativeCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
-  using TurboModuleCache =
+  using ModuleCache =
       std::unordered_map<std::string, std::shared_ptr<react::TurboModule>>;
 
   /**
@@ -52,7 +51,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
    */
-  std::shared_ptr<TurboModuleCache> turboModuleCache_;
+  std::shared_ptr<ModuleCache> turboModuleCache_;
+  std::shared_ptr<ModuleCache> legacyModuleCache_;
 
   void installJSIBindings(bool shouldCreateLegacyModules);
   explicit TurboModuleManager(
@@ -66,5 +66,4 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   TurboModuleProviderFunctionType createLegacyModuleProvider();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

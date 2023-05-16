@@ -14,7 +14,6 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getExtendsProps, removeKnownExtends} = require('./extends');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
@@ -126,15 +125,11 @@ function buildComponentSchema(
   const types = parser.getTypes(ast);
 
   const propProperties = getProperties(propsTypeName, types);
-
   const commandProperties = getCommandProperties(ast, parser);
+  const {extendsProps, props} = getProps(propProperties, types, parser);
 
-  const extendsProps = getExtendsProps(propProperties, types);
   const options = getOptions(optionsExpression);
-
-  const nonExtendsProps = removeKnownExtends(propProperties, types);
-  const props = getProps(nonExtendsProps, types);
-  const events = getEvents(propProperties, types);
+  const events = getEvents(propProperties, types, parser);
   const commands = getCommands(commandProperties, types);
 
   return {

@@ -131,19 +131,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return _contextContainer;
 }
 
-- (void)setContextContainer:(ContextContainer::Shared)contextContainer
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  _contextContainer = contextContainer;
-  _mountingManager.contextContainer = contextContainer;
-}
-
-- (RuntimeExecutor)runtimeExecutor
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  return _runtimeExecutor;
-}
-
 - (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
@@ -281,8 +268,8 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::useNativeState = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_nstextstorage_caching")) {
-    CoreFeatures::cacheNSTextStorage = true;
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
+    CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
   auto componentRegistryFactory =

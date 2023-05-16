@@ -10,8 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JBackgroundExecutor : public jni::JavaClass<JBackgroundExecutor> {
  public:
@@ -21,5 +20,4 @@ class JBackgroundExecutor : public jni::JavaClass<JBackgroundExecutor> {
   static BackgroundExecutor create(const std::string &name);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

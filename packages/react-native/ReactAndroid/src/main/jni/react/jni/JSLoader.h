@@ -13,8 +13,7 @@
 #include <cxxreact/JSExecutor.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct JAssetManager : jni::JavaClass<JAssetManager> {
   static constexpr auto kJavaDescriptor = "Landroid/content/res/AssetManager;";
@@ -30,5 +29,4 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
     AAssetManager *assetManager,
     const std::string &assetName);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

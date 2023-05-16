@@ -16,6 +16,9 @@ import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
 
+/** Temporary to help trace the cause of T151032868 */
+class ReactViewReturnTypeException(message: String, e: Throwable) : Exception(message, e)
+
 interface ReactViewManagerWrapper {
   fun createView(
       reactTag: Int,
@@ -51,9 +54,17 @@ interface ReactViewManagerWrapper {
         props: Any?,
         stateWrapper: StateWrapper?,
         jsResponderHandler: JSResponderHandler
-    ): View =
-        viewManager.createView(
+    ): View {
+      try {
+        return viewManager.createView(
             reactTag, reactContext, props as? ReactStylesDiffMap, stateWrapper, jsResponderHandler)
+      } catch (e: NullPointerException) {
+        // Throwing to try capture information about the cause of T151032868, remove after.
+        throw ReactViewReturnTypeException(
+            "DefaultViewManagerWrapper::createView(${viewManager.getName()}, ${viewManager::class.java}) can't return null",
+            e)
+      }
+    }
 
     override fun updateProperties(viewToUpdate: View, props: Any?) {
       viewManager.updateProperties(viewToUpdate, props as? ReactStylesDiffMap)

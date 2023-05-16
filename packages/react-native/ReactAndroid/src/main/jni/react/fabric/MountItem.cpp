@@ -7,8 +7,7 @@
 
 #include "MountItem.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CppMountItem CppMountItem::CreateMountItem(ShadowView const &shadowView) {
   return {CppMountItem::Type::Create, {}, {}, shadowView, -1};
@@ -62,5 +61,4 @@ CppMountItem CppMountItem::UpdateOverflowInsetMountItem(
   return {CppMountItem::Type::UpdateOverflowInset, {}, {}, shadowView, -1};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

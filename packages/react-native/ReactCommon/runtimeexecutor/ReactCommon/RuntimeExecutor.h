@@ -12,8 +12,7 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Takes a function and calls it with a reference to a Runtime. The function
@@ -125,5 +124,4 @@ inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
   return data;
 }
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

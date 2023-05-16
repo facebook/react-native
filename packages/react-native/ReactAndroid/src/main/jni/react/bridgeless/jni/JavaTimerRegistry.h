@@ -14,8 +14,7 @@
 
 #include "JJavaTimerManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Call into JavaTimerManager.java to schedule and delete timers
@@ -36,5 +35,4 @@ class JavaTimerRegistry : public PlatformTimerRegistry {
   jni::global_ref<JJavaTimerManager::javaobject> javaTimerManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

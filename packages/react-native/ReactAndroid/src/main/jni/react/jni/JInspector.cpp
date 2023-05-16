@@ -11,8 +11,7 @@
 
 #ifdef WITH_INSPECTOR
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -108,7 +107,6 @@ void JInspector::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

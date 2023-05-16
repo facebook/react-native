@@ -13,8 +13,7 @@
 #include <react/bridgeless/TimerManager.h>
 #include <react/jni/WritableNativeArray.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
  public:
@@ -35,5 +34,4 @@ class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
   std::weak_ptr<TimerManager> timerManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

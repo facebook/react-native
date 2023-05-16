@@ -20,8 +20,7 @@
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class JavaScriptExecutorHolder;
@@ -117,5 +116,4 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

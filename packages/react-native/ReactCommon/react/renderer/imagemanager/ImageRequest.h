@@ -34,19 +34,23 @@ class ImageRequest final {
   /*
    * The move constructor.
    */
-  ImageRequest(ImageRequest &&other) noexcept;
+  ImageRequest(ImageRequest &&other) noexcept = default;
 
   /*
    * `ImageRequest` does not support copying by design.
    */
   ImageRequest(const ImageRequest &other) = delete;
 
-  ~ImageRequest();
-
   /**
    * Set cancelation function.
    */
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
+
+  /*
+   * Calls cancel function if one is defined. Should be when downloading
+   * image isn't needed anymore. E.g. <ImageView /> was removed.
+   */
+  void cancel() const;
 
   /*
    * Returns the Image Source associated with the request.

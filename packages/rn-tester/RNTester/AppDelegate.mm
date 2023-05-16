@@ -49,6 +49,7 @@
 #endif
 
 #ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
@@ -58,6 +59,10 @@
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#endif
+
+#if RCT_NEW_ARCH_ENABLED
+#import <RNTMyNativeViewComponentView.h>
 #endif
 
 #if DEBUG
@@ -82,10 +87,14 @@
   facebook::react::ContextContainer::Shared _contextContainer;
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 #endif
-
-  RCTTurboModuleManager *_turboModuleManager;
 }
 @end
+
+#if RCT_NEW_ARCH_ENABLED
+/// Declare conformance to `RCTComponentViewFactoryComponentProvider`
+@interface AppDelegate () <RCTComponentViewFactoryComponentProvider>
+@end
+#endif
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -111,6 +120,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   // Appetizer.io params check
   NSDictionary *initProps = [self prepareInitialProps];
+
+#if RCT_NEW_ARCH_ENABLED
+  [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
+#endif
 
 #ifdef RN_FABRIC_ENABLED
   _bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:_bridge contextContainer:_contextContainer];
@@ -207,15 +220,18 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
   callInvoker = std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
 #endif
-  _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
-  [bridge setRCTTurboModuleRegistry:_turboModuleManager];
+
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
+  [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
   /**
    * Eagerly initialize RCTDevMenu so CMD + d, CMD + i, and CMD + r work.
    * This is a stop gap until we have a system to eagerly init Turbo Modules.
    */
-  [_turboModuleManager moduleForName:"RCTDevMenu"];
+  [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif
 
   __weak __typeof(self) weakSelf = self;
@@ -225,25 +241,26 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
 #endif
-      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+      facebook::react::RCTJSIExecutorRuntimeInstaller([weakSelf, bridge, turboModuleManager](
+                                                          facebook::jsi::Runtime &runtime) {
         if (!bridge) {
           return;
         }
-        __typeof(self) strongSelf = weakSelf;
+
 #if RN_FABRIC_ENABLED
+        __typeof(self) strongSelf = weakSelf;
         if (strongSelf && strongSelf->_runtimeScheduler) {
           facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, strongSelf->_runtimeScheduler);
         }
 #endif
-        if (strongSelf) {
-          facebook::react::RuntimeExecutor syncRuntimeExecutor =
-              [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-          [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
-        }
+
+        facebook::react::RuntimeExecutor syncRuntimeExecutor =
+            [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
+        [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
       }));
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -329,6 +346,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }
 
+#endif
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+#if RCT_NEW_ARCH_ENABLED
+- (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
+}
 #endif
 
 @end

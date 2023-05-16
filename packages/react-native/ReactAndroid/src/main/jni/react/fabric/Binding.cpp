@@ -37,8 +37,7 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
     jni::alias_ref<jclass>) {
@@ -422,8 +421,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  CoreFeatures::cacheLastTextMeasurement =
-      getFeatureFlagValue("enableTextMeasureCachePerShadowNode");
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
@@ -486,7 +483,12 @@ void Binding::schedulerDidFinishTransaction(
   if (!mountingManager) {
     return;
   }
-  mountingManager->executeMount(mountingCoordinator);
+
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+  mountingManager->executeMount(*mountingTransaction);
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
@@ -586,5 +588,4 @@ void Binding::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

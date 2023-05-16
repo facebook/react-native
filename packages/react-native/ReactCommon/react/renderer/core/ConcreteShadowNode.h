@@ -86,7 +86,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static ConcreteStateData initialStateData(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const & /*props*/,
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     return {};

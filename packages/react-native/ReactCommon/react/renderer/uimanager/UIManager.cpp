@@ -80,8 +80,7 @@ ShadowNode::Shared UIManager::createNode(
       componentDescriptor.createFamily(fragment, std::move(eventTarget));
   auto const props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
-  auto const state =
-      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
+  auto const state = componentDescriptor.createInitialState(props, family);
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{

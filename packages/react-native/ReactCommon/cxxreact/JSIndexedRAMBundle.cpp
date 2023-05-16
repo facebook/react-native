@@ -12,8 +12,7 @@
 #include <memory>
 #include <sstream>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<std::unique_ptr<JSModulesUnbundle>(std::string)>
 JSIndexedRAMBundle::buildFactory() {
@@ -127,5 +126,4 @@ void JSIndexedRAMBundle::readBundle(
   readBundle(buffer, bytes);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -136,8 +136,7 @@ ShadowNode::Shared ComponentDescriptorRegistry::createNode(
       PropsParserContext{surfaceId, *contextContainer_.get()},
       nullptr,
       RawProps(propsDynamic));
-  auto const state =
-      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
+  auto const state = componentDescriptor.createInitialState(props, family);
 
   return componentDescriptor.createShadowNode(
       {

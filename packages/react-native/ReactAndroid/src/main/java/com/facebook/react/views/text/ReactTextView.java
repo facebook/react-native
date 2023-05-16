@@ -378,7 +378,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // operation
     // TODO T56559197: remove this condition when we migrate 100% to Fabric
     if (paddingLeft != UNSET
-        && paddingBottom != UNSET
+        && paddingTop != UNSET
         && paddingRight != UNSET
         && paddingBottom != UNSET) {
 

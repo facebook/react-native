@@ -24,8 +24,7 @@
 
 using namespace facebook::jsi;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -579,5 +578,4 @@ void bindNativePerformanceNow(Runtime &runtime) {
              size_t count) { return Value(JSExecutor::performanceNow()); }));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

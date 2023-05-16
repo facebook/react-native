@@ -13,8 +13,7 @@
 #include <memory>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TurboModuleManagerDelegate
     : public jni::HybridClass<TurboModuleManagerDelegate> {
@@ -33,5 +32,4 @@ class TurboModuleManagerDelegate
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

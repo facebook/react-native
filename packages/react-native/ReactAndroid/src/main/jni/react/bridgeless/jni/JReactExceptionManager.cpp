@@ -11,8 +11,7 @@
 #include <jni.h>
 #include <iostream>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JReactExceptionManager::reportJsException(
     const JReadableMapBuffer::javaobject errorMapBuffer) {
@@ -24,5 +23,4 @@ void JReactExceptionManager::reportJsException(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

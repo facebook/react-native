@@ -55,6 +55,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
+import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
@@ -77,6 +78,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
 import java.util.HashMap;
@@ -104,51 +106,48 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
-      new DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener() {
-        @Override
-        public void onFabricCommitEnd(DevToolsReactPerfLogger.FabricCommitPoint commitPoint) {
-          long commitDuration = commitPoint.getCommitDuration();
-          long layoutDuration = commitPoint.getLayoutDuration();
-          long diffDuration = commitPoint.getDiffDuration();
-          long transactionEndDuration = commitPoint.getTransactionEndDuration();
-          long batchExecutionDuration = commitPoint.getBatchExecutionDuration();
+      commitPoint -> {
+        long commitDuration = commitPoint.getCommitDuration();
+        long layoutDuration = commitPoint.getLayoutDuration();
+        long diffDuration = commitPoint.getDiffDuration();
+        long transactionEndDuration = commitPoint.getTransactionEndDuration();
+        long batchExecutionDuration = commitPoint.getBatchExecutionDuration();
 
-          DevToolsReactPerfLogger.mStreamingCommitStats.add(commitDuration);
-          DevToolsReactPerfLogger.mStreamingLayoutStats.add(layoutDuration);
-          DevToolsReactPerfLogger.mStreamingDiffStats.add(diffDuration);
-          DevToolsReactPerfLogger.mStreamingTransactionEndStats.add(transactionEndDuration);
-          DevToolsReactPerfLogger.mStreamingBatchExecutionStats.add(batchExecutionDuration);
+        DevToolsReactPerfLogger.mStreamingCommitStats.add(commitDuration);
+        DevToolsReactPerfLogger.mStreamingLayoutStats.add(layoutDuration);
+        DevToolsReactPerfLogger.mStreamingDiffStats.add(diffDuration);
+        DevToolsReactPerfLogger.mStreamingTransactionEndStats.add(transactionEndDuration);
+        DevToolsReactPerfLogger.mStreamingBatchExecutionStats.add(batchExecutionDuration);
 
-          FLog.i(
-              TAG,
-              "Statistics of Fabric commit #%d:\n"
-                  + " - Total commit time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
-                  + " - Layout time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
-                  + " - Diffing time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
-                  + " - FinishTransaction (Diffing + JNI serialization): %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
-                  + " - Mounting: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n",
-              commitPoint.getCommitNumber(),
-              commitDuration,
-              DevToolsReactPerfLogger.mStreamingCommitStats.getAverage(),
-              DevToolsReactPerfLogger.mStreamingCommitStats.getMedian(),
-              DevToolsReactPerfLogger.mStreamingCommitStats.getMax(),
-              layoutDuration,
-              DevToolsReactPerfLogger.mStreamingLayoutStats.getAverage(),
-              DevToolsReactPerfLogger.mStreamingLayoutStats.getMedian(),
-              DevToolsReactPerfLogger.mStreamingLayoutStats.getMax(),
-              diffDuration,
-              DevToolsReactPerfLogger.mStreamingDiffStats.getAverage(),
-              DevToolsReactPerfLogger.mStreamingDiffStats.getMedian(),
-              DevToolsReactPerfLogger.mStreamingDiffStats.getMax(),
-              transactionEndDuration,
-              DevToolsReactPerfLogger.mStreamingTransactionEndStats.getAverage(),
-              DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMedian(),
-              DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMax(),
-              batchExecutionDuration,
-              DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getAverage(),
-              DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMedian(),
-              DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
-        }
+        FLog.i(
+            TAG,
+            "Statistics of Fabric commit #%d:\n"
+                + " - Total commit time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
+                + " - Layout time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
+                + " - Diffing time: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
+                + " - FinishTransaction (Diffing + JNI serialization): %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n"
+                + " - Mounting: %d ms. Avg: %.2f. Median: %.2f ms. Max: %d ms.\n",
+            commitPoint.getCommitNumber(),
+            commitDuration,
+            DevToolsReactPerfLogger.mStreamingCommitStats.getAverage(),
+            DevToolsReactPerfLogger.mStreamingCommitStats.getMedian(),
+            DevToolsReactPerfLogger.mStreamingCommitStats.getMax(),
+            layoutDuration,
+            DevToolsReactPerfLogger.mStreamingLayoutStats.getAverage(),
+            DevToolsReactPerfLogger.mStreamingLayoutStats.getMedian(),
+            DevToolsReactPerfLogger.mStreamingLayoutStats.getMax(),
+            diffDuration,
+            DevToolsReactPerfLogger.mStreamingDiffStats.getAverage(),
+            DevToolsReactPerfLogger.mStreamingDiffStats.getMedian(),
+            DevToolsReactPerfLogger.mStreamingDiffStats.getMax(),
+            transactionEndDuration,
+            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getAverage(),
+            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMedian(),
+            DevToolsReactPerfLogger.mStreamingTransactionEndStats.getMax(),
+            batchExecutionDuration,
+            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getAverage(),
+            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMedian(),
+            DevToolsReactPerfLogger.mStreamingBatchExecutionStats.getMax());
       };
 
   static {
@@ -191,7 +190,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   // from C++ to exceed 9,999 and it should be obvious what's going on when analyzing performance.
   private int mCurrentSynchronousCommitNumber = 10000;
 
-  private MountingManager.MountItemExecutor mMountItemExecutor =
+  private final MountingManager.MountItemExecutor mMountItemExecutor =
       new MountingManager.MountItemExecutor() {
         @Override
         public void executeItems(Queue<MountItem> items) {
@@ -202,9 +201,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       };
 
   public FabricUIManager(
-      ReactApplicationContext reactContext,
-      ViewManagerRegistry viewManagerRegistry,
-      EventBeatManager eventBeatManager) {
+      @NonNull ReactApplicationContext reactContext,
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @NonNull EventBeatManager eventBeatManager) {
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
@@ -385,6 +384,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
+    }
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
+      mReactApplicationContext.internal_registerInteropModule(
+          RCTEventEmitter.class, interopEventEmitter);
     }
   }
 
@@ -1079,7 +1083,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(MountingManager mountingManager) {
+          public void execute(@NonNull MountingManager mountingManager) {
             SurfaceMountingManager surfaceMountingManager =
                 mountingManager.getSurfaceManager(surfaceId);
             if (surfaceMountingManager != null) {
@@ -1096,6 +1100,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
             return surfaceId;
           }
 
+          @NonNull
+          @SuppressLint("DefaultLocale")
           @Override
           public String toString() {
             return String.format("SET_JS_RESPONDER [%d] [surface:%d]", reactTag, surfaceId);
@@ -1111,7 +1117,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountItemDispatcher.addMountItem(
         new MountItem() {
           @Override
-          public void execute(MountingManager mountingManager) {
+          public void execute(@NonNull MountingManager mountingManager) {
             mountingManager.clearJSResponder();
           }
 

@@ -444,9 +444,14 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(33)
+        minSdk = 21
+        targetSdk = 33
         versionCode(1)
         versionName("1.0")
 
@@ -659,13 +664,8 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            // Robolectric tests are downloading JARs at runtime. This allows to specify
-            // a local file mirror with REACT_NATIVE_ROBOLECTRIC_MIRROR to go in offline more.
-            if (System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR") != null) {
-                systemProperty 'robolectric.offline', 'true'
-                systemProperty 'robolectric.dependency.dir', System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR")
-            }
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -723,11 +723,14 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 tasks.withType(Test).all {
     // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
         jvmArgs += [
-            "-XX:+AllowRedefinitionToAddDeleteMethods",
             "--illegal-access=permit",
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",

@@ -36,7 +36,11 @@ extern "C" {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
 
+#ifndef RCT_DYNAMIC_FRAMEWORKS
+
 ${lookupFuncs}
+
+#endif
 
 #ifdef __cplusplus
 }

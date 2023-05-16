@@ -23,11 +23,14 @@ import type {
   SchemaType,
   NativeModuleEnumMap,
   OptionsShape,
+  PropTypeAnnotation,
+  EventTypeAnnotation,
+  ObjectTypeAnnotation,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
+import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
@@ -68,6 +71,11 @@ export type CommandOptions = $ReadOnly<{
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type OptionsAST = Object;
+
+type ExtendedPropResult = {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+} | null;
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -817,6 +825,83 @@ function propertyNames(
     .filter(Boolean);
 }
 
+function extendsForProp(
+  prop: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): ExtendedPropResult {
+  const argument = parser.argumentForProp(prop);
+
+  if (!argument) {
+    console.log('null', prop);
+  }
+
+  const name = parser.nameForArgument(prop);
+
+  if (types[name] != null) {
+    // This type is locally defined in the file
+    return null;
+  }
+
+  switch (name) {
+    case 'ViewProps':
+      return {
+        type: 'ReactNativeBuiltInType',
+        knownTypeName: 'ReactNativeCoreViewProps',
+      };
+    default: {
+      throw new Error(`Unable to handle prop spread: ${name}`);
+    }
+  }
+}
+
+function buildPropSchema(
+  property: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): ?NamedShape<PropTypeAnnotation> {
+  const getSchemaInfoFN = parser.getGetSchemaInfoFN();
+  const info = getSchemaInfoFN(property, types);
+  if (info == null) {
+    return null;
+  }
+  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+
+  const getTypeAnnotationFN = parser.getGetTypeAnnotationFN();
+
+  return {
+    name,
+    optional,
+    typeAnnotation: getTypeAnnotationFN(
+      name,
+      typeAnnotation,
+      defaultValue,
+      withNullDefault,
+      types,
+      parser,
+      buildPropSchema,
+    ),
+  };
+}
+
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function getEventArgument(
+  argumentProps: PropAST,
+  buildPropertiesForEvent: (
+    property: PropAST,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+  parser: Parser,
+): ObjectTypeAnnotation<EventTypeAnnotation> {
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties: argumentProps.map(member =>
+      buildPropertiesForEvent(member, parser),
+    ),
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -836,4 +921,7 @@ module.exports = {
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
+  extendsForProp,
+  buildPropSchema,
+  getEventArgument,
 };

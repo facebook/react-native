@@ -13,5 +13,5 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 @DoNotStripAny
 public interface ReactJsExceptionHandler {
 
-  public void reportJsException(ReadableMapBuffer errorMap);
+  void reportJsException(ReadableMapBuffer errorMap);
 }

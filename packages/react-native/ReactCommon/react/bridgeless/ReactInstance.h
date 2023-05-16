@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <JsErrorHandler/JsErrorHandler.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
+#include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/bridgeless/BufferedRuntimeExecutor.h>

@@ -11,8 +11,7 @@
 #include <tuple>
 #include <unordered_map>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // pure destructors in C++ are odd. You would think they don't want an
 // implementation, but in fact the linker requires one. Define them to be
@@ -104,5 +103,4 @@ std::unique_ptr<IInspector> makeTestInspectorInstance() {
   return std::make_unique<InspectorImpl>();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

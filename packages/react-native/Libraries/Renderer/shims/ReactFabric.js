@@ -6,9 +6,8 @@
  *
  * @noformat
  * @flow
- * @generated SignedSource<<ef2742380b2b2c69cea8618289eea086>>
- *
- * This file was sync'd from the facebook/react repository.
+ * @nolint
+ * @generated SignedSource<<cece19ddbec9f287c995721f49c68977>>
  */
 
 'use strict';

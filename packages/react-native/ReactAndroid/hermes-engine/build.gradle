@@ -125,8 +125,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion = "31.0.0"
+    compileSdkVersion 33
+    buildToolsVersion = "33.0.0"
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -139,7 +139,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdk = 21
 
         externalNativeBuild {
             cmake {
@@ -188,6 +188,15 @@ android {
                 }
             }
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlin {
+        jvmToolchain(11)
     }
 
     sourceSets {

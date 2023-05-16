@@ -14,6 +14,9 @@
 
 namespace facebook::react {
 
+// TODO: "AP" (Accessibility Props) are interleaved with "VP" (View Props).
+// Ordinals must be unique between them.
+
 constexpr MapBuffer::Key AP_ACCESSIBILITY_ACTIONS = 0;
 constexpr MapBuffer::Key AP_ACCESSIBILITY_HINT = 1;
 constexpr MapBuffer::Key AP_ACCESSIBILITY_LABEL = 2;
@@ -24,6 +27,8 @@ constexpr MapBuffer::Key AP_ACCESSIBILITY_STATE = 6;
 constexpr MapBuffer::Key AP_ACCESSIBILITY_VALUE = 7;
 constexpr MapBuffer::Key AP_ACCESSIBLE = 8;
 constexpr MapBuffer::Key AP_IMPORTANT_FOR_ACCESSIBILITY = 19;
+
+constexpr MapBuffer::Key AP_ROLE = 47;
 
 // AccessibilityAction values
 constexpr MapBuffer::Key ACCESSIBILITY_ACTION_NAME = 0;
