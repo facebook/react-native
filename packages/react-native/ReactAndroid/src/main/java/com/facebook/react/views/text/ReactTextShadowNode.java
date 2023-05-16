@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
@@ -59,7 +60,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private @Nullable Spannable mPreparedSpannableText;
 
   private boolean mShouldNotifyOnTextLayout;
-  private ReadableArray mTextLayoutRegions;
+  private MapBuffer mTextLayoutRegions;
 
   private final YogaMeasureFunction mTextMeasureFunction =
       new YogaMeasureFunction() {
@@ -109,14 +110,14 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           if (mShouldNotifyOnTextLayout) {
             ThemedReactContext themedReactContext = getThemedContext();
-//             WritableMap textLayoutMetrics =
-//                 FontMetricsUtil.getFontMetrics(
-//                     text, layout, sTextPaintInstance, themedReactContext, mTextLayoutRegions);
+             WritableMap textLayoutMetrics =
+                 FontMetricsUtil.getFontMetrics(
+                     text, layout, sTextPaintInstance, themedReactContext, mTextLayoutRegions);
 
             if (themedReactContext.hasActiveReactInstance()) {
-//              themedReactContext
-//                  .getJSModule(RCTEventEmitter.class)
-//                  .receiveEvent(getReactTag(), "topTextLayout", textLayoutMetrics);
+              themedReactContext
+                  .getJSModule(RCTEventEmitter.class)
+                  .receiveEvent(getReactTag(), "topTextLayout", textLayoutMetrics);
             } else {
               ReactSoftExceptionLogger.logSoftException(
                   "ReactTextShadowNode",
@@ -360,7 +361,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   @ReactProp(name = "textLayoutRegions")
   public void setTextLayoutRegions(ReadableArray textLayoutRegions) {
-    mTextLayoutRegions = textLayoutRegions;
+    mTextLayoutRegions = (MapBuffer) textLayoutRegions;
   }
 
   @Override
