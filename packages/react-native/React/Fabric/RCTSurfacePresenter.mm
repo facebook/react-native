@@ -272,6 +272,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
+    CoreFeatures::disableTransactionCommit = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
