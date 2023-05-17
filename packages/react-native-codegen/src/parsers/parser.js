@@ -27,6 +27,7 @@ import type {
   TypeDeclarationMap,
   PropAST,
   ASTNode,
+  TypeResolutionStatus,
 } from './utils';
 
 export type GetTypeAnnotationFN = (
@@ -318,4 +319,13 @@ export interface Parser {
   getGetTypeAnnotationFN(): GetTypeAnnotationFN;
 
   getGetSchemaInfoFN(): GetSchemaInfoFN;
+
+  getResolvedTypeAnnotation(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): {
+    nullable: boolean,
+    typeAnnotation: $FlowFixMe,
+    typeResolutionStatus: TypeResolutionStatus,
+  };
 }
