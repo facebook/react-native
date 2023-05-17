@@ -185,7 +185,7 @@
       CGFloat width =  self.layoutMetrics.frame.size.width;
       // fixes text alignment when using lineHeight see issue #28012
       CGFloat padding = (height - effectiveLineHeight) / 2.0;
-      baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height);
+      baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
     }
     baseTextInputView.reactPaddingInsets = paddingInsets;
 

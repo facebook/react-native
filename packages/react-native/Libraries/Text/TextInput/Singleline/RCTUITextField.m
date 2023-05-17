@@ -157,9 +157,9 @@
 
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
-  if (self.reactTextInsets.size.height > 0) {
+  if (self.fragmentViewContainerBounds.size.height > 0) {
     self.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
-    return UIEdgeInsetsInsetRect([super textRectForBounds:self.reactTextInsets], _textContainerInset);
+    return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], _textContainerInset);
   } else {
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }

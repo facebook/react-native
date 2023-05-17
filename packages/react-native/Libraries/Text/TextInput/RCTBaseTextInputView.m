@@ -84,10 +84,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self setNeedsLayout];
 }
 
-- (void)setReactTextInsets:(CGRect)reactTextInsets
+- (void)setFragmentViewContainerBounds:(CGRect)fragmentViewContainerBounds
 {
-  _reactTextInsets = reactTextInsets;
-  self.backedTextInputView.reactTextInsets = reactTextInsets;
+  _fragmentViewContainerBounds = fragmentViewContainerBounds;
+  self.backedTextInputView.fragmentViewContainerBounds = fragmentViewContainerBounds;
   [self setNeedsLayout];
 }
 

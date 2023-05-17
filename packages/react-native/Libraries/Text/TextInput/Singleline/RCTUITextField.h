@@ -32,8 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
-@property (nonatomic, assign) CGRect reactTextInsets;
-@property (nonatomic, assign) CGRect reactEditingInsets;
+@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
 
 @end
 
