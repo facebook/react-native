@@ -34,7 +34,7 @@ type State = {
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
-  textLayoutRegions?: TextLayoutEvent["nativeEvent"]["regions"],
+  textLayoutRegions?: TextLayoutEvent['nativeEvent']['regions'],
   viewLayout?: ViewLayout,
   viewStyle: {|margin: number|},
   ...
@@ -149,19 +149,18 @@ class LayoutEventExample extends React.Component<Props, State> {
             }
           </Text>
           <View>
-            {textRegions.map((region, index) => (
-              <View
-                key={index}
-                style={{
-                  width: region.width,
-                  height: region.height,
-                  top: region.y,
-                  left: region.x,
-                  backgroundColor: 'red',
-                  position: 'absolute',
-                }}
-              />
-            ))}
+            {textRegions.map((region, index) => {
+              const regionStyle = {
+                width: region.width,
+                height: region.height,
+                top: region.y,
+                left: region.x,
+              };
+              return (
+                // eslint-disable-next-line react-native/no-inline-styles
+                <View key={index} style={[regionStyle, styles.highlighted]} />
+              );
+            })}
             <Text
               onTextLayout={this.onTextRegionsLayout}
               textLayoutRegions={[[0, 111]]}
@@ -202,6 +201,10 @@ const styles = StyleSheet.create({
   },
   italicText: {
     fontStyle: 'italic',
+  },
+  highlighted: {
+    backgroundColor: 'red',
+    position: 'absolute',
   },
 });
 
