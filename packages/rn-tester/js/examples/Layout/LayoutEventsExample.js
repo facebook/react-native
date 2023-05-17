@@ -157,7 +157,6 @@ class LayoutEventExample extends React.Component<Props, State> {
                 left: region.x,
               };
               return (
-                // eslint-disable-next-line react-native/no-inline-styles
                 <View key={index} style={[regionStyle, styles.highlighted]} />
               );
             })}
