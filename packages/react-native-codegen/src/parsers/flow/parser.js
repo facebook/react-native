@@ -22,13 +22,20 @@ import type {
   NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
-import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from '../parser';
+import type {
+  GetSchemaInfoFN,
+  GetTypeAnnotationFN,
+  Parser,
+  ResolveTypeAnnotationFN,
+} from '../parser';
 import type {
   ParserErrorCapturer,
   TypeDeclarationMap,
   PropAST,
   TypeResolutionStatus,
 } from '../utils';
+
+const {resolveTypeAnnotation} = require('./utils');
 const invariant = require('invariant');
 
 const {
@@ -55,6 +62,7 @@ const {
 
 class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
+  typeAlias: string = 'TypeAlias';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
@@ -428,6 +436,10 @@ class FlowParser implements Parser {
       typeAnnotation: node,
       typeResolutionStatus,
     };
+  }
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
+    return resolveTypeAnnotation;
   }
 }
 

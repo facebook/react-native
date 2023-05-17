@@ -336,9 +336,11 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = parser.getResolvedTypeAnnotation(
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotationFN(
     value,
     types,
+    parser,
   ));
 
   throwIfModuleTypeIsUnsupported(

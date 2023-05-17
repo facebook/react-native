@@ -305,6 +305,12 @@ describe('FlowParser', () => {
       expect(parser.isOptionalProperty(property)).toEqual(true);
     });
   });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TypeAlias');
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -580,6 +586,12 @@ describe('TypeScriptParser', () => {
         optional: false,
       };
       expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+  });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
     });
   });
 });

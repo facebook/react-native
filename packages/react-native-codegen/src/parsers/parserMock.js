@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from './parser';
+import type {
+  GetSchemaInfoFN,
+  GetTypeAnnotationFN,
+  Parser,
+  ResolveTypeAnnotationFN,
+} from './parser';
 import type {ParserType} from './errors';
 import type {
   UnionTypeAnnotationMemberType,
@@ -55,6 +60,7 @@ const schemaMock = {
 
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
+  typeAlias: string = 'TypeAlias';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
@@ -276,6 +282,16 @@ export class MockedParser implements Parser {
         typeAnnotation: 'BooleanTypeAnnotation',
         defaultValue: false,
         withNullDefault: false,
+      };
+    };
+  }
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
+    return () => {
+      return {
+        nullable: false,
+        typeAnnotation: null,
+        typeResolutionStatus: {successful: false},
       };
     };
   }

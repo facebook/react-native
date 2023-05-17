@@ -22,7 +22,12 @@ import type {
   NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
-import type {GetSchemaInfoFN, GetTypeAnnotationFN, Parser} from '../parser';
+import type {
+  GetSchemaInfoFN,
+  GetTypeAnnotationFN,
+  Parser,
+  ResolveTypeAnnotationFN,
+} from '../parser';
 import type {
   ParserErrorCapturer,
   TypeDeclarationMap,
@@ -46,7 +51,7 @@ const {
   getSchemaInfo,
   getTypeAnnotation,
 } = require('./components/componentsUtils');
-
+const {resolveTypeAnnotation} = require('./utils');
 const fs = require('fs');
 
 const {
@@ -55,6 +60,7 @@ const {
 
 class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
+  typeAlias: string = 'TSTypeAliasDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'TSPropertySignature';
@@ -436,6 +442,10 @@ class TypeScriptParser implements Parser {
       typeAnnotation: node,
       typeResolutionStatus,
     };
+  }
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
+    return resolveTypeAnnotation;
   }
 }
 
