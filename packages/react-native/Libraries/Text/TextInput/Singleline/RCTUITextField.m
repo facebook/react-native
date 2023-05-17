@@ -170,11 +170,6 @@
   return [self textRectForBounds:bounds];
 }
 
-- (CGRect)placeholderRectForBounds:(CGRect)bounds
-{
-  return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
-}
-
 #pragma mark - Overrides
 
 #pragma clang diagnostic push
