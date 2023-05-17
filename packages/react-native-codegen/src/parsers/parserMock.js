@@ -62,6 +62,7 @@ export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
+  interfaceDelcaration: string = 'InterfaceDelcaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';

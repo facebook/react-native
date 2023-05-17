@@ -62,6 +62,7 @@ class TypeScriptParser implements Parser {
   typeParameterInstantiation: string = 'TSTypeParameterInstantiation';
   typeAlias: string = 'TSTypeAliasDeclaration';
   enumDeclaration: string = 'TSEnumDeclaration';
+  interfaceDelcaration: string = 'TSInterfaceDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'TSPropertySignature';
