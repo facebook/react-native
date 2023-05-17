@@ -177,6 +177,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   NSParagraphStyle *paragraphStyle = [self effectiveParagraphStyle];
   if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
+    // aligns text vertically when applying lineHeight
     if(!isnan(paragraphStyle.maximumLineHeight) && font && paragraphStyle.maximumLineHeight >= font.lineHeight) {
       CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
       attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);

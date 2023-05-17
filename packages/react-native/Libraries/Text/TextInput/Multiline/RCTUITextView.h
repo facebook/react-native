@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL textWasPasted;
 @property (nonatomic, copy, nullable) NSString *placeholder;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
 
 @property (nonatomic, assign) CGFloat preferredMaxLayoutWidth;
 
@@ -36,8 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL caretHidden;
 
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
-
-@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
 
 @end
 

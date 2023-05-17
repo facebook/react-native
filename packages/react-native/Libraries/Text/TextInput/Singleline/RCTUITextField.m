@@ -161,6 +161,7 @@
     self.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
     return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], _textContainerInset);
   } else {
+    self.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }
 }
