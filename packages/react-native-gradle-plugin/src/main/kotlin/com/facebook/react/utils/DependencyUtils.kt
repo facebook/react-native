@@ -66,6 +66,16 @@ internal object DependencyUtils {
               .using(it.module("${groupString}:hermes-android:${versionString}"))
               .because(
                   "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+          if (groupString != DEFAULT_GROUP_STRING) {
+            it.substitute(it.module("com.facebook.react:react-android"))
+                .using(it.module("${groupString}:react-android:${versionString}"))
+                .because(
+                    "The react-android dependency was modified to use the correct Maven group.")
+            it.substitute(it.module("com.facebook.react:hermes-android"))
+                .using(it.module("${groupString}:hermes-android:${versionString}"))
+                .because(
+                    "The hermes-android dependency was modified to use the correct Maven group.")
+          }
         }
         configuration.resolutionStrategy.force(
             "${groupString}:react-android:${versionString}",
