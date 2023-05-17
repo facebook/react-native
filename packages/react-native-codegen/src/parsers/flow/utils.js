@@ -62,7 +62,7 @@ function resolveTypeAnnotation(
         node = resolvedTypeAnnotation.right;
         break;
       }
-      case 'EnumDeclaration': {
+      case parser.enumDeclaration: {
         typeResolutionStatus = {
           successful: true,
           type: 'enum',
@@ -73,7 +73,7 @@ function resolveTypeAnnotation(
       }
       default: {
         throw new TypeError(
-          `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}') or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
         );
       }
     }

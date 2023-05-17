@@ -76,7 +76,7 @@ function resolveTypeAnnotation(
         node = resolvedTypeAnnotation;
         break;
       }
-      case 'TSEnumDeclaration': {
+      case parser.enumDeclaration: {
         typeResolutionStatus = {
           successful: true,
           type: 'enum',
@@ -87,7 +87,7 @@ function resolveTypeAnnotation(
       }
       default: {
         throw new TypeError(
-          `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}'), an interface ('TSInterfaceDeclaration'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+          `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}'), an interface ('TSInterfaceDeclaration'), or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
         );
       }
     }

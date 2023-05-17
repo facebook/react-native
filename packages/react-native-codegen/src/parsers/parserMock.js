@@ -61,6 +61,7 @@ const schemaMock = {
 export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
   typeAlias: string = 'TypeAlias';
+  enumDeclaration: string = 'EnumDeclaration';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';

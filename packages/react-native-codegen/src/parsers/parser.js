@@ -89,6 +89,11 @@ export interface Parser {
   typeAlias: string;
 
   /**
+   * enumDeclaration Property of the Parser
+   */
+  enumDeclaration: string;
+
+  /**
    * Given a declaration, it returns true if it is a property
    */
   isProperty(property: $FlowFixMe): boolean;

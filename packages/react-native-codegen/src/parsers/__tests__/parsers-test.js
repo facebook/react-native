@@ -311,6 +311,12 @@ describe('FlowParser', () => {
       expect(parser.typeAlias).toEqual('TypeAlias');
     });
   });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('EnumDeclaration');
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -592,6 +598,12 @@ describe('TypeScriptParser', () => {
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
+    });
+  });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('TSEnumDeclaration');
     });
   });
 });
