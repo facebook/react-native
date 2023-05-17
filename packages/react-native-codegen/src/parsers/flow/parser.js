@@ -66,6 +66,8 @@ class FlowParser implements Parser {
   enumDeclaration: string = 'EnumDeclaration';
   interfaceDelcaration: string = 'InterfaceDeclaration';
 
+  nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
+
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
   }
