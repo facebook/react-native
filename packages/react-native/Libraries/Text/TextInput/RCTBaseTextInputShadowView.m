@@ -96,6 +96,7 @@
   }
 
   CGSize contentSize = [self sizeThatFitsMinimumSize:(CGSize)CGSizeZero maximumSize:maximumSize];
+
   if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
     return;
   }
@@ -177,13 +178,11 @@
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
 
-    // add a check and disable this behaviour when effectiveFontSizeMultiplier is used
     CGFloat effectiveLineHeight = (textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier);
     CGFloat height = self.layoutMetrics.frame.size.height;
+    // fixes text alignment when using lineHeight see issue #28012
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && effectiveLineHeight >= textAttributes.effectiveFont.lineHeight) {
-      NSLog(@"TESTING:: textAttributes.effectiveFontSizeMultiplier %f", textAttributes.effectiveFontSizeMultiplier);
       CGFloat width =  self.layoutMetrics.frame.size.width;
-      // fixes text alignment when using lineHeight see issue #28012
       CGFloat padding = (height - effectiveLineHeight) / 2.0;
       baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
     }

@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
 @property (nonatomic, assign) CGRect fragmentViewContainerBounds;
-@property (nonatomic, assign) CGRect reactEditingInsets;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to
