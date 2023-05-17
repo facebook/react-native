@@ -64,15 +64,15 @@ RCT_EXPORT_MODULE()
 
 - (void)clearInitialMessageDelay
 {
-  if (self->_initialMessageBlock != nil) {
-    dispatch_block_cancel(self->_initialMessageBlock);
-    self->_initialMessageBlock = nil;
+  if (_initialMessageBlock != nil) {
+    dispatch_block_cancel(_initialMessageBlock);
+    _initialMessageBlock = nil;
   }
 }
 
 - (void)showInitialMessageDelayed:(void (^)())initialMessage
 {
-  self->_initialMessageBlock = dispatch_block_create(static_cast<dispatch_block_flags_t>(0), initialMessage);
+  _initialMessageBlock = dispatch_block_create(static_cast<dispatch_block_flags_t>(0), initialMessage);
 
   // We delay the initial loading message to prevent flashing it
   // when loading progress starts quickly. To do that, we
@@ -85,7 +85,7 @@ RCT_EXPORT_MODULE()
 
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor
 {
-  if (!RCTDevLoadingViewGetEnabled() || self->_hiding) {
+  if (!RCTDevLoadingViewGetEnabled() || _hiding) {
     return;
   }
 
@@ -152,7 +152,7 @@ RCT_EXPORT_METHOD(hide)
   [self clearInitialMessageDelay];
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    self->_hiding = true;
+    self->_hiding = YES;
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
@@ -174,11 +174,11 @@ RCT_EXPORT_METHOD(hide)
 
 - (void)showProgressMessage:(NSString *)message
 {
-  if (self->_window != nil) {
+  if (_window != nil) {
     // This is an optimization. Since the progress can come in quickly,
     // we want to do the minimum amount of work to update the UI,
     // which is to only update the label text.
-    self->_label.text = message;
+    _label.text = message;
     return;
   }
 
