@@ -829,12 +829,6 @@ inline void fromRawValue(
   result = HyphenationFrequency::None;
 }
 
-inline std::string toString(const TextLayoutRegions &textLayoutRegions) {
-  LOG(ERROR) << "Unsupported HyphenationFrequency value";
-  react_native_expect(false);
-  return "none";
-}
-
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
@@ -857,13 +851,6 @@ inline void fromRawValue(
   } else {
     LOG(ERROR) << "Unsupported TextLayoutRegions type";
   }
-}
-
-inline folly::dynamic toDynamic(
-    const TextLayoutRegions &textLayoutRegions) {
-  auto values = folly::dynamic::object();
-  
-  return values;
 }
 
 inline ParagraphAttributes convertRawProp(

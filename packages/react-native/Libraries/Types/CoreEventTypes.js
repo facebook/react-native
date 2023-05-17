@@ -72,6 +72,16 @@ export type TextLayout = $ReadOnly<{|
   xHeight: number,
 |}>;
 
+export type TextRegion = $ReadOnly<{|
+  text: string,
+  height: number,
+  width: number,
+  x: number,
+  y: number,
+  line: number,
+  region: number,
+|}>;
+
 export type LayoutEvent = SyntheticEvent<
   $ReadOnly<{|
     layout: Layout,
@@ -81,6 +91,7 @@ export type LayoutEvent = SyntheticEvent<
 export type TextLayoutEvent = SyntheticEvent<
   $ReadOnly<{|
     lines: Array<TextLayout>,
+    regions: Array<TextRegion>,
   |}>,
 >;
 

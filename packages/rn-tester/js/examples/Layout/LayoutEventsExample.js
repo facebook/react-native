@@ -18,7 +18,10 @@ const {
   StyleSheet,
   Text,
   View,
+  ScrollView,
 } = require('react-native');
+
+import type {TextLayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import type {
   ViewLayout,
@@ -31,6 +34,7 @@ type State = {
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
+  textLayoutRegions?: TextLayoutEvent["nativeEvent"]["regions"],
   viewLayout?: ViewLayout,
   viewStyle: {|margin: number|},
   ...
@@ -76,6 +80,11 @@ class LayoutEventExample extends React.Component<Props, State> {
     this.setState({textLayout: e.nativeEvent.layout});
   };
 
+  onTextRegionsLayout = (e: TextLayoutEvent) => {
+    console.log('received text layout regions event\n', e.nativeEvent);
+    this.setState({textLayoutRegions: e.nativeEvent.regions});
+  };
+
   onImageLayout = (e: ViewLayoutEvent) => {
     console.log('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout});
@@ -85,8 +94,10 @@ class LayoutEventExample extends React.Component<Props, State> {
     const viewStyle = [styles.view, this.state.viewStyle];
     const textLayout = this.state.textLayout || {width: '?', height: '?'};
     const imageLayout = this.state.imageLayout || {x: '?', y: '?'};
+    const textRegions = this.state.textLayoutRegions || [];
+
     return (
-      <View style={this.state.containerStyle}>
+      <ScrollView style={this.state.containerStyle}>
         <Text>
           layout events are called on mount and whenever layout is recalculated.
           Note that the layout event will typically be received{' '}
@@ -124,7 +135,45 @@ class LayoutEventExample extends React.Component<Props, State> {
             Image x/y: {imageLayout.x}/{imageLayout.y}
           </Text>
         </View>
-      </View>
+
+        <View style={viewStyle}>
+          <Text>
+            TextLayout Regions:{' '}
+            {
+              /* $FlowFixMe[incompatible-type] (>=0.95.0 site=react_native_fb)
+               * This comment suppresses an error found when Flow v0.95 was
+               * deployed. To see the error, delete this comment and run Flow.
+               */
+              // $FlowFixMe[unsafe-addition]
+              JSON.stringify(textRegions, null, '  ') + '\n\n'
+            }
+          </Text>
+          <View>
+            {textRegions.map((region, index) => (
+              <View
+                key={index}
+                style={{
+                  width: region.width,
+                  height: region.height,
+                  top: region.y,
+                  left: region.x,
+                  backgroundColor: 'red',
+                  position: 'absolute',
+                }}
+              />
+            ))}
+            <Text
+              onTextLayout={this.onTextRegionsLayout}
+              textLayoutRegions={[[0, 111]]}
+              style={styles.text}>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type and scrambled it to make a type specimen book
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
     );
   }
 }
@@ -140,6 +189,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     borderColor: 'rgba(0, 0, 255, 0.2)',
     borderWidth: 0.5,
+    borderRadius: 4,
   },
   image: {
     width: 50,
