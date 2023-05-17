@@ -96,7 +96,6 @@
   }
 
   CGSize contentSize = [self sizeThatFitsMinimumSize:(CGSize)CGSizeZero maximumSize:maximumSize];
-
   if (CGSizeEqualToSize(_previousContentSize, contentSize)) {
     return;
   }
@@ -178,13 +177,16 @@
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
 
-    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && textAttributes.lineHeight >= textAttributes.effectiveFont.lineHeight) {
-      CGFloat height = self.layoutMetrics.frame.size.height;
+    // add a check and disable this behaviour when effectiveFontSizeMultiplier is used
+    CGFloat effectiveLineHeight = (textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier);
+    CGFloat height = self.layoutMetrics.frame.size.height;
+    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && effectiveLineHeight >= textAttributes.effectiveFont.lineHeight) {
+      NSLog(@"TESTING:: textAttributes.effectiveFontSizeMultiplier %f", textAttributes.effectiveFontSizeMultiplier);
       CGFloat width =  self.layoutMetrics.frame.size.width;
-      CGFloat padding = (height - textAttributes.lineHeight) / 2.0;
       // fixes text alignment when using lineHeight see issue #28012
-      baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, height / 2.0);
-      baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, height);
+      CGFloat padding = (height - effectiveLineHeight) / 2.0;
+      baseTextInputView.reactTextInsets = CGRectMake(0, padding, width, effectiveLineHeight);
+      baseTextInputView.reactEditingInsets = CGRectMake(0, padding, width, effectiveLineHeight);
     }
     baseTextInputView.reactPaddingInsets = paddingInsets;
 

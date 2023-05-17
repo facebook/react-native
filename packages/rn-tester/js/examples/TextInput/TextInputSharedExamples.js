@@ -844,9 +844,9 @@ function LineHeightExamples() {
   return (
     <>
       <View style={container}>
-        <Text>lineHeight 10, height 10</Text>
+        <Text>lineHeight 100, no height</Text>
         <TextInput
-          style={[textInputStyles, {lineHeight: 10, height: 10}]}
+          style={[textInputStyles, {lineHeight: 100}]}
           placeholder="Second Input"
         />
       </View>
@@ -865,9 +865,12 @@ function LineHeightExamples() {
         />
       </View>
       <View style={container}>
-        <Text>lineHeight 40, height 80</Text>
+        <Text>fontSize 30, lineHeight 40, height 80, paddingTop: 15</Text>
         <TextInput
-          style={[textInputStyles, {lineHeight: 40, height: 80}]}
+          style={[
+            textInputStyles,
+            {fontSize: 30, lineHeight: 40, height: 80, paddingTop: 15},
+          ]}
           placeholder="Second Input"
         />
       </View>
@@ -879,9 +882,90 @@ function LineHeightExamples() {
         />
       </View>
       <View style={container}>
-        <Text>fontSize 25, lineHeight 10, height 80</Text>
+        <Text>fontSize 25, lineHeight 10, height 80, textAlign right</Text>
         <TextInput
-          style={[textInputStyles, {fontSize: 25, lineHeight: 10, height: 80}]}
+          style={[
+            textInputStyles,
+            {fontSize: 25, lineHeight: 10, height: 80, textAlign: 'right'},
+          ]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 30, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 50, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 50, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 50, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 55, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 55, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 60, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 60, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 65, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 65, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 70, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 70, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 80, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 80, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 90, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 90, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 120, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 120, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 130, height 130</Text>
+        <TextInput
+          style={[textInputStyles, {lineHeight: 130, height: 130}]}
+          placeholder="Second Input"
+        />
+      </View>
+      <View style={container}>
+        <Text>lineHeight 130, height 130, allowFontScaling false</Text>
+        <TextInput
+          allowFontScaling={false}
+          style={[textInputStyles, {lineHeight: 90, height: 130}]}
           placeholder="Second Input"
         />
       </View>

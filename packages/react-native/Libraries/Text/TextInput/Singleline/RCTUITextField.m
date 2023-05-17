@@ -158,7 +158,8 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   if (self.reactTextInsets.size.height > 0) {
-    return UIEdgeInsetsInsetRect(self.reactTextInsets, _textContainerInset);
+    self.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
+    return UIEdgeInsetsInsetRect([super textRectForBounds:self.reactTextInsets], _textContainerInset);
   } else {
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }
@@ -166,11 +167,7 @@
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
 {
-  if (self.reactEditingInsets.size.height > 0) {
-    return UIEdgeInsetsInsetRect(self.reactEditingInsets, _textContainerInset);
-  } else {
-    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
-  }
+  return [self textRectForBounds:bounds];
 }
 
 - (CGRect)placeholderRectForBounds:(CGRect)bounds
