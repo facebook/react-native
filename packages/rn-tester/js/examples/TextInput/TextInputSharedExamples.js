@@ -843,10 +843,10 @@ function LineHeightExamples() {
   const container = {marginTop: 20};
   return (
     <>
-      <View style={container}>
-        <Text>lineHeight 100, no height</Text>
+      <View style={(container, {height: 100})}>
+        <Text>lineHeight 40, height 80% of parent (height: 100)</Text>
         <TextInput
-          style={[textInputStyles, {lineHeight: 100}]}
+          style={[textInputStyles, {lineHeight: 40, height: '80%'}]}
           placeholder="Second Input"
         />
       </View>

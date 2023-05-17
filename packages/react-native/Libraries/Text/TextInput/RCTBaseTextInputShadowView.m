@@ -178,13 +178,15 @@
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
 
-    CGFloat effectiveLineHeight = (textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier);
-    CGFloat height = self.layoutMetrics.frame.size.height;
     // fixes text alignment when using lineHeight see issue #28012
-    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight) && effectiveLineHeight >= textAttributes.effectiveFont.lineHeight) {
-      CGFloat width =  self.layoutMetrics.frame.size.width;
-      CGFloat padding = (height - effectiveLineHeight) / 2.0;
-      baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
+    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
+      CGFloat effectiveLineHeight = textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier;
+      if (effectiveLineHeight >= textAttributes.effectiveFont.lineHeight) {
+        CGFloat height = self.layoutMetrics.frame.size.height;
+        CGFloat width =  self.layoutMetrics.frame.size.width;
+        CGFloat padding = (height - effectiveLineHeight) / 2.0;
+        baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
+      }
     }
     baseTextInputView.reactPaddingInsets = paddingInsets;
 
