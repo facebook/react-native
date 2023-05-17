@@ -469,7 +469,10 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21"
+                    "-DANDROID_PLATFORM=android-21",
+                    // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                    // specific compilation flags. This can be removed once we moved to NDK 25/26
+                    "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
 
                 targets "jsijniprofiler",
                     "reactnativeblob",
