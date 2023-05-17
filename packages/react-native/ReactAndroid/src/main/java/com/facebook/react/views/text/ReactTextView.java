@@ -59,6 +59,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize = Float.NaN;
+  private float mLetterSpacing = Float.NaN;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
@@ -391,13 +392,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
           (int) Math.floor(paddingBottom));
     }
 
-    // Workaround for an issue where text can be cut off with an ellipsis when
-    // using certain font sizes and padding. Sets the provided text size
-    // (mFontSize) to ensure consistent rendering and prevent cut-off.
-    if (!Float.isNaN(mFontSize)) {
-      setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
-    }
-
     int nextTextAlign = update.getTextAlign();
     if (nextTextAlign != getGravityHorizontal()) {
       setGravityHorizontal(nextTextAlign);
@@ -596,6 +590,22 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       mAdjustsFontSizeToFit
         ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
         : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+
+    applyTextAttributes();
+  }
+
+  public void setLetterSpacing(float letterSpacing) {
+    if (Float.isNaN(letterSpacing)) {
+      return;
+    }
+
+    float letterSpacingPixels = PixelUtil.toPixelFromDIP(letterSpacing);
+
+    // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
+    // yielding an accurate em value.
+    mLetterSpacing = letterSpacingPixels / mFontSize;
+
+    applyTextAttributes();
   }
 
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
@@ -666,5 +676,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     return super.dispatchHoverEvent(event);
+  }
+
+  private void applyTextAttributes() {
+    // Workaround for an issue where text can be cut off with an ellipsis when
+    // using certain font sizes and padding. Sets the provided text size and
+    // letter spacing to ensure consistent rendering and prevent cut-off.
+    if (!Float.isNaN(mFontSize)) {
+      setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
+    }
+
+    if (!Float.isNaN(mLetterSpacing)) {
+      super.setLetterSpacing(mLetterSpacing);
+    }
   }
 }
