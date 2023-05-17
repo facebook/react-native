@@ -61,10 +61,19 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+jsi::Value createJSRuntimeError(
+        jsi::Runtime &runtime,
+        const std::string &message) {
+    return runtime.global()
+        .getPropertyAsFunction(runtime, "Error")
+        .call(runtime, message);
+}
+
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
-    const std::shared_ptr<CallInvoker> &jsInvoker) {
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    const std::string& jsStack) {
   auto weakWrapper =
       CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
@@ -80,7 +89,8 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   return JCxxCallbackImpl::newObjectCxxArgs(
       [weakWrapper = std::move(weakWrapper),
        callbackWrapperOwner = std::move(callbackWrapperOwner),
-       wrapperWasCalled = false](folly::dynamic responses) mutable {
+       wrapperWasCalled = false,
+       jsStack](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           throw std::runtime_error(
               "Callback arg cannot be called more than once");
@@ -94,23 +104,40 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
         strongWrapper->jsInvoker().invokeAsync(
             [weakWrapper = std::move(weakWrapper),
              callbackWrapperOwner = std::move(callbackWrapperOwner),
-             responses = std::move(responses)]() {
+             responses = std::move(responses),
+             jsStack]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
               }
 
+              jsi::Runtime &rt = strongWrapper2->runtime();
               std::vector<jsi::Value> args;
               args.reserve(responses.size());
               for (const auto &val : responses) {
                 args.emplace_back(
-                    jsi::valueFromDynamic(strongWrapper2->runtime(), val));
+                    jsi::valueFromDynamic(rt, val));
               }
 
-              strongWrapper2->callback().call(
-                  strongWrapper2->runtime(),
-                  (const jsi::Value *)args.data(),
-                  args.size());
+              if (jsStack.empty()) {
+                  strongWrapper2->callback().call(
+                          strongWrapper2->runtime(),
+                          (const jsi::Value *)args.data(),
+                          args.size());
+              } else {
+                  std::string message;
+                  const jsi::Value* cause = args.data();
+                  if (cause->isObject() && cause->asObject(rt).getProperty(rt, "message").isString()) {
+                      message = cause->asObject(rt).getProperty(rt, "message").asString(rt).utf8(rt);
+                  } else {
+                      message = "<unknown>";
+                  }
+
+                  jsi::Value error = createJSRuntimeError(rt, "Exception in HostFunction: " + message);
+                  error.asObject(rt).setProperty(rt, "cause", *cause);
+                  error.asObject(rt).setProperty(rt, "stack", jsStack);
+                  strongWrapper2->callback().call(strongWrapper2->runtime(), error);
+              }
             });
 
         wrapperWasCalled = true;
@@ -355,7 +382,7 @@ JNIArgs convertJSIArgsToJNIArgs(
       }
       jsi::Function fn = arg->getObject(rt).getFunction(rt);
       jarg->l = makeGlobalIfNecessary(
-          createJavaCallbackFromJSIFunction(std::move(fn), rt, jsInvoker)
+          createJavaCallbackFromJSIFunction(std::move(fn), rt, jsInvoker, "")
               .release());
     } else if (type == "Lcom/facebook/react/bridge/ReadableArray;") {
       if (!(arg->isObject() && arg->getObject(rt).isArray(rt))) {
@@ -398,14 +425,6 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
-}
-
-jsi::Value createJSRuntimeError(
-    jsi::Runtime &runtime,
-    const std::string &message) {
-  return runtime.global()
-      .getPropertyAsFunction(runtime, "Error")
-      .call(runtime, message);
 }
 
 /**
@@ -805,21 +824,31 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               throw std::invalid_argument("Promise fn arg count must be 2");
             }
 
+            std::string jsStack;
+            try {
+              jsStack = createJSRuntimeError(runtime, "")
+                .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
+            } catch (...) {
+                // Stack unavailable
+            }
+
             jsi::Function resolveJSIFn =
                 promiseConstructorArgs[0].getObject(runtime).getFunction(
                     runtime);
             jsi::Function rejectJSIFn =
                 promiseConstructorArgs[1].getObject(runtime).getFunction(
                     runtime);
-
+            jsi::Function rejectInternalJSIFn =
+                promiseConstructorArgs[1].getObject(runtime).getFunction(
+                    runtime);
             auto rejectWeakWrapper =
-                  CallbackWrapper::createWeak(std::move(rejectJSIFn), runtime, jsInvoker_);
+                CallbackWrapper::createWeak(std::move(rejectInternalJSIFn), runtime, jsInvoker_);
 
             auto resolve = createJavaCallbackFromJSIFunction(
-                               std::move(resolveJSIFn), runtime, jsInvoker_)
+                               std::move(resolveJSIFn), runtime, jsInvoker_, "")
                                .release();
             auto reject = createJavaCallbackFromJSIFunction(
-                              std::move(rejectJSIFn), runtime, jsInvoker_)
+                              std::move(rejectJSIFn), runtime, jsInvoker_, jsStack)
                               .release();
 
             jclass jPromiseImpl =
@@ -847,6 +876,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             nativeInvoker_->invokeAsync(
                 [jargs,
                  rejectWeakWrapper = std::move(rejectWeakWrapper),
+                 jsStack,
                  globalRefs,
                  methodID,
                  instance_ = jni::make_weak(instance_),
@@ -878,12 +908,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                         moduleName, methodName, id);
                     if (rejectStrongWrapper) {
                       auto exception = std::current_exception();
+                      jsi::Runtime &runtime = rejectStrongWrapper->runtime();
                       auto throwable = jni::getJavaExceptionForCppException(exception);
-                      auto jsError = convertThrowableToJSError(rejectStrongWrapper->runtime(), throwable);
+                      auto jsError = convertThrowableToJSError(runtime, throwable);
+                      jsError.value().asObject(runtime).setProperty(runtime, "stack", jsStack);
                       rejectStrongWrapper->callback().call(
-                        rejectStrongWrapper->runtime(),
-                        jsError.value(),
-                        1);
+                          rejectStrongWrapper->runtime(),
+                          jsError.value(),
+                          1);
                     } else {
                       throw;
                     }
