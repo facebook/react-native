@@ -20,9 +20,6 @@
 
 using namespace facebook::react;
 
-NSString *const RCTHostWillReloadNotification = @"RCTHostWillReloadNotification";
-NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
-
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
@@ -58,7 +55,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 - (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
           turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(nullable RCTHostJSEngineProvider)jsEngineProvider
+                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -69,34 +66,34 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
 
-    __weak RCTHost *weakHost = self;
+    __weak RCTHost *weakSelf = self;
 
     auto bundleURLGetter = ^NSURL *()
     {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return nil;
       }
 
-      return strongHost->_bundleURL;
+      return strongSelf->_bundleURL;
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL) {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return;
       }
-      strongHost->_bundleURL = bundleURL;
+      strongSelf->_bundleURL = bundleURL;
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
     {
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return nil;
       }
 
-      return [strongHost->_hostDelegate getBundleURL];
+      return [strongSelf->_hostDelegate getBundleURL];
     };
 
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
@@ -112,17 +109,17 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
      * JS calls before the main JSBundle finishes execution, and execute them after.
      */
     _onInitialBundleLoad = ^{
-      RCTHost *strongHost = weakHost;
-      if (!strongHost) {
+      RCTHost *strongSelf = weakSelf;
+      if (!strongSelf) {
         return;
       }
 
       NSArray<RCTFabricSurface *> *unstartedSurfaces = @[];
 
       {
-        std::lock_guard<std::mutex> guard{strongHost->_surfaceStartBufferMutex};
-        unstartedSurfaces = [NSArray arrayWithArray:strongHost->_surfaceStartBuffer];
-        strongHost->_surfaceStartBuffer = nil;
+        std::lock_guard<std::mutex> guard{strongSelf->_surfaceStartBufferMutex};
+        unstartedSurfaces = [NSArray arrayWithArray:strongSelf->_surfaceStartBuffer];
+        strongSelf->_surfaceStartBuffer = nil;
       }
 
       for (RCTFabricSurface *surface in unstartedSurfaces) {
@@ -140,7 +137,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 #pragma mark - Public
 
-- (void)preload
+- (void)start
 {
   if (_instance) {
     RCTLogWarn(
@@ -149,14 +146,14 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
   [self _refreshBundleURL];
   RCTReloadCommandSetBundleURL(_bundleURL);
-  _instance =
-      [[RCTInstance alloc] initWithDelegate:self
-                           jsEngineInstance:_jsEngineProvider ? _jsEngineProvider() : [_hostDelegate getJSEngine]
-                              bundleManager:_bundleManager
-                 turboModuleManagerDelegate:_turboModuleManagerDelegate
-                        onInitialBundleLoad:_onInitialBundleLoad
-                        bindingsInstallFunc:_bindingsInstallFunc
-                             moduleRegistry:_moduleRegistry];
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsEngineInstance:[self _provideJSEngine]
+                                      bundleManager:_bundleManager
+                         turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                onInitialBundleLoad:_onInitialBundleLoad
+                                bindingsInstallFunc:_bindingsInstallFunc
+                                     moduleRegistry:_moduleRegistry];
+  [_hostDelegate hostDidStart:self];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -205,8 +202,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 - (void)didReceiveReloadCommand
 {
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostWillReloadNotification object:nil]];
   [_instance invalidate];
   _instance = nil;
   [self _refreshBundleURL];
@@ -218,16 +213,14 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
     _surfaceStartBuffer = [NSMutableArray arrayWithArray:[self _getAttachedSurfaces]];
   }
 
-  _instance =
-      [[RCTInstance alloc] initWithDelegate:self
-                           jsEngineInstance:_jsEngineProvider ? _jsEngineProvider() : [_hostDelegate getJSEngine]
-                              bundleManager:_bundleManager
-                 turboModuleManagerDelegate:_turboModuleManagerDelegate
-                        onInitialBundleLoad:_onInitialBundleLoad
-                        bindingsInstallFunc:_bindingsInstallFunc
-                             moduleRegistry:_moduleRegistry];
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsEngineInstance:[self _provideJSEngine]
+                                      bundleManager:_bundleManager
+                         turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                onInitialBundleLoad:_onInitialBundleLoad
+                                bindingsInstallFunc:_bindingsInstallFunc
+                                     moduleRegistry:_moduleRegistry];
+  [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
     [surface resetWithSurfacePresenter:[self getSurfacePresenter]];
@@ -278,6 +271,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 }
 
 #pragma mark - Private
+
 - (void)_refreshBundleURL FB_OBJC_DIRECT
 {
   // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
@@ -306,6 +300,15 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   }
 
   return surfaces;
+}
+
+- (std::shared_ptr<facebook::react::JSEngineInstance>)_provideJSEngine
+{
+  RCTAssert(_jsEngineProvider, @"_jsEngineProvider must be non-nil");
+  std::shared_ptr<facebook::react::JSEngineInstance> jsEngine = _jsEngineProvider();
+  RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
+
+  return jsEngine;
 }
 
 @end

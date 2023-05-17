@@ -28,9 +28,8 @@ import type {
 const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
-const {resolveTypeAnnotation} = require('../utils');
-
 const {parseObjectProperty} = require('../../parsers-commons');
+const {resolveTypeAnnotation} = require('../utils');
 
 const {
   emitArrayType,
@@ -190,7 +189,8 @@ function translateTypeAnnotation(
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(typeScriptTypeAnnotation, types);
+    parser.getResolvedTypeAnnotation(typeScriptTypeAnnotation, types);
+  resolveTypeAnnotation(typeScriptTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'TSArrayType': {

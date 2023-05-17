@@ -19,6 +19,7 @@ import type {Parser} from '../../parser';
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
 
@@ -223,7 +224,7 @@ function findEventArgumentsAndType(
         : null;
     if (
       typeAnnotation.typeParameters.params[0].type ===
-      'NullLiteralTypeAnnotation'
+      parser.nullLiteralTypeAnnotation
     ) {
       return {
         argumentProps: [],
@@ -296,24 +297,22 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  if (!bubblingType) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
   if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
-      bubblingType,
+      bubblingType: nonNullableBubblingType,
       paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
-          argumentProps,
+          nonNullableArgumentProps,
           buildPropertiesForEvent,
           parser,
         ),
@@ -321,20 +320,14 @@ function buildEventSchema(
     };
   }
 
-  if (argumentProps === null) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  }
-
-  throwIfBubblingTypeIsNull(bubblingType, name);
-
   return {
     name,
     optional,
-    bubblingType,
+    bubblingType: nonNullableBubblingType,
     typeAnnotation: {
       type: 'EventTypeAnnotation',
       argument: getEventArgument(
-        argumentProps,
+        nonNullableArgumentProps,
         buildPropertiesForEvent,
         parser,
       ),

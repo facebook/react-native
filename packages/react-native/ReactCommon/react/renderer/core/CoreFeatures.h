@@ -43,6 +43,11 @@ class CoreFeatures {
   // Fabric was not cancelling image downloads when <ImageView /> was removed
   // from view hierarchy. This feature flag enables this feature.
   static bool cancelImageDownloadsOnRecycle;
+
+  // On iOS, every transaction is wrapperd in [CATransaction begin] and
+  // [CATransaction end] This feature flag disables it to measure its impact in
+  // production.
+  static bool disableTransactionCommit;
 };
 
 } // namespace facebook::react

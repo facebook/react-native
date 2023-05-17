@@ -322,7 +322,6 @@ function buildPropertySchema(
   enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NativeModulePropertyShape {
@@ -337,7 +336,12 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotationFN(
+    value,
+    types,
+    parser,
+  ));
 
   throwIfModuleTypeIsUnsupported(
     hasteModuleName,
@@ -381,11 +385,9 @@ function buildSchemaFromConfigType(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   switch (configType) {
@@ -406,7 +408,6 @@ function buildSchemaFromConfigType(
           ast,
           tryParse,
           parser,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
         ),
       );
@@ -448,14 +449,12 @@ function buildSchema(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   // Early return for non-Spec JavaScript files
@@ -477,7 +476,6 @@ function buildSchema(
     buildComponentSchema,
     buildModuleSchema,
     parser,
-    resolveTypeAnnotation,
     translateTypeAnnotation,
   );
 }
@@ -572,7 +570,6 @@ const buildModuleSchema = (
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): NativeModuleSchema => {
   const language = parser.language();
@@ -640,7 +637,6 @@ const buildModuleSchema = (
           enumMap,
           tryParse,
           cxxOnly,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,
         ),

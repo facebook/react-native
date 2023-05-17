@@ -107,12 +107,12 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
     {
-      __weak __typeof(self) weakInstance = self;
+      __weak __typeof(self) weakSelf = self;
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
             // TODO: Make RCTInstance call onComplete
-            [weakInstance callFunctionOnJSModule:moduleName method:methodName args:args];
+            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
 
@@ -237,6 +237,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
   auto contextContainer = [_delegate createContextContainer];
+  if (!contextContainer) {
+    contextContainer = std::make_shared<ContextContainer>();
+  }
   contextContainer->insert(
       "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
@@ -304,10 +307,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
 {
-  __weak RCTInstance *weakInstance = self;
+  __weak RCTInstance *weakSelf = self;
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
     ((id<RCTJSDispatcherModule>)module).dispatchToJSThread = ^(dispatch_block_t block) {
-      __strong __typeof(self) strongSelf = weakInstance;
+      __strong __typeof(self) strongSelf = weakSelf;
 
       if (strongSelf && strongSelf->_valid) {
         strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });

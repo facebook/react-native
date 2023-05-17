@@ -27,6 +27,7 @@ import type {
   TypeDeclarationMap,
   PropAST,
   ASTNode,
+  TypeResolutionStatus,
 } from './utils';
 
 export type GetTypeAnnotationFN = (
@@ -62,6 +63,16 @@ export type BuildSchemaFN<T> = (
   parser: Parser,
 ) => ?NamedShape<T>;
 
+export type ResolveTypeAnnotationFN = (
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => {
+  nullable: boolean,
+  typeAnnotation: $FlowFixMe,
+  typeResolutionStatus: TypeResolutionStatus,
+};
+
 /**
  * This is the main interface for Parsers of various languages.
  * It exposes all the methods that contain language-specific logic.
@@ -71,6 +82,26 @@ export interface Parser {
    * This is the TypeParameterInstantiation value
    */
   typeParameterInstantiation: string;
+
+  /**
+   * TypeAlias property of the Parser
+   */
+  typeAlias: string;
+
+  /**
+   * enumDeclaration Property of the Parser
+   */
+  enumDeclaration: string;
+
+  /**
+   * InterfaceDelcaration property of the Parser
+   */
+  interfaceDelcaration: string;
+
+  /**
+   * This is the NullLiteralTypeAnnotation value
+   */
+  nullLiteralTypeAnnotation: string;
 
   /**
    * Given a declaration, it returns true if it is a property
@@ -318,4 +349,15 @@ export interface Parser {
   getGetTypeAnnotationFN(): GetTypeAnnotationFN;
 
   getGetSchemaInfoFN(): GetSchemaInfoFN;
+
+  getResolvedTypeAnnotation(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): {
+    nullable: boolean,
+    typeAnnotation: $FlowFixMe,
+    typeResolutionStatus: TypeResolutionStatus,
+  };
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
 }

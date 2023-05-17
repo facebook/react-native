@@ -13,6 +13,7 @@
 
 #include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -80,6 +81,7 @@ class TextAttributes : public DebugStringConvertible {
   // construction.
   std::optional<LayoutDirection> layoutDirection{};
   std::optional<AccessibilityRole> accessibilityRole{};
+  std::optional<Role> role{};
 
 #pragma mark - Operations
 
@@ -131,7 +133,8 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
         textAttributes.layoutDirection,
-        textAttributes.accessibilityRole);
+        textAttributes.accessibilityRole,
+        textAttributes.role);
   }
 };
 } // namespace std

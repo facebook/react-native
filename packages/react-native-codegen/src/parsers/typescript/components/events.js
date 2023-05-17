@@ -22,6 +22,7 @@ const {parseTopLevelType} = require('../parseTopLevelType');
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
 function getPropertyType(
@@ -237,7 +238,7 @@ function findEventArgumentsAndType(
         : null;
 
     switch (typeAnnotation.typeParameters.params[0].type) {
-      case 'TSNullKeyword':
+      case parser.nullLiteralTypeAnnotation:
       case 'TSUndefinedKeyword':
         return {
           argumentProps: [],
@@ -307,42 +308,42 @@ function buildEventSchema(
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
     findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  } else if (!bubblingType) {
-    throwIfBubblingTypeIsNull(bubblingType, name);
-  } else {
-    if (paperTopLevelNameDeprecated != null) {
-      return {
-        name,
-        optional,
-        bubblingType,
-        paperTopLevelNameDeprecated,
-        typeAnnotation: {
-          type: 'EventTypeAnnotation',
-          argument: getEventArgument(
-            argumentProps,
-            buildPropertiesForEvent,
-            parser,
-          ),
-        },
-      };
-    }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
+  if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
-      bubblingType,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
-          argumentProps,
+          nonNullableArgumentProps,
           buildPropertiesForEvent,
           parser,
         ),
       },
     };
   }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: getEventArgument(
+        nonNullableArgumentProps,
+        buildPropertiesForEvent,
+        parser,
+      ),
+    },
+  };
 }
 
 function getEvents(
