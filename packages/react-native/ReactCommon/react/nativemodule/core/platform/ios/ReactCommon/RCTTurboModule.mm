@@ -242,7 +242,8 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 /**
  * Creates JSErrorValue with given stack trace.
  */
-static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::string jsStack) {
+static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::string jsStack)
+{
   jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
   jsi::Value error;
   NSString *message = reason[@"message"];

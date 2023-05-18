@@ -61,7 +61,6 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
@@ -132,6 +131,8 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   };
   return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
 }
+
+jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message);
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
     jsi::Function &&function,
@@ -491,15 +492,14 @@ jsi::JSError convertThrowableToJSError(
 void rejectWithException(
     std::shared_ptr<CallbackWrapper> &reject,
     std::exception_ptr &exception,
-    std::string &jsStack
-    ) {
-    jsi::Runtime &runtime = reject->runtime();
-    auto throwable = jni::getJavaExceptionForCppException(exception);
-    auto jsError = convertThrowableToJSError(runtime, throwable);
-    jsError.value().asObject(runtime).setProperty(runtime, "stack", jsStack);
-    reject->callback().call(
-            runtime,
-            jsError.value());
+    std::string &jsStack) {
+  jsi::Runtime &runtime = reject->runtime();
+  auto throwable = jni::getJavaExceptionForCppException(exception);
+  auto jsError = convertThrowableToJSError(runtime, throwable);
+  jsError.value().asObject(runtime).setProperty(runtime, "stack", jsStack);
+  reject->callback().call(
+          runtime,
+          jsError.value());
 }
 
 } // namespace
@@ -876,11 +876,11 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 CallbackWrapper::createWeak(std::move(rejectInternalJSIFn), runtime, jsInvoker_);
 
             auto resolve = createJavaCallbackFromJSIFunction(
-                            std::move(resolveJSIFn), runtime, jsInvoker_)
-                            .release();
+                                std::move(resolveJSIFn), runtime, jsInvoker_)
+                                .release();
             auto reject = createPromiseRejectJavaCallbackFromJSIFunction(
-                            std::move(rejectJSIFn), runtime, jsInvoker_, jsStack)
-                            .release();
+                              std::move(rejectJSIFn), runtime, jsInvoker_, jsStack)
+                              .release();
 
             jclass jPromiseImpl =
                 env->FindClass("com/facebook/react/bridge/PromiseImpl");
