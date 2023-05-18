@@ -159,14 +159,10 @@
 {
   // required to fix iOS UITextField issue https://bit.ly/3BwlmgC
   if (self.fragmentViewContainerBounds.size.height > 0) {
-    // set _UITextLayoutFragmentView to vertically align to the top.
-    // Required to correctly align _UITextLayoutFragmentView.
-    self.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
     // apply custom bounds with RCTUITextField textRectForBound
     // to align _UITextLayoutFragmentView with the correct y coordinates and height
     return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], _textContainerInset);
   } else {
-    self.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
   }
 }

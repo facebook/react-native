@@ -84,6 +84,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self setNeedsLayout];
 }
 
+// required to fix iOS UITextField issue https://bit.ly/3BwlmgC
+// set _UITextLayoutFragmentView to vertically align to the top.
+// Required to correctly align _UITextLayoutFragmentView.
+- (void)setContentVerticalAlignment:(UIControlContentVerticalAlignment)contentVerticalAlignment
+{
+  _contentVerticalAlignment = contentVerticalAlignment;
+  self.backedTextInputView.contentVerticalAlignment = contentVerticalAlignment;
+}
+
 - (void)setFragmentViewContainerBounds:(CGRect)fragmentViewContainerBounds
 {
   _fragmentViewContainerBounds = fragmentViewContainerBounds;

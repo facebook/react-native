@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
 @property (nonatomic, assign) CGRect fragmentViewContainerBounds;
+@property (nonatomic, assign) UIControlContentVerticalAlignment contentVerticalAlignment;
 
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;

@@ -185,8 +185,11 @@
         CGFloat height = self.layoutMetrics.frame.size.height;
         CGFloat width =  self.layoutMetrics.frame.size.width;
         CGFloat padding = (height - effectiveLineHeight) / 2.0;
+        baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
         baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
       }
+    } else {
+      baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     }
     baseTextInputView.reactPaddingInsets = paddingInsets;
 
