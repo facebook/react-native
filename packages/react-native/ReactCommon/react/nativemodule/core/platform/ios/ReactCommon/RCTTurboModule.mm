@@ -265,13 +265,8 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
-  std::string jsStack;
-  try {
-    jsStack = createJSRuntimeError(runtime, "")
+  std::string jsStack = createJSRuntimeError(runtime, "")
       .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
-  } catch (...) {
-    // Stack unavailable
-  }
 
   std::string moduleName = name_;
 
