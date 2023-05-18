@@ -131,9 +131,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (!isnan(_lineHeight)) {
     // apply lineHeight only when lineHeight is higher of font.lineHeight
     // fixes text not correctly aligning
-    UIFont *font = self.effectiveFont;
     CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
-    if (font && lineHeight > font.lineHeight) {
+    if (lineHeight > self.effectiveFont.lineHeight) {
       paragraphStyle.minimumLineHeight = lineHeight;
       paragraphStyle.maximumLineHeight = lineHeight;
       isParagraphStyleUsed = YES;
@@ -178,7 +177,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
     // aligns text vertically when applying lineHeight
-    if(!isnan(paragraphStyle.maximumLineHeight) && font && paragraphStyle.maximumLineHeight >= font.lineHeight) {
+    if(!isnan(paragraphStyle.maximumLineHeight) && paragraphStyle.maximumLineHeight >= font.lineHeight) {
       CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
       attributes[NSBaselineOffsetAttributeName] = @(baseLineOffset);
     }
