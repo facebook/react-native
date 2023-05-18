@@ -277,7 +277,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, jsStack](
+      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, jsStack = std::move(jsStack)](
           jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         std::string moduleMethod = moduleName + "." + methodName + "()";
 
@@ -361,7 +361,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             return;
           }
 
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, blockGuard, reason, jsStack]() {
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, blockGuard, reason, jsStack = std::move(jsStack)]() {
             auto strongResolveWrapper2 = weakResolveWrapper.lock();
             auto strongRejectWrapper2 = weakRejectWrapper.lock();
             if (!strongResolveWrapper2 || !strongRejectWrapper2) {
