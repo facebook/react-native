@@ -40,7 +40,7 @@ export type Observer = (
   |}>,
 ) => void;
 
-export type IgnorePattern = string | RegExp;
+export type IgnorePattern = string | RegExp | ((message: string) => boolean);
 
 export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
@@ -116,6 +116,7 @@ export function isMessageIgnored(message: string): boolean {
   for (const pattern of ignorePatterns) {
     if (
       (pattern instanceof RegExp && pattern.test(message)) ||
+      (typeof pattern === 'function' && pattern(message) === false) ||
       (typeof pattern === 'string' && message.includes(pattern))
     ) {
       return true;
@@ -340,7 +341,6 @@ export function addIgnorePatterns(
           return;
         }
       }
-      ignorePatterns.add(pattern);
     }
     ignorePatterns.add(pattern);
   });

@@ -435,14 +435,17 @@ describe('LogBoxData', () => {
   });
 
   it('ignores logs matching patterns (logs)', () => {
-    addLogs(['A!', 'B?', 'C!']);
+    addLogs(['A!', 'B?', 'C!', 'D#']);
 
-    expect(filteredRegistry().length).toBe(3);
+    expect(filteredRegistry().length).toBe(4);
 
     LogBoxData.addIgnorePatterns(['!']);
-    expect(filteredRegistry().length).toBe(1);
+    expect(filteredRegistry().length).toBe(2);
 
     LogBoxData.addIgnorePatterns(['?']);
+    expect(filteredRegistry().length).toBe(1);
+
+    LogBoxData.addIgnorePatterns([() => false]);
     expect(filteredRegistry().length).toBe(0);
   });
 
