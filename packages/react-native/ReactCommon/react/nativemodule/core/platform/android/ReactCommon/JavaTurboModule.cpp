@@ -150,7 +150,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
             const std::shared_ptr<CallbackWrapper>& reject,
             const std::vector<jsi::Value>& args) {
             std::string message;
-            jsi::Runtime &rt2 = strongWrapper2->runtime();
+            jsi::Runtime &rt2 = reject->runtime();
             const jsi::Value* cause = args.data();
             if (cause->isObject() && cause->asObject(rt2).getProperty(rt2, "message").isString()) {
                 message = cause->asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
@@ -490,10 +490,10 @@ jsi::JSError convertThrowableToJSError(
 
 void rejectWithException(
     std::shared_ptr<CallbackWrapper> &reject,
-    std::exception &exception,
-    std::string &jsStack,
+    std::exception_ptr &exception,
+    std::string &jsStack
     ) {
-    jsi::Runtime &runtime = rejectStrongWrapper->runtime();
+    jsi::Runtime &runtime = reject->runtime();
     auto throwable = jni::getJavaExceptionForCppException(exception);
     auto jsError = convertThrowableToJSError(runtime, throwable);
     jsError.value().asObject(runtime).setProperty(runtime, "stack", jsStack);
@@ -860,8 +860,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               throw std::invalid_argument("Promise fn arg count must be 2");
             }
 
-            std::string jsStack = createJSRuntimeError(runtime, "")
-                .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
+            std::shared_ptr<std::string> jsStack = std::make_shared<std::string>(createJSRuntimeError(runtime, "")
+                .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime));
 
             jsi::Function resolveJSIFn =
                 promiseConstructorArgs[0].getObject(runtime).getFunction(
@@ -937,7 +937,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                   } catch (...) {
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
-                    if (rejectStrongWrapper) {
+                    if (rejectInternalStrongWrapper) {
                       auto exception = std::current_exception();
                       rejectWithException(rejectInternalStrongWrapper, exception, *jsStack);
                     } else {
