@@ -116,8 +116,6 @@ class Binding : public jni::HybridClass<Binding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
-  void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
-
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
@@ -126,11 +124,10 @@ class Binding : public jni::HybridClass<Binding>,
 
   // Private member variables
   std::shared_mutex installMutex_;
-  std::shared_ptr<FabricMountingManager> mountingManager_;
+  std::unique_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  const std::shared_ptr<FabricMountingManager> &verifyMountingManager(
-      const char *locationHint);
+  FabricMountingManager *getMountingManager(const char *locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;

@@ -131,8 +131,7 @@ void Binding::startSurface(
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::startSurface");
+  auto *mountingManager = getMountingManager("startSurface");
   if (!mountingManager) {
     return;
   }
@@ -202,8 +201,7 @@ void Binding::startSurfaceWithConstraints(
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 
-  auto &mountingManager = verifyMountingManager(
-      "FabricUIManagerBinding::startSurfaceWithConstraints");
+  auto *mountingManager = getMountingManager("startSurfaceWithConstraints");
   if (!mountingManager) {
     return;
   }
@@ -255,8 +253,7 @@ void Binding::stopSurface(jint surfaceId) {
     scheduler->unregisterSurface(surfaceHandler);
   }
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::stopSurface");
+  auto *mountingManager = getMountingManager("stopSurface");
   if (!mountingManager) {
     return;
   }
@@ -272,8 +269,7 @@ void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
   }
   scheduler->registerSurface(surfaceHandler);
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::registerSurface");
+  auto *mountingManager = getMountingManager("registerSurface");
   if (!mountingManager) {
     return;
   }
@@ -289,8 +285,7 @@ void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
   }
   scheduler->unregisterSurface(surfaceHandler);
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::unregisterSurface");
+  auto *mountingManager = getMountingManager("unregisterSurface");
   if (!mountingManager) {
     return;
   }
@@ -373,7 +368,7 @@ void Binding::installFabricUIManager(
 
   auto globalJavaUiManager = make_global(javaUIManager);
   mountingManager_ =
-      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
+      std::make_unique<FabricMountingManager>(config, globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
@@ -467,19 +462,18 @@ void Binding::uninstallFabricUIManager() {
   reactNativeConfig_ = nullptr;
 }
 
-const std::shared_ptr<FabricMountingManager> &Binding::verifyMountingManager(
-    const char *locationHint) {
+FabricMountingManager *Binding::getMountingManager(const char *locationHint) {
   std::shared_lock lock(installMutex_);
   if (!mountingManager_) {
-    LOG(ERROR) << locationHint << " mounting manager disappeared.";
+    LOG(ERROR) << "FabricMountingManager::" << locationHint
+               << " mounting manager disappeared";
   }
-  return mountingManager_;
+  return mountingManager_.get();
 }
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared &mountingCoordinator) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidFinishTransaction");
+  auto *mountingManager = getMountingManager("schedulerDidFinishTransaction");
   if (!mountingManager) {
     return;
   }
@@ -498,27 +492,18 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
 
-  preallocateView(surfaceId, shadowNode);
-}
-
-void Binding::preallocateView(
-    SurfaceId surfaceId,
-    ShadowNode const &shadowNode) {
-  auto name = std::string(shadowNode.getComponentName());
-  auto shadowView = ShadowView(shadowNode);
-  auto &mountingManager = verifyMountingManager("Binding::preallocateView");
+  auto *mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
   }
-  mountingManager->preallocateShadowView(surfaceId, shadowView);
+  mountingManager->preallocateShadowView(surfaceId, ShadowView(shadowNode));
 }
 
 void Binding::schedulerDidDispatchCommand(
     const ShadowView &shadowView,
     std::string const &commandName,
     folly::dynamic const &args) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidDispatchCommand");
+  auto *mountingManager = getMountingManager("schedulerDidDispatchCommand");
   if (!mountingManager) {
     return;
   }
@@ -528,8 +513,8 @@ void Binding::schedulerDidDispatchCommand(
 void Binding::schedulerDidSendAccessibilityEvent(
     const ShadowView &shadowView,
     std::string const &eventType) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidSendAccessibilityEvent");
+  auto *mountingManager =
+      getMountingManager("schedulerDidSendAccessibilityEvent");
   if (!mountingManager) {
     return;
   }
@@ -540,8 +525,7 @@ void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidSetIsJSResponder");
+  auto *mountingManager = getMountingManager("schedulerDidSetIsJSResponder");
   if (!mountingManager) {
     return;
   }
@@ -550,7 +534,7 @@ void Binding::schedulerDidSetIsJSResponder(
 }
 
 void Binding::onAnimationStarted() {
-  auto &mountingManager = verifyMountingManager("Binding::onAnimationStarted");
+  auto *mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
     return;
   }
@@ -558,7 +542,7 @@ void Binding::onAnimationStarted() {
 }
 
 void Binding::onAllAnimationsComplete() {
-  auto &mountingManager = verifyMountingManager("Binding::onAnimationComplete");
+  auto *mountingManager = getMountingManager("onAnimationComplete");
   if (!mountingManager) {
     return;
   }
