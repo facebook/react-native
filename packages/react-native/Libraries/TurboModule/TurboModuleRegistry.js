@@ -41,6 +41,7 @@ function requireModule<T: TurboModule>(name: string): ?T {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {
+      console.log('NativeModule: ' + name);
       if (shouldReportLoadedModules()) {
         moduleLoadHistory.NativeModules.push(name);
       }
@@ -51,6 +52,7 @@ function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
     if (module != null) {
+      console.log('TurboModule: ' + name);
       if (shouldReportLoadedModules()) {
         moduleLoadHistory.TurboModules.push(name);
       }
@@ -58,6 +60,7 @@ function requireModule<T: TurboModule>(name: string): ?T {
     }
   }
 
+  console.log('Not Loaded: ' + name);
   if (shouldReportLoadedModules()) {
     moduleLoadHistory.NotFound.push(name);
   }
