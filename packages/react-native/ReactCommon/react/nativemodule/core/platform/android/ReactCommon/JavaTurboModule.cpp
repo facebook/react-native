@@ -61,84 +61,76 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
-jsi::Value createJSRuntimeError(
-        jsi::Runtime &runtime,
-        const std::string &message) {
-    return runtime.global()
-        .getPropertyAsFunction(runtime, "Error")
-        .call(runtime, message);
-}
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
-        jsi::Function &&function,
-        jsi::Runtime &rt,
-        const std::shared_ptr<CallInvoker> &jsInvoker,
-        std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>&& executor) {
-    auto weakWrapper =
-            CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
+    jsi::Function &&function,
+    jsi::Runtime &rt,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>&& executor) {
+  auto weakWrapper =
+      CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
-    // This needs to be a shared_ptr because:
-    // 1. It cannot be unique_ptr. std::function is copyable but unique_ptr is
-    // not.
-    // 2. It cannot be weak_ptr since we need this object to live on.
-    // 3. It cannot be a value, because that would be deleted as soon as this
-    // function returns.
-    auto callbackWrapperOwner =
-            std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper);
+  // This needs to be a shared_ptr because:
+  // 1. It cannot be unique_ptr. std::function is copyable but unique_ptr is
+  // not.
+  // 2. It cannot be weak_ptr since we need this object to live on.
+  // 3. It cannot be a value, because that would be deleted as soon as this
+  // function returns.
+  auto callbackWrapperOwner =
+      std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper);
 
-    return JCxxCallbackImpl::newObjectCxxArgs(
+  return JCxxCallbackImpl::newObjectCxxArgs(
+      [weakWrapper = std::move(weakWrapper),
+       callbackWrapperOwner = std::move(callbackWrapperOwner),
+       wrapperWasCalled = false,
+       executor = std::move(executor)](folly::dynamic responses) mutable {
+        if (wrapperWasCalled) {
+          throw std::runtime_error(
+              "Callback arg cannot be called more than once");
+        }
+
+        auto strongWrapper = weakWrapper.lock();
+        if (!strongWrapper) {
+          return;
+        }
+
+        strongWrapper->jsInvoker().invokeAsync(
             [weakWrapper = std::move(weakWrapper),
-                    callbackWrapperOwner = std::move(callbackWrapperOwner),
-                    wrapperWasCalled = false,
-                    executor = std::move(executor)](folly::dynamic responses) mutable {
-                if (wrapperWasCalled) {
-                    throw std::runtime_error(
-                            "Callback arg cannot be called more than once");
-                }
+             callbackWrapperOwner = std::move(callbackWrapperOwner),
+             responses = std::move(responses),
+             executor = std::move(executor)]() {
+              auto strongWrapper2 = weakWrapper.lock();
+              if (!strongWrapper2) {
+                return;
+              }
 
-                auto strongWrapper = weakWrapper.lock();
-                if (!strongWrapper) {
-                    return;
-                }
+              std::vector<jsi::Value> args;
+              args.reserve(responses.size());
+              for (const auto &val : responses) {
+                args.emplace_back(
+                    jsi::valueFromDynamic(strongWrapper2->runtime(), val));
+              }
 
-                strongWrapper->jsInvoker().invokeAsync(
-                        [weakWrapper = std::move(weakWrapper),
-                                callbackWrapperOwner = std::move(callbackWrapperOwner),
-                                responses = std::move(responses),
-                                executor = std::move(executor)]() {
-                            auto strongWrapper2 = weakWrapper.lock();
-                            if (!strongWrapper2) {
-                                return;
-                            }
-
-                            jsi::Runtime &rt = strongWrapper2->runtime();
-                            std::vector<jsi::Value> args;
-                            args.reserve(responses.size());
-                            for (const auto &val : responses) {
-                                args.emplace_back(
-                                        jsi::valueFromDynamic(rt, val));
-                            }
-
-                            executor(strongWrapper2, args);
-                        });
-
-                wrapperWasCalled = true;
+              executor(strongWrapper2, args);
             });
+
+        wrapperWasCalled = true;
+      });
 }
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
-    auto executor = [](
-            const std::shared_ptr<CallbackWrapper>& wrapper,
-            const std::vector<jsi::Value>& args) {
-        wrapper->callback().call(
-                wrapper->runtime(),
-                (const jsi::Value *)args.data(),
-                args.size());
-    };
-    return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
+  auto executor = [](
+          const std::shared_ptr<CallbackWrapper>& wrapper,
+          const std::vector<jsi::Value>& args) {
+      wrapper->callback().call(
+              wrapper->runtime(),
+              (const jsi::Value *)args.data(),
+              args.size());
+  };
+  return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
 }
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
@@ -146,24 +138,24 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
     std::shared_ptr<std::string> jsStack) {
-    auto executor = [jsStack = std::move(jsStack)](
-            const std::shared_ptr<CallbackWrapper>& reject,
-            const std::vector<jsi::Value>& args) {
-            std::string message;
-            jsi::Runtime &rt2 = reject->runtime();
-            const jsi::Value* cause = args.data();
-            if (cause->isObject() && cause->asObject(rt2).getProperty(rt2, "message").isString()) {
-                message = cause->asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
-            } else {
-                message = "<unknown>";
-            }
+  auto executor = [jsStack = std::move(jsStack)](
+          const std::shared_ptr<CallbackWrapper>& reject,
+          const std::vector<jsi::Value>& args) {
+      std::string message;
+      jsi::Runtime &rt2 = reject->runtime();
+      const jsi::Value* cause = args.data();
+      if (cause->isObject() && cause->asObject(rt2).getProperty(rt2, "message").isString()) {
+          message = cause->asObject(rt2).getProperty(rt2, "message").asString(rt2).utf8(rt2);
+      } else {
+          message = "<unknown>";
+      }
 
-            jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + message);
-            error.asObject(rt2).setProperty(rt2, "cause", *cause);
-            error.asObject(rt2).setProperty(rt2, "stack", *jsStack);
-            reject->callback().call(rt2, error);
-    };
-    return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
+      jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + message);
+      error.asObject(rt2).setProperty(rt2, "cause", *cause);
+      error.asObject(rt2).setProperty(rt2, "stack", *jsStack);
+      reject->callback().call(rt2, error);
+  };
+  return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
 }
 
 // This is used for generating short exception strings.
@@ -447,6 +439,14 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
+}
+
+jsi::Value createJSRuntimeError(
+    jsi::Runtime &runtime,
+    const std::string &message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
 }
 
 /**
