@@ -154,6 +154,9 @@ android {
                 // We intentionally build Hermes with Intl support only. This is to simplify
                 // the build setup and to avoid overcomplicating the build-type matrix.
                 arguments "-DHERMES_ENABLE_INTL=True"
+                // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                // specific compilation flags. This can be removed once we moved to NDK 25/26
+                arguments "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
                 targets "libhermes"
             }
         }
