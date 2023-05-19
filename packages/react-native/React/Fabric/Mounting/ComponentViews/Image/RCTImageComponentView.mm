@@ -14,6 +14,7 @@
 #import <react/renderer/components/image/ImageComponentDescriptor.h>
 #import <react/renderer/components/image/ImageEventEmitter.h>
 #import <react/renderer/components/image/ImageProps.h>
+#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
 
@@ -97,8 +98,18 @@ using namespace facebook::react;
 - (void)_setStateAndResubscribeImageResponseObserver:(ImageShadowNode::ConcreteState::Shared const &)state
 {
   if (_state) {
-    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    auto const &imageRequest = _state->getData().getImageRequest();
+    auto &observerCoordinator = imageRequest.getObserverCoordinator();
     observerCoordinator.removeObserver(_imageResponseObserverProxy);
+    if (CoreFeatures::cancelImageDownloadsOnRecycle) {
+      // Cancelling image request because we are no longer observing it.
+      // This is not 100% correct place to do this because we may want to
+      // re-create RCTImageComponentView with the same image and if it
+      // was cancelled before downloaded, download is not resumed.
+      // This will only become issue if we decouple life cycle of a
+      // ShadowNode from ComponentView, which is not something we do now.
+      imageRequest.cancel();
+    }
   }
 
   _state = state;

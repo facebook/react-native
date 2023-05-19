@@ -132,7 +132,9 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void adoptYogaChild(size_t index);
 
-  static YGConfig &initializeYogaConfig(YGConfig &config);
+  static YGConfig &initializeYogaConfig(
+      YGConfig &config,
+      YGConfigRef previousConfig = nullptr);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,
       YGNode *parentYogaNode,

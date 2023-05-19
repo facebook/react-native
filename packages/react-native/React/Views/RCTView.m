@@ -310,7 +310,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
         @"timer" : @"timer",
         @"toolbar" : @"tool bar",
         @"checked" : @"checked",
-        @"unchecked" : @"not checked",
+        @"unchecked" : @"unchecked",
         @"busy" : @"busy",
         @"expanded" : @"expanded",
         @"collapsed" : @"collapsed",

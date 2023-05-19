@@ -18,6 +18,10 @@
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
 
+#ifdef RCT_DYNAMIC_FRAMEWORKS
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 using namespace facebook::react;
 
 @implementation RCTViewComponentView {
@@ -29,6 +33,13 @@ using namespace facebook::react;
   NSMutableArray<UIView *> *_reactSubviews;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
 }
+
+#ifdef RCT_DYNAMIC_FRAMEWORKS
++ (void)load
+{
+  [RCTComponentViewFactory.currentComponentViewFactory registerComponentViewClass:self];
+}
+#endif
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -710,21 +721,40 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     }
   }
 
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  NSString *roleString = [NSString stringWithUTF8String:props.accessibilityRole.c_str()];
+
+  // In iOS, checkbox and radio buttons aren't recognized as traits. However,
+  // because our apps use checkbox and radio buttons often, we should announce
+  // these to screenreader users.  (They should already be familiar with them
+  // from using web).
+  if ([roleString isEqualToString:@"checkbox"]) {
+    [valueComponents addObject:@"checkbox"];
+  }
+
+  if ([roleString isEqualToString:@"radio"]) {
+    [valueComponents addObject:@"radio button"];
+  }
+
   // Handle states which haven't already been handled.
   if (props.accessibilityState.checked == AccessibilityState::Checked) {
-    return @"checked";
+    [valueComponents addObject:@"checked"];
   }
   if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
-    return @"unchecked";
+    [valueComponents addObject:@"unchecked"];
   }
   if (props.accessibilityState.checked == AccessibilityState::Mixed) {
-    return @"mixed";
+    [valueComponents addObject:@"mixed"];
   }
   if (props.accessibilityState.expanded) {
-    return @"expanded";
+    [valueComponents addObject:@"expanded"];
   }
   if (props.accessibilityState.busy) {
-    return @"busy";
+    [valueComponents addObject:@"busy"];
+  }
+
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@", "];
   }
 
   return nil;

@@ -35,6 +35,7 @@ const {
   throwIfMoreThanOneCodegenNativecommands,
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -970,6 +971,26 @@ describe('throwIfBubblingTypeIsNull', () => {
 
     expect(() => {
       throwIfBubblingTypeIsNull(bubblingType, eventName);
+    }).not.toThrow();
+  });
+});
+
+describe('throwIfArgumentPropsAreNull', () => {
+  it('throws an error if unable to determine event arguments', () => {
+    const argumentProps = null;
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfArgumentPropsAreNull(argumentProps, eventName);
+    }).toThrowError(`Unable to determine event arguments for "${eventName}"`);
+  });
+
+  it('does not throw an error if able to determine event arguments', () => {
+    const argumentProps = [{}];
+    const eventName = 'Event';
+
+    expect(() => {
+      throwIfArgumentPropsAreNull(argumentProps, eventName);
     }).not.toThrow();
   });
 });

@@ -85,7 +85,7 @@ public class ReactHost {
   private static final int BRIDGELESS_MARKER_INSTANCE_KEY = 1;
 
   private final Context mContext;
-  private final ReactInstanceDelegate mReactInstanceDelegate;
+  private final ReactHostDelegate mReactHostDelegate;
   private final ComponentFactory mComponentFactory;
   private final ReactJsExceptionHandler mReactJsExceptionHandler;
   private final DevSupportManager mDevSupportManager;
@@ -121,7 +121,7 @@ public class ReactHost {
 
   public ReactHost(
       Context context,
-      ReactInstanceDelegate delegate,
+      ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
       ReactJsExceptionHandler reactJsExceptionHandler,
@@ -139,7 +139,7 @@ public class ReactHost {
 
   public ReactHost(
       Context context,
-      ReactInstanceDelegate delegate,
+      ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       Executor bgExecutor,
       Executor uiExecutor,
@@ -147,7 +147,7 @@ public class ReactHost {
       boolean allowPackagerServerAccess,
       boolean useDevSupport) {
     mContext = context;
-    mReactInstanceDelegate = delegate;
+    mReactHostDelegate = delegate;
     mComponentFactory = componentFactory;
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
@@ -163,7 +163,7 @@ public class ReactHost {
     if (DEV) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
-              ReactHost.this, mContext, mReactInstanceDelegate.getJSMainModulePath());
+              ReactHost.this, mContext, mReactHostDelegate.getJSMainModulePath());
     } else {
       mDevSupportManager = new DisabledDevSupportManager();
     }
@@ -221,7 +221,7 @@ public class ReactHost {
                                 destroy(
                                     "old_preload() failure: " + task.getError().getMessage(),
                                     task.getError());
-                                mReactInstanceDelegate.handleInstanceException(task.getError());
+                                mReactHostDelegate.handleInstanceException(task.getError());
                               }
 
                               return task;
@@ -246,7 +246,7 @@ public class ReactHost {
                         .continueWithTask(
                             (task) -> {
                               if (task.isFaulted()) {
-                                mReactInstanceDelegate.handleInstanceException(task.getError());
+                                mReactHostDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
                                 return new_getOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
@@ -571,7 +571,7 @@ public class ReactHost {
     log(method);
 
     destroy(method, e);
-    mReactInstanceDelegate.handleInstanceException(e);
+    mReactHostDelegate.handleInstanceException(e);
   }
 
   /**
@@ -779,7 +779,7 @@ public class ReactHost {
                     final ReactInstance instance =
                         new ReactInstance(
                             reactContext,
-                            mReactInstanceDelegate,
+                            mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
@@ -873,7 +873,7 @@ public class ReactHost {
                     final ReactInstance instance =
                         new ReactInstance(
                             reactContext,
-                            mReactInstanceDelegate,
+                            mReactHostDelegate,
                             mComponentFactory,
                             devSupportManager,
                             mQueueThreadExceptionHandler,
@@ -945,7 +945,7 @@ public class ReactHost {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
                 }
-                return Task.forResult(mReactInstanceDelegate.getJSBundleLoader(mContext));
+                return Task.forResult(mReactHostDelegate.getJSBundleLoader(mContext));
               },
               mBGExecutor);
     } else {
@@ -960,7 +960,7 @@ public class ReactHost {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactInstanceDelegate.getJSBundleLoader(mContext));
+      return Task.call(() -> mReactHostDelegate.getJSBundleLoader(mContext));
     }
   }
 

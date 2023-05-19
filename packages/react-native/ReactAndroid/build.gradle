@@ -444,6 +444,11 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     defaultConfig {
         minSdk = 21
         targetSdk = 33
@@ -468,7 +473,10 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21"
+                    "-DANDROID_PLATFORM=android-21",
+                    // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                    // specific compilation flags. This can be removed once we moved to NDK 25/26
+                    "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
 
                 targets "jsijniprofiler",
                     "reactnativeblob",
@@ -718,11 +726,14 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 tasks.withType(Test).all {
     // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
         jvmArgs += [
-            "-XX:+AllowRedefinitionToAddDeleteMethods",
             "--illegal-access=permit",
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",

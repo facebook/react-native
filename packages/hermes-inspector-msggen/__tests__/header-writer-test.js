@@ -40,8 +40,12 @@ test('emits type decl', () => {
   expectCodeIsEqual(stream.get(), `
     struct debugger::Location : public Serializable {
       Location() = default;
+      Location(Location&&) = default;
+      Location(const Location&) = delete;
       explicit Location(const folly::dynamic &obj);
       folly::dynamic toDynamic() const override;
+      Location& operator=(const Location&) = delete;
+      Location& operator=(Location&&) = default;
 
       runtime::ScriptId scriptId{};
       int lineNumber{};

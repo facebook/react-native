@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 
 #include <butter/map.h>
 
@@ -64,7 +65,7 @@ class TimelineController final : public UIManagerCommitHook {
   /*
    * Protects all the data members.
    */
-  mutable butter::shared_mutex timelinesMutex_;
+  mutable std::shared_mutex timelinesMutex_;
 
   /*
    * Owning collection of all running `Timeline` instances.

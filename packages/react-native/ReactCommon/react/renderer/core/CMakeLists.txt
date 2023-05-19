@@ -23,6 +23,7 @@ target_link_libraries(react_render_core
         folly_runtime
         glog
         jsi
+        react_config
         react_debug
         react_render_debug
         react_render_graphics

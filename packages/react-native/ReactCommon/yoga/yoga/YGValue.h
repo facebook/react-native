@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "YGEnums.h"
-#include "YGMacros.h"
+#include <yoga/YGEnums.h>
+#include <yoga/YGMacros.h>
 
 YG_EXTERN_C_BEGIN
 

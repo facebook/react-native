@@ -9,13 +9,12 @@
  */
 
 'use strict';
-import type {ASTNode} from '../utils';
-import type {NamedShape} from '../../../CodegenSchema.js';
 const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
-import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
+import type {BuildSchemaFN, Parser} from '../../parser';
 
 function getProperties(
   typeName: string,
@@ -111,7 +110,8 @@ function detectArrayType<T>(
   typeAnnotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // Covers: readonly T[]
   if (
@@ -126,6 +126,7 @@ function detectArrayType<T>(
         typeAnnotation.typeAnnotation.elementType,
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -140,6 +141,7 @@ function detectArrayType<T>(
         typeAnnotation.elementType,
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -158,6 +160,7 @@ function detectArrayType<T>(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -169,11 +172,12 @@ function detectArrayType<T>(
 function buildObjectType<T>(
   rawProperties: Array<$FlowFixMe>,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   const flattenedProperties = flattenProperties(rawProperties, types);
   const properties = flattenedProperties
-    .map(prop => buildSchema(prop, types))
+    .map(prop => buildSchema(prop, types, parser))
     .filter(Boolean);
 
   return {
@@ -189,17 +193,24 @@ function getCommonTypeAnnotation<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   switch (type) {
     case 'TSTypeLiteral':
-      return buildObjectType(typeAnnotation.members, types, buildSchema);
+      return buildObjectType(
+        typeAnnotation.members,
+        types,
+        parser,
+        buildSchema,
+      );
     case 'TSInterfaceDeclaration':
-      return buildObjectType([typeAnnotation], types, buildSchema);
+      return buildObjectType([typeAnnotation], types, parser, buildSchema);
     case 'TSIntersectionType':
       return buildObjectType(
         flattenIntersectionType(typeAnnotation, types),
         types,
+        parser,
         buildSchema,
       );
     case 'ImageSource':
@@ -276,7 +287,8 @@ function getTypeAnnotationForArray<T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | void,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(typeAnnotation, types);
@@ -297,6 +309,7 @@ function getTypeAnnotationForArray<T>(
     extractedTypeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (arrayType) {
@@ -322,6 +335,7 @@ function getTypeAnnotationForArray<T>(
     extractedTypeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (common) {
@@ -370,8 +384,10 @@ function getTypeAnnotation<T>(
   name: string,
   annotation: $FlowFixMe | ASTNode,
   defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(annotation, types);
@@ -381,6 +397,7 @@ function getTypeAnnotation<T>(
     typeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (arrayType) {
@@ -400,6 +417,7 @@ function getTypeAnnotation<T>(
     typeAnnotation,
     defaultValue,
     types,
+    parser,
     buildSchema,
   );
   if (common) {
@@ -435,6 +453,7 @@ type SchemaInfo = {
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe,
+  withNullDefault: boolean, // Just to make `getTypeAnnotation` signature match with the one from Flow
 };
 
 function getSchemaInfo(
@@ -460,6 +479,7 @@ function getSchemaInfo(
     optional: property.optional || topLevelType.optional,
     typeAnnotation: topLevelType.type,
     defaultValue: topLevelType.defaultValue,
+    withNullDefault: false, // Just to make `getTypeAnnotation` signature match with the one from Flow
   };
 }
 

@@ -219,7 +219,7 @@ static void sliceChildShadowNodeViewPairsRecursivelyV2(
     auto &childShadowNode = *sharedChildShadowNode;
 
 #ifndef ANDROID
-    // Temporary disabled on Android because the mounting infrastructure
+    // T153547836: Disabled on Android because the mounting infrastructure
     // is not fully ready yet.
     if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
       continue;

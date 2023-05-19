@@ -10,10 +10,10 @@
 
 'use strict';
 
-import type {ASTNode} from '../utils';
 import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
-import type {TypeDeclarationMap, PropAST} from '../../utils';
+import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
+import type {BuildSchemaFN, Parser} from '../../parser';
 
 function getProperties(
   typeName: string,
@@ -34,7 +34,8 @@ function getTypeAnnotationForArray<+T>(
   typeAnnotation: $FlowFixMe,
   defaultValue: $FlowFixMe | null,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   const extractedTypeAnnotation = getValueFromTypes(typeAnnotation, types);
   if (extractedTypeAnnotation.type === 'NullableTypeAnnotation') {
@@ -63,7 +64,7 @@ function getTypeAnnotationForArray<+T>(
           objectType.typeParameters.params[0].properties,
           types,
         )
-          .map(prop => buildSchema(prop, types))
+          .map(prop => buildSchema(prop, types, parser))
           .filter(Boolean),
       };
     }
@@ -84,7 +85,7 @@ function getTypeAnnotationForArray<+T>(
             nestedObjectType.typeParameters.params[0].properties,
             types,
           )
-            .map(prop => buildSchema(prop, types))
+            .map(prop => buildSchema(prop, types, parser))
             .filter(Boolean),
         },
       };
@@ -233,7 +234,8 @@ function getTypeAnnotation<+T>(
   defaultValue: $FlowFixMe | null,
   withNullDefault: boolean,
   types: TypeDeclarationMap,
-  buildSchema: (property: PropAST, types: TypeDeclarationMap) => ?NamedShape<T>,
+  parser: Parser,
+  buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   const typeAnnotation = getValueFromTypes(annotation, types);
 
@@ -248,6 +250,7 @@ function getTypeAnnotation<+T>(
         typeAnnotation.typeParameters.params[0],
         defaultValue,
         types,
+        parser,
         buildSchema,
       ),
     };
@@ -263,7 +266,7 @@ function getTypeAnnotation<+T>(
         typeAnnotation.typeParameters.params[0].properties,
         types,
       )
-        .map(prop => buildSchema(prop, types))
+        .map(prop => buildSchema(prop, types, parser))
         .filter(Boolean),
     };
   }

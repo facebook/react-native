@@ -105,8 +105,6 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   return jsi::Value::undefined();
 }
 
-static id
-convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
 static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::String &value)
 {
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
@@ -144,8 +142,7 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, 
 
 static RCTResponseSenderBlock
 convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<CallInvoker> jsInvoker);
-static id
-convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
 {
   if (value.isUndefined() || value.isNull()) {
     return nil;
@@ -385,13 +382,13 @@ id ObjCTurboModule::performMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   __block id result;
-  __weak id<RCTTurboModule> weakModule = instance_;
+  __weak id<RCTBridgeModule> weakModule = instance_;
   const char *moduleName = name_.c_str();
   std::string methodNameStr{methodName};
   __block int32_t asyncCallCounter = 0;
 
   void (^block)() = ^{
-    id<RCTTurboModule> strongModule = weakModule;
+    id<RCTBridgeModule> strongModule = weakModule;
     if (!strongModule) {
       return;
     }
@@ -650,7 +647,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   const char *moduleName = name_.c_str();
-  const id<RCTTurboModule> module = instance_;
+  const id<RCTBridgeModule> module = instance_;
 
   if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);

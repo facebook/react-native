@@ -52,20 +52,41 @@ class ParagraphLayoutManager {
 
  private:
   std::shared_ptr<TextLayoutManager const> mutable textLayoutManager_{};
+
+  /*
+   * Stores opaque pointer to `NSTextStorage` on iOS. nullptr on Android.
+   * TODO: In the future, we may want to cache Android's text storage.
+   */
   std::shared_ptr<void> mutable hostTextStorage_{};
 
+  /*
+   * Hash of AttributedString and ParagraphAttributes last used to
+   * measure. Result of that measure is stored in cachedTextMeasurement_.
+   * The available width defined for the measurement is stored in
+   * lastAvailableWidth_.
+   */
+  size_t mutable paragraphInputHash_{};
+
   /* The width Yoga set as maximum width.
-   * Yoga sometimes calls measure twice with two
-   * different maximum width. One if available space.
+   * Yoga calls measure twice with two
+   * different maximum width. One of available space.
    * The other one is exact space needed for the string.
    * This happens when node is dirtied but its size is not affected.
    * To deal with this inefficiency, we cache `TextMeasurement` for each
    * `ParagraphShadowNode`. If Yoga tries to re-measure with available width
    * or exact width, we provide it with the cached value.
    */
-  Float mutable availableWidth_{};
+  Float mutable lastAvailableWidth_{};
   TextMeasurement mutable cachedTextMeasurement_{};
 
-  size_t mutable hash_{};
+  /*
+   * Checks whether the inputs into text measurement meaningfully affect
+   * text measurement result. Returns true if inputs have changed and measure is
+   * needed.
+   */
+  bool shoudMeasureString(
+      AttributedString const &attributedString,
+      ParagraphAttributes const &paragraphAttributes,
+      LayoutConstraints layoutConstraints) const;
 };
 } // namespace facebook::react

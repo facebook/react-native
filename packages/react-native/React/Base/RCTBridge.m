@@ -120,7 +120,7 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
-static BOOL turboModuleInteropEnabled = YES;
+static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {
   return turboModuleInteropEnabled;
@@ -215,9 +215,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
-- (void)attachBridgeAPIsToTurboModule:(id<RCTTurboModule>)module
+- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module
 {
-  [self.batchedBridge attachBridgeAPIsToTurboModule:module];
+  [self.batchedBridge attachBridgeAPIsToObjCModule:module];
 }
 
 - (void)didReceiveReloadCommand

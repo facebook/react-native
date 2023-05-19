@@ -23,6 +23,9 @@ import type {
   SchemaType,
   NativeModuleEnumMap,
   OptionsShape,
+  PropTypeAnnotation,
+  EventTypeAnnotation,
+  ObjectTypeAnnotation,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -319,7 +322,6 @@ function buildPropertySchema(
   enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NativeModulePropertyShape {
@@ -334,7 +336,12 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotationFN(
+    value,
+    types,
+    parser,
+  ));
 
   throwIfModuleTypeIsUnsupported(
     hasteModuleName,
@@ -378,11 +385,9 @@ function buildSchemaFromConfigType(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   switch (configType) {
@@ -403,7 +408,6 @@ function buildSchemaFromConfigType(
           ast,
           tryParse,
           parser,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
         ),
       );
@@ -445,14 +449,12 @@ function buildSchema(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   // Early return for non-Spec JavaScript files
@@ -474,7 +476,6 @@ function buildSchema(
     buildComponentSchema,
     buildModuleSchema,
     parser,
-    resolveTypeAnnotation,
     translateTypeAnnotation,
   );
 }
@@ -569,7 +570,6 @@ const buildModuleSchema = (
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): NativeModuleSchema => {
   const language = parser.language();
@@ -637,7 +637,6 @@ const buildModuleSchema = (
           enumMap,
           tryParse,
           cxxOnly,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,
         ),
@@ -852,6 +851,53 @@ function extendsForProp(
   }
 }
 
+function buildPropSchema(
+  property: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+): ?NamedShape<PropTypeAnnotation> {
+  const getSchemaInfoFN = parser.getGetSchemaInfoFN();
+  const info = getSchemaInfoFN(property, types);
+  if (info == null) {
+    return null;
+  }
+  const {name, optional, typeAnnotation, defaultValue, withNullDefault} = info;
+
+  const getTypeAnnotationFN = parser.getGetTypeAnnotationFN();
+
+  return {
+    name,
+    optional,
+    typeAnnotation: getTypeAnnotationFN(
+      name,
+      typeAnnotation,
+      defaultValue,
+      withNullDefault,
+      types,
+      parser,
+      buildPropSchema,
+    ),
+  };
+}
+
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+function getEventArgument(
+  argumentProps: PropAST,
+  buildPropertiesForEvent: (
+    property: PropAST,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+  parser: Parser,
+): ObjectTypeAnnotation<EventTypeAnnotation> {
+  return {
+    type: 'ObjectTypeAnnotation',
+    properties: argumentProps.map(member =>
+      buildPropertiesForEvent(member, parser),
+    ),
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -872,4 +918,6 @@ module.exports = {
   getOptions,
   getCommandTypeNameAndOptionsExpression,
   extendsForProp,
+  buildPropSchema,
+  getEventArgument,
 };

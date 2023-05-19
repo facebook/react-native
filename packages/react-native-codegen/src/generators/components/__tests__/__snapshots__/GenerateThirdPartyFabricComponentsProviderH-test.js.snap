@@ -23,6 +23,8 @@ extern \\"C\\" {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name);
 
+#ifndef RCT_DYNAMIC_FRAMEWORKS
+
 Class<RCTComponentViewProtocol> NoPropsNoEventsComponentCls(void) __attribute__((used)); // NO_PROPS_NO_EVENTS
 Class<RCTComponentViewProtocol> InterfaceOnlyComponentCls(void) __attribute__((used)); // INTERFACE_ONLY
 Class<RCTComponentViewProtocol> BooleanPropNativeComponentCls(void) __attribute__((used)); // BOOLEAN_PROP
@@ -54,6 +56,8 @@ Class<RCTComponentViewProtocol> CommandNativeComponentCls(void) __attribute__((u
 Class<RCTComponentViewProtocol> ExcludedAndroidComponentCls(void) __attribute__((used)); // EXCLUDE_ANDROID
 
 Class<RCTComponentViewProtocol> MultiFileIncludedNativeComponentCls(void) __attribute__((used)); // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+
+#endif
 
 #ifdef __cplusplus
 }

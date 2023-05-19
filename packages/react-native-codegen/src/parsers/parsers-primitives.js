@@ -309,6 +309,16 @@ function emitGenericObject(
   });
 }
 
+function emitDictionary(
+  nullable: boolean,
+  valueType: Nullable<NativeModuleTypeAnnotation>,
+): Nullable<NativeModuleGenericObjectTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'GenericObjectTypeAnnotation',
+    dictionaryValueType: valueType,
+  });
+}
+
 function emitObject(
   nullable: boolean,
   properties: Array<$FlowFixMe>,
@@ -576,6 +586,7 @@ module.exports = {
   emitInt32,
   emitNumber,
   emitGenericObject,
+  emitDictionary,
   emitObject,
   emitPromise,
   emitRootTag,

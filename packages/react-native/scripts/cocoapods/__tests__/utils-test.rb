@@ -577,7 +577,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -676,74 +676,6 @@ class UtilsTests < Test::Unit::TestCase
         user_project_mock.build_configurations.each do |config|
             assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited)")
         end
-    end
-
-    # ============================= #
-    # Test - Enable Hermes Profiler #
-    # ============================= #
-
-    def test_enableHermesProfiler_whenEnableHermesProfileIsTrue_setsFlagsInRelease
-        # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-         # Act
-         ReactNativePodsUtils.enable_hermes_profiler(installer, enable_hermes_profiler: true)
-
-         # Assert
-         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            target_installation_result.native_target.build_configurations.each do |config|
-                if config.name != "Release"
-                    assert_nil(config.build_settings["OTHER_CFLAGS"])
-                else
-                    assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited) -DRCT_REMOTE_PROFILE=1")
-                end
-            end
-         end
-    end
-
-    def test_enableHermesProfiler_whenEnableHermesProfileIsFalse_doesNothing
-        # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-         # Act
-         ReactNativePodsUtils.enable_hermes_profiler(installer)
-
-         # Assert
-         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            target_installation_result.native_target.build_configurations.each do |config|
-                assert_nil(config.build_settings["OTHER_CFLAGS"])
-            end
-         end
     end
 end
 

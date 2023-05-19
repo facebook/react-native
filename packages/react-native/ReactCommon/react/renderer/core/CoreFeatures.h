@@ -34,15 +34,20 @@ class CoreFeatures {
   // in simple data passing scenarios with JS
   static bool useNativeState;
 
-  // Creating NSTextStorage is relatively expensive operation and we were
-  // creating it twice. Once when measuring text and once when rendering it.
-  // This flag caches it inside ParagraphState.
-  static bool cacheNSTextStorage;
-
   // Yoga might measure multiple times the same Text with the same constraints
   // This flag enables a caching mechanism to avoid subsequents measurements
   // of the same Text with the same constrainst.
+  // On iOS, we also cache NSTextStorage.
   static bool cacheLastTextMeasurement;
+
+  // Fabric was not cancelling image downloads when <ImageView /> was removed
+  // from view hierarchy. This feature flag enables this feature.
+  static bool cancelImageDownloadsOnRecycle;
+
+  // On iOS, every transaction is wrapperd in [CATransaction begin] and
+  // [CATransaction end] This feature flag disables it to measure its impact in
+  // production.
+  static bool disableTransactionCommit;
 };
 
 } // namespace facebook::react

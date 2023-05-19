@@ -5,28 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "Yoga.h"
-#include "log.h"
 #include <float.h>
 #include <string.h>
 #include <algorithm>
 #include <atomic>
 #include <memory>
+
+#include <yoga/Yoga.h>
+
+#include "log.h"
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
 #include "event/event.h"
-#ifdef _MSC_VER
-#include <float.h>
-
-/* define fmaxf if < VC12 */
-#if _MSC_VER < 1800
-__forceinline const float fmaxf(const float a, const float b) {
-  return (a > b) ? a : b;
-}
-#endif
-#endif
 
 using namespace facebook::yoga;
 using detail::Log;
@@ -50,8 +42,8 @@ static int YGDefaultLog(
 #ifdef ANDROID
 #include <android/log.h>
 static int YGAndroidLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
+    const YGConfigRef /*config*/,
+    const YGNodeRef /*node*/,
     YGLogLevel level,
     const char* format,
     va_list args) {
@@ -238,6 +230,10 @@ YOGA_EXPORT void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+  YGNodeDeallocate(node);
+}
+
+YOGA_EXPORT void YGNodeDeallocate(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
   delete node;
 }
@@ -849,7 +845,7 @@ YOGA_EXPORT void YGNodeStyleSetMinWidthPercent(
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMinWidth(const YGNodeConstRef node) {
   return node->getStyle().minDimensions()[YGDimensionWidth];
-};
+}
 
 YOGA_EXPORT void YGNodeStyleSetMinHeight(
     const YGNodeRef node,
@@ -867,7 +863,7 @@ YOGA_EXPORT void YGNodeStyleSetMinHeightPercent(
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMinHeight(const YGNodeConstRef node) {
   return node->getStyle().minDimensions()[YGDimensionHeight];
-};
+}
 
 YOGA_EXPORT void YGNodeStyleSetMaxWidth(
     const YGNodeRef node,
@@ -885,7 +881,7 @@ YOGA_EXPORT void YGNodeStyleSetMaxWidthPercent(
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMaxWidth(const YGNodeConstRef node) {
   return node->getStyle().maxDimensions()[YGDimensionWidth];
-};
+}
 
 YOGA_EXPORT void YGNodeStyleSetMaxHeight(
     const YGNodeRef node,
@@ -903,7 +899,7 @@ YOGA_EXPORT void YGNodeStyleSetMaxHeightPercent(
 }
 YOGA_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
   return node->getStyle().maxDimensions()[YGDimensionHeight];
-};
+}
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName)   \
   YOGA_EXPORT type YGNodeLayoutGet##name(const YGNodeRef node) { \
@@ -937,18 +933,18 @@ YOGA_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeConstRef node) {
     return node->getLayout().instanceName[edge];                        \
   }
 
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight]);
-YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction());
-YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow());
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Left, position[YGEdgeLeft])
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Top, position[YGEdgeTop])
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Right, position[YGEdgeRight])
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Bottom, position[YGEdgeBottom])
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Width, dimensions[YGDimensionWidth])
+YG_NODE_LAYOUT_PROPERTY_IMPL(float, Height, dimensions[YGDimensionHeight])
+YG_NODE_LAYOUT_PROPERTY_IMPL(YGDirection, Direction, direction())
+YG_NODE_LAYOUT_PROPERTY_IMPL(bool, HadOverflow, hadOverflow())
 
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin);
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border);
-YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Margin, margin)
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Border, border)
+YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding)
 
 std::atomic<uint32_t> gCurrentGenerationCount(0);
 
@@ -2988,7 +2984,7 @@ static void YGNodelayoutImpl(
         availableInnerMainDim = maxInnerMainDim;
       } else {
         bool useLegacyStretchBehaviour =
-            node->getConfig()->getErrata() & YGErrataStretchFlexBasis;
+            node->hasErrata(YGErrataStretchFlexBasis);
 
         if (!useLegacyStretchBehaviour &&
             ((!YGFloatIsUndefined(
@@ -4083,6 +4079,10 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
   }
 }
 
+YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigRef config) {
+  return config->getPointScaleFactor();
+}
+
 static void YGRoundToPixelGrid(
     const YGNodeRef node,
     const double pointScaleFactor,
@@ -4313,16 +4313,16 @@ YOGA_EXPORT void YGConfigSetUseWebDefaults(
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
     const YGConfigRef config) {
-  return config->getErrata() & YGErrataStretchFlexBasis;
+  return config->hasErrata(YGErrataStretchFlexBasis);
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
   if (useLegacyStretchBehaviour) {
-    config->setErrata(config->getErrata() | YGErrataStretchFlexBasis);
+    config->addErrata(YGErrataStretchFlexBasis);
   } else {
-    config->setErrata(config->getErrata() & ~YGErrataStretchFlexBasis);
+    config->removeErrata(YGErrataStretchFlexBasis);
   }
 }
 

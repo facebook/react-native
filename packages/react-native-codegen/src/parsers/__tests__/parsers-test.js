@@ -270,6 +270,59 @@ describe('FlowParser', () => {
       ).toEqual(expected);
     });
   });
+
+  describe('isOptionalProperty', () => {
+    it('when property is optional', () => {
+      const property = {
+        value: {
+          type: 'TypeAnnotation',
+        },
+        optional: true,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+
+    it('when property is not optional', () => {
+      const property = {
+        value: {
+          type: 'TypeAnnotation',
+        },
+        optional: false,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+
+    it('when property value type is NullableTypeAnnotation', () => {
+      const property = {
+        value: {
+          type: 'NullableTypeAnnotation',
+        },
+        optional: false,
+      };
+
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+  });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TypeAlias');
+    });
+  });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('EnumDeclaration');
+    });
+  });
+
+  describe('interfaceDelcaration', () => {
+    it('returns interfaceDelcaration Property', () => {
+      expect(parser.interfaceDelcaration).toEqual('InterfaceDeclaration');
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -529,6 +582,40 @@ describe('TypeScriptParser', () => {
       expect(
         parser.getNativeComponentType(typeArgumentParams, funcArgumentParams),
       ).toEqual(expected);
+    });
+  });
+
+  describe('isOptionalProperty', () => {
+    it('when property is optional', () => {
+      const property = {
+        optional: true,
+      };
+      expect(parser.isOptionalProperty(property)).toEqual(true);
+    });
+
+    it('when property is undefined or not optional', () => {
+      const property = {
+        optional: false,
+      };
+      expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+  });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
+    });
+  });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('TSEnumDeclaration');
+    });
+  });
+
+  describe('interfaceDelcaration', () => {
+    it('returns interfaceDelcaration Property', () => {
+      expect(parser.interfaceDelcaration).toEqual('TSInterfaceDeclaration');
     });
   });
 });

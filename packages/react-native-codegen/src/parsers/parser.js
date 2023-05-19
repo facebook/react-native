@@ -22,7 +22,56 @@ import type {
   NativeModuleEnumMap,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  PropAST,
+  ASTNode,
+  TypeResolutionStatus,
+} from './utils';
+
+export type GetTypeAnnotationFN = (
+  name: string,
+  annotation: $FlowFixMe | ASTNode,
+  defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean,
+  types: TypeDeclarationMap,
+  parser: Parser,
+  buildSchema: (
+    property: PropAST,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ) => $FlowFixMe,
+) => $FlowFixMe;
+
+export type SchemaInfo = {
+  name: string,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe,
+  withNullDefault: boolean,
+};
+
+export type GetSchemaInfoFN = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+) => ?SchemaInfo;
+
+export type BuildSchemaFN<T> = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => ?NamedShape<T>;
+
+export type ResolveTypeAnnotationFN = (
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => {
+  nullable: boolean,
+  typeAnnotation: $FlowFixMe,
+  typeResolutionStatus: TypeResolutionStatus,
+};
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -33,6 +82,26 @@ export interface Parser {
    * This is the TypeParameterInstantiation value
    */
   typeParameterInstantiation: string;
+
+  /**
+   * TypeAlias property of the Parser
+   */
+  typeAlias: string;
+
+  /**
+   * enumDeclaration Property of the Parser
+   */
+  enumDeclaration: string;
+
+  /**
+   * InterfaceDelcaration property of the Parser
+   */
+  interfaceDelcaration: string;
+
+  /**
+   * This is the NullLiteralTypeAnnotation value
+   */
+  nullLiteralTypeAnnotation: string;
 
   /**
    * Given a declaration, it returns true if it is a property
@@ -269,4 +338,26 @@ export interface Parser {
    * @returns: name property
    */
   nameForArgument(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a property return if it is optional.
+   * @parameter property
+   * @returns: a boolean specifying if the Property is optional
+   */
+  isOptionalProperty(property: $FlowFixMe): boolean;
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN;
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN;
+
+  getResolvedTypeAnnotation(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): {
+    nullable: boolean,
+    typeAnnotation: $FlowFixMe,
+    typeResolutionStatus: TypeResolutionStatus,
+  };
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
 }

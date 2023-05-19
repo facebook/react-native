@@ -15,12 +15,12 @@
 static NSString *const testFile = @"test.jsbundle";
 static NSString *const mainBundle = @"main.jsbundle";
 
-static NSURL *mainBundleURL()
+static NSURL *mainBundleURL(void)
 {
   return [[[NSBundle mainBundle] bundleURL] URLByAppendingPathComponent:mainBundle];
 }
 
-static NSURL *localhostBundleURL()
+static NSURL *localhostBundleURL(void)
 {
   return [NSURL
       URLWithString:
@@ -30,7 +30,7 @@ static NSURL *localhostBundleURL()
                   testFile]];
 }
 
-static NSURL *ipBundleURL()
+static NSURL *ipBundleURL(void)
 {
   return [NSURL
       URLWithString:

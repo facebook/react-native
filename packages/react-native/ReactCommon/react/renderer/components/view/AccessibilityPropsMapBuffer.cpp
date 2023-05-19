@@ -158,6 +158,10 @@ void AccessibilityProps::propsDiffMapBuffer(
     }
     builder.putInt(AP_IMPORTANT_FOR_ACCESSIBILITY, value);
   }
+
+  if (oldProps.role != newProps.role) {
+    builder.putInt(AP_ROLE, static_cast<int32_t>(newProps.role));
+  }
 }
 #endif
 
