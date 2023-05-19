@@ -76,17 +76,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   backedTextInputView.defaultTextAttributes = textAttributes;
 }
 
-// required to fix iOS UITextField issue https://bit.ly/3BwlmgC
-// set _UITextLayoutFragmentView to vertically align to the top.
-// Required to correctly align _UITextLayoutFragmentView.
+// Fixes iOS alignment issue caused by adding paragraphStyle.maximumLineHeight to an iOS UITextField
+// vertically aligns _UITextLayoutFragmentView with the parent view UITextField
 - (void)setContentVerticalAlignment:(UIControlContentVerticalAlignment)contentVerticalAlignment
 {
   _contentVerticalAlignment = contentVerticalAlignment;
   self.backedTextInputView.contentVerticalAlignment = contentVerticalAlignment;
 }
 
-// sets custom bounds to position correctly UITextField
-// CALayer _UITextLayoutFragmentView when using lineHeight
+// Custom bounds used to control vertical position of CALayer _UITextLayoutFragmentView
+// _UITextLayoutFragmentView is the CALayer of UITextField
 - (void)setFragmentViewContainerBounds:(CGRect)fragmentViewContainerBounds
 {
   _fragmentViewContainerBounds = fragmentViewContainerBounds;
@@ -105,9 +104,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
 {
   _reactBorderInsets = reactBorderInsets;
-  // Borders are added using insets
-  // UITextField sets borders with method textRectForBound
-  // UITextView sets borders with setFrame
+  // Borders are added using insets (UITextField textRectForBound, UITextView setFrame)
   [self.backedTextInputView setTextBorderInsetsAndFrame:self.bounds textBorderInsets:reactBorderInsets];
 }
 
