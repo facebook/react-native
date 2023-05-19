@@ -165,7 +165,9 @@
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
   // Text is vertically aligned to the center
-  UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, _textContainerInset.left + _textBorderInsets.left, _textContainerInset.bottom, _textContainerInset.right + _textBorderInsets.right);
+  CGFloat leftPadding = _textContainerInset.left + _textBorderInsets.left;
+  CGFloat rightPadding = _textContainerInset.right + _textBorderInsets.right;
+  UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, leftPadding, _textContainerInset.bottom, rightPadding);
   if (self.fragmentViewContainerBounds.size.height > 0) {
     // required to fix iOS UITextField issue https://bit.ly/3BwlmgC
     // apply custom bounds with RCTUITextField textRectForBound
