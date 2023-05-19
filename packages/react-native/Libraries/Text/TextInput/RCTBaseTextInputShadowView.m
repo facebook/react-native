@@ -178,7 +178,7 @@
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
 
-    // fixes text alignment when using lineHeight see issue #28012
+    // fixes vertical text alignment when using lineHeight see issue #28012
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
       CGFloat effectiveLineHeight = textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier;
       CGFloat fontLineHeight = textAttributes.effectiveFont.lineHeight;

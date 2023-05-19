@@ -27,13 +27,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
 @property (nonatomic, assign) UIEdgeInsets textBorderInsets;
+@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
-@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
 
 @end
 

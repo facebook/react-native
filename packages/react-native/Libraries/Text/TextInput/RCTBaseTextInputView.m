@@ -76,14 +76,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   backedTextInputView.defaultTextAttributes = textAttributes;
 }
 
-- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
-{
-  _reactPaddingInsets = reactPaddingInsets;
-  // We apply `paddingInsets` as `backedTextInputView`'s `textContainerInset`.
-  self.backedTextInputView.textContainerInset = reactPaddingInsets;
-  [self setNeedsLayout];
-}
-
 // required to fix iOS UITextField issue https://bit.ly/3BwlmgC
 // set _UITextLayoutFragmentView to vertically align to the top.
 // Required to correctly align _UITextLayoutFragmentView.
@@ -93,10 +85,20 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   self.backedTextInputView.contentVerticalAlignment = contentVerticalAlignment;
 }
 
+// sets custom bounds to position correctly UITextField
+// CALayer _UITextLayoutFragmentView when using lineHeight
 - (void)setFragmentViewContainerBounds:(CGRect)fragmentViewContainerBounds
 {
   _fragmentViewContainerBounds = fragmentViewContainerBounds;
   self.backedTextInputView.fragmentViewContainerBounds = fragmentViewContainerBounds;
+  [self setNeedsLayout];
+}
+
+- (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
+{
+  _reactPaddingInsets = reactPaddingInsets;
+  // We apply `paddingInsets` as `backedTextInputView`'s `textContainerInset`.
+  self.backedTextInputView.textContainerInset = reactPaddingInsets;
   [self setNeedsLayout];
 }
 
