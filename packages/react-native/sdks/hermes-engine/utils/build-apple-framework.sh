@@ -52,17 +52,12 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local build_cli_tools enable_bitcode enable_debugger cmake_build_type
+  local enable_bitcode enable_debugger cmake_build_type
 
   if [[ $1 == iphoneos || $1 == catalyst ]]; then
     enable_bitcode="true"
   else
     enable_bitcode="false"
-  fi
-  if [[ $1 == macosx ]]; then
-    build_cli_tools="true"
-  else
-    build_cli_tools="false"
   fi
   if [[ $BUILD_TYPE == "Debug" ]]; then
     enable_debugger="true"
@@ -90,11 +85,9 @@ function configure_apple_framework {
       -DHERMES_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
       -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
       -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
-      -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
       -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
       -DJSI_DIR="$JSI_PATH" \
       -DHERMES_RELEASE_VERSION="for RN $(get_release_version)" \
-      -DCMAKE_INSTALL_PREFIX:PATH=../destroot \
       -DCMAKE_BUILD_TYPE="$cmake_build_type"
     popd > /dev/null || exit 1
 }
@@ -109,11 +102,27 @@ function build_apple_framework {
   [ ! -f "$IMPORT_HERMESC_PATH" ] &&
   echo "Host hermesc is required to build apple frameworks!"
 
+  # $1: platform, $2: architectures, $3: deployment target
   echo "Building $BUILD_TYPE framework for $1 with architectures: $2"
   configure_apple_framework "$1" "$2" "$3"
 
   pushd "$HERMES_PATH" > /dev/null || exit 1
-    cmake --build "./build_$1" --target install/strip -j "${NUM_CORES}"
+    mkdir -p "destroot/Library/Frameworks/$1"
+    cmake --build "./build_$1" --target libhermes -j "${NUM_CORES}"
+    cp -R "./build_$1"/API/hermes/hermes.framework* "destroot/Library/Frameworks/$1"
+
+    # In a MacOS build, also produce the hermes and hermesc CLI tools.
+    if [[ $1 == macosx ]]; then
+      cmake --build "./build_$1" --target hermesc hermes -j "${NUM_CORES}"
+      mkdir -p destroot/bin
+      cp "./build_$1/bin"/* "destroot/bin"
+    fi
+
+    # Copy over Hermes and JSI API headers.
+    mkdir -p destroot/include/hermes/Public destroot/include/jsi
+    cp public/hermes/Public/*.h destroot/include/hermes/Public
+    cp API/hermes/*.h destroot/include/hermes
+    cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
 }
 
