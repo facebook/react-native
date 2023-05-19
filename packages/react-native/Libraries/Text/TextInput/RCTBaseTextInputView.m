@@ -90,7 +90,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   _fragmentViewContainerBounds = fragmentViewContainerBounds;
   self.backedTextInputView.fragmentViewContainerBounds = fragmentViewContainerBounds;
-  [self setNeedsLayout];
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
