@@ -181,12 +181,13 @@
     // fixes text alignment when using lineHeight see issue #28012
     if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
       CGFloat effectiveLineHeight = textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier;
-      if (effectiveLineHeight >= textAttributes.effectiveFont.lineHeight) {
+      CGFloat fontLineHeight = textAttributes.effectiveFont.lineHeight;
+      if (effectiveLineHeight >= fontLineHeight * 2.0) {
         CGFloat height = self.layoutMetrics.frame.size.height;
         CGFloat width =  self.layoutMetrics.frame.size.width;
         CGFloat padding = (height - effectiveLineHeight) / 2.0;
         baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
-        baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, height);
+        baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, effectiveLineHeight);
       }
     } else {
       baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;

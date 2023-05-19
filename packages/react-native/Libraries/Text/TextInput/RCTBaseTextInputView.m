@@ -103,9 +103,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (void)setReactBorderInsets:(UIEdgeInsets)reactBorderInsets
 {
   _reactBorderInsets = reactBorderInsets;
-  // We apply `borderInsets` as `backedTextInputView` layout offset.
-  self.backedTextInputView.frame = UIEdgeInsetsInsetRect(self.bounds, reactBorderInsets);
-  [self setNeedsLayout];
+  // Borders are added using insets
+  // UITextField sets borders with method textRectForBound
+  // UITextView sets borders with setFrame
+  [self.backedTextInputView setTextBorderInsetsAndFrame:self.bounds textBorderInsets:reactBorderInsets];
 }
 
 - (NSAttributedString *)attributedText

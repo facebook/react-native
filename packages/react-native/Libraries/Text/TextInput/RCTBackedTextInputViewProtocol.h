@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 // If the change was a result of user actions (like typing or touches), we MUST notify the delegate.
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
+- (void)setTextBorderInsetsAndFrame:(CGRect)bounds textBorderInsets:(UIEdgeInsets)textBorderInsets;
 
 // This protocol disallows direct access to `text` property because
 // unwise usage of it can break the `attributeText` behavior.

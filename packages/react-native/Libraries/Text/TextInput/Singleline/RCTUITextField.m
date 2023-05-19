@@ -55,6 +55,13 @@
   [self setNeedsLayout];
 }
 
+- (void)setTextBorderInsetsAndFrame:(CGRect)bounds textBorderInsets:(UIEdgeInsets)textBorderInsets
+{
+  _textBorderInsets = textBorderInsets;
+  [self setNeedsLayout];
+}
+
+
 - (void)setPlaceholder:(NSString *)placeholder
 {
   [super setPlaceholder:placeholder];
@@ -157,13 +164,15 @@
 
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
-  // required to fix iOS UITextField issue https://bit.ly/3BwlmgC
+  // Text is vertically aligned to the center
+  UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, _textContainerInset.left + _textBorderInsets.left, _textContainerInset.bottom, _textContainerInset.right + _textBorderInsets.right);
   if (self.fragmentViewContainerBounds.size.height > 0) {
+    // required to fix iOS UITextField issue https://bit.ly/3BwlmgC
     // apply custom bounds with RCTUITextField textRectForBound
     // to align _UITextLayoutFragmentView with the correct y coordinates and height
-    return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], _textContainerInset);
+    return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], borderAndPaddingInsets);
   } else {
-    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], _textContainerInset);
+      return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], borderAndPaddingInsets);
   }
 }
 
