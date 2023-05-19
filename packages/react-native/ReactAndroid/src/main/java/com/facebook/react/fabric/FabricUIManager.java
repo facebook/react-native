@@ -429,6 +429,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
     mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
+    mViewManagerRegistry.invalidate();
 
     // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
     // away. Then stop the mDispatchUIFrameCallback false will cause the choreographer
