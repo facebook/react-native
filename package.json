@@ -52,9 +52,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@babel/eslint-parser": "^7.19.0",
+    "@babel/eslint-parser": "^7.20.0",
     "@babel/generator": "^7.20.0",
-    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/plugin-transform-regenerator": "^7.20.0",
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.2.1",
     "@react-native/metro-config": "^0.73.0",

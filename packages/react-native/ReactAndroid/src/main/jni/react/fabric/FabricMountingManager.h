@@ -25,6 +25,7 @@ class FabricMountingManager final {
   FabricMountingManager(
       std::shared_ptr<const ReactNativeConfig> &config,
       jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
+  FabricMountingManager(const FabricMountingManager &) = delete;
 
   void onSurfaceStart(SurfaceId surfaceId);
 

@@ -17,7 +17,7 @@
   "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.20.0",
-    "@babel/eslint-parser": "^7.19.0",
+    "@babel/eslint-parser": "^7.20.0",
     "@react-native/eslint-plugin": "^0.73.0",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
