@@ -33,6 +33,7 @@ import type {
   VoidTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
+  NamedShape,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
@@ -93,6 +94,19 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'DoubleTypeAnnotation',
   });
+}
+
+function emitDoubleProp(
+  name: string,
+  optional: boolean,
+): NamedShape<DoubleTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'DoubleTypeAnnotation',
+    },
+  };
 }
 
 function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
@@ -581,6 +595,7 @@ module.exports = {
   emitArrayType,
   emitBoolean,
   emitDouble,
+  emitDoubleProp,
   emitFloat,
   emitFunction,
   emitInt32,

@@ -16,6 +16,8 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+
+import {emitDoubleProp} from '../../parsers-primitives';
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
@@ -59,13 +61,7 @@ function getPropertyType(
         },
       };
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
       return {
         name,
