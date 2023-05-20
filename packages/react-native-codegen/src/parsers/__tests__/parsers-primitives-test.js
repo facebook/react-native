@@ -18,6 +18,7 @@ const {
   emitBoolean,
   emitDouble,
   emitFloat,
+  emitFloatProp,
   emitNumber,
   emitInt32,
   emitGenericObject,
@@ -636,6 +637,38 @@ describe('emitFloat', () => {
       const result = emitFloat(false);
       const expected = {
         type: 'FloatTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitFloatProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional FloatTypeAnnotation', () => {
+      const result = emitFloatProp('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when optional is false', () => {
+    it('returns required FloatTypeAnnotation', () => {
+      const result = emitFloatProp('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
       };
 
       expect(result).toEqual(expected);

@@ -14,7 +14,9 @@ import type {
   Nullable,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
+  EventTypeAnnotation,
   Int32TypeAnnotation,
+  NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
@@ -337,6 +339,19 @@ function emitFloat(
   });
 }
 
+function emitFloatProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'FloatTypeAnnotation',
+    },
+  };
+}
+
 function emitUnion(
   nullable: boolean,
   hasteModuleName: string,
@@ -582,6 +597,7 @@ module.exports = {
   emitBoolean,
   emitDouble,
   emitFloat,
+  emitFloatProp,
   emitFunction,
   emitInt32,
   emitNumber,
