@@ -17,6 +17,10 @@ import type {
   ResolveTypeAnnotationFN,
 } from './parser';
 import type {ParserType} from './errors';
+type ExtendsForProp = null | {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+};
 import type {
   UnionTypeAnnotationMemberType,
   SchemaType,
@@ -27,6 +31,8 @@ import type {
   NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../CodegenSchema';
 import type {
   ParserErrorCapturer,
@@ -35,6 +41,10 @@ import type {
   TypeResolutionStatus,
 } from './utils';
 import invariant from 'invariant';
+
+const {flattenProperties} = require('./typescript/components/componentsUtils');
+
+const {buildPropSchema} = require('./parsers-commons');
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -366,6 +376,73 @@ export class MockedParser implements Parser {
       nullable: nullable,
       typeAnnotation: node,
       typeResolutionStatus,
+    };
+  }
+
+  getExtendsProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): $ReadOnlyArray<ExtendsPropsShape> {
+    return typeDefinition
+      .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
+      .map(prop => this.extendsForProp(prop, types, this))
+      .filter(Boolean);
+  }
+
+  extendsForProp(
+    prop: PropAST,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ): ExtendsForProp {
+    const argument = this.argumentForProp(prop);
+    if (!argument) {
+      console.log('null', prop);
+    }
+    const name = parser.nameForArgument(prop);
+
+    if (types[name] != null) {
+      // This type is locally defined in the file
+      return null;
+    }
+
+    switch (name) {
+      case 'ViewProps':
+        return {
+          type: 'ReactNativeBuiltInType',
+          knownTypeName: 'ReactNativeCoreViewProps',
+        };
+      default: {
+        throw new Error(`Unable to handle prop spread: ${name}`);
+      }
+    }
+  }
+
+  removeKnownExtends(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): $ReadOnlyArray<PropAST> {
+    return typeDefinition.filter(
+      prop =>
+        prop.type !== 'ObjectTypeSpreadProperty' ||
+        this.extendsForProp(prop, types, this) === null,
+    );
+  }
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  } {
+    const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
+    const props = flattenProperties(nonExtendsProps, types)
+      .map(property => buildPropSchema(property, types, this))
+      .filter(Boolean);
+
+    return {
+      props,
+      extendsProps: this.getExtendsProps(typeDefinition, types),
     };
   }
 }

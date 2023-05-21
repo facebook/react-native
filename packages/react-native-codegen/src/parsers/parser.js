@@ -20,6 +20,8 @@ import type {
   NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -361,4 +363,12 @@ export interface Parser {
   };
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  };
 }
