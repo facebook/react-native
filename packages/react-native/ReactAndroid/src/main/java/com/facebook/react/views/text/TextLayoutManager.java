@@ -223,12 +223,12 @@ public class TextLayoutManager {
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
-    int priority = 0;
-    for (SetSpanOperation op : ops) {
+    for (int priorityIndex = 0; priorityIndex < ops.size(); ++priorityIndex) {
+      final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+
       // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priority} DOES matter.
-      op.execute(sb, priority);
-      priority++;
+      // but the {@code priorityIndex} DOES matter.
+      op.execute(sb, priorityIndex);
     }
 
     if (reactTextViewManagerCallback != null) {
