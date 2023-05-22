@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fb/fbjni.h>
 #include <jni.h>
@@ -92,14 +93,16 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       bool isProfiling) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
-  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+  getNativeMethodCallInvokerHolder();
 
   std::unique_ptr<ReactInstance> instance_;
   jni::global_ref<JRuntimeExecutor::javaobject> unbufferedRuntimeExecutor_;
   jni::global_ref<JRuntimeExecutor::javaobject> bufferedRuntimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
-  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<NativeMethodCallInvokerHolder::javaobject>
+      nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
   jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
 };

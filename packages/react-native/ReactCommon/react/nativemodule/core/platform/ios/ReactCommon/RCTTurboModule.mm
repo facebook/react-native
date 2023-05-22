@@ -424,7 +424,7 @@ id ObjCTurboModule::performMethodInvocation(
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeInvoker_->invokeAsync([block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
     return nil;
   }
 }
@@ -685,7 +685,7 @@ bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
 ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
-      nativeInvoker_(params.nativeInvoker),
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
       isSyncModule_(params.isSyncModule)
 {
 }

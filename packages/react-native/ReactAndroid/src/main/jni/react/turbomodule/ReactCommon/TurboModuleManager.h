@@ -10,6 +10,7 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/JavaTurboModule.h>
 #include <ReactCommon/LongLivedObject.h>
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
@@ -30,7 +31,8 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<jhybridobject> jThis,
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
       jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
-      jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
+      jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+          nativeMethodCallInvokerHolder,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
   static void registerNatives();
 
@@ -39,7 +41,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<CallInvoker> jsCallInvoker_;
-  std::shared_ptr<CallInvoker> nativeCallInvoker_;
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
   using ModuleCache =
@@ -59,7 +61,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
       jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
       RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
-      std::shared_ptr<CallInvoker> nativeCallInvoker,
+      std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
   TurboModuleProviderFunctionType createTurboModuleProvider();

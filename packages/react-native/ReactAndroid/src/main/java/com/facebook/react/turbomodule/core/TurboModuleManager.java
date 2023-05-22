@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.soloader.SoLoader;
@@ -61,14 +62,14 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       RuntimeExecutor runtimeExecutor,
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
-      CallInvokerHolder nativeCallInvokerHolder) {
+      NativeMethodCallInvokerHolder nativeMethodCallInvokerHolder) {
     maybeLoadSoLibrary();
     mDelegate = delegate;
     mHybridData =
         initHybrid(
             runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
-            (CallInvokerHolderImpl) nativeCallInvokerHolder,
+            (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
             delegate);
     installJSIBindings(shouldCreateLegacyModules());
 
@@ -405,7 +406,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private native HybridData initHybrid(
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
-      CallInvokerHolderImpl nativeCallInvokerHolder,
+      NativeMethodCallInvokerHolderImpl nativeMethodCallInvoker,
       TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings(boolean shouldCreateLegacyModules);
