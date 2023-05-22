@@ -1379,7 +1379,7 @@ public class ReactInstanceManager {
               catalystInstance.getRuntimeExecutor(),
               tmmDelegate,
               catalystInstance.getJSCallInvokerHolder(),
-              catalystInstance.getNativeCallInvokerHolder());
+              catalystInstance.getNativeMethodCallInvokerHolder());
 
       catalystInstance.setTurboModuleManager(turboModuleManager);
 

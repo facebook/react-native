@@ -100,11 +100,11 @@ class NativeToJsBridge {
   void runOnExecutorQueue(std::function<void(JSExecutor *)> task);
 
   /**
-   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeMethodCallInvoker is used by TurboModules to schedule work on the
    * NativeModule thread(s).
    */
-  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
-      std::shared_ptr<CallInvoker> nativeInvoker);
+  std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
+      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
 
  private:
   // This is used to avoid a race condition where a proxyCallback gets queued

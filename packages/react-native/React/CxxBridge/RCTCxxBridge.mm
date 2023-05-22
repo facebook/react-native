@@ -1635,9 +1635,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   return _reactInstance ? _reactInstance->getJSCallInvoker() : nullptr;
 }
 
-- (std::shared_ptr<CallInvoker>)decorateNativeCallInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+- (std::shared_ptr<NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
+    (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
-  return _reactInstance ? _reactInstance->getDecoratedNativeCallInvoker(nativeInvoker) : nullptr;
+  return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
 }
 
 @end

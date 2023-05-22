@@ -21,6 +21,7 @@ add_library(
         callinvokerholder
         STATIC
         ReactCommon/CallInvokerHolder.cpp
+        ReactCommon/NativeMethodCallInvokerHolder.cpp
 )
 
 target_include_directories(callinvokerholder
