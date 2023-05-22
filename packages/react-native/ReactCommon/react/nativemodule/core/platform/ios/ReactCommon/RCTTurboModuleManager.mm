@@ -111,12 +111,12 @@ class ModuleHolder {
   }
 };
 
-class MethodQueueNativeMethodCallInvoker : public NativeMethodCallInvoker {
+class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
  private:
   dispatch_queue_t methodQueue_;
 
  public:
-  MethodQueueNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
+  ModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue) : methodQueue_(methodQueue) {}
   void invokeAsync(const std::string &methodName, std::function<void()> &&work) override
   {
     if (methodQueue_ == RCTJSThread) {
@@ -132,15 +132,7 @@ class MethodQueueNativeMethodCallInvoker : public NativeMethodCallInvoker {
 
   void invokeSync(const std::string &methodName, std::function<void()> &&work) override
   {
-    if (methodQueue_ == RCTJSThread) {
-      work();
-      return;
-    }
-
-    __block auto retainedWork = std::move(work);
-    dispatch_sync(methodQueue_, ^{
-      retainedWork();
-    });
+    work();
   }
 };
 }
@@ -304,7 +296,7 @@ static Class getFallbackClassFromName(const char *name)
    * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
    */
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<MethodQueueNativeMethodCallInvoker>(methodQueue);
+      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
 
   /**
    * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
@@ -383,7 +375,7 @@ static Class getFallbackClassFromName(const char *name)
 
   // Create a native call invoker from module's method queue
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<MethodQueueNativeMethodCallInvoker>(methodQueue);
+      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
 
   // If module is a legacy cxx module, return TurboCxxModule
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
