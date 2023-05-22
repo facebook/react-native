@@ -51,7 +51,6 @@ const {
   getSchemaInfo,
   getTypeAnnotation,
 } = require('./components/componentsUtils');
-const {resolveTypeAnnotation} = require('./utils');
 const fs = require('fs');
 
 const {
@@ -372,6 +371,7 @@ class TypeScriptParser implements Parser {
     // TODO(T108222691): Use flow-types for @babel/parser
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
+    parser: Parser,
   ): {
     nullable: boolean,
     typeAnnotation: $FlowFixMe,
@@ -406,7 +406,7 @@ class TypeScriptParser implements Parser {
       }
 
       switch (resolvedTypeAnnotation.type) {
-        case 'TSTypeAliasDeclaration': {
+        case parser.typeAlias: {
           typeResolutionStatus = {
             successful: true,
             type: 'alias',
@@ -415,7 +415,7 @@ class TypeScriptParser implements Parser {
           node = resolvedTypeAnnotation.typeAnnotation;
           break;
         }
-        case 'TSInterfaceDeclaration': {
+        case parser.interfaceDeclaration: {
           typeResolutionStatus = {
             successful: true,
             type: 'alias',
@@ -424,7 +424,7 @@ class TypeScriptParser implements Parser {
           node = resolvedTypeAnnotation;
           break;
         }
-        case 'TSEnumDeclaration': {
+        case parser.enumDeclaration: {
           typeResolutionStatus = {
             successful: true,
             type: 'enum',
@@ -435,7 +435,7 @@ class TypeScriptParser implements Parser {
         }
         default: {
           throw new TypeError(
-            `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('TSInterfaceDeclaration'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+            `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}'), an interface ('${parser.interfaceDeclaration}'), or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
           );
         }
       }
@@ -449,7 +449,13 @@ class TypeScriptParser implements Parser {
   }
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
-    return resolveTypeAnnotation;
+    return (
+      typeAnnotation: $FlowFixMe,
+      types: TypeDeclarationMap,
+      parser: Parser,
+    ) => {
+      return this.getResolvedTypeAnnotation(typeAnnotation, types, parser);
+    };
   }
 }
 
