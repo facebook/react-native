@@ -79,6 +79,8 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-FabricImage"
+  s.dependency "React-utils"
+  s.dependency "React-runtimescheduler"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
