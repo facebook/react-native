@@ -82,7 +82,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   _socketId: number;
   _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
-  _binaryType: ?BinaryType;
+  _binaryType: ?BinaryType = 'blob';
 
   onclose: ?Function;
   onerror: ?Function;

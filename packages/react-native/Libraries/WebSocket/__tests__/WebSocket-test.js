@@ -28,4 +28,10 @@ describe('WebSocket', function () {
   it('should have connection lifecycle constants defined on the instance', () => {
     expect(new WebSocket('wss://echo.websocket.org').CONNECTING).toEqual(0);
   });
+
+  it('should have binaryType of blob by default on the instance', () => {
+    expect(new WebSocket('wss://echo.websocket.org').binaryType).toEqual(
+      'blob',
+    );
+  });
 });
