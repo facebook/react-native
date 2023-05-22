@@ -1360,6 +1360,15 @@ public class ReactInstanceManager {
 
     reactContext.initializeWithInstance(catalystInstance);
 
+    if (ReactFeatureFlags.unstable_useRuntimeSchedulerAlways) {
+      // On Old Architecture, we need to initialize the Native Runtime Scheduler so that
+      // the `nativeRuntimeScheduler` object is registered on JS.
+      // On New Architecture, this is normally triggered by instantiate a TurboModuleManager.
+      // Here we invoke getRuntimeScheduler() to trigger the creation of it regardless of the
+      // architecture so it will always be there.
+      catalystInstance.getRuntimeScheduler();
+    }
+
     if (ReactFeatureFlags.useTurboModules && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
