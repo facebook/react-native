@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
+import com.facebook.react.utils.DependencyUtils.getDependencySubstitutions
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
@@ -242,6 +243,48 @@ class DependencyUtilsTest {
     assertTrue(appForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
     assertTrue(libForcedModules.any { it.toString() == "io.github.test:react-android:1.2.3" })
     assertTrue(libForcedModules.any { it.toString() == "io.github.test:hermes-android:1.2.3" })
+  }
+
+  @Test
+  fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly() {
+    val dependencySubstitutions = getDependencySubstitutions("0.42.0")
+
+    assertEquals(dependencySubstitutions[0].first, "com.facebook.react:react-native")
+    assertEquals(dependencySubstitutions[0].second, "com.facebook.react:react-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[0].third,
+        "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
+    assertEquals(dependencySubstitutions[1].first, "com.facebook.react:hermes-engine")
+    assertEquals(dependencySubstitutions[1].second, "com.facebook.react:hermes-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[1].third,
+        "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+  }
+
+  @Test
+  fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly() {
+    val dependencySubstitutions = getDependencySubstitutions("0.42.0", "io.github.test")
+
+    assertEquals(dependencySubstitutions[0].first, "com.facebook.react:react-native")
+    assertEquals(dependencySubstitutions[0].second, "io.github.test:react-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[0].third,
+        "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
+    assertEquals(dependencySubstitutions[1].first, "com.facebook.react:hermes-engine")
+    assertEquals(dependencySubstitutions[1].second, "io.github.test:hermes-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[1].third,
+        "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+    assertEquals(dependencySubstitutions[2].first, "com.facebook.react:react-android")
+    assertEquals(dependencySubstitutions[2].second, "io.github.test:react-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[2].third,
+        "The react-android dependency was modified to use the correct Maven group.")
+    assertEquals(dependencySubstitutions[3].first, "com.facebook.react:hermes-android")
+    assertEquals(dependencySubstitutions[3].second, "io.github.test:hermes-android:0.42.0")
+    assertEquals(
+        dependencySubstitutions[3].third,
+        "The hermes-android dependency was modified to use the correct Maven group.")
   }
 
   @Test
