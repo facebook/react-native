@@ -35,7 +35,6 @@ import type {
   TypeResolutionStatus,
 } from '../utils';
 
-const {resolveTypeAnnotation} = require('./utils');
 const invariant = require('invariant');
 
 const {
@@ -65,7 +64,6 @@ class FlowParser implements Parser {
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
   interfaceDeclaration: string = 'InterfaceDeclaration';
-
   nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
 
   isProperty(property: $FlowFixMe): boolean {
@@ -376,6 +374,7 @@ class FlowParser implements Parser {
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
+    parser: Parser,
   ): {
     nullable: boolean,
     typeAnnotation: $FlowFixMe,
@@ -409,7 +408,7 @@ class FlowParser implements Parser {
       }
 
       switch (resolvedTypeAnnotation.type) {
-        case 'TypeAlias': {
+        case parser.typeAlias: {
           typeResolutionStatus = {
             successful: true,
             type: 'alias',
@@ -418,7 +417,7 @@ class FlowParser implements Parser {
           node = resolvedTypeAnnotation.right;
           break;
         }
-        case 'EnumDeclaration': {
+        case parser.enumDeclaration: {
           typeResolutionStatus = {
             successful: true,
             type: 'enum',
@@ -429,7 +428,7 @@ class FlowParser implements Parser {
         }
         default: {
           throw new TypeError(
-            `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+            `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}') or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
           );
         }
       }
@@ -443,7 +442,8 @@ class FlowParser implements Parser {
   }
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
-    return resolveTypeAnnotation;
+    return (typeAnnotation, types, parser) =>
+      this.getResolvedTypeAnnotation(typeAnnotation, types, parser);
   }
 }
 
