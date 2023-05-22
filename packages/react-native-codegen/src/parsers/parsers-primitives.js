@@ -33,6 +33,7 @@ import type {
   VoidTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
+  NamedShape,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
@@ -146,6 +147,19 @@ function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'StringTypeAnnotation',
   });
+}
+
+function emitStringProp(
+  name: string,
+  optional: boolean,
+): NamedShape<StringTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'StringTypeAnnotation',
+    },
+  };
 }
 
 function typeAliasResolution(
@@ -593,6 +607,7 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
+  emitStringProp,
   emitMixed,
   emitUnion,
   emitPartial,
