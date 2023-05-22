@@ -64,7 +64,7 @@ class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
-  interfaceDelcaration: string = 'InterfaceDeclaration';
+  interfaceDeclaration: string = 'InterfaceDeclaration';
 
   nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
 

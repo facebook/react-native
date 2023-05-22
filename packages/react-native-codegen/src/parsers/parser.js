@@ -94,9 +94,9 @@ export interface Parser {
   enumDeclaration: string;
 
   /**
-   * InterfaceDelcaration property of the Parser
+   * InterfaceDeclaration property of the Parser
    */
-  interfaceDelcaration: string;
+  interfaceDeclaration: string;
 
   /**
    * This is the NullLiteralTypeAnnotation value

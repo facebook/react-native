@@ -62,7 +62,7 @@ export class MockedParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
-  interfaceDelcaration: string = 'InterfaceDelcaration';
+  interfaceDeclaration: string = 'InterfaceDeclaration';
 
   nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
 
