@@ -419,7 +419,7 @@ id ObjCTurboModule::performMethodInvocation(
   };
 
   if (isSync) {
-    block();
+    nativeMethodCallInvoker_->invokeSync(methodNameStr, [&]() -> void { block(); });
     return result;
   } else {
     asyncCallCounter = getUniqueId();
