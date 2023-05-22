@@ -17,13 +17,13 @@ import type {
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
 
-import {emitDoubleProp} from '../../parsers-primitives';
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
+const {emitDoubleProp} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
