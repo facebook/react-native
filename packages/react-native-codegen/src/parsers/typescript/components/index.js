@@ -17,7 +17,10 @@ const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
-const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
+const {
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfTypeAliasIsNotInterface,
+} = require('../../error-utils');
 const {
   createComponentConfig,
   findNativeComponentType,
@@ -73,11 +76,7 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   const types = parser.getTypes(ast);
   const typeAlias = types[commandTypeName];
 
-  if (typeAlias.type !== 'TSInterfaceDeclaration') {
-    throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
-    );
-  }
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
 
   const properties = parser.bodyProperties(typeAlias);
   if (!properties) {
