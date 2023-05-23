@@ -135,6 +135,29 @@ class ModuleNativeMethodCallInvoker : public NativeMethodCallInvoker {
     work();
   }
 };
+
+class LegacyModuleNativeMethodCallInvoker : public ModuleNativeMethodCallInvoker {
+  bool requiresMainQueueSetup_;
+
+ public:
+  LegacyModuleNativeMethodCallInvoker(dispatch_queue_t methodQueue, bool requiresMainQueueSetup)
+      : ModuleNativeMethodCallInvoker(methodQueue), requiresMainQueueSetup_(requiresMainQueueSetup)
+  {
+  }
+
+  void invokeSync(const std::string &methodName, std::function<void()> &&work) override
+  {
+    if (requiresMainQueueSetup_ && methodName == "getConstants") {
+      __block auto retainedWork = std::move(work);
+      RCTUnsafeExecuteOnMainQueueSync(^{
+        retainedWork();
+      });
+      return;
+    }
+
+    ModuleNativeMethodCallInvoker::invokeSync(methodName, std::move(work));
+  }
+};
 }
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
@@ -375,7 +398,7 @@ static Class getFallbackClassFromName(const char *name)
 
   // Create a native call invoker from module's method queue
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
+      std::make_shared<LegacyModuleNativeMethodCallInvoker>(methodQueue, [self _requiresMainQueueSetup:moduleClass]);
 
   // If module is a legacy cxx module, return TurboCxxModule
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
