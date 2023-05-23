@@ -230,6 +230,14 @@ Pod::Spec.new do |s|
     end
   end
 
+  s.subspec "debug_renderer" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/debug/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/renderer/debug/tests"
+    ss.header_dir           = "react/renderer/debug"
+  end
+
   s.subspec "imagemanager" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags

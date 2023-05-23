@@ -27,8 +27,8 @@
 #import <React/JSCExecutorFactory.h>
 #endif
 
-#import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTDataRequestHandler.h>
@@ -45,7 +45,6 @@
 #import <ReactCommon/RuntimeExecutor.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-#import <react/utils/ManagedObjectWrapper.h>
 
 #import <cxxreact/JSExecutor.h>
 
@@ -89,47 +88,6 @@
 @end
 
 using namespace facebook::react;
-
-// This is copied from RCTSurfacePresenterBridgeAdapter.mm.
-// It had to be copied to prevent circular dependency.
-static facebook::react::RuntimeExecutor _RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
-{
-  RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil.");
-
-  auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
-
-  facebook::react::RuntimeExecutor runtimeExecutor =
-      [bridgeWeakWrapper](std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-        RCTBridge *bridge = unwrapManagedObjectWeakly(bridgeWeakWrapper);
-
-        RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of scheduling a call.");
-
-        [bridge invokeAsync:[bridgeWeakWrapper, callback = std::move(callback)]() {
-          RCTCxxBridge *batchedBridge = (RCTCxxBridge *)unwrapManagedObjectWeakly(bridgeWeakWrapper);
-
-          RCTAssert(
-              batchedBridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of invocation.");
-
-          if (!batchedBridge) {
-            return;
-          }
-
-          auto runtime = (facebook::jsi::Runtime *)(batchedBridge.runtime);
-
-          RCTAssert(
-              runtime,
-              @"RCTRuntimeExecutorFromBridge: Bridge must have a valid jsi::Runtime at the moment of invocation.");
-
-          if (!runtime) {
-            return;
-          }
-
-          callback(*runtime);
-        }];
-      };
-
-  return runtimeExecutor;
-}
 
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
@@ -264,7 +222,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   std::shared_ptr<facebook::react::CallInvoker> callInvoker = bridge.jsCallInvoker;
-  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(_RCTRuntimeExecutorFromBridge(bridge));
+  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
 
 #ifdef RN_FABRIC_ENABLED
   _contextContainer->erase("RuntimeScheduler");
