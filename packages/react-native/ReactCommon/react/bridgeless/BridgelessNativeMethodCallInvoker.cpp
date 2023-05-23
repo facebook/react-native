@@ -5,19 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "BridgelessNativeCallInvoker.h"
+#include "BridgelessNativeMethodCallInvoker.h"
 
 namespace facebook::react {
 
-BridgelessNativeCallInvoker::BridgelessNativeCallInvoker(
+BridgelessNativeMethodCallInvoker::BridgelessNativeMethodCallInvoker(
     std::shared_ptr<MessageQueueThread> messageQueueThread)
     : messageQueueThread_(std::move(messageQueueThread)) {}
 
-void BridgelessNativeCallInvoker::invokeAsync(std::function<void()> &&func) {
+void BridgelessNativeMethodCallInvoker::invokeAsync(
+    const std::string &methodName,
+    std::function<void()> &&func) {
   messageQueueThread_->runOnQueue(std::move(func));
 }
 
-void BridgelessNativeCallInvoker::invokeSync(std::function<void()> &&func) {
+void BridgelessNativeMethodCallInvoker::invokeSync(
+    const std::string &methodName,
+    std::function<void()> &&func) {
   messageQueueThread_->runOnQueueSync(std::move(func));
 }
 

@@ -43,7 +43,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     std::string moduleName;
     id<RCTBridgeModule> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
-    std::shared_ptr<CallInvoker> nativeInvoker;
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
     bool isSyncModule;
   };
 
@@ -58,7 +58,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       size_t count);
 
   id<RCTBridgeModule> instance_;
-  std::shared_ptr<CallInvoker> nativeInvoker_;
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
@@ -159,6 +159,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  */
 @interface RCTBridge (RCTTurboModule)
 - (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
-- (std::shared_ptr<facebook::react::CallInvoker>)decorateNativeCallInvoker:
-    (std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker;
+- (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
+    (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)nativeMethodCallInvoker;
 @end

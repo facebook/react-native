@@ -12,12 +12,14 @@
 
 namespace facebook::react {
 
-class BridgelessNativeCallInvoker : public CallInvoker {
+class BridgelessNativeMethodCallInvoker : public NativeMethodCallInvoker {
  public:
-  explicit BridgelessNativeCallInvoker(
+  explicit BridgelessNativeMethodCallInvoker(
       std::shared_ptr<MessageQueueThread> messageQueueThread);
-  void invokeAsync(std::function<void()> &&func) override;
-  void invokeSync(std::function<void()> &&func) override;
+  void invokeAsync(const std::string &methodName, std::function<void()> &&func)
+      override;
+  void invokeSync(const std::string &methodName, std::function<void()> &&func)
+      override;
 
  private:
   std::shared_ptr<MessageQueueThread> messageQueueThread_;

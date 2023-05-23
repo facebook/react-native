@@ -28,6 +28,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -111,7 +112,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
-  public native CallInvokerHolderImpl getNativeCallInvokerHolder();
+  public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
