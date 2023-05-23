@@ -312,7 +312,17 @@ static void attemptAsynchronousLoadOfBundleAtURL(
           return;
         }
 
-        RCTSource *source = RCTSourceCreate(scriptURL, data, data.length);
+        // Prefer `Content-Location` as the canonical source URL, if given, or fall back to scriptURL.
+        NSURL *sourceURL = scriptURL;
+        NSString *contentLocationHeader = headers[@"Content-Location"];
+        if (contentLocationHeader) {
+          NSURL *contentLocationURL = [NSURL URLWithString:contentLocationHeader relativeToURL:scriptURL];
+          if (contentLocationURL) {
+            sourceURL = contentLocationURL;
+          }
+        }
+
+        RCTSource *source = RCTSourceCreate(sourceURL, data, data.length);
         parseHeaders(headers, source);
         onComplete(nil, source);
       }
