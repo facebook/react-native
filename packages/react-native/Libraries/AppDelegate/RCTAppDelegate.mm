@@ -8,6 +8,7 @@
 #import "RCTAppDelegate.h"
 #import <React/RCTRootView.h>
 #import "RCTAppSetupUtils.h"
+#import <React/RCTRuntimeExecutorFromBridge.h>
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
