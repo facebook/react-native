@@ -8,6 +8,7 @@
 #include "RuntimeSchedulerBinding.h"
 #include <ReactCommon/SchedulerPriority.h>
 #include "SchedulerPriorityUtils.h"
+#include "RuntimeScheduler.h"
 #include "primitives.h"
 
 #include <chrono>

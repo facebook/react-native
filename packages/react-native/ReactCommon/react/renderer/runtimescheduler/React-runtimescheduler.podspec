@@ -23,6 +23,11 @@ header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
 ]
 
+if ENV['USE_FRAMEWORKS']
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" #this is needed to allow the RuntimeScheduler access its own files
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+end
+
 Pod::Spec.new do |s|
   s.name                   = "React-runtimescheduler"
   s.version                = version
@@ -35,10 +40,10 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/renderer/runtimescheduler"
-  s.exclude_files          = "tests" 
-  s.pod_target_xcconfig    = { 
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", 
-    "HEADER_SEARCH_PATH" => header_search_paths.join(' ')}
+  s.exclude_files          = "tests"
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_runtimescheduler"
@@ -49,5 +54,13 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimeexecutor"
   s.dependency "React-callinvoker"
   s.dependency "React-debug"
+  s.dependency "glog"
   s.dependency "RCT-Folly", folly_version
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsi"
+  end
+
 end

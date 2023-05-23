@@ -6,6 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#ifdef __cplusplus
 #import <ReactCommon/RuntimeExecutor.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,3 +16,4 @@ NS_ASSUME_NONNULL_BEGIN
 facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge);
 
 NS_ASSUME_NONNULL_END
+#endif

@@ -21,7 +21,13 @@ folly_version = '2021.07.22.00'
 
 header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_TARGET_SRCROOT)\"",
+    "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
 ]
+
+if ENV["USE_FRAMEWORKS"]
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+end
 
 Pod::Spec.new do |s|
   s.name                   = "React-utils"
@@ -35,16 +41,17 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{cpp,h,mm}"
   s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/utils"
-  s.exclude_files          = "tests" 
-  s.pod_target_xcconfig    = { 
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", 
-    "HEADER_SEARCH_PATH" => header_search_paths.join(' ')}
+  s.exclude_files          = "tests"
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_utils"
-    s.header_mappings_dir  = "../../.."
+    s.header_mappings_dir  = "../.."
   end
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-debug"
+  s.dependency "glog"
 end

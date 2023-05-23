@@ -101,12 +101,20 @@ generateArtifacts () {
 }
 
 moveOutputs () {
-    mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
+    if [[ "$RCT_SCRIPT_LIBRARY_TYPE" == "components" ]]; then
+      outputDir="$RCT_SCRIPT_POD_INSTALLATION_ROOT/$RCT_SCRIPT_CODEGEN_COMPONENT_DIR/$RCT_SCRIPT_LIBRARY_NAME"
+    elif [[ "$RCT_SCRIPT_LIBRARY_TYPE" == "modules" ]]; then
+      outputDir="$RCT_SCRIPT_POD_INSTALLATION_ROOT/$RCT_SCRIPT_CODEGEN_MODULE_DIR/$RCT_SCRIPT_LIBRARY_NAME"
+    else
+      outputDir="$RCT_SCRIPT_OUTPUT_DIR"
+    fi
+
+    mkdir -p "$outputDir"
 
     # Copy all output to output_dir
-    cp -R "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
-    echo "$LIBRARY_NAME output has been written to $RCT_SCRIPT_OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
-    ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+    cp -R "$TEMP_OUTPUT_DIR/." "$outputDir" || exit 1
+    echo "$LIBRARY_NAME output has been written to $outputDir:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+    ls -1 "$outputDir" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
 }
 
 withCodegenDiscovery () {
@@ -126,9 +134,12 @@ noCodegenDiscovery () {
     moveOutputs
 }
 
+echo "Running codegen from Xcode"
 if [ "$RCT_SCRIPT_TYPE" = "withCodegenDiscovery" ]; then
+    echo "using withCodegenDiscovery."
     withCodegenDiscovery "$@"
 else
+    echo "using noCodegenDiscovery."
     noCodegenDiscovery "$@"
 fi
 
