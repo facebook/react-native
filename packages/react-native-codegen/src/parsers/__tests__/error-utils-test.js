@@ -1001,7 +1001,9 @@ describe('throwIfTypeAliasIsNotInterface', () => {
   const typescriptParser = new TypeScriptParser();
 
   it('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
-    const typeAlias = {};
+    const typeAlias = {
+        type: ''
+    };
     expect(() => {
       throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
     }).toThrowError(
@@ -1019,7 +1021,9 @@ describe('throwIfTypeAliasIsNotInterface', () => {
   });
 
   it('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
-    const typeAlias = {};
+    const typeAlias = {
+        type: ''
+    };
     expect(() => {
       throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
     }).toThrowError(
