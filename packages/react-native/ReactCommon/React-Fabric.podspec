@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "DoubleConversion"
   s.dependency "React-Core"
+  s.dependency "React-debug"
   s.dependency "React-utils"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
