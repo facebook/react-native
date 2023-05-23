@@ -1002,7 +1002,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
 
   it('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
     const typeAlias = {
-        type: ''
+      type: '',
     };
     expect(() => {
       throwIfTypeAliasIsNotInterface(typeAlias, flowParser);
@@ -1022,7 +1022,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
 
   it('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
     const typeAlias = {
-        type: ''
+      type: '',
     };
     expect(() => {
       throwIfTypeAliasIsNotInterface(typeAlias, typescriptParser);
