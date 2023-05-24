@@ -553,6 +553,13 @@ export default class Pressability {
           return;
         }
 
+        // for non-pointer click events (e.g. accessibility clicks), we should only dispatch when we're the "real" target
+        // in particular, we shouldn't respond to clicks from nested pressables
+        if (event?.currentTarget !== event?.target) {
+          event?.stopPropagation();
+          return;
+        }
+
         const {onPress, disabled} = this._config;
         if (onPress != null && disabled !== true) {
           onPress(event);
