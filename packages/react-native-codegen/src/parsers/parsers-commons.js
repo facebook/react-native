@@ -41,6 +41,7 @@ const {
   isModuleRegistryCall,
   verifyPlatforms,
 } = require('./utils');
+
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
@@ -55,6 +56,9 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
 } = require('./error-utils');
 
 const {
@@ -898,6 +902,37 @@ function getEventArgument(
   };
 }
 
+/* $FlowFixMe[signature-verification-failure] there's no flowtype for AST.
+ * TODO(T108222691): Use flow-types for @babel/parser */
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
+
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  defaultExports.forEach(statement => {
+    findNativeComponentType(statement, foundConfigs, parser);
+  });
+
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
+
+  const foundConfig = foundConfigs[0];
+
+  const namedExports = ast.body.filter(
+    node => node.type === 'ExportNamedDeclaration',
+  );
+
+  const commandsTypeNames = namedExports
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
+    .filter(Boolean);
+
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+
+  return createComponentConfig(foundConfig, commandsTypeNames);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -920,4 +955,5 @@ module.exports = {
   extendsForProp,
   buildPropSchema,
   getEventArgument,
+  findComponentConfig,
 };
