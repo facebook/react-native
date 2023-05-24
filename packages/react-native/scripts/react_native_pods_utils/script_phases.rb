@@ -9,7 +9,6 @@ require "erb"
 
 def get_script_phases_with_codegen_discovery(options)
     export_vars = {
-        'RCT_SCRIPT_POD_INSTALLATION_ROOT' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT",
         'RCT_SCRIPT_RN_DIR' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:react_native_path]}",
         'RCT_SCRIPT_APP_PATH' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:relative_app_root]}",
         'RCT_SCRIPT_CONFIG_FILE_DIR' => "#{options[:relative_config_file_dir] != '' ? "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:relative_config_file_dir]}" : ''}",
@@ -22,7 +21,6 @@ end
 
 def get_script_phases_no_codegen_discovery(options)
     export_vars = {
-        'RCT_SCRIPT_POD_INSTALLATION_ROOT' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT",
         'RCT_SCRIPT_RN_DIR' => "${PODS_TARGET_SRCROOT}/#{options[:react_native_path]}",
         'RCT_SCRIPT_LIBRARY_NAME' => "#{options[:library_name]}",
         'RCT_SCRIPT_OUTPUT_DIR' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:codegen_output_dir]}",
