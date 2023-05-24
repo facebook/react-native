@@ -88,7 +88,7 @@ describe('publish-npm', () => {
         true,
       );
       expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native dist-tags.next`,
+        `npm view react-native@next version`,
       );
       expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,
@@ -111,7 +111,7 @@ describe('publish-npm', () => {
 
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
       expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native dist-tags.next`,
+        `npm view react-native@next version`,
       );
       expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,
