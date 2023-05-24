@@ -328,21 +328,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         if (!args.isNull(1)) {
           String text = args.getString(1);
-          reactEditText.maybeSetTextFromJS(
-              getReactTextUpdate(text, mostRecentEventCount, start, end));
+          reactEditText.maybeSetTextFromJS(getReactTextUpdate(text, mostRecentEventCount));
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
   }
 
-  private ReactTextUpdate getReactTextUpdate(
-      String text, int mostRecentEventCount, int start, int end) {
+  private ReactTextUpdate getReactTextUpdate(String text, int mostRecentEventCount) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0, start, end);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0);
   }
 
   @Override
@@ -373,9 +371,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
       // Ensure that selection is handled correctly on text update
       boolean isCurrentSelectionEmpty = view.getSelectionStart() == view.getSelectionEnd();
-      int selectionStart = update.getSelectionStart();
-      int selectionEnd = update.getSelectionEnd();
-      if ((selectionStart == UNSET || selectionEnd == UNSET) && isCurrentSelectionEmpty) {
+      int selectionStart = UNSET;
+      int selectionEnd = UNSET;
+      if (isCurrentSelectionEmpty) {
         // if selection is not set by state, shift current selection to ensure constant gap to
         // text end
         int textLength = view.getText() == null ? 0 : view.getText().length();
@@ -507,7 +505,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, String placeholder) {
-    view.setHint(placeholder);
+    view.setPlaceholder(placeholder);
   }
 
   @ReactProp(name = "placeholderTextColor", customType = "Color")
