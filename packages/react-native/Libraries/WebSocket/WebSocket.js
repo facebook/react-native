@@ -82,7 +82,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
   _socketId: number;
   _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
-  _binaryType: ?BinaryType = 'blob';
+  _binaryType: ?BinaryType;
 
   onclose: ?Function;
   onerror: ?Function;
@@ -146,6 +146,10 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): any) {
     this._socketId = nextWebSocketId++;
     this._registerEvents();
     NativeWebSocketModule.connect(url, protocols, {headers}, this._socketId);
+
+    if (BlobManager.isAvailable) {
+      this.binaryType = 'blob';
+    }
   }
 
   get binaryType(): ?BinaryType {

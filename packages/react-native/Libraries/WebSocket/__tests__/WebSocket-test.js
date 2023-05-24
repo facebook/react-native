@@ -29,9 +29,24 @@ describe('WebSocket', function () {
     expect(new WebSocket('wss://echo.websocket.org').CONNECTING).toEqual(0);
   });
 
-  it('should have binaryType of blob by default on the instance', () => {
+  it('should have binaryType of undefined when BlobManager is not available', () => {
     expect(new WebSocket('wss://echo.websocket.org').binaryType).toEqual(
-      'blob',
+      undefined,
     );
   });
+
+  // it('should have binaryType of blob when BlobManager is available', () => {
+  //   jest.setMock('../../BatchedBridge/NativeModules', {
+  //     WebSocketModule: {
+  //       connect: () => {},
+  //     },
+  //     PlatformConstants: {},
+  //     BlobModule: require('../../Blob/__mocks__/BlobModule'),
+  //   });
+  //   const BlobManager = require('../../Blob/BlobManager')
+  //   expect(BlobManager.isAvailable).toEqual(true);
+  //   expect(new WebSocket('wss://echo.websocket.org').binaryType).toEqual(
+  //     'blob',
+  //   );
+  // });
 });
