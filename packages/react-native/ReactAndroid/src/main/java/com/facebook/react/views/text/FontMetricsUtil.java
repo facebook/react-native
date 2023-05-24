@@ -71,10 +71,12 @@ public class FontMetricsUtil {
           break;
         }
 
+        int offset = layout.getLineEnd(i) >= textLayoutRegion.getInt(1) ? 0 : 1; 
+
         Rect regionBounds = new Rect(
           (int)layout.getPrimaryHorizontal(startIndex),
           bounds.top,
-          (int)layout.getPrimaryHorizontal(endIndex - 1),
+          (int)layout.getPrimaryHorizontal(endIndex - offset),
           bounds.bottom);
 
         WritableMap region = Arguments.createMap();
