@@ -184,7 +184,7 @@ class CodegenTests < Test::Unit::TestCase
 
     def testCheckAndGenerateEmptyThirdPartyProvider_withAbsoluteReactNativePath_buildCodegen()
         # Arrange
-        rn_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`)
+        rn_path = '/Users/distiller/react-native/packages/react-native'
         codegen_cli_path = rn_path + "/../@react-native/codegen"
         DirMock.mocked_existing_dirs([
             codegen_cli_path,
