@@ -27,6 +27,7 @@ type Props = $ReadOnly<{|
   hitSlop?: ?EdgeInsetsProp,
   onPress?: ?(event: PressEvent) => void,
   style?: ViewStyleProp,
+  testID?: string,
 |}>;
 
 function LogBoxButton(props: Props): React.Node {
@@ -61,7 +62,8 @@ function LogBoxButton(props: Props): React.Node {
       hitSlop={props.hitSlop}
       onPress={props.onPress}
       onPressIn={() => setPressed(true)}
-      onPressOut={() => setPressed(false)}>
+      onPressOut={() => setPressed(false)}
+      testID={props?.testID}>
       {content}
     </TouchableWithoutFeedback>
   );

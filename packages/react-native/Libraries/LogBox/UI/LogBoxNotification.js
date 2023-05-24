@@ -32,6 +32,8 @@ type Props = $ReadOnly<{
 function LogBoxLogNotification(props: Props): React.Node {
   const {totalLogCount, level, log} = props;
 
+  const testID = `log-box-notification-wrapper-${level}`;
+
   // Eagerly symbolicate so the stack is available when pressing to inspect.
   React.useEffect(() => {
     LogBoxData.symbolicateLogLazy(log);
@@ -42,28 +44,40 @@ function LogBoxLogNotification(props: Props): React.Node {
       <LogBoxButton
         onPress={props.onPressOpen}
         style={toastStyles.press}
+        testID={testID}
         backgroundColor={{
           default: LogBoxStyle.getBackgroundColor(1),
           pressed: LogBoxStyle.getBackgroundColor(0.9),
         }}>
         <View style={toastStyles.content}>
-          <CountBadge count={totalLogCount} level={level} />
-          <Message message={log.message} />
-          <DismissButton onPress={props.onPressDismiss} />
+          <CountBadge
+            count={totalLogCount}
+            level={level}
+            testID="log-box-count"
+          />
+          <Message message={log.message} testID="log-box-message" />
+          <DismissButton
+            onPress={props.onPressDismiss}
+            testID="log-box-dismiss-button"
+          />
         </View>
       </LogBoxButton>
     </View>
   );
 }
 
-function CountBadge(props: {count: number, level: 'error' | 'warn'}) {
+function CountBadge(props: {
+  count: number,
+  level: 'error' | 'warn',
+  testID?: string,
+}) {
   return (
     <View style={countStyles.outside}>
       {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
        * when fixing the type of `StyleSheet.create`. Remove this comment to
        * see the error. */}
       <View style={[countStyles.inside, countStyles[props.level]]}>
-        <Text style={countStyles.text}>
+        <Text style={countStyles.text} testID={props?.testID}>
           {props.count <= 1 ? '!' : props.count}
         </Text>
       </View>
@@ -71,10 +85,10 @@ function CountBadge(props: {count: number, level: 'error' | 'warn'}) {
   );
 }
 
-function Message(props: {message: MessageType}) {
+function Message(props: {message: MessageType, testID?: string}) {
   return (
     <View style={messageStyles.container}>
-      <Text numberOfLines={1} style={messageStyles.text}>
+      <Text numberOfLines={1} style={messageStyles.text} testID={props?.testID}>
         {props.message && (
           <LogBoxMessage
             plaintext
@@ -87,7 +101,7 @@ function Message(props: {message: MessageType}) {
   );
 }
 
-function DismissButton(props: {onPress: () => void}) {
+function DismissButton(props: {onPress: () => void, testID?: string}) {
   return (
     <View style={dismissStyles.container}>
       <LogBoxButton
@@ -102,7 +116,8 @@ function DismissButton(props: {onPress: () => void}) {
           left: 10,
         }}
         onPress={props.onPress}
-        style={dismissStyles.press}>
+        style={dismissStyles.press}
+        testID={props?.testID}>
         <Image
           source={require('./LogBoxImages/close.png')}
           style={dismissStyles.image}
