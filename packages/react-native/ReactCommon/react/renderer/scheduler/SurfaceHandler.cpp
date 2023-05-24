@@ -325,11 +325,9 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      link_.status == Status::Unregistered &&
-  //      "`SurfaceHandler` must be unregistered (or moved-from) before
-  //      deallocation.");
+  react_native_assert(
+      link_.status == Status::Unregistered &&
+      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
 }
 
 } // namespace facebook::react
