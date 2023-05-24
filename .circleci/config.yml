@@ -62,7 +62,8 @@ references:
     hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
@@ -314,11 +315,24 @@ commands:
       - run:
           name: Get React Native version
           command: |
-            VERSION=$( grep '"version"' packages/react-native/package.json | cut -d '"' -f 4 | head -1)
+            VERSION=$(cat packages/react-native/package.json | jq -r '.version')
             # Save the react native version we are building in a file so we can use that file as part of the cache key.
             echo "$VERSION" > /tmp/react-native-version
             echo "React Native Version is $(cat /tmp/react-native-version)"
-            echo "Hermes commit is $(cat /tmp/hermes/hermesversion)"
+            HERMES_VERSION="$(cat /tmp/hermes/hermesversion)"
+            echo "Hermes commit is $HERMES_VERSION"
+
+  get_react_native_version_windows:
+    steps:
+      - run:
+          name: Get React Native version on Windows
+          command: |
+            $VERSION=cat packages/react-native/package.json | jq -r '.version'
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
+            echo "React Native Version is $(cat /tmp/react-native-version)"
+            $HERMES_VERSION=cat C:\Users\circleci\project\tmp\hermes\hermesversion
+            echo "Hermes commit is $HERMES_VERSION"
 
   with_hermes_tarball_cache_span:
     parameters:
@@ -729,7 +743,7 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
-      
+
       - store_test_results:
           path: ~/react-native/packages/react-native/ReactAndroid/build/test-results
 
@@ -1146,17 +1160,18 @@ jobs:
     docker:
       - image: debian:bullseye
     resource_class: "xlarge"
-    working_directory: /root
     steps:
+      - checkout_code_with_cache
       - run:
           name: Install dependencies
           command: |
             apt update
             apt install -y git openssh-client cmake build-essential \
-                libreadline-dev libicu-dev zip python3
+                libreadline-dev libicu-dev jq zip python3
       - *attach_hermes_workspace
+      - get_react_native_version
       - restore_cache:
-          key: *hermes_workspace_cache_key
+          key: *hermes_linux_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -1175,7 +1190,7 @@ jobs:
               cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
             fi
       - save_cache:
-          key: *hermes_workspace_cache_key
+          key: *hermes_linux_cache_key
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
@@ -1296,7 +1311,9 @@ jobs:
       - MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       - CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
+      - checkout_code_with_cache
       - *attach_hermes_workspace
+      - get_react_native_version_windows
       - restore_cache:
           key: *hermes_windows_cache_key
       - run:

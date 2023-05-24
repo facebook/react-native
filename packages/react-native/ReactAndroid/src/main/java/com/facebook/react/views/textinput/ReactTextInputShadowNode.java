@@ -14,9 +14,11 @@ import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -263,6 +265,13 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
    * {@code EditText} this class uses to determine the expected size of the view.
    */
   protected EditText createInternalEditText() {
-    return new EditText(getThemedContext());
+    // By setting a style which has a background drawable, this EditText will have a different
+    // background drawable instance from that on the UI Thread, which maybe has a default background
+    // drawable instance.
+    // Otherwise, DrawableContainer is not a thread safe class, and it caused the npe in #29452.
+    ContextThemeWrapper context =
+        new ContextThemeWrapper(
+            getThemedContext(), R.style.Theme_ReactNative_TextInput_DefaultBackground);
+    return new EditText(context);
   }
 }

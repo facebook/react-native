@@ -24,8 +24,11 @@ import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/Point
 import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
 import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
 import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
+import PointerEventClickTouch from './W3CPointerEventPlatformTests/PointerEventClickTouch';
+import PointerEventClickTouchHierarchy from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchy';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
+import PointerEventClickTouchHierarchyPointerEvents from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchyPointerEvents';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
   return (
@@ -234,6 +237,27 @@ export default {
       title: 'WPT 11: Pointer Events pointercancel Tests',
       render(): React.Node {
         return <PointerEventPointerCancelTouch />;
+      },
+    },
+    {
+      name: 'pointerevent_click_touch',
+      title: 'Pointer Events: basic click test',
+      render(): React.Node {
+        return <PointerEventClickTouch />;
+      },
+    },
+    {
+      name: 'pointerevent_click_touch_hierarchy',
+      title: 'Pointer Events: hierarchy click test',
+      render(): React.Node {
+        return <PointerEventClickTouchHierarchy />;
+      },
+    },
+    {
+      name: 'pointerevent_click_touch_hierarchy_pointerEvents',
+      title: 'Pointer Events: hierarchy click test with pointerEvents',
+      render(): React.Node {
+        return <PointerEventClickTouchHierarchyPointerEvents />;
       },
     },
     {
