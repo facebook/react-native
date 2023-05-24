@@ -11,8 +11,9 @@
 # - dir_manager: a class that implements the `Dir` interface. Defaults to `Dir`, the Dependency can be injected for testing purposes.
 # @throws an error if it could not find the codegen folder.
 def build_codegen!(react_native_path, relative_installation_root, dir_manager: Dir)
-    codegen_repo_path = "#{relative_installation_root}/#{react_native_path}/../react-native-codegen";
-    codegen_npm_path = "#{relative_installation_root}/#{react_native_path}/../@react-native/codegen";
+    is_react_native_path_absolute = react_native_path.start_with?("/")
+    codegen_repo_path = "#{is_react_native_path_absolute ? '' : relative_installation_root.to_s + '/'}#{react_native_path}/../react-native-codegen";
+    codegen_npm_path = "#{is_react_native_path_absolute ? '' : relative_installation_root.to_s + '/'}#{react_native_path}/../@react-native/codegen";
     codegen_cli_path = ""
 
     if dir_manager.exist?(codegen_repo_path)
@@ -40,6 +41,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled
     return if new_arch_enabled
 
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
+    is_react_native_path_absolute = react_native_path.start_with?("/")
 
     output_dir = "#{react_native_path}/React/Fabric"
 
@@ -61,7 +63,7 @@ def checkAndGenerateEmptyThirdPartyProvider!(react_native_path, new_arch_enabled
         Pod::Executable.execute_command(
         'node',
         [
-            "#{relative_installation_root}/#{react_native_path}/scripts/generate-provider-cli.js",
+            "#{is_react_native_path_absolute ? '' : relative_installation_root.to_s + '/'}#{react_native_path}/scripts/generate-provider-cli.js",
             "--platform", 'ios',
             "--schemaListPath", temp_schema_list_path,
             "--outputDir", "#{output_dir}"
