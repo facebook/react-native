@@ -61,22 +61,28 @@ public class FontMetricsUtil {
       line.putString(
           "text", text.subSequence(layout.getLineStart(i), layout.getLineEnd(i)).toString());
 
-      for (int j = 0; j < textLayoutRegions.getCount(); j++) {
+      lines.pushMap(line);
+    }
+
+    for (int j = 0; j < textLayoutRegions.getCount(); j++) {
+      for (int i = 0; i < layout.getLineCount(); i++) {
+        Rect bounds = new Rect();
+        layout.getLineBounds(i, bounds);
+
         MapBuffer textLayoutRegion = textLayoutRegions.getMapBuffer(j);
 
+        int offset = layout.getLineEnd(i) >= textLayoutRegion.getInt(1) ? 0 : 1; 
         int startIndex = Math.max(layout.getLineStart(i), textLayoutRegion.getInt(0));
-        int endIndex = Math.min(layout.getLineEnd(i), textLayoutRegion.getInt(1));
+        int endIndex = Math.min(layout.getLineEnd(i), textLayoutRegion.getInt(1)) - offset;
 
-        if (startIndex > endIndex) {
+        if (startIndex > endIndex + 1) {
           break;
         }
-
-        int offset = layout.getLineEnd(i) >= textLayoutRegion.getInt(1) ? 0 : 1; 
 
         Rect regionBounds = new Rect(
           (int)layout.getPrimaryHorizontal(startIndex),
           bounds.top,
-          (int)layout.getPrimaryHorizontal(endIndex - offset),
+          (int)layout.getPrimaryHorizontal(endIndex),
           bounds.bottom);
 
         WritableMap region = Arguments.createMap();
@@ -89,8 +95,6 @@ public class FontMetricsUtil {
         region.putInt("line", i);
         regions.pushMap(region);
       }
-
-      lines.pushMap(line);
     }
 
     WritableMap textLayoutMetrics = Arguments.createMap();
