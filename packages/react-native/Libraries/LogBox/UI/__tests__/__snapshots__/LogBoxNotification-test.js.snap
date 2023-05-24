@@ -31,6 +31,7 @@ exports[`LogBoxNotification should render log 1`] = `
         "width": "100%",
       }
     }
+    testID="log-box-notification-wrapper-warn"
   >
     <View
       style={
@@ -47,6 +48,7 @@ exports[`LogBoxNotification should render log 1`] = `
       <CountBadge
         count={1}
         level="warn"
+        testID="log-box-count"
       />
       <Message
         message={
@@ -55,9 +57,11 @@ exports[`LogBoxNotification should render log 1`] = `
             "substitutions": Array [],
           }
         }
+        testID="log-box-message"
       />
       <DismissButton
         onPress={[Function]}
+        testID="log-box-dismiss-button"
       />
     </View>
   </LogBoxButton>
