@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.Spacing;
@@ -44,13 +43,10 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   @VisibleForTesting public static final String PROP_TEXT = "text";
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
-  @VisibleForTesting public static final String PROP_SELECTION = "selection";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
   private @Nullable String mPlaceholder = null;
-  private int mSelectionStart = UNSET;
-  private int mSelectionEnd = UNSET;
 
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
@@ -165,18 +161,6 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   @ReactProp(name = PROP_TEXT)
   public void setText(@Nullable String text) {
     mText = text;
-    if (text != null) {
-      // The selection shouldn't be bigger than the length of the text
-      if (mSelectionStart > text.length()) {
-        mSelectionStart = text.length();
-      }
-      if (mSelectionEnd > text.length()) {
-        mSelectionEnd = text.length();
-      }
-    } else {
-      mSelectionStart = UNSET;
-      mSelectionEnd = UNSET;
-    }
     markUpdated();
   }
 
@@ -192,18 +176,6 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   public @Nullable String getPlaceholder() {
     return mPlaceholder;
-  }
-
-  @ReactProp(name = PROP_SELECTION)
-  public void setSelection(@Nullable ReadableMap selection) {
-    mSelectionStart = mSelectionEnd = UNSET;
-    if (selection == null) return;
-
-    if (selection.hasKey("start") && selection.hasKey("end")) {
-      mSelectionStart = selection.getInt("start");
-      mSelectionEnd = selection.getInt("end");
-      markUpdated();
-    }
   }
 
   @Override
@@ -245,9 +217,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               getPadding(Spacing.BOTTOM),
               mTextAlign,
               mTextBreakStrategy,
-              mJustificationMode,
-              mSelectionStart,
-              mSelectionEnd);
+              mJustificationMode);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

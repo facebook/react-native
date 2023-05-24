@@ -27,32 +27,6 @@
 namespace facebook {
 namespace react {
 
-struct AndroidTextInputSelectionStruct {
-  int start;
-  int end;
-};
-
-static inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AndroidTextInputSelectionStruct &result) {
-  auto map = (butter::map<std::string, RawValue>)value;
-
-  auto start = map.find("start");
-  if (start != map.end()) {
-    fromRawValue(context, start->second, result.start);
-  }
-  auto end = map.find("end");
-  if (end != map.end()) {
-    fromRawValue(context, end->second, result.end);
-  }
-}
-
-static inline std::string toString(
-    const AndroidTextInputSelectionStruct &value) {
-  return "[Object AndroidTextInputSelectionStruct]";
-}
-
 struct AndroidTextInputTextShadowOffsetStruct {
   double width;
   double height;
@@ -85,13 +59,6 @@ inline folly::dynamic toDynamic(
   folly::dynamic dynamicValue = folly::dynamic::object();
   dynamicValue["width"] = value.width;
   dynamicValue["height"] = value.height;
-  return dynamicValue;
-}
-
-inline folly::dynamic toDynamic(const AndroidTextInputSelectionStruct &value) {
-  folly::dynamic dynamicValue = folly::dynamic::object();
-  dynamicValue["start"] = value.start;
-  dynamicValue["end"] = value.end;
   return dynamicValue;
 }
 #endif
@@ -138,7 +105,6 @@ class AndroidTextInputProps final : public ViewProps, public BaseTextProps {
   SharedColor placeholderTextColor{};
   bool secureTextEntry{false};
   SharedColor selectionColor{};
-  AndroidTextInputSelectionStruct selection{};
   std::string value{};
   std::string defaultValue{};
   bool selectTextOnFocus{false};
