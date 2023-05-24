@@ -1308,11 +1308,7 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedReactRoots) {
       for (ReactRoot reactRoot : mAttachedReactRoots) {
-        if (ReactFeatureFlags.unmountApplicationOnInstanceDetach) {
-          detachRootViewFromInstance(reactRoot, reactContext);
-        } else {
-          clearReactRoot(reactRoot);
-        }
+        detachRootViewFromInstance(reactRoot, reactContext);
       }
     }
 
