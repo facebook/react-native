@@ -245,7 +245,8 @@ export function mkEvent(id: string, eventName: EventName): EventOccurrence {
 }
 
 export type EventTrackerProps = $ReadOnly<{
-  eventsRef: {current: Array<EventOccurrence>},
+  eventsRef?: {current: Array<EventOccurrence>},
+  onAnyEvent?: (EventOccurrence, PointerEvent) => void,
   eventsToTrack: Array<EventName>,
   id: string,
   ...ViewProps,
@@ -254,7 +255,7 @@ export type EventTrackerProps = $ReadOnly<{
 type HandlerFunction = PointerEvent => void;
 
 export function EventTracker(props: EventTrackerProps): React.MixedElement {
-  const {eventsToTrack, eventsRef, id, style, ...viewProps} = props;
+  const {eventsToTrack, eventsRef, id, style, onAnyEvent, ...viewProps} = props;
   const handlerProps = useMemo(() => {
     const handlers: {
       onClick?: HandlerFunction,
@@ -263,11 +264,13 @@ export function EventTracker(props: EventTrackerProps): React.MixedElement {
     } = {};
     for (const eventName of eventsToTrack) {
       handlers[eventName] = (e: PointerEvent) => {
-        eventsRef.current.push({id: id, eventName: eventName});
+        const occurrence = {id, eventName};
+        eventsRef?.current.push(occurrence);
+        onAnyEvent?.(occurrence, e);
       };
     }
     return handlers;
-  }, [eventsToTrack, id, eventsRef]);
+  }, [eventsToTrack, id, eventsRef, onAnyEvent]);
 
   return (
     <View {...handlerProps} {...viewProps} style={props.style} id={props.id}>

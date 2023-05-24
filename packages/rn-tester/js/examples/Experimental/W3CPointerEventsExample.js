@@ -29,6 +29,7 @@ import PointerEventClickTouchHierarchy from './W3CPointerEventPlatformTests/Poin
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 import PointerEventClickTouchHierarchyPointerEvents from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchyPointerEvents';
+import PointerEventAccessibility from './W3CPointerEventPlatformTests/PointerEventAccessibility';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
   return (
@@ -258,6 +259,13 @@ export default {
       title: 'Pointer Events: hierarchy click test with pointerEvents',
       render(): React.Node {
         return <PointerEventClickTouchHierarchyPointerEvents />;
+      },
+    },
+    {
+      name: 'pointerevent_click_touch_accessibility',
+      title: 'Pointer Events: accessibility click testbed',
+      render(): React.Node {
+        return <PointerEventAccessibility />;
       },
     },
     {
