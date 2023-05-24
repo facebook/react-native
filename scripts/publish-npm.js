@@ -11,6 +11,7 @@
 
 const {exec, echo, exit} = require('shelljs');
 const {parseVersion} = require('./version-utils');
+const {getPackageVersionStrByTag, publishPackage} = require('./npm-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
@@ -76,13 +77,8 @@ if (require.main === module) {
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
-  const cmd = 'npm view react-native dist-tags.next';
-  echo(cmd);
-  const result = exec(cmd);
-  if (result.code) {
-    throw 'Failed to get next version from npm';
-  }
-  const {major, minor} = parseVersion(result.stdout.trim(), 'release');
+  const versionStr = getPackageVersionStrByTag('react-native', 'next');
+  const {major, minor} = parseVersion(versionStr, 'release');
   return `${major}.${parseInt(minor, 10) + 1}.0`;
 }
 
@@ -165,12 +161,12 @@ function publishNpm(buildType) {
   // NPM publishing is done just after.
   publishAndroidArtifactsToMaven(version, buildType === 'nightly');
 
-  const tagFlag = `--tag ${tag}`;
-  const otp = process.env.NPM_CONFIG_OTP;
-  const otpFlag = otp ? ` --otp ${otp}` : '';
-
-  const packageDirPath = path.join(__dirname, '..', 'packages', 'react-native');
-  if (exec(`npm publish ${tagFlag}${otpFlag}`, {cwd: packageDirPath}).code) {
+  const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
+  const result = publishPackage(packagePath, {
+    tag,
+    otp: process.env.NPM_CONFIG_OTP,
+  });
+  if (result.code) {
     echo('Failed to publish package to npm');
     return exit(1);
   } else {
