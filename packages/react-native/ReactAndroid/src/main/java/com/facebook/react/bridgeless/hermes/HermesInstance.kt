@@ -12,7 +12,7 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridgeless.JSEngineInstance
 import com.facebook.soloader.SoLoader
 
-class HermesInstance() : JSEngineInstance(initHybrid()!!) {
+class HermesInstance : JSEngineInstance(initHybrid()!!) {
 
   companion object {
     @JvmStatic @DoNotStrip protected external fun initHybrid(): HybridData?
