@@ -6,7 +6,6 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <ReactCommon/RuntimeExecutor.h>
 #import <UIKit/UIKit.h>
 #import <react/utils/ContextContainer.h>
 
@@ -14,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTSurfacePresenter;
 @class RCTBridge;
-
-facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge);
 
 /*
  * Controls a life-cycle of a Surface Presenter based on Bridge's life-cycle.
