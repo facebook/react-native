@@ -8,6 +8,7 @@
 #import "RCTTurboModule.h"
 #import "RCTBlockGuard.h"
 
+#include <glog/logging.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import <atomic>
@@ -184,7 +185,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
-      throw std::runtime_error("callback arg cannot be called more than once");
+      LOG(FATAL) << "callback arg cannot be called more than once";
     }
 
     auto strongWrapper = weakWrapper.lock();
