@@ -222,6 +222,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("tiltX", 0);
     pointerEvent.putDouble("tiltY", 0);
 
+    pointerEvent.putInt("twist", 0);
+
     if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
       pointerEvent.putDouble("width", 1);
       pointerEvent.putDouble("height", 1);
@@ -241,6 +243,7 @@ public class PointerEvent extends Event<PointerEvent> {
 
     pointerEvent.putDouble(
         "pressure", PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName));
+    pointerEvent.putDouble("tangentialPressure", 0.0);
 
     return pointerEvent;
   }
