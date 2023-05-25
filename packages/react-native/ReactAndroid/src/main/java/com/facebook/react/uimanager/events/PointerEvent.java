@@ -91,6 +91,10 @@ public class PointerEvent extends Event<PointerEvent> {
     return mEventName;
   }
 
+  private boolean isClickEvent() {
+    return mEventName.equals(PointerEventHelper.CLICK);
+  }
+
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     if (mMotionEvent == null) {
@@ -190,7 +194,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putString("pointerType", pointerType);
 
     boolean isPrimary =
-        mEventState.supportsHover(pointerId) || pointerId == mEventState.mPrimaryPointerId;
+        !isClickEvent() // compatibility click events should not be considered primary
+            && (mEventState.supportsHover(pointerId) || pointerId == mEventState.mPrimaryPointerId);
     pointerEvent.putBoolean("isPrimary", isPrimary);
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
@@ -223,8 +228,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("tiltY", 0);
 
     pointerEvent.putInt("twist", 0);
-
-    if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
+    // note: click events should have width = height = 1
+    if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE) || isClickEvent()) {
       pointerEvent.putDouble("width", 1);
       pointerEvent.putDouble("height", 1);
     } else {
@@ -241,8 +246,12 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putInt(
         "buttons", PointerEventHelper.getButtons(mEventName, pointerType, buttonState));
 
-    pointerEvent.putDouble(
-        "pressure", PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName));
+    final double pressure =
+        isClickEvent() // click events need pressure=0
+            ? 0
+            : PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName);
+
+    pointerEvent.putDouble("pressure", pressure);
     pointerEvent.putDouble("tangentialPressure", 0.0);
 
     return pointerEvent;
@@ -264,6 +273,7 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_LEAVE:
       case PointerEventHelper.POINTER_OUT:
       case PointerEventHelper.POINTER_OVER:
+      case PointerEventHelper.CLICK:
         pointersEventData = Arrays.asList(createW3CPointerEvent(activePointerIndex));
         break;
     }
