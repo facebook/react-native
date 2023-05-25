@@ -150,6 +150,19 @@ function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   });
 }
 
+function emitStringProp(
+  name: string,
+  optional: boolean,
+): NamedShape<StringTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'StringTypeAnnotation',
+    },
+  };
+}
+
 function typeAliasResolution(
   typeResolution: TypeResolutionStatus,
   objectTypeAnnotation: ObjectTypeAnnotation<
@@ -609,6 +622,7 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
+  emitStringProp,
   emitMixed,
   emitUnion,
   emitPartial,

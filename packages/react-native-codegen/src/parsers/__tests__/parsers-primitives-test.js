@@ -34,6 +34,7 @@ const {
   typeAliasResolution,
   typeEnumResolution,
   Visitor,
+  emitStringProp,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
@@ -145,6 +146,38 @@ describe('emitRootTag', () => {
       const result = emitRootTag(false);
 
       expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitStringProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional StringTypeAnnotation', () => {
+      const result = emitStringProp('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns required StringTypeAnnotatio', () => {
+      const result = emitStringProp('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

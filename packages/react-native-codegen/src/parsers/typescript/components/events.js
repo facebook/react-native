@@ -25,7 +25,7 @@ const {
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
-const {emitBoolProp} = require('../../parsers-primitives');
+const {emitBoolProp, emitStringProp} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -49,13 +49,7 @@ function getPropertyType(
     case 'TSBooleanKeyword':
       return emitBoolProp(name, optional);
     case 'TSStringKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
       return {
         name,
