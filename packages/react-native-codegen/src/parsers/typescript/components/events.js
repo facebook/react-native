@@ -239,7 +239,7 @@ function findEventArgumentsAndType(
 
     switch (typeAnnotation.typeParameters.params[0].type) {
       case parser.nullLiteralTypeAnnotation:
-      case 'TSUndefinedKeyword':
+      case parser.undefinedLiteralTypeAnnotation:
         return {
           argumentProps: [],
           bubblingType: eventType,

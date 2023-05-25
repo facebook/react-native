@@ -106,6 +106,11 @@ export interface Parser {
   nullLiteralTypeAnnotation: string;
 
   /**
+   * UndefinedLiteralTypeAnnotation property of the Parser
+   */
+  undefinedLiteralTypeAnnotation: string;
+
+  /**
    * Given a declaration, it returns true if it is a property
    */
   isProperty(property: $FlowFixMe): boolean;

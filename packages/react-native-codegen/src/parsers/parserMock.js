@@ -73,8 +73,8 @@ export class MockedParser implements Parser {
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
   interfaceDeclaration: string = 'InterfaceDeclaration';
-
   nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
+  undefinedLiteralTypeAnnotation: string = 'VoidLiteralTypeAnnotation';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
