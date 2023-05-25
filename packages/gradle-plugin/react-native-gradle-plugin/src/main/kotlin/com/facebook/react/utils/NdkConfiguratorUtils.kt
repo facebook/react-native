@@ -11,7 +11,6 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
 import org.gradle.api.Project
 
@@ -19,12 +18,7 @@ internal object NdkConfiguratorUtils {
   @Suppress("UnstableApiUsage")
   fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     project.pluginManager.withPlugin("com.android.application") {
-      project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
-          ext ->
-        if (!project.isNewArchEnabled(extension)) {
-          // For Old Arch, we don't need to setup the NDK
-          return@finalizeDsl
-        }
+      project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
         // We enable prefab so users can consume .so/headers from ReactAndroid and hermes-engine
         // .aar
         ext.buildFeatures.prefab = true
@@ -73,20 +67,12 @@ internal object NdkConfiguratorUtils {
    * sure we specify the correct .pickFirsts for all the .so files we are producing or that we're
    * aware of as some of our dependencies are pulling them in.
    */
+  @Suppress("UNUSED_PARAMETER")
   fun configureNewArchPackagingOptions(
       project: Project,
       extension: ReactExtension,
       variant: Variant
   ) {
-    if (!project.isNewArchEnabled(extension)) {
-      // For Old Arch, we set a pickFirst only on libraries that we know are
-      // clashing with our direct dependencies (mainly FBJNI and Hermes).
-      variant.packaging.jniLibs.pickFirsts.addAll(
-          listOf(
-              "**/libfbjni.so",
-              "**/libc++_shared.so",
-          ))
-    } else {
       // We set some packagingOptions { pickFirst ... } for our users for libraries we own.
       variant.packaging.jniLibs.pickFirsts.addAll(
           listOf(
@@ -100,7 +86,6 @@ internal object NdkConfiguratorUtils {
               // AGP will give priority of libc++_shared coming from App modules.
               "**/libc++_shared.so",
           ))
-    }
   }
 
   /**

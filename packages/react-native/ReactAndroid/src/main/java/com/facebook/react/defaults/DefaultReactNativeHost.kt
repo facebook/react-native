@@ -38,12 +38,7 @@ protected constructor(
 ) : ReactNativeHost(application) {
 
   override fun getReactPackageTurboModuleManagerDelegateBuilder():
-      ReactPackageTurboModuleManagerDelegate.Builder? =
-      if (isNewArchEnabled) {
-        DefaultTurboModuleManagerDelegate.Builder()
-      } else {
-        null
-      }
+      ReactPackageTurboModuleManagerDelegate.Builder? = DefaultTurboModuleManagerDelegate.Builder()
 
   override fun getUIManagerProvider(): UIManagerProvider? =
       if (isNewArchEnabled) {
