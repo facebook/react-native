@@ -30,6 +30,7 @@ using namespace facebook::react;
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
+  RCTHostBundleURLProvider _bundleURLProvider;
   facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTHostJSEngineProvider _jsEngineProvider;
 
@@ -86,11 +87,11 @@ using namespace facebook::react;
     auto defaultBundleURLGetter = ^NSURL *()
     {
       RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
+      if (!strongSelf || !strongSelf->_bundleURLProvider) {
         return nil;
       }
 
-      return [strongSelf->_hostDelegate getBundleURL];
+      return strongSelf->_bundleURLProvider();
     };
 
     [self _setBundleURL:bundleURL];
@@ -200,7 +201,9 @@ using namespace facebook::react;
 {
   [_instance invalidate];
   _instance = nil;
-  [self _setBundleURL:[_hostDelegate getBundleURL]];
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
 
   // Ensure all attached surfaces are restarted after reload
   {
@@ -263,6 +266,11 @@ using namespace facebook::react;
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
 {
   [_instance registerSegmentWithId:segmentId path:path];
+}
+
+- (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
+{
+  _bundleURLProvider = [bundleURLProvider copy];
 }
 
 #pragma mark - Private

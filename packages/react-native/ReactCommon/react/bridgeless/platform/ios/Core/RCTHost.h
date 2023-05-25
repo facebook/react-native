@@ -29,7 +29,6 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 
 @protocol RCTHostDelegate <NSObject>
 
-- (NSURL *)getBundleURL;
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
 - (void)host:(RCTHost *)host
