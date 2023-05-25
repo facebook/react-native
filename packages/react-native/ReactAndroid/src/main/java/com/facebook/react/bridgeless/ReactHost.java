@@ -945,7 +945,7 @@ public class ReactHost {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
                 }
-                return Task.forResult(mReactHostDelegate.getJSBundleLoader(mContext));
+                return Task.forResult(mReactHostDelegate.getJSBundleLoader());
               },
               mBGExecutor);
     } else {
@@ -960,7 +960,7 @@ public class ReactHost {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactHostDelegate.getJSBundleLoader(mContext));
+      return Task.call(() -> mReactHostDelegate.getJSBundleLoader());
     }
   }
 
