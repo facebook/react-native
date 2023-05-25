@@ -25,8 +25,11 @@ const {
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
-const {emitBoolProp, emitStringProp} = require('../../parsers-primitives');
-
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitStringProp,
+} = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -59,13 +62,7 @@ function getPropertyType(
         },
       };
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
       return {
         name,

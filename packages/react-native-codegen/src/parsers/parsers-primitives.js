@@ -97,6 +97,19 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   });
 }
 
+function emitDoubleProp(
+  name: string,
+  optional: boolean,
+): NamedShape<DoubleTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'DoubleTypeAnnotation',
+    },
+  };
+}
+
 function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'VoidTypeAnnotation',
@@ -610,6 +623,7 @@ module.exports = {
   emitBoolean,
   emitBoolProp,
   emitDouble,
+  emitDoubleProp,
   emitFloat,
   emitFunction,
   emitInt32,

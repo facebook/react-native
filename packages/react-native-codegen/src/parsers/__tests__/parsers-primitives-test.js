@@ -11,13 +11,18 @@
 
 'use-strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
+import type {
+  DoubleTypeAnnotation,
+  NamedShape,
+  UnionTypeAnnotationMemberType,
+} from '../../CodegenSchema';
 
 const {
   emitArrayType,
   emitBoolean,
   emitBoolProp,
   emitDouble,
+  emitDoubleProp,
   emitFloat,
   emitNumber,
   emitInt32,
@@ -257,6 +262,35 @@ describe('emitDouble', () => {
         type: 'DoubleTypeAnnotation',
       };
 
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitDoubleProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional type annotation', () => {
+      const result = emitDoubleProp('Foo', true);
+      const expected: NamedShape<DoubleTypeAnnotation> = {
+        name: 'Foo',
+        optional: true,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when optional is false', () => {
+    it('returns required type annotation', () => {
+      const result = emitDoubleProp('Foo', false);
+      const expected: NamedShape<DoubleTypeAnnotation> = {
+        name: 'Foo',
+        optional: false,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
       expect(result).toEqual(expected);
     });
   });
