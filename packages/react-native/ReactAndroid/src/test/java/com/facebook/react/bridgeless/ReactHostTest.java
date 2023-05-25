@@ -20,7 +20,6 @@ import android.app.Activity;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.MemoryPressureListener;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
@@ -32,7 +31,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
@@ -83,9 +81,7 @@ public class ReactHostTest {
     whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
     whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
 
-    doReturn(mJSBundleLoader)
-        .when(mReactHostDelegate)
-        .getJSBundleLoader(ArgumentMatchers.<ReactApplicationContext>any());
+    doReturn(mJSBundleLoader).when(mReactHostDelegate).getJSBundleLoader();
 
     mReactHost =
         new ReactHost(

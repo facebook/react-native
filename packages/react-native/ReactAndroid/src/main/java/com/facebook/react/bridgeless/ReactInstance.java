@@ -150,7 +150,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance(mBridgelessReactContext);
+    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -225,7 +225,7 @@ final class ReactInstance {
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
-    ReactNativeConfig config = mDelegate.getReactNativeConfig(mTurboModuleManager);
+    ReactNativeConfig config = mDelegate.getReactNativeConfig(mBridgelessReactContext);
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);
@@ -383,7 +383,7 @@ final class ReactInstance {
       JavaTimerManager timerManager,
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
-      BindingsInstaller jBindingsInstaller,
+      @Nullable BindingsInstaller jBindingsInstaller,
       boolean isProfiling);
 
   @DoNotStrip
