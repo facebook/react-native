@@ -35,6 +35,7 @@ interface ReactHostDelegate {
 
   fun handleInstanceException(e: Exception)
 
+  // TODO: remove TurboModuleManager as a parameter
   fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig
 
   @UnstableReactNativeAPI
@@ -45,7 +46,7 @@ interface ReactHostDelegate {
       private val jsBundleLoader: JSBundleLoader,
       private val turboModuleManagerDelegate: TurboModuleManagerDelegate,
       private val jsEngineInstance: JSEngineInstance,
-      private val reactNativeConfig: ReactNativeConfig,
+      private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
       private val exceptionHandler: (Exception) -> Unit = {}
   ) : ReactHostDelegate {
     override fun getJSBundleLoader(context: Context) = jsBundleLoader
