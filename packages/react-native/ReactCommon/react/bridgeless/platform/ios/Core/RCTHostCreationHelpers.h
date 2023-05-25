@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN_C_BEGIN
 
 RCTHost *RCTHostCreateDefault(
+    NSURL *bundleURL,
     id<RCTHostDelegate> hostDelegate,
     id<RCTTurboModuleManagerDelegate> turboModuleManagerDelegate,
     RCTHostJSEngineProvider jsEngineProvider);
