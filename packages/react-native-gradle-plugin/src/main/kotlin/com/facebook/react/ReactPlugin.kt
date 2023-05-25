@@ -19,6 +19,7 @@ import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibili
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
 import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
+import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
@@ -78,6 +79,9 @@ class ReactPlugin : Plugin<Project> {
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
+
+    // App and Library Configurations
+    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
