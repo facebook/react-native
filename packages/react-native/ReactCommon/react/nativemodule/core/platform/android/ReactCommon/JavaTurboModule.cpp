@@ -10,6 +10,7 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
@@ -83,8 +84,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          throw std::runtime_error(
-              "Callback arg cannot be called more than once");
+          LOG(FATAL) << "callback arg cannot be called more than once";
         }
 
         auto strongWrapper = weakWrapper.lock();

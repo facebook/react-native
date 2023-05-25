@@ -42,6 +42,7 @@ Pod::Spec.new do |s|
 
     s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
 
+    s.dependency "glog"
     s.dependency "ReactCommon/turbomodule/core"
     s.dependency "ReactCommon/turbomodule/bridging"
     s.dependency "React-callinvoker"
