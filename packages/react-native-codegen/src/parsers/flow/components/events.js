@@ -264,7 +264,7 @@ function buildPropertiesForEvent(
 ): NamedShape<EventTypeAnnotation> {
   const name = property.key.name;
   const optional = parser.isOptionalProperty(property);
-  let typeAnnotation =
+  const typeAnnotation =
     property.value.type === 'NullableTypeAnnotation'
       ? property.value.typeAnnotation
       : property.value;
