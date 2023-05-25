@@ -272,6 +272,10 @@ export class MockedParser implements Parser {
     return property.optional || false;
   }
 
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe {
+    return property.typeAnnotation.typeAnnotation;
+  }
+
   getGetTypeAnnotationFN(): GetTypeAnnotationFN {
     return () => {
       return {};

@@ -367,6 +367,12 @@ class FlowParser implements Parser {
     return getSchemaInfo;
   }
 
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe {
+    return property.value.type === 'NullableTypeAnnotation'
+      ? property.value.typeAnnotation
+      : property.value;
+  }
+
   getGetTypeAnnotationFN(): GetTypeAnnotationFN {
     return getTypeAnnotation;
   }

@@ -363,6 +363,10 @@ class TypeScriptParser implements Parser {
     return getSchemaInfo;
   }
 
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe {
+    return property.typeAnnotation.typeAnnotation;
+  }
+
   getGetTypeAnnotationFN(): GetTypeAnnotationFN {
     return getTypeAnnotation;
   }

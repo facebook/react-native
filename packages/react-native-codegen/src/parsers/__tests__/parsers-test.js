@@ -306,6 +306,41 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('getTypeAnnotationFromProperty', () => {
+    describe('when property value type is NullableTypeAnnotation', () => {
+      it('returns typeAnnotation of the value', () => {
+        const typeAnnotation = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: typeAnnotation,
+          },
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+          typeAnnotation,
+        );
+      });
+    });
+
+    describe('when property value type is not NullableTypeAnnotation', () => {
+      it('returns the value', () => {
+        const value = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: value,
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(value);
+      });
+    });
+  });
+
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TypeAlias');
@@ -598,6 +633,30 @@ describe('TypeScriptParser', () => {
         optional: false,
       };
       expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+  });
+
+  describe('getTypeAnnotationFromProperty', () => {
+    it('returns the type annotation', () => {
+      const typeAnnotation = {
+        type: 'TSStringKeyword',
+        key: {
+          type: 'Identifier',
+          name: 'b',
+        },
+        members: [],
+      };
+
+      const property = {
+        typeAnnotation: {
+          type: 'TSTypeAnnotation',
+          typeAnnotation: typeAnnotation,
+        },
+      };
+
+      expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+        typeAnnotation,
+      );
     });
   });
 
