@@ -52,10 +52,11 @@ using namespace facebook::react;
  Host initialization should not be resource intensive. A host may be created before any intention of using React Native
  has been expressed.
  */
-- (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-          turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                     hostDelegate:(id<RCTHostDelegate>)hostDelegate
+       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -78,7 +79,7 @@ using namespace facebook::react;
       return strongSelf->_bundleURL;
     };
 
-    auto bundleURLSetter = ^(NSURL *bundleURL) {
+    auto bundleURLSetter = ^(NSURL *bundleURL_) {
       [weakSelf _setBundleURL:bundleURL];
     };
 
@@ -92,6 +93,7 @@ using namespace facebook::react;
       return [strongSelf->_hostDelegate getBundleURL];
     };
 
+    [self _setBundleURL:bundleURL];
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
@@ -140,7 +142,6 @@ using namespace facebook::react;
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
     [_instance invalidate];
   }
-  [self _setBundleURL:[_hostDelegate getBundleURL]];
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager

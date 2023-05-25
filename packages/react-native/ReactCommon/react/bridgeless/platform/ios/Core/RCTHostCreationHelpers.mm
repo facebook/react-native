@@ -8,12 +8,14 @@
 #import "RCTHostCreationHelpers.h"
 
 RCTHost *RCTHostCreateDefault(
+    NSURL *bundleURL,
     id<RCTHostDelegate> hostDelegate,
     id<RCTTurboModuleManagerDelegate> turboModuleManagerDelegate,
     RCTHostJSEngineProvider jsEngineProvider)
 {
-  return [[RCTHost alloc] initWithHostDelegate:hostDelegate
-                    turboModuleManagerDelegate:turboModuleManagerDelegate
-                           bindingsInstallFunc:nullptr
-                              jsEngineProvider:jsEngineProvider];
+  return [[RCTHost alloc] initWithBundleURL:bundleURL
+                               hostDelegate:hostDelegate
+                 turboModuleManagerDelegate:turboModuleManagerDelegate
+                        bindingsInstallFunc:nullptr
+                           jsEngineProvider:jsEngineProvider];
 }
