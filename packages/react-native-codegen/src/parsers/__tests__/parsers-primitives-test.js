@@ -16,6 +16,7 @@ import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
 const {
   emitArrayType,
   emitBoolean,
+  emitBoolProp,
   emitDouble,
   emitFloat,
   emitNumber,
@@ -829,7 +830,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -843,7 +844,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1042,7 +1043,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1056,7 +1057,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1503,6 +1504,37 @@ describe('emitCommonTypes', () => {
     };
     it('returns null', () => {
       expect(emitCommonTypesForUnitTest(typeAnnotation, false)).toBeNull();
+    });
+  });
+});
+
+describe('emitBoolProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional type annotation', () => {
+      const result = emitBoolProp('someProp', true);
+      const expected = {
+        name: 'someProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when optional is false', () => {
+    it('returns required type annotation', () => {
+      const result = emitBoolProp('someProp', false);
+      const expected = {
+        name: 'someProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

@@ -33,6 +33,8 @@ import type {
   VoidTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
+  NamedShape,
+  EventTypeAnnotation,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
@@ -577,9 +579,23 @@ function emitCommonTypes(
   );
 }
 
+function emitBoolProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'BooleanTypeAnnotation',
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
+  emitBoolProp,
   emitDouble,
   emitFloat,
   emitFunction,

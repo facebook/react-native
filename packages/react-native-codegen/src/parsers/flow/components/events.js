@@ -16,12 +16,14 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
+const {emitBoolProp} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -35,13 +37,7 @@ function getPropertyType(
 
   switch (type) {
     case 'BooleanTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'StringTypeAnnotation':
       return {
         name,

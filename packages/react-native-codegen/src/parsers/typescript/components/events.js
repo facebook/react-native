@@ -25,6 +25,8 @@ const {
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
+const {emitBoolProp} = require('../../parsers-primitives');
+
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -45,13 +47,7 @@ function getPropertyType(
 
   switch (type) {
     case 'TSBooleanKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'TSStringKeyword':
       return {
         name,
