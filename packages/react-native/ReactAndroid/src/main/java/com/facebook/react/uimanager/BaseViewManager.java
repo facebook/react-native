@@ -700,6 +700,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
   }
 
+  @ReactProp(name = "onClick")
+  public void setClick(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK, value);
+  }
+
+  @ReactProp(name = "onClickCapture")
+  public void setClickCapture(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK_CAPTURE, value);
+  }
+
   /* Experimental W3C Pointer events end */
 
   @ReactProp(name = "onMoveShouldSetResponder")
