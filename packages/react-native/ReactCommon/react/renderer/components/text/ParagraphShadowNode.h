@@ -15,6 +15,7 @@
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook::react {
 
