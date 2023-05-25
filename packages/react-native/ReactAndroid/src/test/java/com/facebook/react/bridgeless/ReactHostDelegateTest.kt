@@ -7,10 +7,10 @@
 
 package com.facebook.react.bridgeless
 
-import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
+import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
@@ -25,28 +25,23 @@ import org.robolectric.annotation.Config
 @Config(shadows = [ShadowSoLoader::class])
 class ReactHostDelegateTest {
 
-  /** Mock test for ReactInstanceDelegate, used to setup the process to create a stable API */
+  /**
+   * Mock test for {@link DefaultReactHostDelegate}, used to setup the process to create a stable
+   * API
+   */
   @Test
-  fun testReactInstanceDelegateCreation() {
+  fun testDefaultReactHostDelegateCreation() {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
-    val reactPackage: ReactPackage = Mockito.mock(ReactPackage::class.java)
-    val bindingsInstallerMock: BindingsInstaller = Mockito.mock(BindingsInstaller::class.java)
     val turboModuleManagerDelegateMock: TurboModuleManagerDelegate =
         Mockito.mock(TurboModuleManagerDelegate::class.java)
-    val jsEngineInstanceMock: JSEngineInstance = Mockito.mock(JSEngineInstance::class.java)
-    val reactNativeConfigMock: ReactNativeConfig = Mockito.mock(ReactNativeConfig::class.java)
-    val reactPackages = listOf(reactPackage)
+    val hermesInstance: JSEngineInstance = Mockito.mock(HermesInstance::class.java)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
     val delegate =
-        ReactHostDelegate.ReactHostDelegateBase(
-            jsMainModulePathMocked,
+        DefaultReactHostDelegate(
+            jSMainModulePath = jsMainModulePathMocked,
             jSBundleLoader = jsBundleLoader,
-            reactPackages = reactPackages,
-            bindingsInstaller = bindingsInstallerMock,
-            jSEngineInstance = jsEngineInstanceMock,
-            reactNativeConfig = reactNativeConfigMock,
-            turboModuleManagerDelegate = { turboModuleManagerDelegateMock },
-            exceptionHandler = {})
+            jSEngineInstance = hermesInstance,
+            turboModuleManagerDelegate = { turboModuleManagerDelegateMock })
 
     assertThat(delegate.jSMainModulePath).isEqualTo(jsMainModulePathMocked)
   }
