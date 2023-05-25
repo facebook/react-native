@@ -39,11 +39,10 @@ You can read more about the macOS implementation in our website - [React Native 
 
 - [Requirements](#-requirements)
 - [Building your first React Native app](#-building-your-first-react-native-app)
-- [Documentation](#-documentation)
-- [Upgrading](#-upgrading)
-- [How to Contribute](#-how-to-contribute)
+- [Documentation](#documentation)
+- [How to Contribute](#contributing)
 - [Code of Conduct](#code-of-conduct)
-- [License](#-license)
+- [License](#license)
 
 
 ## 📋 Requirements
