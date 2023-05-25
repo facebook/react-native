@@ -15,6 +15,7 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getProperties} = require('./componentsUtils.js');
+const {throwIfTypeAliasIsNotInterface} = require('../../error-utils');
 const {
   propertyNames,
   getCommandOptions,
@@ -35,11 +36,7 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
 
   const typeAlias = types[commandTypeName];
 
-  if (typeAlias.type !== 'InterfaceDeclaration') {
-    throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
-    );
-  }
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
 
   const properties = parser.bodyProperties(typeAlias);
   if (!properties) {
