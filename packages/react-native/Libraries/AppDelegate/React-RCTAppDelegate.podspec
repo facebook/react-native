@@ -47,6 +47,9 @@ header_search_paths = [
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-runtimescheduler/React_runtimescheduler.framework/Headers/",
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -75,10 +78,23 @@ Pod::Spec.new do |s|
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "ReactCommon/turbomodule/core"
+  s.dependency "React-RCTNetwork"
+  s.dependency "React-RCTImage"
+  s.dependency "React-NativeModulesApple"
+  s.dependency "React-CoreModules"
+  s.dependency "React-runtimescheduler"
+
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency "React-hermes"
+  else
+    s.dependency "React-jsc"
+  end
 
   if is_new_arch_enabled
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
+    s.dependency "React-utils"
+    s.dependency "React-debug"
 
     s.script_phases = {
       :name => "Generate Legacy Components Interop",

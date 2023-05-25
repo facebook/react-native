@@ -70,8 +70,4 @@ Pod::Spec.new do |s|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
     end
   end
-
-  s.subspec "react_debug_core" do |sss|
-    sss.source_files = "react/debug/*.{cpp,h}"
-  end
 end
