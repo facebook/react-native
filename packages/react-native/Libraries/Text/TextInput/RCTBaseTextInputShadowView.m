@@ -191,7 +191,6 @@
         // _UITextLayoutFragmentView and UITextField on the same ordinate (y coordinate).
         baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
 
-
         // Align vertically _UITextLayoutFragmentView in the center of the UITextField (TextInput).
         CGFloat padding = (height - effectiveLineHeight) / 2.0;
         baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, effectiveLineHeight);
