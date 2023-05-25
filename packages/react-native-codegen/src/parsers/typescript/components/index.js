@@ -15,7 +15,6 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
-const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 const {
@@ -135,7 +134,7 @@ function buildComponentSchema(
 
   const componentEventAsts: Array<PropsAST> = [];
   categorizeProps(propProperties, types, componentEventAsts);
-  const {props, extendsProps} = getProps(propProperties, types, parser);
+  const {props, extendsProps} = parser.getProps(propProperties, types);
   const events = getEvents(componentEventAsts, types, parser);
   const commands = getCommands(commandProperties, types);
 

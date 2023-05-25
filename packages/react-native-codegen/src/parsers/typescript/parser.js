@@ -20,6 +20,8 @@ import type {
   NativeModuleEnumMemberType,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -45,11 +47,17 @@ const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
-const {buildModuleSchema} = require('../parsers-commons.js');
+const {
+  buildModuleSchema,
+  extendsForProp,
+  buildPropSchema,
+} = require('../parsers-commons.js');
+
 const {parseTopLevelType} = require('./parseTopLevelType');
 const {
   getSchemaInfo,
   getTypeAnnotation,
+  flattenProperties,
 } = require('./components/componentsUtils');
 const fs = require('fs');
 
@@ -455,6 +463,73 @@ class TypeScriptParser implements Parser {
       parser: Parser,
     ) => {
       return this.getResolvedTypeAnnotation(typeAnnotation, types, parser);
+    };
+  }
+
+  isEvent(typeAnnotation: $FlowFixMe): boolean {
+    if (typeAnnotation.type !== 'TSTypeReference') {
+      return false;
+    }
+    const eventNames = new Set(['BubblingEventHandler', 'DirectEventHandler']);
+    return eventNames.has(typeAnnotation.typeName.name);
+  }
+
+  isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
+    if (typeAnnotation.type !== 'TSTypeReference') {
+      return true;
+    }
+    const isStyle =
+      name === 'style' &&
+      typeAnnotation.type === 'GenericTypeAnnotation' &&
+      typeAnnotation.typeName.name === 'ViewStyleProp';
+    return !isStyle;
+  }
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  } {
+    const extendsProps: Array<ExtendsPropsShape> = [];
+    const componentPropAsts: Array<PropAST> = [];
+    const remaining: Array<PropAST> = [];
+
+    for (const prop of typeDefinition) {
+      // find extends
+      if (prop.type === 'TSExpressionWithTypeArguments') {
+        const extend = extendsForProp(prop, types, this);
+        if (extend) {
+          extendsProps.push(extend);
+          continue;
+        }
+      }
+
+      remaining.push(prop);
+    }
+
+    // find events and props
+    for (const prop of flattenProperties(remaining, types)) {
+      const topLevelType = parseTopLevelType(
+        prop.typeAnnotation.typeAnnotation,
+        types,
+      );
+
+      if (
+        prop.type === 'TSPropertySignature' &&
+        !this.isEvent(topLevelType.type) &&
+        this.isProp(prop.key.name, prop)
+      ) {
+        componentPropAsts.push(prop);
+      }
+    }
+
+    return {
+      props: componentPropAsts
+        .map(property => buildPropSchema(property, types, this))
+        .filter(Boolean),
+      extendsProps,
     };
   }
 }
