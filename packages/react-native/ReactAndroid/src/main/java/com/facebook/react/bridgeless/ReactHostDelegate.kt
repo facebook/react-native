@@ -32,7 +32,7 @@ interface ReactHostDelegate {
 
   fun getTurboModuleManagerDelegate(context: ReactApplicationContext): TurboModuleManagerDelegate
 
-  fun handleInstanceException(e: Exception)
+  fun handleInstanceException(error: Exception)
 
   fun getReactNativeConfig(context: ReactContext): ReactNativeConfig
 
@@ -46,7 +46,7 @@ interface ReactHostDelegate {
       private val turboModuleManagerDelegate:
           (context: ReactApplicationContext) -> TurboModuleManagerDelegate,
       private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-      private val exceptionHandler: (Exception) -> Unit = {}
+      private val exceptionHandler: (error: Exception) -> Unit = {}
   ) : ReactHostDelegate {
 
     override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
@@ -54,6 +54,6 @@ interface ReactHostDelegate {
 
     override fun getReactNativeConfig(context: ReactContext) = reactNativeConfig
 
-    override fun handleInstanceException(e: Exception) = exceptionHandler(e)
+    override fun handleInstanceException(error: Exception) = exceptionHandler(error)
   }
 }

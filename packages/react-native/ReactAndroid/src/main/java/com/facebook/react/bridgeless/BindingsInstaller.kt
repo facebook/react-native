@@ -13,7 +13,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.soloader.SoLoader
 
 @DoNotStripAny
-abstract class BindingsInstaller(@field:DoNotStrip private val mHybridData: HybridData) {
+abstract class BindingsInstaller(@field:DoNotStrip private val mHybridData: HybridData?) {
   companion object {
     init {
       SoLoader.loadLibrary("rninstance")
