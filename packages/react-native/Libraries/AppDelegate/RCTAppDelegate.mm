@@ -28,7 +28,7 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTComponentViewFactoryComponentProvider> {
+@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
