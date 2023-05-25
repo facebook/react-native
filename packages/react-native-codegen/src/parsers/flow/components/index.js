@@ -15,49 +15,12 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getProperties} = require('./componentsUtils.js');
-const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 const {
-  createComponentConfig,
-  findNativeComponentType,
   propertyNames,
   getCommandOptions,
   getOptions,
-  getCommandTypeNameAndOptionsExpression,
+  findComponentConfig,
 } = require('../../parsers-commons');
-const {
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-} = require('../../error-utils');
-
-// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
-function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
-  const foundConfigs: Array<{[string]: string}> = [];
-
-  const defaultExports = ast.body.filter(
-    node => node.type === 'ExportDefaultDeclaration',
-  );
-
-  defaultExports.forEach(statement => {
-    findNativeComponentType(statement, foundConfigs, parser);
-  });
-
-  throwIfConfigNotfound(foundConfigs);
-  throwIfMoreThanOneConfig(foundConfigs);
-
-  const foundConfig = foundConfigs[0];
-
-  const namedExports = ast.body.filter(
-    node => node.type === 'ExportNamedDeclaration',
-  );
-
-  const commandsTypeNames = namedExports
-    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
-    .filter(Boolean);
-
-  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
-
-  return createComponentConfig(foundConfig, commandsTypeNames);
-}
 
 function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   const {commandTypeName, commandOptionsExpression} = findComponentConfig(
