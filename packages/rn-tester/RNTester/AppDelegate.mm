@@ -41,6 +41,10 @@
 #import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTNetworking.h>
 #import <React/RCTRootView.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
+#import <ReactCommon/RuntimeExecutor.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #import <cxxreact/JSExecutor.h>
 
@@ -56,8 +60,6 @@
 
 #import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <react/config/ReactNativeConfig.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #endif
 
@@ -80,12 +82,19 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import "RNTesterTurboModuleProvider.h"
 
+@interface RCTBridge ()
+- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+- (void)invokeAsync:(std::function<void()> &&)func;
+@end
+
+using namespace facebook::react;
+
 @interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 #ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
-  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 #endif
 }
 @end
@@ -213,9 +222,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
   std::shared_ptr<facebook::react::CallInvoker> callInvoker = bridge.jsCallInvoker;
+  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
 
 #ifdef RN_FABRIC_ENABLED
-  _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
   callInvoker = std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
@@ -247,12 +256,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
           return;
         }
 
-#if RN_FABRIC_ENABLED
         __typeof(self) strongSelf = weakSelf;
         if (strongSelf && strongSelf->_runtimeScheduler) {
           facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, strongSelf->_runtimeScheduler);
         }
-#endif
 
         facebook::react::RuntimeExecutor syncRuntimeExecutor =
             [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
