@@ -26,6 +26,7 @@ const {getEventArgument} = require('../../parsers-commons');
 const {
   emitBoolProp,
   emitDoubleProp,
+  emitFloatProp,
   emitStringProp,
 } = require('../../parsers-primitives');
 
@@ -55,13 +56,7 @@ function getPropertyType(
     case 'Double':
       return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case '$ReadOnly':
       return getPropertyType(
         name,

@@ -14,7 +14,9 @@ import type {
   Nullable,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
+  EventTypeAnnotation,
   Int32TypeAnnotation,
+  NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
@@ -33,8 +35,6 @@ import type {
   VoidTypeAnnotation,
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
-  NamedShape,
-  EventTypeAnnotation,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
@@ -365,6 +365,19 @@ function emitFloat(
   });
 }
 
+function emitFloatProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'FloatTypeAnnotation',
+    },
+  };
+}
+
 function emitUnion(
   nullable: boolean,
   hasteModuleName: string,
@@ -625,6 +638,7 @@ module.exports = {
   emitDouble,
   emitDoubleProp,
   emitFloat,
+  emitFloatProp,
   emitFunction,
   emitInt32,
   emitNumber,
