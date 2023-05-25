@@ -180,6 +180,7 @@ export interface TransformsStyle {
         | SkewYTransform
         | MatrixTransform
       )[]
+    | string
     | undefined;
   /**
    * @deprecated Use matrix in transform prop instead.
