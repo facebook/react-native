@@ -7,8 +7,11 @@
 
 #import "RCTHost.h"
 
+typedef NSURL * (^RCTHostBundleURLProvider)(void);
+
 @interface RCTHost (Internal)
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
+- (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
 
 @end
