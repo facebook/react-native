@@ -23,7 +23,7 @@ import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 interface ReactHostDelegate {
   val jSMainModulePath: String
 
-  val bindingsInstaller: BindingsInstaller
+  val bindingsInstaller: BindingsInstaller?
 
   val reactPackages: List<ReactPackage>
 
@@ -40,7 +40,7 @@ interface ReactHostDelegate {
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
       override val jSMainModulePath: String,
-      override val bindingsInstaller: BindingsInstaller,
+      override val bindingsInstaller: BindingsInstaller? = null,
       override val reactPackages: List<ReactPackage>,
       private val jsBundleLoader: JSBundleLoader,
       private val turboModuleManagerDelegate: TurboModuleManagerDelegate,
