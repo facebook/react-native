@@ -28,7 +28,7 @@ NSSharingServicePickerDelegate
 #endif // macOS]
 , NativeActionSheetManagerSpec>
 
-#if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_OSX // [macOS] Unlike iOS, we will only ever have one NSMenu present at a time
 @property (nonatomic, strong) NSMutableArray<UIAlertController *> *alertControllers;
 #endif // [macOS]
 
@@ -37,22 +37,30 @@ NSSharingServicePickerDelegate
 @implementation RCTActionSheetManager
 #if TARGET_OS_OSX // [macOS
 {
-  // Use NSMapTable, as UIAlertViews do not implement <NSCopying>
-  // which is required for NSDictionary keys
+  /* Unlike UIAlertAction (which takes a block for it's action), NSMenuItem takes a selector.
+   * That selector no longer has has access to the method argument `callback`, so we must save it
+   * as an instance variable, that we can access in `menuItemDidTap`. We must do this as well for 
+   * `failureCallback` and `successCallback`.
+   */
   NSMapTable *_callbacks;
-  NSArray<NSSharingService*> *_excludedActivities;
-  NSString *_sharingSubject;
   RCTResponseSenderBlock _failureCallback;
   RCTResponseSenderBlock _successCallback;
+  NSArray<NSSharingService*> *_excludedActivities;
+  NSString *_sharingSubject;
+
 }
 #endif // macOS]
 
-#if !TARGET_OS_OSX // [macOS]
 - (instancetype)init
 {
   self = [super init];
   if (self) {
+#if !TARGET_OS_OSX // [macOS]
     _alertControllers = [NSMutableArray new];
+#else // [macOS
+    _callbacks = [NSMapTable new];
+#endif // macOS]
+
   }
   return self;
 }
@@ -61,15 +69,10 @@ NSSharingServicePickerDelegate
 {
   return NO;
 }
-#endif // [macOS]
 
 RCT_EXPORT_MODULE()
 
-#if !TARGET_OS_OSX // [macOS]
 @synthesize viewRegistry_DEPRECATED = _viewRegistry_DEPRECATED;
-#else // [macOS
-@synthesize bridge = _bridge;
-#endif // macOS]
 
 - (dispatch_queue_t)methodQueue
 {
@@ -93,6 +96,28 @@ RCT_EXPORT_MODULE()
   alertController.popoverPresentationController.sourceRect = sourceView.bounds;
   [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
+#else // [macOS
+- (void)presentMenu:(NSMenu *)menu
+      anchorViewTag:(NSNumber *)anchorViewTag
+{
+    NSView *sourceView = nil;
+    if (anchorViewTag) {
+      sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
+    }
+
+    NSPoint location = CGPointZero;
+    if (sourceView != nil) {
+      // Display under the anchorview
+      CGRect bounds = [sourceView bounds];
+
+      CGFloat originX = [sourceView userInterfaceLayoutDirection] == NSUserInterfaceLayoutDirectionRightToLeft ? NSMaxX(bounds) : NSMinX(bounds);
+      location = NSMakePoint(originX, NSMaxY(bounds));
+    } else {
+      // Display at mouse location if no anchorView provided
+      location = [NSEvent mouseLocation];
+    }
+    [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:sourceView];
+}
 #endif // [macOS]
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions
@@ -107,7 +132,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 #endif // [macOS]
 
   NSString *title = options.title();
-#if !TARGET_OS_OSX // [macOS]
+#if !TARGET_OS_OSX // [macOS] Unused on macOS
   NSString *message = options.message();
 #endif // [macOS]
   NSArray<NSString *> *buttons = RCTConvertOptionalVecToArray(options.options(), ^id(NSString *element) {
@@ -122,28 +147,28 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       return @(element);
     });
   }
+#if !TARGET_OS_OSX // [macOS] NSMenu doesn't have an equivalent of destructive buttons
   if (options.destructiveButtonIndices()) {
     destructiveButtonIndices = RCTConvertVecToArray(*options.destructiveButtonIndices(), ^id(double element) {
       return @(element);
     });
   } else {
-#if !TARGET_OS_OSX // [macOS]
     NSNumber *destructiveButtonIndex = @-1;
     destructiveButtonIndices = @[ destructiveButtonIndex ];
-#endif // [macOS]
   }
 
-  NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
-
-#if !TARGET_OS_OSX // [macOS]
   UIViewController *controller = RCTPresentedViewController();
+#endif // [macOS]
+  NSNumber *anchor = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
+#if !TARGET_OS_OSX // [macOS]
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
   UIColor *cancelButtonTintColor =
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
 
   if (controller == nil) {
+    // [macOS nil check our dict values before inserting them or we may crash
     RCTLogError(
-        @"Tried to display action sheet but there is no application window. options: %@", @{ /* [macOS nil check our dict values before inserting them or we may crash */
+        @"Tried to display action sheet but there is no application window. options: %@", @{
           @"title" : title ?: [NSNull null],
           @"message" : message ?: [NSNull null],
           @"options" : buttons ?: [NSNull null],
@@ -153,10 +178,12 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
           @"tintColor" : tintColor ?: [NSNull null],
           @"cancelButtonTintColor" : cancelButtonTintColor ?: [NSNull null],
           @"disabledButtonIndices" : disabledButtonIndices ?: [NSNull null],
-        }); /* [macOS] nil check our dict values before inserting them or we may crash ] */
+        });
+    // macOS]
     return;
   }
 #endif // [macOS]
+
   /*
    * The `anchor` option takes a view to set as the anchor for the share
    * popup to point to, on iPads running iOS 8. If it is not passed, it
@@ -168,14 +195,22 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
+#else // [macOS
+  NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
+  [menu setAutoenablesItems:NO];
+  [_callbacks setObject:callback forKey:menu];
+#endif // macOS]
 
   NSInteger index = 0;
+#if !TARGET_OS_OSX // [macOS]
   bool isCancelButtonIndex = false;
   // The handler for a button might get called more than once when tapping outside
   // the action sheet on iPad. RCTResponseSenderBlock can only be called once so
   // keep track of callback invocation here.
   __block bool callbackInvoked = false;
+#endif  // [macOS]
   for (NSString *option in buttons) {
+#if !TARGET_OS_OSX // [macOS]
     UIAlertActionStyle style = UIAlertActionStyleDefault;
     if ([destructiveButtonIndices containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
@@ -198,6 +233,17 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
       [actionButton setValue:cancelButtonTintColor forKey:@"titleTextColor"];
     }
     [alertController addAction:actionButton];
+#else // [macOS
+    if (index == cancelButtonIndex) {
+      // NSMenu doesn't need a cancel button, you can just click outside the menu
+      continue;
+    }
+
+    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:option action:@selector(menuItemDidTap:) keyEquivalent:@""];
+    [item setTag:index];
+    [item setTarget:self];
+    [menu addItem:item];
+#endif // macOS]
 
     index++;
   }
@@ -205,7 +251,12 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   if (disabledButtonIndices) {
     for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
       if ([disabledButtonIndex integerValue] < buttons.count) {
+#if !TARGET_OS_OSX // [macOS]
         [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+#else // [macOS
+        NSMenuItem *menuItem = [[menu itemArray] objectAtIndex:[disabledButtonIndex integerValue]];
+        [menuItem setEnabled:NO];
+#endif // macOS]
       } else {
         RCTLogError(
             @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",
@@ -216,6 +267,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     }
   }
 
+#if !TARGET_OS_OSX // [macOS]
   alertController.view.tintColor = tintColor;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
     __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
@@ -234,39 +286,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
 
   [_alertControllers addObject:alertController];
   [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
-
 #else // [macOS
-  NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
-  [_callbacks setObject:callback forKey:menu];
-  for (NSInteger index = 0; index < buttons.count; index++) {
-    if (index == cancelButtonIndex) {
-      //NSMenu doesn't require a cancel button
-      continue;
-    }
-    
-    NSString *option = buttons[index];
-    NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:option action:@selector(menuItemDidTap:) keyEquivalent:@""];
-    item.tag = index;
-    item.target = self;
-    [menu addItem:item];
-  }
-
-  RCTPlatformView *view = nil;
-  if (anchorViewTag) {
-    view = [self.bridge.uiManager viewForReactTag:anchorViewTag];
-  }
-  NSPoint location = CGPointZero;
-  if (view != nil) {
-    // Display under the anchorview
-    CGRect bounds = [view bounds];
-
-    CGFloat originX = [view userInterfaceLayoutDirection] == NSUserInterfaceLayoutDirectionRightToLeft ? NSMaxX(bounds) : NSMinX(bounds);
-    location = NSMakePoint(originX, NSMaxY(bounds));
-  } else {
-    // Display at mouse location if no anchorView provided
-    location = [NSEvent mouseLocation];
-  }
-  [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:location inView:view];
+  [self presentMenu:menu anchorViewTag:anchorViewTag];
 #endif // macOS]
 }
 
@@ -378,12 +399,12 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
   _sharingSubject = options.subject();
   _failureCallback = failureCallback;
   _successCallback = successCallback;
-  RCTPlatformView *view = nil;
+  RCTPlatformView *sourceView = nil;
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options.anchor() ? @(*options.anchor()) : nil];
   if (anchorViewTag) {
-    view = [self.bridge.uiManager viewForReactTag:anchorViewTag];
+    sourceView = [self.viewRegistry_DEPRECATED viewForReactTag:anchorViewTag];
   }
-  NSView *contentView = view ?: NSApp.keyWindow.contentView;
+  NSView *contentView = sourceView ?: NSApp.keyWindow.contentView;
   NSSharingServicePicker *picker = [[NSSharingServicePicker alloc] initWithItems:items];
   picker.delegate = self;
   [picker showRelativeToRect:contentView.bounds ofView:contentView preferredEdge:NSRectEdgeMinX];
@@ -396,14 +417,14 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
 
 - (void)menuItemDidTap:(NSMenuItem*)menuItem
 {
-  NSMenu *actionSheet = menuItem.menu;
+  NSMenu *menu = menuItem.menu;
   NSInteger buttonIndex = menuItem.tag;
-  RCTResponseSenderBlock callback = [_callbacks objectForKey:actionSheet];
+  RCTResponseSenderBlock callback = [_callbacks objectForKey:menu];
   if (callback) {
     callback(@[@(buttonIndex)]);
-    [_callbacks removeObjectForKey:actionSheet];
+    [_callbacks removeObjectForKey:menu];
   } else {
-    RCTLogWarn(@"No callback registered for action sheet: %@", actionSheet.title);
+    RCTLogWarn(@"No callback registered for menu: %@", menu.title);
   }
 }
 
@@ -438,7 +459,6 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions
     return ![self->_excludedActivities containsObject:service];
   }]];
 }
-  
 #endif // macOS]
   
 - (std::shared_ptr<TurboModule>)getTurboModule:(const ObjCTurboModule::InitParams &)params
