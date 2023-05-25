@@ -172,7 +172,8 @@ static UIColor *defaultPlaceholderColor(void)
 - (void)setTextBorderInsetsAndFrame:(CGRect)bounds textBorderInsets:(UIEdgeInsets)textBorderInsets
 {
   _textBorderInsets = textBorderInsets;
-  // We apply `borderInsets` as `RCTUITextView` layout offset.
+
+  // We apply `borderInsets` as the `RCTUITextView` layout offset.
   self.frame = UIEdgeInsetsInsetRect(bounds, textBorderInsets);
   [self setNeedsLayout];
 }

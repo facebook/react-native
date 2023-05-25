@@ -164,16 +164,16 @@
 
 - (CGRect)textRectForBounds:(CGRect)bounds
 {
-  // Text is vertically aligned to the center
+  // Text is vertically aligned to the center.
   CGFloat leftPadding = _textContainerInset.left + _textBorderInsets.left;
   CGFloat rightPadding = _textContainerInset.right + _textBorderInsets.right;
   UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, leftPadding, _textContainerInset.bottom, rightPadding);
   if (self.fragmentViewContainerBounds.size.height > 0) {
-    // apply custom bounds to fix iOS UITextField issue with lineHeight
-    // sets the correct y coordinates for _UITextLayoutFragmentView
+    // Apply custom bounds to fix iOS UITextField issue with lineHeight.
+    // Sets the correct y coordinates for _UITextLayoutFragmentView.
     return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], borderAndPaddingInsets);
   } else {
-      return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], borderAndPaddingInsets);
+    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], borderAndPaddingInsets);
   }
 }
 
