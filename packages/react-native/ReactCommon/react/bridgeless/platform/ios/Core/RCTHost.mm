@@ -79,11 +79,7 @@ using namespace facebook::react;
     };
 
     auto bundleURLSetter = ^(NSURL *bundleURL) {
-      RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      strongSelf->_bundleURL = bundleURL;
+      [weakSelf _setBundleURL:bundleURL];
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
@@ -144,8 +140,7 @@ using namespace facebook::react;
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
     [_instance invalidate];
   }
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
+  [self _setBundleURL:[_hostDelegate getBundleURL]];
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager
@@ -204,8 +199,7 @@ using namespace facebook::react;
 {
   [_instance invalidate];
   _instance = nil;
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
+  [self _setBundleURL:[_hostDelegate getBundleURL]];
 
   // Ensure all attached surfaces are restarted after reload
   {
@@ -272,19 +266,6 @@ using namespace facebook::react;
 
 #pragma mark - Private
 
-- (void)_refreshBundleURL FB_OBJC_DIRECT
-{
-  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
-  NSURL *newDelegateBundleURL = [_hostDelegate getBundleURL];
-  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
-    _oldDelegateBundleURL = newDelegateBundleURL;
-    _bundleURL = newDelegateBundleURL;
-  }
-
-  // Sanitize the bundle URL
-  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
-}
-
 - (void)_attachSurface:(RCTFabricSurface *)surface FB_OBJC_DIRECT
 {
   _attachedSurfaces.push_back(surface);
@@ -309,6 +290,22 @@ using namespace facebook::react;
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;
+}
+
+- (void)_setBundleURL:(NSURL *)bundleURL
+{
+  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
+  NSURL *newDelegateBundleURL = bundleURL;
+  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
+    _oldDelegateBundleURL = newDelegateBundleURL;
+    _bundleURL = newDelegateBundleURL;
+  }
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  // Update the global bundle URLq
+  RCTReloadCommandSetBundleURL(_bundleURL);
 }
 
 @end
