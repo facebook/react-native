@@ -204,7 +204,9 @@ jest
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
     openSettings: jest.fn(),
-    addEventListener: jest.fn(),
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
     getInitialURL: jest.fn(() => Promise.resolve()),
     sendIntent: jest.fn(),
   }))
