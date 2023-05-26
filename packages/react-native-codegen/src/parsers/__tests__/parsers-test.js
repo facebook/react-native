@@ -442,6 +442,19 @@ describe('TypeScriptParser', () => {
     });
   });
 
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        type: 'TSTypeReference',
+        typeName: {
+          name: 'Foo',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toEqual('Foo');
+    });
+  });
+
   describe('computePartialProperties', () => {
     it('returns partial properties', () => {
       const properties = [
