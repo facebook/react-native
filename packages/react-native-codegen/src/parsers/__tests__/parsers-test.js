@@ -125,6 +125,20 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        id: {
+          name: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toBe(
+        'StringTypeAnnotation',
+      );
+    });
+  });
+
   describe('computePartialProperties', () => {
     it('returns partial properties', () => {
       const properties = [
