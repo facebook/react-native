@@ -385,6 +385,149 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
 }
 
 /*
+ * ┌────────────────────────┐
+ * │<Root>                  │
+ * │ ┌─────────────────────┐│
+ * │ │ <View>              ││
+ * │ │     ┌──────────────┐││
+ * │ │     │<View>        │││
+ * │ │     │  ┌──────────┐│││
+ * │ │     │  │<View>    ││││
+ * │ │     │  │          ││││
+ * │ │     │  │          ││││
+ * │ │     │  └──────────┘│││
+ * │ │     └──────────────┘││
+ * │ └─────────────────────┘│
+ * └────────────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnParentWithClipping) {
+  auto builder = simpleComponentBuilder();
+
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .finalize([](RootShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {900, 900};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 10};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .reference(childShadowNode)
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {150, 150};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(),
+          *parentShadowNode,
+          {
+              /* includeTransform = */ true,
+              /* includeViewportOffset = */ false,
+              /* enableOverflowClipping = */ true,
+          });
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 20);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 90);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 90);
+}
+
+/*
+ * ┌────────────────────────┐
+ * │<Root>                  │
+ * │ ┌─────────────────────┐│
+ * │ │ <View>              ││
+ * │ │     ┌──────────────┐││
+ * │ │     │<View>        │││
+ * │ │     │  ┌──────────┐│││
+ * │ │     │  │<View>    ││││
+ * │ │     │  │          ││││
+ * │ │     │  │          ││││
+ * │ │     │  └──────────┘│││
+ * │ │     └──────────────┘││
+ * │ └─────────────────────┘│
+ * └────────────────────────┘
+ */
+TEST(
+    LayoutableShadowNodeTest,
+    relativeLayoutMetricsOnTransformedParentWithClipping) {
+  auto builder = simpleComponentBuilder();
+
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .finalize([](RootShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {900, 900};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .props([] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          sharedProps->transform = Transform::Scale(0.5, 0.5, 1);
+          return sharedProps;
+        })
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 10};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+          .reference(childShadowNode)
+          .finalize([](ViewShadowNode &shadowNode){
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.origin = {10, 10};
+            layoutMetrics.frame.size = {150, 150};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+        })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(),
+          *parentShadowNode,
+          {
+              /* includeTransform = */ true,
+              /* includeViewportOffset = */ false,
+              /* enableOverflowClipping = */ true,
+          });
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 40);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 40);
+
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 45);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 45);
+}
+
+/*
  * ┌────────────────┐
  * │<View>          │
  * │                │

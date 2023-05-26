@@ -46,6 +46,7 @@ class LayoutableShadowNode : public ShadowNode {
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};
+    bool enableOverflowClipping{false};
   };
 
   using UnsharedList = butter::

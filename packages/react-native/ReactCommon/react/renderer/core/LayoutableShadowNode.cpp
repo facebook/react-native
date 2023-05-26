@@ -179,7 +179,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   resultFrame.origin = {0, 0};
 
   // Step 3.
-  // Iterating on a list of nodes computing compound offset.
+  // Iterating on a list of nodes computing compound offset and size.
   auto size = shadowNodeList.size();
   for (size_t i = 0; i < size; i++) {
     auto currentShadowNode =
@@ -205,6 +205,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
     auto isRootNode = currentShadowNode->getTraits().check(
         ShadowNodeTraits::Trait::RootNodeKind);
+
     auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
         (policy.includeViewportOffset && isRootNode);
 
@@ -222,6 +223,16 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     if (!shouldCalculateTransformedFrames && i != 0 &&
         policy.includeTransform) {
       resultFrame.origin += currentShadowNode->getContentOriginOffset();
+    }
+
+    if (policy.enableOverflowClipping) {
+      auto overflowInset = currentShadowNode->getLayoutMetrics().overflowInset;
+      auto overflowRect = insetBy(
+          currentFrame * currentShadowNode->getTransform(), overflowInset);
+      resultFrame = Rect::intersect(resultFrame, overflowRect);
+      if (resultFrame.size.width == 0 && resultFrame.size.height == 0) {
+        return EmptyLayoutMetrics;
+      }
     }
   }
 
