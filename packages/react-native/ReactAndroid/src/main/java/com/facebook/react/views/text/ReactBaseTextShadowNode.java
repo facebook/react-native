@@ -69,31 +69,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   protected @Nullable ReactTextViewManagerCallback mReactTextViewManagerCallback;
 
-  private static class SetSpanOperation {
-    protected int start, end;
-    protected ReactSpan what;
-
-    SetSpanOperation(int start, int end, ReactSpan what) {
-      this.start = start;
-      this.end = end;
-      this.what = what;
-    }
-
-    public void execute(SpannableStringBuilder sb, int priority) {
-      // All spans will automatically extend to the right of the text, but not the left - except
-      // for spans that start at the beginning of the text.
-      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
-      if (start == 0) {
-        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
-      }
-
-      spanFlags &= ~Spannable.SPAN_PRIORITY;
-      spanFlags |= (priority << Spannable.SPAN_PRIORITY_SHIFT) & Spannable.SPAN_PRIORITY;
-
-      sb.setSpan(what, start, end, spanFlags);
-    }
-  }
-
   private static void buildSpannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
@@ -276,8 +251,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
     // While setting the Spans on the final text, we also check whether any of them are inline views
     // or images.
-    int priority = 0;
-    for (SetSpanOperation op : ops) {
+    for (int priorityIndex = 0; priorityIndex < ops.size(); priorityIndex++) {
+      final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+
       boolean isInlineImage = op.what instanceof TextInlineImageSpan;
       if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
         int height;
@@ -304,9 +280,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
 
       // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priority} DOES matter.
-      op.execute(sb, priority);
-      priority++;
+      // but the {@code priorityIndex} DOES matter.
+      op.execute(sb, priorityIndex);
     }
 
     textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(
