@@ -1135,7 +1135,7 @@ jobs:
       - image: debian:11
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
       - BUILD_FROM_SOURCE: true
     steps:
       - run:
@@ -1154,8 +1154,10 @@ jobs:
             mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
 
             if [ -f "$HERMES_VERSION_FILE" ]; then
+              echo "Hermes version file found. Using the latest commit"
               cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
             else
+              echo "No hermes version file found. Using the latest commit"
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
