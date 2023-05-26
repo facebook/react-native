@@ -19,11 +19,17 @@ struct TaskWrapper : public jsi::HostObject {
   std::shared_ptr<Task> task;
 };
 
+struct TaskWrapper : public jsi::HostObject {
+  TaskWrapper(std::shared_ptr<Task> const &task) : task(task) {}
+
+  std::shared_ptr<Task> task;
+};
+
 inline static jsi::Value valueFromTask(
     jsi::Runtime &runtime,
     std::shared_ptr<Task> task) {
   return jsi::Object::createFromHostObject(
-          runtime, std::make_shared<TaskWrapper>(task));
+      runtime, std::make_shared<TaskWrapper>(task));
 }
 
 inline static std::shared_ptr<Task> taskFromValue(
