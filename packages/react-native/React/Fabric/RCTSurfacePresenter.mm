@@ -276,6 +276,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::disableTransactionCommit = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
+    CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
