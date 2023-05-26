@@ -182,7 +182,6 @@ function getTypeAnnotationForArray<+T>(
         );
       }
     default:
-      (type: empty);
       throw new Error(`Unknown property type for "${name}": ${type}`);
   }
 }
@@ -399,7 +398,6 @@ function getTypeAnnotation<+T>(
         type: 'MixedTypeAnnotation',
       };
     default:
-      (type: empty);
       throw new Error(
         `Unknown property type for "${name}": "${type}" in the State`,
       );
