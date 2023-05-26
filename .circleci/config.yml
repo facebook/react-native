@@ -922,6 +922,26 @@ jobs:
   # -------------------------
   #    JOBS: Test iOS RNTester
   # -------------------------
+  test_ios_rntester_hermes_integration:
+     executor: reactnativeios
+     steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - run:
+          name: Pod install
+          command: |
+            cd packages/rn-tester
+            rm -rf Pods Podfile.lock
+            bundle install
+            RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
+              -sdk iphonesimulator
+
   test_ios_rntester:
     executor: reactnativeios
     parameters:
@@ -1597,6 +1617,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_hermes_workspace
+      - test_ios_rntester_hermes_integration
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
