@@ -377,8 +377,8 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedParent) {
       LayoutableShadowNode::computeRelativeLayoutMetrics(
           childShadowNode->getFamily(), *parentShadowNode, {});
 
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 45);
-  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 45);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 40);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 40);
 
   EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 25);
   EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 25);
