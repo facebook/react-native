@@ -114,7 +114,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -147,7 +147,7 @@ Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
