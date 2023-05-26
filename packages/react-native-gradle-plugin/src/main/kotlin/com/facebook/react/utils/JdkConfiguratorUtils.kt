@@ -8,6 +8,7 @@
 package com.facebook.react.utils
 
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.facebook.react.utils.PropertyUtils.INTERNAL_DISABLE_JAVA_VERSION_ALIGNMENT
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
@@ -20,6 +21,9 @@ internal object JdkConfiguratorUtils {
    * configure the toolchain to 11.
    */
   fun configureJavaToolChains(input: Project) {
+    if (input.hasProperty(INTERNAL_DISABLE_JAVA_VERSION_ALIGNMENT)) {
+      return
+    }
     input.rootProject.allprojects { project ->
       val action =
           Action<AppliedPlugin> {
