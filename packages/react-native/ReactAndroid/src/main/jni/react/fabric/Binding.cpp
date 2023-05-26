@@ -97,6 +97,15 @@ void Binding::driveCxxAnimations() {
   scheduler_->animationTick();
 }
 
+void Binding::reportMount(SurfaceId surfaceId) {
+  const auto &scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
+    return;
+  }
+  scheduler->reportMount(surfaceId);
+}
+
 #pragma mark - Surface management
 
 void Binding::startSurface(
@@ -570,6 +579,7 @@ void Binding::registerNatives() {
       makeNativeMethod("setConstraints", Binding::setConstraints),
       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod("reportMount", Binding::reportMount),
       makeNativeMethod(
           "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
       makeNativeMethod("registerSurface", Binding::registerSurface),

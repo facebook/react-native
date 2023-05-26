@@ -108,6 +108,8 @@ class Scheduler final : public UIManagerDelegate {
 #pragma mark - UIManager
   std::shared_ptr<UIManager> getUIManager() const;
 
+  void reportMount(SurfaceId surfaceId) const;
+
 #pragma mark - Event listeners
   void addEventListener(const std::shared_ptr<EventListener const> &listener);
   void removeEventListener(

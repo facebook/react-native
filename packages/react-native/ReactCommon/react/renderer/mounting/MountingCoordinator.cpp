@@ -179,6 +179,10 @@ TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
+ShadowTreeRevision const &MountingCoordinator::getBaseRevision() const {
+  return baseRevision_;
+}
+
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<MountingOverrideDelegate const> delegate) const {
   std::lock_guard<std::mutex> lock(mutex_);
