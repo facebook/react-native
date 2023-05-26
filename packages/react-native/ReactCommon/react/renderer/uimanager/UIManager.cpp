@@ -7,6 +7,7 @@
 
 #include "UIManager.h"
 
+#include <cxxreact/JSExecutor.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,6 +17,7 @@
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
+#include <react/renderer/uimanager/UIManagerMountHook.h>
 
 #include <glog/logging.h>
 
@@ -612,6 +614,21 @@ void UIManager::unregisterCommitHook(
   commitHook.commitHookWasUnregistered(*this);
 }
 
+void UIManager::registerMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  react_native_assert(
+      std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook) ==
+      mountHooks_.end());
+  mountHooks_.push_back(&mountHook);
+}
+
+void UIManager::unregisterMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  auto iterator = std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook);
+  react_native_assert(iterator != mountHooks_.end());
+  mountHooks_.erase(iterator);
+}
+
 #pragma mark - ShadowTreeDelegate
 
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
@@ -637,6 +654,28 @@ void UIManager::shadowTreeDidFinishTransaction(
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
         std::move(mountingCoordinator), mountSynchronously);
+  }
+}
+
+void UIManager::reportMount(SurfaceId surfaceId) const {
+  auto time = JSExecutor::performanceNow();
+
+  auto rootShadowNode = RootShadowNode::Shared{};
+  shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+    rootShadowNode =
+        shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
+  });
+
+  if (!rootShadowNode) {
+    return;
+  }
+
+  {
+    std::shared_lock lock(mountHookMutex_);
+
+    for (auto *mountHook : mountHooks_) {
+      mountHook->shadowTreeDidMount(rootShadowNode, time);
+    }
   }
 }
 

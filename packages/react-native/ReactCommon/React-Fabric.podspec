@@ -54,6 +54,7 @@ Pod::Spec.new do |s|
   s.dependency "React-debug"
   s.dependency "React-utils"
   s.dependency "React-runtimescheduler"
+  s.dependency "React-cxxreact"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

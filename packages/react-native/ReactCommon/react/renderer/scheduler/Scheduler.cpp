@@ -377,6 +377,10 @@ void Scheduler::uiManagerDidSetIsJSResponder(
   }
 }
 
+void Scheduler::reportMount(SurfaceId surfaceId) const {
+  uiManager_->reportMount(surfaceId);
+}
+
 ContextContainer::Shared Scheduler::getContextContainer() const {
   return contextContainer_;
 }

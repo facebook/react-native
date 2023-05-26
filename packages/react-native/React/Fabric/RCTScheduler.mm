@@ -132,6 +132,11 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
   _scheduler->animationTick();
 }
 
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId
+{
+  _scheduler->reportMount(surfaceId);
+}
+
 - (void)dealloc
 {
   if (_animationDriver) {
