@@ -155,6 +155,8 @@ struct Transform {
    */
   Transform operator*(Transform const &rhs) const;
 
+  Rect applyWithCenter(Rect const &rect, Point const &center) const;
+
   /**
    * Convert to folly::dynamic.
    */
