@@ -124,7 +124,7 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<UIManager> uiManager_;
   std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 
-  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks_;
+  std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks_;
 
   /*
    * At some point, we have to have an owning shared pointer to something that

@@ -80,8 +80,8 @@ class UIManager final : public ShadowTreeDelegate {
   /*
    * Registers and unregisters a commit hook.
    */
-  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
-  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+  void registerCommitHook(UIManagerCommitHook &commitHook);
+  void unregisterCommitHook(UIManagerCommitHook &commitHook);
 
   /*
    * Registers and unregisters a mount hook.
@@ -224,7 +224,7 @@ class UIManager final : public ShadowTreeDelegate {
   ContextContainer::Shared contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;
-  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
+  mutable std::vector<UIManagerCommitHook *> commitHooks_;
 
   mutable std::shared_mutex mountHookMutex_;
   mutable std::vector<UIManagerMountHook *> mountHooks_;
