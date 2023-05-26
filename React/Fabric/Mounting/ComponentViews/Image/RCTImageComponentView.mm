@@ -31,10 +31,8 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _imageView = [RCTUIImageViewAnimated new];
-#if !TARGET_OS_OSX // [macOS]
     _imageView.clipsToBounds = YES;
     _imageView.contentMode = RCTContentModeFromImageResizeMode(defaultProps->resizeMode);
-#endif // [macOS]
     _imageView.layer.minificationFilter = kCAFilterTrilinear;
     _imageView.layer.magnificationFilter = kCAFilterTrilinear;
 
@@ -58,7 +56,6 @@ using namespace facebook::react;
   auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
   auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
 
-#if !TARGET_OS_OSX // [macOS]
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
     _imageView.contentMode = RCTContentModeFromImageResizeMode(newImageProps.resizeMode);
@@ -68,7 +65,6 @@ using namespace facebook::react;
   if (oldImageProps.tintColor != newImageProps.tintColor) {
     _imageView.tintColor = RCTUIColorFromSharedColor(newImageProps.tintColor);
   }
-#endif // [macOS]
 
   [super updateProps:props oldProps:oldProps];
 }
@@ -148,6 +144,11 @@ using namespace facebook::react;
     // Applying capInsets of 0 will switch the "resizingMode" of the image to "tile" which is undesired.
     image = [image resizableImageWithCapInsets:RCTUIEdgeInsetsFromEdgeInsets(imageProps.capInsets)
                                   resizingMode:UIImageResizingModeStretch];
+  }
+#else
+  if (imageProps.resizeMode == ImageResizeMode::Repeat) {
+    image.capInsets = RCTUIEdgeInsetsFromEdgeInsets(imageProps.capInsets);
+    image.resizingMode = NSImageResizingModeTile;
   }
 #endif // [macOS]
 

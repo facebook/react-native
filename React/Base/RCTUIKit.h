@@ -578,3 +578,17 @@ typedef UITouch RCTUITouch;
 @interface RCTUITouch : NSEvent
 @end
 #endif
+
+// RCTUIImageView
+
+#if !TARGET_OS_OSX
+typedef UIImageView RCTUIImageView;
+#else
+@interface RCTUIImageView : NSImageView
+NS_ASSUME_NONNULL_BEGIN
+@property (nonatomic, assign) BOOL clipsToBounds;
+@property (nonatomic, strong) RCTUIColor *tintColor;
+@property (nonatomic, assign) UIViewContentMode contentMode;
+NS_ASSUME_NONNULL_END
+@end
+#endif

@@ -751,4 +751,86 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 
 @end
 
+// RCTUIImageView
+
+@implementation RCTUIImageView
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    [self setLayer:[[CALayer alloc] init]];
+    [self setWantsLayer:YES];
+  }
+  
+  return self;
+}
+
+- (BOOL)clipsToBounds
+{
+  return [[self layer] masksToBounds];
+}
+
+- (void)setClipsToBounds:(BOOL)clipsToBounds
+{
+  [[self layer] setMasksToBounds:clipsToBounds];
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode
+{
+  _contentMode = contentMode;
+  
+  CALayer *layer = [self layer];
+  switch (contentMode) {
+    case UIViewContentModeScaleAspectFill:
+      [layer setContentsGravity:kCAGravityResizeAspectFill];
+      break;
+      
+    case UIViewContentModeScaleAspectFit:
+      [layer setContentsGravity:kCAGravityResizeAspect];
+      break;
+      
+    case UIViewContentModeScaleToFill:
+      [layer setContentsGravity:kCAGravityResize];
+      break;
+      
+    case UIViewContentModeCenter:
+      [layer setContentsGravity:kCAGravityCenter];
+      break;
+    
+    default:
+      break;
+  }
+}
+
+- (UIImage *)image
+{
+  return [[self layer] contents];
+}
+
+- (void)setImage:(UIImage *)image
+{
+  CALayer *layer = [self layer];
+  
+  if ([layer contents] != image || [layer backgroundColor] != nil) {
+    if (_tintColor != nil) {
+      image = [image copy];
+      [image lockFocus];
+      [_tintColor set];
+      NSRect imageRect = { NSZeroPoint, image.size };
+      NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceIn);
+      [image unlockFocus];
+    }
+    
+    if (image != nil && [image resizingMode] == NSImageResizingModeTile) {
+      [layer setContents:nil];
+      [layer setBackgroundColor:[NSColor colorWithPatternImage:image].CGColor];
+    } else {
+      [layer setContents:image];
+      [layer setBackgroundColor:nil];
+    }
+  }
+}
+
+@end
+
 #endif
