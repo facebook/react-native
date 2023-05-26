@@ -60,5 +60,5 @@ echo "Build Apple framework"
 echo "Copy Apple framework to destroot/Library/Frameworks"
 
 cp -pfR \
-  "${PODS_ROOT}/hermes-engine/build/API/hermes/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/ios"
