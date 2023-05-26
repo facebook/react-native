@@ -47,7 +47,7 @@ public class FontMetricsUtil {
       WritableMap line = Arguments.createMap();
       line.putDouble("x", layout.getLineLeft(i) / dm.density);
       line.putDouble("y", bounds.top / dm.density);
-      line.putDouble("width", layout.getLineWidth(i) / dm.density);
+      line.putDouble("width", layout.getLineMax(i) / dm.density);
       line.putDouble("height", bounds.height() / dm.density);
       line.putDouble("descender", layout.getLineDescent(i) / dm.density);
       line.putDouble("ascender", -layout.getLineAscent(i) / dm.density);

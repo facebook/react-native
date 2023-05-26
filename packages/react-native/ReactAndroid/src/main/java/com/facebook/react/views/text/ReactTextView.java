@@ -271,7 +271,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
               isRtlParagraph
                   // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                   // values when the paragraph is RTL and `setSingleLine(true)`.
-                  ? textViewWidth - (int) layout.getLineWidth(line)
+                  ? textViewWidth - (int) layout.getLineMax(line)
                   : (int) layout.getLineRight(line) - width;
         } else {
           // The direction of the paragraph may not be exactly the direction the string is heading

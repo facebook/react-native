@@ -407,7 +407,7 @@ public class TextLayoutManager {
       calculatedWidth = width;
     } else {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        float lineWidth = layout.getLineWidth(lineIndex);
+        float lineWidth = layout.getLineMax(lineIndex);
         if (lineWidth > calculatedWidth) {
           calculatedWidth = lineWidth;
         }
@@ -466,7 +466,7 @@ public class TextLayoutManager {
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? calculatedWidth - layout.getLineWidth(line)
+                    ? calculatedWidth - layout.getLineMax(line)
                     : layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is heading
