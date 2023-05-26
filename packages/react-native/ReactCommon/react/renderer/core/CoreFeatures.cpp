@@ -17,5 +17,6 @@ bool CoreFeatures::cacheLastTextMeasurement = false;
 bool CoreFeatures::cancelImageDownloadsOnRecycle = false;
 bool CoreFeatures::disableTransactionCommit = false;
 bool CoreFeatures::enableGranularScrollViewStateUpdatesIOS = false;
+bool CoreFeatures::enableMountHooks = false;
 
 } // namespace facebook::react

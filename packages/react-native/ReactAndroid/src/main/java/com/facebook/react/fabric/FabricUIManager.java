@@ -22,6 +22,8 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -81,10 +83,13 @@ import com.facebook.react.uimanager.events.EventDispatcherImpl;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -165,6 +170,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
+
+  @NonNull private final AtomicBoolean mMountNotificationScheduled = new AtomicBoolean(false);
+  @NonNull private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @ThreadConfined(UI)
   @NonNull
@@ -1179,16 +1187,49 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
     @Override
-    public void willMountItems() {
+    public void willMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.willMountItems(FabricUIManager.this);
       }
     }
 
     @Override
-    public void didMountItems() {
+    public void didMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
+      }
+
+      if (!ReactFeatureFlags.enableMountHooks) {
+        return;
+      }
+
+      boolean mountNotificationScheduled = mMountNotificationScheduled.getAndSet(true);
+      if (!mountNotificationScheduled) {
+        // Notify mount when the effects are visible and prevent mount hooks to
+        // delay paint.
+        mMainThreadHandler.postAtFrontOfQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                mMountNotificationScheduled.set(false);
+
+                if (mountItems == null) {
+                  return;
+                }
+
+                // Collect surface IDs for all the mount items
+                List<Integer> surfaceIds = new ArrayList();
+                for (MountItem mountItem : mountItems) {
+                  if (!surfaceIds.contains(mountItem.getSurfaceId())) {
+                    surfaceIds.add(mountItem.getSurfaceId());
+                  }
+                }
+
+                for (int surfaceId : surfaceIds) {
+                  mBinding.reportMount(surfaceId);
+                }
+              }
+            });
       }
     }
 

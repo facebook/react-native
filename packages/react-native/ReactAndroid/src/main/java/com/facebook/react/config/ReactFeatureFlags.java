@@ -156,4 +156,7 @@ public class ReactFeatureFlags {
    * HostObject pattern
    */
   public static boolean useNativeState = false;
+
+  /** Report mount operations from the host platform to notify mount hooks. */
+  public static boolean enableMountHooks = false;
 }
