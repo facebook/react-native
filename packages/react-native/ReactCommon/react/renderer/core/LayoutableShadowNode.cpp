@@ -105,7 +105,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   }
 
   auto ancestors = descendantNodeFamily.getAncestors(ancestorNode);
+  return computeRelativeLayoutMetrics(ancestors, policy);
+}
 
+LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
+    AncestorList const &ancestors,
+    LayoutInspectingPolicy policy) {
   if (ancestors.empty()) {
     // Specified nodes do not form an ancestor-descender relationship
     // in the same tree. Aborting.

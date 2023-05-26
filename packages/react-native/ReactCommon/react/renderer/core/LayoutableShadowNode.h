@@ -63,6 +63,13 @@ class LayoutableShadowNode : public ShadowNode {
       LayoutInspectingPolicy policy);
 
   /*
+   * Computes the layout metrics of a node relative to its specified ancestors.
+   */
+  static LayoutMetrics computeRelativeLayoutMetrics(
+      AncestorList const &ancestors,
+      LayoutInspectingPolicy policy);
+
+  /*
    * Performs layout of the tree starting from this node. Usually is being
    * called on the root node.
    * Default implementation does nothing.
