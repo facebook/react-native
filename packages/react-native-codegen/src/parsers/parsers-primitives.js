@@ -644,6 +644,19 @@ function emitBoolProp(
   };
 }
 
+function emitMixedProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'MixedTypeAnnotation',
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -655,6 +668,7 @@ module.exports = {
   emitFunction,
   emitInt32,
   emitInt32Prop,
+  emitMixedProp,
   emitNumber,
   emitGenericObject,
   emitDictionary,
