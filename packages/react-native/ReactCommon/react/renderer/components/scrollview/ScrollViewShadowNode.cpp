@@ -8,7 +8,7 @@
 #include "ScrollViewShadowNode.h"
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/core/LayoutMetrics.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 
 namespace facebook::react {
 

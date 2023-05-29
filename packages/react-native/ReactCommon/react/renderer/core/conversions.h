@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/core/LayoutPrimitives.h>
+#include <react/renderer/graphics/LayoutPrimitives.h>
 
 namespace facebook::react {
 

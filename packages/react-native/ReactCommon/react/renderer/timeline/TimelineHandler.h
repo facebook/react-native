@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/timeline/TimelineFrame.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
