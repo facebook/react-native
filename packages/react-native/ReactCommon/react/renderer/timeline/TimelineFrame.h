@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/core/LayoutPrimitives.h>
+#include <react/renderer/graphics/LayoutPrimitives.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/utils/Telemetry.h>
 

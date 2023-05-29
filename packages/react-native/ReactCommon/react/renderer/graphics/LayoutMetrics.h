@@ -8,9 +8,9 @@
 #pragma once
 
 #include <folly/Hash.h>
-#include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/debug/flags.h>
+#include <react/renderer/graphics/LayoutPrimitives.h>
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 

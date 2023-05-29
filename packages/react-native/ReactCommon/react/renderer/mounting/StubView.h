@@ -10,9 +10,9 @@
 #include <memory>
 #include <vector>
 
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {
