@@ -13,13 +13,6 @@
 #import "RCTSurfaceView.h"
 #import "RCTUtils.h"
 
-@interface RCTSurfaceHostingView ()
-
-@property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
-@property (nonatomic, assign) BOOL isSurfaceViewVisible;
-
-@end
-
 @implementation RCTSurfaceHostingView {
   UIView *_Nullable _activityIndicatorView;
   UIView *_Nullable _surfaceView;

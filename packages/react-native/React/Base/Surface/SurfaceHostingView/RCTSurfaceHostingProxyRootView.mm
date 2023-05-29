@@ -180,6 +180,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   {
     return loadingView;
   };
+  super.isActivityIndicatorViewVisible = loadingView != nil;
 }
 
 #pragma mark RCTSurfaceDelegate proxying

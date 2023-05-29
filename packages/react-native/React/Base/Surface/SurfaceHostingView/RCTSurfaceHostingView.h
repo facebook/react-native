@@ -73,6 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, copy, nullable) RCTSurfaceHostingViewActivityIndicatorViewFactory activityIndicatorViewFactory;
 
+@property (nonatomic, assign) BOOL isActivityIndicatorViewVisible;
+@property (nonatomic, assign) BOOL isSurfaceViewVisible;
+
 @end
 
 NS_ASSUME_NONNULL_END
