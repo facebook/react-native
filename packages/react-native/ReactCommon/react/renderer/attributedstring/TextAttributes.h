@@ -14,11 +14,11 @@
 #include <folly/Hash.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
+#include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
-#include <react/renderer/graphics/LayoutPrimitives.h>
 #include <react/renderer/graphics/Size.h>
 
 namespace facebook::react {

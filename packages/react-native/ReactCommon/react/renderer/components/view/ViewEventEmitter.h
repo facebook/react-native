@@ -10,8 +10,8 @@
 #include <memory>
 #include <mutex>
 
+#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <react/renderer/graphics/LayoutMetrics.h>
 
 #include "TouchEventEmitter.h"
 

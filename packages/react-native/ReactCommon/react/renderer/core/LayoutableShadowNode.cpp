@@ -9,11 +9,11 @@
 
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/renderer/graphics/LayoutMetrics.h>
 
 namespace facebook::react {
 
