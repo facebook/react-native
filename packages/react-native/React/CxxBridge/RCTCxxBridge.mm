@@ -475,6 +475,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   // Load the source asynchronously, then store it for later execution.
   dispatch_group_enter(prepareBridge);
   __block NSData *sourceCode;
+  __block NSURL *sourceURL = self.bundleURL;
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
@@ -490,6 +491,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         }
 
         sourceCode = source.data;
+        if (source.url) {
+          sourceURL = source.url;
+        }
         dispatch_group_leave(prepareBridge);
       }
       onProgress:^(RCTLoadingProgress *progressData) {
@@ -504,7 +508,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   dispatch_group_notify(prepareBridge, dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
     RCTCxxBridge *strongSelf = weakSelf;
     if (sourceCode && strongSelf.loading) {
-      [strongSelf executeSourceCode:sourceCode sync:NO];
+      [strongSelf executeSourceCode:sourceCode withSourceURL:sourceURL sync:NO];
     }
   });
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -1050,7 +1054,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
 
-- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync
+- (void)executeSourceCode:(NSData *)sourceCode withSourceURL:(NSURL *)url sync:(BOOL)sync
 {
   // This will get called from whatever thread was actually executing JS.
   dispatch_block_t completion = ^{
@@ -1075,12 +1079,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   };
 
   if (sync) {
-    [self executeApplicationScriptSync:sourceCode url:self.bundleURL];
+    [self executeApplicationScriptSync:sourceCode url:url];
     completion();
   } else {
-    [self enqueueApplicationScript:sourceCode url:self.bundleURL onComplete:completion];
+    [self enqueueApplicationScript:sourceCode url:url onComplete:completion];
   }
 
+  // Use the original request URL here - HMRClient uses this to derive the /hot URL and entry point.
   [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
 }
 
@@ -1635,9 +1640,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
   return _reactInstance ? _reactInstance->getJSCallInvoker() : nullptr;
 }
 
-- (std::shared_ptr<CallInvoker>)decorateNativeCallInvoker:(std::shared_ptr<CallInvoker>)nativeInvoker
+- (std::shared_ptr<NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
+    (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
-  return _reactInstance ? _reactInstance->getDecoratedNativeCallInvoker(nativeInvoker) : nullptr;
+  return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
 }
 
 @end

@@ -15,51 +15,14 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
-const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
-const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
+const {throwIfTypeAliasIsNotInterface} = require('../../error-utils');
 const {
-  createComponentConfig,
-  findNativeComponentType,
   propertyNames,
   getCommandOptions,
   getOptions,
-  getCommandTypeNameAndOptionsExpression,
+  findComponentConfig,
 } = require('../../parsers-commons');
-const {
-  throwIfConfigNotfound,
-  throwIfMoreThanOneConfig,
-} = require('../../error-utils');
-
-// $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
-function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
-  const foundConfigs: Array<{[string]: string}> = [];
-
-  const defaultExports = ast.body.filter(
-    node => node.type === 'ExportDefaultDeclaration',
-  );
-
-  defaultExports.forEach(statement =>
-    findNativeComponentType(statement, foundConfigs, parser),
-  );
-
-  throwIfConfigNotfound(foundConfigs);
-  throwIfMoreThanOneConfig(foundConfigs);
-
-  const foundConfig = foundConfigs[0];
-
-  const namedExports = ast.body.filter(
-    node => node.type === 'ExportNamedDeclaration',
-  );
-
-  const commandsTypeNames = namedExports
-    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
-    .filter(Boolean);
-
-  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
-
-  return createComponentConfig(foundConfig, commandsTypeNames);
-}
 
 function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   const {commandTypeName, commandOptionsExpression} = findComponentConfig(
@@ -73,11 +36,7 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   const types = parser.getTypes(ast);
   const typeAlias = types[commandTypeName];
 
-  if (typeAlias.type !== 'TSInterfaceDeclaration') {
-    throw new Error(
-      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
-    );
-  }
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
 
   const properties = parser.bodyProperties(typeAlias);
   if (!properties) {
@@ -135,7 +94,7 @@ function buildComponentSchema(
 
   const componentEventAsts: Array<PropsAST> = [];
   categorizeProps(propProperties, types, componentEventAsts);
-  const {props, extendsProps} = getProps(propProperties, types, parser);
+  const {props, extendsProps} = parser.getProps(propProperties, types);
   const events = getEvents(componentEventAsts, types, parser);
   const commands = getCommands(commandProperties, types);
 

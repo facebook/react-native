@@ -21,6 +21,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created in
  * FabricMountingManager.cpp, where the pointer to the C++ event emitter is set.
  */
+@DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
 public class EventEmitterWrapper {
 
@@ -30,6 +31,7 @@ public class EventEmitterWrapper {
 
   @DoNotStrip private final HybridData mHybridData;
 
+  @DoNotStrip
   private EventEmitterWrapper(HybridData hybridData) {
     mHybridData = hybridData;
   }

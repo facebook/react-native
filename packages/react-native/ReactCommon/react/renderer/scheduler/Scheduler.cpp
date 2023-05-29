@@ -114,7 +114,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -147,7 +147,7 @@ Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
@@ -166,10 +166,9 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      surfaceIds.empty() &&
-  //      "Scheduler was destroyed with outstanding Surfaces.");
+  react_native_assert(
+      surfaceIds.empty() &&
+      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -376,6 +375,10 @@ void Scheduler::uiManagerDidSetIsJSResponder(
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
+}
+
+void Scheduler::reportMount(SurfaceId surfaceId) const {
+  uiManager_->reportMount(surfaceId);
 }
 
 ContextContainer::Shared Scheduler::getContextContainer() const {

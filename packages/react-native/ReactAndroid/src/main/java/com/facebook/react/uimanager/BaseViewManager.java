@@ -588,6 +588,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerOver", "captured", "onPointerOverCapture")))
+            .put(
+                "topClick",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onClick", "captured", "onClickCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -693,6 +698,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = "onPointerMoveCapture")
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
+  }
+
+  @ReactProp(name = "onClick")
+  public void setClick(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK, value);
+  }
+
+  @ReactProp(name = "onClickCapture")
+  public void setClickCapture(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK_CAPTURE, value);
   }
 
   /* Experimental W3C Pointer events end */

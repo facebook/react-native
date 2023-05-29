@@ -768,10 +768,25 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
   });
 
   testViewTree_([](StubViewTree const &viewTree) {
-    // 5 views in total.
+#ifdef ANDROID
+    // T153547836: Android still mounts views with
+    // ShadowNodeTraits::Trait::Hidden
+
+    EXPECT_EQ(viewTree.size(), 8);
+
+    // nodeBB_ forms a stacking context
+    EXPECT_EQ(viewTree.getRootStubView().children.size(), 5);
+
+    // The root view subviews are [6, 10, 9, 5].
+    EXPECT_EQ(viewTree.getRootStubView().children.at(0)->tag, 6);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 10);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 9);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 5);
+    EXPECT_EQ(viewTree.getRootStubView().children.at(4)->tag, 3);
+#else
     EXPECT_EQ(viewTree.size(), 5);
 
-    // The root view has all 5 subviews.
+    // The root view has all 4 subviews.
     EXPECT_EQ(viewTree.getRootStubView().children.size(), 4);
 
     // The root view subviews are [6, 10, 9, 5].
@@ -779,6 +794,7 @@ TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
     EXPECT_EQ(viewTree.getRootStubView().children.at(1)->tag, 9);
     EXPECT_EQ(viewTree.getRootStubView().children.at(2)->tag, 5);
     EXPECT_EQ(viewTree.getRootStubView().children.at(3)->tag, 3);
+#endif
   });
 }
 

@@ -699,7 +699,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     fontStyle: true,
     textShadowOffset: true,
     selectionColor: {process: require('../../StyleSheet/processColor').default},
-    selection: true,
     placeholderTextColor: {
       process: require('../../StyleSheet/processColor').default,
     },

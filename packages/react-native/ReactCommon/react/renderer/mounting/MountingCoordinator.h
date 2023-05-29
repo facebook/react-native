@@ -71,6 +71,8 @@ class MountingCoordinator final {
 
   TelemetryController const &getTelemetryController() const;
 
+  ShadowTreeRevision const &getBaseRevision() const;
+
   /*
    * Methods from this section are meant to be used by
    * `MountingOverrideDelegate` only.

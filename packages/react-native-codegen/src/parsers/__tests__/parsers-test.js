@@ -305,6 +305,24 @@ describe('FlowParser', () => {
       expect(parser.isOptionalProperty(property)).toEqual(true);
     });
   });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TypeAlias');
+    });
+  });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('EnumDeclaration');
+    });
+  });
+
+  describe('interfaceDeclaration', () => {
+    it('returns interfaceDeclaration Property', () => {
+      expect(parser.interfaceDeclaration).toEqual('InterfaceDeclaration');
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -580,6 +598,24 @@ describe('TypeScriptParser', () => {
         optional: false,
       };
       expect(parser.isOptionalProperty(property)).toEqual(false);
+    });
+  });
+
+  describe('typeAlias', () => {
+    it('returns typeAlias Property', () => {
+      expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
+    });
+  });
+
+  describe('enumDeclaration', () => {
+    it('returns enumDeclaration Property', () => {
+      expect(parser.enumDeclaration).toEqual('TSEnumDeclaration');
+    });
+  });
+
+  describe('interfaceDeclaration', () => {
+    it('returns interfaceDeclaration Property', () => {
+      expect(parser.interfaceDeclaration).toEqual('TSInterfaceDeclaration');
     });
   });
 });

@@ -52,14 +52,14 @@ static LayoutableSmallVector<Rect> calculateTransformedFrames(
       if (i != size) {
         auto parentShadowNode =
             traitCast<LayoutableShadowNode const *>(shadowNodeList.at(i));
-        auto contentOritinOffset = parentShadowNode->getContentOriginOffset();
+        auto contentOriginOffset = parentShadowNode->getContentOriginOffset();
         if (Transform::isVerticalInversion(transformation)) {
-          contentOritinOffset.y = -contentOritinOffset.y;
+          contentOriginOffset.y = -contentOriginOffset.y;
         }
         if (Transform::isHorizontalInversion(transformation)) {
-          contentOritinOffset.x = -contentOritinOffset.x;
+          contentOriginOffset.x = -contentOriginOffset.x;
         }
-        currentFrame.origin += contentOritinOffset;
+        currentFrame.origin += contentOriginOffset;
       }
 
       transformation = transformation * currentShadowNode->getTransform();
@@ -105,7 +105,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   }
 
   auto ancestors = descendantNodeFamily.getAncestors(ancestorNode);
+  return computeRelativeLayoutMetrics(ancestors, policy);
+}
 
+LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
+    AncestorList const &ancestors,
+    LayoutInspectingPolicy policy) {
   if (ancestors.empty()) {
     // Specified nodes do not form an ancestor-descender relationship
     // in the same tree. Aborting.
@@ -174,7 +179,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
   resultFrame.origin = {0, 0};
 
   // Step 3.
-  // Iterating on a list of nodes computing compound offset.
+  // Iterating on a list of nodes computing compound offset and size.
   auto size = shadowNodeList.size();
   for (size_t i = 0; i < size; i++) {
     auto currentShadowNode =
@@ -200,18 +205,34 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
     auto isRootNode = currentShadowNode->getTraits().check(
         ShadowNodeTraits::Trait::RootNodeKind);
+
     auto shouldApplyTransformation = (policy.includeTransform && !isRootNode) ||
         (policy.includeViewportOffset && isRootNode);
 
+    // Move frame to the coordinate space of the current node.
+    resultFrame.origin += currentFrame.origin;
+
     if (shouldApplyTransformation) {
-      resultFrame.size = resultFrame.size * currentShadowNode->getTransform();
-      currentFrame = currentFrame * currentShadowNode->getTransform();
+      // If a node has a transform, we need to use the center of that node as
+      // the origin of the transform when transforming its children (which
+      // affects the result of transforms like `scale` and `rotate`).
+      resultFrame = currentShadowNode->getTransform().applyWithCenter(
+          resultFrame, currentFrame.getCenter());
     }
 
-    resultFrame.origin += currentFrame.origin;
     if (!shouldCalculateTransformedFrames && i != 0 &&
         policy.includeTransform) {
       resultFrame.origin += currentShadowNode->getContentOriginOffset();
+    }
+
+    if (policy.enableOverflowClipping) {
+      auto overflowInset = currentShadowNode->getLayoutMetrics().overflowInset;
+      auto overflowRect = insetBy(
+          currentFrame * currentShadowNode->getTransform(), overflowInset);
+      resultFrame = Rect::intersect(resultFrame, overflowRect);
+      if (resultFrame.size.width == 0 && resultFrame.size.height == 0) {
+        return EmptyLayoutMetrics;
+      }
     }
   }
 

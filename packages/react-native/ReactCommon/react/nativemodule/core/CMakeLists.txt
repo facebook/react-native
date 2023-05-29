@@ -32,6 +32,7 @@ target_include_directories(react_nativemodule_core
 target_link_libraries(react_nativemodule_core
         fbjni
         folly_runtime
+        glog
         jsi
         react_bridging
         react_debug

@@ -17,6 +17,7 @@
 #import <React/RCTUtils.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
+#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
@@ -49,8 +50,10 @@ static void RCTPerformMountInstructions(
 {
   SystraceSection s("RCTPerformMountInstructions");
 
-  [CATransaction begin];
-  [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+  if (!CoreFeatures::disableTransactionCommit) {
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+  }
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -149,7 +152,9 @@ static void RCTPerformMountInstructions(
       }
     }
   }
-  [CATransaction commit];
+  if (!CoreFeatures::disableTransactionCommit) {
+    [CATransaction commit];
+  }
 }
 
 @implementation RCTMountingManager {

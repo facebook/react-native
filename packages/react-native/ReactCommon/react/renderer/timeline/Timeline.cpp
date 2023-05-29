@@ -110,7 +110,8 @@ void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
           -> RootShadowNode::Unshared {
         return std::static_pointer_cast<RootShadowNode>(
             rootShadowNode->ShadowNode::clone({}));
-      });
+      },
+      {});
 
   assert(rewinding_ && "");
   rewinding_ = false;

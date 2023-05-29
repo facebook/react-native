@@ -8,9 +8,10 @@
 #pragma once
 
 #include <ReactCommon/CallInvoker.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
 namespace facebook::react {
+
+class RuntimeScheduler;
 
 /*
  * Exposes RuntimeScheduler to native modules. All calls invoked on JavaScript

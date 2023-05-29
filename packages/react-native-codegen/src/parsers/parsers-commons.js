@@ -41,6 +41,7 @@ const {
   isModuleRegistryCall,
   verifyPlatforms,
 } = require('./utils');
+
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
@@ -55,6 +56,9 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
 } = require('./error-utils');
 
 const {
@@ -322,7 +326,6 @@ function buildPropertySchema(
   enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NativeModulePropertyShape {
@@ -337,7 +340,12 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotationFN(
+    value,
+    types,
+    parser,
+  ));
 
   throwIfModuleTypeIsUnsupported(
     hasteModuleName,
@@ -381,11 +389,9 @@ function buildSchemaFromConfigType(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   switch (configType) {
@@ -406,7 +412,6 @@ function buildSchemaFromConfigType(
           ast,
           tryParse,
           parser,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
         ),
       );
@@ -448,14 +453,12 @@ function buildSchema(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   // Early return for non-Spec JavaScript files
@@ -477,7 +480,6 @@ function buildSchema(
     buildComponentSchema,
     buildModuleSchema,
     parser,
-    resolveTypeAnnotation,
     translateTypeAnnotation,
   );
 }
@@ -572,7 +574,6 @@ const buildModuleSchema = (
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): NativeModuleSchema => {
   const language = parser.language();
@@ -640,7 +641,6 @@ const buildModuleSchema = (
           enumMap,
           tryParse,
           cxxOnly,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,
         ),
@@ -902,6 +902,37 @@ function getEventArgument(
   };
 }
 
+/* $FlowFixMe[signature-verification-failure] there's no flowtype for AST.
+ * TODO(T108222691): Use flow-types for @babel/parser */
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
+
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  defaultExports.forEach(statement => {
+    findNativeComponentType(statement, foundConfigs, parser);
+  });
+
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
+
+  const foundConfig = foundConfigs[0];
+
+  const namedExports = ast.body.filter(
+    node => node.type === 'ExportNamedDeclaration',
+  );
+
+  const commandsTypeNames = namedExports
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
+    .filter(Boolean);
+
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+
+  return createComponentConfig(foundConfig, commandsTypeNames);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -924,4 +955,5 @@ module.exports = {
   extendsForProp,
   buildPropSchema,
   getEventArgument,
+  findComponentConfig,
 };

@@ -8,9 +8,10 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
 namespace facebook::react {
+
+class RuntimeScheduler;
 
 /*
  * Exposes RuntimeScheduler to JavaScript realm.

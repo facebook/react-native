@@ -94,6 +94,11 @@
  */
 - (UIViewController *)createRootViewController;
 
+/// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
+///
+/// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
+- (BOOL)runtimeSchedulerEnabled;
+
 #if RCT_NEW_ARCH_ENABLED
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 

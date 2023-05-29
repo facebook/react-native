@@ -14,15 +14,15 @@
 #import <react/renderer/mapbuffer/MapBuffer.h>
 #import <react/utils/ContextContainer.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * A utility to enable diagnostics mode at runtime. Useful for test runs.
  * The flags are comma-separated string tokens, or an empty string when
  * nothing is enabled.
  */
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
-RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags);
-
-NS_ASSUME_NONNULL_BEGIN
+RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @class RCTBundleManager;
 @class RCTInstance;
@@ -58,7 +58,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry FB_OBJC_DIRECT;
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

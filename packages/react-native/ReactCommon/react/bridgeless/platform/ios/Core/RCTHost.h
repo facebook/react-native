@@ -25,21 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-/**
- * This notification fires just before RCTHost releases it's RCTInstance reference.
- */
-RCT_EXTERN NSString *const RCTHostWillReloadNotification;
-
-/**
- * This notification fires just after RCTHost releases it's RCTInstance reference.
- */
-RCT_EXTERN NSString *const RCTHostDidReloadNotification;
-
 typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProvider)(void);
 
 @protocol RCTHostDelegate <NSObject>
 
-- (NSURL *)getBundleURL;
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
 - (void)host:(RCTHost *)host
@@ -47,6 +36,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
                    message:(NSString *)message
                exceptionId:(NSUInteger)exceptionId
                    isFatal:(BOOL)isFatal;
+- (void)hostDidStart:(RCTHost *)host;
 
 @end
 
@@ -57,10 +47,11 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
  */
 @interface RCTHost : NSObject
 
-- (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-          turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                     hostDelegate:(id<RCTHostDelegate>)hostDelegate
+       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
 
 /**
  * This function initializes an RCTInstance if one does not yet exist.  This function is currently only called on the

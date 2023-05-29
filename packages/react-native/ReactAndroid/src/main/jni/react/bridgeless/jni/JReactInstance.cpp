@@ -19,7 +19,7 @@
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/bridgeless/BridgelessJSCallInvoker.h>
-#include <react/bridgeless/BridgelessNativeCallInvoker.h>
+#include <react/bridgeless/BridgelessNativeMethodCallInvoker.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
@@ -90,10 +90,12 @@ JReactInstance::JReactInstance(
       std::make_unique<BridgelessJSCallInvoker>(unbufferedRuntimeExecutor);
   jsCallInvokerHolder_ = jni::make_global(
       CallInvokerHolder::newObjectCxxArgs(std::move(jsInvoker)));
-  auto nativeInvoker = std::make_unique<BridgelessNativeCallInvoker>(
-      sharedNativeMessageQueueThread);
-  nativeCallInvokerHolder_ = jni::make_global(
-      CallInvokerHolder::newObjectCxxArgs(std::move(nativeInvoker)));
+  auto nativeMethodCallInvoker =
+      std::make_unique<BridgelessNativeMethodCallInvoker>(
+          sharedNativeMessageQueueThread);
+  nativeMethodCallInvokerHolder_ =
+      jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+          std::move(nativeMethodCallInvoker)));
 
   // Storing this here to make sure the Java reference doesn't get destroyed
   unbufferedRuntimeExecutor_ = jni::make_global(
@@ -156,9 +158,9 @@ JReactInstance::getJSCallInvokerHolder() {
   return jsCallInvokerHolder_;
 }
 
-jni::alias_ref<CallInvokerHolder::javaobject>
-JReactInstance::getNativeCallInvokerHolder() {
-  return nativeCallInvokerHolder_;
+jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+JReactInstance::getNativeMethodCallInvokerHolder() {
+  return nativeMethodCallInvokerHolder_;
 }
 
 jni::global_ref<JJSTimerExecutor::javaobject>
@@ -211,8 +213,8 @@ void JReactInstance::registerNatives() {
       makeNativeMethod(
           "getJSCallInvokerHolder", JReactInstance::getJSCallInvokerHolder),
       makeNativeMethod(
-          "getNativeCallInvokerHolder",
-          JReactInstance::getNativeCallInvokerHolder),
+          "getNativeMethodCallInvokerHolder",
+          JReactInstance::getNativeMethodCallInvokerHolder),
       makeNativeMethod(
           "callFunctionOnModule", JReactInstance::callFunctionOnModule),
       makeNativeMethod(

@@ -61,14 +61,9 @@ internal object DependencyUtils {
         // This allows users to import libraries that are still using
         // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
         configuration.resolutionStrategy.dependencySubstitution {
-          it.substitute(it.module("com.facebook.react:react-native"))
-              .using(it.module("${groupString}:react-android:${versionString}"))
-              .because(
-                  "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
-          it.substitute(it.module("com.facebook.react:hermes-engine"))
-              .using(it.module("${groupString}:hermes-android:${versionString}"))
-              .because(
-                  "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+          getDependencySubstitutions(versionString, groupString).forEach { (module, dest, reason) ->
+            it.substitute(it.module(module)).using(it.module(dest)).because(reason)
+          }
         }
         configuration.resolutionStrategy.force(
             "${groupString}:react-android:${versionString}",
@@ -76,6 +71,36 @@ internal object DependencyUtils {
         )
       }
     }
+  }
+
+  internal fun getDependencySubstitutions(
+      versionString: String,
+      groupString: String = DEFAULT_GROUP_STRING
+  ): List<Triple<String, String, String>> {
+    val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
+    dependencySubstitution.add(
+        Triple(
+            "com.facebook.react:react-native",
+            "${groupString}:react-android:${versionString}",
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."))
+    dependencySubstitution.add(
+        Triple(
+            "com.facebook.react:hermes-engine",
+            "${groupString}:hermes-android:${versionString}",
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."))
+    if (groupString != DEFAULT_GROUP_STRING) {
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:react-android",
+              "${groupString}:react-android:${versionString}",
+              "The react-android dependency was modified to use the correct Maven group."))
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:hermes-android",
+              "${groupString}:hermes-android:${versionString}",
+              "The hermes-android dependency was modified to use the correct Maven group."))
+    }
+    return dependencySubstitution
   }
 
   fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {

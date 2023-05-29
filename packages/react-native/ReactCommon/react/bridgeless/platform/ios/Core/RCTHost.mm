@@ -20,9 +20,6 @@
 
 using namespace facebook::react;
 
-NSString *const RCTHostWillReloadNotification = @"RCTHostWillReloadNotification";
-NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
-
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @end
 
@@ -33,6 +30,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
+  RCTHostBundleURLProvider _bundleURLProvider;
   facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTHostJSEngineProvider _jsEngineProvider;
 
@@ -55,10 +53,11 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
  Host initialization should not be resource intensive. A host may be created before any intention of using React Native
  has been expressed.
  */
-- (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-          turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                     hostDelegate:(id<RCTHostDelegate>)hostDelegate
+       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -81,24 +80,21 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
       return strongSelf->_bundleURL;
     };
 
-    auto bundleURLSetter = ^(NSURL *bundleURL) {
-      RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      strongSelf->_bundleURL = bundleURL;
+    auto bundleURLSetter = ^(NSURL *bundleURL_) {
+      [weakSelf _setBundleURL:bundleURL];
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
     {
       RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
+      if (!strongSelf || !strongSelf->_bundleURLProvider) {
         return nil;
       }
 
-      return [strongSelf->_hostDelegate getBundleURL];
+      return strongSelf->_bundleURLProvider();
     };
 
+    [self _setBundleURL:bundleURL];
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
@@ -147,8 +143,6 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
     [_instance invalidate];
   }
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager
@@ -156,6 +150,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
+  [_hostDelegate hostDidStart:self];
 }
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
@@ -204,12 +199,11 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
 
 - (void)didReceiveReloadCommand
 {
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostWillReloadNotification object:nil]];
   [_instance invalidate];
   _instance = nil;
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
 
   // Ensure all attached surfaces are restarted after reload
   {
@@ -224,8 +218,7 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
                                 onInitialBundleLoad:_onInitialBundleLoad
                                 bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
-  [[NSNotificationCenter defaultCenter]
-      postNotification:[NSNotification notificationWithName:RCTHostDidReloadNotification object:nil]];
+  [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
     [surface resetWithSurfacePresenter:[self getSurfacePresenter]];
@@ -275,20 +268,12 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   [_instance registerSegmentWithId:segmentId path:path];
 }
 
-#pragma mark - Private
-
-- (void)_refreshBundleURL FB_OBJC_DIRECT
+- (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
 {
-  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
-  NSURL *newDelegateBundleURL = [_hostDelegate getBundleURL];
-  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
-    _oldDelegateBundleURL = newDelegateBundleURL;
-    _bundleURL = newDelegateBundleURL;
-  }
-
-  // Sanitize the bundle URL
-  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+  _bundleURLProvider = [bundleURLProvider copy];
 }
+
+#pragma mark - Private
 
 - (void)_attachSurface:(RCTFabricSurface *)surface FB_OBJC_DIRECT
 {
@@ -314,6 +299,22 @@ NSString *const RCTHostDidReloadNotification = @"RCTHostDidReloadNotification";
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;
+}
+
+- (void)_setBundleURL:(NSURL *)bundleURL
+{
+  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
+  NSURL *newDelegateBundleURL = bundleURL;
+  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
+    _oldDelegateBundleURL = newDelegateBundleURL;
+    _bundleURL = newDelegateBundleURL;
+  }
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  // Update the global bundle URLq
+  RCTReloadCommandSetBundleURL(_bundleURL);
 }
 
 @end
