@@ -28,6 +28,7 @@ module.exports = {
   project: {
     ios: {
       sourceDir: '.',
+      unstable_reactLegacyComponentNames: ['RNTMyLegacyNativeView'],
     },
     android: {
       sourceDir: '../../',
