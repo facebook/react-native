@@ -59,7 +59,7 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
-    hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
@@ -1109,7 +1109,7 @@ jobs:
       - image: debian:11
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
       - BUILD_FROM_SOURCE: true
     steps:
       - run:
@@ -1128,8 +1128,11 @@ jobs:
             mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
 
             if [ -f "$HERMES_VERSION_FILE" ]; then
+              echo "Hermes Version file found! Using this version for the build:"
               cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
             else
+              echo "Hermes Version file not found!!!"
+              echo "Using the last commit from main for the build:"
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
