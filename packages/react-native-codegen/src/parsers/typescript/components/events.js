@@ -25,6 +25,12 @@ const {
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitFloatProp,
+  emitStringProp,
+} = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -45,21 +51,9 @@ function getPropertyType(
 
   switch (type) {
     case 'TSBooleanKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'TSStringKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
       return {
         name,
@@ -69,21 +63,9 @@ function getPropertyType(
         },
       };
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case 'TSTypeLiteral':
       return {
         name,
@@ -239,7 +221,7 @@ function findEventArgumentsAndType(
 
     switch (typeAnnotation.typeParameters.params[0].type) {
       case parser.nullLiteralTypeAnnotation:
-      case 'TSUndefinedKeyword':
+      case parser.undefinedLiteralTypeAnnotation:
         return {
           argumentProps: [],
           bubblingType: eventType,

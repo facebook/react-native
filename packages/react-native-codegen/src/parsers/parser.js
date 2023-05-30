@@ -20,6 +20,8 @@ import type {
   NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -94,14 +96,19 @@ export interface Parser {
   enumDeclaration: string;
 
   /**
-   * InterfaceDelcaration property of the Parser
+   * InterfaceDeclaration property of the Parser
    */
-  interfaceDelcaration: string;
+  interfaceDeclaration: string;
 
   /**
    * This is the NullLiteralTypeAnnotation value
    */
   nullLiteralTypeAnnotation: string;
+
+  /**
+   * UndefinedLiteralTypeAnnotation property of the Parser
+   */
+  undefinedLiteralTypeAnnotation: string;
 
   /**
    * Given a declaration, it returns true if it is a property
@@ -353,6 +360,7 @@ export interface Parser {
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
+    parser: Parser,
   ): {
     nullable: boolean,
     typeAnnotation: $FlowFixMe,
@@ -360,4 +368,12 @@ export interface Parser {
   };
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  };
 }

@@ -16,12 +16,19 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
 const {getEventArgument} = require('../../parsers-commons');
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitFloatProp,
+  emitStringProp,
+} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -35,21 +42,9 @@ function getPropertyType(
 
   switch (type) {
     case 'BooleanTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'StringTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
       return {
         name,
@@ -59,21 +54,9 @@ function getPropertyType(
         },
       };
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case '$ReadOnly':
       return getPropertyType(
         name,

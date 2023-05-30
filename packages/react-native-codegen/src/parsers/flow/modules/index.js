@@ -20,7 +20,6 @@ import type {
 } from '../../../CodegenSchema';
 
 import type {Parser} from '../../parser';
-const {resolveTypeAnnotation} = require('../utils');
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
 const {
@@ -59,8 +58,9 @@ function translateTypeAnnotation(
   cxxOnly: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(flowTypeAnnotation, types, parser);
+    resolveTypeAnnotationFN(flowTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {

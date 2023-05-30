@@ -14,7 +14,9 @@ import type {
   Nullable,
   BooleanTypeAnnotation,
   DoubleTypeAnnotation,
+  EventTypeAnnotation,
   Int32TypeAnnotation,
+  NamedShape,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
@@ -95,6 +97,19 @@ function emitDouble(nullable: boolean): Nullable<DoubleTypeAnnotation> {
   });
 }
 
+function emitDoubleProp(
+  name: string,
+  optional: boolean,
+): NamedShape<DoubleTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'DoubleTypeAnnotation',
+    },
+  };
+}
+
 function emitVoid(nullable: boolean): Nullable<VoidTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'VoidTypeAnnotation',
@@ -146,6 +161,19 @@ function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'StringTypeAnnotation',
   });
+}
+
+function emitStringProp(
+  name: string,
+  optional: boolean,
+): NamedShape<StringTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'StringTypeAnnotation',
+    },
+  };
 }
 
 function typeAliasResolution(
@@ -335,6 +363,19 @@ function emitFloat(
   return wrapNullable(nullable, {
     type: 'FloatTypeAnnotation',
   });
+}
+
+function emitFloatProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'FloatTypeAnnotation',
+    },
+  };
 }
 
 function emitUnion(
@@ -577,11 +618,27 @@ function emitCommonTypes(
   );
 }
 
+function emitBoolProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'BooleanTypeAnnotation',
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
+  emitBoolProp,
   emitDouble,
+  emitDoubleProp,
   emitFloat,
+  emitFloatProp,
   emitFunction,
   emitInt32,
   emitNumber,
@@ -593,6 +650,7 @@ module.exports = {
   emitVoid,
   emitString,
   emitStringish,
+  emitStringProp,
   emitMixed,
   emitUnion,
   emitPartial,

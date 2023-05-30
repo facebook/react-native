@@ -7,56 +7,80 @@
 
 package com.facebook.react.bridgeless
 
-import android.content.Context
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
-import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
-/** TODO: add javadoc for class and methods */
+/**
+ * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
+ * This interface works in combination with [ReactHost]
+ */
 @ThreadSafe
 @UnstableReactNativeAPI
 interface ReactHostDelegate {
+  /**
+   * Path to your app's main module on Metro. This is used when reloading JS during development. All
+   * paths are relative to the root folder the packager is serving files from. Examples:
+   * `index.android` or `subdirectory/index.android`
+   */
   val jSMainModulePath: String
 
-  val bindingsInstaller: BindingsInstaller
+  /**
+   * Object that holds a native C++ references that allow host applications to install C++ objects
+   * into jsi::Runtime during the initialization of React Native
+   */
+  val bindingsInstaller: BindingsInstaller?
 
+  /** list of [ReactPackage] to expose Native Modules and View Components to JS */
   val reactPackages: List<ReactPackage>
 
-  fun getJSBundleLoader(context: Context): JSBundleLoader
+  /** Object that holds a native reference to the javascript engine */
+  val jSEngineInstance: JSEngineInstance
 
+  /**
+   * Bundle loader to use when setting up JS environment. <p>Example:
+   * [JSBundleLoader.createFileLoader(application, bundleFile)]
+   */
+  val jSBundleLoader: JSBundleLoader
+
+  /** TODO: combine getTurboModuleManagerDelegate inside [ReactPackage] */
   fun getTurboModuleManagerDelegate(context: ReactApplicationContext): TurboModuleManagerDelegate
 
-  fun getJSEngineInstance(context: ReactApplicationContext): JSEngineInstance
+  /**
+   * Callback that can be used by React Native host applications to react to exceptions thrown by
+   * the internals of React Native.
+   */
+  fun handleInstanceException(error: Exception)
 
-  fun handleInstanceException(e: Exception)
-
-  fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig
+  /**
+   * ReactNative Configuration that allows to customize the behavior of key/value pairs used by the
+   * framework to enable/disable experimental capabilities
+   */
+  fun getReactNativeConfig(context: ReactContext): ReactNativeConfig
 
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
       override val jSMainModulePath: String,
-      override val bindingsInstaller: BindingsInstaller,
-      override val reactPackages: List<ReactPackage>,
-      private val jsBundleLoader: JSBundleLoader,
-      private val turboModuleManagerDelegate: TurboModuleManagerDelegate,
-      private val jsEngineInstance: JSEngineInstance,
-      private val reactNativeConfig: ReactNativeConfig,
-      private val exceptionHandler: (Exception) -> Unit = {}
+      override val jSBundleLoader: JSBundleLoader,
+      override val jSEngineInstance: JSEngineInstance,
+      override val reactPackages: List<ReactPackage> = emptyList(),
+      override val bindingsInstaller: BindingsInstaller? = null,
+      private val turboModuleManagerDelegate:
+          (context: ReactApplicationContext) -> TurboModuleManagerDelegate,
+      private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
+      private val exceptionHandler: (error: Exception) -> Unit = {}
   ) : ReactHostDelegate {
-    override fun getJSBundleLoader(context: Context) = jsBundleLoader
 
     override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
-        turboModuleManagerDelegate
+        turboModuleManagerDelegate(context)
 
-    override fun getJSEngineInstance(context: ReactApplicationContext) = jsEngineInstance
+    override fun getReactNativeConfig(context: ReactContext) = reactNativeConfig
 
-    override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
-
-    override fun handleInstanceException(e: Exception) = exceptionHandler(e)
+    override fun handleInstanceException(error: Exception) = exceptionHandler(error)
   }
 }

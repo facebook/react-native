@@ -233,9 +233,11 @@ RuntimeExecutor Instance::getRuntimeExecutor() {
   return runtimeExecutor;
 }
 
-std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
-    std::shared_ptr<CallInvoker> nativeInvoker) {
-  return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);
+std::shared_ptr<NativeMethodCallInvoker>
+Instance::getDecoratedNativeMethodCallInvoker(
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) {
+  return nativeToJsBridge_->getDecoratedNativeMethodCallInvoker(
+      nativeMethodCallInvoker);
 }
 
 void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(

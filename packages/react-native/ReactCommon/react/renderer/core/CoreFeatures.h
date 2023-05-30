@@ -48,6 +48,13 @@ class CoreFeatures {
   // [CATransaction end] This feature flag disables it to measure its impact in
   // production.
   static bool disableTransactionCommit;
+
+  // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
+  // updates for all changes in scroll position.
+  static bool enableGranularScrollViewStateUpdatesIOS;
+
+  // Report mount operations from the host platform to notify mount hooks.
+  static bool enableMountHooks;
 };
 
 } // namespace facebook::react

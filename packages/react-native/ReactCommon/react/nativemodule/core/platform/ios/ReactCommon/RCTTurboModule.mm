@@ -8,6 +8,7 @@
 #import "RCTTurboModule.h"
 #import "RCTBlockGuard.h"
 
+#include <glog/logging.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 #import <atomic>
@@ -184,7 +185,7 @@ convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, 
   BOOL __block wrapperWasCalled = NO;
   RCTResponseSenderBlock callback = ^(NSArray *responses) {
     if (wrapperWasCalled) {
-      throw std::runtime_error("callback arg cannot be called more than once");
+      LOG(FATAL) << "callback arg cannot be called more than once";
     }
 
     auto strongWrapper = weakWrapper.lock();
@@ -419,12 +420,12 @@ id ObjCTurboModule::performMethodInvocation(
   };
 
   if (isSync) {
-    block();
+    nativeMethodCallInvoker_->invokeSync(methodNameStr, [&]() -> void { block(); });
     return result;
   } else {
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
-    nativeInvoker_->invokeAsync([block]() -> void { block(); });
+    nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block]() -> void { block(); });
     return nil;
   }
 }
@@ -685,7 +686,7 @@ bool ObjCTurboModule::isMethodSync(TurboModuleMethodValueKind returnType)
 ObjCTurboModule::ObjCTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(params.instance),
-      nativeInvoker_(params.nativeInvoker),
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker),
       isSyncModule_(params.isSyncModule)
 {
 }

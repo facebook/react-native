@@ -20,6 +20,8 @@ import type {
   NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {
@@ -35,12 +37,17 @@ import type {
   TypeResolutionStatus,
 } from '../utils';
 
-const {resolveTypeAnnotation} = require('./utils');
+type ExtendsForProp = null | {
+  type: 'ReactNativeBuiltInType',
+  knownTypeName: 'ReactNativeCoreViewProps',
+};
+
 const invariant = require('invariant');
 
 const {
   getSchemaInfo,
   getTypeAnnotation,
+  flattenProperties,
 } = require('./components/componentsUtils');
 
 const {flowTranslateTypeAnnotation} = require('./modules');
@@ -48,7 +55,7 @@ const {flowTranslateTypeAnnotation} = require('./modules');
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 
-const {buildSchema} = require('../parsers-commons');
+const {buildSchema, buildPropSchema} = require('../parsers-commons');
 const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
@@ -64,9 +71,9 @@ class FlowParser implements Parser {
   typeParameterInstantiation: string = 'TypeParameterInstantiation';
   typeAlias: string = 'TypeAlias';
   enumDeclaration: string = 'EnumDeclaration';
-  interfaceDelcaration: string = 'InterfaceDeclaration';
-
+  interfaceDeclaration: string = 'InterfaceDeclaration';
   nullLiteralTypeAnnotation: string = 'NullLiteralTypeAnnotation';
+  undefinedLiteralTypeAnnotation: string = 'VoidLiteralTypeAnnotation';
 
   isProperty(property: $FlowFixMe): boolean {
     return property.type === 'ObjectTypeProperty';
@@ -376,6 +383,7 @@ class FlowParser implements Parser {
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
+    parser: Parser,
   ): {
     nullable: boolean,
     typeAnnotation: $FlowFixMe,
@@ -409,7 +417,7 @@ class FlowParser implements Parser {
       }
 
       switch (resolvedTypeAnnotation.type) {
-        case 'TypeAlias': {
+        case parser.typeAlias: {
           typeResolutionStatus = {
             successful: true,
             type: 'alias',
@@ -418,7 +426,7 @@ class FlowParser implements Parser {
           node = resolvedTypeAnnotation.right;
           break;
         }
-        case 'EnumDeclaration': {
+        case parser.enumDeclaration: {
           typeResolutionStatus = {
             successful: true,
             type: 'enum',
@@ -429,7 +437,7 @@ class FlowParser implements Parser {
         }
         default: {
           throw new TypeError(
-            `A non GenericTypeAnnotation must be a type declaration ('TypeAlias') or enum ('EnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+            `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}') or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
           );
         }
       }
@@ -443,7 +451,74 @@ class FlowParser implements Parser {
   }
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN {
-    return resolveTypeAnnotation;
+    return (typeAnnotation, types, parser) =>
+      this.getResolvedTypeAnnotation(typeAnnotation, types, parser);
+  }
+  extendsForProp(
+    prop: PropAST,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ): ExtendsForProp {
+    const argument = this.argumentForProp(prop);
+    if (!argument) {
+      console.log('null', prop);
+    }
+    const name = parser.nameForArgument(prop);
+
+    if (types[name] != null) {
+      // This type is locally defined in the file
+      return null;
+    }
+
+    switch (name) {
+      case 'ViewProps':
+        return {
+          type: 'ReactNativeBuiltInType',
+          knownTypeName: 'ReactNativeCoreViewProps',
+        };
+      default: {
+        throw new Error(`Unable to handle prop spread: ${name}`);
+      }
+    }
+  }
+
+  removeKnownExtends(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): $ReadOnlyArray<PropAST> {
+    return typeDefinition.filter(
+      prop =>
+        prop.type !== 'ObjectTypeSpreadProperty' ||
+        this.extendsForProp(prop, types, this) === null,
+    );
+  }
+
+  getExtendsProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): $ReadOnlyArray<ExtendsPropsShape> {
+    return typeDefinition
+      .filter(prop => prop.type === 'ObjectTypeSpreadProperty')
+      .map(prop => this.extendsForProp(prop, types, this))
+      .filter(Boolean);
+  }
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  } {
+    const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
+    const props = flattenProperties(nonExtendsProps, types)
+      .map(property => buildPropSchema(property, types, this))
+      .filter(Boolean);
+
+    return {
+      props,
+      extendsProps: this.getExtendsProps(typeDefinition, types),
+    };
   }
 }
 

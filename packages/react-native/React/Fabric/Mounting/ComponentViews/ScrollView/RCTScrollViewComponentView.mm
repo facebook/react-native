@@ -437,7 +437,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  if (!_isUserTriggeredScrolling) {
+  if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
     [self _updateStateWithContentOffset];
   }
 

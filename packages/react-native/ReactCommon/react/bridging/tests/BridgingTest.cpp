@@ -475,11 +475,9 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
 
-  // Ensure copying and up/down casting JSI values is also supported.
+  // Ensure copying and down casting JSI values is also supported.
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value &>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object &>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String &>));

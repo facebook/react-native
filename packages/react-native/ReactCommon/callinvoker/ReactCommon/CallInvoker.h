@@ -32,4 +32,11 @@ class CallInvoker {
   virtual ~CallInvoker() {}
 };
 
+class NativeMethodCallInvoker {
+ public:
+  virtual void invokeAsync(const std::string &methodName, CallFunc &&func) = 0;
+  virtual void invokeSync(const std::string &methodName, CallFunc &&func) = 0;
+  virtual ~NativeMethodCallInvoker() {}
+};
+
 } // namespace facebook::react

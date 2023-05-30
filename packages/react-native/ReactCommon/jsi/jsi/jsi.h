@@ -1098,14 +1098,14 @@ class JSI_EXPORT Value {
   }
 
   /// Moves a Symbol, String, or Object rvalue into a new JS value.
-  template <typename T>
+  template <
+      typename T,
+      typename = std::enable_if_t<
+          std::is_base_of<Symbol, T>::value ||
+          std::is_base_of<BigInt, T>::value ||
+          std::is_base_of<String, T>::value ||
+          std::is_base_of<Object, T>::value>>
   /* implicit */ Value(T&& other) : Value(kindOf(other)) {
-    static_assert(
-        std::is_base_of<Symbol, T>::value ||
-            std::is_base_of<BigInt, T>::value ||
-            std::is_base_of<String, T>::value ||
-            std::is_base_of<Object, T>::value,
-        "Value cannot be implicitly move-constructed from this type");
     new (&data_.pointer) T(std::move(other));
   }
 

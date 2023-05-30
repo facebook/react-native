@@ -28,4 +28,8 @@
         <item name="android:datePickerMode">calendar</item>
     </style>
 
+    <style name="Theme.ReactNative.TextInput.DefaultBackground" parent="android:Widget.EditText">
+      <item name="android:editTextBackground">@drawable/abc_edit_text_material</item>
+    </style>
+
 </resources>

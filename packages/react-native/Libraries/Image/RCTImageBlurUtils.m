@@ -19,8 +19,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   }
 
   // convert to ARGB if it isn't
-  if (CGImageGetBitsPerPixel(imageRef) != 32 || CGImageGetBitsPerComponent(imageRef) != 8 ||
-      !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
+  if (CGImageGetBitsPerPixel(imageRef) != 32 || !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
     UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
     rendererFormat.scale = inputImage.scale;
     UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
