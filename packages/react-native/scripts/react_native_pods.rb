@@ -117,8 +117,6 @@ def use_react_native! (
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
   pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
-  pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
-  pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
@@ -131,7 +129,6 @@ def use_react_native! (
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
-  pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true

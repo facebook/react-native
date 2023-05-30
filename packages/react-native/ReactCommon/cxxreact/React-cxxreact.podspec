@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{cpp,h}"
   s.exclude_files          = "SampleCxxModule.*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
   s.header_dir             = "cxxreact"
 
