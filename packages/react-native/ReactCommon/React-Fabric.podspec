@@ -232,6 +232,14 @@ Pod::Spec.new do |s|
     end
   end
 
+  s.subspec "debug_core" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/debug/**/*.{m,mm,cpp,h}"
+    ss.exclude_files        = "react/debug/tests"
+    ss.header_dir           = "react/debug"
+  end
+
   s.subspec "debug_renderer" do |ss|
     ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
@@ -315,4 +323,19 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
+
+  s.subspec "runtimescheduler" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
+    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
+    ss.header_dir           = "react/renderer/runtimescheduler"
+    ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
+  end
+
+  s.subspec "utils" do |ss|
+    ss.source_files         = "react/utils/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/utils"
+  end
+
 end

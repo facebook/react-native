@@ -8,7 +8,6 @@
 #include "RuntimeSchedulerCallInvoker.h"
 
 #include <utility>
-#include "RuntimeScheduler.h"
 
 namespace facebook::react {
 

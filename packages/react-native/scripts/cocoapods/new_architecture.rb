@@ -109,8 +109,6 @@ class NewArchitectureHelper
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
-            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
         end
         header_search_paths_string = header_search_paths.join(" ")
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
@@ -137,8 +135,6 @@ class NewArchitectureHelper
             spec.dependency "Yoga"
             spec.dependency "React-Fabric"
             spec.dependency "React-graphics"
-            spec.dependency "React-utils"
-            spec.dependency "React-debug"
 
             if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
                 spec.dependency "hermes-engine"
