@@ -14,6 +14,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTComponentViewFactory.h>
+#import <React/RCTConstants.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
@@ -25,6 +26,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTNativeViewConfigProvider.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
@@ -282,6 +284,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
+
+    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+      installNativeViewConfigProviderBinding(runtime);
+    }
 
     if (strongSelf->_bindingsInstallFunc) {
       strongSelf->_bindingsInstallFunc(runtime);
