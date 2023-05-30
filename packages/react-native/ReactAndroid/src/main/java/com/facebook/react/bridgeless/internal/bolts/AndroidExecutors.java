@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import androidx.annotation.NonNull;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -32,11 +33,12 @@ import java.util.concurrent.TimeUnit;
  * 0 and maxPoolSize is Integer.MAX_VALUE. This is dangerous because it can create an unchecked
  * amount of threads.
  */
-/* package */ final class AndroidExecutors {
+/* package */
+final class AndroidExecutors {
 
   private static final AndroidExecutors INSTANCE = new AndroidExecutors();
 
-  private final Executor uiThread;
+  @NonNull private final Executor uiThread;
 
   private AndroidExecutors() {
     uiThread = new UIThreadExecutor();
@@ -64,7 +66,7 @@ import java.util.concurrent.TimeUnit;
    *
    * @return the newly created thread pool
    */
-  public static ExecutorService newCachedThreadPool() {
+  public static @NonNull ExecutorService newCachedThreadPool() {
     ThreadPoolExecutor executor =
         new ThreadPoolExecutor(
             CORE_POOL_SIZE,
@@ -89,7 +91,7 @@ import java.util.concurrent.TimeUnit;
    * @param threadFactory the factory to use when creating new threads
    * @return the newly created thread pool
    */
-  public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {
+  public static @NonNull ExecutorService newCachedThreadPool(@NonNull ThreadFactory threadFactory) {
     ThreadPoolExecutor executor =
         new ThreadPoolExecutor(
             CORE_POOL_SIZE,
@@ -114,21 +116,21 @@ import java.util.concurrent.TimeUnit;
    * @param value true if should time out, else false
    */
   @SuppressLint("NewApi")
-  public static void allowCoreThreadTimeout(ThreadPoolExecutor executor, boolean value) {
+  public static void allowCoreThreadTimeout(@NonNull ThreadPoolExecutor executor, boolean value) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
       executor.allowCoreThreadTimeOut(value);
     }
   }
 
   /** An {@link java.util.concurrent.Executor} that executes tasks on the UI thread. */
-  public static Executor uiThread() {
+  public static @NonNull Executor uiThread() {
     return INSTANCE.uiThread;
   }
 
   /** An {@link java.util.concurrent.Executor} that runs tasks on the UI thread. */
   private static class UIThreadExecutor implements Executor {
     @Override
-    public void execute(Runnable command) {
+    public void execute(@NonNull Runnable command) {
       new Handler(Looper.getMainLooper()).post(command);
     }
   }
