@@ -168,13 +168,9 @@
   CGFloat leftPadding = _textContainerInset.left + _textBorderInsets.left;
   CGFloat rightPadding = _textContainerInset.right + _textBorderInsets.right;
   UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, leftPadding, _textContainerInset.bottom, rightPadding);
-  if (self.fragmentViewContainerBounds.size.height > 0) {
-    // Apply custom bounds to fix iOS UITextField issue with lineHeight.
-    // Sets the correct y coordinates for _UITextLayoutFragmentView.
-    return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds], borderAndPaddingInsets);
-  } else {
-    return UIEdgeInsetsInsetRect([super textRectForBounds:bounds], borderAndPaddingInsets);
-  }
+  // The fragmentViewContainerBounds set the correct y coordinates for
+  // _UITextLayoutFragmentView to fix an iOS UITextField issue with lineHeight.
+  return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds.size.height > 0 ? self.fragmentViewContainerBounds : bounds], borderAndPaddingInsets);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
