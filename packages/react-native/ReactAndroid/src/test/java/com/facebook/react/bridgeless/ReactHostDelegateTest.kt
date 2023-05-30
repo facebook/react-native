@@ -14,7 +14,6 @@ import com.facebook.react.defaults.DefaultReactHostDelegate
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
@@ -31,7 +30,6 @@ class ReactHostDelegateTest {
    * API
    */
   @Test
-  @Ignore
   fun testDefaultReactHostDelegateCreation() {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
     val turboModuleManagerDelegateMock: TurboModuleManagerDelegate =

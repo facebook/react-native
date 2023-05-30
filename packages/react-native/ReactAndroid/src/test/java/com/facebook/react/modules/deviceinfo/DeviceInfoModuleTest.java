@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -151,12 +152,12 @@ public class DeviceInfoModuleTest extends TestCase {
               }
             });
 
-    fakePortraitDisplayMetrics = Arguments.createMap();
-    fakePortraitDisplayMetrics.putInt("width", 100);
-    fakePortraitDisplayMetrics.putInt("height", 200);
+    fakePortraitDisplayMetrics = mock(Arguments.class);
+    when(fakePortraitDisplayMetrics.getInt("width")).thenReturn(100);
+    when(fakePortraitDisplayMetrics.getInt("height")).thenReturn(200);
 
-    fakeLandscapeDisplayMetrics = Arguments.createMap();
-    fakeLandscapeDisplayMetrics.putInt("width", 200);
-    fakeLandscapeDisplayMetrics.putInt("height", 100);
+    fakeLandscapeDisplayMetrics = mock(Arguments.class);
+    when(fakeLandscapeDisplayMetrics.getInt("width")).thenReturn(200);
+    when(fakeLandscapeDisplayMetrics.getInt("height")).thenReturn(100);
   }
 }

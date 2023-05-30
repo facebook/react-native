@@ -700,7 +700,7 @@ dependencies {
 
     testImplementation("junit:junit:${JUNIT_VERSION}")
     testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
-    testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+    testImplementation("org.mockito:mockito-inline:${MOCKITO_INLINE_VERSION}")
     testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
     testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
     testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
@@ -710,7 +710,7 @@ dependencies {
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+    androidTestImplementation("org.mockito:mockito-inline:${MOCKITO_INLINE_VERSION}")
 
     // This compileOnly dependency is needed to be able to update the offline
     // mirror from a non-linux machine, while still executing inside a Linux CI
