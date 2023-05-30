@@ -170,7 +170,8 @@
   UIEdgeInsets borderAndPaddingInsets = UIEdgeInsetsMake(_textContainerInset.top, leftPadding, _textContainerInset.bottom, rightPadding);
   // The fragmentViewContainerBounds set the correct y coordinates for
   // _UITextLayoutFragmentView to fix an iOS UITextField issue with lineHeight.
-  return UIEdgeInsetsInsetRect([super textRectForBounds:self.fragmentViewContainerBounds.size.height > 0 ? self.fragmentViewContainerBounds : bounds], borderAndPaddingInsets);
+  CGRect updatedBounds = self.fragmentViewContainerBounds.size.height > 0 ? self.fragmentViewContainerBounds : bounds;
+  return UIEdgeInsetsInsetRect([super textRectForBounds:updatedBounds], borderAndPaddingInsets);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds
