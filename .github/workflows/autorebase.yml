@@ -19,9 +19,9 @@ jobs:
       - name: Checkout the latest code
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} # TODO: consider using a PAT with required permissions
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
       - name: Automatic Rebase
         uses: cirrus-actions/rebase@1.8
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # TODO: consider using a PAT with required permissions
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
