@@ -12,7 +12,12 @@ import {Insets} from '../../../types/public/Insets';
 import {GestureResponderHandlers} from '../../../types/public/ReactNativeRenderer';
 import {StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
-import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';
+import {
+  KeyEvent,
+  LayoutChangeEvent,
+  MouseEvent,
+  PointerEvents,
+} from '../../Types/CoreEventTypes';
 import {Touchable} from '../Touchable/Touchable';
 import {AccessibilityProps} from './ViewAccessibility';
 
@@ -163,12 +168,31 @@ export interface ViewPropsAndroid {
   focusable?: boolean | undefined;
 }
 
+export type DraggedType = 'fileUrl';
+export type DraggedTypesType = DraggedType | DraggedType[];
+
+export interface ViewPropsMacOS {
+  acceptsFirstMouse?: boolean | undefined;
+  enableFocusRing?: boolean | undefined;
+  onMouseEnter?: ((event: MouseEvent) => void) | undefined;
+  onMouseLeave?: ((event: MouseEvent) => void) | undefined;
+  onDragEnter?: ((event: MouseEvent) => void) | undefined;
+  onDragLeave?: ((event: MouseEvent) => void) | undefined;
+  onDrop?: ((event: MouseEvent) => void) | undefined;
+  onKeyDown?: ((event: KeyEvent) => void) | undefined;
+  onKeyUp?: ((event: KeyEvent) => void) | undefined;
+  validKeysDown?: string[] | undefined;
+  validKeysUp?: string[] | undefined;
+  draggedTypes?: DraggedTypesType | undefined;
+}
+
 /**
  * @see https://reactnative.dev/docs/view#props
  */
 export interface ViewProps
   extends ViewPropsAndroid,
     ViewPropsIOS,
+    ViewPropsMacOS,
     GestureResponderHandlers,
     Touchable,
     PointerEvents,

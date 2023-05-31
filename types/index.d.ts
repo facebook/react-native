@@ -130,6 +130,7 @@ export * from '../Libraries/ReactNative/requireNativeComponent';
 export * from '../Libraries/Settings/Settings';
 export * from '../Libraries/Share/Share';
 export * from '../Libraries/StyleSheet/PlatformColorValueTypesIOS';
+export * from '../Libraries/StyleSheet/PlatformColorValueTypesMacOS'; // [macOS]
 export * from '../Libraries/StyleSheet/PlatformColorValueTypes';
 export * from '../Libraries/StyleSheet/StyleSheet';
 export * from '../Libraries/StyleSheet/StyleSheetTypes';

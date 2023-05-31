@@ -15,6 +15,7 @@ type AccessibilityChangeEventName =
   | 'change' // deprecated, maps to screenReaderChanged
   | 'boldTextChanged' // iOS-only Event
   | 'grayscaleChanged' // iOS-only Event
+  | 'highContrastChanged' // [macOS]
   | 'invertColorsChanged' // iOS-only Event
   | 'reduceMotionChanged'
   | 'screenReaderChanged'
@@ -56,6 +57,14 @@ export interface AccessibilityInfoStatic {
    * @platform ios
    */
   isGrayscaleEnabled: () => Promise<boolean>;
+
+  /**
+   *
+   * @returns Query whether high contract is currently enabled.
+   *
+   * @platform macos
+   */
+  isHighContrastEnabled: () => Promise<boolean>;
 
   /**
    * Query whether invert colors is currently enabled.
