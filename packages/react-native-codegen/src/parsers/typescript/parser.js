@@ -93,10 +93,6 @@ class TypeScriptParser implements Parser {
     return 'TypeScript';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation?.typeName?.name;
-  }
-
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.typeName.name;
   }

@@ -812,7 +812,7 @@ function getCommandTypeNameAndOptionsExpression(
   }
 
   return {
-    commandTypeName: parser.nameForGenericTypeAnnotation(typeArgumentParam),
+    commandTypeName: parser.getTypeAnnotationName(typeArgumentParam),
     commandOptionsExpression: callExpression.arguments[0],
   };
 }

@@ -95,10 +95,6 @@ class FlowParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation?.id?.name;
-  }
-
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation.id.name;
   }
