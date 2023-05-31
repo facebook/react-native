@@ -420,11 +420,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
 }
 
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete
-{
-  [self.batchedBridge loadAndExecuteSplitBundleURL:bundleURL onError:onError onComplete:onComplete];
-}
-
 @end

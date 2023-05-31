@@ -227,11 +227,4 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  */
 - (BOOL)isBatchActive;
 
-/**
- * Loads and executes additional bundles in the VM for development.
- */
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete;
-
 @end

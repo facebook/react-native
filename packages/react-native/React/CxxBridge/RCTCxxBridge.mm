@@ -1089,42 +1089,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self.devSettings setupHMRClientWithBundleURL:self.bundleURL];
 }
 
-#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete
-{
-  __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:bundleURL
-      onProgress:^(RCTLoadingProgress *progressData) {
-#if (RCT_DEV_MENU | RCT_DEV_MENU) && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-        id<RCTDevLoadingViewProtocol> loadingView = [weakSelf moduleForName:@"DevLoadingView"
-                                                      lazilyLoadIfNecessary:YES];
-        [loadingView updateProgress:progressData];
-#endif
-      }
-      onComplete:^(NSError *error, RCTSource *source) {
-        if (error) {
-          onError(error);
-          return;
-        }
-
-        [self enqueueApplicationScript:source.data
-                                   url:source.url
-                            onComplete:^{
-                              [self.devSettings setupHMRClientWithAdditionalBundleURL:source.url];
-                              onComplete();
-                            }];
-      }];
-}
-#else
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete
-{
-}
-#endif
-
 - (void)handleError:(NSError *)error
 {
   // This is generally called when the infrastructure throws an
