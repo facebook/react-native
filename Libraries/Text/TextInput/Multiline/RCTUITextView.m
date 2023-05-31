@@ -25,10 +25,17 @@
 #endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 static UIFont *defaultPlaceholderFont()
 {
   return [UIFont systemFontOfSize:17];
 }
+#else // [macOS
+static NSFont *defaultPlaceholderFont()
+{
+  return [NSFont systemFontOfSize:[NSFont systemFontSize]];
+}
+#endif // macOS]
 
 static RCTUIColor *defaultPlaceholderColor() // [macOS]
 {
