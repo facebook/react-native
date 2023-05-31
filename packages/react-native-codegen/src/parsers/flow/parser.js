@@ -96,7 +96,7 @@ class FlowParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+    return typeAnnotation?.id?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {

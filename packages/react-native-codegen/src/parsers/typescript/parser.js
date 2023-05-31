@@ -94,7 +94,7 @@ class TypeScriptParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.typeName.name;
+    return typeAnnotation?.typeName?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
