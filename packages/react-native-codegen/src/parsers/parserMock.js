@@ -96,7 +96,6 @@ export class MockedParser implements Parser {
     return 'Flow';
   }
 
-
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.id?.name;
   }
