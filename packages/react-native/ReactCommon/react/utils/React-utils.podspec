@@ -1,4 +1,3 @@
-# coding: utf-8
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -6,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -19,10 +18,19 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.07.22.00'
-boost_compiler_flags = '-Wno-documentation'
+
+header_search_paths = [
+    "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_TARGET_SRCROOT)\"",
+    "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
+]
+
+if ENV["USE_FRAMEWORKS"]
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-cxxreact"
+  s.name                   = "React-utils"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "https://reactnative.dev/"
@@ -30,25 +38,20 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
-  s.exclude_files          = "SampleCxxModule.*"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
-  s.header_dir             = "cxxreact"
+  s.source_files           = "**/*.{cpp,h,mm}"
+  s.compiler_flags         = folly_compiler_flags
+  s.header_dir             = "react/utils"
+  s.exclude_files          = "tests"
+  s.pod_target_xcconfig    = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
-  s.dependency "boost", "1.76.0"
-  s.dependency "DoubleConversion"
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "glog"
-  s.dependency "React-jsinspector", version
-  s.dependency "React-callinvoker", version
-  s.dependency "React-runtimeexecutor", version
-  s.dependency "React-perflogger", version
-  s.dependency "React-jsi", version
-  s.dependency "React-logger", version
-
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-    s.dependency 'hermes-engine'
+  if ENV['USE_FRAMEWORKS']
+    s.module_name            = "React_utils"
+    s.header_mappings_dir  = "../.."
   end
+
+  s.dependency "RCT-Folly", folly_version
+  s.dependency "React-debug"
+  s.dependency "glog"
 end

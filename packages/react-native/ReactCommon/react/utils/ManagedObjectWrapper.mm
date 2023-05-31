@@ -7,8 +7,6 @@
 
 #include "ManagedObjectWrapper.h"
 
-#if TARGET_OS_MAC
-
 namespace facebook::react {
 namespace detail {
 
@@ -30,5 +28,3 @@ void wrappedManagedObjectDeleter(void *cfPointer) noexcept
 
 @implementation RCTInternalGenericWeakWrapper
 @end
-
-#endif

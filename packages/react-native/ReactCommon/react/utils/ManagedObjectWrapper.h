@@ -13,9 +13,6 @@
 #include <TargetConditionals.h>
 #endif
 
-#if defined(__OBJC__) && defined(__cplusplus)
-#if TARGET_OS_MAC
-
 #include <memory>
 
 #import <Foundation/Foundation.h>
@@ -75,6 +72,3 @@ inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object) noexcep
 }
 
 } // namespace facebook::react
-
-#endif
-#endif

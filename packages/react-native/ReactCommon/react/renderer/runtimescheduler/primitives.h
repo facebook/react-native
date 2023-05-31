@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <jsi/jsi.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/runtimescheduler/Task.h>
 
 namespace facebook::react {
