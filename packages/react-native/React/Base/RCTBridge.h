@@ -60,6 +60,10 @@ RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
 
+// Turn on TurboModule interop's Bridge proxy
+RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
+RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
 // Route all TurboModules through TurboModule interop
 RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
