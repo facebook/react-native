@@ -376,4 +376,6 @@ export interface Parser {
     props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
     extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   };
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;
 }

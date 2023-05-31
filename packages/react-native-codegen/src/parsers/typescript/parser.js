@@ -510,7 +510,7 @@ class TypeScriptParser implements Parser {
     }
 
     // find events and props
-    for (const prop of flattenProperties(remaining, types)) {
+    for (const prop of flattenProperties(remaining, types, this)) {
       const topLevelType = parseTopLevelType(
         prop.typeAnnotation.typeAnnotation,
         types,
@@ -531,6 +531,33 @@ class TypeScriptParser implements Parser {
         .filter(Boolean),
       extendsProps,
     };
+  }
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe {
+    const alias = types[typeName];
+    if (!alias) {
+      throw new Error(
+        `Failed to find definition for "${typeName}", please check that you have a valid codegen typescript file`,
+      );
+    }
+    const aliasKind =
+      alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
+
+    try {
+      if (aliasKind === 'interface') {
+        return [...(alias.extends ?? []), ...alias.body.body];
+      }
+
+      return (
+        alias.typeAnnotation.members ||
+        alias.typeAnnotation.typeParameters.params[0].members ||
+        alias.typeAnnotation.typeParameters.params
+      );
+    } catch (e) {
+      throw new Error(
+        `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
+      );
+    }
   }
 }
 

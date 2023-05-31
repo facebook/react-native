@@ -436,7 +436,7 @@ export class MockedParser implements Parser {
     extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   } {
     const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
-    const props = flattenProperties(nonExtendsProps, types)
+    const props = flattenProperties(nonExtendsProps, types, this)
       .map(property => buildPropSchema(property, types, this))
       .filter(Boolean);
 
@@ -444,5 +444,16 @@ export class MockedParser implements Parser {
       props,
       extendsProps: this.getExtendsProps(typeDefinition, types),
     };
+  }
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe {
+    const typeAlias = types[typeName];
+    try {
+      return typeAlias.right.typeParameters.params[0].properties;
+    } catch (e) {
+      throw new Error(
+        `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
+      );
+    }
   }
 }
