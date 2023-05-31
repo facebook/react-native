@@ -1,0 +1,22 @@
+{
+    "extends": [
+      "config:base"
+    ],
+    "enabledManagers": [
+      "npm"
+    ],
+    "packageRules": [
+      {
+        "matchPackagePatterns": [
+          "*@deprecated"
+        ],
+        "automerge": false
+      }
+    ],
+    "schedule": {
+        "weekly": {
+          "day": "friday",
+          "hour": "00"
+        }
+      }
+}
