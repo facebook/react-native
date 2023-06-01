@@ -131,11 +131,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   RCTUIImageViewAnimated *_imageView;
 
-#if TARGET_OS_OSX // [macOS
-  // Whether observing changes to the window's backing scale
-  BOOL _subscribedToWindowBackingNotifications;
-#endif // macOS]
-  
   RCTImageURLLoaderRequest *_loaderRequest;
 }
 
@@ -616,32 +611,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 #if TARGET_OS_OSX // [macOS
 #define didMoveToWindow viewDidMoveToWindow
 #endif
-#if TARGET_OS_OSX
-- (void)viewWillMoveToWindow:(NSWindow *)newWindow
-{
-  if (_subscribedToWindowBackingNotifications &&
-      self.window != nil &&
-      self.window != newWindow) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSWindowDidChangeBackingPropertiesNotification
-                                                  object:self.window];
-    _subscribedToWindowBackingNotifications = NO;
-  }
-}
-#endif // macOS]
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
 
-#if TARGET_OS_OSX // [macOS
-  if (!_subscribedToWindowBackingNotifications && self.window != nil) {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(windowDidChangeBackingProperties:)
-                                                 name:NSWindowDidChangeBackingPropertiesNotification
-                                               object:self.window];
-    _subscribedToWindowBackingNotifications = YES;
-  }
-#endif // macOS]
   if (!self.window) {
     // Cancel loading the image if we've moved offscreen. In addition to helping
     // prioritise image requests that are actually on-screen, this removes
@@ -655,7 +628,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 }
     
 #if TARGET_OS_OSX // [macOS
-- (void)windowDidChangeBackingProperties:(NSNotification *)notification
+- (void)viewDidChangeBackingProperties
 {
   [self reloadImage];
 }
