@@ -78,7 +78,7 @@
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
-    "flow-bin": "^0.206.0",
+    "flow-bin": "^0.207.0",
     "hermes-eslint": "0.8.0",
     "inquirer": "^7.1.0",
     "jest": "^29.2.1",
