@@ -504,6 +504,14 @@ if (Platform.OS === 'macos') {
         return <ScrollIndicatorOverlayExample />;
       },
     },
+    {
+      title: '<ScrollView> (centerContent = true)\n',
+      description:
+        'ScrollView puts its content in the center if the content is smaller than scroll view',
+      render: function (): React.Node {
+        return <CenterContentList />;
+      },
+    },
   );
 }
 

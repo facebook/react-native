@@ -871,7 +871,8 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 - (void)scrollViewDocumentViewBoundsDidChange:(__unused NSNotification *)notification
 {
   if (_scrollView.centerContent) {
-    _scrollView.contentOffset = _scrollView.contentOffset; // necessary for content centering when _centerContent == YES
+    // contentOffset setter dynamically centers content when _centerContent == YES
+    [_scrollView setContentOffset:_scrollView.contentOffset];
   }
 
   // if scrollView is not ready, don't notify with scroll event
@@ -1176,6 +1177,9 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
     _scrollView.contentSize = contentSize;
+#if TARGET_OS_OSX // [macOS
+    [_scrollView setContentOffset:_scrollView.contentOffset];
+#endif // macOS]
   }
 }
 
