@@ -34,10 +34,6 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
     // is TextInputs being blurred immediately after being focused. So, for now,
     // it's easier to just disable this for these specific RTL views.
     // TODO T86027499: support `setRemoveClippedSubviews` in RTL mode
-    if (mLayoutDirection == LAYOUT_DIRECTION_RTL) {
-      super.setRemoveClippedSubviews(false);
-      return;
-    }
 
     super.setRemoveClippedSubviews(removeClippedSubviews);
   }
@@ -47,11 +43,8 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
     if (mLayoutDirection == LAYOUT_DIRECTION_RTL) {
       // When the layout direction is RTL, we expect Yoga to give us a layout
       // that extends off the screen to the left so we re-center it with left=0
-      int newLeft = 0;
-      int width = right - left;
-      int newRight = newLeft + width;
-      setLeft(newLeft);
-      setRight(newRight);
+      setRight(Math.abs(right - left));
+      setLeft(0);
 
       /**
        * Note: in RTL mode, *when layout width changes*, we adjust the scroll position. Practically,
@@ -64,7 +57,7 @@ public class ReactHorizontalScrollContainerView extends ReactViewGroup {
         // Call with the present values in order to re-layout if necessary
         ReactHorizontalScrollView parent = (ReactHorizontalScrollView) getParent();
         // Fix the ScrollX position when using RTL language
-        int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth - parent.getWidth();
+        int offsetX = parent.getScrollX() + getWidth() - mCurrentWidth;
         parent.scrollTo(offsetX, parent.getScrollY());
       }
     }
