@@ -48,6 +48,7 @@ header_search_paths = [
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers/",
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -91,6 +92,7 @@ Pod::Spec.new do |s|
     s.dependency "React-Fabric"
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
+    s.dependency "React-debug"
 
     s.script_phases = {
       :name => "Generate Legacy Components Interop",

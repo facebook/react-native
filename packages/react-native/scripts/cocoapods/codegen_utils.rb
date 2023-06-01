@@ -100,6 +100,7 @@ class CodegenUtils
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"",
           ])
         end
 
@@ -140,6 +141,7 @@ class CodegenUtils
           spec[:'dependencies'].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-debug': [],
           });
         end
 

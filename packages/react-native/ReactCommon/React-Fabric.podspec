@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "DoubleConversion"
   s.dependency "React-Core"
-  # s.dependency "React-debug"
+  s.dependency "React-debug"
   # s.dependency "React-utils"
   # s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
@@ -230,14 +230,6 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
-  end
-
-  s.subspec "debug_core" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/debug/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/debug/tests"
-    ss.header_dir           = "react/debug"
   end
 
   s.subspec "debug_renderer" do |ss|
