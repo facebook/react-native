@@ -134,10 +134,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return YES;
 }
 
+#if RCT_NEW_ARCH_ENABLED
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-#if RCT_NEW_ARCH_ENABLED
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
@@ -147,12 +147,6 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
-#else
-  if (self.runtimeSchedulerEnabled) {
-    _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
-  }
-  return RCTAppSetupJsExecutorFactoryForOldArch(bridge, _runtimeScheduler);
-#endif
 }
 
 #pragma mark - RCTTurboModuleManagerDelegate
