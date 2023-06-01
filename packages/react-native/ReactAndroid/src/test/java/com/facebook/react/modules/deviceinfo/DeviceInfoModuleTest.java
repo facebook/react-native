@@ -126,7 +126,8 @@ public class DeviceInfoModuleTest extends TestCase {
   }
 
   private static void givenDisplayMetricsHolderContains(final WritableMap fakeDisplayMetrics) {
-    when(DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0)).thenReturn(fakeDisplayMetrics);
+    when(DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0))
+        .thenAnswer(invocation -> fakeDisplayMetrics);
   }
 
   private static void verifyUpdateDimensionsEventsEmitted(
