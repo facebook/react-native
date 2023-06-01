@@ -142,16 +142,19 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       return;
     }
 
-    if (duration && easing) {
-      LayoutAnimation.configureNext({
-        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+    // bottom is changing, animate
+    LayoutAnimation.configureNext({
+      // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+      duration: duration > 10 ? duration : 10,
+      update: {
         duration: duration > 10 ? duration : 10,
-        update: {
-          duration: duration > 10 ? duration : 10,
-          type: LayoutAnimation.Types[easing] || 'keyboard',
-        },
-      });
-    }
+        type:
+          Platform.OS === 'android'
+            ? 'linear'
+            : LayoutAnimation.Types[easing] || 'keyboard',
+      },
+    });
+
     this.setState({bottom: height});
   };
 
