@@ -43,6 +43,7 @@ if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
+  header_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\""
 end
 
 Pod::Spec.new do |s|
@@ -79,6 +80,7 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-FabricImage"
+  s.dependency "React-debug"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
