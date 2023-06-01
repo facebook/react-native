@@ -14,10 +14,10 @@
 
 #include <butter/small_vector.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 #include <react/renderer/graphics/Transform.h>
 
 namespace facebook::react {

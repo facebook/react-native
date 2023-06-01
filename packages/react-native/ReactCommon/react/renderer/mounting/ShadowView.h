@@ -10,11 +10,11 @@
 #include <butter/small_vector.h>
 #include <folly/Hash.h>
 #include <react/renderer/core/EventEmitter.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/flags.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 
 namespace facebook::react {
 

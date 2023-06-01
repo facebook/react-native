@@ -11,7 +11,6 @@
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
-#include <react/renderer/core/LayoutPrimitives.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>

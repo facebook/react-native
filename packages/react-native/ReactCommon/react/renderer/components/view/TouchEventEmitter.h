@@ -10,9 +10,9 @@
 #include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/components/view/TouchEvent.h>
 #include <react/renderer/core/EventEmitter.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 
 namespace facebook::react {
 

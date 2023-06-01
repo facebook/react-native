@@ -13,8 +13,8 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/components/view/primitives.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 #include <react/renderer/graphics/Transform.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>

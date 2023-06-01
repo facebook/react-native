@@ -49,9 +49,14 @@ Pod::Spec.new do |s|
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
 
-  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => header_search_paths.join(" ") }
+  s.pod_target_xcconfig  = {
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
+    "USE_HEADERMAP" => "NO",
+  }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "React-Core/Default", version
+  s.dependency "React-rendererdebug"
 end

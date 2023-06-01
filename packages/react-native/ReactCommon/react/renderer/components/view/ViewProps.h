@@ -10,10 +10,10 @@
 #include <react/renderer/components/view/AccessibilityProps.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
 #include <react/renderer/components/view/primitives.h>
-#include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
+#include <react/renderer/graphics/LayoutMetrics.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
