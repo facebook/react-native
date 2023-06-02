@@ -17,6 +17,7 @@ const {
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
+const publishNightlyForEachChangedPackage = require('./monorepo/publish-nightly-for-each-changed-package');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -136,6 +137,7 @@ function publishNpm(buildType) {
   // Set version number in various files (package.json, gradle.properties etc)
   // For non-nightly, non-dry-run, CircleCI job `prepare_package_for_release` does this
   if (buildType === 'nightly' || buildType === 'dry-run') {
+    // Sets the version for package/react-native
     if (
       exec(
         `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
@@ -144,6 +146,11 @@ function publishNpm(buildType) {
       echo(`Failed to set version number to ${version}`);
       return exit(1);
     }
+  }
+
+  // set and publish the relevant monorepo packages
+  if (buildType === 'nightly') {
+    publishNightlyForEachChangedPackage(version);
   }
 
   generateAndroidArtifacts(version);
@@ -166,6 +173,7 @@ function publishNpm(buildType) {
     tag,
     otp: process.env.NPM_CONFIG_OTP,
   });
+
   if (result.code) {
     echo('Failed to publish package to npm');
     return exit(1);
