@@ -30,6 +30,7 @@ const {
   emitDoubleProp,
   emitFloatProp,
   emitStringProp,
+  emitInt32Prop,
 } = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -55,13 +56,7 @@ function getPropertyType(
     case 'TSStringKeyword':
       return emitStringProp(name, optional);
     case 'Int32':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'Int32TypeAnnotation',
-        },
-      };
+      return emitInt32Prop(name, optional);
     case 'Double':
       return emitDoubleProp(name, optional);
     case 'Float':

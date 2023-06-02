@@ -76,6 +76,19 @@ function emitInt32(nullable: boolean): Nullable<Int32TypeAnnotation> {
   });
 }
 
+function emitInt32Prop(
+  name: string,
+  optional: boolean,
+): NamedShape<Int32TypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'Int32TypeAnnotation',
+    },
+  };
+}
+
 function emitNumber(
   nullable: boolean,
 ): Nullable<NativeModuleNumberTypeAnnotation> {
@@ -641,6 +654,7 @@ module.exports = {
   emitFloatProp,
   emitFunction,
   emitInt32,
+  emitInt32Prop,
   emitNumber,
   emitGenericObject,
   emitDictionary,

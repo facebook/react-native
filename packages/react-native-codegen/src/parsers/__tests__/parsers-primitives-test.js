@@ -27,6 +27,7 @@ const {
   emitFloatProp,
   emitNumber,
   emitInt32,
+  emitInt32Prop,
   emitGenericObject,
   emitObject,
   emitPromise,
@@ -97,6 +98,38 @@ describe('emitInt32', () => {
       const result = emitInt32(false);
       const expected = {
         type: 'Int32TypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitInt32Prop', () => {
+  describe('when optional is true', () => {
+    it('returns optional Int32TypeAnnotation', () => {
+      const result = emitInt32Prop('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns required Int32TypeAnnotation', () => {
+      const result = emitInt32Prop('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
       };
 
       expect(result).toEqual(expected);

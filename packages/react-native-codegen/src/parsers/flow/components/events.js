@@ -28,6 +28,7 @@ const {
   emitDoubleProp,
   emitFloatProp,
   emitStringProp,
+  emitInt32Prop,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
@@ -46,13 +47,7 @@ function getPropertyType(
     case 'StringTypeAnnotation':
       return emitStringProp(name, optional);
     case 'Int32':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'Int32TypeAnnotation',
-        },
-      };
+      return emitInt32Prop(name, optional);
     case 'Double':
       return emitDoubleProp(name, optional);
     case 'Float':
