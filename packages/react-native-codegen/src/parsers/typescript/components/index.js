@@ -16,60 +16,11 @@ const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
 const {getProperties} = require('./componentsUtils.js');
-const {throwIfTypeAliasIsNotInterface} = require('../../error-utils');
 const {
-  propertyNames,
-  getCommandOptions,
   getOptions,
   findComponentConfig,
+  getCommandProperties,
 } = require('../../parsers-commons');
-
-function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
-  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
-    ast,
-    parser,
-  );
-  if (commandTypeName == null) {
-    return [];
-  }
-
-  const types = parser.getTypes(ast);
-  const typeAlias = types[commandTypeName];
-
-  throwIfTypeAliasIsNotInterface(typeAlias, parser);
-
-  const properties = parser.bodyProperties(typeAlias);
-  if (!properties) {
-    throw new Error(
-      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-
-  const typeScriptPropertyNames = propertyNames(properties);
-
-  const commandOptions = getCommandOptions(commandOptionsExpression);
-  if (commandOptions == null || commandOptions.supportedCommands == null) {
-    throw new Error(
-      'codegenNativeCommands must be given an options object with supportedCommands array',
-    );
-  }
-
-  if (
-    commandOptions.supportedCommands.length !==
-      typeScriptPropertyNames.length ||
-    !commandOptions.supportedCommands.every(supportedCommand =>
-      typeScriptPropertyNames.includes(supportedCommand),
-    )
-  ) {
-    throw new Error(
-      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${typeScriptPropertyNames.join(
-        ', ',
-      )}`,
-    );
-  }
-
-  return properties;
-}
 
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type PropsAST = Object;

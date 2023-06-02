@@ -15,61 +15,11 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getProperties} = require('./componentsUtils.js');
-const {throwIfTypeAliasIsNotInterface} = require('../../error-utils');
 const {
-  propertyNames,
-  getCommandOptions,
   getOptions,
   findComponentConfig,
+  getCommandProperties,
 } = require('../../parsers-commons');
-
-function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
-  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
-    ast,
-    parser,
-  );
-
-  if (commandTypeName == null) {
-    return [];
-  }
-  const types = parser.getTypes(ast);
-
-  const typeAlias = types[commandTypeName];
-
-  throwIfTypeAliasIsNotInterface(typeAlias, parser);
-
-  const properties = parser.bodyProperties(typeAlias);
-  if (!properties) {
-    throw new Error(
-      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-
-  const flowPropertyNames = propertyNames(properties);
-
-  const commandOptions = getCommandOptions(commandOptionsExpression);
-
-  if (commandOptions == null || commandOptions.supportedCommands == null) {
-    throw new Error(
-      'codegenNativeCommands must be given an options object with supportedCommands array',
-    );
-  }
-
-  if (
-    commandOptions.supportedCommands.length !== flowPropertyNames.length ||
-    !commandOptions.supportedCommands.every(supportedCommand =>
-      flowPropertyNames.includes(supportedCommand),
-    )
-  ) {
-    throw new Error(
-      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${flowPropertyNames.join(
-        ', ',
-      )}`,
-    );
-  }
-
-  return properties;
-}
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST
 function buildComponentSchema(
