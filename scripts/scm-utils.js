@@ -85,6 +85,19 @@ function revertFiles(filePaths, tmpFolder) {
   }
 }
 
+// git restore for local path
+function restore(repoPath) {
+  const result = exec('git restore .', {
+    cwd: repoPath,
+  });
+
+  if (result.code !== 0) {
+    throw new Error(result.stderr);
+  }
+
+  return;
+}
+
 module.exports = {
   exitIfNotOnGit,
   getCurrentCommit,
@@ -92,4 +105,5 @@ module.exports = {
   isTaggedLatest,
   revertFiles,
   saveFiles,
+  restore,
 };
