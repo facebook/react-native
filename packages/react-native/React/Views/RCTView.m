@@ -332,7 +332,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
     }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleDescription = self.accessibilityRole ? rolesAndStatesDescription[self.accessibilityRole] : nil;
+
+  // TODO: This logic makes VoiceOver describe some AccessibilityRole which do not have a backing UIAccessibilityTrait.
+  // It does not run on Fabric.
+  NSString *role = self.role ?: self.accessibilityRole;
+  NSString *roleDescription = role ? rolesAndStatesDescription[role] : nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
