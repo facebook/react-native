@@ -293,6 +293,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       strongSelf->_bindingsInstallFunc(runtime);
     }
 
+    [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
+
     // Set up Display Link
     RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
                                                                              bridge:nil

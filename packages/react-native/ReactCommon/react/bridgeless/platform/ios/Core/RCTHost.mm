@@ -27,6 +27,7 @@ using namespace facebook::react;
   RCTInstance *_instance;
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
+  __weak id<RCTHostRuntimeDelegate> _runtimeDelegate;
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
@@ -261,6 +262,11 @@ using namespace facebook::react;
                      isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
 }
 
+- (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
+{
+  [_runtimeDelegate hostDidInitializeRuntime:runtime];
+}
+
 #pragma mark - Internal
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
@@ -271,6 +277,11 @@ using namespace facebook::react;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
 {
   _bundleURLProvider = [bundleURLProvider copy];
+}
+
+- (void)setRuntimeDelegate:(id<RCTHostRuntimeDelegate>)runtimeDelegate
+{
+  _runtimeDelegate = runtimeDelegate;
 }
 
 #pragma mark - Private
