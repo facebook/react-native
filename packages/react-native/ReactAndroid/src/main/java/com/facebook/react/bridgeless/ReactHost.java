@@ -38,6 +38,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.bridgeless.internal.bolts.CancellationTokenSource;
 import com.facebook.react.bridgeless.internal.bolts.Continuation;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
@@ -61,8 +62,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -1211,30 +1217,36 @@ public class ReactHost {
    *
    * @return A task that completes when React Native gets destroyed.
    */
-  public Task<Void> destroy(String reason) {
+  public Future<Void> destroy(String reason) {
     return destroy(reason, null);
   }
 
-  public Task<Void> destroy(String reason, @Nullable Exception ex) {
+  public Future<Void> destroy(String reason, @Nullable Exception ex) {
+    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     final String method = "destroy()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return Task.call(
-              () -> {
-                if (mReloadTask != null) {
-                  log(
-                      method,
-                      "Reloading React Native. Waiting for reload to finish before destroying React Native.");
-                  return mReloadTask.continueWithTask(
-                      task -> new_getOrCreateDestroyTask(reason, ex), mBGExecutor);
-                }
-                return new_getOrCreateDestroyTask(reason, ex);
-              },
-              mBGExecutor)
-          .continueWithTask(Task::getResult);
+      return new BoltsFutureTask<>(
+          Task.call(
+                  () -> {
+                    if (mReloadTask != null) {
+                      log(
+                          method,
+                          "Reloading React Native. Waiting for reload to finish before destroying React Native.");
+                      return mReloadTask.continueWithTask(
+                          task -> new_getOrCreateDestroyTask(reason, ex),
+                          mBGExecutor,
+                          cancellationTokenSource.getToken());
+                    }
+                    return new_getOrCreateDestroyTask(reason, ex);
+                  },
+                  mBGExecutor,
+                  cancellationTokenSource.getToken())
+              .continueWithTask(Task::getResult, cancellationTokenSource.getToken()),
+          cancellationTokenSource);
     }
 
     old_destroy(reason, ex);
-    return Task.forResult(nullsafeFIXME(null, "Empty Destroy Task"));
+    return new BoltsFutureTask<>(Task.forResult(nullsafeFIXME(null, "Empty Destroy Task")));
   }
 
   @ThreadConfined("ReactHost")
@@ -1470,6 +1482,83 @@ public class ReactHost {
               mPreloadTask = null;
             });
       }
+    }
+  }
+
+  /**
+   * This class is a {@link Future} that holds an instance of {@link Task}. The implementation of
+   * this class delegates its behavior on the held task, following the {@link Future} interface
+   * defined in {@link "https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html"}
+   *
+   * @param <T> The type of the result of the task.
+   */
+  private static class BoltsFutureTask<T> implements Future<T> {
+    private final Task<T> mTask;
+    private boolean isTaskCancelled = false;
+    private final CancellationTokenSource mCancellationTokenSource;
+
+    private BoltsFutureTask(Task<T> task) {
+      this(task, new CancellationTokenSource());
+    }
+
+    /**
+     * Creates a new instance of {@link BoltsFutureTask} for a task that handles cancellation. For
+     * more details about bolts cancellation refer to {@link
+     * "https://github.com/BoltsFramework/Bolts-Android#cancelling-tasks"}
+     *
+     * @param task {@link Task} to be held by BoltsFutureTask
+     * @param cancellationTokenSource {@link CancellationTokenSource} object that is used by the
+     *     task received by parameter to handle cancellation.
+     */
+    private BoltsFutureTask(Task<T> task, CancellationTokenSource cancellationTokenSource) {
+      mTask = task;
+      mCancellationTokenSource = cancellationTokenSource;
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+      try {
+        if (!isDone()) {
+          mCancellationTokenSource.cancel();
+        }
+        return true;
+      } finally {
+        isTaskCancelled = true;
+      }
+    }
+
+    @Override
+    public boolean isCancelled() {
+      return isTaskCancelled || mTask.isCancelled();
+    }
+
+    @Override
+    public boolean isDone() {
+      return isTaskCancelled || mTask.isCancelled() || mTask.isFaulted() || mTask.isCompleted();
+    }
+
+    @Override
+    public T get() throws ExecutionException, InterruptedException {
+      mTask.waitForCompletion();
+      return getResult(mTask);
+    }
+
+    @Override
+    public T get(long timeout, TimeUnit unit)
+        throws ExecutionException, InterruptedException, TimeoutException {
+      if (mTask.waitForCompletion(timeout, unit)) {
+        return getResult(mTask);
+      }
+      throw new TimeoutException();
+    }
+
+    private T getResult(Task<T> task) throws ExecutionException {
+      if (task.isFaulted()) {
+        throw new ExecutionException("", new Throwable());
+      } else if (task.isCancelled()) {
+        throw new CancellationException("");
+      }
+      return task.getResult();
     }
   }
 }
