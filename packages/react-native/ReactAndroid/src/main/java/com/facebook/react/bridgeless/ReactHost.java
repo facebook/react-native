@@ -202,12 +202,12 @@ public class ReactHost {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> start() {
+  public Future<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return newStart();
+      return new BoltsFutureTask<>(newStart());
     }
 
-    return oldStart();
+    return new BoltsFutureTask<>(oldStart());
   }
 
   @ThreadConfined("ReactHost")
