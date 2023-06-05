@@ -25,9 +25,12 @@ using namespace facebook::react;
 
 @implementation RCTHost {
   RCTInstance *_instance;
+
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
   __weak id<RCTHostRuntimeDelegate> _runtimeDelegate;
+  __weak id<RCTContextContainerHandling> _contextContainerHandler;
+
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
@@ -228,11 +231,6 @@ using namespace facebook::react;
 
 #pragma mark - RCTInstanceDelegate
 
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer
-{
-  return [_hostDelegate createContextContainer];
-}
-
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
 {
   NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
@@ -262,6 +260,13 @@ using namespace facebook::react;
   [_runtimeDelegate hostDidInitializeRuntime:runtime];
 }
 
+#pragma mark - RCTContextContainerHandling
+
+- (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer
+{
+  [_contextContainerHandler didCreateContextContainer:contextContainer];
+}
+
 #pragma mark - Internal
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
@@ -277,6 +282,11 @@ using namespace facebook::react;
 - (void)setRuntimeDelegate:(id<RCTHostRuntimeDelegate>)runtimeDelegate
 {
   _runtimeDelegate = runtimeDelegate;
+}
+
+- (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler
+{
+  _contextContainerHandler = contextContainerHandler;
 }
 
 #pragma mark - Private
