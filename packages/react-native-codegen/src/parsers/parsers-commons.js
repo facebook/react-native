@@ -59,6 +59,7 @@ const {
   throwIfMoreThanOneCodegenNativecommands,
   throwIfConfigNotfound,
   throwIfMoreThanOneConfig,
+  throwIfTypeAliasIsNotInterface,
 } = require('./error-utils');
 
 const {
@@ -933,6 +934,55 @@ function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
   return createComponentConfig(foundConfig, commandsTypeNames);
 }
 
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
+
+  if (commandTypeName == null) {
+    return [];
+  }
+  const types = parser.getTypes(ast);
+
+  const typeAlias = types[commandTypeName];
+
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
+
+  const properties = parser.bodyProperties(typeAlias);
+  if (!properties) {
+    throw new Error(
+      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen file`,
+    );
+  }
+
+  const commandPropertyNames = propertyNames(properties);
+
+  const commandOptions = getCommandOptions(commandOptionsExpression);
+
+  if (commandOptions == null || commandOptions.supportedCommands == null) {
+    throw new Error(
+      'codegenNativeCommands must be given an options object with supportedCommands array',
+    );
+  }
+
+  if (
+    commandOptions.supportedCommands.length !== commandPropertyNames.length ||
+    !commandOptions.supportedCommands.every(supportedCommand =>
+      commandPropertyNames.includes(supportedCommand),
+    )
+  ) {
+    throw new Error(
+      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${commandPropertyNames.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  return properties;
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -956,4 +1006,5 @@ module.exports = {
   buildPropSchema,
   getEventArgument,
   findComponentConfig,
+  getCommandProperties,
 };
