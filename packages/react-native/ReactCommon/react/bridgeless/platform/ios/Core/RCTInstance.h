@@ -40,6 +40,7 @@ FB_RUNTIME_PROTOCOL
 - (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
 
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
+- (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
 @end
 
