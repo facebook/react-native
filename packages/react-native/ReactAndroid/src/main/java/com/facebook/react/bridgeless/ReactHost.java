@@ -203,17 +203,18 @@ public class ReactHost {
    *     before it completes.
    */
   public Future<Void> start() {
+    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return new BoltsFutureTask<>(newStart());
+      return new BoltsFutureTask<>(newStart(cancellationTokenSource), cancellationTokenSource);
     }
 
-    return new BoltsFutureTask<>(oldStart());
+    return new BoltsFutureTask<>(oldStart(cancellationTokenSource), cancellationTokenSource);
   }
 
   @ThreadConfined("ReactHost")
   private @Nullable Task<Void> mStartTask = null;
 
-  private Task<Void> oldStart() {
+  private Task<Void> oldStart(CancellationTokenSource cancellationTokenSource) {
     final String method = "old_preload()";
     return Task.call(
             () -> {
@@ -232,16 +233,18 @@ public class ReactHost {
 
                               return task;
                             },
-                            mBGExecutor)
+                            mBGExecutor,
+                            cancellationTokenSource.getToken())
                         .makeVoid();
               }
               return mStartTask;
             },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+            mBGExecutor,
+            cancellationTokenSource.getToken())
+        .continueWithTask(Task::getResult, cancellationTokenSource.getToken());
   }
 
-  private Task<Void> newStart() {
+  private Task<Void> newStart(CancellationTokenSource cancellationTokenSource) {
     final String method = "new_preload()";
     return Task.call(
             () -> {
@@ -257,24 +260,28 @@ public class ReactHost {
                                 return newGetOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
                                         task.getError())
-                                    .continueWithTask(destroyTask -> Task.forError(task.getError()))
+                                    .continueWithTask(
+                                        destroyTask -> Task.forError(task.getError()),
+                                        cancellationTokenSource.getToken())
                                     .makeVoid();
                               }
                               return task.makeVoid();
                             },
-                            mBGExecutor);
+                            mBGExecutor,
+                            cancellationTokenSource.getToken());
               }
               return mStartTask;
             },
-            mBGExecutor)
-        .continueWithTask(Task::getResult);
+            mBGExecutor,
+            cancellationTokenSource.getToken())
+        .continueWithTask(Task::getResult, cancellationTokenSource.getToken());
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
   public Future<Void> prerenderSurface(final ReactSurface surface) {
     final String method = "prerenderSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
-
+    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     attachSurface(surface);
     return new BoltsFutureTask<>(
         callAfterGetOrCreateReactInstance(
@@ -282,7 +289,9 @@ public class ReactHost {
             reactInstance -> {
               log(method, "Execute");
               reactInstance.prerenderSurface(surface);
-            }));
+            },
+            cancellationTokenSource),
+        cancellationTokenSource);
   }
 
   /**
@@ -294,6 +303,7 @@ public class ReactHost {
   public Future<Void> startSurface(final ReactSurface surface) {
     final String method = "startSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
+    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     attachSurface(surface);
     return new BoltsFutureTask<>(
@@ -302,7 +312,9 @@ public class ReactHost {
             reactInstance -> {
               log(method, "Execute");
               reactInstance.startSurface(surface);
-            }));
+            },
+            cancellationTokenSource),
+        cancellationTokenSource);
   }
 
   /**
@@ -680,7 +692,9 @@ public class ReactHost {
   }
 
   private Task<Void> callAfterGetOrCreateReactInstance(
-      final String callingMethod, final VeniceThenable<ReactInstance> runnable) {
+      final String callingMethod,
+      final VeniceThenable<ReactInstance> runnable,
+      CancellationTokenSource cancellationTokenSource) {
     final String method = "callAfterGetOrCreateReactInstance(" + callingMethod + ")";
 
     return getOrCreateReactInstanceTask()
@@ -696,7 +710,8 @@ public class ReactHost {
                   runnable.then(reactInstance);
                   return null;
                 },
-            mBGExecutor)
+            mBGExecutor,
+            cancellationTokenSource.getToken())
         .continueWith(
             task -> {
               if (task.isFaulted()) {
@@ -704,7 +719,8 @@ public class ReactHost {
               }
               return null;
             },
-            mBGExecutor);
+            mBGExecutor,
+            cancellationTokenSource.getToken());
   }
 
   private BridgelessReactContext getOrCreateReactContext() {
@@ -1033,6 +1049,7 @@ public class ReactHost {
    */
   public Future<Void> reload(String reason) {
     final String method = "reload()";
+    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return new BoltsFutureTask<>(
           Task.call(
@@ -1042,17 +1059,23 @@ public class ReactHost {
                           method,
                           "Destroying React Native. Waiting for destroy to finish, before reloading React Native.");
                       return mDestroyTask
-                          .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
+                          .continueWithTask(
+                              task -> newGetOrCreateReloadTask(reason),
+                              mBGExecutor,
+                              cancellationTokenSource.getToken())
                           .makeVoid();
                     }
 
                     return newGetOrCreateReloadTask(reason).makeVoid();
                   },
-                  mBGExecutor)
-              .continueWithTask(Task::getResult));
+                  mBGExecutor,
+                  cancellationTokenSource.getToken())
+              .continueWithTask(Task::getResult, cancellationTokenSource.getToken()),
+          cancellationTokenSource);
     }
 
-    return new BoltsFutureTask<>(oldReload(reason));
+    return new BoltsFutureTask<>(
+        oldReload(reason, cancellationTokenSource), cancellationTokenSource);
   }
 
   @ThreadConfined("ReactHost")
@@ -1365,7 +1388,7 @@ public class ReactHost {
   }
 
   /** Destroy and recreate the ReactInstance and context. */
-  private Task<Void> oldReload(String reason) {
+  private Task<Void> oldReload(String reason, CancellationTokenSource cancellationTokenSource) {
     final String method = "old_reload()";
     log(method);
 
@@ -1387,7 +1410,8 @@ public class ReactHost {
                 reactInstance.startSurface(surface);
               }
             }
-          });
+          },
+          cancellationTokenSource);
     }
   }
 
