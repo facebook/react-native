@@ -12,7 +12,8 @@
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/bridgeless/ReactInstance.h>
 #import <react/renderer/mapbuffer/MapBuffer.h>
-#import <react/utils/ContextContainer.h>
+
+#import "RCTContextContainerHandling.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,9 +36,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-@protocol RCTInstanceDelegate <NSObject>
-
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
+@protocol RCTInstanceDelegate <RCTContextContainerHandling>
 
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;

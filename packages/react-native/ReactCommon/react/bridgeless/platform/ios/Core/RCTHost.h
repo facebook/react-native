@@ -29,8 +29,6 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 
 @protocol RCTHostDelegate <NSObject>
 
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
-
 - (void)host:(RCTHost *)host
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message
