@@ -16,6 +16,5 @@ RCTHost *RCTHostCreateDefault(
   return [[RCTHost alloc] initWithBundleURL:bundleURL
                                hostDelegate:hostDelegate
                  turboModuleManagerDelegate:turboModuleManagerDelegate
-                        bindingsInstallFunc:nullptr
                            jsEngineProvider:jsEngineProvider];
 }
