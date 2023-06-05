@@ -32,7 +32,6 @@ using namespace facebook::react;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
   RCTHostBundleURLProvider _bundleURLProvider;
-  facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
@@ -57,7 +56,6 @@ using namespace facebook::react;
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
@@ -65,7 +63,6 @@ using namespace facebook::react;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _surfaceStartBuffer = [NSMutableArray new];
     _bundleManager = [RCTBundleManager new];
-    _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
 
@@ -149,7 +146,6 @@ using namespace facebook::react;
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 }
@@ -217,7 +213,6 @@ using namespace facebook::react;
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 

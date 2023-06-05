@@ -73,7 +73,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
-  ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTTurboModuleManager *_turboModuleManager;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
@@ -90,7 +89,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
-             bindingsInstallFunc:(ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
@@ -103,7 +101,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
-    _bindingsInstallFunc = bindingsInstallFunc;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
@@ -287,10 +284,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
     if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
       installNativeViewConfigProviderBinding(runtime);
-    }
-
-    if (strongSelf->_bindingsInstallFunc) {
-      strongSelf->_bindingsInstallFunc(runtime);
     }
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
