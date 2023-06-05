@@ -7,11 +7,20 @@
 
 #import "RCTHost.h"
 
+#import <jsi/jsi.h>
+
 typedef NSURL * (^RCTHostBundleURLProvider)(void);
+
+@protocol RCTHostRuntimeDelegate <NSObject>
+
+- (void)hostDidInitializeRuntime:(facebook::jsi::Runtime &)runtime;
+
+@end
 
 @interface RCTHost (Internal)
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
+- (void)setRuntimeDelegate:(id<RCTHostRuntimeDelegate>)runtimeDelegate;
 
 @end
