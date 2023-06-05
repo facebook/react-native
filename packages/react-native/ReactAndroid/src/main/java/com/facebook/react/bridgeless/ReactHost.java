@@ -202,24 +202,24 @@ public class ReactHost {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> preload() {
+  public Task<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return new_preload();
+      return newStart();
     }
 
-    return old_preload();
+    return oldStart();
   }
 
   @ThreadConfined("ReactHost")
-  private @Nullable Task<Void> mPreloadTask = null;
+  private @Nullable Task<Void> mStartTask = null;
 
-  private Task<Void> old_preload() {
+  private Task<Void> oldStart() {
     final String method = "old_preload()";
     return Task.call(
             () -> {
-              if (mPreloadTask == null) {
+              if (mStartTask == null) {
                 log(method, "Schedule");
-                mPreloadTask =
+                mStartTask =
                     getOrCreateReactInstanceTask()
                         .continueWithTask(
                             task -> {
@@ -235,26 +235,26 @@ public class ReactHost {
                             mBGExecutor)
                         .makeVoid();
               }
-              return mPreloadTask;
+              return mStartTask;
             },
             mBGExecutor)
         .continueWithTask(Task::getResult);
   }
 
-  private Task<Void> new_preload() {
+  private Task<Void> newStart() {
     final String method = "new_preload()";
     return Task.call(
             () -> {
-              if (mPreloadTask == null) {
+              if (mStartTask == null) {
                 log(method, "Schedule");
-                mPreloadTask =
-                    waitThen_new_getOrCreateReactInstanceTask()
+                mStartTask =
+                    waitThenCallNewGetOrCreateReactInstanceTask()
                         .continueWithTask(
                             (task) -> {
                               if (task.isFaulted()) {
                                 mReactHostDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
-                                return new_getOrCreateDestroyTask(
+                                return newGetOrCreateDestroyTask(
                                         "new_preload() failure: " + task.getError().getMessage(),
                                         task.getError())
                                     .continueWithTask(destroyTask -> Task.forError(task.getError()))
@@ -264,7 +264,7 @@ public class ReactHost {
                             },
                             mBGExecutor);
               }
-              return mPreloadTask;
+              return mStartTask;
             },
             mBGExecutor)
         .continueWithTask(Task::getResult);
@@ -720,20 +720,20 @@ public class ReactHost {
    */
   private Task<ReactInstance> getOrCreateReactInstanceTask() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return Task.call(this::waitThen_new_getOrCreateReactInstanceTask, mBGExecutor)
+      return Task.call(this::waitThenCallNewGetOrCreateReactInstanceTask, mBGExecutor)
           .continueWithTask(Task::getResult);
     }
 
-    return old_getOrCreateReactInstanceTask();
+    return oldGetOrCreateReactInstanceTask();
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> waitThen_new_getOrCreateReactInstanceTask() {
-    return waitThen_new_getOrCreateReactInstanceTaskWithRetries(0, 4);
+  private Task<ReactInstance> waitThenCallNewGetOrCreateReactInstanceTask() {
+    return waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(0, 4);
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> waitThen_new_getOrCreateReactInstanceTaskWithRetries(
+  private Task<ReactInstance> waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(
       int tryNum, int maxTries) {
     final String method = "waitThen_new_getOrCreateReactInstanceTaskWithRetries";
     if (mReloadTask != null) {
@@ -751,7 +751,7 @@ public class ReactHost {
                 + tryNum
                 + ").");
         return mDestroyTask.onSuccessTask(
-            (task) -> waitThen_new_getOrCreateReactInstanceTaskWithRetries(tryNum + 1, maxTries),
+            (task) -> waitThenCallNewGetOrCreateReactInstanceTaskWithRetries(tryNum + 1, maxTries),
             mBGExecutor);
       }
 
@@ -760,11 +760,11 @@ public class ReactHost {
           "React Native is tearing down. Not wait for teardown to finish: reached max retries.");
     }
 
-    return new_getOrCreateReactInstanceTask();
+    return newGetOrCreateReactInstanceTask();
   }
 
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> new_getOrCreateReactInstanceTask() {
+  private Task<ReactInstance> newGetOrCreateReactInstanceTask() {
     final String method = "new_getOrCreateReactInstanceTask()";
     log(method);
 
@@ -858,7 +858,7 @@ public class ReactHost {
         });
   }
 
-  private Task<ReactInstance> old_getOrCreateReactInstanceTask() {
+  private Task<ReactInstance> oldGetOrCreateReactInstanceTask() {
     final String method = "old_getOrCreateReactInstanceTask()";
     log(method);
 
@@ -1037,17 +1037,17 @@ public class ReactHost {
                       method,
                       "Destroying React Native. Waiting for destroy to finish, before reloading React Native.");
                   return mDestroyTask
-                      .continueWithTask(task -> new_getOrCreateReloadTask(reason), mBGExecutor)
+                      .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
                       .makeVoid();
                 }
 
-                return new_getOrCreateReloadTask(reason).makeVoid();
+                return newGetOrCreateReloadTask(reason).makeVoid();
               },
               mBGExecutor)
           .continueWithTask(Task::getResult);
     }
 
-    return old_reload(reason);
+    return oldReload(reason);
   }
 
   @ThreadConfined("ReactHost")
@@ -1062,7 +1062,7 @@ public class ReactHost {
    * ReactInstance task work throws an exception.
    */
   @ThreadConfined("ReactHost")
-  private Task<ReactInstance> new_getOrCreateReloadTask(String reason) {
+  private Task<ReactInstance> newGetOrCreateReloadTask(String reason) {
     final String method = "new_getOrCreateReloadTask()";
     log(method);
 
@@ -1165,10 +1165,10 @@ public class ReactHost {
                     mReactInstanceTaskRef.reset();
 
                     log(method, "Resetting preload task ref");
-                    mPreloadTask = null;
+                    mStartTask = null;
 
                     // Kickstart a new ReactInstance create
-                    return new_getOrCreateReactInstanceTask();
+                    return newGetOrCreateReactInstanceTask();
                   },
                   mBGExecutor)
               .onSuccess(
@@ -1235,11 +1235,11 @@ public class ReactHost {
                           method,
                           "Reloading React Native. Waiting for reload to finish before destroying React Native.");
                       return mReloadTask.continueWithTask(
-                          task -> new_getOrCreateDestroyTask(reason, ex),
+                          task -> newGetOrCreateDestroyTask(reason, ex),
                           mBGExecutor,
                           cancellationTokenSource.getToken());
                     }
-                    return new_getOrCreateDestroyTask(reason, ex);
+                    return newGetOrCreateDestroyTask(reason, ex);
                   },
                   mBGExecutor,
                   cancellationTokenSource.getToken())
@@ -1247,7 +1247,7 @@ public class ReactHost {
           cancellationTokenSource);
     }
 
-    old_destroy(reason, ex);
+    oldDestroy(reason, ex);
     return new BoltsFutureTask<>(Task.forResult(nullsafeFIXME(null, "Empty Destroy Task")));
   }
 
@@ -1263,7 +1263,7 @@ public class ReactHost {
    * ReactInstance task work throws an exception.
    */
   @ThreadConfined("ReactHost")
-  private Task<Void> new_getOrCreateDestroyTask(final String reason, @Nullable Exception ex) {
+  private Task<Void> newGetOrCreateDestroyTask(final String reason, @Nullable Exception ex) {
     final String method = "new_getOrCreateDestroyTask()";
     log(method);
 
@@ -1347,7 +1347,7 @@ public class ReactHost {
                     mReactInstanceTaskRef.reset();
 
                     log(method, "Resetting Preload task ref");
-                    mPreloadTask = null;
+                    mStartTask = null;
 
                     log(method, "Resetting destroy task ref");
                     mDestroyTask = null;
@@ -1360,7 +1360,7 @@ public class ReactHost {
   }
 
   /** Destroy and recreate the ReactInstance and context. */
-  private Task<Void> old_reload(String reason) {
+  private Task<Void> oldReload(String reason) {
     final String method = "old_reload()";
     log(method);
 
@@ -1370,7 +1370,7 @@ public class ReactHost {
 
     synchronized (mReactInstanceTaskRef) {
       mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
-      old_destroyReactInstanceAndContext(method, reason);
+      oldDestroyReactInstanceAndContext(method, reason);
 
       return callAfterGetOrCreateReactInstance(
           method,
@@ -1387,7 +1387,7 @@ public class ReactHost {
   }
 
   /** Destroy the specified instance and context. */
-  private void old_destroy(String reason, @Nullable Exception ex) {
+  private void oldDestroy(String reason, @Nullable Exception ex) {
     final String method = "old_destroy()";
     log(method);
 
@@ -1403,7 +1403,7 @@ public class ReactHost {
         mMemoryPressureRouter.destroy(reactContext);
       }
 
-      old_destroyReactInstanceAndContext(method, reason);
+      oldDestroyReactInstanceAndContext(method, reason);
 
       // Remove all attached surfaces
       log(method, "Clearing attached surfaces");
@@ -1421,7 +1421,7 @@ public class ReactHost {
     }
   }
 
-  private void old_destroyReactInstanceAndContext(final String callingMethod, final String reason) {
+  private void oldDestroyReactInstanceAndContext(final String callingMethod, final String reason) {
     final String method = "old_destroyReactInstanceAndContext(" + callingMethod + ")";
     log(method);
 
@@ -1466,7 +1466,7 @@ public class ReactHost {
 
               // Re-enable preloads
               log(method, "Resetting Preload task ref");
-              mPreloadTask = null;
+              mStartTask = null;
             });
       } else {
         raiseSoftException(
@@ -1481,7 +1481,7 @@ public class ReactHost {
         mBGExecutor.execute(
             () -> {
               log(method, "Resetting Preload task ref");
-              mPreloadTask = null;
+              mStartTask = null;
             });
       }
     }
