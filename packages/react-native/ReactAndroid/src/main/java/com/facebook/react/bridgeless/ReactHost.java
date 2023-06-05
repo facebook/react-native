@@ -311,17 +311,18 @@ public class ReactHost {
    * @param surface The surface to stop
    * @return A Task that will complete when stopSurface has been called.
    */
-  public Task<Boolean> stopSurface(final ReactSurface surface) {
+  public Future<Boolean> stopSurface(final ReactSurface surface) {
     final String method = "stopSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
     detachSurface(surface);
-    return callWithExistingReactInstance(
-        method,
-        reactInstance -> {
-          log(method, "Execute");
-          reactInstance.stopSurface(surface);
-        });
+    return new BoltsFutureTask<>(
+        callWithExistingReactInstance(
+            method,
+            reactInstance -> {
+              log(method, "Execute");
+              reactInstance.stopSurface(surface);
+            }));
   }
 
   /**
