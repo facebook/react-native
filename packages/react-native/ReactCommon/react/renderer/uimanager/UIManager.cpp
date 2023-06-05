@@ -633,6 +633,8 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
+  SystraceSection s("UIManager::shadowTreeWillCommit");
+
   std::shared_lock lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
@@ -656,6 +658,8 @@ void UIManager::shadowTreeDidFinishTransaction(
 }
 
 void UIManager::reportMount(SurfaceId surfaceId) const {
+  SystraceSection s("UIManager::reportMount");
+
   auto time = JSExecutor::performanceNow();
 
   auto rootShadowNode = RootShadowNode::Shared{};
