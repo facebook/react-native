@@ -25,6 +25,9 @@ import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
@@ -133,10 +136,10 @@ public class ReactSurface {
     return mSurfaceView.get();
   }
 
-  public Task<Void> prerender() {
+  public Future<Void> prerender() {
     ReactHost host = mReactHost.get();
     if (host == null) {
-      return Task.forError(
+      return new FailedFuture<>(
           new IllegalStateException(
               "Trying to call ReactSurface.prerender(), but no ReactHost is attached."));
     }
@@ -233,5 +236,38 @@ public class ReactSurface {
 
   private static boolean doRTLSwap(Context context) {
     return I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
+  }
+
+  private static class FailedFuture<T> implements Future<T> {
+    private final ExecutionException result;
+
+    public FailedFuture(Throwable exception) {
+      this.result = new ExecutionException(exception);
+    }
+
+    @Override
+    public T get() throws ExecutionException {
+      throw result;
+    }
+
+    @Override
+    public T get(long timeout, TimeUnit unit) throws ExecutionException {
+      return get();
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+      return false;
+    }
+
+    @Override
+    public boolean isCancelled() {
+      return false;
+    }
+
+    @Override
+    public boolean isDone() {
+      return true;
+    }
   }
 }
