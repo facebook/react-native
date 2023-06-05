@@ -458,7 +458,7 @@ public class ReactHost {
     return reactInstance.getUIManager();
   }
 
-  public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
+  /* package */ <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.hasNativeModule(nativeModuleInterface);
@@ -466,7 +466,7 @@ public class ReactHost {
     return false;
   }
 
-  public Collection<NativeModule> getNativeModules() {
+  /* package */ Collection<NativeModule> getNativeModules() {
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
     if (reactInstance != null) {
       return reactInstance.getNativeModules();
@@ -474,7 +474,8 @@ public class ReactHost {
     return new ArrayList<>();
   }
 
-  public @Nullable <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
+  /* package */ @Nullable
+  <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface) {
     if (nativeModuleInterface == UIManagerModule.class) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
