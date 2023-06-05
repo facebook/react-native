@@ -14,7 +14,6 @@ import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
-const {getProperties} = require('./componentsUtils.js');
 const {
   getOptions,
   findComponentConfig,
@@ -33,7 +32,7 @@ function buildComponentSchema(
 
   const types = parser.getTypes(ast);
 
-  const propProperties = getProperties(propsTypeName, types);
+  const propProperties = parser.getProperties(propsTypeName, types);
   const commandProperties = getCommandProperties(ast, parser);
   const {extendsProps, props} = parser.getProps(propProperties, types);
 

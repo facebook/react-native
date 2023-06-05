@@ -183,7 +183,7 @@ function findEventArgumentsAndType(
 } {
   if (typeAnnotation.type === 'TSInterfaceDeclaration') {
     return {
-      argumentProps: flattenProperties([typeAnnotation], types),
+      argumentProps: flattenProperties([typeAnnotation], types, parser),
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
