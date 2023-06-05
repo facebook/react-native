@@ -36,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class ReactContext extends ContextWrapper {
   @DoNotStrip
-  public interface RCTDeviceEventEmitter extends JavaScriptModule {
+  private interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(@NonNull String eventName, @Nullable Object data);
   }
 
