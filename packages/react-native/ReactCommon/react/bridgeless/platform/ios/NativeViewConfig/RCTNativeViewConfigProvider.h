@@ -7,16 +7,11 @@
 
 #pragma once
 
-#ifdef ANDROID
-
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
+#include <jsi/jsi.h>
 
 namespace facebook::react {
-
-constexpr MapBuffer::Key PROPS_MAX = 1;
-constexpr MapBuffer::Key PROPS_NATIVE_ID = 1;
-
+/*
+ * Installs native view config provider into JavaScript runtime.
+ */
+void installNativeViewConfigProviderBinding(jsi::Runtime &runtime);
 } // namespace facebook::react
-
-#endif

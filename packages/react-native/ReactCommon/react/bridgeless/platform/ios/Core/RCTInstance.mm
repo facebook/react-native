@@ -14,6 +14,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTComponentViewFactory.h>
+#import <React/RCTConstants.h>
 #import <React/RCTCxxUtils.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
@@ -25,6 +26,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTNativeViewConfigProvider.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
@@ -71,7 +73,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
-  ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTTurboModuleManager *_turboModuleManager;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
@@ -88,7 +89,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
-             bindingsInstallFunc:(ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
@@ -101,18 +101,17 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
     _onInitialBundleLoad = onInitialBundleLoad;
-    _bindingsInstallFunc = bindingsInstallFunc;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
     {
-      __weak __typeof(self) weakInstance = self;
+      __weak __typeof(self) weakSelf = self;
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
             // TODO: Make RCTInstance call onComplete
-            [weakInstance callFunctionOnJSModule:moduleName method:methodName args:args];
+            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
           }];
     }
 
@@ -236,7 +235,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTLogSetBridgelessModuleRegistry(_bridgeModuleDecorator.moduleRegistry);
   RCTLogSetBridgelessCallableJSModules(_bridgeModuleDecorator.callableJSModules);
 
-  auto contextContainer = [_delegate createContextContainer];
+  auto contextContainer = std::make_shared<ContextContainer>();
+  [_delegate didCreateContextContainer:contextContainer];
+
   contextContainer->insert(
       "RCTImageLoader", facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTImageLoader"]));
   contextContainer->insert(
@@ -280,9 +281,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
-    if (strongSelf->_bindingsInstallFunc) {
-      strongSelf->_bindingsInstallFunc(runtime);
+    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+      installNativeViewConfigProviderBinding(runtime);
     }
+
+    [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
 
     // Set up Display Link
     RCTModuleData *timingModuleData = [[RCTModuleData alloc] initWithModuleInstance:timing
@@ -304,10 +307,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
 {
-  __weak RCTInstance *weakInstance = self;
+  __weak RCTInstance *weakSelf = self;
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
     ((id<RCTJSDispatcherModule>)module).dispatchToJSThread = ^(dispatch_block_t block) {
-      __strong __typeof(self) strongSelf = weakInstance;
+      __strong __typeof(self) strongSelf = weakSelf;
 
       if (strongSelf && strongSelf->_valid) {
         strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });

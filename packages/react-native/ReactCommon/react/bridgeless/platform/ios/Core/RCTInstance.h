@@ -12,7 +12,10 @@
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/bridgeless/ReactInstance.h>
 #import <react/renderer/mapbuffer/MapBuffer.h>
-#import <react/utils/ContextContainer.h>
+
+#import "RCTContextContainerHandling.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A utility to enable diagnostics mode at runtime. Useful for test runs.
@@ -20,9 +23,7 @@
  * nothing is enabled.
  */
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
-RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags);
-
-NS_ASSUME_NONNULL_BEGIN
+RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 
 @class RCTBundleManager;
 @class RCTInstance;
@@ -35,11 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
-@protocol RCTInstanceDelegate <NSObject>
-
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer;
+@protocol RCTInstanceDelegate <RCTContextContainerHandling>
 
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
+- (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
 @end
 
@@ -57,8 +57,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
-             bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry FB_OBJC_DIRECT;
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

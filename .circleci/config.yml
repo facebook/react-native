@@ -59,13 +59,14 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
-    hermes_workspace_cache_key: &hermes_workspace_cache_key v4-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+    hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_windows_cache_key: &hermes_windows_cache_key v3-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+    hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    pods_cache_key: &pods_cache_key v8-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
@@ -314,11 +315,24 @@ commands:
       - run:
           name: Get React Native version
           command: |
-            VERSION=$( grep '"version"' packages/react-native/package.json | cut -d '"' -f 4 | head -1)
+            VERSION=$(cat packages/react-native/package.json | jq -r '.version')
             # Save the react native version we are building in a file so we can use that file as part of the cache key.
             echo "$VERSION" > /tmp/react-native-version
             echo "React Native Version is $(cat /tmp/react-native-version)"
-            echo "Hermes commit is $(cat /tmp/hermes/hermesversion)"
+            HERMES_VERSION="$(cat /tmp/hermes/hermesversion)"
+            echo "Hermes commit is $HERMES_VERSION"
+
+  get_react_native_version_windows:
+    steps:
+      - run:
+          name: Get React Native version on Windows
+          command: |
+            $VERSION=cat packages/react-native/package.json | jq -r '.version'
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
+            echo "React Native Version is $(cat /tmp/react-native-version)"
+            $HERMES_VERSION=cat C:\Users\circleci\project\tmp\hermes\hermesversion
+            echo "Hermes commit is $HERMES_VERSION"
 
   with_hermes_tarball_cache_span:
     parameters:
@@ -588,9 +602,6 @@ jobs:
   test_ios:
     executor: reactnativeios
     parameters:
-      use_frameworks:
-        type: boolean
-        default: false
       run_unit_tests:
         description: Specifies whether unit tests should run.
         type: boolean
@@ -646,13 +657,6 @@ jobs:
       - run:
           name: Configure Watchman
           command: echo "{}" > .watchmanconfig
-
-      - when:
-          condition: << parameters.use_frameworks >>
-          steps:
-            - run:
-                name: Set USE_FRAMEWORKS=1
-                command: echo "export USE_FRAMEWORKS=1" >> $BASH_ENV
 
       - run:
           name: Setup the CocoaPods environment
@@ -739,7 +743,7 @@ jobs:
 
       - store_test_results:
           path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
-      
+
       - store_test_results:
           path: ~/react-native/packages/react-native/ReactAndroid/build/test-results
 
@@ -918,6 +922,32 @@ jobs:
   # -------------------------
   #    JOBS: Test iOS RNTester
   # -------------------------
+  # This job builds configures Xcode so that Hermes is built from source
+  # (but only the iphonesimulator slice) and integrated with the Xcode
+  # build toolchain. The `test_ios_rntester` job, instead, takes the
+  # same prebuilt for Hermes that we are going to use in the Release.
+  test_ios_rntester_hermes_xcode_integration:
+     executor: reactnativeios
+     steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - brew_install:
+          package: cmake
+      - run:
+          name: Pod install
+          command: |
+            cd packages/rn-tester
+            rm -rf Pods Podfile.lock
+            bundle install
+            RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
+      - run:
+          name: Build RNTester
+          command: |
+            xcodebuild build \
+              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+              -scheme RNTester \
+              -sdk iphonesimulator
+
   test_ios_rntester:
     executor: reactnativeios
     parameters:
@@ -931,6 +961,11 @@ jobs:
         description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
         type: enum
         enum: ["NewArch", "OldArch"]
+      use_frameworks:
+        default: "StaticLibraries"
+        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "StaticFrameworks", "DynamicFrameworks"
+        type: enum
+        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -963,6 +998,16 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
+                  fi
+
+                  if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
+                    export NO_FLIPPER=1
+                    export USE_FRAMEWORKS=static
+                  fi
+
+                  if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+                    export NO_FLIPPER=1
+                    export USE_FRAMEWORKS=dynamic
                   fi
 
                   cd packages/rn-tester
@@ -1090,7 +1135,7 @@ jobs:
       - image: debian:11
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
-      - HERMES_VERSION_FILE: "sdks/.hermesversion"
+      - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
       - BUILD_FROM_SOURCE: true
     steps:
       - run:
@@ -1109,8 +1154,11 @@ jobs:
             mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
 
             if [ -f "$HERMES_VERSION_FILE" ]; then
+              echo "Hermes Version file found! Using this version for the build:"
               cat $HERMES_VERSION_FILE > /tmp/hermes/hermesversion
             else
+              echo "Hermes Version file not found!!!"
+              echo "Using the last commit from main for the build:"
               HERMES_TAG_SHA=$(git ls-remote https://github.com/facebook/hermes main | cut -f 1 | tr -d '[:space:]')
               echo $HERMES_TAG_SHA > /tmp/hermes/hermesversion
             fi
@@ -1141,17 +1189,18 @@ jobs:
     docker:
       - image: debian:bullseye
     resource_class: "xlarge"
-    working_directory: /root
     steps:
+      - checkout_code_with_cache
       - run:
           name: Install dependencies
           command: |
             apt update
             apt install -y git openssh-client cmake build-essential \
-                libreadline-dev libicu-dev zip python3
+                libreadline-dev libicu-dev jq zip python3
       - *attach_hermes_workspace
+      - get_react_native_version
       - restore_cache:
-          key: *hermes_workspace_cache_key
+          key: *hermes_linux_cache_key
       - run:
           name: Set up workspace
           command: |
@@ -1170,7 +1219,7 @@ jobs:
               cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
             fi
       - save_cache:
-          key: *hermes_workspace_cache_key
+          key: *hermes_linux_cache_key
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
@@ -1291,7 +1340,9 @@ jobs:
       - MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       - CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
+      - checkout_code_with_cache
       - *attach_hermes_workspace
+      - get_react_native_version_windows
       - restore_cache:
           key: *hermes_windows_cache_key
       - run:
@@ -1575,6 +1626,7 @@ workflows:
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
       - prepare_hermes_workspace
+      - test_ios_rntester_hermes_xcode_integration
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
@@ -1648,11 +1700,6 @@ workflows:
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
@@ -1665,11 +1712,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
@@ -1728,18 +1770,8 @@ workflows:
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Debug"
@@ -1770,6 +1802,7 @@ workflows:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
+              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
       - test_ios:
           name: "Test iOS with Ruby 2.7.7"
           run_unit_tests: true
@@ -1789,13 +1822,6 @@ workflows:
           matrix:
             parameters:
               jsengine: ["Hermes", "JSC"]
-      # DISABLED: USE_FRAMEWORKS=1 not supported by Flipper
-      # - test_ios:
-      #     name: test_ios_frameworks
-      #     use_frameworks: true
-      #     run_unit_tests: true
-      #     requires:
-      #       - build_ios_frameworks
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts

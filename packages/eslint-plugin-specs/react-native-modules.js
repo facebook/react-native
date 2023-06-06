@@ -69,7 +69,6 @@ function requireModuleParser() {
     buildModuleSchema: RNParserCommons.buildModuleSchema,
     createParserErrorCapturer: RNParserUtils.createParserErrorCapturer,
     parser: new RNFlowParser.FlowParser(),
-    resolveTypeAnnotation: RNFlowParserUtils.resolveTypeAnnotation,
     translateTypeAnnotation: RNModuleParser.flowTranslateTypeAnnotation,
   };
 }
@@ -149,7 +148,6 @@ function rule(context) {
         buildModuleSchema,
         createParserErrorCapturer,
         parser,
-        resolveTypeAnnotation,
         translateTypeAnnotation,
       } = requireModuleParser();
 
@@ -164,7 +162,6 @@ function rule(context) {
           ast,
           tryParse,
           parser,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
         );
       });

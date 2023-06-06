@@ -10,6 +10,7 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
@@ -31,7 +32,7 @@ namespace TMPL = TurboModulePerfLogger;
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -42,15 +43,16 @@ JavaTurboModule::~JavaTurboModule() {
     return;
   }
 
-  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
-    /**
-     * Reset the global NativeModule ref on the NativeModules thread. Why:
-     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
-     *     global ref in ~JavaTurboModule(), we might access the JVM from a
-     *     non-JVM thread, which will crash the app.
-     */
-    instance.reset();
-  });
+  nativeMethodCallInvoker_->invokeAsync(
+      "~" + name_, [instance = std::move(instance_)]() mutable {
+        /**
+         * Reset the global NativeModule ref on the NativeModules thread. Why:
+         *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset
+         * the global ref in ~JavaTurboModule(), we might access the JVM from a
+         *     non-JVM thread, which will crash the app.
+         */
+        instance.reset();
+      });
 }
 
 namespace {
@@ -84,8 +86,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
        wrapperWasCalled = false,
        executor = std::move(executor)](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          throw std::runtime_error(
-              "Callback arg cannot be called more than once");
+          LOG(FATAL) << "callback arg cannot be called more than once";
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -797,7 +798,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-      nativeInvoker_->invokeAsync(
+      nativeMethodCallInvoker_->invokeAsync(
+          methodName,
           [jargs,
            globalRefs,
            methodID,
@@ -904,7 +906,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
             TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-            nativeInvoker_->invokeAsync(
+            nativeMethodCallInvoker_->invokeAsync(
+                methodName,
                 [jargs,
                  rejectInternalWeakWrapper = std::move(rejectInternalWeakWrapper),
                  jsStack = std::move(jsStack),

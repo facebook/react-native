@@ -106,12 +106,12 @@ TurboModuleManager::TurboModuleManager(
     jni::alias_ref<TurboModuleManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
     std::shared_ptr<CallInvoker> jsCallInvoker,
-    std::shared_ptr<CallInvoker> nativeCallInvoker,
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate)
     : javaPart_(jni::make_global(jThis)),
       runtimeExecutor_(runtimeExecutor),
       jsCallInvoker_(jsCallInvoker),
-      nativeCallInvoker_(nativeCallInvoker),
+      nativeMethodCallInvoker_(nativeMethodCallInvoker),
       delegate_(jni::make_global(delegate)),
       turboModuleCache_(std::make_shared<ModuleCache>()),
       legacyModuleCache_(std::make_shared<ModuleCache>()) {}
@@ -120,13 +120,14 @@ jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutor,
     jni::alias_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder,
-    jni::alias_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder,
+    jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+        nativeMethodCallInvokerHolder,
     jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
   return makeCxxInstance(
       jThis,
       runtimeExecutor->cthis()->get(),
       jsCallInvokerHolder->cthis()->getCallInvoker(),
-      nativeCallInvokerHolder->cthis()->getCallInvoker(),
+      nativeMethodCallInvokerHolder->cthis()->getNativeMethodCallInvoker(),
       delegate);
 }
 
@@ -142,17 +143,18 @@ TurboModuleProviderFunctionType
 TurboModuleManager::createTurboModuleProvider() {
   return [turboModuleCache_ = std::weak_ptr<ModuleCache>(turboModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
-          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
+          nativeMethodCallInvoker_ =
+              std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
              const std::string &name) -> std::shared_ptr<TurboModule> {
     auto turboModuleCache = turboModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
-    auto nativeCallInvoker = nativeCallInvoker_.lock();
+    auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
     auto delegate = delegate_.lockLocal();
     auto javaPart = javaPart_.lockLocal();
 
-    if (!turboModuleCache || !jsCallInvoker || !nativeCallInvoker ||
+    if (!turboModuleCache || !jsCallInvoker || !nativeMethodCallInvoker ||
         !delegate || !javaPart) {
       return nullptr;
     }
@@ -205,7 +207,7 @@ TurboModuleManager::createTurboModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeInvoker = nativeCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker};
 
       auto turboModule = delegate->cthis()->getTurboModule(name, params);
       turboModuleCache->insert({name, turboModule});
@@ -221,17 +223,18 @@ TurboModuleProviderFunctionType
 TurboModuleManager::createLegacyModuleProvider() {
   return [legacyModuleCache_ = std::weak_ptr<ModuleCache>(legacyModuleCache_),
           jsCallInvoker_ = std::weak_ptr<CallInvoker>(jsCallInvoker_),
-          nativeCallInvoker_ = std::weak_ptr<CallInvoker>(nativeCallInvoker_),
+          nativeMethodCallInvoker_ =
+              std::weak_ptr<NativeMethodCallInvoker>(nativeMethodCallInvoker_),
           delegate_ = jni::make_weak(delegate_),
           javaPart_ = jni::make_weak(javaPart_)](
              const std::string &name) -> std::shared_ptr<TurboModule> {
     auto legacyModuleCache = legacyModuleCache_.lock();
     auto jsCallInvoker = jsCallInvoker_.lock();
-    auto nativeCallInvoker = nativeCallInvoker_.lock();
+    auto nativeMethodCallInvoker = nativeMethodCallInvoker_.lock();
     auto delegate = delegate_.lockLocal();
     auto javaPart = javaPart_.lockLocal();
 
-    if (!legacyModuleCache || !jsCallInvoker || !nativeCallInvoker ||
+    if (!legacyModuleCache || !jsCallInvoker || !nativeMethodCallInvoker ||
         !delegate || !javaPart) {
       return nullptr;
     }
@@ -278,7 +281,7 @@ TurboModuleManager::createLegacyModuleProvider() {
           .moduleName = name,
           .instance = moduleInstance,
           .jsInvoker = jsCallInvoker,
-          .nativeInvoker = nativeCallInvoker};
+          .nativeMethodCallInvoker = nativeMethodCallInvoker};
 
       static auto getMethodDescriptorsFromModule =
           javaPart->getClass()

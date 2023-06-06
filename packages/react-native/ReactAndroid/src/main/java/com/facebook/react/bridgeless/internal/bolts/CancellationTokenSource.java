@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +29,9 @@ import java.util.concurrent.TimeUnit;
 public class CancellationTokenSource implements Closeable {
 
   private final Object lock = new Object();
-  private final List<CancellationTokenRegistration> registrations = new ArrayList<>();
-  private final ScheduledExecutorService executor = BoltsExecutors.scheduled();
-  private ScheduledFuture<?> scheduledCancellation;
+  private final @NonNull List<CancellationTokenRegistration> registrations = new ArrayList<>();
+  private final @NonNull ScheduledExecutorService executor = BoltsExecutors.scheduled();
+  @Nullable private ScheduledFuture<?> scheduledCancellation;
   private boolean cancellationRequested;
   private boolean closed;
 
@@ -48,7 +50,7 @@ public class CancellationTokenSource implements Closeable {
   }
 
   /** @return the token that can be passed to asynchronous method to control cancellation. */
-  public CancellationToken getToken() {
+  public @NonNull CancellationToken getToken() {
     synchronized (lock) {
       throwIfClosed();
       return new CancellationToken(this);
@@ -84,7 +86,7 @@ public class CancellationTokenSource implements Closeable {
     cancelAfter(delay, TimeUnit.MILLISECONDS);
   }
 
-  private void cancelAfter(long delay, TimeUnit timeUnit) {
+  private void cancelAfter(long delay, @NonNull TimeUnit timeUnit) {
     if (delay < -1) {
       throw new IllegalArgumentException("Delay must be >= -1");
     }
@@ -137,7 +139,8 @@ public class CancellationTokenSource implements Closeable {
     }
   }
 
-  /* package */ CancellationTokenRegistration register(Runnable action) {
+  /* package */ @NonNull
+  CancellationTokenRegistration register(@NonNull Runnable action) {
     CancellationTokenRegistration ctr;
     synchronized (lock) {
       throwIfClosed();
@@ -165,7 +168,7 @@ public class CancellationTokenSource implements Closeable {
     }
   }
 
-  /* package */ void unregister(CancellationTokenRegistration registration) {
+  /* package */ void unregister(@NonNull CancellationTokenRegistration registration) {
     synchronized (lock) {
       throwIfClosed();
       registrations.remove(registration);
@@ -178,7 +181,7 @@ public class CancellationTokenSource implements Closeable {
   // to be synchronized with state changes you should provide external synchronization.
   // If this is invoked without external synchronization there is a probability the token becomes
   // cancelled concurrently.
-  private void notifyListeners(List<CancellationTokenRegistration> registrations) {
+  private void notifyListeners(@NonNull List<CancellationTokenRegistration> registrations) {
     for (CancellationTokenRegistration registration : registrations) {
       registration.runAction();
     }

@@ -11,9 +11,8 @@ import com.facebook.jni.HybridData
 import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridgeless.JSEngineInstance
 import com.facebook.soloader.SoLoader
-import kotlin.jvm.JvmStatic
 
-class HermesInstance() : JSEngineInstance(initHybrid()!!) {
+class HermesInstance : JSEngineInstance(initHybrid()!!) {
 
   companion object {
     @JvmStatic @DoNotStrip protected external fun initHybrid(): HybridData?

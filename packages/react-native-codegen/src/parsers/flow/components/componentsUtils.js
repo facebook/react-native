@@ -10,24 +10,9 @@
 
 'use strict';
 
-import type {NamedShape} from '../../../CodegenSchema.js';
 const {getValueFromTypes} = require('../utils.js');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
-
-function getProperties(
-  typeName: string,
-  types: TypeDeclarationMap,
-): $FlowFixMe {
-  const typeAlias = types[typeName];
-  try {
-    return typeAlias.right.typeParameters.params[0].properties;
-  } catch (e) {
-    throw new Error(
-      `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
-    );
-  }
-}
 
 function getTypeAnnotationForArray<+T>(
   name: string,
@@ -63,6 +48,7 @@ function getTypeAnnotationForArray<+T>(
         properties: flattenProperties(
           objectType.typeParameters.params[0].properties,
           types,
+          parser,
         )
           .map(prop => buildSchema(prop, types, parser))
           .filter(Boolean),
@@ -84,6 +70,7 @@ function getTypeAnnotationForArray<+T>(
           properties: flattenProperties(
             nestedObjectType.typeParameters.params[0].properties,
             types,
+            parser,
           )
             .map(prop => buildSchema(prop, types, parser))
             .filter(Boolean),
@@ -190,6 +177,7 @@ function getTypeAnnotationForArray<+T>(
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
@@ -197,8 +185,9 @@ function flattenProperties(
         return property;
       } else if (property.type === 'ObjectTypeSpreadProperty') {
         return flattenProperties(
-          getProperties(property.argument.id.name, types),
+          parser.getProperties(property.argument.id.name, types),
           types,
+          parser,
         );
       }
     })
@@ -265,6 +254,7 @@ function getTypeAnnotation<+T>(
       properties: flattenProperties(
         typeAnnotation.typeParameters.params[0].properties,
         types,
+        parser,
       )
         .map(prop => buildSchema(prop, types, parser))
         .filter(Boolean),
@@ -503,7 +493,6 @@ function getSchemaInfo(
 }
 
 module.exports = {
-  getProperties,
   getSchemaInfo,
   getTypeAnnotation,
   flattenProperties,

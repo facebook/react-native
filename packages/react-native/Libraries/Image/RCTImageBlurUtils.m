@@ -19,8 +19,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   }
 
   // convert to ARGB if it isn't
-  if (CGImageGetBitsPerPixel(imageRef) != 32 || CGImageGetBitsPerComponent(imageRef) != 8 ||
-      !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
+  if (CGImageGetBitsPerPixel(imageRef) != 32 || !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
     UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
     rendererFormat.scale = inputImage.scale;
     UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
@@ -55,7 +54,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   // create temp buffer
   vImage_Error tempBufferSize = vImageBoxConvolve_ARGB8888(
       &buffer1, &buffer2, NULL, 0, 0, boxSize, boxSize, NULL, kvImageGetTempBufferSize | kvImageEdgeExtend);
-  if (tempBufferSize < 0) {
+  if (tempBufferSize <= 0) {
     free(buffer1.data);
     free(buffer2.data);
     return inputImage;

@@ -32,7 +32,8 @@ jest
   .mock('./../release-utils', () => ({
     generateAndroidArtifacts: jest.fn(),
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
-  }));
+  }))
+  .mock('../monorepo/publish-nightly-for-each-changed-package');
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
@@ -88,7 +89,7 @@ describe('publish-npm', () => {
         true,
       );
       expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native dist-tags.next`,
+        `npm view react-native@next version`,
       );
       expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,
@@ -111,7 +112,7 @@ describe('publish-npm', () => {
 
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
       expect(execMock.mock.calls[0][0]).toBe(
-        `npm view react-native dist-tags.next`,
+        `npm view react-native@next version`,
       );
       expect(execMock.mock.calls[1][0]).toBe(
         `node scripts/set-rn-version.js --to-version ${expectedVersion} --build-type nightly`,

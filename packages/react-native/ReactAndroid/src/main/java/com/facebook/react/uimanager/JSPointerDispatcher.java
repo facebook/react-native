@@ -41,6 +41,7 @@ public class JSPointerDispatcher {
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
+  private Map<Integer, List<ViewTarget>> mCurrentlyDownPointerIdsToHitPath;
   private Set<Integer> mHoveringPointerIds = new HashSet<>();
 
   private int mChildHandlingNativeGesture = -1;
@@ -53,6 +54,7 @@ public class JSPointerDispatcher {
 
   public JSPointerDispatcher(ViewGroup viewGroup) {
     mRootViewGroup = viewGroup;
+    mCurrentlyDownPointerIdsToHitPath = new HashMap<>();
   }
 
   public void onChildStartedNativeGesture(
@@ -85,6 +87,30 @@ public class JSPointerDispatcher {
   public void onChildEndedNativeGesture() {
     // There should be only one child gesture at any given time. We can safely turn off the flag.
     mChildHandlingNativeGesture = -1;
+  }
+
+  // returns the section of the hit path shared by both lists, or an empty list if there's no such
+  // section
+  private static List<ViewTarget> findHitPathIntersection(
+      final List<ViewTarget> hitsA, final List<ViewTarget> hitsB) {
+    if (hitsA.isEmpty()) {
+      return new ArrayList<>();
+    }
+    if (hitsB.isEmpty()) {
+      return new ArrayList<>();
+    }
+
+    Set<ViewTarget> inA = new HashSet<>(hitsA);
+
+    List<ViewTarget> intersection = new ArrayList<>();
+
+    for (final ViewTarget vt : hitsB) {
+      if (inA.contains(vt)) {
+        intersection.add(vt);
+      }
+    }
+
+    return intersection;
   }
 
   private void onUp(
@@ -125,6 +151,18 @@ public class JSPointerDispatcher {
           motionEvent,
           leaveViewTargets,
           eventDispatcher);
+    }
+
+    List<ViewTarget> hitPathDown = mCurrentlyDownPointerIdsToHitPath.remove(activePointerId);
+    if (hitPathDown != null
+        && isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
+      List<ViewTarget> hitPathForClick = findHitPathIntersection(hitPathDown, activeHitPath);
+      if (!hitPathForClick.isEmpty()) {
+        final ViewTarget clickTarget = hitPathForClick.get(0);
+        eventDispatcher.dispatchEvent(
+            PointerEvent.obtain(
+                PointerEventHelper.CLICK, clickTarget.getViewId(), eventState, motionEvent));
+      }
     }
 
     if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
@@ -173,6 +211,12 @@ public class JSPointerDispatcher {
           motionEvent,
           enterViewTargets,
           eventDispatcher);
+    }
+
+    // store some information if we might need to emit a click later on
+    if (isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CLICK, EVENT.CLICK_CAPTURE)) {
+      mCurrentlyDownPointerIdsToHitPath.put(
+          eventState.getActivePointerId(), new ArrayList<>(activeHitPath));
     }
 
     boolean listeningForDown =

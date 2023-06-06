@@ -171,14 +171,6 @@ AccessibilityProps::AccessibilityProps(
                     "importantForAccessibility",
                     sourceProps.importantForAccessibility,
                     ImportantForAccessibility::Auto)),
-      role(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.role
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "role",
-                                                       sourceProps.role,
-                                                       {})),
       testId(
           CoreFeatures::enablePropIteratorSetter ? sourceProps.testId
                                                  : convertRawProp(
@@ -195,19 +187,31 @@ AccessibilityProps::AccessibilityProps(
   // to work around here, and (2) would require very careful work to address
   // this case and not regress the more common cases.
   if (!CoreFeatures::enablePropIteratorSetter) {
-    const auto *rawPropValue =
+    auto *accessibilityRoleValue =
         rawProps.at("accessibilityRole", nullptr, nullptr);
-    AccessibilityTraits traits;
-    std::string roleString;
-    if (rawPropValue == nullptr || !rawPropValue->hasValue()) {
-      traits = sourceProps.accessibilityTraits;
-      roleString = sourceProps.accessibilityRole;
+    auto *roleValue = rawProps.at("role", nullptr, nullptr);
+
+    auto *precedentRoleValue =
+        roleValue != nullptr ? roleValue : accessibilityRoleValue;
+
+    if (accessibilityRoleValue == nullptr ||
+        !accessibilityRoleValue->hasValue()) {
+      accessibilityRole = sourceProps.accessibilityRole;
     } else {
-      fromRawValue(context, *rawPropValue, traits);
-      fromRawValue(context, *rawPropValue, roleString);
+      fromRawValue(context, *accessibilityRoleValue, accessibilityRole);
     }
-    accessibilityTraits = traits;
-    accessibilityRole = roleString;
+
+    if (roleValue == nullptr || !roleValue->hasValue()) {
+      role = sourceProps.role;
+    } else {
+      fromRawValue(context, *roleValue, role);
+    }
+
+    if (precedentRoleValue == nullptr || !precedentRoleValue->hasValue()) {
+      accessibilityTraits = sourceProps.accessibilityTraits;
+    } else {
+      fromRawValue(context, *precedentRoleValue, accessibilityTraits);
+    }
   }
 }
 

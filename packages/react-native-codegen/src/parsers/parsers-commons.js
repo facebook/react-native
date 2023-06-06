@@ -41,6 +41,7 @@ const {
   isModuleRegistryCall,
   verifyPlatforms,
 } = require('./utils');
+
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
@@ -55,6 +56,10 @@ const {
   throwIfModuleInterfaceNotFound,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleInterfaceIsMisnamed,
+  throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+  throwIfTypeAliasIsNotInterface,
 } = require('./error-utils');
 
 const {
@@ -322,7 +327,6 @@ function buildPropertySchema(
   enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NativeModulePropertyShape {
@@ -337,7 +341,12 @@ function buildPropertySchema(
         : property.typeAnnotation;
   }
 
-  ({nullable, typeAnnotation: value} = resolveTypeAnnotation(value, types));
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
+  ({nullable, typeAnnotation: value} = resolveTypeAnnotationFN(
+    value,
+    types,
+    parser,
+  ));
 
   throwIfModuleTypeIsUnsupported(
     hasteModuleName,
@@ -381,11 +390,9 @@ function buildSchemaFromConfigType(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   switch (configType) {
@@ -406,7 +413,6 @@ function buildSchemaFromConfigType(
           ast,
           tryParse,
           parser,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
         ),
       );
@@ -448,14 +454,12 @@ function buildSchema(
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
-    resolveTypeAnnotation: $FlowFixMe,
     translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   // Early return for non-Spec JavaScript files
@@ -477,7 +481,6 @@ function buildSchema(
     buildComponentSchema,
     buildModuleSchema,
     parser,
-    resolveTypeAnnotation,
     translateTypeAnnotation,
   );
 }
@@ -572,7 +575,6 @@ const buildModuleSchema = (
   ast: $FlowFixMe,
   tryParse: ParserErrorCapturer,
   parser: Parser,
-  resolveTypeAnnotation: $FlowFixMe,
   translateTypeAnnotation: $FlowFixMe,
 ): NativeModuleSchema => {
   const language = parser.language();
@@ -640,7 +642,6 @@ const buildModuleSchema = (
           enumMap,
           tryParse,
           cxxOnly,
-          resolveTypeAnnotation,
           translateTypeAnnotation,
           parser,
         ),
@@ -902,6 +903,86 @@ function getEventArgument(
   };
 }
 
+/* $FlowFixMe[signature-verification-failure] there's no flowtype for AST.
+ * TODO(T108222691): Use flow-types for @babel/parser */
+function findComponentConfig(ast: $FlowFixMe, parser: Parser) {
+  const foundConfigs: Array<{[string]: string}> = [];
+
+  const defaultExports = ast.body.filter(
+    node => node.type === 'ExportDefaultDeclaration',
+  );
+
+  defaultExports.forEach(statement => {
+    findNativeComponentType(statement, foundConfigs, parser);
+  });
+
+  throwIfConfigNotfound(foundConfigs);
+  throwIfMoreThanOneConfig(foundConfigs);
+
+  const foundConfig = foundConfigs[0];
+
+  const namedExports = ast.body.filter(
+    node => node.type === 'ExportNamedDeclaration',
+  );
+
+  const commandsTypeNames = namedExports
+    .map(statement => getCommandTypeNameAndOptionsExpression(statement, parser))
+    .filter(Boolean);
+
+  throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+
+  return createComponentConfig(foundConfig, commandsTypeNames);
+}
+
+// $FlowFixMe[signature-verification-failure] there's no flowtype for AST
+function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
+  const {commandTypeName, commandOptionsExpression} = findComponentConfig(
+    ast,
+    parser,
+  );
+
+  if (commandTypeName == null) {
+    return [];
+  }
+  const types = parser.getTypes(ast);
+
+  const typeAlias = types[commandTypeName];
+
+  throwIfTypeAliasIsNotInterface(typeAlias, parser);
+
+  const properties = parser.bodyProperties(typeAlias);
+  if (!properties) {
+    throw new Error(
+      `Failed to find type definition for "${commandTypeName}", please check that you have a valid codegen file`,
+    );
+  }
+
+  const commandPropertyNames = propertyNames(properties);
+
+  const commandOptions = getCommandOptions(commandOptionsExpression);
+
+  if (commandOptions == null || commandOptions.supportedCommands == null) {
+    throw new Error(
+      'codegenNativeCommands must be given an options object with supportedCommands array',
+    );
+  }
+
+  if (
+    commandOptions.supportedCommands.length !== commandPropertyNames.length ||
+    !commandOptions.supportedCommands.every(supportedCommand =>
+      commandPropertyNames.includes(supportedCommand),
+    )
+  ) {
+    throw new Error(
+      `codegenNativeCommands expected the same supportedCommands specified in the ${commandTypeName} interface: ${commandPropertyNames.join(
+        ', ',
+      )}`,
+    );
+  }
+
+  return properties;
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -924,4 +1005,6 @@ module.exports = {
   extendsForProp,
   buildPropSchema,
   getEventArgument,
+  findComponentConfig,
+  getCommandProperties,
 };

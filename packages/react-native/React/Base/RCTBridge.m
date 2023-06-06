@@ -120,7 +120,7 @@ void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
   turboModuleManagerDelegateLockingDisabled = disabled;
 }
 
-static BOOL turboModuleInteropEnabled = YES;
+static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {
   return turboModuleInteropEnabled;
@@ -128,6 +128,17 @@ BOOL RCTTurboModuleInteropEnabled(void)
 void RCTEnableTurboModuleInterop(BOOL enabled)
 {
   turboModuleInteropEnabled = enabled;
+}
+
+static BOOL turboModuleInteropBridgeProxyEnabled = NO;
+BOOL RCTTurboModuleInteropBridgeProxyEnabled(void)
+{
+  return turboModuleInteropBridgeProxyEnabled;
+}
+
+void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
+{
+  turboModuleInteropBridgeProxyEnabled = enabled;
 }
 
 static BOOL useTurboModuleInteropForAllTurboModules = NO;
@@ -418,13 +429,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
   [self.batchedBridge registerSegmentWithId:segmentId path:path];
-}
-
-- (void)loadAndExecuteSplitBundleURL:(NSURL *)bundleURL
-                             onError:(RCTLoadAndExecuteErrorBlock)onError
-                          onComplete:(dispatch_block_t)onComplete
-{
-  [self.batchedBridge loadAndExecuteSplitBundleURL:bundleURL onError:onError onComplete:onComplete];
 }
 
 @end

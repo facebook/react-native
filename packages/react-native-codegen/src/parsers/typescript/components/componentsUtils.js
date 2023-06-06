@@ -16,36 +16,6 @@ const {
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
 
-function getProperties(
-  typeName: string,
-  types: TypeDeclarationMap,
-): $FlowFixMe {
-  const alias = types[typeName];
-  if (!alias) {
-    throw new Error(
-      `Failed to find definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-  const aliasKind =
-    alias.type === 'TSInterfaceDeclaration' ? 'interface' : 'type';
-
-  try {
-    if (aliasKind === 'interface') {
-      return [...(alias.extends ?? []), ...alias.body.body];
-    }
-
-    return (
-      alias.typeAnnotation.members ||
-      alias.typeAnnotation.typeParameters.params[0].members ||
-      alias.typeAnnotation.typeParameters.params
-    );
-  } catch (e) {
-    throw new Error(
-      `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
-    );
-  }
-}
-
 function getUnionOfLiterals(
   name: string,
   forArray: boolean,
@@ -175,7 +145,7 @@ function buildObjectType<T>(
   parser: Parser,
   buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
-  const flattenedProperties = flattenProperties(rawProperties, types);
+  const flattenedProperties = flattenProperties(rawProperties, types, parser);
   const properties = flattenedProperties
     .map(prop => buildSchema(prop, types, parser))
     .filter(Boolean);
@@ -497,6 +467,7 @@ function verifyPropNotAlreadyDefined(
 function flattenProperties(
   typeDefinition: $ReadOnlyArray<PropAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<PropAST> {
   return typeDefinition
     .map(property => {
@@ -504,23 +475,29 @@ function flattenProperties(
         return property;
       } else if (property.type === 'TSTypeReference') {
         return flattenProperties(
-          getProperties(property.typeName.name, types),
+          parser.getProperties(property.typeName.name, types),
           types,
+          parser,
         );
       } else if (
         property.type === 'TSExpressionWithTypeArguments' ||
         property.type === 'TSInterfaceHeritage'
       ) {
         return flattenProperties(
-          getProperties(property.expression.name, types),
+          parser.getProperties(property.expression.name, types),
           types,
+          parser,
         );
       } else if (property.type === 'TSTypeLiteral') {
-        return flattenProperties(property.members, types);
+        return flattenProperties(property.members, types, parser);
       } else if (property.type === 'TSInterfaceDeclaration') {
-        return flattenProperties(getProperties(property.id.name, types), types);
+        return flattenProperties(
+          parser.getProperties(property.id.name, types),
+          types,
+          parser,
+        );
       } else if (property.type === 'TSIntersectionType') {
-        return flattenProperties(property.types, types);
+        return flattenProperties(property.types, types, parser);
       } else {
         throw new Error(
           `${property.type} is not a supported object literal type.`,
@@ -544,7 +521,6 @@ function flattenProperties(
 }
 
 module.exports = {
-  getProperties,
   getSchemaInfo,
   getTypeAnnotation,
   flattenProperties,

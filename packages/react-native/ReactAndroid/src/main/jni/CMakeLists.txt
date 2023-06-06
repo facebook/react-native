@@ -190,7 +190,6 @@ add_executable(reactnative_unittest
     -fexceptions
     -frtti
     -std=c++17
-    -DANDROID
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest

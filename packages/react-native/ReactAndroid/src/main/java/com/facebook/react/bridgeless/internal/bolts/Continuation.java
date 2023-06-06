@@ -7,6 +7,9 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * A function to be called after a task completes.
  *
@@ -16,5 +19,6 @@ package com.facebook.react.bridgeless.internal.bolts;
  * @see Task
  */
 public interface Continuation<TTaskResult, TContinuationResult> {
-  TContinuationResult then(Task<TTaskResult> task) throws Exception;
+  @Nullable
+  TContinuationResult then(@NonNull Task<TTaskResult> task) throws Exception;
 }

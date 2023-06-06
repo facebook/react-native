@@ -249,7 +249,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Runtime &runtime,
             jsi::Value const & /*thisValue*/,
             jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
+            size_t /*count*/) {
           auto node = shadowNodeFromValue(runtime, arguments[0]);
           auto locationX = (Float)arguments[1].getNumber();
           auto locationY = (Float)arguments[2].getNumber();
@@ -538,7 +538,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Runtime &runtime,
             jsi::Value const & /*thisValue*/,
             jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
+            size_t /*count*/) {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               shadowNodeFromValue(runtime, arguments[1]).get(),
@@ -574,7 +574,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Runtime &runtime,
             jsi::Value const & /*thisValue*/,
             jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
+            size_t /*count*/) {
           auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNode, nullptr, {/* .includeTransform = */ true});
@@ -616,7 +616,7 @@ jsi::Value UIManagerBinding::get(
             jsi::Runtime &runtime,
             jsi::Value const & /*thisValue*/,
             jsi::Value const *arguments,
-            size_t /*count*/) noexcept -> jsi::Value {
+            size_t /*count*/) {
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
               *shadowNodeFromValue(runtime, arguments[0]),
               nullptr,

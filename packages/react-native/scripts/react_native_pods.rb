@@ -117,6 +117,7 @@ def use_react_native! (
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
   pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
+  pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)

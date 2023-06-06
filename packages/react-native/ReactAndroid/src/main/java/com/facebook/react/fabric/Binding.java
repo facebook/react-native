@@ -52,6 +52,8 @@ public interface Binding {
 
   public void driveCxxAnimations();
 
+  public void reportMount(int surfaceId);
+
   public ReadableNativeMap getInspectorDataForInstance(EventEmitterWrapper eventEmitterWrapper);
 
   public void register(

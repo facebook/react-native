@@ -44,6 +44,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.uimanager.ComponentNameResolver;
@@ -149,7 +150,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance(mBridgelessReactContext);
+    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -193,7 +194,7 @@ final class ReactInstance {
             unbufferedRuntimeExecutor,
             turboModuleManagerDelegate,
             getJSCallInvokerHolder(),
-            getNativeCallInvokerHolder());
+            getNativeMethodCallInvokerHolder());
 
     // Eagerly initialize TurboModules
     for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
@@ -382,7 +383,7 @@ final class ReactInstance {
       JavaTimerManager timerManager,
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
-      BindingsInstaller jBindingsInstaller,
+      @Nullable BindingsInstaller jBindingsInstaller,
       boolean isProfiling);
 
   @DoNotStrip
@@ -397,7 +398,7 @@ final class ReactInstance {
 
   private native CallInvokerHolderImpl getJSCallInvokerHolder();
 
-  private native CallInvokerHolderImpl getNativeCallInvokerHolder();
+  private native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private native RuntimeExecutor getUnbufferedRuntimeExecutor();
 

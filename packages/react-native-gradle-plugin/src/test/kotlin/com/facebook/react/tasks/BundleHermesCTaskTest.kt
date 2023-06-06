@@ -341,11 +341,12 @@ class BundleHermesCTaskTest {
 
     assertEquals(customHermesc, hermesCommand[0])
     assertEquals("-emit-binary", hermesCommand[1])
-    assertEquals("-out", hermesCommand[2])
-    assertEquals(bytecodeFile.absolutePath, hermesCommand[3])
-    assertEquals(bundleFile.absolutePath, hermesCommand[4])
-    assertEquals("my-custom-hermes-flag", hermesCommand[5])
-    assertEquals(6, hermesCommand.size)
+    assertEquals("-max-diagnostic-width=80", hermesCommand[2])
+    assertEquals("-out", hermesCommand[3])
+    assertEquals(bytecodeFile.absolutePath, hermesCommand[4])
+    assertEquals(bundleFile.absolutePath, hermesCommand[5])
+    assertEquals("my-custom-hermes-flag", hermesCommand[6])
+    assertEquals(7, hermesCommand.size)
   }
 
   @Test
@@ -366,11 +367,12 @@ class BundleHermesCTaskTest {
     assertEquals("/c", hermesCommand[1])
     assertEquals(customHermesc, hermesCommand[2])
     assertEquals("-emit-binary", hermesCommand[3])
-    assertEquals("-out", hermesCommand[4])
-    assertEquals(bytecodeFile.relativeTo(tempFolder.root).path, hermesCommand[5])
-    assertEquals(bundleFile.relativeTo(tempFolder.root).path, hermesCommand[6])
-    assertEquals("my-custom-hermes-flag", hermesCommand[7])
-    assertEquals(8, hermesCommand.size)
+    assertEquals("-max-diagnostic-width=80", hermesCommand[4])
+    assertEquals("-out", hermesCommand[5])
+    assertEquals(bytecodeFile.relativeTo(tempFolder.root).path, hermesCommand[6])
+    assertEquals(bundleFile.relativeTo(tempFolder.root).path, hermesCommand[7])
+    assertEquals("my-custom-hermes-flag", hermesCommand[8])
+    assertEquals(9, hermesCommand.size)
   }
 
   @Test

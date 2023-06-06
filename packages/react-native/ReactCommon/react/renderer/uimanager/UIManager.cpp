@@ -7,6 +7,7 @@
 
 #include "UIManager.h"
 
+#include <cxxreact/JSExecutor.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,6 +17,7 @@
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
+#include <react/renderer/uimanager/UIManagerMountHook.h>
 
 #include <glog/logging.h>
 
@@ -592,8 +594,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
-void UIManager::registerCommitHook(
-    UIManagerCommitHook const &commitHook) const {
+void UIManager::registerCommitHook(UIManagerCommitHook &commitHook) {
   std::unique_lock lock(commitHookMutex_);
   react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
@@ -602,8 +603,7 @@ void UIManager::registerCommitHook(
   commitHooks_.push_back(&commitHook);
 }
 
-void UIManager::unregisterCommitHook(
-    UIManagerCommitHook const &commitHook) const {
+void UIManager::unregisterCommitHook(UIManagerCommitHook &commitHook) {
   std::unique_lock lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
@@ -612,16 +612,33 @@ void UIManager::unregisterCommitHook(
   commitHook.commitHookWasUnregistered(*this);
 }
 
+void UIManager::registerMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  react_native_assert(
+      std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook) ==
+      mountHooks_.end());
+  mountHooks_.push_back(&mountHook);
+}
+
+void UIManager::unregisterMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  auto iterator = std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook);
+  react_native_assert(iterator != mountHooks_.end());
+  mountHooks_.erase(iterator);
+}
+
 #pragma mark - ShadowTreeDelegate
 
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
+  SystraceSection s("UIManager::shadowTreeWillCommit");
+
   std::shared_lock lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
-  for (auto const *commitHook : commitHooks_) {
+  for (auto *commitHook : commitHooks_) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
         shadowTree, oldRootShadowNode, resultRootShadowNode);
   }
@@ -637,6 +654,30 @@ void UIManager::shadowTreeDidFinishTransaction(
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
         std::move(mountingCoordinator), mountSynchronously);
+  }
+}
+
+void UIManager::reportMount(SurfaceId surfaceId) const {
+  SystraceSection s("UIManager::reportMount");
+
+  auto time = JSExecutor::performanceNow();
+
+  auto rootShadowNode = RootShadowNode::Shared{};
+  shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+    rootShadowNode =
+        shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
+  });
+
+  if (!rootShadowNode) {
+    return;
+  }
+
+  {
+    std::shared_lock lock(mountHookMutex_);
+
+    for (auto *mountHook : mountHooks_) {
+      mountHook->shadowTreeDidMount(rootShadowNode, time);
+    }
   }
 }
 

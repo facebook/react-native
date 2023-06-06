@@ -11,11 +11,13 @@
 
 const {exec, echo, exit} = require('shelljs');
 const {parseVersion} = require('./version-utils');
+const {getPackageVersionStrByTag, publishPackage} = require('./npm-utils');
 const {
   exitIfNotOnGit,
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
+const publishNightlyForEachChangedPackage = require('./monorepo/publish-nightly-for-each-changed-package');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -76,13 +78,8 @@ if (require.main === module) {
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
-  const cmd = 'npm view react-native dist-tags.next';
-  echo(cmd);
-  const result = exec(cmd);
-  if (result.code) {
-    throw 'Failed to get next version from npm';
-  }
-  const {major, minor} = parseVersion(result.stdout.trim(), 'release');
+  const versionStr = getPackageVersionStrByTag('react-native', 'next');
+  const {major, minor} = parseVersion(versionStr, 'release');
   return `${major}.${parseInt(minor, 10) + 1}.0`;
 }
 
@@ -140,6 +137,7 @@ function publishNpm(buildType) {
   // Set version number in various files (package.json, gradle.properties etc)
   // For non-nightly, non-dry-run, CircleCI job `prepare_package_for_release` does this
   if (buildType === 'nightly' || buildType === 'dry-run') {
+    // Sets the version for package/react-native
     if (
       exec(
         `node scripts/set-rn-version.js --to-version ${version} --build-type ${buildType}`,
@@ -148,6 +146,11 @@ function publishNpm(buildType) {
       echo(`Failed to set version number to ${version}`);
       return exit(1);
     }
+  }
+
+  // set and publish the relevant monorepo packages
+  if (buildType === 'nightly') {
+    publishNightlyForEachChangedPackage(version);
   }
 
   generateAndroidArtifacts(version);
@@ -165,12 +168,13 @@ function publishNpm(buildType) {
   // NPM publishing is done just after.
   publishAndroidArtifactsToMaven(version, buildType === 'nightly');
 
-  const tagFlag = `--tag ${tag}`;
-  const otp = process.env.NPM_CONFIG_OTP;
-  const otpFlag = otp ? ` --otp ${otp}` : '';
+  const packagePath = path.join(__dirname, '..', 'packages', 'react-native');
+  const result = publishPackage(packagePath, {
+    tag,
+    otp: process.env.NPM_CONFIG_OTP,
+  });
 
-  const packageDirPath = path.join(__dirname, '..', 'packages', 'react-native');
-  if (exec(`npm publish ${tagFlag}${otpFlag}`, {cwd: packageDirPath}).code) {
+  if (result.code) {
     echo('Failed to publish package to npm');
     return exit(1);
   } else {

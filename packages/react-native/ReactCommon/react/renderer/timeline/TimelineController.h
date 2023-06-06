@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 
 #include <butter/map.h>
 
@@ -51,20 +52,17 @@ class TimelineController final : public UIManagerCommitHook {
   RootShadowNode::Unshared shadowTreeWillCommit(
       ShadowTree const &shadowTree,
       RootShadowNode::Shared const &oldRootShadowNode,
-      RootShadowNode::Unshared const &newRootShadowNode)
-      const noexcept override;
+      RootShadowNode::Unshared const &newRootShadowNode) noexcept override;
 
-  void commitHookWasRegistered(
-      UIManager const &uiManager) const noexcept override;
+  void commitHookWasRegistered(UIManager const &uiManager) noexcept override;
 
-  void commitHookWasUnregistered(
-      UIManager const &uiManager) const noexcept override;
+  void commitHookWasUnregistered(UIManager const &uiManager) noexcept override;
 
  private:
   /*
    * Protects all the data members.
    */
-  mutable butter::shared_mutex timelinesMutex_;
+  mutable std::shared_mutex timelinesMutex_;
 
   /*
    * Owning collection of all running `Timeline` instances.
