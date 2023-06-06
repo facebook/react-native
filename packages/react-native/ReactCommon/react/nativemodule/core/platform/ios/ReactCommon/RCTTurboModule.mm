@@ -264,8 +264,14 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
-  std::string jsStack = createJSRuntimeError(runtime, "")
+  std::string jsStack;
+  if (RCTTracePromiseRejectionsEnabled()) {
+   jsStack = createJSRuntimeError(runtime, "")
       .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
+  } else {
+    jsStack = "";
+  }
+
 
   std::string moduleName = name_;
 

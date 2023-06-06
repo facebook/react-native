@@ -20,10 +20,12 @@ folly_flags = ' -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+trace_promise_rejections_enabled = ENV["RCT_TRACE_PROMISE_REJECTION_ENABLED"] == "1"
+trace_promise_rejections_flag = (trace_promise_rejections_enabled ? " -DRCT_TRACE_PROMISE_REJECTION_ENABLED" : "")
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 is_fabric_enabled = is_new_arch_enabled || ENV["RCT_FABRIC_ENABLED"]
 fabric_flag = (is_fabric_enabled ? " -DRN_FABRIC_ENABLED" : "")
-other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + fabric_flag
+other_cflags = "$(inherited)" + folly_flags + new_arch_enabled_flag + fabric_flag + trace_promise_rejections_flag
 
 use_hermes = ENV['USE_HERMES'] == '1'
 use_frameworks = ENV['USE_FRAMEWORKS'] != nil
