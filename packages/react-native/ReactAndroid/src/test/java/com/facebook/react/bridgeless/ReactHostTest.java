@@ -119,7 +119,7 @@ public class ReactHostTest {
 
     assertThat(mReactHost.isInstanceInitialized()).isFalse();
 
-    mReactHost.preload().waitForCompletion();
+    mReactHost.start().waitForCompletion();
 
     assertThat(mReactHost.isInstanceInitialized()).isTrue();
     assertThat(mReactHost.getCurrentReactContext()).isNotNull();
