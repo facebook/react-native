@@ -103,15 +103,15 @@ BOOL RCTTurboModuleEagerInitEnabled(void)
   return turboModuleEagerInitEnabled;
 }
 
-static BOOL tracePromiseRejectionsEnabled = NO;
-BOOL RCTTracePromiseRejectionsEnabled(void)
+static BOOL traceTurboModulePromiseRejectionEnabled = NO;
+BOOL RCTTraceTurboModulePromiseRejectionEnabled(void)
 {
-  return tracePromiseRejectionsEnabled;
+  return traceTurboModulePromiseRejectionEnabled;
 }
 
-void RCTEnableTracePromiseRejection(BOOL enabled)
+void RCTEnableTraceTurboModulePromiseRejection(BOOL enabled)
 {
-  tracePromiseRejectionsEnabled = enabled;
+  traceTurboModulePromiseRejectionEnabled = enabled;
 }
 
 void RCTEnableTurboModuleEagerInit(BOOL enabled)
