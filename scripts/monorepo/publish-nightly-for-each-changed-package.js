@@ -54,7 +54,7 @@ function hasChanges(
   );
 
   // delete tarball and restore package.json changes
-  rm({cwd: packageAbsolutePath}, localTarballName);
+  rm(path.join(packageAbsolutePath, localTarballName));
   restore(packageAbsolutePath);
 
   return diff.trim().length !== 0;
