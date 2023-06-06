@@ -273,9 +273,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       return;
     }
 
-    facebook::react::RuntimeExecutor syncRuntimeExecutor =
-        [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-    [strongSelf->_turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+    [strongSelf->_turboModuleManager installJSBindings:runtime];
     facebook::react::bindNativeLogger(runtime, [](const std::string &message, unsigned int logLevel) {
       _RCTLogJavaScriptInternal(static_cast<RCTLogLevel>(logLevel), [NSString stringWithUTF8String:message.c_str()]);
     });
