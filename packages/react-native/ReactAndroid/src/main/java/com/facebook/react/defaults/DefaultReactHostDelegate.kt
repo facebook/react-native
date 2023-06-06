@@ -11,13 +11,13 @@ import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridgeless.BindingsInstaller
 import com.facebook.react.bridgeless.JSEngineInstance
 import com.facebook.react.bridgeless.ReactHostDelegate
 import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
 /**
@@ -55,7 +55,7 @@ class DefaultReactHostDelegate(
   override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
       turboModuleManagerDelegate(context)
 
-  override fun getReactNativeConfig(context: ReactContext) = reactNativeConfig
+  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
 
   override fun handleInstanceException(error: Exception) = exceptionHandler(error)
 }
