@@ -577,7 +577,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
-    setSingleLine(mNumberOfLines == 1);
     setMaxLines(mNumberOfLines);
   }
 
