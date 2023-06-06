@@ -378,4 +378,19 @@ export interface Parser {
   };
 
   getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns the next node.
+   */
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given an enum Declaration, it returns the next node.
+   */
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a unsupported typeAnnotation, returns an error message.
+   */
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string;
 }

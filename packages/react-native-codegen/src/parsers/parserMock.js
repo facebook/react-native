@@ -456,4 +456,16 @@ export class MockedParser implements Parser {
       );
     }
   }
+
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.right;
+  }
+
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.body;
+  }
+
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
+    return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}') or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
+  }
 }

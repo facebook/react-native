@@ -30,7 +30,12 @@ import type {
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
-import type {ParserErrorCapturer, TypeDeclarationMap, PropAST} from './utils';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  PropAST,
+  TypeResolutionStatus,
+} from './utils';
 import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
@@ -983,6 +988,71 @@ function getCommandProperties(ast: $FlowFixMe, parser: Parser) {
   return properties;
 }
 
+function getTypeResolutionStatus(
+  type: 'alias' | 'enum',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): TypeResolutionStatus {
+  return {
+    successful: true,
+    type,
+    name: parser.nameForGenericTypeAnnotation(typeAnnotation),
+  };
+}
+
+function handleGenericTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  resolvedTypeAnnotation: TypeDeclarationMap,
+  parser: Parser,
+): {
+  typeAnnotation: $FlowFixMe,
+  typeResolutionStatus: TypeResolutionStatus,
+} {
+  let typeResolutionStatus;
+  let node;
+
+  switch (resolvedTypeAnnotation.type) {
+    case parser.typeAlias: {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'alias',
+        typeAnnotation,
+        parser,
+      );
+      node = parser.nextNodeForTypeAlias(resolvedTypeAnnotation);
+      break;
+    }
+    case parser.enumDeclaration: {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'enum',
+        typeAnnotation,
+        parser,
+      );
+      node = parser.nextNodeForEnum(resolvedTypeAnnotation);
+      break;
+    }
+    // parser.interfaceDeclaration is not used here because for flow it should fall through to default case and throw an error
+    case 'TSInterfaceDeclaration': {
+      typeResolutionStatus = getTypeResolutionStatus(
+        'alias',
+        typeAnnotation,
+        parser,
+      );
+      node = resolvedTypeAnnotation;
+      break;
+    }
+    default: {
+      throw new TypeError(
+        parser.genericTypeAnnotationErrorMessage(resolvedTypeAnnotation),
+      );
+    }
+  }
+
+  return {
+    typeAnnotation: node,
+    typeResolutionStatus,
+  };
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1007,4 +1077,6 @@ module.exports = {
   getEventArgument,
   findComponentConfig,
   getCommandProperties,
+  handleGenericTypeAnnotation,
+  getTypeResolutionStatus,
 };

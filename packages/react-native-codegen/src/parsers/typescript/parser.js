@@ -43,14 +43,15 @@ const {typeScriptTranslateTypeAnnotation} = require('./modules');
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
 
-const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
 const {
+  buildSchema,
   buildModuleSchema,
   extendsForProp,
   buildPropSchema,
+  handleGenericTypeAnnotation,
 } = require('../parsers-commons.js');
 
 const {parseTopLevelType} = require('./parseTopLevelType');
@@ -408,45 +409,16 @@ class TypeScriptParser implements Parser {
         break;
       }
 
-      const resolvedTypeAnnotation = types[node.typeName.name];
+      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
       }
 
-      switch (resolvedTypeAnnotation.type) {
-        case parser.typeAlias: {
-          typeResolutionStatus = {
-            successful: true,
-            type: 'alias',
-            name: node.typeName.name,
-          };
-          node = resolvedTypeAnnotation.typeAnnotation;
-          break;
-        }
-        case parser.interfaceDeclaration: {
-          typeResolutionStatus = {
-            successful: true,
-            type: 'alias',
-            name: node.typeName.name,
-          };
-          node = resolvedTypeAnnotation;
-          break;
-        }
-        case parser.enumDeclaration: {
-          typeResolutionStatus = {
-            successful: true,
-            type: 'enum',
-            name: node.typeName.name,
-          };
-          node = resolvedTypeAnnotation;
-          break;
-        }
-        default: {
-          throw new TypeError(
-            `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}'), an interface ('${parser.interfaceDeclaration}'), or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
-          );
-        }
-      }
+      const {typeAnnotation: typeAnnotationNode, typeResolutionStatus: status} =
+        handleGenericTypeAnnotation(node, resolvedTypeAnnotation, this);
+      typeResolutionStatus = status;
+      node = typeAnnotationNode;
     }
 
     return {
@@ -558,6 +530,18 @@ class TypeScriptParser implements Parser {
         `Failed to find ${aliasKind} definition for "${typeName}", please check that you have a valid codegen typescript file`,
       );
     }
+  }
+
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeAnnotation;
+  }
+
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation;
+  }
+
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
+    return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}'), an interface ('${this.interfaceDeclaration}'), or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
   }
 }
 

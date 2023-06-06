@@ -55,11 +55,15 @@ const {flowTranslateTypeAnnotation} = require('./modules');
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
 
-const {buildSchema, buildPropSchema} = require('../parsers-commons');
+const {
+  buildSchema,
+  buildPropSchema,
+  buildModuleSchema,
+  handleGenericTypeAnnotation,
+} = require('../parsers-commons');
 const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
-const {buildModuleSchema} = require('../parsers-commons.js');
 
 const fs = require('fs');
 
@@ -411,36 +415,16 @@ class FlowParser implements Parser {
         break;
       }
 
-      const resolvedTypeAnnotation = types[node.id.name];
+      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
       }
 
-      switch (resolvedTypeAnnotation.type) {
-        case parser.typeAlias: {
-          typeResolutionStatus = {
-            successful: true,
-            type: 'alias',
-            name: node.id.name,
-          };
-          node = resolvedTypeAnnotation.right;
-          break;
-        }
-        case parser.enumDeclaration: {
-          typeResolutionStatus = {
-            successful: true,
-            type: 'enum',
-            name: node.id.name,
-          };
-          node = resolvedTypeAnnotation.body;
-          break;
-        }
-        default: {
-          throw new TypeError(
-            `A non GenericTypeAnnotation must be a type declaration ('${parser.typeAlias}') or enum ('${parser.enumDeclaration}'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
-          );
-        }
-      }
+      const {typeAnnotation: typeAnnotationNode, typeResolutionStatus: status} =
+        handleGenericTypeAnnotation(node, resolvedTypeAnnotation, this);
+      typeResolutionStatus = status;
+      node = typeAnnotationNode;
     }
 
     return {
@@ -530,6 +514,18 @@ class FlowParser implements Parser {
         `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
       );
     }
+  }
+
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.right;
+  }
+
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.body;
+  }
+
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
+    return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}') or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
   }
 }
 
