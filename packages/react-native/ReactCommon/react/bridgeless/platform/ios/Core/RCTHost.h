@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 @class RCTHost;
-@class RCTJSThreadManager;
 @class RCTModuleRegistry;
 FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
@@ -37,6 +36,12 @@ FB_RUNTIME_PROTOCOL
 
 @end
 
+@protocol RCTHostRuntimeDelegate <NSObject>
+
+- (void)host:(RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
+
+@end
+
 typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProvider)(void);
 
 @interface RCTHost : NSObject
@@ -45,6 +50,8 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
+
+@property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
 - (void)start;
 

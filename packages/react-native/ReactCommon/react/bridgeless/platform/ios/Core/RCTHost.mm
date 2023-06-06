@@ -28,7 +28,6 @@ using namespace facebook::react;
 
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
-  __weak id<RCTHostRuntimeDelegate> _runtimeDelegate;
   __weak id<RCTContextContainerHandling> _contextContainerHandler;
 
   NSURL *_oldDelegateBundleURL;
@@ -257,7 +256,7 @@ using namespace facebook::react;
 
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
-  [_runtimeDelegate hostDidInitializeRuntime:runtime];
+  [self.runtimeDelegate host:self didInitializeRuntime:runtime];
 }
 
 #pragma mark - RCTContextContainerHandling
@@ -277,11 +276,6 @@ using namespace facebook::react;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
 {
   _bundleURLProvider = [bundleURLProvider copy];
-}
-
-- (void)setRuntimeDelegate:(id<RCTHostRuntimeDelegate>)runtimeDelegate
-{
-  _runtimeDelegate = runtimeDelegate;
 }
 
 - (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler
