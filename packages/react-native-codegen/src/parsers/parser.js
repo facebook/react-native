@@ -357,6 +357,13 @@ export interface Parser {
 
   getGetSchemaInfoFN(): GetSchemaInfoFN;
 
+  /**
+   * Given a property return the type annotation.
+   * @parameter property
+   * @returns: the annotation for a type in the AST.
+   */
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe;
+
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
