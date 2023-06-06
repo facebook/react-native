@@ -70,6 +70,9 @@ public class JSPointerDispatcher {
 
     dispatchCancelEventForTarget(childView, motionInRoot, eventDispatcher);
     mChildHandlingNativeGesture = childView.getId();
+
+    // clear "previous" state since interaction was canceled
+    resetPreviousStateForMotionEvent(motionEvent);
   }
 
   private MotionEvent convertMotionToRootFrame(View childView, MotionEvent childMotion) {
@@ -82,6 +85,28 @@ public class JSPointerDispatcher {
     motionInRoot.setLocation(childCoords.left, childCoords.top);
 
     return motionInRoot;
+  }
+
+  private void updatePreviousStateFromEvent(MotionEvent event, PointerEventState eventState) {
+    // Caching the event state so we have a new "last"
+    mLastHitPathByPointerId = eventState.getHitPathByPointerId();
+    mLastEventCoordinatesByPointerId = eventState.getEventCoordinatesByPointerId();
+    mLastButtonState = event.getButtonState();
+
+    // Clean up any stale pointerIds
+    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
+    mHoveringPointerIds.retainAll(allPointerIds);
+  }
+
+  private void resetPreviousStateForMotionEvent(MotionEvent event) {
+    int activePointerId = event.getPointerId(event.getActionIndex());
+    if (mLastHitPathByPointerId != null) {
+      mLastHitPathByPointerId.remove(activePointerId);
+    }
+    if (mLastEventCoordinatesByPointerId != null) {
+      mLastEventCoordinatesByPointerId.remove(activePointerId);
+    }
+    mLastButtonState = 0;
   }
 
   public void onChildEndedNativeGesture() {
@@ -368,14 +393,7 @@ public class JSPointerDispatcher {
         return;
     }
 
-    // Caching the event state so we have a new "last"
-    mLastHitPathByPointerId = eventState.getHitPathByPointerId();
-    mLastEventCoordinatesByPointerId = eventState.getEventCoordinatesByPointerId();
-    mLastButtonState = motionEvent.getButtonState();
-
-    // Clean up any stale pointerIds
-    Set<Integer> allPointerIds = mLastEventCoordinatesByPointerId.keySet();
-    mHoveringPointerIds.retainAll(allPointerIds);
+    updatePreviousStateFromEvent(motionEvent, eventState);
   }
 
   private static boolean isAnyoneListeningForBubblingEvent(
