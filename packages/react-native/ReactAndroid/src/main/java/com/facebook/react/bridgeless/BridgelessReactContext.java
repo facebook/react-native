@@ -115,7 +115,7 @@ public class BridgelessReactContext extends ReactApplicationContext
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) {
       NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mReactHost.callFunctionOnModule(
           JavaScriptModuleRegistry.getJSModuleName(mJSModuleInterface), method.getName(), jsArgs);
