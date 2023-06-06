@@ -29,6 +29,7 @@ const {
   emitBoolProp,
   emitDoubleProp,
   emitFloatProp,
+  emitMixedProp,
   emitStringProp,
   emitInt32Prop,
 } = require('../../parsers-primitives');
@@ -82,13 +83,7 @@ function getPropertyType(
         },
       };
     case 'UnsafeMixed':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'MixedTypeAnnotation',
-        },
-      };
+      return emitMixedProp(name, optional);
     case 'TSArrayType':
       return {
         name,
