@@ -1017,6 +1017,8 @@ public class ReactHost {
    * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
    * destroy is finished, before reloading.
    *
+   * @param reason {@link String} describing why ReactHost is being reloaded (e.g. js error, user
+   *     tap on reload button)
    * @return A task that completes when React Native reloads
    */
   public Task<Void> reload(String reason) {
