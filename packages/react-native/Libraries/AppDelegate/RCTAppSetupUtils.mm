@@ -135,9 +135,7 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
             if (runtimeScheduler) {
               facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
             }
-            facebook::react::RuntimeExecutor syncRuntimeExecutor =
-                [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-            [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+            [turboModuleManager installJSBindings:runtime];
           }));
 }
 
