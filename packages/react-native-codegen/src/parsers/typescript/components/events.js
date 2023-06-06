@@ -24,7 +24,10 @@ const {
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
-const {getEventArgument} = require('../../parsers-commons');
+const {
+  getEventArgument,
+  buildPropertiesForEvent,
+} = require('../../parsers-commons');
 const {
   emitBoolProp,
   emitDoubleProp,
@@ -69,7 +72,7 @@ function getPropertyType(
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
           properties: typeAnnotation.members.map(member =>
-            buildPropertiesForEvent(member, parser),
+            buildPropertiesForEvent(member, parser, getPropertyType),
           ),
         },
       };
@@ -136,7 +139,7 @@ function extractArrayElementType(
       return {
         type: 'ObjectTypeAnnotation',
         properties: typeAnnotation.members.map(member =>
-          buildPropertiesForEvent(member, parser),
+          buildPropertiesForEvent(member, parser, getPropertyType),
         ),
       };
     case 'TSArrayType':
@@ -247,19 +250,6 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  property,
-  parser: Parser,
-): NamedShape<EventTypeAnnotation> {
-  const name = property.key.name;
-  const optional = parser.isOptionalProperty(property);
-  const typeAnnotation = parser.getTypeAnnotationFromProperty(property);
-
-  return getPropertyType(name, optional, typeAnnotation, parser);
-}
-
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type EventTypeAST = Object;
 
@@ -296,8 +286,8 @@ function buildEventSchema(
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
           nonNullableArgumentProps,
-          buildPropertiesForEvent,
           parser,
+          getPropertyType,
         ),
       },
     };
@@ -311,8 +301,8 @@ function buildEventSchema(
       type: 'EventTypeAnnotation',
       argument: getEventArgument(
         nonNullableArgumentProps,
-        buildPropertiesForEvent,
         parser,
+        getPropertyType,
       ),
     },
   };
