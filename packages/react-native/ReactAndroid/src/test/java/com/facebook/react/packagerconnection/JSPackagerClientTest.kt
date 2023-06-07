@@ -7,35 +7,30 @@ import okio.ByteString.Companion.encodeUtf8
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when` as whenever 
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.*
+import org.mockito.Mockito.`when` as whenever
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class JSPackagerClientTest {
-  private fun createRH(action: String, handler: RequestHandler): Map<String, RequestHandler> {
-    val m: MutableMap<String, RequestHandler> = HashMap()
-    m[action] = handler
-    return m
-  }
 
   private lateinit var settings: PackagerConnectionSettings
 
   @Before
   fun setup() {
-    mSettings = mock(PackagerConnectionSettings::class.java)
-    `when`(mSettings.debugServerHost).thenReturn("ws://not_needed")
-    `when`(mSettings.packageName).thenReturn("my_test_package")
+    settings = mock(PackagerConnectionSettings::class.java)
+    whenever(settings.debugServerHost).thenReturn("ws://not_needed")
+    whenever(settings.packageName).thenReturn("my_test_package")
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_ShouldTriggerNotification() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
-    client.onMessage(
-      """{"version": 2, "method": "methodValue", "params": "paramsValue"}"""
-    )
+    client.onMessage("""{"version": 2, "method": "methodValue", "params": "paramsValue"}""")
     verify(handler).onNotification(eq("paramsValue"))
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
@@ -44,7 +39,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_ShouldTriggerRequest() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(
       """{"version": 2, "id": "idValue", "method": "methodValue", "params": "paramsValue"}"""
@@ -57,7 +52,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_WithoutParams_ShouldTriggerNotification() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": "methodValue"}""")
     verify(handler).onNotification(ArgumentMatchers.isNull())
@@ -68,7 +63,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_WithInvalidContentType_ShouldNotTriggerCallback() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": "methodValue"}""".encodeUtf8())
     verify(handler, never()).onNotification(any())
@@ -79,7 +74,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_WithoutMethod_ShouldNotTriggerCallback() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2}""")
     verify(handler, never()).onNotification(any())
@@ -90,7 +85,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_With_Null_Action_ShouldNotTriggerCallback() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": null}""")
     verify(handler, never()).onNotification(any())
@@ -101,7 +96,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_WithInvalidMethod_ShouldNotTriggerCallback() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(ByteString.EMPTY)
     verify(handler, never()).onNotification(any())
@@ -112,7 +107,7 @@ class JSPackagerClientTest {
   @Throws(IOException::class)
   fun test_onMessage_WrongVersion_ShouldNotTriggerCallback() {
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
+    val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 1, "method": "methodValue"}""")
     verify(handler, never()).onNotification(any())
@@ -124,7 +119,7 @@ class JSPackagerClientTest {
   fun test_onDisconnection_ShouldTriggerDisconnectionCallback() {
     val connectionHandler = mock(ConnectionCallback::class.java)
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, emptyMap(), connectionHandler)
+    val client = getClient(requestHandlers = emptyMap(), connectionCallback = connectionHandler)
 
     client.close()
 
@@ -134,4 +129,16 @@ class JSPackagerClientTest {
     verify(handler, never()).onNotification(any())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
+
+  private fun getClient(
+    requestHandlers: Map<String, RequestHandler>,
+    clientId: String = "test_client",
+    settings: PackagerConnectionSettings = this.settings,
+    connectionCallback: ConnectionCallback? = null
+  ): JSPackagerClient = JSPackagerClient(clientId, settings, requestHandlers, connectionCallback)
+
+  private fun createRequestHandler(
+    action: String,
+    handler: RequestHandler
+  ): Map<String, RequestHandler> = mapOf(action to handler)
 }
