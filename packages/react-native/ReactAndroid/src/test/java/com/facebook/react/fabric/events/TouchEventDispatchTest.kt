@@ -22,11 +22,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.times
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
+import org.mockito.Mockito
+import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PowerMockIgnore
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor
@@ -39,10 +36,10 @@ import org.robolectric.RobolectricTestRunner
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class TouchEventDispatchTest {
   @get:Rule var rule = PowerMockRule()
-  private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
+  private val mTouchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
   /** Events (1 pointer): START -> MOVE -> MOVE -> UP */
-  private val startMoveEndSequence =
+  private val mStartMoveEndSequence =
     listOf(
       createTouchEvent(
         GESTURE_START_TIME,
@@ -75,7 +72,7 @@ class TouchEventDispatchTest {
     )
 
   /** Expected values for [.mStartMoveEndSequence] */
-  private val startMoveEndExpectedSequence =
+  private val mStartMoveEndExpectedSequence =
     listOf(
       /*
        * START event for touch 1:
@@ -162,7 +159,7 @@ class TouchEventDispatchTest {
     )
 
   /** Events (2 pointer): START 1st -> START 2nd -> MOVE 1st -> UP 2st -> UP 1st */
-  private val startPointerMoveUpSequence =
+  private val mStartPointerMoveUpSequence =
     listOf(
       createTouchEvent(
         GESTURE_START_TIME,
@@ -201,8 +198,8 @@ class TouchEventDispatchTest {
       )
     )
 
-  /** Expected values for [startPointerMoveUpSequence] */
-  private val startPointerMoveUpExpectedSequence =
+  /** Expected values for [mStartPointerMoveUpSequence] */
+  private val mStartPointerMoveUpExpectedSequence =
     listOf(
       /*
        * START event for touch 1:
@@ -339,7 +336,7 @@ class TouchEventDispatchTest {
     )
 
   /** Events (2 pointer): START 1st -> START 2nd -> MOVE 1st -> CANCEL */
-  private val startMoveCancelSequence =
+  private val mStartMoveCancelSequence =
     listOf(
       createTouchEvent(
         GESTURE_START_TIME,
@@ -371,8 +368,8 @@ class TouchEventDispatchTest {
       )
     )
 
-  /** Expected values for [startMoveCancelSequence] */
-  private val startMoveCancelExpectedSequence =
+  /** Expected values for [mStartMoveCancelSequence] */
+  private val mStartMoveCancelExpectedSequence =
     listOf(
       /*
        * START event for touch 1:
@@ -504,32 +501,32 @@ class TouchEventDispatchTest {
         )
       )
     )
-  private var dispatchedEvents: List<ReadableMap> = emptyList()
-  private lateinit var eventEmitter: FabricEventEmitter
-  private lateinit var uiManager: FabricUIManager
+  private var mDispatchedEvents: List<ReadableMap> = emptyList()
+  private lateinit var mEventEmitter: FabricEventEmitter
+  private lateinit var mUIManager: FabricUIManager
 
   @Before
   fun setUp() {
-    mockStatic(Arguments::class.java)
-    mockStatic(FabricUIManager::class.java)
-    whenever(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
-    whenever(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
+    PowerMockito.mockStatic(Arguments::class.java)
+    PowerMockito.mockStatic(FabricUIManager::class.java)
+    PowerMockito.`when`(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
+    PowerMockito.`when`(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
     val metrics = DisplayMetrics()
     metrics.xdpi = 1f
     metrics.ydpi = 1f
     metrics.density = 1f
     DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
-    uiManager = mock(FabricUIManager::class.java)
-    eventEmitter = FabricEventEmitter(uiManager)
+    mUIManager = Mockito.mock(FabricUIManager::class.java)
+    mEventEmitter = FabricEventEmitter(mUIManager)
   }
 
   @Test
   fun testFabric_startMoveEnd() {
-    for (event in startMoveEndSequence) {
-      event.dispatchModern(eventEmitter)
+    for (event in mStartMoveEndSequence) {
+      event.dispatchModern(mEventEmitter)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(4))
+    Mockito.verify(mUIManager, Mockito.times(4))
       .receiveEvent(
         ArgumentMatchers.anyInt(),
         ArgumentMatchers.anyInt(),
@@ -539,16 +536,16 @@ class TouchEventDispatchTest {
         argument.capture(),
         ArgumentMatchers.anyInt()
       )
-    Assert.assertEquals(startMoveEndExpectedSequence, argument.allValues)
+    Assert.assertEquals(mStartMoveEndExpectedSequence, argument.allValues)
   }
 
   @Test
   fun testFabric_startMoveCancel() {
-    for (event in startMoveCancelSequence) {
-      event.dispatchModern(eventEmitter)
+    for (event in mStartMoveCancelSequence) {
+      event.dispatchModern(mEventEmitter)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(6))
+    Mockito.verify(mUIManager, Mockito.times(6))
       .receiveEvent(
         ArgumentMatchers.anyInt(),
         ArgumentMatchers.anyInt(),
@@ -558,16 +555,16 @@ class TouchEventDispatchTest {
         argument.capture(),
         ArgumentMatchers.anyInt()
       )
-    Assert.assertEquals(startMoveCancelExpectedSequence, argument.allValues)
+    Assert.assertEquals(mStartMoveCancelExpectedSequence, argument.allValues)
   }
 
   @Test
   fun testFabric_startPointerUpCancel() {
-    for (event in startPointerMoveUpSequence) {
-      event.dispatchModern(eventEmitter)
+    for (event in mStartPointerMoveUpSequence) {
+      event.dispatchModern(mEventEmitter)
     }
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
-    verify(uiManager, times(6))
+    Mockito.verify(mUIManager, Mockito.times(6))
       .receiveEvent(
         ArgumentMatchers.anyInt(),
         ArgumentMatchers.anyInt(),
@@ -577,7 +574,7 @@ class TouchEventDispatchTest {
         argument.capture(),
         ArgumentMatchers.anyInt()
       )
-    Assert.assertEquals(startPointerMoveUpExpectedSequence, argument.allValues)
+    Assert.assertEquals(mStartPointerMoveUpExpectedSequence, argument.allValues)
   }
 
   private fun createTouchEvent(
@@ -588,7 +585,7 @@ class TouchEventDispatchTest {
     pointerCoords: Array<MotionEvent.PointerCoords>
   ): TouchEvent {
     var action = action
-    touchEventCoalescingKeyHelper.addCoalescingKey(gestureTime.toLong())
+    mTouchEventCoalescingKeyHelper.addCoalescingKey(gestureTime.toLong())
     action = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
     return TouchEvent.obtain(
       SURFACE_ID,
@@ -612,7 +609,7 @@ class TouchEventDispatchTest {
       gestureTime.toLong(),
       pointerCoords[0].x,
       pointerCoords[0].y,
-      touchEventCoalescingKeyHelper
+      mTouchEventCoalescingKeyHelper
     )
   }
 
