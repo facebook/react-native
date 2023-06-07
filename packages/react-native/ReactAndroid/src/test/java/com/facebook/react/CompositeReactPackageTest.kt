@@ -98,8 +98,8 @@ class CompositeReactPackageTest {
 
     // Wrapping lists into sets to be order-independent.
     // Note that there should be no module2 returned.
-    val expected: Set<NativeModule> = HashSet(listOf(moduleNo1, moduleNo3, moduleNo4))
-    val actual: Set<NativeModule> = HashSet(compositeModules)
+    val expected: Set<NativeModule> = setOf(moduleNo1, moduleNo3, moduleNo4)
+    val actual: Set<NativeModule> = compositeModules.toSet()
     Assert.assertEquals(expected, actual)
   }
 
@@ -131,8 +131,8 @@ class CompositeReactPackageTest {
 
     // Wrapping lists into sets to be order-independent.
     // Note that there should be no managerNo2 returned.
-    val expected: Set<ViewManager<*, *>> = HashSet(listOf(managerNo1, managerNo3, managerNo4))
-    val actual: Set<ViewManager<*, *>> = HashSet(compositeModules)
+    val expected: Set<ViewManager<*, *>> = setOf(managerNo1, managerNo3, managerNo4)
+    val actual: Set<ViewManager<*, *>> = compositeModules.toSet()
     Assert.assertEquals(expected, actual)
   }
 }
