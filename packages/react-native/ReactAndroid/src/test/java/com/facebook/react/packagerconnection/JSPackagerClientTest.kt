@@ -7,7 +7,7 @@ import okio.ByteString.Companion.encodeUtf8
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when` as whenever 
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
