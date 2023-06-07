@@ -81,17 +81,20 @@
                  10,
                  "file",
                  "address at seg-3_198.js"));
-     val message = JSStackTrace.format("Error", values);
+     val message = JSStackTrace.format("Error", values)
      Assert.assertEquals(
-         message,
-         "Error, stack:\n"
-             + "method_from_bundle@7:11\n"
-             + "method_from_ram_bundle@199.js:18:13\n"
-             + "method_from_ram_bundle_with_address@199.js:18:13\n"
-             + "method_from_segment@seg-1.js:9:18\n"
-             + "method_from_segment_with_address@seg-1.js:9:18\n"
-             + "method_from_ram_segment@seg-3_198.js:10:20\n"
-             + "method_from_ram_segment_with_address@seg-3_198.js:10:20\n");
+            message,
+            """
+            Error, stack:
+            method_from_bundle@7:11
+            method_from_ram_bundle@199.js:18:13
+            method_from_ram_bundle_with_address@199.js:18:13
+            method_from_segment@seg-1.js:9:18
+            method_from_segment_with_address@seg-1.js:9:18
+            method_from_ram_segment@seg-3_198.js:10:20
+            method_from_ram_segment_with_address@seg-3_198.js:10:20
+            
+            """.trimIndent());
    }
  }
  
