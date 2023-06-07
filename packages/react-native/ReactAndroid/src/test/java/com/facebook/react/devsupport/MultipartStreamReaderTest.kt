@@ -1,6 +1,5 @@
 package com.facebook.react.devsupport
 
-import java.io.IOException
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.encodeUtf8
@@ -16,17 +15,14 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    @Throws(IOException::class)
     override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
       callCount++
     }
 
-    @Throws(IOException::class)
     override fun onChunkProgress(headers: Map<String, String>, loaded: Long, total: Long) {}
   }
 
   @Test
-  @Throws(IOException::class)
   fun testSimpleCase() {
     val response: ByteString =
       ("preable, should be ignored\r\n" +
@@ -45,7 +41,6 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
       object : CallCountTrackingChunkCallback() {
-        @Throws(IOException::class)
         override fun onChunkComplete(
           headers: Map<String, String>?,
           body: Buffer,
@@ -66,7 +61,6 @@ class MultipartStreamReaderTest {
   }
 
   @Test
-  @Throws(IOException::class)
   fun testMultipleParts() {
     val response: ByteString =
       ("preable, should be ignored\r\n" +
@@ -87,7 +81,6 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
       object : CallCountTrackingChunkCallback() {
-        @Throws(IOException::class)
         override fun onChunkComplete(
           headers: Map<String, String>?,
           body: Buffer,
@@ -106,7 +99,6 @@ class MultipartStreamReaderTest {
   }
 
   @Test
-  @Throws(IOException::class)
   fun testNoDelimiter() {
     val response: ByteString = "Yolo".encodeUtf8()
 
@@ -123,7 +115,6 @@ class MultipartStreamReaderTest {
   }
 
   @Test
-  @Throws(IOException::class)
   fun testNoCloseDelimiter() {
     val response: ByteString =
       ("preable, should be ignored\r\n" +
