@@ -209,6 +209,12 @@ class TimingModuleTestKotlin {
     verifyNoMoreInteractions(mJSTimersMock)
   }
 
+  @Test
+  fun testSetTimeoutZero() {
+    mTimingModule.createTimer(100.0, 0.0, 0.0, false)
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+  }
+
   private class PostFrameCallbackHandler : Answer<Unit> {
 
     private var mFrameCallback: FrameCallback? = null
