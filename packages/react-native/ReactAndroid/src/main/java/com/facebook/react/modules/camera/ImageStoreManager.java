@@ -77,7 +77,7 @@ public class ImageStoreManager extends NativeImageStoreAndroidSpec {
     }
   }
 
-  public String convertInputStreamToBase64OutputStream(InputStream is) throws IOException {
+  String convertInputStreamToBase64OutputStream(InputStream is) throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     Base64OutputStream b64os = new Base64OutputStream(baos, Base64.NO_WRAP);
     byte[] buffer = new byte[BUFFER_SIZE];
