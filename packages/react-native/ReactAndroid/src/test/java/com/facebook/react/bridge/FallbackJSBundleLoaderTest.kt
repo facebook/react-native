@@ -16,12 +16,17 @@ import org.mockito.Mockito.*
 import org.mockito.Mockito.`when` as whenever
 
 class FallbackJSBundleLoaderTest {
-  private lateinit var mLoggingDelegate: FakeLoggingDelegate
+  private lateinit var UNRECOVERABLE: String
+  private lateinit var loggingDelegate: FakeLoggingDelegate
 
   @Before
   fun setup() {
-    mLoggingDelegate = FakeLoggingDelegate()
-    FLog.setLoggingDelegate(mLoggingDelegate)
+    val prefix = FallbackJSBundleLoader.RECOVERABLE
+    val first = prefix[0]
+    UNRECOVERABLE = prefix.replace(first, (first.code + 1).toChar())
+
+    loggingDelegate = FakeLoggingDelegate()
+    FLog.setLoggingDelegate(loggingDelegate)
   }
 
   @Test
@@ -36,7 +41,7 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], never()).loadScript(null)
 
     assertThat(
-            mLoggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
+            loggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
         .isFalse
   }
 
@@ -55,7 +60,7 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[2], never()).loadScript(null)
 
     assertThat(
-            mLoggingDelegate.logContains(
+            loggingDelegate.logContains(
                 FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")))
         .isTrue
   }
@@ -74,7 +79,7 @@ class FallbackJSBundleLoaderTest {
       assertThat(e).isInstanceOf(RuntimeException::class.java)
 
       var cause = e.cause
-      val msgs = ArrayList<String?>()
+      val msgs = mutableListOf<String?>()
 
       while (cause != null) {
         msgs.add(cause.message)
@@ -88,12 +93,12 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], times(1)).loadScript(null)
 
     assertThat(
-            mLoggingDelegate.logContains(
+            loggingDelegate.logContains(
                 FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")))
         .isTrue
 
     assertThat(
-            mLoggingDelegate.logContains(
+            loggingDelegate.logContains(
                 FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error2")))
         .isTrue
   }
@@ -115,48 +120,33 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], never()).loadScript(null)
 
     assertThat(
-            mLoggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
+            loggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
         .isFalse
   }
 
-  companion object {
-    private val UNRECOVERABLE: String
+  private fun successfulLoader(url: String): JSBundleLoader {
+    val loader = mock(JSBundleLoader::class.java)
+    whenever(loader.loadScript(null)).thenReturn(url)
 
-    init {
-      val prefix = FallbackJSBundleLoader.RECOVERABLE
-      val first = prefix[0]
+    return loader
+  }
 
-      UNRECOVERABLE = prefix.replace(first, (first.code + 1).toChar())
-    }
+  private fun recoverableMsg(errMsg: String): String = FallbackJSBundleLoader.RECOVERABLE + errMsg
 
-    private fun successfulLoader(url: String): JSBundleLoader {
-      val loader = mock(JSBundleLoader::class.java)
-      whenever(loader.loadScript(null)).thenReturn(url)
+  private fun recoverableLoader(url: String, errMsg: String): JSBundleLoader {
+    val loader = mock(JSBundleLoader::class.java)
+    whenever(loader.loadScript(null))
+        .thenThrow(RuntimeException(FallbackJSBundleLoader.RECOVERABLE + errMsg))
 
-      return loader
-    }
+    return loader
+  }
 
-    private fun recoverableMsg(errMsg: String): String {
-      return FallbackJSBundleLoader.RECOVERABLE + errMsg
-    }
+  private fun fatalMsg(errMsg: String): String = UNRECOVERABLE + errMsg
 
-    private fun recoverableLoader(url: String, errMsg: String): JSBundleLoader {
-      val loader = mock(JSBundleLoader::class.java)
-      whenever(loader.loadScript(null))
-          .thenThrow(RuntimeException(FallbackJSBundleLoader.RECOVERABLE + errMsg))
+  private fun fatalLoader(url: String, errMsg: String): JSBundleLoader {
+    val loader = mock(JSBundleLoader::class.java)
+    whenever(loader.loadScript(null)).thenThrow(RuntimeException(UNRECOVERABLE + errMsg))
 
-      return loader
-    }
-
-    private fun fatalMsg(errMsg: String): String {
-      return UNRECOVERABLE + errMsg
-    }
-
-    private fun fatalLoader(url: String, errMsg: String): JSBundleLoader {
-      val loader = mock(JSBundleLoader::class.java)
-      whenever(loader.loadScript(null)).thenThrow(RuntimeException(UNRECOVERABLE + errMsg))
-
-      return loader
-    }
+    return loader
   }
 }
