@@ -60,7 +60,7 @@ class JSPackagerClientTest {
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": "methodValue"}""")
-    verify(handler).onNotification(eq<Any?>(null))
+    verify(handler).onNotification(ArgumentMatchers.isNull())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
 
