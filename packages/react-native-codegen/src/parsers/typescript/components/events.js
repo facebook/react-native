@@ -101,7 +101,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'TSParenthesizedType':
@@ -157,12 +157,6 @@ function extractArrayElementType(
         )}`,
       );
   }
-}
-
-function extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-  return typeAnnotation.type === 'TSTypeReference'
-    ? typeAnnotation.typeName.name
-    : typeAnnotation.type;
 }
 
 function findEventArgumentsAndType(
