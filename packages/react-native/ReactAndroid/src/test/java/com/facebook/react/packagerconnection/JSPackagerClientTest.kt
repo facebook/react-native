@@ -34,7 +34,7 @@ class JSPackagerClientTest {
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
     client.onMessage(
-      "{\"version\": 2, \"method\": \"methodValue\", \"params\": \"paramsValue\"}"
+      """{"version": 2, "method": "methodValue", "params": "paramsValue"}"""
     )
     verify(handler).onNotification(eq("paramsValue"))
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
@@ -47,7 +47,7 @@ class JSPackagerClientTest {
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
     client.onMessage(
-      "{\"version\": 2, \"id\": \"idValue\", \"method\": \"methodValue\", \"params\": \"paramsValue\"}"
+      """{"version": 2, "id": "idValue", "method": "methodValue", "params": "paramsValue"}"""
     )
     verify(handler, never()).onNotification(any())
     verify(handler).onRequest(eq("paramsValue"), any(Responder::class.java))
@@ -59,7 +59,7 @@ class JSPackagerClientTest {
     val handler = mock(RequestHandler::class.java)
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
-    client.onMessage("{\"version\": 2, \"method\": \"methodValue\"}")
+    client.onMessage("""{"version": 2, "method": "methodValue"}""")
     verify(handler).onNotification(eq<Any?>(null))
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
@@ -70,7 +70,7 @@ class JSPackagerClientTest {
     val handler = mock(RequestHandler::class.java)
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
-    client.onMessage("{\"version\": 2, \"method\": \"methodValue\"}".encodeUtf8())
+    client.onMessage("""{"version": 2, "method": "methodValue"}""".encodeUtf8())
     verify(handler, never()).onNotification(any())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
@@ -81,7 +81,7 @@ class JSPackagerClientTest {
     val handler = mock(RequestHandler::class.java)
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
-    client.onMessage("{\"version\": 2}")
+    client.onMessage("""{"version": 2}""")
     verify(handler, never()).onNotification(any())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
@@ -92,7 +92,7 @@ class JSPackagerClientTest {
     val handler = mock(RequestHandler::class.java)
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
-    client.onMessage("{\"version\": 2, \"method\": null}")
+    client.onMessage("""{"version": 2, "method": null}""")
     verify(handler, never()).onNotification(any())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
@@ -114,7 +114,7 @@ class JSPackagerClientTest {
     val handler = mock(RequestHandler::class.java)
     val client = JSPackagerClient("test_client", mSettings, createRH("methodValue", handler))
 
-    client.onMessage("{\"version\": 1, \"method\": \"methodValue\"}")
+    client.onMessage("""{"version": 1, "method": "methodValue"}""")
     verify(handler, never()).onNotification(any())
     verify(handler, never()).onRequest(any(), any(Responder::class.java))
   }
