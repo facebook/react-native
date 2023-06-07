@@ -17,9 +17,6 @@
 - Allow string `transform` style in TypeScript ([2558c3d4f5](https://github.com/facebook/react-native/commit/2558c3d4f56776699602b116aff8c22b8bfa176a) by [@NickGerleman](https://github.com/NickGerleman))
 - Fix autoComplete type for TextInput ([94356e14ec](https://github.com/facebook/react-native/commit/94356e14ec0562a1fd5a208d93021f102ba9565e) by [@iRoachie](https://github.com/iRoachie))
 
-#### Android specific
-
-
 ## v0.71.8
 
 ### Fixed
