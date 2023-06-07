@@ -45,36 +45,36 @@ class TouchEventDispatchTest {
   private val startMoveEndSequence =
     listOf(
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_DOWN,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_DOWN,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_MOVE,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 2f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_MOVE,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 2f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_MOVE,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 3f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_MOVE,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 3f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_UP,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 3f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_UP,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 3f))
       )
     )
 
-  /** Expected values for [.mStartMoveEndSequence] */
+  /** Expected values for [startMoveEndSequence] */
   private val startMoveEndExpectedSequence =
     listOf(
       /*
@@ -85,16 +85,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        1f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         )
       ),
@@ -106,16 +106,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        2f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 2f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
         )
       ),
@@ -127,16 +127,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        3f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 3f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
         )
       ),
@@ -148,14 +148,14 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        3f,
-        GESTURE_START_TIME,
-        0,
-        emptyList<WritableMap>(),
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 3f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = emptyList(),
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
         )
       )
@@ -165,39 +165,39 @@ class TouchEventDispatchTest {
   private val startPointerMoveUpSequence =
     listOf(
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_DOWN,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_DOWN,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_POINTER_DOWN,
-        1,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_POINTER_DOWN,
+        pointerId = 1,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_MOVE,
-        0,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_MOVE,
+        pointerId = 0,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_POINTER_UP,
-        1,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_POINTER_UP,
+        pointerId = 1,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_POINTER_UP,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 2f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_POINTER_UP,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 2f))
       )
     )
 
@@ -213,16 +213,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        1f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         )
       ),
@@ -235,17 +235,17 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        2f,
-        1f,
-        GESTURE_START_TIME,
-        1,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 2f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 1,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
       ),
@@ -263,33 +263,33 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        2f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 2f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
       ),
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        2f,
-        1f,
-        GESTURE_START_TIME,
-        1,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 2f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 1,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -303,16 +303,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        2f,
-        1f,
-        GESTURE_START_TIME,
-        1,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 2f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 1,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
       ),
@@ -325,14 +325,14 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        2f,
-        GESTURE_START_TIME,
-        0,
-        emptyList<WritableMap>(),
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 2f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = emptyList(),
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
         )
       )
@@ -342,32 +342,32 @@ class TouchEventDispatchTest {
   private val startMoveCancelSequence =
     listOf(
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_DOWN,
-        0,
-        intArrayOf(0),
-        arrayOf(pointerCoords(1f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_DOWN,
+        pointerId = 0,
+        pointerIds = intArrayOf(0),
+        pointerCoords = arrayOf(pointerCoords(1f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_POINTER_DOWN,
-        1,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_POINTER_DOWN,
+        pointerId = 1,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 1f), pointerCoords(2f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_MOVE,
-        0,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_MOVE,
+        pointerId = 0,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 2f), pointerCoords(2f, 1f))
       ),
       createTouchEvent(
-        GESTURE_START_TIME,
-        MotionEvent.ACTION_CANCEL,
-        0,
-        intArrayOf(0, 1),
-        arrayOf(pointerCoords(1f, 3f), pointerCoords(2f, 1f))
+        gestureTime = GESTURE_START_TIME,
+        action = MotionEvent.ACTION_CANCEL,
+        pointerId = 0,
+        pointerIds = intArrayOf(0, 1),
+        pointerCoords = arrayOf(pointerCoords(1f, 3f), pointerCoords(2f, 1f))
       )
     )
 
@@ -383,16 +383,16 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        1f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
         )
       ),
@@ -405,17 +405,17 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        2f,
-        1f,
-        GESTURE_START_TIME,
-        1,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 2f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 1,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
       ),
@@ -433,17 +433,17 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        2f,
-        GESTURE_START_TIME,
-        0,
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 2f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -455,11 +455,11 @@ class TouchEventDispatchTest {
         1f,
         GESTURE_START_TIME,
         1,
-        listOf<WritableMap?>(
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        listOf<WritableMap?>(
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -478,27 +478,27 @@ class TouchEventDispatchTest {
        * }
        */
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        1f,
-        3f,
-        GESTURE_START_TIME,
-        0,
-        emptyList<WritableMap>(),
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 1f,
+        locationY = 3f,
+        time = GESTURE_START_TIME,
+        pointerId = 0,
+        touches = emptyList(),
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
       ),
       buildGestureEvent(
-        SURFACE_ID,
-        TARGET_VIEW_ID,
-        2f,
-        1f,
-        GESTURE_START_TIME,
-        1,
-        emptyList<WritableMap>(),
-        listOf<WritableMap?>(
+        surfaceId = SURFACE_ID,
+        viewTag = TARGET_VIEW_ID,
+        locationX = 2f,
+        locationY = 1f,
+        time = GESTURE_START_TIME,
+        pointerId = 1,
+        touches = emptyList(),
+        changedTouches = listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -587,9 +587,8 @@ class TouchEventDispatchTest {
     pointerIds: IntArray,
     pointerCoords: Array<MotionEvent.PointerCoords>
   ): TouchEvent {
-    var action = action
     touchEventCoalescingKeyHelper.addCoalescingKey(gestureTime.toLong())
-    action = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
+    val action = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
     return TouchEvent.obtain(
       SURFACE_ID,
       TARGET_VIEW_ID,
@@ -622,8 +621,7 @@ class TouchEventDispatchTest {
     private const val GESTURE_START_TIME = 1
 
     private fun getType(action: Int): TouchEventType {
-      var action = action
-      action = action and MotionEvent.ACTION_POINTER_INDEX_MASK.inv()
+      val action = action and MotionEvent.ACTION_POINTER_INDEX_MASK.inv()
       when (action) {
         MotionEvent.ACTION_DOWN,
         MotionEvent.ACTION_POINTER_DOWN -> return TouchEventType.START
@@ -642,13 +640,11 @@ class TouchEventDispatchTest {
       locationY: Float,
       time: Int,
       pointerId: Int,
-      touches: List<WritableMap?>,
-      changedTouches: List<WritableMap?>
-    ): ReadableMap {
-      val gesture = buildGesture(surfaceId, viewTag, locationX, locationY, time, pointerId)
-      gesture.putArray("changedTouches", JavaOnlyArray.from(changedTouches))
-      gesture.putArray("touches", JavaOnlyArray.from(touches))
-      return gesture
+      touches: List<WritableMap>,
+      changedTouches: List<WritableMap>
+    ): ReadableMap  = buildGesture(surfaceId, viewTag, locationX, locationY, time, pointerId).apply {
+      putArray("changedTouches", JavaOnlyArray.from(changedTouches))
+      putArray("touches", JavaOnlyArray.from(touches))
     }
 
     private fun buildGesture(
@@ -658,24 +654,23 @@ class TouchEventDispatchTest {
       locationY: Float,
       time: Int,
       pointerId: Int
-    ): WritableMap {
-      val map: WritableMap = JavaOnlyMap()
-      map.putInt("targetSurface", surfaceId)
-      map.putInt("target", viewTag)
-      map.putDouble("locationX", locationX.toDouble())
-      map.putDouble("locationY", locationY.toDouble())
-      map.putDouble("pageX", locationX.toDouble())
-      map.putDouble("pageY", locationY.toDouble())
-      map.putDouble("identifier", pointerId.toDouble())
-      map.putDouble("timestamp", time.toDouble())
-      return map
+    ): WritableMap = JavaOnlyMap().apply {
+      putInt("targetSurface", surfaceId)
+      putInt("target", viewTag)
+      putDouble("locationX", locationX.toDouble())
+      putDouble("locationY", locationY.toDouble())
+      putDouble("pageX", locationX.toDouble())
+      putDouble("pageY", locationY.toDouble())
+      putDouble("identifier", pointerId.toDouble())
+      putDouble("timestamp", time.toDouble())
     }
 
-    private fun pointerCoords(x: Float, y: Float): MotionEvent.PointerCoords {
-      val pointerCoords = MotionEvent.PointerCoords()
-      pointerCoords.x = x
-      pointerCoords.y = y
-      return pointerCoords
+    private fun pointerCoords(
+      x: Float,
+      y: Float
+    ): MotionEvent.PointerCoords = MotionEvent.PointerCoords().apply {
+      this.x = x
+      this.y = y
     }
   }
 }
