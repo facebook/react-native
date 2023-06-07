@@ -18,7 +18,7 @@ class JSPackagerClientTest {
     return m
   }
 
-  private lateinit var mSettings: PackagerConnectionSettings
+  private lateinit var settings: PackagerConnectionSettings
 
   @Before
   fun setup() {
