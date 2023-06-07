@@ -126,7 +126,7 @@ class MultipartStreamReaderTest {
   @Throws(IOException::class)
   fun testNoCloseDelimiter() {
     val response: ByteString =
-      ("preable, should be ignored\r\n" +
+      ("preamble, should be ignored\r\n" +
         "--sample_boundary\r\n" +
         "Content-Type: application/json; charset=utf-8\r\n" +
         "Content-Length: 2\r\n\r\n" +
