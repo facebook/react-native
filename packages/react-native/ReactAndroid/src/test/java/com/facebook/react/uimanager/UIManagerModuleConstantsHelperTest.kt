@@ -29,8 +29,8 @@ class UIManagerModuleConstantsHelperTest {
 
     @Test
     fun `normalizeEventTypes withOnEvent doesNormalize`() {
-        val onClickMap: Map<String, Any?> =
-            MapBuilder.builder<String, Any?>().put("onClick", "¯\\_(ツ)_/¯").build()
+        val onClickMap: Map<String, String> =
+            MapBuilder.builder<String, String>().put("onClick", "¯\\_(ツ)_/¯").build()
         UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
         assertTrue(onClickMap.containsKey("topOnClick"))
         assertTrue(onClickMap.containsKey("onClick"))
