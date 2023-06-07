@@ -1209,12 +1209,12 @@ public class ReactHost {
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
    *
+   * @param reason {@link String} describing why ReactHost is being destroyed (e.g. memmory
+   *     pressure)
+   * @param ex {@link Exception} exception that caused the trigger to destroy ReactHost (or null)
+   *     This exception will be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public Task<Void> destroy(String reason) {
-    return destroy(reason, null);
-  }
-
   public Task<Void> destroy(String reason, @Nullable Exception ex) {
     final String method = "destroy()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
