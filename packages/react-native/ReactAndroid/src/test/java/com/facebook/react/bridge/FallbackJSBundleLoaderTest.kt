@@ -36,17 +36,15 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], never()).loadScript(null)
 
     assertThat(
-      mLoggingDelegate.logContains(
-        FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null
-      )
-    ).isFalse
+            mLoggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
+        .isFalse
   }
 
   @Test
   fun fallingBackSuccessfully() {
-    val delegates = arrayOf(
-      recoverableLoader("url1", "error1"), successfulLoader("url2"), successfulLoader("url3")
-    )
+    val delegates =
+        arrayOf(
+            recoverableLoader("url1", "error1"), successfulLoader("url2"), successfulLoader("url3"))
 
     val fallbackLoader = FallbackJSBundleLoader(listOf(*delegates))
 
@@ -57,17 +55,15 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[2], never()).loadScript(null)
 
     assertThat(
-      mLoggingDelegate.logContains(
-        FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")
-      )
-    ).isTrue
+            mLoggingDelegate.logContains(
+                FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")))
+        .isTrue
   }
 
   @Test
   fun fallingbackUnsuccessfully() {
-    val delegates = arrayOf(
-      recoverableLoader("url1", "error1"), recoverableLoader("url2", "error2")
-    )
+    val delegates =
+        arrayOf(recoverableLoader("url1", "error1"), recoverableLoader("url2", "error2"))
 
     val fallbackLoader = FallbackJSBundleLoader(listOf(*delegates))
 
@@ -92,16 +88,14 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], times(1)).loadScript(null)
 
     assertThat(
-      mLoggingDelegate.logContains(
-        FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")
-      )
-    ).isTrue
+            mLoggingDelegate.logContains(
+                FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error1")))
+        .isTrue
 
     assertThat(
-      mLoggingDelegate.logContains(
-        FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error2")
-      )
-    ).isTrue
+            mLoggingDelegate.logContains(
+                FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, recoverableMsg("error2")))
+        .isTrue
   }
 
   @Test
@@ -121,10 +115,8 @@ class FallbackJSBundleLoaderTest {
     verify(delegates[1], never()).loadScript(null)
 
     assertThat(
-      mLoggingDelegate.logContains(
-        FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null
-      )
-    ).isFalse
+            mLoggingDelegate.logContains(FakeLoggingDelegate.WTF, FallbackJSBundleLoader.TAG, null))
+        .isFalse
   }
 
   companion object {
@@ -150,7 +142,8 @@ class FallbackJSBundleLoaderTest {
 
     private fun recoverableLoader(url: String, errMsg: String): JSBundleLoader {
       val loader = mock(JSBundleLoader::class.java)
-      whenever(loader.loadScript(null)).thenThrow(RuntimeException(FallbackJSBundleLoader.RECOVERABLE + errMsg))
+      whenever(loader.loadScript(null))
+          .thenThrow(RuntimeException(FallbackJSBundleLoader.RECOVERABLE + errMsg))
 
       return loader
     }
