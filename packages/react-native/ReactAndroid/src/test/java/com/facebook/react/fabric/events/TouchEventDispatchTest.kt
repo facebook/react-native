@@ -23,8 +23,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.powermock.api.mockito.PowerMockito.mockStatic
 import org.powermock.api.mockito.PowerMockito.`when` as whenever
 import org.powermock.core.classloader.annotations.PowerMockIgnore
@@ -91,12 +91,10 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))
       ),
       /*
        * MOVE event for touch 1:
@@ -112,12 +110,10 @@ class TouchEventDispatchTest {
         locationY = 2f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0))
       ),
       /*
        * MOVE event for touch 1:
@@ -133,12 +129,10 @@ class TouchEventDispatchTest {
         locationY = 3f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0))
       ),
       /*
        * END event for touch 1:
@@ -155,9 +149,8 @@ class TouchEventDispatchTest {
         time = GESTURE_START_TIME,
         pointerId = 0,
         touches = emptyList(),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0)
-        )
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0))
       )
     )
 
@@ -219,12 +212,10 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))
       ),
       /*
        * START event for touch 2:
@@ -241,13 +232,13 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 1,
-        touches = listOf(
+        touches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
-        )
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))
       ),
       /*
        * MOVE event for touch 1:
@@ -269,11 +260,13 @@ class TouchEventDispatchTest {
         locationY = 2f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
+        touches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        changedTouches = listOf(
+        changedTouches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -285,11 +278,13 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 1,
-        touches = listOf(
+        touches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        changedTouches = listOf(
+        changedTouches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -309,12 +304,10 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 1,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))
       ),
       /*
        * UP event pointer 0:
@@ -332,9 +325,8 @@ class TouchEventDispatchTest {
         time = GESTURE_START_TIME,
         pointerId = 0,
         touches = emptyList(),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0)
-        )
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0))
       )
     )
 
@@ -389,12 +381,10 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)
-        )
+        touches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0)),
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0))
       ),
       /*
        * START event for touch 2:
@@ -411,13 +401,13 @@ class TouchEventDispatchTest {
         locationY = 1f,
         time = GESTURE_START_TIME,
         pointerId = 1,
-        touches = listOf(
+        touches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 1f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        changedTouches = listOf(
-          buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
-        )
+        changedTouches =
+        listOf(buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1))
       ),
       /*
        * MOVE event for touch 1:
@@ -439,11 +429,13 @@ class TouchEventDispatchTest {
         locationY = 2f,
         time = GESTURE_START_TIME,
         pointerId = 0,
-        touches = listOf(
+        touches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         ),
-        changedTouches = listOf(
+        changedTouches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 2f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -485,7 +477,8 @@ class TouchEventDispatchTest {
         time = GESTURE_START_TIME,
         pointerId = 0,
         touches = emptyList(),
-        changedTouches = listOf(
+        changedTouches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -498,7 +491,8 @@ class TouchEventDispatchTest {
         time = GESTURE_START_TIME,
         pointerId = 1,
         touches = emptyList(),
-        changedTouches = listOf(
+        changedTouches =
+        listOf(
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 1f, 3f, GESTURE_START_TIME, 0),
           buildGesture(SURFACE_ID, TARGET_VIEW_ID, 2f, 1f, GESTURE_START_TIME, 1)
         )
@@ -642,10 +636,11 @@ class TouchEventDispatchTest {
       pointerId: Int,
       touches: List<WritableMap>,
       changedTouches: List<WritableMap>
-    ): ReadableMap  = buildGesture(surfaceId, viewTag, locationX, locationY, time, pointerId).apply {
-      putArray("changedTouches", JavaOnlyArray.from(changedTouches))
-      putArray("touches", JavaOnlyArray.from(touches))
-    }
+    ): ReadableMap =
+      buildGesture(surfaceId, viewTag, locationX, locationY, time, pointerId).apply {
+        putArray("changedTouches", JavaOnlyArray.from(changedTouches))
+        putArray("touches", JavaOnlyArray.from(touches))
+      }
 
     private fun buildGesture(
       surfaceId: Int,
@@ -654,23 +649,22 @@ class TouchEventDispatchTest {
       locationY: Float,
       time: Int,
       pointerId: Int
-    ): WritableMap = JavaOnlyMap().apply {
-      putInt("targetSurface", surfaceId)
-      putInt("target", viewTag)
-      putDouble("locationX", locationX.toDouble())
-      putDouble("locationY", locationY.toDouble())
-      putDouble("pageX", locationX.toDouble())
-      putDouble("pageY", locationY.toDouble())
-      putDouble("identifier", pointerId.toDouble())
-      putDouble("timestamp", time.toDouble())
-    }
+    ): WritableMap =
+      JavaOnlyMap().apply {
+        putInt("targetSurface", surfaceId)
+        putInt("target", viewTag)
+        putDouble("locationX", locationX.toDouble())
+        putDouble("locationY", locationY.toDouble())
+        putDouble("pageX", locationX.toDouble())
+        putDouble("pageY", locationY.toDouble())
+        putDouble("identifier", pointerId.toDouble())
+        putDouble("timestamp", time.toDouble())
+      }
 
-    private fun pointerCoords(
-      x: Float,
-      y: Float
-    ): MotionEvent.PointerCoords = MotionEvent.PointerCoords().apply {
-      this.x = x
-      this.y = y
-    }
+    private fun pointerCoords(x: Float, y: Float): MotionEvent.PointerCoords =
+      MotionEvent.PointerCoords().apply {
+        this.x = x
+        this.y = y
+      }
   }
 }
