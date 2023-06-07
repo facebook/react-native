@@ -23,27 +23,26 @@ import org.robolectric.RuntimeEnvironment
 @SuppressLint("ClipboardManager", "DeprecatedClass")
 @RunWith(RobolectricTestRunner::class)
 class ClipboardModuleTest {
-  private lateinit var mClipboardModule: ClipboardModule
-  private lateinit var mClipboardManager: ClipboardManager
+  private lateinit var clipboardModule: ClipboardModule
+  private lateinit var clipboardManager: ClipboardManager
 
   @Before
   fun setUp() {
-    mClipboardModule = ClipboardModule(ReactApplicationContext(RuntimeEnvironment.application))
-    mClipboardManager =
-      RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE)
-        as ClipboardManager
+    clipboardModule = ClipboardModule(ReactApplicationContext(RuntimeEnvironment.application))
+    clipboardManager =
+      RuntimeEnvironment.application.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
   }
 
   @Test
   fun testSetString() {
-    mClipboardModule.setString(TEST_CONTENT)
-    assertTrue(mClipboardManager.text == TEST_CONTENT)
-    mClipboardModule.setString(null)
-    assertFalse(mClipboardManager.hasText())
-    mClipboardModule.setString("")
-    assertFalse(mClipboardManager.hasText())
-    mClipboardModule.setString(" ")
-    assertTrue(mClipboardManager.hasText())
+    clipboardModule.setString(TEST_CONTENT)
+    assertTrue(clipboardManager.text == TEST_CONTENT)
+    clipboardModule.setString(null)
+    assertFalse(clipboardManager.hasText())
+    clipboardModule.setString("")
+    assertFalse(clipboardManager.hasText())
+    clipboardModule.setString(" ")
+    assertTrue(clipboardManager.hasText())
   }
 
   companion object {
