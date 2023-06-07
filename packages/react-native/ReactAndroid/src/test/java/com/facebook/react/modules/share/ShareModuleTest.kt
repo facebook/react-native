@@ -9,13 +9,11 @@ package com.facebook.react.modules.share
 
 import android.app.Activity
 import android.content.Intent
-import androidx.annotation.NonNull
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.WritableMap
 import com.facebook.testutils.shadows.ShadowArguments
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -31,8 +29,8 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 class ShareModuleTest {
 
-    private var activity: Activity? = null
-    private var shareModule: ShareModule? = null
+    private lateinit var activity: Activity
+    private lateinit var shareModule: ShareModule
 
     @Before
     fun prepareModules() {
@@ -41,12 +39,6 @@ class ShareModuleTest {
         val applicationContext = ReactTestHelper.createCatalystContextForTest()
         applicationContext.onNewIntent(activity, Intent())
         shareModule = ShareModule(applicationContext)
-    }
-
-    @After
-    fun cleanUp() {
-        activity = null
-        shareModule = null
     }
 
     @Test
@@ -61,7 +53,7 @@ class ShareModuleTest {
 
         val promise = SimplePromise()
 
-        shareModule?.share(content, dialogTitle, promise)
+        shareModule.share(content, dialogTitle, promise)
 
         val chooserIntent = shadowOf(RuntimeEnvironment.application).nextStartedActivity
         assertNotNull("Dialog was not displayed", chooserIntent)
@@ -83,7 +75,7 @@ class ShareModuleTest {
 
         val promise = SimplePromise()
 
-        shareModule?.share(null, dialogTitle, promise)
+        shareModule.share(null, dialogTitle, promise)
 
         assertEquals(1, promise.rejected)
         assertEquals(ShareModule.ERROR_INVALID_CONTENT, promise.errorCode)
