@@ -227,6 +227,14 @@ class TimingModuleTestKotlin {
     assertThat(mTimingModule.hasActiveTimersInRange(200)).isTrue // In range
   }
 
+  @Test
+  fun testIdleCallback() {
+    mTimingModule.onHostResume()
+    mTimingModule.setSendIdleEvents(true)
+    stepChoreographerFrame()
+    verify(mJSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
+  }
+
   private class PostFrameCallbackHandler : Answer<Unit> {
 
     private var mFrameCallback: FrameCallback? = null
