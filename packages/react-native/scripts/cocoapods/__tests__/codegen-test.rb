@@ -55,7 +55,7 @@ class CodegenTests < Test::Unit::TestCase
         checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
             @prefix + "/React/Fabric/" + @third_party_provider_header,
@@ -81,7 +81,7 @@ class CodegenTests < Test::Unit::TestCase
         }
 
         # Assert
-        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
             @prefix + "/React/Fabric/" + @third_party_provider_header
@@ -113,7 +113,7 @@ class CodegenTests < Test::Unit::TestCase
         checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
             @prefix + "/React/Fabric/" + @third_party_provider_header,
@@ -153,7 +153,7 @@ class CodegenTests < Test::Unit::TestCase
         checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
             @prefix + "/React/Fabric/" + @third_party_provider_header,
@@ -194,7 +194,7 @@ class CodegenTests < Test::Unit::TestCase
         checkAndGenerateEmptyThirdPartyProvider!(rn_path, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pathname.pwd_invocation_count, 0)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
             rn_path + "/React/Fabric/" + @third_party_provider_header,
