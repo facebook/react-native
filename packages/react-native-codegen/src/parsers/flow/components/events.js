@@ -40,7 +40,7 @@ function getPropertyType(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -99,7 +99,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -162,12 +162,6 @@ function extractArrayElementType(
 
 function prettify(jsonObject: $FlowFixMe): string {
   return JSON.stringify(jsonObject, null, 2);
-}
-
-function extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-  return typeAnnotation.type === 'GenericTypeAnnotation'
-    ? typeAnnotation.id.name
-    : typeAnnotation.type;
 }
 
 function findEventArgumentsAndType(
