@@ -16,19 +16,19 @@ import org.junit.Test
 
 class UIManagerModuleConstantsHelperTest {
     @Test
-    fun `normalizeEventTypes withNull doesNothing`() {
+    fun normalizeEventTypes_withNull_doesNothing() {
         UIManagerModuleConstantsHelper.normalizeEventTypes(null)
     }
 
     @Test
-    fun `normalizeEventTypes withEmptyMap doesNothing`() {
+    fun normalizeEventTypes_withEmptyMap_doesNothing() {
         val emptyMap: Map<String, Any?> = MapBuilder.builder<String, Any?>().build()
         UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)
         assertTrue(emptyMap.isEmpty())
     }
 
     @Test
-    fun `normalizeEventTypes withOnEvent doesNormalize`() {
+    fun normalizeEventTypes_withOnEvent_doesNormalize() {
         val onClickMap: Map<String, String> =
             MapBuilder.builder<String, String>().put("onClick", "¯\\_(ツ)_/¯").build()
         UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
@@ -37,16 +37,17 @@ class UIManagerModuleConstantsHelperTest {
     }
 
     @Test
-    fun `normalizeEventTypes withTopEvent doesNormalize`() {
-        val onClickMap: Map<String, Any?> =
-            MapBuilder.builder<String, Any?>().put("topOnClick", "¯\\_(ツ)_/¯").build()
+    fun normalizeEventTypes_withTopEvent_doesNormalize() {
+        val onClickMap: Map<String, String> =
+            MapBuilder.builder<String, String>().put("topOnClick", "¯\\_(ツ)_/¯").build()
         UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap)
         assertTrue(onClickMap.containsKey("topOnClick"))
         assertFalse(onClickMap.containsKey("onClick"))
     }
 
+    @Suppress("UNCHECKED_CAST")
     @Test
-    fun `normalizeEventTypes withNestedObjects doesNotLoseThem`() {
+    fun normalizeEventTypes_withNestedObjects_doesNotLoseThem() {
         val nestedObjects: Map<String, Any?> =
             MapBuilder.builder<String, Any?>()
                 .put(
@@ -64,21 +65,17 @@ class UIManagerModuleConstantsHelperTest {
                 .build()
         UIManagerModuleConstantsHelper.normalizeEventTypes(nestedObjects)
         assertTrue(nestedObjects.containsKey("topOnColorChanged"))
-        @Suppress("UNCHECKED_CAST")
         var innerMap = nestedObjects["topOnColorChanged"] as? Map<String, Any?>
         assertNotNull(innerMap)
         assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
-        @Suppress("UNCHECKED_CAST")
         var innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
         assertNotNull(innerInnerMap)
         assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
         assertEquals("onColorChangedCapture", innerInnerMap.get("captured"))
         assertTrue(nestedObjects.containsKey("onColorChanged"))
-        @Suppress("UNCHECKED_CAST")
         innerMap = nestedObjects.get("topOnColorChanged") as? Map<String, Any?>
         assertNotNull(innerMap)
         assertTrue(innerMap!!.containsKey("phasedRegistrationNames"))
-        @Suppress("UNCHECKED_CAST")
         innerInnerMap = innerMap.get("phasedRegistrationNames") as? Map<String, Any?>
         assertNotNull(innerInnerMap)
         assertEquals("onColorChanged", innerInnerMap!!.get("bubbled"))
