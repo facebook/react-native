@@ -89,6 +89,6 @@ class FakeLoggingDelegate : LoggingDelegate {
     ): Boolean =
       priority == line.priority &&
         tag == line.tag &&
-        (throwMsg == null || throwMsg == line.tr!!.message)
+        (throwMsg == null || throwMsg == line.tr?.message)
   }
 }
