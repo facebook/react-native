@@ -10,7 +10,7 @@ package com.facebook.common.logging
 import java.util.*
 
 class FakeLoggingDelegate : LoggingDelegate {
-  class LogLine(val priority: Int, val tag: String, val msg: String, val tr: Throwable?)
+  class LogLine(val priority: Int, val tag: String, val msg: String, val tr: Throwable? = null)
 
   private var minLogLevel = FLog.VERBOSE
   private val logs = ArrayList<LogLine>()
@@ -25,75 +25,58 @@ class FakeLoggingDelegate : LoggingDelegate {
   }
 
   /** LoggingDelegate API */
-  override fun getMinimumLoggingLevel(): Int {
-    return minLogLevel
-  }
+  override fun getMinimumLoggingLevel(): Int = minLogLevel
 
   override fun setMinimumLoggingLevel(level: Int) {
     minLogLevel = level
   }
 
-  override fun isLoggable(level: Int): Boolean {
-    return level >= minLogLevel
-  }
+  override fun isLoggable(level: Int): Boolean = level >= minLogLevel
 
-  private fun logImpl(priority: Int, tag: String, msg: String, tr: Throwable?) {
+  private fun logImpl(priority: Int, tag: String, msg: String, tr: Throwable? = null) {
     if (isLoggable(priority)) {
       logs.add(LogLine(priority, tag, msg, tr))
     }
   }
 
-  override fun log(priority: Int, tag: String, msg: String) {
+  override fun log(priority: Int, tag: String, msg: String) =
     logImpl(priority, tag, msg, null)
-  }
 
-  override fun d(tag: String, msg: String, tr: Throwable) {
+  override fun d(tag: String, msg: String, tr: Throwable) =
     logImpl(DEBUG, tag, msg, tr)
-  }
 
-  override fun d(tag: String, msg: String) {
+  override fun d(tag: String, msg: String) =
     logImpl(DEBUG, tag, msg, null)
-  }
 
-  override fun e(tag: String, msg: String, tr: Throwable) {
+  override fun e(tag: String, msg: String, tr: Throwable) =
     logImpl(ERROR, tag, msg, tr)
-  }
 
-  override fun e(tag: String, msg: String) {
+  override fun e(tag: String, msg: String) =
     logImpl(ERROR, tag, msg, null)
-  }
 
-  override fun i(tag: String, msg: String, tr: Throwable) {
+  override fun i(tag: String, msg: String, tr: Throwable) =
     logImpl(INFO, tag, msg, tr)
-  }
 
-  override fun i(tag: String, msg: String) {
+  override fun i(tag: String, msg: String) =
     logImpl(INFO, tag, msg, null)
-  }
 
-  override fun v(tag: String, msg: String, tr: Throwable) {
+  override fun v(tag: String, msg: String, tr: Throwable) =
     logImpl(VERBOSE, tag, msg, tr)
-  }
 
-  override fun v(tag: String, msg: String) {
+  override fun v(tag: String, msg: String) =
     logImpl(VERBOSE, tag, msg, null)
-  }
 
-  override fun w(tag: String, msg: String, tr: Throwable) {
+  override fun w(tag: String, msg: String, tr: Throwable) =
     logImpl(WARN, tag, msg, tr)
-  }
 
-  override fun w(tag: String, msg: String) {
+  override fun w(tag: String, msg: String) =
     logImpl(WARN, tag, msg, null)
-  }
 
-  override fun wtf(tag: String, msg: String, tr: Throwable) {
+  override fun wtf(tag: String, msg: String, tr: Throwable) =
     logImpl(WTF, tag, msg, tr)
-  }
 
-  override fun wtf(tag: String, msg: String) {
+  override fun wtf(tag: String, msg: String) =
     logImpl(WTF, tag, msg, null)
-  }
 
   companion object {
     const val ASSERT = FLog.ASSERT
@@ -109,7 +92,7 @@ class FakeLoggingDelegate : LoggingDelegate {
      * to be larger than any of the other log levels.
      */
     @JvmField
-    val WTF = 1 + Collections.max(listOf(ASSERT, DEBUG, ERROR, INFO, VERBOSE, WARN))
+    val WTF = 1 + listOf(ASSERT, DEBUG, ERROR, INFO, VERBOSE, WARN).max()
 
     /** Test Harness */
     private fun matchLogQuery(
@@ -117,10 +100,9 @@ class FakeLoggingDelegate : LoggingDelegate {
       tag: String,
       throwMsg: String?,
       line: LogLine
-    ): Boolean {
-      return priority == line.priority &&
+    ): Boolean =
+        priority == line.priority &&
         tag == line.tag &&
         (throwMsg == null || throwMsg == line.tr!!.message)
-    }
   }
 }
