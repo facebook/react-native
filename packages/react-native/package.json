@@ -34,7 +34,6 @@
     "build.gradle.kts",
     "cli.js",
     "flow",
-    "flow-typed",
     "gradle.properties",
     "index.js",
     "interface.js",
