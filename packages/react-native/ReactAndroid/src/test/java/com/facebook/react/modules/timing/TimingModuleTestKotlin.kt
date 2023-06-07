@@ -133,6 +133,18 @@ class TimingModuleTestKotlin {
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0))
   }
 
+  @Test
+  fun testCancelRecurringTimer() {
+    mTimingModule.onHostResume()
+    mTimingModule.createTimer(105.0, 1.0, 0.0, true)
+    stepChoreographerFrame()
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105.0))
+    reset(mJSTimersMock)
+    mTimingModule.deleteTimer(105.0)
+    stepChoreographerFrame()
+    verifyNoMoreInteractions(mJSTimersMock)
+  }
+
   private class PostFrameCallbackHandler : Answer<Unit> {
 
     private var mFrameCallback: FrameCallback? = null
