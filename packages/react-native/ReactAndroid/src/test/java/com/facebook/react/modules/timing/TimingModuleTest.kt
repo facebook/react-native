@@ -37,7 +37,7 @@ PrepareForTest(Arguments::class, SystemClock::class, ReactChoreographer::class)
 PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 RunWith(RobolectricTestRunner::class)
 ]
-class TimingModuleTestKotlin {
+class TimingModuleTest {
   companion object {
     const val FRAME_TIME_NS = 17 * 1000 * 1000
   }
