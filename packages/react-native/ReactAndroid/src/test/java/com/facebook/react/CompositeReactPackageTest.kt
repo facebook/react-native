@@ -1,15 +1,16 @@
 /*
-* Copyright (c) Meta Platforms, Inc. and affiliates.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 package com.facebook.react
 
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import java.util.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -23,25 +24,19 @@ import org.mockito.MockitoAnnotations
 import org.powermock.core.classloader.annotations.PowerMockIgnore
 import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class CompositeReactPackageTest {
-  @get:Rule
-  var rule = PowerMockRule()
+  @get:Rule var rule = PowerMockRule()
 
-  @Mock
-  lateinit var packageNo1: ReactPackage
+  @Mock lateinit var packageNo1: ReactPackage
 
-  @Mock
-  lateinit var packageNo2: ReactPackage
+  @Mock lateinit var packageNo2: ReactPackage
 
-  @Mock
-  lateinit var packageNo3: ReactPackage
+  @Mock lateinit var packageNo3: ReactPackage
 
-  @Mock
-  lateinit var reactContext: ReactApplicationContext
+  @Mock lateinit var reactContext: ReactApplicationContext
 
   @Before
   fun initMocks() {
@@ -80,42 +75,24 @@ class CompositeReactPackageTest {
   fun testThatCompositeReturnsASumOfNativeModules() {
     // Given
     val composite = CompositeReactPackage(packageNo1, packageNo2)
-    val moduleNo1 = mock(
-      NativeModule::class.java
-    )
+    val moduleNo1 = mock(NativeModule::class.java)
     whenever(moduleNo1.name).thenReturn("ModuleNo1")
 
     // module2 and module3 will share same name, composite should return only the latter one
     val sameModuleName = "SameModuleName"
-    val moduleNo2 = mock(
-      NativeModule::class.java
-    )
+    val moduleNo2 = mock(NativeModule::class.java)
     whenever(moduleNo2.name).thenReturn(sameModuleName)
-    val moduleNo3 = mock(
-      NativeModule::class.java
-    )
+    val moduleNo3 = mock(NativeModule::class.java)
     whenever(moduleNo3.name).thenReturn(sameModuleName)
-    val moduleNo4 = mock(
-      NativeModule::class.java
-    )
+    val moduleNo4 = mock(NativeModule::class.java)
     whenever(moduleNo4.name).thenReturn("ModuleNo4")
-    whenever(
-      packageNo1.createNativeModules(
-        reactContext
-      )
-    )
+    whenever(packageNo1.createNativeModules(reactContext))
       .thenReturn(listOf(moduleNo1, moduleNo2))
-    whenever(
-      packageNo2.createNativeModules(
-        reactContext
-      )
-    )
+    whenever(packageNo2.createNativeModules(reactContext))
       .thenReturn(listOf(moduleNo3, moduleNo4))
 
     // When
-    val compositeModules = composite.createNativeModules(
-      reactContext
-    )
+    val compositeModules = composite.createNativeModules(reactContext)
 
     // Then
 
@@ -130,42 +107,25 @@ class CompositeReactPackageTest {
   fun testThatCompositeReturnsASumOfViewManagers() {
     // Given
     val composite = CompositeReactPackage(packageNo1, packageNo2)
-    val managerNo1 = mock(
-      ViewManager::class.java
-    )
+    val managerNo1 = mock(ViewManager::class.java)
     whenever(managerNo1.name).thenReturn("ManagerNo1")
 
-    // managerNo2 and managerNo3 will share same name, composite should return only the latter one
+    // managerNo2 and managerNo3 will share same name, composite should return only the latter
+    // one
     val sameModuleName = "SameModuleName"
-    val managerNo2 = mock(
-      ViewManager::class.java
-    )
+    val managerNo2 = mock(ViewManager::class.java)
     whenever(managerNo2.name).thenReturn(sameModuleName)
-    val managerNo3 = mock(
-      ViewManager::class.java
-    )
+    val managerNo3 = mock(ViewManager::class.java)
     whenever(managerNo3.name).thenReturn(sameModuleName)
-    val managerNo4 = mock(
-      ViewManager::class.java
-    )
+    val managerNo4 = mock(ViewManager::class.java)
     whenever(managerNo4.name).thenReturn("ManagerNo4")
-    whenever(
-      packageNo1.createViewManagers(
-        reactContext
-      )
-    )
+    whenever(packageNo1.createViewManagers(reactContext))
       .thenReturn(listOf(managerNo1, managerNo2))
-    whenever(
-      packageNo2.createViewManagers(
-        reactContext
-      )
-    )
+    whenever(packageNo2.createViewManagers(reactContext))
       .thenReturn(listOf(managerNo3, managerNo4))
 
     // When
-    val compositeModules = composite.createViewManagers(
-      reactContext
-    )
+    val compositeModules = composite.createViewManagers(reactContext)
 
     // Then
 
