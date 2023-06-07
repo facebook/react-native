@@ -434,6 +434,60 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(user_project_mock.save_invocation_count, 1)
     end
 
+    # ================================= #
+    # Test - Apply Xcode 15 Patch       #
+    # ================================= #
+
+    def test_applyXcode15Patch_correctlyAppliesNecessaryPatch
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.apply_xcode_15_patch(installer)
+
+        # Assert
+        first_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        second_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        third_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "SomeFlag=1" "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+    end
+
     # ==================================== #
     # Test - Set Node_Modules User Setting #
     # ==================================== #
