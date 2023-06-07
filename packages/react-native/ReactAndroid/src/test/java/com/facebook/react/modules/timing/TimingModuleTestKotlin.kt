@@ -145,6 +145,22 @@ class TimingModuleTestKotlin {
     verifyNoMoreInteractions(mJSTimersMock)
   }
 
+  @Test
+  fun testPausingAndResuming() {
+    mTimingModule.onHostResume()
+    mTimingModule.createTimer(41.0, 1.0, 0.0, true)
+    stepChoreographerFrame()
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(mJSTimersMock)
+    mTimingModule.onHostPause()
+    stepChoreographerFrame()
+    verifyNoMoreInteractions(mJSTimersMock)
+    reset(mJSTimersMock)
+    mTimingModule.onHostResume()
+    stepChoreographerFrame()
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+  }
+
   private class PostFrameCallbackHandler : Answer<Unit> {
 
     private var mFrameCallback: FrameCallback? = null
