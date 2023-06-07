@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.71.10
+
+### Fixed
+
+#### Android specific
+
+- Bump RNGP to 0.71.19 ([3be3a7d1a2](https://github.com/facebook/react-native/commit/3be3a7d1a2840a045892ddd8e5f2263028e15127) by [@kelset](https://github.com/kelset))
+  - contains: RNGP dependency substitutions for fork with different Maven group ([012e4bd654](https://github.com/facebook/react-native/commit/012e4bd654f1eee2b00a066ba50a7f9c44cc305b) by [@douglowder](https://github.com/douglowder))
+
 ## v0.71.9
 
 ### Fixed
@@ -10,7 +19,6 @@
 
 #### Android specific
 
-- RNGP dependency substitutions for fork with different Maven group ([012e4bd654](https://github.com/facebook/react-native/commit/012e4bd654f1eee2b00a066ba50a7f9c44cc305b) by [@douglowder](https://github.com/douglowder))
 
 ## v0.71.8
 
