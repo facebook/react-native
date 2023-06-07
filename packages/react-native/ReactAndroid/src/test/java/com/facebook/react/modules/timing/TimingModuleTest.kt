@@ -24,6 +24,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when` as mockWhen
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.powermock.api.mockito.PowerMockito
@@ -31,13 +32,11 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
-import org.mockito.Mockito.`when` as mockWhen
 
 @[
 PrepareForTest(Arguments::class, SystemClock::class, ReactChoreographer::class)
 PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
-RunWith(RobolectricTestRunner::class)
-]
+RunWith(RobolectricTestRunner::class)]
 class TimingModuleTest {
   companion object {
     const val FRAME_TIME_NS = 17 * 1000 * 1000
@@ -50,20 +49,25 @@ class TimingModuleTest {
   private var mCurrentTimeNs = 0L
   private lateinit var mJSTimersMock: JSTimers
 
-  @get:Rule
-  val powerMockRule = PowerMockRule()
+  @get:Rule val powerMockRule = PowerMockRule()
 
   @Before
   fun prepareModules() {
     PowerMockito.mockStatic(Arguments::class.java)
     mockWhen(Arguments.createArray()).thenAnswer {
-        return@thenAnswer JavaOnlyArray()
-      }
+      return@thenAnswer JavaOnlyArray()
+    }
 
     PowerMockito.mockStatic(SystemClock::class.java)
-    mockWhen(SystemClock.uptimeMillis()).thenAnswer { return@thenAnswer mCurrentTimeNs / 1000000 }
-    mockWhen(SystemClock.currentTimeMillis()).thenAnswer { return@thenAnswer mCurrentTimeNs / 1000000 }
-    mockWhen(SystemClock.nanoTime()).thenAnswer { return@thenAnswer mCurrentTimeNs }
+    mockWhen(SystemClock.uptimeMillis()).thenAnswer {
+      return@thenAnswer mCurrentTimeNs / 1000000
+    }
+    mockWhen(SystemClock.currentTimeMillis()).thenAnswer {
+      return@thenAnswer mCurrentTimeNs / 1000000
+    }
+    mockWhen(SystemClock.nanoTime()).thenAnswer {
+      return@thenAnswer mCurrentTimeNs
+    }
 
     mReactChoreographerMock = mock(ReactChoreographer::class.java)
     PowerMockito.mockStatic(ReactChoreographer::class.java)
@@ -79,28 +83,18 @@ class TimingModuleTest {
 
     doAnswer(mPostFrameCallbackHandler)
       .`when`(mReactChoreographerMock)
-      .postFrameCallback(
-        eq(CallbackType.TIMERS_EVENTS),
-        any(FrameCallback::class.java)
-      )
+      .postFrameCallback(eq(CallbackType.TIMERS_EVENTS), any(FrameCallback::class.java))
 
     doAnswer(mIdlePostFrameCallbackHandler)
       .`when`(mReactChoreographerMock)
-      .postFrameCallback(
-        eq(CallbackType.IDLE_EVENT),
-        any(FrameCallback::class.java)
-      )
+      .postFrameCallback(eq(CallbackType.IDLE_EVENT), any(FrameCallback::class.java))
 
-    mTimingModule = TimingModule(
-      reactContext, mock(
-        DevSupportManager::class.java
-      )
-    )
+    mTimingModule = TimingModule(reactContext, mock(DevSupportManager::class.java))
     mJSTimersMock = mock(JSTimers::class.java)
     mockWhen(reactContext.getJSModule(JSTimers::class.java)).thenReturn(mJSTimersMock)
-    doAnswer {  invocation ->
-      (invocation.arguments[0] as Runnable).run()
-    }.`when`(reactContext).runOnJSQueueThread(any(Runnable::class.java))
+    doAnswer { invocation -> (invocation.arguments[0] as Runnable).run() }
+      .`when`(reactContext)
+      .runOnJSQueueThread(any(Runnable::class.java))
     mTimingModule.initialize()
   }
 
@@ -108,7 +102,9 @@ class TimingModuleTest {
     val callback = mPostFrameCallbackHandler.getAndResetFrameCallback()
     val idleCallback = mIdlePostFrameCallbackHandler.getAndResetFrameCallback()
     mCurrentTimeNs += FRAME_TIME_NS
-    mockWhen(SystemClock.uptimeMillis()).thenAnswer { return@thenAnswer mCurrentTimeNs / 1000000 }
+    mockWhen(SystemClock.uptimeMillis()).thenAnswer {
+      return@thenAnswer mCurrentTimeNs / 1000000
+    }
     callback?.doFrame(mCurrentTimeNs)
     idleCallback?.doFrame(mCurrentTimeNs)
   }
