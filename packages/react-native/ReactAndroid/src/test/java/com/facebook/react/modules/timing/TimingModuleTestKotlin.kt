@@ -161,6 +161,19 @@ class TimingModuleTestKotlin {
     verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
   }
 
+  @Test
+  fun testHeadlessJsTaskInBackground() {
+    mTimingModule.onHostPause()
+    mTimingModule.onHeadlessJsTaskStart(42)
+    mTimingModule.createTimer(41.0, 1.0, 0.0, true)
+    stepChoreographerFrame()
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(mJSTimersMock)
+    mTimingModule.onHeadlessJsTaskFinish(42)
+    stepChoreographerFrame()
+    verifyNoMoreInteractions(mJSTimersMock)
+  }
+
   private class PostFrameCallbackHandler : Answer<Unit> {
 
     private var mFrameCallback: FrameCallback? = null
