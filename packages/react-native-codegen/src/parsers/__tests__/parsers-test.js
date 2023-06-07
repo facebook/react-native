@@ -358,6 +358,31 @@ describe('FlowParser', () => {
       expect(parser.interfaceDeclaration).toEqual('InterfaceDeclaration');
     });
   });
+
+  describe('extractTypeFromTypeAnnotation', () => {
+    it('should return the name if typeAnnotation is GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'SomeType',
+        },
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeType',
+      );
+    });
+
+    it('should return the type if typeAnnotation is not GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'SomeOtherType',
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeOtherType',
+      );
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
