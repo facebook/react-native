@@ -53,7 +53,7 @@ class UIManagerModuleConstantsHelperTest {
                     "onColorChanged",
                     MapBuilder.of<String, Any?>(
                         "phasedRegistrationNames",
-                        MapBuilder.of<String, Any?>(
+                        MapBuilder.of<String, String>(
                             "bubbled",
                             "onColorChanged",
                             "captured",
