@@ -11,7 +11,7 @@ import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
 import com.facebook.react.modules.core.TimingModule
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -219,12 +219,12 @@ class TimingModuleTestKotlin {
   @Test
   fun testActiveTimersInRange() {
     mTimingModule.onHostResume()
-    Assertions.assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse
     mTimingModule.createTimer(41.0, 1.0, 0.0, true)
-    Assertions.assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse // Repeating
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse // Repeating
     mTimingModule.createTimer(42.0, 150.0, 0.0, false)
-    Assertions.assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse // Out of range
-    Assertions.assertThat(mTimingModule.hasActiveTimersInRange(200)).isTrue // In range
+    assertThat(mTimingModule.hasActiveTimersInRange(100)).isFalse // Out of range
+    assertThat(mTimingModule.hasActiveTimersInRange(200)).isTrue // In range
   }
 
   private class PostFrameCallbackHandler : Answer<Unit> {
