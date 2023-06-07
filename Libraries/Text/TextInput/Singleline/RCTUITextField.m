@@ -605,7 +605,7 @@
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
 #else // [macOS
   CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
-  CGFloat scale = self.window.backingScaleFactor;
+  CGFloat scale = _pointScaleFactor ?: self.window.backingScaleFactor;
   if (scale == 0.0 && RCTRunningInTestEnvironment()) {
     // When running in the test environment the view is not on screen.
     // Use a scaleFactor of 1 so that the test results are machine independent.

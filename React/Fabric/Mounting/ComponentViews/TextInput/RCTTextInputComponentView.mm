@@ -258,6 +258,9 @@ using namespace facebook::react;
 {
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
+#if TARGET_OS_OSX // [macOS
+  _backedTextInputView.pointScaleFactor = layoutMetrics.pointScaleFactor;
+#endif // macOS]
   _backedTextInputView.frame =
       UIEdgeInsetsInsetRect(self.bounds, RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.borderWidth));
   _backedTextInputView.textContainerInset =

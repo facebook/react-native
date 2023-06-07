@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL enableFocusRing;
 @property (nonatomic, strong, nullable) RCTUIColor *selectionColor;
 @property (weak, nullable) id<RCTUITextFieldDelegate> delegate;
+@property (nonatomic, assign) CGFloat pointScaleFactor;
 #endif // macOS]
 
 @end

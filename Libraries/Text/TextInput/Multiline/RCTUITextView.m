@@ -464,7 +464,7 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
                                .size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
 #else // [macOS
-  CGFloat scale = self.window.backingScaleFactor;
+  CGFloat scale = _pointScaleFactor ?: self.window.backingScaleFactor;
   CGSize placeholderSize = [placeholder sizeWithAttributes:[self _placeholderTextAttributes]];
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width, scale), RCTCeilPixelValue(placeholderSize.height, scale));
 #endif // macOS]
