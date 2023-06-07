@@ -21,7 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
@@ -525,13 +525,13 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(4))
       .receiveEvent(
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyString(),
-        ArgumentMatchers.anyBoolean(),
-        ArgumentMatchers.anyInt(),
+        anyInt(),
+        anyInt(),
+        anyString(),
+        anyBoolean(),
+        anyInt(),
         argument.capture(),
-        ArgumentMatchers.anyInt()
+        anyInt()
       )
     Assert.assertEquals(startMoveEndExpectedSequence, argument.allValues)
   }
@@ -544,13 +544,13 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
       .receiveEvent(
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyString(),
-        ArgumentMatchers.anyBoolean(),
-        ArgumentMatchers.anyInt(),
+        anyInt(),
+        anyInt(),
+        anyString(),
+        anyBoolean(),
+        anyInt(),
         argument.capture(),
-        ArgumentMatchers.anyInt()
+        anyInt()
       )
     Assert.assertEquals(startMoveCancelExpectedSequence, argument.allValues)
   }
@@ -563,13 +563,13 @@ class TouchEventDispatchTest {
     val argument = ArgumentCaptor.forClass(WritableMap::class.java)
     verify(uiManager, times(6))
       .receiveEvent(
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyInt(),
-        ArgumentMatchers.anyString(),
-        ArgumentMatchers.anyBoolean(),
-        ArgumentMatchers.anyInt(),
+        anyInt(),
+        anyInt(),
+        anyString(),
+        anyBoolean(),
+        anyInt(),
         argument.capture(),
-        ArgumentMatchers.anyInt()
+        anyInt()
       )
     Assert.assertEquals(startPointerMoveUpExpectedSequence, argument.allValues)
   }
