@@ -6,26 +6,21 @@
  */
 package com.facebook.react.animated
 
-import org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
-/**
- * Tests method used by [InterpolationAnimatedNode] to interpolate value of the input nodes.
- */
+/** Tests method used by [InterpolationAnimatedNode] to interpolate value of the input nodes. */
 @RunWith(RobolectricTestRunner::class)
 class NativeAnimatedInterpolationTest {
-  private fun simpleInterpolation(
-    value: Double, input: DoubleArray, output: DoubleArray
-  ): Double {
+  private fun simpleInterpolation(value: Double, input: DoubleArray, output: DoubleArray): Double {
     return InterpolationAnimatedNode.interpolate(
-      value,
-      input,
-      output,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
-      InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND
-    )
+        value,
+        input,
+        output,
+        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
+        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND)
   }
 
   @Test
@@ -82,23 +77,21 @@ class NativeAnimatedInterpolationTest {
     val input = doubleArrayOf(10.0, 20.0)
     val output = doubleArrayOf(0.0, 1.0)
     assertThat(
-      InterpolationAnimatedNode.interpolate(
-        30.0,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP
-      )
-    ).isEqualTo(1.0)
+            InterpolationAnimatedNode.interpolate(
+                30.0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+        .isEqualTo(1.0)
     assertThat(
-      InterpolationAnimatedNode.interpolate(
-        5.0,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP
-      )
-    ).isEqualTo(0.0)
+            InterpolationAnimatedNode.interpolate(
+                5.0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_CLAMP))
+        .isEqualTo(0.0)
   }
 
   @Test
@@ -106,23 +99,21 @@ class NativeAnimatedInterpolationTest {
     val input = doubleArrayOf(10.0, 20.0)
     val output = doubleArrayOf(0.0, 1.0)
     assertThat(
-      InterpolationAnimatedNode.interpolate(
-        30.0,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-      )
-    ).isEqualTo(30.0)
+            InterpolationAnimatedNode.interpolate(
+                30.0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo(30.0)
     assertThat(
-      InterpolationAnimatedNode.interpolate(
-        5.0,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-      )
-    ).isEqualTo(5.0)
+            InterpolationAnimatedNode.interpolate(
+                5.0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo(5.0)
   }
 
   @Test
@@ -136,30 +127,28 @@ class NativeAnimatedInterpolationTest {
   @Test
   fun testInterpolateString() {
     val input = doubleArrayOf(0.0, 1.0)
-    val output = arrayOf(
-      doubleArrayOf(20.0, 20.0, 20.0, 80.0, 80.0, 80.0, 80.0, 20.0),
-      doubleArrayOf(40.0, 40.0, 33.0, 60.0, 60.0, 60.0, 65.0, 40.0)
-    )
+    val output =
+        arrayOf(
+            doubleArrayOf(20.0, 20.0, 20.0, 80.0, 80.0, 80.0, 80.0, 20.0),
+            doubleArrayOf(40.0, 40.0, 33.0, 60.0, 60.0, 60.0, 65.0, 40.0))
     val pattern = "M20,20L20,80L80,80L80,20Z"
     assertThat(
-      InterpolationAnimatedNode.interpolateString(
-        pattern,
-        0.0,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-      )
-    ).isEqualTo("M20,20L20,80L80,80L80,20Z")
+            InterpolationAnimatedNode.interpolateString(
+                pattern,
+                0.0,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo("M20,20L20,80L80,80L80,20Z")
     assertThat(
-      InterpolationAnimatedNode.interpolateString(
-        pattern,
-        0.5,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY
-      )
-    ).isEqualTo("M30,30L26.5,70L70,70L72.5,30Z")
+            InterpolationAnimatedNode.interpolateString(
+                pattern,
+                0.5,
+                input,
+                output,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY,
+                InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
+        .isEqualTo("M30,30L26.5,70L70,70L72.5,30Z")
   }
 }
