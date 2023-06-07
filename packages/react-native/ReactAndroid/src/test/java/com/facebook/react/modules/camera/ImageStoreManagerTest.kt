@@ -1,4 +1,5 @@
 package com.facebook.react.modules.camera
+
 import android.util.Base64
 import android.util.Base64InputStream
 import com.facebook.react.bridge.ReactApplicationContext
@@ -13,7 +14,6 @@ import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
 
-
 @RunWith(RobolectricTestRunner::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ImageStoreManagerTest {
@@ -24,7 +24,7 @@ class ImageStoreManagerTest {
   @Before
   fun setUp() {
     reactApplicationContext = mock(ReactApplicationContext::class.java)
-    imageStoreManager =  ImageStoreManager(reactApplicationContext)
+    imageStoreManager = ImageStoreManager(reactApplicationContext)
   }
 
   @Test
