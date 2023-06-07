@@ -14,14 +14,6 @@ import org.robolectric.RobolectricTestRunner
 /** Tests method used by [InterpolationAnimatedNode] to interpolate value of the input nodes. */
 @RunWith(RobolectricTestRunner::class)
 class NativeAnimatedInterpolationTest {
-  private fun simpleInterpolation(value: Double, input: DoubleArray, output: DoubleArray): Double {
-    return InterpolationAnimatedNode.interpolate(
-        value,
-        input,
-        output,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
-        InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND)
-  }
 
   @Test
   fun testSimpleOneToOneMapping() {
@@ -119,9 +111,11 @@ class NativeAnimatedInterpolationTest {
   @Test
   fun testInterpolateColor() {
     val input = doubleArrayOf(0.0, 1.0)
-    val output = intArrayOf(-0x1000000, -0x10000)
-    assertThat(InterpolationAnimatedNode.interpolateColor(0.0, input, output)).isEqualTo(-0x1000000)
-    assertThat(InterpolationAnimatedNode.interpolateColor(0.5, input, output)).isEqualTo(-0x810000)
+    val output = intArrayOf(0xFF000000.toInt(), 0xFFFF0000.toInt())
+    assertThat(InterpolationAnimatedNode.interpolateColor(0.0, input, output))
+        .isEqualTo(0xFF000000.toInt())
+    assertThat(InterpolationAnimatedNode.interpolateColor(0.5, input, output))
+        .isEqualTo(0xFF7F0000.toInt())
   }
 
   @Test
@@ -151,4 +145,12 @@ class NativeAnimatedInterpolationTest {
                 InterpolationAnimatedNode.EXTRAPOLATE_TYPE_IDENTITY))
         .isEqualTo("M30,30L26.5,70L70,70L72.5,30Z")
   }
+
+  private fun simpleInterpolation(value: Double, input: DoubleArray, output: DoubleArray): Double =
+      InterpolationAnimatedNode.interpolate(
+          value,
+          input,
+          output,
+          InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND,
+          InterpolationAnimatedNode.EXTRAPOLATE_TYPE_EXTEND)
 }
