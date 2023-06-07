@@ -124,7 +124,7 @@ class JSPackagerClientTest {
   fun test_onDisconnection_ShouldTriggerDisconnectionCallback() {
     val connectionHandler = mock(ConnectionCallback::class.java)
     val handler = mock(RequestHandler::class.java)
-    val client = JSPackagerClient("test_client", mSettings, HashMap(), connectionHandler)
+    val client = JSPackagerClient("test_client", mSettings, emptyMap(), connectionHandler)
 
     client.close()
 
