@@ -9,7 +9,13 @@
     "directory": "packages/react-native-codegen"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-codegen#readme",
-  "keywords": ["code", "generation", "codegen", "tools", "react-native"],
+  "keywords": [
+    "code",
+    "generation",
+    "codegen",
+    "tools",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=16"
@@ -44,7 +50,7 @@
     "invariant": "^2.2.4",
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
-    "prettier": "^2.4.1",
+    "prettier": "2.8.8",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
