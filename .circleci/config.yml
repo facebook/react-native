@@ -309,7 +309,7 @@ commands:
             $HERMES_VERSION=cat C:\Users\circleci\project\tmp\hermes\hermesversion
             echo "Hermes commit is $HERMES_VERSION"
 
-  with_hermes_tarball_cache_span:
+  with_hermes_sdk_cache_span:
     parameters:
       steps:
         type: steps
