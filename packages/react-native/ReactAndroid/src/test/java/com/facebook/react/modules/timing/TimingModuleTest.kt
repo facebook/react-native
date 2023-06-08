@@ -232,10 +232,9 @@ class TimingModuleTest {
   }
 
   @Test
-  @Ignore("Failing due to failed invocation verification") // TODO T13905097
   fun testIdleCallback() {
-    timingModule.onHostResume()
     timingModule.setSendIdleEvents(true)
+    timingModule.onHostResume()
     stepChoreographerFrame()
     verify(jSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
   }
