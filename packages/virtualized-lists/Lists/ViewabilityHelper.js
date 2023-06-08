@@ -10,7 +10,8 @@
 
 'use strict';
 
-import type {CellMetricProps} from './VirtualizedListProps';
+import type {CellMetricProps} from './ListMetricsAggregator';
+import ListMetricsAggregator from './ListMetricsAggregator';
 
 const invariant = require('invariant');
 
@@ -104,14 +105,7 @@ class ViewabilityHelper {
     props: CellMetricProps,
     scrollOffset: number,
     viewportHeight: number,
-    getCellMetrics: (
-      index: number,
-      props: CellMetricProps,
-    ) => ?{
-      length: number,
-      offset: number,
-      ...
-    },
+    listMetrics: ListMetricsAggregator,
     // Optional optimization to reduce the scan size
     renderRange?: {
       first: number,
@@ -146,7 +140,7 @@ class ViewabilityHelper {
       return [];
     }
     for (let idx = first; idx <= last; idx++) {
-      const metrics = getCellMetrics(idx, props);
+      const metrics = listMetrics.getCellMetrics(idx, props);
       if (!metrics) {
         continue;
       }
@@ -181,14 +175,7 @@ class ViewabilityHelper {
     props: CellMetricProps,
     scrollOffset: number,
     viewportHeight: number,
-    getCellMetrics: (
-      index: number,
-      props: CellMetricProps,
-    ) => ?{
-      length: number,
-      offset: number,
-      ...
-    },
+    listMetrics: ListMetricsAggregator,
     createViewToken: (
       index: number,
       isViewable: boolean,
@@ -210,7 +197,7 @@ class ViewabilityHelper {
     if (
       (this._config.waitForInteraction && !this._hasInteracted) ||
       itemCount === 0 ||
-      !getCellMetrics(0, props)
+      !listMetrics.getCellMetrics(0, props)
     ) {
       return;
     }
@@ -220,7 +207,7 @@ class ViewabilityHelper {
         props,
         scrollOffset,
         viewportHeight,
-        getCellMetrics,
+        listMetrics,
         renderRange,
       );
     }
