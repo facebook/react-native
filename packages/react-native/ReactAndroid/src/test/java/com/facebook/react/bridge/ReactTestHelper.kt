@@ -7,7 +7,6 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.bridge.queue.MessageQueueThreadSpec
-import com.facebook.react.bridge.queue.QueueThreadExceptionHandler
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec
@@ -20,14 +19,13 @@ import org.robolectric.RuntimeEnvironment
 object ReactTestHelper {
   /**
    * @return a ReactApplicationContext that has a CatalystInstance mock returned by
-   *   [ ][.createMockCatalystInstance]
+   *   [createMockCatalystInstance]
    */
   @JvmStatic
-  fun createCatalystContextForTest(): ReactApplicationContext {
-    val context = ReactApplicationContext(RuntimeEnvironment.application)
-    context.initializeWithInstance(createMockCatalystInstance())
-    return context
-  }
+  fun createCatalystContextForTest(): ReactApplicationContext =
+    ReactApplicationContext(RuntimeEnvironment.application).apply {
+      initializeWithInstance(createMockCatalystInstance())
+    }
 
   /** @return a CatalystInstance mock that has a default working ReactQueueConfiguration. */
   @JvmStatic
@@ -37,17 +35,10 @@ object ReactTestHelper {
         .setJSQueueThreadSpec(MessageQueueThreadSpec.mainThreadSpec())
         .setNativeModulesQueueThreadSpec(MessageQueueThreadSpec.mainThreadSpec())
         .build()
-    val ReactQueueConfiguration: ReactQueueConfiguration =
-      ReactQueueConfigurationImpl.create(
-        spec,
-        object : QueueThreadExceptionHandler {
-          override fun handleException(e: java.lang.Exception?) {
-            throw RuntimeException(e)
-          }
-        }
-      )
+    val reactQueueConfiguration: ReactQueueConfiguration =
+      ReactQueueConfigurationImpl.create(spec) { e -> throw RuntimeException(e) }
     val reactInstance: CatalystInstance = mock(CatalystInstance::class.java)
-    whenever(reactInstance.getReactQueueConfiguration()).thenReturn(ReactQueueConfiguration)
+    whenever(reactInstance.getReactQueueConfiguration()).thenReturn(reactQueueConfiguration)
     whenever(reactInstance.getNativeModule(UIManagerModule::class.java))
       .thenReturn(mock(UIManagerModule::class.java))
     whenever(reactInstance.isDestroyed()).thenReturn(false)
