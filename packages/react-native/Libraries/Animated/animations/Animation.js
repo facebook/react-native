@@ -15,7 +15,7 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 
-export type EndResult = {finished: boolean, ...};
+export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = {
