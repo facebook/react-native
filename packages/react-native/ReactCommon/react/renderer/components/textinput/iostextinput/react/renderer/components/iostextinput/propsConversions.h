@@ -141,6 +141,12 @@ static TextInputTraits convertRawProp(
       "passwordRules",
       sourceTraits.passwordRules,
       defaultTraits.passwordRules);
+  traits.smartInsertDelete = convertRawProp(
+      context,
+      rawProps,
+      "smartInsertDelete",
+      sourceTraits.smartInsertDelete,
+      defaultTraits.smartInsertDelete);
 
   return traits;
 }

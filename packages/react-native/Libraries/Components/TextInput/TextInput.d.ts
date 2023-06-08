@@ -291,6 +291,14 @@ export interface TextInputIOSProps {
     | 'hangul-word'
     | 'push-out'
     | undefined;
+
+  /**
+   * If `false`, the iOS system will not insert an extra space after a paste operation
+   * neither delete one or two spaces after a cut or delete operation.
+   *
+   * The default value is `true`.
+   */
+  smartInsertDelete?: boolean | undefined;
 }
 
 /**

@@ -906,4 +906,23 @@ exports.examples = ([
       );
     },
   },
+  {
+    title: 'iOS autoformatting behaviors',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="smartInsertDelete: true | undefined">
+            <TextInput style={styles.default} defaultValue="CopyAndPaste" />
+          </WithLabel>
+          <WithLabel label="smartInsertDelete: false">
+            <TextInput
+              smartInsertDelete={false}
+              style={styles.default}
+              defaultValue="CopyAndPaste"
+            />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
 ]: Array<RNTesterModuleExample>);
