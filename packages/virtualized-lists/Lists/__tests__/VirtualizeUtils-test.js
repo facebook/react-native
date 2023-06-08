@@ -42,14 +42,14 @@ describe('newRangeCount', function () {
 describe('elementsThatOverlapOffsets', function () {
   it('handles fixed length', function () {
     const offsets = [0, 250, 350, 450];
-    function getFrameMetrics(index: number) {
+    function getCellMetrics(index: number) {
       return {
         length: 100,
         offset: 100 * index,
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
+      elementsThatOverlapOffsets(offsets, fakeProps(100), getCellMetrics, 1),
     ).toEqual([0, 2, 3, 4]);
   });
   it('handles variable length', function () {
@@ -72,14 +72,14 @@ describe('elementsThatOverlapOffsets', function () {
   });
   it('handles frame boundaries', function () {
     const offsets = [0, 100, 200, 300];
-    function getFrameMetrics(index: number) {
+    function getCellMetrics(index: number) {
       return {
         length: 100,
         offset: 100 * index,
       };
     }
     expect(
-      elementsThatOverlapOffsets(offsets, fakeProps(100), getFrameMetrics, 1),
+      elementsThatOverlapOffsets(offsets, fakeProps(100), getCellMetrics, 1),
     ).toEqual([0, 0, 1, 2]);
   });
   it('handles out of bounds', function () {
