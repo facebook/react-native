@@ -89,8 +89,10 @@ public class JSPointerDispatcher {
 
   private void updatePreviousStateFromEvent(MotionEvent event, PointerEventState eventState) {
     // Caching the event state so we have a new "last"
-    mLastHitPathByPointerId = eventState.getHitPathByPointerId();
-    mLastEventCoordinatesByPointerId = eventState.getEventCoordinatesByPointerId();
+    // note: we need to make copies here as the eventState may be accessed later and we don't want
+    // mutations of these instance vars to affect it
+    mLastHitPathByPointerId = new HashMap<>(eventState.getHitPathByPointerId());
+    mLastEventCoordinatesByPointerId = new HashMap<>(eventState.getEventCoordinatesByPointerId());
     mLastButtonState = event.getButtonState();
 
     // Clean up any stale pointerIds
