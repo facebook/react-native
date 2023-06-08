@@ -14,6 +14,7 @@
 #include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
@@ -134,7 +135,7 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
-      SharedEventTarget eventTarget) const;
+      const InstanceHandle::Shared &instanceHandle) const;
 
   ShadowNode::Shared cloneNode(
       ShadowNode const &shadowNode,
