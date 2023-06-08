@@ -29,6 +29,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
