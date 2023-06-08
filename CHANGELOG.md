@@ -969,6 +969,14 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 - Add GitHub token permissions for workflows ([3da3d82320](https://github.com/facebook/react-native/commit/3da3d82320bd035c6bd361a82ea12a70dba4e851) by [@varunsh-coder](https://github.com/varunsh-coder))
 - Bump RCT-Folly to 2021-07-22 ([68f3a42fc7](https://github.com/facebook/react-native/commit/68f3a42fc7380051714253f43b42175de361f8bd) by [@luissantana](https://github.com/luissantana))
 
+## v0.69.11
+
+### Fixed
+
+#### iOS specific
+
+- Make 0.69 compatible with Xcode 15 (thanks to @AlexanderEggers for the commit in main) ([37e8df1cdc](https://github.com/facebook/react-native/commit/37e8df1cdce4a66763c720b1b0768d049def9518))
+
 ## v0.69.10
 
 ### Fixed
