@@ -139,7 +139,7 @@ class VirtualizedSectionList<
       return;
     }
     if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
-      const frame = this._listRef.__getFrameMetricsApprox(
+      const frame = this._listRef.__getCellMetricsApprox(
         index - params.itemIndex,
         this._listRef.props,
       );
