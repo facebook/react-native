@@ -984,7 +984,6 @@ jobs:
     docker:
       - image: debian:bullseye
     resource_class: "xlarge"
-    working_directory: /root
     steps:
       - checkout
       - run:
