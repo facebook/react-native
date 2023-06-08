@@ -97,12 +97,12 @@ export const normalizeColorObject = (
     'colorWithSystemEffect' in color &&
     color.colorWithSystemEffect != null
   ) {
-    const processColor = require('./processColor').default;
+    const normalizeColor = require('./normalizeColor');
     const colorWithSystemEffect = color.colorWithSystemEffect;
     const colorObject: NativeColorValue = {
       colorWithSystemEffect: {
         // $FlowFixMe[incompatible-use]
-        baseColor: processColor(colorWithSystemEffect.baseColor),
+        baseColor: normalizeColor(colorWithSystemEffect.baseColor),
         // $FlowFixMe[incompatible-use]
         systemEffect: colorWithSystemEffect.systemEffect,
       },
