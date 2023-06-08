@@ -317,6 +317,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
     cpp_flags = NEW_ARCH_OTHER_CPLUSPLUSFLAGS
   end
   modify_flags_for_new_architecture(installer, cpp_flags)
+  apply_xcode_15_patch(installer)
 
   set_node_modules_user_settings(installer, react_native_path)
 end
@@ -726,6 +727,19 @@ def __apply_Xcode_12_5_M1_post_install_workaround(installer)
   # See https://github.com/facebook/flipper/issues/834 for more details.
   time_header = "#{Pod::Config.instance.installation_root.to_s}/Pods/RCT-Folly/folly/portability/Time.h"
   `sed -i -e  $'s/ && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)//' #{time_header}`
+end
+
+# Fix to build react native on Xcode 15 beta 1
+def apply_xcode_15_patch(installer)
+  installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+          target_installation_result.native_target.build_configurations.each do |config|
+              # unary_function and binary_function are no longer provided in C++17 and newer standard modes as part of Xcode 15. They can be re-enabled with setting _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+              # Ref: https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Deprecations
+              config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) '
+              config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '"_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION" '
+      end
+  end
 end
 
 # Monkeypatch of `Pod::Lockfile` to ensure automatic update of dependencies integrated with a local podspec when their version changed.
