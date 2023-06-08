@@ -48,6 +48,10 @@ SurfaceId ShadowNodeFamily::getSurfaceId() const {
   return surfaceId_;
 }
 
+SharedEventEmitter ShadowNodeFamily::getEventEmitter() const {
+  return eventEmitter_;
+}
+
 ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
 }
