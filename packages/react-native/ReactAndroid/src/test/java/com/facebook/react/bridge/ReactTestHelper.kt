@@ -22,6 +22,7 @@ object ReactTestHelper {
    * @return a ReactApplicationContext that has a CatalystInstance mock returned by
    *   [ ][.createMockCatalystInstance]
    */
+  @JvmStatic
   fun createCatalystContextForTest(): ReactApplicationContext {
     val context = ReactApplicationContext(RuntimeEnvironment.application)
     context.initializeWithInstance(createMockCatalystInstance())
@@ -29,6 +30,7 @@ object ReactTestHelper {
   }
 
   /** @return a CatalystInstance mock that has a default working ReactQueueConfiguration. */
+  @JvmStatic
   fun createMockCatalystInstance(): CatalystInstance {
     val spec: ReactQueueConfigurationSpec =
       ReactQueueConfigurationSpec.builder()
