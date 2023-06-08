@@ -50,7 +50,7 @@ React Native brings [**React**'s][r] declarative UI framework to iOS and Android
 
 React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
 
-[r]: https://reactjs.org/
+[r]: https://react.dev/
 [p]: https://reactnative.dev/docs/out-of-tree-platforms
 [e]: https://github.com/facebook/react-native/blob/HEAD/ECOSYSTEM.md
 
@@ -77,7 +77,7 @@ Follow the [Getting Started guide](https://reactnative.dev/docs/getting-started)
 - [Creating a New Application][new-app]
 - [Adding React Native to an Existing Application][existing]
 
-[hello-world]: https://snack.expo.dev/@hramos/hello,-world!
+[hello-world]: https://snack.expo.dev/@samples/hello-world
 [new-app]: https://reactnative.dev/docs/getting-started
 [existing]: https://reactnative.dev/docs/integration-with-existing-apps
 
@@ -90,7 +90,7 @@ The React Native documentation discusses components, APIs, and topics that are s
 The source for the React Native documentation and website is hosted on a separate repo, [**@facebook/react-native-website**][repo-website].
 
 [docs]: https://reactnative.dev/docs/getting-started
-[r-docs]: https://reactjs.org/docs/getting-started.html
+[r-docs]: https://react.dev/learn
 [repo-website]: https://github.com/facebook/react-native-website
 
 ## 🚀 Upgrading

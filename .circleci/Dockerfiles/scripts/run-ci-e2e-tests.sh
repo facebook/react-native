@@ -141,7 +141,7 @@ function e2e_suite() {
       fi
     fi
 
-    if ! npm pack
+    if ! (cd packages/react-native && FILENAME=$(npm pack | tail -1) && mv "$FILENAME" ../../)
     then
       echo "Failed to pack react-native"
       return 1

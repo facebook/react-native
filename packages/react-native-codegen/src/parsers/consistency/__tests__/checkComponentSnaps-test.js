@@ -21,7 +21,7 @@ const tsExtraCases = [
   'ARRAY2_PROP_TYPES_NO_EVENTS',
   'PROPS_AND_EVENTS_WITH_INTERFACES',
 ];
-const ignoredCases = ['ARRAY_PROP_TYPES_NO_EVENTS'];
+const ignoredCases = [];
 
 compareSnaps(
   flowFixtures,

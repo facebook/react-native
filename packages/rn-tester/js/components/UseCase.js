@@ -9,7 +9,7 @@
  */
 
 import * as React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{|
   children?: React.Node,
@@ -20,7 +20,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 export default function UseCase(props: Props): React.Node {
-  const children = React.Children.toArray(props.children).filter(
+  const children = React.Children.toArray<any>(props.children).filter(
     child => child !== ' ',
   );
   return (

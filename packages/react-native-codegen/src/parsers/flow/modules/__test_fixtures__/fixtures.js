@@ -288,6 +288,68 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_PARTIALS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type SomeObj = {|
+  a: string,
+  b?: boolean,
+|};
+
+export interface Spec extends TurboModule {
+  +getSomeObj: () => SomeObj;
+  +getPartialSomeObj: () => Partial<SomeObj>;
+  +getSomeObjFromPartialSomeObj: (value: Partial<SomeObj>) => SomeObj;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NATIVE_MODULE_WITH_PARTIALS_COMPLEX = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type SomeObj = {|
+  a: string,
+  b?: boolean,
+|};
+
+export type PartialSomeObj = Partial<SomeObj>;
+
+export interface Spec extends TurboModule {
+  +getPartialPartial: (value1: Partial<SomeObj>, value2: PartialSomeObj) => SomeObj
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const NATIVE_MODULE_WITH_ROOT_TAG = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -529,6 +591,35 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_UNION = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type ChooseInt = 1 | 2 | 3;
+export type ChooseFloat = 1.44 | 2.88 | 5.76;
+export type ChooseObject = {} | {low: string};
+export type ChooseString = 'One' | 'Two' | 'Three';
+
+export interface Spec extends TurboModule {
+ +getUnion: (chooseInt: ChooseInt, chooseFloat: ChooseFloat, chooseObject: ChooseObject, chooseString: ChooseString) => ChooseObject;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const ANDROID_ONLY_NATIVE_MODULE = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -591,7 +682,7 @@ export enum StringOptions {
 }
 
 export interface Spec extends TurboModule {
-  +getEnums: (quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions) => string;
+  getEnums(quality: Quality, resolution?: Resolution, floppy: Floppy, stringOptions: StringOptions): string;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleIOS');
@@ -653,6 +744,45 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModuleCxx');
 
 `;
 
+const PROMISE_WITH_COMMONLY_USED_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type Season = 'Spring' | 'Summer' | 'Autumn' | 'Winter';
+
+export type CustomObject = {|
+  field1: Array<Object>,
+  field2: boolean,
+  field3: string,
+  type: 'A_String_Literal',
+|};
+
+export interface Spec extends TurboModule {
+  returnStringArray(): Promise<Array<string>>;
+  returnObjectArray(): Promise<Array<Object>>;
+  returnNullableNumber(): Promise<number | null>;
+  returnEmpty(): Promise<empty>;
+  returnUnsupportedIndex(): Promise<{ [string]: 'authorized' | 'denied' | 'undetermined' | true | false }>;
+  returnSupportedIndex(): Promise<{ [string]: CustomObject }>;
+  returnEnum() : Promise<Season>;
+  returnObject() : Promise<CustomObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -664,6 +794,8 @@ module.exports = {
   NATIVE_MODULE_WITH_COMPLEX_OBJECTS_WITH_NULLABLE_KEY,
   NATIVE_MODULE_WITH_SIMPLE_OBJECT,
   NATIVE_MODULE_WITH_UNSAFE_OBJECT,
+  NATIVE_MODULE_WITH_PARTIALS,
+  NATIVE_MODULE_WITH_PARTIALS_COMPLEX,
   NATIVE_MODULE_WITH_ROOT_TAG,
   NATIVE_MODULE_WITH_NULLABLE_PARAM,
   NATIVE_MODULE_WITH_BASIC_ARRAY,
@@ -671,8 +803,10 @@ module.exports = {
   NATIVE_MODULE_WITH_ARRAY_WITH_ALIAS,
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   NATIVE_MODULE_WITH_CALLBACK,
+  NATIVE_MODULE_WITH_UNION,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
+  PROMISE_WITH_COMMONLY_USED_TYPES,
 };

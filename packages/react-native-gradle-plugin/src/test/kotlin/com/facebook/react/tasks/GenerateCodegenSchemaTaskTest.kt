@@ -7,9 +7,8 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.tests.OS
-import com.facebook.react.tests.OsRule
-import com.facebook.react.tests.WithOs
+import com.facebook.react.tests.*
+import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
 import org.junit.Assert.*
@@ -52,7 +51,7 @@ class GenerateCodegenSchemaTaskTest {
         tempFolder.newFolder("js").apply {
           File(this, "afolder/includedfile.js").createFileAndPath()
           // Those files should be excluded due to their filepath
-          File(this, "afolder/generated/source/codegen/anotherfolder/excludedfile.js")
+          File(this, "afolder/build/generated/source/codegen/anotherfolder/excludedfile.js")
               .createFileAndPath()
           File(this, "afolder/build/generated/assets/react/anotherfolder/excludedfile.js")
               .createFileAndPath()
@@ -69,13 +68,10 @@ class GenerateCodegenSchemaTaskTest {
     assertEquals(jsRootDir, task.jsInputFiles.dir)
     assertEquals(
         setOf(
-            "**/generated/source/codegen/**/*",
             "**/build/ASSETS/**/*",
             "**/build/RES/**/*",
-            "**/build/generated/assets/react/**/*",
-            "**/build/generated/res/react/**/*",
-            "**/build/generated/sourcemaps/react/**/*",
-            "**/build/intermediates/sourcemaps/react/**/*",
+            "**/build/generated/**/*",
+            "**/build/intermediates/**/*",
         ),
         task.jsInputFiles.excludes)
     assertEquals(1, task.jsInputFiles.files.size)
@@ -140,19 +136,55 @@ class GenerateCodegenSchemaTaskTest {
           it.codegenDir.set(codegenDir)
           it.jsRootDir.set(jsRootDir)
           it.generatedSrcDir.set(outputDir)
-          it.nodeExecutableAndArgs.set(listOf("--verbose"))
+          it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
         }
 
     task.setupCommandLine()
 
     assertEquals(
         listOf(
+            "node",
             "--verbose",
             File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js").toString(),
             "--platform",
             "android",
             File(outputDir, "schema.json").toString(),
             jsRootDir.toString(),
+        ),
+        task.commandLine.toMutableList())
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun setupCommandLine_onWindows_willSetupCorrectly() {
+    val codegenDir = tempFolder.newFolder("codegen")
+    val jsRootDir = tempFolder.newFolder("js")
+    val outputDir = tempFolder.newFolder("output")
+
+    val project = createProject()
+    val task =
+        createTestTask<GenerateCodegenSchemaTask>(project) {
+          it.codegenDir.set(codegenDir)
+          it.jsRootDir.set(jsRootDir)
+          it.generatedSrcDir.set(outputDir)
+          it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
+        }
+
+    task.setupCommandLine()
+
+    assertEquals(
+        listOf(
+            "cmd",
+            "/c",
+            "node",
+            "--verbose",
+            File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js")
+                .relativeTo(project.projectDir)
+                .path,
+            "--platform",
+            "android",
+            File(outputDir, "schema.json").relativeTo(project.projectDir).path,
+            jsRootDir.relativeTo(project.projectDir).path,
         ),
         task.commandLine.toMutableList())
   }

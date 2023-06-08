@@ -24,10 +24,14 @@ module.exports = {
       dependencyConfig: android.dependencyConfig,
     },
   },
-  reactNativePath: '../../',
+  reactNativePath: '../react-native',
   project: {
     ios: {
       sourceDir: '.',
+      unstable_reactLegacyComponentNames: ['RNTMyLegacyNativeView'],
+    },
+    android: {
+      sourceDir: '../../',
     },
   },
 };

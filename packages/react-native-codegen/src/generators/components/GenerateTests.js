@@ -9,10 +9,12 @@
  */
 
 'use strict';
-import type {PropTypeAnnotation, ComponentShape} from '../../CodegenSchema';
-
+import type {ComponentShape, PropTypeAnnotation} from '../../CodegenSchema';
 import type {SchemaType} from '../../CodegenSchema';
-const {getImports, toSafeCppString} = require('./CppHelpers');
+
+const {getImports} = require('./CppHelpers');
+
+const {toSafeCppString} = require('../Utils');
 
 type FilesOutput = Map<string, string>;
 type PropValueType = string | number | boolean;
@@ -151,7 +153,7 @@ function generateTestsString(name: string, component: ComponentShape) {
     });
   }
 
-  const testCases = component.props.reduce((cases, prop) => {
+  const testCases = component.props.reduce((cases: Array<TestCase>, prop) => {
     return cases.concat(getTestCasesForProp(prop.name, prop.typeAnnotation));
   }, []);
 

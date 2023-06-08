@@ -8,10 +8,10 @@
  * @flow strict-local
  */
 
-import type {PointValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
-import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {PointValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,

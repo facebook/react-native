@@ -106,6 +106,9 @@ function getJavaValueForProp(
         case 'EdgeInsetsPrimitive':
           addNullable(imports);
           return '@Nullable ReadableMap value';
+        case 'DimensionPrimitive':
+          addNullable(imports);
+          return '@Nullable YogaValue value';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Received unknown ReservedPropTypeAnnotation');
@@ -124,6 +127,8 @@ function getJavaValueForProp(
     case 'Int32EnumTypeAnnotation':
       addNullable(imports);
       return '@Nullable Integer value';
+    case 'MixedTypeAnnotation':
+      return 'Dynamic value';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

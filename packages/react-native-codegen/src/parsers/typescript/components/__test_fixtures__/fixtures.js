@@ -84,6 +84,57 @@ const EVENT_DEFINITION = `
   object_readonly_optional_both?: Readonly<{
     int32_optional_both?: Int32 | null | undefined;
   }> | null | undefined;
+
+  boolean_array_required: boolean[];
+  boolean_array_optional_key?: boolean[];
+  boolean_array_optional_value: boolean[] | null | undefined;
+  boolean_array_optional_both?: boolean[] | null | undefined;
+
+  string_array_required: string[];
+  string_array_optional_key?: (string[]);
+  string_array_optional_value: (string[]) | null | undefined;
+  string_array_optional_both?: (string[] | null | undefined);
+
+  double_array_required: Double[];
+  double_array_optional_key?: Double[];
+  double_array_optional_value: Double[] | null | undefined;
+  double_array_optional_both?: Double[] | null | undefined;
+
+  float_array_required: Float[];
+  float_array_optional_key?: Float[];
+  float_array_optional_value: Float[] | null | undefined;
+  float_array_optional_both?: Float[] | null | undefined;
+
+  int32_array_required: Int32[];
+  int32_array_optional_key?: Int32[];
+  int32_array_optional_value: Int32[] | null | undefined;
+  int32_array_optional_both?: Int32[] | null | undefined;
+
+  enum_array_required: ('small' | 'large')[];
+  enum_array_optional_key?: ('small' | 'large')[];
+  enum_array_optional_value: ('small' | 'large')[] | null | undefined;
+  enum_array_optional_both?: ('small' | 'large')[] | null | undefined;
+
+  object_array_required: {
+    boolean_required: boolean;
+  }[];
+
+  object_array_optional_key?: {
+    string_optional_key?: string;
+  }[];
+
+  object_array_optional_value: {
+    float_optional_value: Float | null | undefined;
+  }[] | null | undefined;
+
+  object_array_optional_both?: {
+    int32_optional_both?: Int32 | null | undefined;
+  }[] | null | undefined;
+
+  int32_array_array_required: Int32[][];
+  int32_array_array_optional_key?: Int32[][];
+  int32_array_array_optional_value: Int32[][] | null | undefined;
+  int32_array_array_optional_both?: Int32[][] | null | undefined;
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `
@@ -197,13 +248,14 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault, UnsafeMixed} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {
   ColorValue,
   ColorArrayValue,
   PointValue,
   EdgeInsetsValue,
+  DimensionValue,
 } from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
@@ -302,6 +354,17 @@ export interface ModuleProps extends ViewProps {
   insets_optional_key?: EdgeInsetsValue;
   insets_optional_value: EdgeInsetsValue | null | undefined;
   insets_optional_both?: EdgeInsetsValue | null | undefined;
+
+
+  // DimensionValue props
+  dimension_required: DimensionValue;
+  dimension_optional_key?: DimensionValue;
+  dimension_optional_value: DimensionValue | null | undefined;
+  dimension_optional_both?: DimensionValue | null | undefined;
+
+  // Mixed props
+  mixed_required: UnsafeMixed,
+  mixed_optional_key?: UnsafeMixed,
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -330,6 +393,7 @@ import type {
   ColorArrayValue,
   PointValue,
   EdgeInsetsValue,
+  DimensionValue,
 } from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
@@ -403,6 +467,12 @@ export interface ModuleProps extends ViewProps {
   array_insets_optional_value: ReadonlyArray<EdgeInsetsValue> | null | undefined;
   array_insets_optional_both?: ReadonlyArray<EdgeInsetsValue> | null | undefined;
 
+  // DimensionValue props
+  array_dimension_required: ReadonlyArray<DimensionValue>;
+  array_dimension_optional_key?: ReadonlyArray<DimensionValue>;
+  array_dimension_optional_value: ReadonlyArray<DimensionValue> | null | undefined;
+  array_dimension_optional_both?: ReadonlyArray<DimensionValue> | null | undefined;
+
   // Object props
   array_object_required: ReadonlyArray<Readonly<{prop: string}>>;
   array_object_optional_key?: ReadonlyArray<Readonly<{prop: string}>>;
@@ -452,6 +522,13 @@ export interface ModuleProps extends ViewProps {
   array_of_array_of_object_required_in_file: ReadonlyArray<
     ReadonlyArray<ObjectType>
   >;
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: ReadonlyArray<
+    ReadonlyArray<
+      Readonly<ObjectType & {}>,
+    >,
+  >,
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -584,6 +661,9 @@ export interface ModuleProps extends ViewProps {
 
   // Nested array of array of object types (in file)
   array_of_array_of_object_required_in_file: readonly ObjectType[][];
+
+  // Nested array of array of object types (with spread)
+  array_of_array_of_object_required_with_spread: readonly Readonly<ObjectType & {}>[][];
 }
 
 export default codegenNativeComponent<ModuleProps>(
@@ -612,6 +692,7 @@ import type {
   ColorArrayValue,
   PointValue,
   EdgeInsetsValue,
+  DimensionValue,
 } from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
@@ -676,6 +757,12 @@ export interface ModuleProps extends ViewProps {
   insets_optional_key: Readonly<{prop?: EdgeInsetsValue}>;
   insets_optional_value: Readonly<{prop: EdgeInsetsValue | null | undefined}>;
   insets_optional_both: Readonly<{prop?: EdgeInsetsValue | null | undefined}>;
+
+  // DimensionValue props
+  dimension_required: Readonly<{prop: DimensionValue}>;
+  dimension_optional_key: Readonly<{prop?: DimensionValue}>;
+  dimension_optional_value: Readonly<{prop: DimensionValue | null | undefined}>;
+  dimension_optional_both: Readonly<{prop?: DimensionValue | null | undefined}>;
 
   // Nested object props
   object_required: Readonly<{prop: Readonly<{nestedProp: string}>}>;
@@ -971,13 +1058,13 @@ type NativeType = HostComponent<ModuleProps>;
  interface NativeCommands {
    readonly handleRootTag: (viewRef: React.ElementRef<NativeType>, rootTag: RootTag) => void;
    readonly hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void;
-   readonly scrollTo: (
+   scrollTo(
      viewRef: React.ElementRef<NativeType>,
      x: Float,
      y: Int32,
      z: Double,
      animated: boolean,
-   ) => void;
+   ): void;
  }
 
  export const Commands = codegenNativeCommands<NativeCommands>({

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ta_IN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">ரியாக்ட் நேட்டிவ் டேவ் மெனு (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">இயங்குகிறது %1$s</string>
+</resources>

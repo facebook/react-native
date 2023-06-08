@@ -31,7 +31,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /**
    * The path to the react-native NPM package folder.
    *
-   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
+   * Default: ${rootProject.dir}/../node_modules/react-native
    */
   val reactNativeDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/react-native"))
@@ -89,7 +89,7 @@ abstract class ReactExtension @Inject constructor(project: Project) {
    * will:
    * - Not be bundled (the bundle file will not be created and won't be copied over).
    * - Have the Hermes Debug flags set. That's useful if you have another variant (say `canary`)
-   * where you want dev mode to be enabled. Default: ['debug']
+   *   where you want dev mode to be enabled. Default: ['debug']
    */
   val debuggableVariants: ListProperty<String> =
       objects.listProperty(String::class.java).convention(listOf("debug"))
@@ -121,17 +121,17 @@ abstract class ReactExtension @Inject constructor(project: Project) {
   /**
    * The path to the react-native-codegen NPM package folder.
    *
-   * Default: ${rootProject.dir}/../node_modules/react-native-codegen
+   * Default: ${rootProject.dir}/../node_modules/@react-native/codegen
    */
   val codegenDir: DirectoryProperty =
-      objects.directoryProperty().convention(root.dir("node_modules/react-native-codegen"))
+      objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
 
   /**
    * The root directory for all JS files for the app.
    *
-   * Default: [root] (i.e. ${rootProject.dir}/../)
+   * Default: the parent folder of the `/android` folder.
    */
-  val jsRootDir: DirectoryProperty = objects.directoryProperty().convention(root.get())
+  val jsRootDir: DirectoryProperty = objects.directoryProperty()
 
   /**
    * The library name that will be used for the codegen artifacts.

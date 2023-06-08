@@ -123,7 +123,7 @@ const EVENTS_WITH_PAPER_NAME: SchemaType = {
               },
             },
             {
-              name: 'onDire tChange',
+              name: 'onDirectChange',
               paperTopLevelNameDeprecated: 'paperDirectChange',
               optional: true,
               bubblingType: 'direct',
@@ -526,6 +526,36 @@ const INSETS_PROP: SchemaType = {
   },
 };
 
+const DIMENSION_PROP: SchemaType = {
+  modules: {
+    CustomView: {
+      type: 'Component',
+      components: {
+        DimensionPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'marginBack',
+              optional: true,
+              typeAnnotation: {
+                type: 'ReservedPropTypeAnnotation',
+                name: 'DimensionPrimitive',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -610,6 +640,17 @@ const ARRAY_PROPS: SchemaType = {
                 elementType: {
                   type: 'ReservedPropTypeAnnotation',
                   name: 'PointPrimitive',
+                },
+              },
+            },
+            {
+              name: 'dimensions',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'ReservedPropTypeAnnotation',
+                  name: 'DimensionPrimitive',
                 },
               },
             },
@@ -1082,6 +1123,35 @@ const INT32_ENUM_PROP: SchemaType = {
   },
 };
 
+const MIXED_PROP: SchemaType = {
+  modules: {
+    CustomView: {
+      type: 'Component',
+      components: {
+        MixedPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'mixedProp',
+              optional: false,
+              typeAnnotation: {
+                type: 'MixedTypeAnnotation',
+              },
+            },
+          ],
+          commands: [],
+        },
+      },
+    },
+  },
+};
+
 const EVENT_PROPS: SchemaType = {
   modules: {
     Switch: {
@@ -1137,6 +1207,99 @@ const EVENT_PROPS: SchemaType = {
               },
             },
             {
+              name: 'onArrayEventType',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'bool_array_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'BooleanTypeAnnotation',
+                        },
+                      },
+                    },
+                    {
+                      name: 'string_enum_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'StringEnumTypeAnnotation',
+                          options: ['YES', 'NO'],
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_array_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {
+                            type: 'StringTypeAnnotation',
+                          },
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_object_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'ObjectTypeAnnotation',
+                          properties: [
+                            {
+                              name: 'lat',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'DoubleTypeAnnotation',
+                              },
+                            },
+                            {
+                              name: 'lon',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'DoubleTypeAnnotation',
+                              },
+                            },
+                            {
+                              name: 'names',
+                              optional: false,
+                              typeAnnotation: {
+                                type: 'ArrayTypeAnnotation',
+                                elementType: {
+                                  type: 'StringTypeAnnotation',
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                    {
+                      name: 'array_mixed_event_prop',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'ArrayTypeAnnotation',
+                        elementType: {
+                          type: 'MixedTypeAnnotation',
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+            {
               name: 'onEventDirect',
               optional: true,
               bubblingType: 'direct',
@@ -1183,6 +1346,26 @@ const EVENT_PROPS: SchemaType = {
               bubblingType: 'bubble',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
+              },
+            },
+            {
+              name: 'onEventWithMixedPropAttribute',
+              optional: true,
+              bubblingType: 'direct',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      name: 'value',
+                      optional: false,
+                      typeAnnotation: {
+                        type: 'MixedTypeAnnotation',
+                      },
+                    },
+                  ],
+                },
               },
             },
           ],
@@ -1653,12 +1836,14 @@ module.exports = {
   IMAGE_PROP,
   POINT_PROP,
   INSETS_PROP,
+  DIMENSION_PROP,
   ARRAY_PROPS,
   ARRAY_PROPS_WITH_NESTED_OBJECT,
   OBJECT_PROPS,
   MULTI_NATIVE_PROP,
   STRING_ENUM_PROP,
   INT32_ENUM_PROP,
+  MIXED_PROP,
   EVENT_PROPS,
   EVENTS_WITH_PAPER_NAME,
   EVENT_NESTED_OBJECT_PROPS,

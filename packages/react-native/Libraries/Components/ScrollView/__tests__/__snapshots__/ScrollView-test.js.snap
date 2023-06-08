@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ScrollView renders its children: should deep render when mocked (please verify output manually) 1`] = `
+<RCTScrollView>
+  <View>
+    <View>
+      <Text>
+        Hello World!
+      </Text>
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`ScrollView renders its children: should deep render when not mocked (please verify output manually) 1`] = `
+<RCTScrollView
+  alwaysBounceVertical={true}
+  onContentSizeChange={null}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onResponderGrant={[Function]}
+  onResponderReject={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  onScrollShouldSetResponder={[Function]}
+  onStartShouldSetResponder={[Function]}
+  onStartShouldSetResponderCapture={[Function]}
+  onTouchCancel={[Function]}
+  onTouchEnd={[Function]}
+  onTouchMove={[Function]}
+  onTouchStart={[Function]}
+  pagingEnabled={false}
+  scrollViewRef={null}
+  sendMomentumEvents={false}
+  snapToEnd={true}
+  snapToStart={true}
+  style={
+    Object {
+      "flexDirection": "column",
+      "flexGrow": 1,
+      "flexShrink": 1,
+      "overflow": "scroll",
+    }
+  }
+>
+  <RCTScrollContentView
+    collapsable={false}
+    style={
+      Array [
+        false,
+        undefined,
+      ]
+    }
+  >
+    <View>
+      <Text>
+        Hello World!
+      </Text>
+    </View>
+  </RCTScrollContentView>
+</RCTScrollView>
+`;
+
+exports[`ScrollView renders its children: should shallow render as <ScrollView /> when mocked 1`] = `
+<ScrollView>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ScrollView>
+`;
+
+exports[`ScrollView renders its children: should shallow render as <ScrollView /> when not mocked 1`] = `
+<ScrollView>
+  <View>
+    <Text>
+      Hello World!
+    </Text>
+  </View>
+</ScrollView>
+`;

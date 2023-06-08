@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: hr_HR -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">React native dev izbornik (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">Pokretanje %1$s</string>
+</resources>

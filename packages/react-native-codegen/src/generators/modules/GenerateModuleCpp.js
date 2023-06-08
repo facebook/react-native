@@ -18,6 +18,7 @@ import type {
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -39,8 +40,8 @@ const HostFunctionTemplate = ({
 }>) => {
   const isNullable = returnTypeAnnotation.type === 'NullableTypeAnnotation';
   const isVoid = returnTypeAnnotation.type === 'VoidTypeAnnotation';
-  const methodCallArgs = ['rt', ...args].join(', ');
-  const methodCall = `static_cast<${hasteModuleName}CxxSpecJSI *>(&turboModule)->${methodName}(${methodCallArgs})`;
+  const methodCallArgs = ['    rt', ...args].join(',\n    ');
+  const methodCall = `static_cast<${hasteModuleName}CxxSpecJSI *>(&turboModule)->${methodName}(\n${methodCallArgs}\n  )`;
 
   return `static jsi::Value __hostFunction_${hasteModuleName}CxxSpecJSI_${methodName}(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {${
     isVoid
@@ -114,9 +115,11 @@ ${modules}
 type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
 
 function serializeArg(
+  moduleName: string,
   arg: Param,
   index: number,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ): string {
   const {typeAnnotation: nullableTypeAnnotation, optional} = arg;
   const [typeAnnotation, nullable] =
@@ -136,7 +139,7 @@ function serializeArg(
     } else {
       let condition = `${val}.isNull() || ${val}.isUndefined()`;
       if (optional) {
-        condition = `count < ${index} || ${condition}`;
+        condition = `count <= ${index} || ${condition}`;
       }
       return `${condition} ? std::nullopt : std::make_optional(${expression})`;
     }
@@ -208,9 +211,11 @@ function serializeArg(
 }
 
 function serializePropertyIntoHostFunction(
+  moduleName: string,
   hasteModuleName: string,
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ): string {
   const [propertyTypeAnnotation] =
     unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
@@ -220,7 +225,7 @@ function serializePropertyIntoHostFunction(
     methodName: property.name,
     returnTypeAnnotation: propertyTypeAnnotation.returnTypeAnnotation,
     args: propertyTypeAnnotation.params.map((p, i) =>
-      serializeArg(p, i, resolveAlias),
+      serializeArg(moduleName, p, i, resolveAlias, enumMap),
     ),
   });
 }
@@ -238,24 +243,26 @@ module.exports = {
       .map((hasteModuleName: string) => {
         const nativeModule = nativeModules[hasteModuleName];
         const {
-          aliases,
+          aliasMap,
+          enumMap,
           spec: {properties},
-          moduleNames,
+          moduleName,
         } = nativeModule;
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
         const hostFunctions = properties.map(property =>
           serializePropertyIntoHostFunction(
+            moduleName,
             hasteModuleName,
             property,
             resolveAlias,
+            enumMap,
           ),
         );
 
         return ModuleTemplate({
           hasteModuleName,
           hostFunctions,
-          // TODO: What happens when there are more than one NativeModule requires?
-          moduleName: moduleNames[0],
+          moduleName,
           methods: properties.map(
             ({name: propertyName, typeAnnotation: nullableTypeAnnotation}) => {
               const [{params}] = unwrapNullable(nullableTypeAnnotation);

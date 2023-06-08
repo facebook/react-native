@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
+import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
 import org.gradle.api.Project
@@ -39,15 +40,28 @@ internal object NdkConfiguratorUtils {
         // Parameters should be provided in an additive manner (do not override what
         // the user provided, but allow for sensible defaults).
         val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
-        if ("-DPROJECT_BUILD_DIR" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
         }
-        if ("-DREACT_ANDROID_DIR" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
         }
-        if ("-DANDROID_STL" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
+        }
+        // Due to the new NDK toolchain file, the C++ flags gets overridden between compilation
+        // units. This is causing some libraries to don't be compiled with -DANDROID and other
+        // crucial flags. This can be revisited once we bump to NDK 25/26
+        if (cmakeArgs.none { it.startsWith("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE") }) {
+          cmakeArgs.add("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+        }
+
+        val architectures = project.getReactNativeArchitectures()
+        // abiFilters are split ABI are not compatible each other, so we set the abiFilters
+        // only if the user hasn't enabled the split abi feature.
+        if (architectures.isNotEmpty() && !ext.splits.abi.isEnable) {
+          ext.defaultConfig.ndk.abiFilters.addAll(architectures)
         }
       }
     }
@@ -94,6 +108,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_render_imagemanager.so",
               "**/libreact_render_mapbuffer.so",
               "**/librrc_image.so",
+              "**/librrc_legacyviewmanagerinterop.so",
               "**/librrc_view.so",
               "**/libruntimeexecutor.so",
               "**/libturbomodulejsijni.so",
@@ -112,36 +127,25 @@ internal object NdkConfiguratorUtils {
       config: ReactExtension,
       variant: Variant,
       hermesEnabled: Boolean,
-      debuggableVariant: Boolean
   ) {
     if (config.enableSoCleanup.get()) {
-      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled, debuggableVariant)
+      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled)
       variant.packaging.jniLibs.excludes.addAll(excludes)
       variant.packaging.jniLibs.pickFirsts.addAll(includes)
     }
   }
 
-  fun getPackagingOptionsForVariant(
-      hermesEnabled: Boolean,
-      debuggableVariant: Boolean
-  ): Pair<List<String>, List<String>> {
+  fun getPackagingOptionsForVariant(hermesEnabled: Boolean): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
     if (hermesEnabled) {
       excludes.add("**/libjsc.so")
       excludes.add("**/libjscexecutor.so")
       includes.add("**/libhermes.so")
-      if (debuggableVariant) {
-        excludes.add("**/libhermes-executor-release.so")
-        includes.add("**/libhermes-executor-debug.so")
-      } else {
-        excludes.add("**/libhermes-executor-debug.so")
-        includes.add("**/libhermes-executor-release.so")
-      }
+      includes.add("**/libhermes_executor.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes-executor-debug.so")
-      excludes.add("**/libhermes-executor-release.so")
+      excludes.add("**/libhermes_executor.so")
       includes.add("**/libjsc.so")
       includes.add("**/libjscexecutor.so")
     }

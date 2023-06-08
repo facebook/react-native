@@ -16,12 +16,12 @@ require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
 module.exports = {
   root: true,
 
-  extends: ['@react-native-community'],
+  extends: ['@react-native'],
 
   plugins: ['@react-native/eslint-plugin-specs', 'lint'],
 
   overrides: [
-    // overriding the JS config from eslint-config-react-native-community config to ensure
+    // overriding the JS config from @react-native/eslint-config to ensure
     // that we use hermes-eslint for all js files
     {
       files: ['*.js'],
@@ -34,18 +34,6 @@ module.exports = {
         'no-undef': 0,
       },
     },
-
-    {
-      files: ['Libraries/**/*.js'],
-      rules: {
-        '@react-native-community/platform-colors': 2,
-        '@react-native/specs/react-native-modules': 2,
-        'lint/no-haste-imports': 2,
-        'lint/no-react-native-imports': 2,
-        'lint/require-extends-error': 2,
-        'lint/sort-imports': 1,
-      },
-    },
     {
       files: ['flow-typed/**/*.js'],
       rules: {
@@ -55,11 +43,22 @@ module.exports = {
       },
     },
     {
+      files: ['packages/react-native/Libraries/**/*.js'],
+      rules: {
+        '@react-native/platform-colors': 2,
+        '@react-native/specs/react-native-modules': 2,
+        'lint/no-haste-imports': 2,
+        'lint/no-react-native-imports': 2,
+        'lint/require-extends-error': 2,
+        'lint/sort-imports': 1,
+      },
+    },
+    {
       files: [
         '**/__fixtures__/**/*.js',
         '**/__mocks__/**/*.js',
         '**/__tests__/**/*.js',
-        'jest/**/*.js',
+        'packages/react-native/jest/**/*.js',
         'packages/rn-tester/**/*.js',
       ],
       globals: {
@@ -89,6 +88,16 @@ module.exports = {
         '@typescript-eslint/no-shadow': 'off',
         'no-self-compare': 'off',
         'react/self-closing-comp': 'off',
+      },
+    },
+    {
+      files: ['**/*.d.ts'],
+      plugins: ['redundant-undefined'],
+      rules: {
+        'redundant-undefined/redundant-undefined': [
+          'error',
+          {followExactOptionalPropertyTypes: true},
+        ],
       },
     },
   ],

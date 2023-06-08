@@ -51,9 +51,9 @@ popd
 C_SRC=$GITHUB/src/
 JAVA_SRC=$GITHUB/src/java/src/com/facebook/yoga
 TESTS=$GITHUB/src/java/tests/com/facebook/yoga
-FBA_SRC=$ROOT/xplat/js/react-native-github/ReactAndroid/src/main/java/com/facebook/yoga/
+FBA_SRC=$ROOT/xplat/js/react-native-github/packages/react-native/ReactAndroid/src/main/java/com/facebook/yoga/
 FBA_TESTS=$ROOT/fbandroid/javatests/com/facebook/yoga/
-FBO_SRC=$ROOT/xplat/js/react-native-github/React/Layout/
+FBO_SRC=$ROOT/xplat/js/react-native-github/packages/react-native/React/Layout/
 
 echo "Copying fbandroid src files over..."
 cp $JAVA_SRC/*.java $FBA_SRC

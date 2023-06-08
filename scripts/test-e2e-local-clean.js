@@ -19,7 +19,7 @@
  *
  * It will:
  *  - clean up node modules
- *  - clean up the build folder (derived data, gradlew cleanAll)
+ *  - clean up the build folder (derived data, gradlew clean)
  *  - clean up the pods folder for RNTester (pod install) (and Podfile.lock too)
  *  - kill all packagers
  *  - remove RNTestProject folder
@@ -42,12 +42,15 @@ if (isPackagerRunning() === 'running') {
 
 // Android
 console.info('\n** Cleaning Gradle build artifacts **\n');
-exec('./gradlew cleanAll');
+exec('./gradlew clean');
 exec('rm -rf /tmp/maven-local');
 
 // iOS
 console.info('\n** Nuking the derived data folder **\n');
 exec('rm -rf ~/Library/Developer/Xcode/DerivedData');
+
+console.info('\n** Removing the hermes-engine pod cache **\n');
+exec('rm -rf ~/Library/Caches/CocoaPods/Pods/External/hermes-engine');
 
 // RNTester Pods
 console.info('\n** Removing the RNTester Pods **\n');

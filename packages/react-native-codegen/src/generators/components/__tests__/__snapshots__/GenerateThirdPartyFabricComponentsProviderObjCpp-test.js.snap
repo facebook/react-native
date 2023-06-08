@@ -21,6 +21,7 @@ Map {
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sFabricComponentsClassMap = {
+    #ifndef RCT_DYNAMIC_FRAMEWORKS
 
     {\\"NoPropsNoEventsComponent\\", NoPropsNoEventsComponentCls}, // NO_PROPS_NO_EVENTS
 
@@ -44,6 +45,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
     {\\"InsetsPropNativeComponent\\", InsetsPropNativeComponentCls}, // INSETS_PROP
 
+    {\\"DimensionPropNativeComponent\\", DimensionPropNativeComponentCls}, // DIMENSION_PROP
+
     {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS
 
     {\\"ArrayPropsNativeComponent\\", ArrayPropsNativeComponentCls}, // ARRAY_PROPS_WITH_NESTED_OBJECT
@@ -55,6 +58,8 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
     {\\"StringEnumPropsNativeComponent\\", StringEnumPropsNativeComponentCls}, // STRING_ENUM_PROP
 
     {\\"Int32EnumPropsNativeComponent\\", Int32EnumPropsNativeComponentCls}, // INT32_ENUM_PROP
+
+    {\\"MixedPropNativeComponent\\", MixedPropNativeComponentCls}, // MIXED_PROP
 
     {\\"EventsNativeComponent\\", EventsNativeComponentCls}, // EVENT_PROPS
 
@@ -76,6 +81,7 @@ Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char
 
 
     {\\"MultiFileIncludedNativeComponent\\", MultiFileIncludedNativeComponentCls}, // EXCLUDE_IOS_TWO_COMPONENTS_DIFFERENT_FILES
+    #endif
   };
 
   auto p = sFabricComponentsClassMap.find(name);

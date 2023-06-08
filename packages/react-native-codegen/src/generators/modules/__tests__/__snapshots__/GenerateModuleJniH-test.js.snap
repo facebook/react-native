@@ -36,33 +36,6 @@ std::shared_ptr<TurboModule> SampleWithUppercaseName_ModuleProvider(const std::s
 } // namespace react
 } // namespace facebook
 ",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_SampleWithUppercaseName
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/SampleWithUppercaseName/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/SampleWithUppercaseName
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
-",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -149,33 +122,6 @@ std::shared_ptr<TurboModule> complex_objects_ModuleProvider(const std::string &m
 } // namespace react
 } // namespace facebook
 ",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_complex_objects
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/complex_objects/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/complex_objects
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
-",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -254,33 +200,6 @@ std::shared_ptr<TurboModule> cxx_only_native_modules_ModuleProvider(const std::s
 
 } // namespace react
 } // namespace facebook
-",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_cxx_only_native_modules
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/cxx_only_native_modules/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/cxx_only_native_modules
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -368,33 +287,6 @@ std::shared_ptr<TurboModule> empty_native_modules_ModuleProvider(const std::stri
 } // namespace react
 } // namespace facebook
 ",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_empty_native_modules
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/empty_native_modules/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/empty_native_modules
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
-",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -480,33 +372,6 @@ std::shared_ptr<TurboModule> native_modules_with_type_aliases_ModuleProvider(con
 
 } // namespace react
 } // namespace facebook
-",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_native_modules_with_type_aliases
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/native_modules_with_type_aliases/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/native_modules_with_type_aliases
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -602,33 +467,6 @@ std::shared_ptr<TurboModule> real_module_example_ModuleProvider(const std::strin
 } // namespace react
 } // namespace facebook
 ",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_real_module_example
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/real_module_example/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/real_module_example
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
-",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -714,33 +552,6 @@ std::shared_ptr<TurboModule> simple_native_modules_ModuleProvider(const std::str
 
 } // namespace react
 } // namespace facebook
-",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_simple_native_modules
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/simple_native_modules/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/simple_native_modules
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
@@ -835,33 +646,6 @@ std::shared_ptr<TurboModule> two_modules_different_files_ModuleProvider(const st
 
 } // namespace react
 } // namespace facebook
-",
-  "jni/Android.mk" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-LOCAL_MODULE := react_codegen_two_modules_different_files
-
-LOCAL_C_INCLUDES := $(LOCAL_PATH)
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp) $(wildcard $(LOCAL_PATH)/react/renderer/components/two_modules_different_files/*.cpp)
-LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
-
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/react/renderer/components/two_modules_different_files
-
-LOCAL_SHARED_LIBRARIES := libfbjni   libfolly_runtime   libglog   libjsi   libreact_codegen_rncore   libreact_debug   libreact_nativemodule_core   libreact_render_core   libreact_render_debug   libreact_render_graphics   libreact_render_imagemanager   libreact_render_mapbuffer   librrc_image   librrc_view   libturbomodulejsijni   libyoga
-
-LOCAL_CFLAGS := \\\\
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
-
-include $(BUILD_SHARED_LIBRARY)
 ",
   "jni/CMakeLists.txt" => "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #

@@ -12,6 +12,9 @@ import type {PlatformTestHarness} from '../PlatformTest/RNTesterPlatformTestType
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import {View} from 'react-native';
+import * as React from 'react';
+
 import {useMemo} from 'react';
 
 // These props are not in the specification but are present in the WPT so we keep them
@@ -225,4 +228,53 @@ export function useTestEventHandler(
     return props;
   }, [eventNames, handler]);
   return eventProps;
+}
+
+type EventName = 'onClick' | 'onPointerDown' | 'onPointerUp';
+
+export type EventOccurrence = {
+  id: string,
+  eventName: EventName,
+};
+
+export function mkEvent(id: string, eventName: EventName): EventOccurrence {
+  return {
+    id,
+    eventName,
+  };
+}
+
+export type EventTrackerProps = $ReadOnly<{
+  eventsRef?: {current: Array<EventOccurrence>},
+  onAnyEvent?: (EventOccurrence, PointerEvent) => void,
+  eventsToTrack: Array<EventName>,
+  id: string,
+  ...ViewProps,
+}>;
+
+type HandlerFunction = PointerEvent => void;
+
+export function EventTracker(props: EventTrackerProps): React.MixedElement {
+  const {eventsToTrack, eventsRef, id, style, onAnyEvent, ...viewProps} = props;
+  const handlerProps = useMemo(() => {
+    const handlers: {
+      onClick?: HandlerFunction,
+      onPointerDown?: HandlerFunction,
+      onPointerUp?: HandlerFunction,
+    } = {};
+    for (const eventName of eventsToTrack) {
+      handlers[eventName] = (e: PointerEvent) => {
+        const occurrence = {id, eventName};
+        eventsRef?.current.push(occurrence);
+        onAnyEvent?.(occurrence, e);
+      };
+    }
+    return handlers;
+  }, [eventsToTrack, id, eventsRef, onAnyEvent]);
+
+  return (
+    <View {...handlerProps} {...viewProps} style={props.style} id={props.id}>
+      {props.children}
+    </View>
+  );
 }

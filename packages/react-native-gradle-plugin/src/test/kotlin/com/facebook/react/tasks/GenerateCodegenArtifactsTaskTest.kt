@@ -7,9 +7,8 @@
 
 package com.facebook.react.tasks
 
-import com.facebook.react.tests.OS
-import com.facebook.react.tests.OsRule
-import com.facebook.react.tests.WithOs
+import com.facebook.react.tests.*
+import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.File
 import org.junit.Assert.assertEquals
@@ -26,31 +25,18 @@ class GenerateCodegenArtifactsTaskTest {
 
   @Test
   fun generateCodegenSchema_inputFiles_areSetCorrectly() {
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
-    val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.codegenDir.set(codegenDir)
-          it.generatedSrcDir.set(outputDir)
-        }
+    val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
-    assertEquals(
-        File(codegenDir, "lib/cli/combine/combine-js-to-schema-cli.js"),
-        task.combineJsToSchemaCli.get().asFile)
     assertEquals(File(outputDir, "schema.json"), task.generatedSchemaFile.get().asFile)
   }
 
   @Test
   fun generateCodegenSchema_outputFile_isSetCorrectly() {
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
-    val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.codegenDir.set(codegenDir)
-          it.generatedSrcDir.set(outputDir)
-        }
+    val task = createTestTask<GenerateCodegenArtifactsTask> { it.generatedSrcDir.set(outputDir) }
 
     assertEquals(File(outputDir, "java"), task.generatedJavaFiles.get().asFile)
     assertEquals(File(outputDir, "jni"), task.generatedJniFiles.get().asFile)
@@ -80,13 +66,11 @@ class GenerateCodegenArtifactsTaskTest {
   @WithOs(OS.LINUX)
   fun setupCommandLine_willSetupCorrectly() {
     val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
-    val codegenDir = tempFolder.newFolder("codegen")
     val outputDir = tempFolder.newFolder("output")
 
     val task =
         createTestTask<GenerateCodegenArtifactsTask> {
           it.reactNativeDir.set(reactNativeDir)
-          it.codegenDir.set(codegenDir)
           it.generatedSrcDir.set(outputDir)
           it.nodeExecutableAndArgs.set(listOf("--verbose"))
         }
@@ -103,6 +87,44 @@ class GenerateCodegenArtifactsTaskTest {
             File(outputDir, "schema.json").toString(),
             "--outputDir",
             outputDir.toString(),
+            "--libraryName",
+            "example-test",
+            "--javaPackageName",
+            "com.example.test",
+        ),
+        task.commandLine.toMutableList())
+  }
+
+  @Test
+  @WithOs(OS.WIN)
+  fun setupCommandLine_onWindows_willSetupCorrectly() {
+    val reactNativeDir = tempFolder.newFolder("node_modules/react-native/")
+    val outputDir = tempFolder.newFolder("output")
+
+    val project = createProject()
+    val task =
+        createTestTask<GenerateCodegenArtifactsTask>(project) {
+          it.reactNativeDir.set(reactNativeDir)
+          it.generatedSrcDir.set(outputDir)
+          it.nodeExecutableAndArgs.set(listOf("--verbose"))
+        }
+
+    task.setupCommandLine("example-test", "com.example.test")
+
+    assertEquals(
+        listOf(
+            "cmd",
+            "/c",
+            "--verbose",
+            File(reactNativeDir, "scripts/generate-specs-cli.js")
+                .relativeTo(project.projectDir)
+                .path,
+            "--platform",
+            "android",
+            "--schemaPath",
+            File(outputDir, "schema.json").relativeTo(project.projectDir).path,
+            "--outputDir",
+            outputDir.relativeTo(project.projectDir).path,
             "--libraryName",
             "example-test",
             "--javaPackageName",

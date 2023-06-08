@@ -22,10 +22,12 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.uiapp.component.MyLegacyViewManager;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +40,7 @@ public class RNTesterApplication extends Application implements ReactApplication
       new DefaultReactNativeHost(this) {
         @Override
         public String getJSMainModuleName() {
-          return "packages/rn-tester/js/RNTesterApp.android";
+          return "js/RNTesterApp.android";
         }
 
         @Override
@@ -106,14 +108,17 @@ public class RNTesterApplication extends Application implements ReactApplication
                 @Override
                 public List<ViewManager> createViewManagers(
                     @NonNull ReactApplicationContext reactContext) {
-                  return Collections.singletonList(new MyNativeViewManager());
+                  List<ViewManager> viewManagers = new ArrayList<>();
+                  viewManagers.add(new MyNativeViewManager());
+                  viewManagers.add(new MyLegacyViewManager(reactContext));
+                  return viewManagers;
                 }
               });
         }
 
         @Override
         protected boolean isNewArchEnabled() {
-          return true;
+          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
         }
 
         @Override
@@ -127,7 +132,9 @@ public class RNTesterApplication extends Application implements ReactApplication
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-    DefaultNewArchitectureEntryPoint.load();
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      DefaultNewArchitectureEntryPoint.load();
+    }
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 

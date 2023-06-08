@@ -15,49 +15,29 @@
 static NSString *const testFile = @"test.jsbundle";
 static NSString *const mainBundle = @"main.jsbundle";
 
-static NSURL *mainBundleURL()
+static NSURL *mainBundleURL(void)
 {
   return [[[NSBundle mainBundle] bundleURL] URLByAppendingPathComponent:mainBundle];
 }
 
-static NSURL *localhostBundleURL()
+static NSURL *localhostBundleURL(void)
 {
-#ifdef HERMES_BYTECODE_VERSION
   return [NSURL
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
-                  testFile,
-                  HERMES_BYTECODE_VERSION]];
-#else
-  return [NSURL
-      URLWithString:
-          [NSString
-              stringWithFormat:
-                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
+                  @"http://localhost:8081/%@.bundle?platform=ios&dev=true&lazy=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
-#endif
 }
 
-static NSURL *ipBundleURL()
+static NSURL *ipBundleURL(void)
 {
-#ifdef HERMES_BYTECODE_VERSION
   return [NSURL
       URLWithString:
           [NSString
               stringWithFormat:
-                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&runtimeBytecodeVersion=%u&app=com.apple.dt.xctest.tool",
-                  testFile,
-                  HERMES_BYTECODE_VERSION]];
-#else
-  return [NSURL
-      URLWithString:
-          [NSString
-              stringWithFormat:
-                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
+                  @"http://192.168.1.1:8081/%@.bundle?platform=ios&dev=true&lazy=true&minify=false&modulesOnly=false&runModule=true&app=com.apple.dt.xctest.tool",
                   testFile]];
-#endif
 }
 
 @implementation NSBundle (RCTBundleURLProviderTests)

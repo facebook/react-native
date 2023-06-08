@@ -11,11 +11,13 @@
 'use strict';
 import type {SchemaType} from '../../CodegenSchema.js';
 
-const {parseFile} = require('../../parsers/utils');
-const FlowParser = require('../../parsers/flow');
-const TypeScriptParser = require('../../parsers/typescript');
+const {FlowParser} = require('../../parsers/flow/parser');
+const {TypeScriptParser} = require('../../parsers/typescript/parser');
 const fs = require('fs');
 const path = require('path');
+
+const flowParser = new FlowParser();
+const typescriptParser = new TypeScriptParser();
 
 function combineSchemas(files: Array<string>): SchemaType {
   return files.reduce(
@@ -30,10 +32,9 @@ function combineSchemas(files: Array<string>): SchemaType {
         const isTypeScript =
           path.extname(filename) === '.ts' || path.extname(filename) === '.tsx';
 
-        const schema = parseFile(
-          filename,
-          isTypeScript ? TypeScriptParser.buildSchema : FlowParser.buildSchema,
-        );
+        const parser = isTypeScript ? typescriptParser : flowParser;
+
+        const schema = parser.parseFile(filename);
 
         if (schema && schema.modules) {
           merged.modules = {...merged.modules, ...schema.modules};

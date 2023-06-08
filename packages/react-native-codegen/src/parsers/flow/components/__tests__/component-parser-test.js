@@ -11,8 +11,7 @@
 
 'use strict';
 
-const FlowParser = require('../../index.js');
-const {parseFile} = require('../../../utils.js');
+const {FlowParser} = require('../../parser');
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
 jest.mock('fs', () => ({
@@ -26,12 +25,14 @@ jest.mock('fs', () => ({
   },
 }));
 
+const parser = new FlowParser();
+
 describe('RN Codegen Flow Parser', () => {
   Object.keys(fixtures)
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        const schema = parseFile(fixtureName, FlowParser.buildSchema);
+        const schema = parser.parseFile(fixtureName);
         const serializedSchema = JSON.stringify(schema, null, 2).replace(
           /"/g,
           "'",
@@ -45,7 +46,7 @@ describe('RN Codegen Flow Parser', () => {
     .forEach(fixtureName => {
       it(`Fails with error message ${fixtureName}`, () => {
         expect(() => {
-          parseFile(fixtureName, FlowParser.buildSchema);
+          parser.parseFile(fixtureName);
         }).toThrowErrorMatchingSnapshot();
       });
     });

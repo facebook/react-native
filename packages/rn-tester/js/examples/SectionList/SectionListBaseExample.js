@@ -66,7 +66,7 @@ const Item = ({item, section, separators}) => {
 };
 
 type Props = {
-  exampleProps: $Shape<React.ElementConfig<typeof SectionList>>,
+  exampleProps: Partial<React.ElementConfig<typeof SectionList>>,
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
@@ -98,10 +98,13 @@ const SectionListBaseExample: React.AbstractComponent<
         ref={ref}
         testID="section_list"
         accessibilityRole="list"
+        // $FlowFixMe[incompatible-type]
         sections={DATA}
         keyExtractor={(item, index) => item + index}
         style={styles.list}
         renderItem={Item}
+        /* $FlowFixMe[prop-missing] Error revealed after improved builtin React
+         * utility types */
         renderSectionHeader={({section: {title}}) => (
           <Text style={styles.header}>{title}</Text>
         )}
