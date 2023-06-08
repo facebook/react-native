@@ -73,6 +73,8 @@ class ShadowNodeFamily final {
 
   SurfaceId getSurfaceId() const;
 
+  SharedEventEmitter getEventEmitter() const;
+
   /*
    * Sets and gets the most recent state.
    */
