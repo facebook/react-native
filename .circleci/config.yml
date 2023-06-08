@@ -268,6 +268,29 @@ commands:
             - sdks/hermesc
             - sdks/hermes
 
+  get_react_native_version:
+    steps:
+      - run:
+          name: Get React Native version
+          command: |
+            VERSION=$(cat package.json | jq -r '.version')
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
+            echo "React Native Version is $(cat /tmp/react-native-version)"
+            HERMES_VERSION="$(cat /tmp/hermes/hermesversion)"
+            echo "Hermes commit is $HERMES_VERSION"
+  get_react_native_version_windows:
+    steps:
+      - run:
+          name: Get React Native version on Windows
+          command: |
+            $VERSION=cat packages/react-native/package.json | jq -r '.version'
+            # Save the react native version we are building in a file so we can use that file as part of the cache key.
+            echo "$VERSION" > /tmp/react-native-version
+            echo "React Native Version is $(cat /tmp/react-native-version)"
+            $HERMES_VERSION=cat C:\Users\circleci\project\tmp\hermes\hermesversion
+            echo "Hermes commit is $HERMES_VERSION"
+
 # -------------------------
 #          JOBS
 # -------------------------
@@ -618,6 +641,12 @@ jobs:
           command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
           no_output_timeout: 30m
 
+      - store_test_results:
+          path: ~/react-native/ReactAndroid/build/test-results
+
+      - store_test_results:
+          path: ~/react-native/packages/react-native-gradle-plugin/build/test-results
+
       # Build JavaScript Bundle for instrumentation tests
       - run:
           name: Build JavaScript Bundle
@@ -957,15 +986,17 @@ jobs:
     resource_class: "xlarge"
     working_directory: /root
     steps:
+      - checkout
       - run:
           name: Install dependencies
           command: |
             apt update
             apt install -y git openssh-client cmake build-essential \
-                libreadline-dev libicu-dev zip python3
+                libreadline-dev libicu-dev zip jq python3
       - *attach_hermes_workspace
+      - get_react_native_version
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
       - run:
           name: Set up workspace
           command: |
@@ -984,7 +1015,7 @@ jobs:
               cp /tmp/hermes/build/bin/hermesc /tmp/hermes/linux64-bin/.
             fi
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
+          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
@@ -1065,9 +1096,11 @@ jobs:
       - MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       - CMAKE_DIR: 'C:\Program Files\CMake\bin'
     steps:
+      - checkout
       - *attach_hermes_workspace
+      - get_react_native_version_windows
       - restore_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+          key: v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
       - run:
           name: Set up workspace
           command: |
@@ -1117,7 +1150,7 @@ jobs:
                 Write-Host "Skipping; Clean c:\tmp\hermes\win64-bin to rebuild."
             }
       - save_cache:
-          key: v1-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "tmp/hermes/hermesversion" }}
+          key: v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
           paths:
             - C:\tmp\hermes\win64-bin\
             - C:\tmp\hermes\hermes\icu\
