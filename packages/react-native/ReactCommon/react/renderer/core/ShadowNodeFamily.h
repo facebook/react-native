@@ -14,13 +14,30 @@
 
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 
 namespace facebook::react {
 
 class ComponentDescriptor;
 class ShadowNode;
 class State;
+
+/*
+ * This is a collection of fields serving as a specification to create new
+ * `ShadowNodeFamily` instances.
+ *
+ * Do not use this class as a general purpose container to share information
+ * about a `ShadowNodeFamily`. Pelase define specific purpose containers in
+ * those cases.
+ *
+ * Note: All of the fields are `const &` references (essentially just raw
+ * pointers) which means that the Fragment does not copy/store them nor
+ * retain ownership of them.
+ */
+struct ShadowNodeFamilyFragment {
+  Tag const tag;
+  SurfaceId const surfaceId;
+  EventEmitter::Shared const &eventEmitter;
+};
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -96,7 +113,6 @@ class ShadowNodeFamily final {
 
  private:
   friend ShadowNode;
-  friend ShadowNodeFamilyFragment;
   friend State;
 
   /*
