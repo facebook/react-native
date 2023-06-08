@@ -50,34 +50,23 @@ function LogBoxLogNotification(props: Props): React.Node {
           pressed: LogBoxStyle.getBackgroundColor(0.9),
         }}>
         <View style={toastStyles.content}>
-          <CountBadge
-            count={totalLogCount}
-            level={level}
-            testID="log-box-count"
-          />
-          <Message message={log.message} testID="log-box-message" />
-          <DismissButton
-            onPress={props.onPressDismiss}
-            testID="log-box-dismiss-button"
-          />
+          <CountBadge count={totalLogCount} level={level} />
+          <Message message={log.message} />
+          <DismissButton onPress={props.onPressDismiss} />
         </View>
       </LogBoxButton>
     </View>
   );
 }
 
-function CountBadge(props: {
-  count: number,
-  level: 'error' | 'warn',
-  testID?: string,
-}) {
+function CountBadge(props: {count: number, level: 'error' | 'warn'}) {
   return (
     <View style={countStyles.outside}>
       {/* $FlowFixMe[incompatible-type] (>=0.114.0) This suppression was added
        * when fixing the type of `StyleSheet.create`. Remove this comment to
        * see the error. */}
       <View style={[countStyles.inside, countStyles[props.level]]}>
-        <Text style={countStyles.text} testID={props?.testID}>
+        <Text style={countStyles.text}>
           {props.count <= 1 ? '!' : props.count}
         </Text>
       </View>
@@ -85,10 +74,10 @@ function CountBadge(props: {
   );
 }
 
-function Message(props: {message: MessageType, testID?: string}) {
+function Message(props: {message: MessageType}) {
   return (
     <View style={messageStyles.container}>
-      <Text numberOfLines={1} style={messageStyles.text} testID={props?.testID}>
+      <Text numberOfLines={1} style={messageStyles.text}>
         {props.message && (
           <LogBoxMessage
             plaintext
@@ -101,7 +90,7 @@ function Message(props: {message: MessageType, testID?: string}) {
   );
 }
 
-function DismissButton(props: {onPress: () => void, testID?: string}) {
+function DismissButton(props: {onPress: () => void}) {
   return (
     <View style={dismissStyles.container}>
       <LogBoxButton
@@ -116,8 +105,7 @@ function DismissButton(props: {onPress: () => void, testID?: string}) {
           left: 10,
         }}
         onPress={props.onPress}
-        style={dismissStyles.press}
-        testID={props?.testID}>
+        style={dismissStyles.press}>
         <Image
           source={require('./LogBoxImages/close.png')}
           style={dismissStyles.image}
