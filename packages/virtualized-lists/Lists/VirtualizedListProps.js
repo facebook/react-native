@@ -292,15 +292,3 @@ export type Props = {|
   ...RequiredProps,
   ...OptionalProps,
 |};
-
-/**
- * Subset of properties needed to calculate frame metrics
- */
-export type CellMetricProps = {
-  data: RequiredProps['data'],
-  getItemCount: RequiredProps['getItemCount'],
-  getItem: RequiredProps['getItem'],
-  getItemLayout?: OptionalProps['getItemLayout'],
-  keyExtractor?: OptionalProps['keyExtractor'],
-  ...
-};
