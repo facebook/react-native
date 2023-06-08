@@ -186,12 +186,13 @@ jsi::Value UIManagerBinding::get(
             jsi::Value const & /*thisValue*/,
             jsi::Value const *arguments,
             size_t /*count*/) noexcept -> jsi::Value {
-          auto eventTarget =
-              eventTargetFromValue(runtime, arguments[4], arguments[0]);
-          if (!eventTarget) {
+          auto instanceHandle =
+              instanceHandleFromValue(runtime, arguments[4], arguments[0]);
+          if (!instanceHandle) {
             react_native_assert(false);
             return jsi::Value::undefined();
           }
+
           return valueFromShadowNode(
               runtime,
               uiManager->createNode(
@@ -199,7 +200,7 @@ jsi::Value UIManagerBinding::get(
                   stringFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
                   RawProps(runtime, arguments[3]),
-                  eventTarget));
+                  instanceHandle));
         });
   }
 
@@ -798,7 +799,7 @@ jsi::Value UIManagerBinding::get(
             return jsi::Value::null();
           }
 
-          return getInstanceHandleFromShadowNode(parentShadowNode, runtime);
+          return (*parentShadowNode).getInstanceHandle(runtime);
         });
   }
 
@@ -1006,8 +1007,7 @@ jsi::Value UIManagerBinding::get(
 
           return jsi::Array::createWithElements(
               runtime,
-              getInstanceHandleFromShadowNode(
-                  newestParentOfShadowNode, runtime),
+              (*newestParentOfShadowNode).getInstanceHandle(runtime),
               jsi::Value{runtime, (double)offsetTop},
               jsi::Value{runtime, (double)offsetLeft});
         });

@@ -13,6 +13,7 @@
 #include <butter/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/ReactPrimitives.h>
 
 namespace facebook::react {
@@ -36,7 +37,7 @@ class State;
 struct ShadowNodeFamilyFragment {
   Tag const tag;
   SurfaceId const surfaceId;
-  EventEmitter::Shared const &eventEmitter;
+  InstanceHandle::Shared const &instanceHandle;
 };
 
 /*
@@ -136,6 +137,11 @@ class ShadowNodeFamily final {
    * Identifier of a running Surface instance.
    */
   SurfaceId const surfaceId_;
+
+  /*
+   * Weak reference to the React instance handle
+   */
+  InstanceHandle::Shared const instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.

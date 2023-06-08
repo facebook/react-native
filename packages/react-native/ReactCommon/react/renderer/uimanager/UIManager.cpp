@@ -68,7 +68,7 @@ ShadowNode::Shared UIManager::createNode(
     std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
-    SharedEventTarget eventTarget) const {
+    const InstanceHandle::Shared &instanceHandle) const {
   SystraceSection s("UIManager::createNode");
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
@@ -77,9 +77,9 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family =
-      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto const fragment =
+      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
+  auto family = componentDescriptor.createFamily(fragment);
   auto const props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(props, family);

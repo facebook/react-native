@@ -142,16 +142,16 @@ inline static Tag tagFromValue(jsi::Value const &value) {
   return (Tag)value.getNumber();
 }
 
-inline static SharedEventTarget eventTargetFromValue(
+inline static InstanceHandle::Shared instanceHandleFromValue(
     jsi::Runtime &runtime,
-    jsi::Value const &eventTargetValue,
+    jsi::Value const &instanceHandleValue,
     jsi::Value const &tagValue) {
-  react_native_assert(!eventTargetValue.isNull());
-  if (eventTargetValue.isNull()) {
+  react_native_assert(!instanceHandleValue.isNull());
+  if (instanceHandleValue.isNull()) {
     return nullptr;
   }
-  return std::make_shared<EventTarget>(
-      runtime, eventTargetValue, tagFromValue(tagValue));
+  return std::make_shared<InstanceHandle>(
+      runtime, instanceHandleValue, tagFromValue(tagValue));
 }
 
 inline static SurfaceId surfaceIdFromValue(
@@ -185,21 +185,6 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
-inline static jsi::Value getInstanceHandleFromShadowNode(
-    ShadowNode::Shared shadowNode,
-    jsi::Runtime &runtime) {
-  auto eventTarget = shadowNode->getEventEmitter()->getEventTarget();
-  // shadowNode is probably a RootShadowNode and they don't have
-  // event targets.
-  if (eventTarget == nullptr) {
-    return jsi::Value::null();
-  }
-  eventTarget->retain(runtime);
-  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-  eventTarget->release(runtime);
-  return instanceHandle;
-}
-
 inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
     ShadowNode::ListOfShared const &nodes,
     jsi::Runtime &runtime) {
@@ -209,7 +194,7 @@ inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
   std::vector<jsi::Value> nonNullInstanceHandles;
   nonNullInstanceHandles.reserve(nodes.size());
   for (auto const &shadowNode : nodes) {
-    auto instanceHandle = getInstanceHandleFromShadowNode(shadowNode, runtime);
+    auto instanceHandle = (*shadowNode).getInstanceHandle(runtime);
     if (!instanceHandle.isNull()) {
       nonNullInstanceHandles.push_back(std::move(instanceHandle));
     }

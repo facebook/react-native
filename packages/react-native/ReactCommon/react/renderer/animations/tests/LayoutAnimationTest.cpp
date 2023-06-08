@@ -56,8 +56,6 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
-  auto noopEventEmitter =
-      std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
   PropsParserContext parserContext{-1, *contextContainer};
 
@@ -95,7 +93,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     auto surfaceId = SurfaceId(surfaceIdInt);
 
     auto family = rootComponentDescriptor.createFamily(
-        {Tag(surfaceIdInt), surfaceId, nullptr}, nullptr);
+        {Tag(surfaceIdInt), surfaceId, nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
