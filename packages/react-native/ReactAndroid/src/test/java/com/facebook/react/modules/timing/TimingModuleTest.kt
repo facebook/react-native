@@ -13,13 +13,11 @@ import com.facebook.react.modules.core.ReactChoreographer.CallbackType
 import com.facebook.react.modules.core.TimingModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.verify
@@ -45,8 +43,8 @@ class TimingModuleTest {
   private lateinit var reactChoreographerMock: ReactChoreographer
   private lateinit var postFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var idlePostFrameCallbackHandler: PostFrameCallbackHandler
-  private var mCurrentTimeNs = 0L
-  private lateinit var mJSTimersMock: JSTimers
+  private var currentTimeNs = 0L
+  private lateinit var jSTimersMock: JSTimers
 
   @get:Rule val powerMockRule = PowerMockRule()
 
@@ -59,13 +57,13 @@ class TimingModuleTest {
 
     PowerMockito.mockStatic(SystemClock::class.java)
     whenever(SystemClock.uptimeMillis()).thenAnswer {
-      return@thenAnswer mCurrentTimeNs / 1000000
+      return@thenAnswer currentTimeNs / 1000000
     }
     whenever(SystemClock.currentTimeMillis()).thenAnswer {
-      return@thenAnswer mCurrentTimeNs / 1000000
+      return@thenAnswer currentTimeNs / 1000000
     }
     whenever(SystemClock.nanoTime()).thenAnswer {
-      return@thenAnswer mCurrentTimeNs
+      return@thenAnswer currentTimeNs
     }
 
     reactChoreographerMock = mock(ReactChoreographer::class.java)
@@ -80,32 +78,41 @@ class TimingModuleTest {
     postFrameCallbackHandler = PostFrameCallbackHandler()
     idlePostFrameCallbackHandler = PostFrameCallbackHandler()
 
-    doAnswer(postFrameCallbackHandler)
-      .`when`(reactChoreographerMock)
-      .postFrameCallback(eq(CallbackType.TIMERS_EVENTS), any(FrameCallback::class.java))
+    whenever(
+      reactChoreographerMock.postFrameCallback(
+        eq(CallbackType.TIMERS_EVENTS),
+        any(FrameCallback::class.java)
+      )
+    ).thenAnswer { return@thenAnswer postFrameCallbackHandler.answer(it) }
 
-    doAnswer(idlePostFrameCallbackHandler)
-      .`when`(reactChoreographerMock)
-      .postFrameCallback(eq(CallbackType.IDLE_EVENT), any(FrameCallback::class.java))
+    whenever(
+      reactChoreographerMock.postFrameCallback(
+        eq(CallbackType.IDLE_EVENT),
+        any(FrameCallback::class.java)
+      )
+    ).thenAnswer { return@thenAnswer idlePostFrameCallbackHandler.answer(it) }
 
     timingModule = TimingModule(reactContext, mock(DevSupportManager::class.java))
-    mJSTimersMock = mock(JSTimers::class.java)
-    whenever(reactContext.getJSModule(JSTimers::class.java)).thenReturn(mJSTimersMock)
-    doAnswer { invocation -> (invocation.arguments[0] as Runnable).run() }
-      .`when`(reactContext)
-      .runOnJSQueueThread(any(Runnable::class.java))
+    jSTimersMock = mock(JSTimers::class.java)
+    whenever(reactContext.getJSModule(JSTimers::class.java)).thenReturn(jSTimersMock)
+    whenever(reactContext.runOnJSQueueThread(any(Runnable::class.java)))
+      .thenAnswer { invocation ->
+        (invocation.arguments[0] as Runnable).run()
+        return@thenAnswer true
+      }
+
     timingModule.initialize()
   }
 
   private fun stepChoreographerFrame() {
     val callback = postFrameCallbackHandler.getAndResetFrameCallback()
     val idleCallback = idlePostFrameCallbackHandler.getAndResetFrameCallback()
-    mCurrentTimeNs += FRAME_TIME_NS
+    currentTimeNs += FRAME_TIME_NS
     whenever(SystemClock.uptimeMillis()).thenAnswer {
-      return@thenAnswer mCurrentTimeNs / 1000000
+      return@thenAnswer currentTimeNs / 1000000
     }
-    callback?.doFrame(mCurrentTimeNs)
-    idleCallback?.doFrame(mCurrentTimeNs)
+    callback?.doFrame(currentTimeNs)
+    idleCallback?.doFrame(currentTimeNs)
   }
 
   @Test
@@ -113,10 +120,10 @@ class TimingModuleTest {
     timingModule.onHostResume()
     timingModule.createTimer(1.0, 1.0, 0.0, false)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(1.0))
+    reset(jSTimersMock)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
   }
 
   @Test
@@ -124,10 +131,10 @@ class TimingModuleTest {
     timingModule.createTimer(100.0, 1.0, 0.0, true)
     timingModule.onHostResume()
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    reset(jSTimersMock)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
   }
 
   @Test
@@ -135,11 +142,11 @@ class TimingModuleTest {
     timingModule.onHostResume()
     timingModule.createTimer(105.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(105.0))
+    reset(jSTimersMock)
     timingModule.deleteTimer(105.0)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
   }
 
   @Test
@@ -147,15 +154,15 @@ class TimingModuleTest {
     timingModule.onHostResume()
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHostPause()
     stepChoreographerFrame()
-    verifyNoMoreInteractions(mJSTimersMock)
-    reset(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
+    reset(jSTimersMock)
     timingModule.onHostResume()
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
   }
 
   @Test
@@ -164,11 +171,11 @@ class TimingModuleTest {
     timingModule.onHeadlessJsTaskStart(42)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHeadlessJsTaskFinish(42)
     stepChoreographerFrame()
-    verifyNoMoreInteractions(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
   }
 
   @Test
@@ -177,14 +184,14 @@ class TimingModuleTest {
     timingModule.onHeadlessJsTaskStart(42)
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHeadlessJsTaskFinish(42)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHostPause()
-    verifyNoMoreInteractions(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
   }
 
   @Test
@@ -194,22 +201,22 @@ class TimingModuleTest {
     timingModule.createTimer(41.0, 1.0, 0.0, true)
     timingModule.onHostPause()
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHostResume()
     timingModule.onHeadlessJsTaskFinish(42)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0))
-    reset(mJSTimersMock)
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(41.0))
+    reset(jSTimersMock)
     timingModule.onHostPause()
     stepChoreographerFrame()
-    verifyNoMoreInteractions(mJSTimersMock)
+    verifyNoMoreInteractions(jSTimersMock)
   }
 
   @Test
   fun testSetTimeoutZero() {
     timingModule.createTimer(100.0, 0.0, 0.0, false)
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0))
+    verify(jSTimersMock).callTimers(JavaOnlyArray.of(100.0))
   }
 
   @Test
@@ -224,25 +231,24 @@ class TimingModuleTest {
   }
 
   @Test
-  @Ignore("Failing due to failed invocation verification") // TODO T13905097
   fun testIdleCallback() {
     timingModule.onHostResume()
     timingModule.setSendIdleEvents(true)
     stepChoreographerFrame()
-    verify(mJSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
+    verify(jSTimersMock).callIdleCallbacks(SystemClock.currentTimeMillis().toDouble())
   }
 
   private class PostFrameCallbackHandler : Answer<Unit> {
 
-    private var mFrameCallback: FrameCallback? = null
+    private var frameCallback: FrameCallback? = null
 
     override fun answer(invocation: InvocationOnMock) {
-      invocation.arguments[1]?.let { mFrameCallback = it as FrameCallback }
+      invocation.arguments[1]?.let { frameCallback = it as FrameCallback }
     }
 
     fun getAndResetFrameCallback(): FrameCallback? {
-      val callback = mFrameCallback
-      mFrameCallback = null
+      val callback = frameCallback
+      frameCallback = null
       return callback
     }
   }
