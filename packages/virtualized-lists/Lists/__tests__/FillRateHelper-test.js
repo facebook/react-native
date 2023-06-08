@@ -21,7 +21,7 @@ const dataGlobal = [
   {key: 'd'},
   {key: 'footer'},
 ];
-function getFrameMetrics(index: number) {
+function getCellMetrics(index: number) {
   const frame = rowFramesGlobal[dataGlobal[index].key];
   return {length: frame.height, offset: frame.y, inLayout: frame.inLayout};
 }
@@ -47,7 +47,7 @@ describe('computeBlankness', function () {
   });
 
   it('computes correct blankness of viewport', function () {
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper(getCellMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: true},
       a: {y: 0, height: 50, inLayout: true},
@@ -66,7 +66,7 @@ describe('computeBlankness', function () {
   });
 
   it('skips frames that are not in layout', function () {
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper(getCellMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: false},
       a: {y: 0, height: 10, inLayout: false},
@@ -80,7 +80,7 @@ describe('computeBlankness', function () {
   });
 
   it('sampling rate can disable', function () {
-    let helper = new FillRateHelper(getFrameMetrics);
+    let helper = new FillRateHelper(getCellMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: true},
       a: {y: 0, height: 40, inLayout: true},
@@ -91,7 +91,7 @@ describe('computeBlankness', function () {
 
     FillRateHelper.setSampleRate(0);
 
-    helper = new FillRateHelper(getFrameMetrics);
+    helper = new FillRateHelper(getCellMetrics);
     blankness = computeResult({helper});
     expect(blankness).toBe(0);
   });
@@ -102,7 +102,7 @@ describe('computeBlankness', function () {
       FillRateHelper.addListener(listener),
     );
     subscriptions[1].remove();
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper(getCellMetrics);
     rowFramesGlobal = {
       header: {y: 0, height: 0, inLayout: true},
       a: {y: 0, height: 40, inLayout: true},
