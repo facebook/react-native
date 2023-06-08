@@ -108,7 +108,9 @@ void SurfaceHandler::stop() const noexcept {
   // mounted views, so we need to commit an empty tree to trigger all
   // side-effects (including destroying and removing mounted views).
   react_native_assert(shadowTree && "`shadowTree` must not be null.");
-  shadowTree->commitEmptyTree();
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
