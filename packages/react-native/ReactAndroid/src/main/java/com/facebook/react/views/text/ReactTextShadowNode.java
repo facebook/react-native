@@ -135,7 +135,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             layoutWidth = width;
           } else {
             for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              boolean endsWithNewLine = text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+              boolean endsWithNewLine = text.length() > 0
+                  && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
               float lineWidth =
                   endsWithNewLine
                       ? layout.getLineMax(lineIndex)

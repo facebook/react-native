@@ -407,7 +407,8 @@ public class TextLayoutManager {
       calculatedWidth = width;
     } else {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        boolean endsWithNewLine = text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        boolean endsWithNewLine = text.length() > 0
+            && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
         float lineWidth =
             endsWithNewLine
                 ? layout.getLineMax(lineIndex)
@@ -466,7 +467,8 @@ public class TextLayoutManager {
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
-            boolean endsWithNewLine = text.charAt(layout.getLineEnd(line) - 1) == '\n';
+            boolean endsWithNewLine = text.length() > 0 
+                && text.charAt(layout.getLineEnd(line) - 1) == '\n';
             float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
             placeholderLeftPosition =
                 isRtlParagraph
