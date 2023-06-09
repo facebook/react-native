@@ -318,10 +318,14 @@ static void RCTPerformMountInstructions(
 
   const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
 
-  if (props[@"transform"] &&
-      !CATransform3DEqualToTransform(
-          RCTCATransform3DFromTransformMatrix(newViewProps.transform), componentView.layer.transform)) {
-    componentView.layer.transform = RCTCATransform3DFromTransformMatrix(newViewProps.transform);
+  if (props[@"transform"]) {
+    auto layoutMetrics = LayoutMetrics();
+    layoutMetrics.frame.size.width = componentView.layer.bounds.size.width;
+    layoutMetrics.frame.size.height = componentView.layer.bounds.size.height;
+    CATransform3D newTransform = RCTCATransform3DFromTransformMatrix(newViewProps.resolveTransform(layoutMetrics));
+    if (!CATransform3DEqualToTransform(newTransform, componentView.layer.transform)) {
+      componentView.layer.transform = newTransform;
+    }
   }
   if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
     componentView.layer.opacity = newViewProps.opacity;

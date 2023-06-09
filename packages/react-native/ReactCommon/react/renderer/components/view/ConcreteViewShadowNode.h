@@ -80,7 +80,8 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   }
 
   Transform getTransform() const override {
-    return BaseShadowNode::getConcreteProps().transform;
+    auto layoutMetrics = BaseShadowNode::getLayoutMetrics();
+    return BaseShadowNode::getConcreteProps().resolveTransform(layoutMetrics);
   }
 
  private:

@@ -15,6 +15,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/renderer/core/LayoutMetrics.h>
 
 namespace facebook::react {
 
@@ -119,6 +120,14 @@ ViewProps::ViewProps(
                                                        "transform",
                                                        sourceProps.transform,
                                                        {})),
+      transformOrigin(
+         CoreFeatures::enablePropIteratorSetter ? sourceProps.transformOrigin
+                                           : convertRawProp(
+                                                 context,
+                                                 rawProps,
+                                                 "transformOrigin",
+                                                 sourceProps.transformOrigin,
+                                                 {})),
       backfaceVisibility(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.backfaceVisibility
@@ -292,6 +301,7 @@ void ViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowOpacity);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shadowRadius);
     RAW_SET_PROP_SWITCH_CASE_BASIC(transform);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(transformOrigin);
     RAW_SET_PROP_SWITCH_CASE_BASIC(backfaceVisibility);
     RAW_SET_PROP_SWITCH_CASE_BASIC(shouldRasterize);
     RAW_SET_PROP_SWITCH_CASE_BASIC(zIndex);
@@ -410,6 +420,56 @@ BorderMetrics ViewProps::resolveBorderMetrics(
       /* .borderCurves = */ borderCurves.resolve(isRTL, BorderCurve::Circular),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
+}
+
+Transform ViewProps::resolveTransform(
+  LayoutMetrics const &layoutMetrics) const  {
+  float viewWidth = layoutMetrics.frame.size.width;
+  float viewHeight = layoutMetrics.frame.size.height;
+  if (transformOrigin.empty() || (viewWidth == 0 && viewHeight == 0)) {
+    return transform;
+  }
+  auto newTransform = Transform{};
+  std::array<float, 3> translateOffsets = getTranslateForTransformOrigin(viewWidth, viewHeight);
+  newTransform = newTransform * Transform::Translate(translateOffsets[0], translateOffsets[1], translateOffsets[2]);
+  newTransform = newTransform * transform;
+  newTransform = newTransform * Transform::Translate(-translateOffsets[0], -translateOffsets[1], -translateOffsets[2]);
+  return newTransform;
+}
+
+// https://drafts.csswg.org/css-transforms/#transform-origin-property
+std::array<float, 3> ViewProps::getTranslateForTransformOrigin(float viewWidth, float viewHeight) const {
+  float viewCenterX = viewWidth / 2;
+  float viewCenterY = viewHeight / 2;
+
+  std::array<float, 3> origin = {viewCenterX, viewCenterY, 0.0f};
+  std::istringstream iss(transformOrigin);
+  std::string part;
+  for (int i = 0; std::getline(iss, part, ' ') && i < 3; i++) {
+    auto percentPos = part.find('%');
+    bool isPercent = percentPos != std::string::npos;
+    if (isPercent) {
+      origin[i] = (i == 0 ? viewWidth : viewHeight) * std::stof(part.substr(0, percentPos)) / 100.0f;
+    } else if (part == "top") {
+       origin[1] = 0.0f;
+    } else if (part == "bottom") {
+       origin[1] = static_cast<float>(viewHeight);
+    } else if (part == "left") {
+       origin[0] = 0.0f;
+    } else if (part == "right") {
+       origin[0] = static_cast<float>(viewWidth);
+    } else if (part == "center") {
+       continue;
+    } else {
+       origin[i] = std::stof(part);
+    }
+}
+
+  float newTranslateX = -viewCenterX + origin[0];
+  float newTranslateY = -viewCenterY + origin[1];
+  float newTranslateZ = origin[2];
+
+  return std::array{newTranslateX, newTranslateY, newTranslateZ};
 }
 
 bool ViewProps::getClipsContentToBounds() const {

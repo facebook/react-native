@@ -111,6 +111,7 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
    * Transform
    */
   transform: {process: processTransform},
+  transformOrigin: true,
 
   /**
    * View
