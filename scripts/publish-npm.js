@@ -17,7 +17,7 @@ const {
   getCurrentCommit,
   isTaggedLatest,
 } = require('./scm-utils');
-const publishNightlyForEachChangedPackage = require('./monorepo/publish-nightly-for-each-changed-package');
+const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
 const {
   generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
@@ -150,7 +150,7 @@ function publishNpm(buildType) {
 
   // set and publish the relevant monorepo packages
   if (buildType === 'nightly') {
-    publishNightlyForEachChangedPackage(version);
+    getAndUpdateNightlies(version);
   }
 
   generateAndroidArtifacts(version);
