@@ -69,9 +69,11 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
-          ),
+          properties: parser
+            .getObjectProperties(typeAnnotation)
+            .map(member =>
+              buildPropertiesForEvent(member, parser, getPropertyType),
+            ),
         },
       };
     case 'UnionTypeAnnotation':
@@ -128,9 +130,11 @@ function extractArrayElementType(
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.properties.map(member =>
-          buildPropertiesForEvent(member, parser, getPropertyType),
-        ),
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
       };
     case 'ArrayTypeAnnotation':
       return {

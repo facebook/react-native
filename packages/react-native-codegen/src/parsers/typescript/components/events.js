@@ -71,9 +71,11 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.members.map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
-          ),
+          properties: parser
+            .getObjectProperties(typeAnnotation)
+            .map(member =>
+              buildPropertiesForEvent(member, parser, getPropertyType),
+            ),
         },
       };
     case 'TSUnionType':
@@ -138,9 +140,11 @@ function extractArrayElementType(
     case 'TSTypeLiteral':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.members.map(member =>
-          buildPropertiesForEvent(member, parser, getPropertyType),
-        ),
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
       };
     case 'TSArrayType':
       return {
@@ -183,7 +187,7 @@ function findEventArgumentsAndType(
 
   if (typeAnnotation.type === 'TSTypeLiteral') {
     return {
-      argumentProps: typeAnnotation.members,
+      argumentProps: parser.getObjectProperties(typeAnnotation),
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
