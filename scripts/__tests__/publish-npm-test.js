@@ -33,7 +33,7 @@ jest
     generateAndroidArtifacts: jest.fn(),
     publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
   }))
-  .mock('../monorepo/publish-nightly-for-each-changed-package');
+  .mock('../monorepo/get-and-update-nightlies');
 
 const date = new Date('2023-04-20T23:52:39.543Z');
 
