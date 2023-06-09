@@ -174,6 +174,40 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(result, true)
     end
 
+    # ======================================================== #
+    # Test -  Set GCC Preprocessor Definition for React-hermes #
+    # ======================================================== #
+
+    def test_SetGCCPreprocessorDefinitionForReactHermes_itSetsThePreprocessorForDebug
+        # Arrange
+        react_hermes_name = "React-hermes"
+        react_core_name = "React-Core"
+       react_hermes_debug_config = BuildConfigurationMock.new("Debug")
+       react_hermes_release_config = BuildConfigurationMock.new("Release")
+       react_core_debug_config = BuildConfigurationMock.new("Debug")
+       react_core_release_config = BuildConfigurationMock.new("Release")
+       react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
+       react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
+
+        installer = InstallerMock.new(
+          :pod_target_installation_results => {
+            react_hermes_name => TargetInstallationResultMock.new(react_hermes_target, react_hermes_target),
+            react_core_name => TargetInstallationResultMock.new(react_core_target, react_core_target),
+          }
+        )
+
+        # Act
+        ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+
+        # Assert
+        build_setting = "GCC_PREPROCESSOR_DEFINITIONS"
+        expected_value = "HERMES_ENABLE_DEBUGGER=1"
+        assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
+        assert_nil(react_hermes_release_config.build_settings[build_setting])
+        assert_nil(react_core_debug_config.build_settings[build_setting])
+        assert_nil(react_core_release_config.build_settings[build_setting])
+    end
+
     # ============================ #
     # Test - Exclude Architectures #
     # ============================ #
