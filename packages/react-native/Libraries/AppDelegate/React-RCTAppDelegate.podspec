@@ -99,7 +99,8 @@ Pod::Spec.new do |s|
     s.script_phases = {
       :name => "Generate Legacy Components Interop",
       :script => "
-. ${PODS_ROOT}/../.xcode.env
+WITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
+source $WITH_ENVIRONMENT
 ${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
       ",
       :execution_position => :before_compile,
