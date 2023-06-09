@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.71.10
+
+### Fixed
+
+#### Android specific
+
+- Bump RNGP to 0.71.19 ([3be3a7d1a2](https://github.com/facebook/react-native/commit/3be3a7d1a2840a045892ddd8e5f2263028e15127) by [@kelset](https://github.com/kelset))
+  - contains: RNGP dependency substitutions for fork with different Maven group ([012e4bd654](https://github.com/facebook/react-native/commit/012e4bd654f1eee2b00a066ba50a7f9c44cc305b) by [@douglowder](https://github.com/douglowder))
+
+## v0.71.9
+
+### Fixed
+
+- VirtualizedList scrollToEnd with no data ([98009ad94b](https://github.com/facebook/react-native/commit/98009ad94b92320307f2721ee39dbeb9152c0a58) by [@Andarius](https://github.com/Andarius))
+- Allow string `transform` style in TypeScript ([2558c3d4f5](https://github.com/facebook/react-native/commit/2558c3d4f56776699602b116aff8c22b8bfa176a) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix autoComplete type for TextInput ([94356e14ec](https://github.com/facebook/react-native/commit/94356e14ec0562a1fd5a208d93021f102ba9565e) by [@iRoachie](https://github.com/iRoachie))
+
 ## v0.71.8
 
 ### Fixed
