@@ -429,9 +429,7 @@ public class TextLayoutManagerMapBuffer {
       calculatedWidth = width;
     } else {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        boolean endsWithNewLine = text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
-        float lineWidth =
-            endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
+        float lineWidth = layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {
           calculatedWidth = lineWidth;
         }
@@ -486,14 +484,12 @@ public class TextLayoutManagerMapBuffer {
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
-            boolean endsWithNewLine = text.charAt(layout.getLineEnd(line) - 1) == '\n';
-            float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
             placeholderLeftPosition =
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
                     // incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? calculatedWidth - lineWidth
+                    ? calculatedWidth - layout.getLineWidth(line)
                     : layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is
