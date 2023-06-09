@@ -615,7 +615,7 @@ public class JSPointerDispatcher {
     int activePointerId = eventState.getActivePointerId();
     List<ViewTarget> activeHitPath = eventState.getHitPathByPointerId().get(activePointerId);
 
-    if (!activeHitPath.isEmpty()) {
+    if (!activeHitPath.isEmpty() && targetView != null) {
       boolean listeningForCancel =
           isAnyoneListeningForBubblingEvent(activeHitPath, EVENT.CANCEL, EVENT.CANCEL_CAPTURE);
       if (listeningForCancel) {
