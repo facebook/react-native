@@ -16,6 +16,7 @@ const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion, validateBuildType} = require('./version-utils');
 const {saveFiles} = require('./scm-utils');
+const updateTemplatePackage = require('./update-template-package');
 
 /**
  * This script updates relevant React Native files with supplied version:
@@ -119,14 +120,6 @@ function setPackage({version}) {
   );
 }
 
-function setTemplatePackage({version}) {
-  const result = exec(`node scripts/set-rn-template-version.js ${version}`);
-  if (result.code) {
-    echo("Failed to update React Native template's version of React Native");
-    throw result.stderr;
-  }
-}
-
 function setReactNativeVersion(argVersion, buildType) {
   validateBuildType(buildType);
 
@@ -146,7 +139,7 @@ function setReactNativeVersion(argVersion, buildType) {
 
   setSource(version);
   setPackage(version);
-  setTemplatePackage(version);
+  updateTemplatePackage({'react-native': version.version});
   setGradle(version);
 
   // Validate changes

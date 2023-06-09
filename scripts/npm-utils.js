@@ -56,7 +56,29 @@ function pack(packagePath) {
   }
 }
 
+/**
+ * `package` is an object form of package.json
+ * `dependencies` is a map of dependency to version string
+ *
+ * This replaces both dependencies and devDependencies in package.json
+ */
+function applyPackageVersions(originalPackageJSON, packageVersions) {
+  const packageJSON = {...originalPackageJSON};
+
+  for (const name of Object.keys(packageVersions)) {
+    if (packageJSON.dependencies[name] != null) {
+      packageJSON.dependencies[name] = packageVersions[name];
+    }
+
+    if (packageJSON.devDependencies[name] != null) {
+      packageJSON.devDependencies[name] = packageVersions[name];
+    }
+  }
+  return packageJSON;
+}
+
 module.exports = {
+  applyPackageVersions,
   getPackageVersionStrByTag,
   publishPackage,
   diffPackages,
