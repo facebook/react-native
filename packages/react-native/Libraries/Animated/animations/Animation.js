@@ -37,6 +37,7 @@ export default class Animation {
   __nativeId: number;
   __onEnd: ?EndCallback;
   __iterations: number;
+
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -44,22 +45,26 @@ export default class Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {}
+
   stop(): void {
     if (this.__nativeId) {
       NativeAnimatedHelper.API.stopAnimation(this.__nativeId);
     }
   }
+
   __getNativeAnimationConfig(): any {
     // Subclasses that have corresponding animation implementation done in native
     // should override this method
     throw new Error('This animation type cannot be offloaded to native');
   }
+
   // Helper function for subclasses to make sure onEnd is only called once.
   __debouncedOnEnd(result: EndResult): void {
     const onEnd = this.__onEnd;
     this.__onEnd = null;
     onEnd && onEnd(result);
   }
+
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
     startNativeAnimationNextId += 1;
@@ -74,8 +79,17 @@ export default class Animation {
         this.__nativeId,
         animatedValue.__getNativeTag(),
         config,
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-        this.__debouncedOnEnd.bind(this),
+        result => {
+          this.__debouncedOnEnd(result);
+
+          // When using natively driven animations, once the animation completes,
+          // we need to ensure that the JS side nodes are synced with the updated
+          // values.
+          const {value} = result;
+          if (value != null) {
+            animatedValue.__onAnimatedValueUpdateReceived(value);
+          }
+        },
       );
     } catch (e) {
       throw e;
