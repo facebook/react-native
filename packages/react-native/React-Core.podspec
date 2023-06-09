@@ -134,10 +134,11 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "glog"
 
-  if ENV['USE_HERMES'] == "0"
-    s.dependency 'React-jsc'
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
   else
-    s.dependency 'React-hermes'
-    s.dependency 'hermes-engine'
+    s.dependency "React-jsc"
   end
 end

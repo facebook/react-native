@@ -101,13 +101,21 @@ class JSEngineTests < Test::Unit::TestCase
             "returned by",
             "prepare-hermes-for-build",
         ])
-        assert_equal($podInvocationCount, 4)
+        assert_equal($podInvocationCount, 6)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
         hermes_engine_pod_invocation = $podInvocation["hermes-engine"]
         assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.podspec")
         assert_equal(hermes_engine_pod_invocation[:tag], "")
+        hermes_engine_pod_invocation = $podInvocation["hermes-engine_release"]
+        assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.release.podspec")
+        assert_equal(hermes_engine_pod_invocation[:tag], "")
+        assert_equal(hermes_engine_pod_invocation[:configurations], ["Release"])
+        hermes_engine_pod_invocation = $podInvocation["hermes-engine_debug"]
+        assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.debug.podspec")
+        assert_equal(hermes_engine_pod_invocation[:tag], "")
+        assert_equal(hermes_engine_pod_invocation[:configurations], ["Debug"])
     end
 
     def test_setupHermes_installsPods_installsFabricSubspecWhenFabricEnabled
@@ -118,13 +126,21 @@ class JSEngineTests < Test::Unit::TestCase
         setup_hermes!(:react_native_path => @react_native_path, :fabric_enabled => fabric_enabled)
 
         # Assert
-        assert_equal($podInvocationCount, 4)
+        assert_equal($podInvocationCount, 6)
         assert_equal($podInvocation["React-jsi"][:path], "../../ReactCommon/jsi")
         hermes_engine_pod_invocation = $podInvocation["hermes-engine"]
         assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.podspec")
         assert_equal(hermes_engine_pod_invocation[:tag], "")
         assert_equal($podInvocation["React-hermes"][:path], "../../ReactCommon/hermes")
         assert_equal($podInvocation["libevent"][:version], "~> 2.1.12")
+        hermes_engine_pod_invocation = $podInvocation["hermes-engine_release"]
+        assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.release.podspec")
+        assert_equal(hermes_engine_pod_invocation[:tag], "")
+        assert_equal(hermes_engine_pod_invocation[:configurations], ["Release"])
+        hermes_engine_pod_invocation = $podInvocation["hermes-engine_debug"]
+        assert_equal(hermes_engine_pod_invocation[:podspec], "../../sdks/hermes-engine/hermes-engine.debug.podspec")
+        assert_equal(hermes_engine_pod_invocation[:tag], "")
+        assert_equal(hermes_engine_pod_invocation[:configurations], ["Debug"])
     end
 
 end

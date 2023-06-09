@@ -32,5 +32,11 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{cpp,h}"
   s.header_dir             = "ReactCommon"
 
-  s.dependency "React-jsi", version
+  s.dependency "React-jsi"
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
+  end
 end

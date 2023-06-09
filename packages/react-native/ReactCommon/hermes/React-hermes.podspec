@@ -51,6 +51,9 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "glog"
   s.dependency "RCT-Folly/Futures", folly_version
-  s.dependency "hermes-engine"
   s.dependency "React-jsi"
+  s.dependency "hermes-engine"
+  s.dependency "hermes-engine_debug", :configurations => ['Debug']
+  s.dependency "hermes-engine_release", :configurations => ['Release']
+
 end

@@ -34,7 +34,11 @@ def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enab
     # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*
     hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
     hermestag = File.exist?(hermestag_file) ? File.read(hermestag_file).strip : ''
+
     pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec", :tag => hermestag
+    pod 'hermes-engine_debug', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.debug.podspec", :tag => hermestag, :configurations => ["Debug"]
+    pod 'hermes-engine_release', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.release.podspec", :tag => hermestag, :configurations => ["Release"]
+
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
     pod 'libevent', '~> 2.1.12'
 end

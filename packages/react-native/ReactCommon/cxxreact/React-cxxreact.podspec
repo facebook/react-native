@@ -48,7 +48,11 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "React-logger", version
 
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-    s.dependency 'hermes-engine'
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
+  else
+    s.dependency "React-jsc"
   end
 end

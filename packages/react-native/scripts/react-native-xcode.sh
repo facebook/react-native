@@ -88,7 +88,7 @@ if [[ -z "$HERMES_ENABLED" ]]; then
   USE_HERMES=false
 fi
 
-HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine"
+HERMES_ENGINE_PATH="$PODS_ROOT/hermes-engine_$CONFIGURATION"
 [ -z "$HERMES_CLI_PATH" ] && HERMES_CLI_PATH="$HERMES_ENGINE_PATH/destroot/bin/hermesc"
 
 # Hermes is enabled in new projects by default, so we cannot assume that USE_HERMES=1 is set as an envvar.

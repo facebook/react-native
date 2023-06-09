@@ -168,15 +168,17 @@ function copyPodSpec() {
   if (!fs.existsSync(HERMES_DIR)) {
     fs.mkdirSync(HERMES_DIR, {recursive: true});
   }
-  const podspec = 'hermes-engine.podspec';
+
+  copyFromSDKToHermes('hermes-engine.debug.podspec');
+  copyFromSDKToHermes('hermes-engine.release.podspec');
+  copyFromSDKToHermes('hermes-engine.podspec');
+  copyFromSDKToHermes('hermes-utils.rb');
+}
+
+function copyFromSDKToHermes(filename) {
   fs.copyFileSync(
-    path.join(SDKS_DIR, 'hermes-engine', podspec),
-    path.join(HERMES_DIR, podspec),
-  );
-  const utils = 'hermes-utils.rb';
-  fs.copyFileSync(
-    path.join(SDKS_DIR, 'hermes-engine', utils),
-    path.join(HERMES_DIR, utils),
+    path.join(SDKS_DIR, 'hermes-engine', filename),
+    path.join(HERMES_DIR, filename),
   );
 }
 

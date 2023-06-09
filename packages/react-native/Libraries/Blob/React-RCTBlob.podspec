@@ -54,12 +54,14 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version
   s.dependency "ReactCommon/turbomodule/core", version
-  s.dependency "React-jsi", version
+  s.dependency "React-jsi"
   s.dependency "React-Core/RCTBlobHeaders", version
   s.dependency "React-Core/RCTWebSocket", version
   s.dependency "React-RCTNetwork", version
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
   end
 end

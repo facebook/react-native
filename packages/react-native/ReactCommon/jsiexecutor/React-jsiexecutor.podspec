@@ -36,13 +36,15 @@ Pod::Spec.new do |s|
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact", version
-  s.dependency "React-jsi", version
+  s.dependency "React-jsi"
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
   s.dependency "glog"
 
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-    s.dependency 'hermes-engine'
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
   end
 end

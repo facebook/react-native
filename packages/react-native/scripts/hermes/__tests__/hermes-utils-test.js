@@ -112,6 +112,14 @@ function populateMockFilesystemWithHermesBuildScripts() {
     'Dummy file',
   );
   fs.writeFileSync(
+    path.join(SDKS_DIR, 'hermes-engine/hermes-engine.debug.podspec'),
+    'Dummy file',
+  );
+  fs.writeFileSync(
+    path.join(SDKS_DIR, 'hermes-engine/hermes-engine.release.podspec'),
+    'Dummy file',
+  );
+  fs.writeFileSync(
     path.join(SDKS_DIR, 'hermes-engine/hermes-utils.rb'),
     'Dummy file',
   );

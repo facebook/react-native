@@ -56,5 +56,8 @@ Pod::Spec.new do |s|
     # Just need to provide JSIDynamic in this case.
     s.source_files = "jsi/JSIDynamic.{cpp,h}"
     s.dependency "hermes-engine"
+    s.dependency "hermes-engine_debug", :configurations => ['Debug']
+    s.dependency "hermes-engine_release", :configurations => ['Release']
+
   end
 end

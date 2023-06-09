@@ -53,6 +53,8 @@ Pod::Spec.new do |s|
     ss.dependency "glog"
     if using_hermes
       ss.dependency "hermes-engine"
+      ss.dependency "hermes-engine_debug", :configurations => ['Debug']
+      ss.dependency "hermes-engine_release", :configurations => ['Release']
     end
 
     ss.subspec "bridging" do |sss|
@@ -63,6 +65,8 @@ Pod::Spec.new do |s|
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
       if using_hermes
         sss.dependency "hermes-engine"
+        sss.dependency "hermes-engine_debug", :configurations => ['Debug']
+        sss.dependency "hermes-engine_release", :configurations => ['Release']
       end
     end
 
