@@ -431,6 +431,33 @@ const FabricUIManagerMock: FabricUIManager = {
       ];
     },
   ),
+  getScrollPosition: jest.fn(
+    (node: Node): ?[/* scrollLeft: */ number, /* scrollTop: */ number] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const scrollForTests: ?{
+        scrollLeft: number,
+        scrollTop: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__scrollForTests;
+
+      if (scrollForTests == null) {
+        return null;
+      }
+
+      const {scrollLeft, scrollTop} = scrollForTests;
+      return [scrollLeft, scrollTop];
+    },
+  ),
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;

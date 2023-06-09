@@ -74,10 +74,10 @@ export type Spec = {|
   +getBoundingClientRect: (
     node: Node,
   ) => ?[
-    /* x:*/ number,
-    /* y:*/ number,
-    /* width:*/ number,
-    /* height:*/ number,
+    /* x: */ number,
+    /* y: */ number,
+    /* width: */ number,
+    /* height: */ number,
   ],
   +getOffset: (
     node: Node,
@@ -86,6 +86,9 @@ export type Spec = {|
     /* offsetTop: */ number,
     /* offsetLeft: */ number,
   ],
+  +getScrollPosition: (
+    node: Node,
+  ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number],
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND
