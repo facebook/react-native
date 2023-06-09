@@ -61,12 +61,15 @@ function hasChanges(
 }
 
 /**
- * Publish nightlies for monorepo packages that changed since last publish.
- * This is called by `react-native`'s nightly job.
+ * Get the latest nightly version of each monorepo package and publishes a new nightly if there have been updates.
+ * Returns a map of monorepo packages and its latest nightly version.
  *
+ * This is called by `react-native`'s nightly job.
  * Note: This does not publish `package/react-native`'s nightly. That is handled in `publish-npm`.
  */
-function publishNightlyForEachChangedPackage(nightlyVersion) {
+function getAndUpdateNightlies(nightlyVersion) {
+  const nightlyVersions = {};
+
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {
@@ -103,6 +106,7 @@ function publishNightlyForEachChangedPackage(nightlyVersion) {
         console.log(
           `Detected no changes in ${packageManifest.name}@nightly since last publish. Skipping.`,
         );
+        nightlyVersions[packageManifest.name] = lastPublishedNightlyVersion;
         return;
       }
 
@@ -127,9 +131,11 @@ function publishNightlyForEachChangedPackage(nightlyVersion) {
         console.log(
           `\u2705 Successfully published new version of ${packageManifest.name}`,
         );
+        nightlyVersions[packageManifest.name] = nightlyVersion;
       }
     },
   );
+  return nightlyVersions;
 }
 
-module.exports = publishNightlyForEachChangedPackage;
+module.exports = getAndUpdateNightlies;
