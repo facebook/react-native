@@ -270,7 +270,7 @@ function translateTypeAnnotation(
       return translateObjectTypeAnnotation(
         hasteModuleName,
         nullable,
-        flattenProperties([typeAnnotation], types),
+        flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
         baseTypes,
         types,
@@ -288,6 +288,7 @@ function translateTypeAnnotation(
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
           types,
+          parser,
         ),
         typeResolutionStatus,
         [],

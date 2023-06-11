@@ -17,6 +17,7 @@
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
+#import <react/renderer/components/view/accessibilityPropsConversions.h>
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -722,7 +723,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleString = [NSString stringWithUTF8String:props.accessibilityRole.c_str()];
+  NSString *roleString = (props.role != Role::None) ? [NSString stringWithUTF8String:toString(props.role).c_str()]
+                                                    : [NSString stringWithUTF8String:props.accessibilityRole.c_str()];
 
   // In iOS, checkbox and radio buttons aren't recognized as traits. However,
   // because our apps use checkbox and radio buttons often, we should announce

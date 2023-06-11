@@ -11,9 +11,9 @@ import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
 /**
@@ -61,7 +61,7 @@ interface ReactHostDelegate {
    * ReactNative Configuration that allows to customize the behavior of key/value pairs used by the
    * framework to enable/disable experimental capabilities
    */
-  fun getReactNativeConfig(context: ReactContext): ReactNativeConfig
+  fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig
 
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
@@ -79,7 +79,7 @@ interface ReactHostDelegate {
     override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
         turboModuleManagerDelegate(context)
 
-    override fun getReactNativeConfig(context: ReactContext) = reactNativeConfig
+    override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
 
     override fun handleInstanceException(error: Exception) = exceptionHandler(error)
   }

@@ -10,7 +10,7 @@
 
 import Platform from '../Utilities/Platform';
 
-declare var console: typeof console & {_isPolyfilled: boolean, ...};
+declare var console: {[string]: $FlowFixMe};
 
 /**
  * Sets up developer tools for React Native.

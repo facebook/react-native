@@ -181,6 +181,13 @@ using namespace facebook::react;
     _backedTextInputView.passwordRules = RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
   }
 
+  if (newTextInputProps.traits.smartInsertDelete != oldTextInputProps.traits.smartInsertDelete) {
+    if (@available(iOS 11.0, *)) {
+      _backedTextInputView.smartInsertDeleteType =
+          RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
+    }
+  }
+
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
 

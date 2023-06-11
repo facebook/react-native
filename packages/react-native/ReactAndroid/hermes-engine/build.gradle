@@ -181,6 +181,9 @@ android {
                     // This has the (unlucky) side effect of letting AGP call the build
                     // tasks `configureCMakeRelease` while is actually building the debug flavor.
                     arguments "-DCMAKE_BUILD_TYPE=Release"
+                    // Adding -O3 to handle the issue here: https://github.com/android/ndk/issues/1740#issuecomment-1198438260
+                    // The old NDK toolchain is not passing -O3 correctly for release CMake builds. This is fixed in NDK 25 and can be removed once we're there.
+                    cppFlags "-O3"
                 }
             }
         }

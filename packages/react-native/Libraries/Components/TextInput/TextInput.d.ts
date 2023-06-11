@@ -70,6 +70,15 @@ export type ReturnKeyTypeOptions =
   | ReturnKeyTypeAndroid
   | ReturnKeyTypeIOS;
 
+export type EnterKeyHintTypeAndroid = 'previous';
+export type EnterKeyHintTypeIOS = 'enter';
+export type EnterKeyHintType = 'done' | 'go' | 'next' | 'search' | 'send';
+
+export type EnterKeyHintTypeOptions =
+  | EnterKeyHintType
+  | EnterKeyHintTypeAndroid
+  | EnterKeyHintTypeIOS;
+
 type DataDetectorTypes =
   | 'phoneNumber'
   | 'link'
@@ -282,6 +291,14 @@ export interface TextInputIOSProps {
     | 'hangul-word'
     | 'push-out'
     | undefined;
+
+  /**
+   * If `false`, the iOS system will not insert an extra space after a paste operation
+   * neither delete one or two spaces after a cut or delete operation.
+   *
+   * The default value is `true`.
+   */
+  smartInsertDelete?: boolean | undefined;
 }
 
 /**
@@ -778,6 +795,12 @@ export interface TextInputProps
    * Determines how the return key should look.
    */
   returnKeyType?: ReturnKeyTypeOptions | undefined;
+
+  /**
+   * Determines what text should be shown to the return key on virtual keyboards.
+   * Has precedence over the returnKeyType prop.
+   */
+  enterKeyHint?: EnterKeyHintTypeOptions | undefined;
 
   /**
    * If true, the text input obscures the text entered so that sensitive text like passwords stay secure.

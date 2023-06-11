@@ -117,10 +117,13 @@
  * Accessibility properties
  */
 @property (nonatomic, copy) NSString *accessibilityRole;
+@property (nonatomic, copy) NSString *role;
 @property (nonatomic, copy) NSDictionary<NSString *, id> *accessibilityState;
 @property (nonatomic, copy) NSArray<NSDictionary *> *accessibilityActions;
 @property (nonatomic, copy) NSDictionary *accessibilityValueInternal;
 @property (nonatomic, copy) NSString *accessibilityLanguage;
+@property (nonatomic) UIAccessibilityTraits accessibilityRoleTraits;
+@property (nonatomic) UIAccessibilityTraits roleTraits;
 
 /**
  * Used in debugging to get a description of the view hierarchy rooted at

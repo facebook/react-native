@@ -320,6 +320,41 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('getTypeAnnotationFromProperty', () => {
+    describe('when property value type is NullableTypeAnnotation', () => {
+      it('returns typeAnnotation of the value', () => {
+        const typeAnnotation = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: typeAnnotation,
+          },
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+          typeAnnotation,
+        );
+      });
+    });
+
+    describe('when property value type is not NullableTypeAnnotation', () => {
+      it('returns the value', () => {
+        const value = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: value,
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(value);
+      });
+    });
+  });
+
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TypeAlias');
@@ -335,6 +370,31 @@ describe('FlowParser', () => {
   describe('interfaceDeclaration', () => {
     it('returns interfaceDeclaration Property', () => {
       expect(parser.interfaceDeclaration).toEqual('InterfaceDeclaration');
+    });
+  });
+
+  describe('extractTypeFromTypeAnnotation', () => {
+    it('should return the name if typeAnnotation is GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'SomeType',
+        },
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeType',
+      );
+    });
+
+    it('should return the type if typeAnnotation is not GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'SomeOtherType',
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeOtherType',
+      );
     });
   });
 });
@@ -628,6 +688,30 @@ describe('TypeScriptParser', () => {
     });
   });
 
+  describe('getTypeAnnotationFromProperty', () => {
+    it('returns the type annotation', () => {
+      const typeAnnotation = {
+        type: 'TSStringKeyword',
+        key: {
+          type: 'Identifier',
+          name: 'b',
+        },
+        members: [],
+      };
+
+      const property = {
+        typeAnnotation: {
+          type: 'TSTypeAnnotation',
+          typeAnnotation: typeAnnotation,
+        },
+      };
+
+      expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+        typeAnnotation,
+      );
+    });
+  });
+
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
@@ -643,6 +727,31 @@ describe('TypeScriptParser', () => {
   describe('interfaceDeclaration', () => {
     it('returns interfaceDeclaration Property', () => {
       expect(parser.interfaceDeclaration).toEqual('TSInterfaceDeclaration');
+    });
+  });
+
+  describe('extractTypeFromTypeAnnotation', () => {
+    it('should return the name if typeAnnotation is TSTypeReference', () => {
+      const typeAnnotation = {
+        type: 'TSTypeReference',
+        typeName: {
+          name: 'SomeType',
+        },
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeType',
+      );
+    });
+
+    it('should return the type if typeAnnotation is not TSTypeReference', () => {
+      const typeAnnotation = {
+        type: 'SomeOtherType',
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeOtherType',
+      );
     });
   });
 });

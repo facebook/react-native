@@ -34,7 +34,14 @@ module.exports = {
         'no-undef': 0,
       },
     },
-
+    {
+      files: ['flow-typed/**/*.js'],
+      rules: {
+        'lint/valid-flow-typed-signature': 2,
+        'no-unused-vars': 0,
+        quotes: 0,
+      },
+    },
     {
       files: ['packages/react-native/Libraries/**/*.js'],
       rules: {
@@ -44,14 +51,6 @@ module.exports = {
         'lint/no-react-native-imports': 2,
         'lint/require-extends-error': 2,
         'lint/sort-imports': 1,
-      },
-    },
-    {
-      files: ['packages/react-native/flow-typed/**/*.js'],
-      rules: {
-        'lint/valid-flow-typed-signature': 2,
-        'no-unused-vars': 0,
-        quotes: 0,
       },
     },
     {

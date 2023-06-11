@@ -76,6 +76,19 @@ function emitInt32(nullable: boolean): Nullable<Int32TypeAnnotation> {
   });
 }
 
+function emitInt32Prop(
+  name: string,
+  optional: boolean,
+): NamedShape<Int32TypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'Int32TypeAnnotation',
+    },
+  };
+}
+
 function emitNumber(
   nullable: boolean,
 ): Nullable<NativeModuleNumberTypeAnnotation> {
@@ -631,6 +644,19 @@ function emitBoolProp(
   };
 }
 
+function emitMixedProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'MixedTypeAnnotation',
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -641,6 +667,8 @@ module.exports = {
   emitFloatProp,
   emitFunction,
   emitInt32,
+  emitInt32Prop,
+  emitMixedProp,
   emitNumber,
   emitGenericObject,
   emitDictionary,

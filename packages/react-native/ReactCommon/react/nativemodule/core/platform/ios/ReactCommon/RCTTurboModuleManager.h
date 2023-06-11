@@ -58,6 +58,11 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
+- (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
+
+/**
+ * @deprecated: use installJSBindings instead
+ */
 - (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
 
 - (void)invalidate;

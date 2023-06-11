@@ -7,11 +7,14 @@
 
 #import "RCTHost.h"
 
+#import <ReactCommon/RCTContextContainerHandling.h>
+
 typedef NSURL * (^RCTHostBundleURLProvider)(void);
 
 @interface RCTHost (Internal)
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider;
+- (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler;
 
 @end

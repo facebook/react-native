@@ -846,13 +846,8 @@ static Class getFallbackClassFromName(const char *name)
   return requiresMainQueueSetup;
 }
 
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
+- (void)installJSBindings:(facebook::jsi::Runtime &)runtime
 {
-  if (!runtimeExecutor) {
-    // jsi::Runtime doesn't exist when attached to Chrome debugger.
-    return;
-  }
-
   /**
    * We keep TurboModuleManager alive until the JS VM is deleted.
    * It is perfectly valid to only use/create TurboModules from JS.
@@ -886,48 +881,51 @@ static Class getFallbackClassFromName(const char *name)
     } else {
       TurboModulePerfLogger::moduleJSRequireEndingFail(moduleName);
     }
-
     return turboModule;
   };
 
-  if (!RCTTurboModuleInteropEnabled()) {
-    runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-      TurboModuleBinding::install(runtime, sTurboModuleBindingMode, std::move(turboModuleProvider));
-    });
-    return;
-  }
+  if (RCTTurboModuleInteropEnabled()) {
+    auto legacyModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
+      auto moduleName = name.c_str();
 
-  auto legacyModuleProvider = [self](const std::string &name) -> std::shared_ptr<react::TurboModule> {
-    auto moduleName = name.c_str();
+      TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
+      auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
 
-    TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-    auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
+      /**
+       * By default, all TurboModules are long-lived.
+       * Additionally, if a TurboModule with the name `name` isn't found, then we
+       * trigger an assertion failure.
+       */
+      auto turboModule = [self provideLegacyModule:moduleName];
 
-    /**
-     * By default, all TurboModules are long-lived.
-     * Additionally, if a TurboModule with the name `name` isn't found, then we
-     * trigger an assertion failure.
-     */
-    auto turboModule = [self provideLegacyModule:moduleName];
+      if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
+        [self notifyAboutTurboModuleSetup:moduleName];
+      }
 
-    if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
-      [self notifyAboutTurboModuleSetup:moduleName];
-    }
+      if (turboModule) {
+        TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
+      } else {
+        TurboModulePerfLogger::moduleJSRequireEndingFail(moduleName);
+      }
+      return turboModule;
+    };
 
-    if (turboModule) {
-      TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
-    } else {
-      TurboModulePerfLogger::moduleJSRequireEndingFail(moduleName);
-    }
-
-    return turboModule;
-  };
-
-  runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider),
-                   legacyModuleProvider = std::move(legacyModuleProvider)](jsi::Runtime &runtime) {
     TurboModuleBinding::install(
         runtime, sTurboModuleBindingMode, std::move(turboModuleProvider), std::move(legacyModuleProvider));
-  });
+  } else {
+    TurboModuleBinding::install(runtime, sTurboModuleBindingMode, std::move(turboModuleProvider));
+  }
+}
+
+/**
+ * @deprecated: use installJSBindings instead
+ */
+- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
+{
+  // jsi::Runtime doesn't exist when attached to Chrome debugger.
+  if (runtimeExecutor) {
+    runtimeExecutor([self](facebook::jsi::Runtime &runtime) { [self installJSBindings:runtime]; });
+  }
 }
 
 #pragma mark RCTTurboModuleRegistry
