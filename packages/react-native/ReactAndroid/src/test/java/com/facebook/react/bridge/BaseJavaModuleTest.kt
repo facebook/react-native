@@ -16,17 +16,16 @@ import org.mockito.Mockito.`when` as whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Tests for [BaseJavaModule] and [JavaModuleWrapper]  */
+/** Tests for [BaseJavaModule] and [JavaModuleWrapper] */
 @Config(shadows = [ShadowSoLoader::class])
-@RunWith(
-  RobolectricTestRunner::class
-)
+@RunWith(RobolectricTestRunner::class)
 class BaseJavaModuleTest {
   private lateinit var methods: List<JavaModuleWrapper.MethodDescriptor>
   private lateinit var moduleWrapper: JavaModuleWrapper
   private lateinit var generatedMethods: List<JavaModuleWrapper.MethodDescriptor>
   private lateinit var generatedModuleWrapper: JavaModuleWrapper
   private lateinit var arguments: ReadableNativeArray
+
   @Before
   fun setup() {
     val moduleHolder = ModuleHolder(MethodsModule())
@@ -92,13 +91,9 @@ class BaseJavaModuleTest {
       return "Methods"
     }
 
-    @ReactMethod
-    fun regularMethod(a: String?, b: Int) {
-    }
+    @ReactMethod fun regularMethod(a: String?, b: Int) {}
 
-    @ReactMethod
-    fun asyncMethod(a: Int, p: Promise?) {
-    }
+    @ReactMethod fun asyncMethod(a: Int, p: Promise?) {}
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun syncMethod(a: Int, b: Int): Int {
@@ -106,10 +101,8 @@ class BaseJavaModuleTest {
     }
   }
 
-  private abstract inner class NativeTestGeneratedModuleSpec : BaseJavaModule(),
-    TurboModule {
-    @ReactMethod
-    abstract fun generatedMethod(a: String?, b: Int)
+  private abstract inner class NativeTestGeneratedModuleSpec : BaseJavaModule(), TurboModule {
+    @ReactMethod abstract fun generatedMethod(a: String?, b: Int)
   }
 
   private inner class GeneratedMethodsModule : NativeTestGeneratedModuleSpec() {
