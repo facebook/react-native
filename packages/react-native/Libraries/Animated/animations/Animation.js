@@ -11,11 +11,9 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
-import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
-import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -67,21 +65,6 @@ export default class Animation {
     onEnd && onEnd(result);
   }
 
-  __findAnimatedPropsNode(node: AnimatedNode): ?AnimatedProps {
-    if (node instanceof AnimatedProps) {
-      return node;
-    }
-
-    for (const child of node.__getChildren()) {
-      const result = this.__findAnimatedPropsNode(child);
-      if (result) {
-        return result;
-      }
-    }
-
-    return null;
-  }
-
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
     startNativeAnimationNextId += 1;
@@ -106,10 +89,6 @@ export default class Animation {
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value);
           }
-
-          // Once the JS side node is synced with the updated values, trigger an
-          // update on the AnimatedProps node to call any registered callbacks.
-          this.__findAnimatedPropsNode(animatedValue)?.update();
         },
       );
     } catch (e) {
