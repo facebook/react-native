@@ -9,19 +9,19 @@
 
 const execMock = jest.fn();
 const echoMock = jest.fn();
-const exitMock = jest.fn();
 const catMock = jest.fn();
 const sedMock = jest.fn();
 const writeFileSyncMock = jest.fn();
+const updateTemplatePackageMock = jest.fn();
 
 jest
   .mock('shelljs', () => ({
     exec: execMock,
     echo: echoMock,
-    exit: exitMock,
     cat: catMock,
     sed: sedMock,
   }))
+  .mock('./../update-template-package', () => updateTemplatePackageMock)
   .mock('./../scm-utils', () => ({
     saveFiles: jest.fn(),
   }))
@@ -45,7 +45,7 @@ describe('set-rn-version', () => {
   it('should set nightly version', () => {
     catMock.mockImplementation(path => {
       if (path === 'packages/react-native/package.json') {
-        return '{"name": "myPackage", "version": 2}';
+        return '{"name": "myPackage", "version": 2, "dependencies": {"@react-native/package-a": "nightly", "@react-native/package-b": "^0.73.0"}}';
       } else if (
         path === 'scripts/versiontemplates/ReactNativeVersion.java.template' ||
         path === 'scripts/versiontemplates/RCTVersion.m.template' ||
@@ -58,13 +58,14 @@ describe('set-rn-version', () => {
       }
     });
 
-    execMock
-      .mockReturnValueOnce({code: 0})
-      .mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
+    execMock.mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
     sedMock.mockReturnValueOnce({code: 0});
 
     const version = '0.81.0-nightly-29282302-abcd1234';
-    setReactNativeVersion(version, 'nightly');
+    const nightlyVersions = {
+      '@react-native/package-a': version,
+    };
+    setReactNativeVersion(version, nightlyVersions, 'nightly');
 
     expect(sedMock).toHaveBeenCalledWith(
       '-i',
@@ -91,14 +92,19 @@ describe('set-rn-version', () => {
     expect(writeFileSyncMock.mock.calls[4][0]).toBe(
       'packages/react-native/package.json',
     );
-    expect(writeFileSyncMock.mock.calls[4][1]).toBe(
-      `{\n  "name": "myPackage",\n  "version": "${version}"\n}`,
-    );
+    expect(writeFileSyncMock.mock.calls[4][1]).toBe(`{
+  "name": "myPackage",
+  "version": "${version}",
+  "dependencies": {
+    "@react-native/package-a": "0.81.0-nightly-29282302-abcd1234",
+    "@react-native/package-b": "^0.73.0"
+  }
+}`);
 
-    expect(exitMock.mock.calls[0][0]).toBe(0);
-    expect(execMock.mock.calls[0][0]).toBe(
-      `node scripts/set-rn-template-version.js ${version}`,
-    );
+    expect(updateTemplatePackageMock).toHaveBeenCalledWith({
+      '@react-native/package-a': '0.81.0-nightly-29282302-abcd1234',
+      'react-native': version,
+    });
   });
 
   it('should set release version', () => {
@@ -109,13 +115,11 @@ describe('set-rn-version', () => {
       return 'exports.version = {major: ${major}, minor: ${minor}, patch: ${patch}, prerelease: ${prerelease}}';
     });
 
-    execMock
-      .mockReturnValueOnce({code: 0})
-      .mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
+    execMock.mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
     sedMock.mockReturnValueOnce({code: 0});
 
     const version = '0.81.0';
-    setReactNativeVersion(version, 'release');
+    setReactNativeVersion(version, null, 'release');
 
     expect(sedMock).toHaveBeenCalledWith(
       '-i',
@@ -137,11 +141,10 @@ describe('set-rn-version', () => {
       `{\n  "name": "myPackage",\n  "version": "${version}"\n}`,
     );
 
-    expect(exitMock.mock.calls[0][0]).toBe(0);
+    expect(updateTemplatePackageMock).toHaveBeenCalledWith({
+      'react-native': version,
+    });
     expect(execMock.mock.calls[0][0]).toBe(
-      `node scripts/set-rn-template-version.js ${version}`,
-    );
-    expect(execMock.mock.calls[1][0]).toBe(
       `diff -r ./rn-set-version/ . | grep '^[>]' | grep -c ${version} `,
     );
   });
@@ -149,9 +152,7 @@ describe('set-rn-version', () => {
   it('should fail validation', () => {
     catMock.mockReturnValue('{}');
 
-    execMock
-      .mockReturnValueOnce({code: 0})
-      .mockReturnValueOnce({stdout: 'line1\nline2\n'});
+    execMock.mockReturnValueOnce({stdout: 'line1\nline2\n'});
     sedMock.mockReturnValueOnce({code: 0});
     const filesToValidate = [
       'packages/react-native/package.json',
@@ -160,9 +161,8 @@ describe('set-rn-version', () => {
     ];
 
     const version = '0.81.0';
-    setReactNativeVersion(version, 'release');
+    setReactNativeVersion(version, null, 'release');
 
-    expect(exitMock).toHaveBeenCalledWith(0);
     expect(echoMock).toHaveBeenNthCalledWith(
       1,
       'The tmp versioning folder is ./rn-set-version/',

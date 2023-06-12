@@ -16,6 +16,8 @@ const {cat, echo, exec, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion, validateBuildType} = require('./version-utils');
 const {saveFiles} = require('./scm-utils');
+const updateTemplatePackage = require('./update-template-package');
+const {applyPackageVersions} = require('./npm-utils');
 
 /**
  * This script updates relevant React Native files with supplied version:
@@ -31,13 +33,31 @@ if (require.main === module) {
       type: 'string',
       required: true,
     })
+    .option('d', {
+      alias: 'dependency-versions',
+      type: 'string',
+      describe:
+        'JSON string of package versions. Ex. "{"react-native":"0.64.1"}"',
+      default: null,
+    })
+    .coerce('d', dependencyVersions => {
+      if (dependencyVersions == null) {
+        return null;
+      }
+      return JSON.parse(dependencyVersions);
+    })
     .option('b', {
       alias: 'build-type',
       type: 'string',
       required: true,
     }).argv;
 
-  setReactNativeVersion(argv.toVersion, argv.buildType);
+  setReactNativeVersion(
+    argv.toVersion,
+    argv.dependencyVersions,
+    argv.buildType,
+  );
+  exit(0);
 }
 
 function setSource({major, minor, patch, prerelease}) {
@@ -108,8 +128,15 @@ function setGradle({version}) {
   }
 }
 
-function setPackage({version}) {
-  const packageJson = JSON.parse(cat('packages/react-native/package.json'));
+function setPackage({version}, dependencyVersions) {
+  const originalPackageJson = JSON.parse(
+    cat('packages/react-native/package.json'),
+  );
+  const packageJson =
+    dependencyVersions != null
+      ? applyPackageVersions(originalPackageJson, dependencyVersions)
+      : originalPackageJson;
+
   packageJson.version = version;
 
   fs.writeFileSync(
@@ -119,15 +146,7 @@ function setPackage({version}) {
   );
 }
 
-function setTemplatePackage({version}) {
-  const result = exec(`node scripts/set-rn-template-version.js ${version}`);
-  if (result.code) {
-    echo("Failed to update React Native template's version of React Native");
-    throw result.stderr;
-  }
-}
-
-function setReactNativeVersion(argVersion, buildType) {
+function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
   validateBuildType(buildType);
 
   const version = parseVersion(argVersion, buildType);
@@ -145,8 +164,14 @@ function setReactNativeVersion(argVersion, buildType) {
   saveFiles(tmpVersioningFolder);
 
   setSource(version);
-  setPackage(version);
-  setTemplatePackage(version);
+  setPackage(version, dependencyVersions);
+
+  const templateDependencyVersions = {
+    'react-native': version.version,
+    ...(dependencyVersions != null ? dependencyVersions : {}),
+  };
+  updateTemplatePackage(templateDependencyVersions);
+
   setGradle(version);
 
   // Validate changes
@@ -170,7 +195,7 @@ function setReactNativeVersion(argVersion, buildType) {
     echo(`These files already had version ${version.version} set.`);
   }
 
-  return exit(0);
+  return;
 }
 
 module.exports = setReactNativeVersion;
