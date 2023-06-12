@@ -20,6 +20,8 @@ import type {
 } from '../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../Types/RootTagTypes';
 
+import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
+
 export type NodeSet = Array<Node>;
 export type NodeProps = {...};
 export type Spec = {|
@@ -91,9 +93,69 @@ export type Spec = {|
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number],
 |};
 
+let nativeFabricUIManagerProxy: ?Spec;
+
+// This is a list of all the methods in global.nativeFabricUIManager that we'll
+// cache in JavaScript, as the current implementation of the binding
+// creates a new host function every time methods are accessed.
+const CACHED_PROPERTIES = [
+  'createNode',
+  'cloneNode',
+  'cloneNodeWithNewChildren',
+  'cloneNodeWithNewProps',
+  'cloneNodeWithNewChildrenAndProps',
+  'createChildSet',
+  'appendChild',
+  'appendChildToSet',
+  'completeRoot',
+  'measure',
+  'measureInWindow',
+  'measureLayout',
+  'configureNextLayoutAnimation',
+  'sendAccessibilityEvent',
+  'findShadowNodeByTag_DEPRECATED',
+  'setNativeProps',
+  'dispatchCommand',
+  'getParentNode',
+  'getChildNodes',
+  'isConnected',
+  'compareDocumentPosition',
+  'getTextContent',
+  'getBoundingClientRect',
+  'getOffset',
+  'getScrollPosition',
+];
+
 // This is exposed as a getter because apps using the legacy renderer AND
 // Fabric can define the binding lazily. If we evaluated the global and cached
 // it in the module we might be caching an `undefined` value before it is set.
 export function getFabricUIManager(): ?Spec {
-  return global.nativeFabricUIManager;
+  if (
+    nativeFabricUIManagerProxy == null &&
+    global.nativeFabricUIManager != null
+  ) {
+    nativeFabricUIManagerProxy = createProxyWithCachedProperties(
+      global.nativeFabricUIManager,
+      CACHED_PROPERTIES,
+    );
+  }
+  return nativeFabricUIManagerProxy;
+}
+
+/**
+ *
+ * Returns an object that caches the specified properties the first time they
+ * are accessed, and falls back to the original object for other properties.
+ */
+function createProxyWithCachedProperties(
+  implementation: Spec,
+  propertiesToCache: $ReadOnlyArray<string>,
+): Spec {
+  const proxy = Object.create(implementation);
+  for (const propertyName of propertiesToCache) {
+    defineLazyObjectProperty(proxy, propertyName, {
+      get: () => implementation[propertyName],
+    });
+  }
+  return proxy;
 }
