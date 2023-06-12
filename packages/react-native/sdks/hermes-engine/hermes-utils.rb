@@ -30,7 +30,7 @@ end
 # - react_native_path: path to react native
 #
 # Returns: a properly configured source object
-def compute_hermes_source(build_from_source, hermestag_file, git, version, build_type, react_native_path)
+def compute_hermes_source(build_from_source, hermestag_file, git, version, react_native_path)
     source = {}
 
     if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
@@ -43,8 +43,8 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, build
         else
             build_hermes_from_source(source, git)
         end
-    elsif hermes_artifact_exists(release_tarball_url(version, build_type))
-        use_release_tarball(source, version, build_type)
+    elsif hermes_artifact_exists(release_tarball_url(version, :debug))
+        use_release_tarball(source, version, :debug)
     elsif hermes_artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
         use_nightly_tarball(source, react_native_path, version)
     else

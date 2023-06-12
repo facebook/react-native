@@ -8,9 +8,6 @@ require_relative "./hermes-utils.rb"
 
 react_native_path = File.join(__dir__, "..", "..")
 
-# Whether Hermes is built for Release or Debug is determined by the PRODUCTION envvar.
-build_type = ENV['PRODUCTION'] == "1" ? :release : :debug
-
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
@@ -23,7 +20,7 @@ git = "https://github.com/facebook/hermes.git"
 
 abort_if_invalid_tarball_provided!
 
-source = compute_hermes_source(build_from_source, hermestag_file, git, version, build_type, react_native_path)
+source = compute_hermes_source(build_from_source, hermestag_file, git, version, react_native_path)
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
@@ -42,7 +39,7 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {
                     "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                     "CLANG_CXX_LIBRARY" => "compiler-default"
-                  }.merge!(build_type == :debug ? { "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" } : {})
+                  }
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
@@ -50,12 +47,30 @@ Pod::Spec.new do |spec|
   if source[:http] then
 
     spec.subspec 'Pre-built' do |ss|
-      ss.preserve_paths = ["destroot/bin/*"].concat(build_type == :debug ? ["**/*.{h,c,cpp}"] : [])
+      ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
       ss.source_files = "destroot/include/**/*.h"
       ss.exclude_files = ["destroot/include/jsi/jsi/JSIDynamic.{h,cpp}", "destroot/include/jsi/jsi/jsilib-*.{h,cpp}"]
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+    end
+
+
+    # Right now, even reinstalling pods with the PRODUCTION flag turned on, does not change the version of hermes that is downloaded
+    # To remove the PRODUCTION flag, we want to download the right version of hermes on the flight
+    # we do so in a pre-build script we invoke from the Xcode build pipeline
+    # We use this only for Apps created using the template. RNTester and Nightlies should not be used to build for Release.
+    # We ignore this if we provide a specific tarball: the assumption here is that if you are providing a tarball, is because you want to
+    # test something specific for that tarball.
+    if source[:http].include?('https://repo1.maven.org/')
+      spec.script_phase = {
+        :name => "[Hermes] Download Hermes for the right configuration, if needed",
+        :execution_position => :before_compile,
+        :script => <<-EOS
+        . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/download_right_hermes_version.js" -c "$CONFIGURATION" -r "#{version}"
+        EOS
+      }
     end
 
   elsif source[:git] then
@@ -96,7 +111,7 @@ Pod::Spec.new do |spec|
       {
         :name => '[RN] [1] Build Hermesc',
         :script => <<-EOS
-        . ${PODS_ROOT}/../.xcode.env
+        . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
         export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
         . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
         EOS
@@ -104,7 +119,7 @@ Pod::Spec.new do |spec|
       {
         :name => '[RN] [2] Build Hermes',
         :script => <<-EOS
-        . ${PODS_ROOT}/../.xcode.env
+        . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
         export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
         . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
         EOS
