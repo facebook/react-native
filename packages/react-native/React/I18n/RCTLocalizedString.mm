@@ -7,7 +7,7 @@
 
 #import "RCTLocalizedString.h"
 
-#if !defined(WITH_FBI18N) || !(WITH_FBI18N)
+#if !defined(WITH_FBI18N) || (defined(WITH_FBI18N) && !WITH_FBI18N)
 
 static NSString *FBTStringByConvertingIntegerToBase64(uint64_t number)
 {
