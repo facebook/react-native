@@ -37,10 +37,9 @@ class BaseJavaModuleTest {
     arguments = mock(ReadableNativeArray::class.java)
   }
 
-  private fun findMethod(mname: String, methods: List<JavaModuleWrapper.MethodDescriptor>?): Int = methods.indexOfFirst({it.name === mname})
+  private fun findMethod(mname: String, methods: List<JavaModuleWrapper.MethodDescriptor>): Int = methods.indexOfFirst({it.name === mname})
 
   @Test(expected = NativeArgumentsParseException::class)
-  @Throws(Exception::class)
   fun testCallMethodWithoutEnoughArgs() {
     val methodId = findMethod("regularMethod", methods)
     whenever(arguments.size()).thenReturn(1)
@@ -79,21 +78,21 @@ class BaseJavaModuleTest {
   private class MethodsModule : BaseJavaModule() {
     override fun getName(): String = "Methods"
 
-    @ReactMethod fun regularMethod(a: String?, b: Int) {}
+    @ReactMethod fun regularMethod(a: String, b: Int) {}
 
-    @ReactMethod fun asyncMethod(a: Int, p: Promise?) {}
+    @ReactMethod fun asyncMethod(a: Int, p: Promise) {}
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun syncMethod(a: Int, b: Int): Int = a + b
   }
 
   private abstract inner class NativeTestGeneratedModuleSpec : BaseJavaModule(), TurboModule {
-    @ReactMethod abstract fun generatedMethod(a: String?, b: Int)
+    @ReactMethod abstract fun generatedMethod(a: String, b: Int)
   }
 
   private inner class GeneratedMethodsModule : NativeTestGeneratedModuleSpec() {
     override fun getName(): String  ="GeneratedMethods"
 
-    override fun generatedMethod(a: String?, b: Int) {}
+    override fun generatedMethod(a: String, b: Int) {}
   }
 }
