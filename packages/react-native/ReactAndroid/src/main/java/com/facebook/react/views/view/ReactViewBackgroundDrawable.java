@@ -564,19 +564,28 @@ public class ReactViewBackgroundDrawable extends Drawable {
     int colorRight = getBorderColor(Spacing.RIGHT);
     int colorBottom = getBorderColor(Spacing.BOTTOM);
     int borderColor = getBorderColor(Spacing.ALL);
+
     int colorBlock = getBorderColor(Spacing.BLOCK);
     int colorBlockStart = getBorderColor(Spacing.BLOCK_START);
     int colorBlockEnd = getBorderColor(Spacing.BLOCK_END);
+
+    if (isBorderColorDefined(Spacing.BLOCK)) {
+      colorBottom = colorBlock;
+      colorTop = colorBlock;
+    }
+    if (isBorderColorDefined(Spacing.BLOCK_END)) {
+      colorBottom = colorBlockEnd;
+    }
+    if (isBorderColorDefined(Spacing.BLOCK_START)) {
+      colorTop = colorBlockStart;
+    }
 
     // Clip border ONLY if its color is non transparent
     if (Color.alpha(colorLeft) != 0
         && Color.alpha(colorTop) != 0
         && Color.alpha(colorRight) != 0
         && Color.alpha(colorBottom) != 0
-        && Color.alpha(borderColor) != 0
-        && Color.alpha(colorBlock) != 0
-        && Color.alpha(colorBlockStart) != 0
-        && Color.alpha(colorBlockEnd) != 0) {
+        && Color.alpha(borderColor) != 0) {
 
       mInnerClipTempRectForBorderRadius.top += borderWidth.top;
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
