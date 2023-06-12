@@ -24,7 +24,7 @@ const {
 } = require('../../error-utils');
 const {
   getEventArgument,
-  buildPropertiesForEvent,
+  buildPropertiesWrapper,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -70,7 +70,7 @@ function getPropertyType(
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
           properties: typeAnnotation.properties.map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
+            buildPropertiesWrapper(member, parser, getPropertyType),
           ),
         },
       };
@@ -129,7 +129,7 @@ function extractArrayElementType(
       return {
         type: 'ObjectTypeAnnotation',
         properties: typeAnnotation.properties.map(member =>
-          buildPropertiesForEvent(member, parser, getPropertyType),
+          buildPropertiesWrapper(member, parser, getPropertyType),
         ),
       };
     case 'ArrayTypeAnnotation':

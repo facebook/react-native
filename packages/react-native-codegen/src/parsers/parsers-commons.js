@@ -1072,6 +1072,14 @@ function buildPropertiesForEvent(
   return getPropertyType(name, optional, typeAnnotation, parser);
 }
 
+function buildPropertiesWrapper(
+  property: $FlowFixMe,
+  parser: Parser,
+  getPropertyType: Function
+): NamedShape<EventTypeAnnotation> {
+  return buildPropertiesForEvent(property, parser, getPropertyType);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1098,5 +1106,5 @@ module.exports = {
   getCommandProperties,
   handleGenericTypeAnnotation,
   getTypeResolutionStatus,
-  buildPropertiesForEvent,
+  buildPropertiesWrapper,
 };
