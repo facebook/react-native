@@ -223,4 +223,20 @@ void TouchEventEmitter::onPointerOut(const PointerEvent &event) const {
       RawEvent::Category::ContinuousStart);
 }
 
+void TouchEventEmitter::onGotPointerCapture(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "gotPointerCapture",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onLostPointerCapture(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "lostPointerCapture",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
+}
+
 } // namespace facebook::react
