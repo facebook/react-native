@@ -40,6 +40,63 @@ Pod::Spec.new do |spec|
     "CLANG_CXX_LIBRARY" => "compiler-default"
   }
 
-  spec.dependency "hermes-engine_debug", :configurations => ['Debug']
-  spec.dependency "hermes-engine_release", :configurations => ['Release']
+  if source[:http] then
+
+    spec.dependency "hermes-engine_debug", :configurations => ['Debug']
+    spec.dependency "hermes-engine_release", :configurations => ['Release']
+
+  elsif source[:git] then
+
+    spec.subspec 'Hermes' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/hermes/*.h'
+      ss.header_dir = 'hermes'
+    end
+
+    spec.subspec 'JSI' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'API/jsi/jsi/*.h'
+      ss.header_dir = 'jsi'
+    end
+
+    spec.subspec 'Public' do |ss|
+      ss.source_files = ''
+      ss.public_header_files = 'public/hermes/Public/*.h'
+      ss.header_dir = 'hermes/Public'
+    end
+
+    hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
+
+    if ENV.has_key?('HERMES_OVERRIDE_HERMESC_PATH') && File.exist?(ENV['HERMES_OVERRIDE_HERMESC_PATH']) then
+      hermesc_path = ENV['HERMES_OVERRIDE_HERMESC_PATH']
+    end
+
+    spec.user_target_xcconfig = {
+      'HERMES_CLI_PATH' => "#{hermesc_path}/bin/hermesc"
+    }
+
+    spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
+
+    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
+    # NOTE: Script phases are sorted alphabetically inside Xcode project
+    spec.script_phases = [
+      {
+        :name => '[RN] [1] Build Hermesc',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
+        EOS
+      },
+      {
+        :name => '[RN] [2] Build Hermes',
+        :script => <<-EOS
+        . ${PODS_ROOT}/../.xcode.env
+        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+        EOS
+      }
+    ]
+  end
+
 end
