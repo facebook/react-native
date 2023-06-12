@@ -15,7 +15,11 @@ import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
 import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
 import DOMRect from '../Geometry/DOMRect';
 import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
-import ReadOnlyNode, {getChildNodes, getShadowNode} from './ReadOnlyNode';
+import ReadOnlyNode, {
+  getChildNodes,
+  getInstanceHandle,
+  getShadowNode,
+} from './ReadOnlyNode';
 import {getElementSibling} from './Utilities/Traversal';
 import nullthrows from 'nullthrows';
 
@@ -55,7 +59,11 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get id(): string {
-    throw new TypeError('Unimplemented');
+    const instanceHandle = getInstanceHandle(this);
+    // TODO: migrate off this private React API
+    // $FlowExpectedError[incompatible-use]
+    const props = instanceHandle?.stateNode?.canonical?.currentProps;
+    return props?.id ?? props?.nativeID ?? '';
   }
 
   get lastElementChild(): ReadOnlyElement | null {
