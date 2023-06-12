@@ -1013,6 +1013,71 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  if (methodName == "getScrollPosition") {
+    // This is a method to access scroll information for React Native nodes, to
+    // implement these methods:
+    // * `Element.prototype.scrollLeft`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollLeft.
+    // * `Element.prototype.scrollTop`: see
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTop.
+
+    // It uses the version of the shadow node that is present in the current
+    // revision of the shadow tree. If the node is not present or is not
+    // displayed (because any of its ancestors or itself have 'display: none'),
+    // it returns undefined. Otherwise, it returns the scroll position.
+
+    // getScrollPosition(shadowNode: ShadowNode):
+    //   ?[
+    //     /* scrollLeft: */ number,
+    //     /* scrollTop: */ number,
+    //   ]
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        1,
+        [uiManager](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t /*count*/) noexcept -> jsi::Value {
+          auto shadowNode = shadowNodeFromValue(runtime, arguments[0]);
+
+          auto newestCloneOfShadowNode =
+              uiManager->getNewestCloneOfShadowNode(*shadowNode);
+          // The node is no longer part of an active shadow tree, or it is the
+          // root node
+          if (newestCloneOfShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          // If the node is not displayed (itself or any of its ancestors has
+          // "display: none", it returns an empty layout metrics object.
+          auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
+              *shadowNode, nullptr, {/* .includeTransform = */ true});
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            return jsi::Value::undefined();
+          }
+
+          auto layoutableShadowNode = traitCast<LayoutableShadowNode const *>(
+              newestCloneOfShadowNode.get());
+          // This should never happen
+          if (layoutableShadowNode == nullptr) {
+            return jsi::Value::undefined();
+          }
+
+          auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
+
+          return jsi::Array::createWithElements(
+              runtime,
+              jsi::Value{
+                  runtime,
+                  scrollPosition.x == 0 ? 0 : (double)-scrollPosition.x},
+              jsi::Value{
+                  runtime,
+                  scrollPosition.y == 0 ? 0 : (double)-scrollPosition.y});
+        });
+  }
+
   return jsi::Value::undefined();
 }
 

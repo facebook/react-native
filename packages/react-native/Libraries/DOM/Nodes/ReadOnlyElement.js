@@ -91,19 +91,41 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get scrollHeight(): number {
-    throw new TypeError('Unimplemented');
+    throw new Error('Unimplemented');
   }
 
   get scrollLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[0];
+      }
+    }
+
+    return 0;
   }
 
   get scrollTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollWidth(): number {
-    throw new TypeError('Unimplemented');
+    throw new Error('Unimplemented');
   }
 
   get tagName(): string {
