@@ -264,11 +264,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // the last offset in the layout will result in an endless loop. Work around
         // this bug by avoiding getPrimaryHorizontal in that case.
         if (start == text.length() - 1) {
+          boolean endsWithNewLine =
+              text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+          float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
           placeholderHorizontalPosition =
               isRtlParagraph
                   // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                   // values when the paragraph is RTL and `setSingleLine(true)`.
-                  ? textViewWidth - (int) layout.getLineWidth(line)
+                  ? textViewWidth - (int) lineWidth
                   : (int) layout.getLineRight(line) - width;
         } else {
           // The direction of the paragraph may not be exactly the direction the string is heading

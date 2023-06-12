@@ -42,12 +42,14 @@ public class FontMetricsUtil {
         X_HEIGHT_MEASUREMENT_TEXT, 0, X_HEIGHT_MEASUREMENT_TEXT.length(), xHeightBounds);
     double xHeight = xHeightBounds.height() / AMPLIFICATION_FACTOR / dm.density;
     for (int i = 0; i < layout.getLineCount(); i++) {
+      boolean endsWithNewLine = text.length() > 0 && text.charAt(layout.getLineEnd(i) - 1) == '\n';
+      float lineWidth = endsWithNewLine ? layout.getLineMax(i) : layout.getLineWidth(i);
       Rect bounds = new Rect();
       layout.getLineBounds(i, bounds);
       WritableMap line = Arguments.createMap();
       line.putDouble("x", layout.getLineLeft(i) / dm.density);
       line.putDouble("y", bounds.top / dm.density);
-      line.putDouble("width", layout.getLineWidth(i) / dm.density);
+      line.putDouble("width", lineWidth / dm.density);
       line.putDouble("height", bounds.height() / dm.density);
       line.putDouble("descender", layout.getLineDescent(i) / dm.density);
       line.putDouble("ascender", -layout.getLineAscent(i) / dm.density);
