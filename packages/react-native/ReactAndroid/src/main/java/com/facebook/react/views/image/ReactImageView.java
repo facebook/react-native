@@ -152,6 +152,7 @@ public class ReactImageView extends GenericDraweeView {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
+    setLegacyVisibilityHandlingEnabled(true);
   }
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
