@@ -24,55 +24,55 @@ import defineLazyObjectProperty from '../Utilities/defineLazyObjectProperty';
 
 export type NodeSet = Array<Node>;
 export type NodeProps = {...};
-export type Spec = {|
+export interface Spec {
   +createNode: (
     reactTag: number,
     viewName: string,
     rootTag: RootTag,
     props: NodeProps,
     instanceHandle: InternalInstanceHandle,
-  ) => Node,
-  +cloneNode: (node: Node) => Node,
-  +cloneNodeWithNewChildren: (node: Node) => Node,
-  +cloneNodeWithNewProps: (node: Node, newProps: NodeProps) => Node,
-  +cloneNodeWithNewChildrenAndProps: (node: Node, newProps: NodeProps) => Node,
-  +createChildSet: (rootTag: RootTag) => NodeSet,
-  +appendChild: (parentNode: Node, child: Node) => Node,
-  +appendChildToSet: (childSet: NodeSet, child: Node) => void,
-  +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void,
-  +measure: (node: Node, callback: MeasureOnSuccessCallback) => void,
+  ) => Node;
+  +cloneNode: (node: Node) => Node;
+  +cloneNodeWithNewChildren: (node: Node) => Node;
+  +cloneNodeWithNewProps: (node: Node, newProps: NodeProps) => Node;
+  +cloneNodeWithNewChildrenAndProps: (node: Node, newProps: NodeProps) => Node;
+  +createChildSet: (rootTag: RootTag) => NodeSet;
+  +appendChild: (parentNode: Node, child: Node) => Node;
+  +appendChildToSet: (childSet: NodeSet, child: Node) => void;
+  +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
+  +measure: (node: Node, callback: MeasureOnSuccessCallback) => void;
   +measureInWindow: (
     node: Node,
     callback: MeasureInWindowOnSuccessCallback,
-  ) => void,
+  ) => void;
   +measureLayout: (
     node: Node,
     relativeNode: Node,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback,
-  ) => void,
+  ) => void;
   +configureNextLayoutAnimation: (
     config: LayoutAnimationConfig,
     callback: () => void, // check what is returned here
     errorCallback: () => void,
-  ) => void,
-  +sendAccessibilityEvent: (node: Node, eventType: string) => void,
-  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
-  +setNativeProps: (node: Node, newProps: NodeProps) => void,
+  ) => void;
+  +sendAccessibilityEvent: (node: Node, eventType: string) => void;
+  +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node;
+  +setNativeProps: (node: Node, newProps: NodeProps) => void;
   +dispatchCommand: (
     node: Node,
     commandName: string,
     args: Array<mixed>,
-  ) => void,
+  ) => void;
 
   /**
    * Support methods for the DOM-compatible APIs.
    */
-  +getParentNode: (node: Node) => ?InternalInstanceHandle,
-  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>,
-  +isConnected: (node: Node) => boolean,
-  +compareDocumentPosition: (node: Node, otherNode: Node) => number,
-  +getTextContent: (node: Node) => string,
+  +getParentNode: (node: Node) => ?InternalInstanceHandle;
+  +getChildNodes: (node: Node) => $ReadOnlyArray<InternalInstanceHandle>;
+  +isConnected: (node: Node) => boolean;
+  +compareDocumentPosition: (node: Node, otherNode: Node) => number;
+  +getTextContent: (node: Node) => string;
   +getBoundingClientRect: (
     node: Node,
   ) => ?[
@@ -80,18 +80,18 @@ export type Spec = {|
     /* y: */ number,
     /* width: */ number,
     /* height: */ number,
-  ],
+  ];
   +getOffset: (
     node: Node,
   ) => ?[
     /* offsetParent: */ InternalInstanceHandle,
     /* offsetTop: */ number,
     /* offsetLeft: */ number,
-  ],
+  ];
   +getScrollPosition: (
     node: Node,
-  ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number],
-|};
+  ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
+}
 
 let nativeFabricUIManagerProxy: ?Spec;
 
@@ -154,6 +154,7 @@ function createProxyWithCachedProperties(
   const proxy = Object.create(implementation);
   for (const propertyName of propertiesToCache) {
     defineLazyObjectProperty(proxy, propertyName, {
+      // $FlowExpectedError[prop-missing]
       get: () => implementation[propertyName],
     });
   }
