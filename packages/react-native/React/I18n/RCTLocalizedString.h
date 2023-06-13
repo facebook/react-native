@@ -14,6 +14,10 @@
 
 #import <React/FBXXHashUtils.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 uint64_t FBcoreLocalexxHash48(const char *input, uint64_t length, uint64_t seed);
 NSString *RCTLocalizedStringFromKey(uint64_t key, NSString *defaultValue);
 
@@ -22,5 +26,9 @@ NSString *RCTLocalizedStringFromKey(uint64_t key, NSString *defaultValue);
 
 #define RCTLocalizedString(string, description) \
   RCTLocalizedStringFromKey(RCTLocalizedStringKey(string, description), @"" string)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
