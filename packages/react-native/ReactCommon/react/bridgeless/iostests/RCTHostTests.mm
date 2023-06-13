@@ -40,10 +40,18 @@ static ShimRCTInstance *shimmedRCTInstance;
                                }];
 }
 
+- (void)tearDown
+{
+  [shimmedRCTInstance reset];
+
+  [super tearDown];
+}
+
 - (void)testStart
 {
   [_subject start];
   OCMVerify(OCMTimes(1), [_mockHostDelegate hostDidStart:_subject]);
+  XCTAssertEqual(shimmedRCTInstance.initCount, 1);
 }
 
 @end
