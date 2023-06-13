@@ -105,6 +105,8 @@ type PointerEventProps = $ReadOnly<{|
   onPointerOverCapture?: ?(e: PointerEvent) => void,
   onPointerOut?: ?(e: PointerEvent) => void,
   onPointerOutCapture?: ?(e: PointerEvent) => void,
+  onGotPointerCapture?: ?(e: PointerEvent) => void,
+  onLostPointerCapture?: ?(e: PointerEvent) => void,
 |}>;
 
 type FocusEventProps = $ReadOnly<{|
