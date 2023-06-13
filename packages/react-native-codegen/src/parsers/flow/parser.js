@@ -539,6 +539,10 @@ class FlowParser implements Parser {
       ? typeAnnotation.id.name
       : typeAnnotation.type;
   }
+
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.properties;
+  }
 }
 
 module.exports = {

@@ -407,4 +407,11 @@ export interface Parser {
    * @returns: the extracted type.
    */
   extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a typeAnnotation return the properties of an object.
+   * @parameter property
+   * @returns: the properties of an object represented by a type annotation.
+   */
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }
