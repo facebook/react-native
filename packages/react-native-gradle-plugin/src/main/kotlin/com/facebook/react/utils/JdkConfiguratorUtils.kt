@@ -36,5 +36,11 @@ internal object JdkConfiguratorUtils {
       project.pluginManager.withPlugin("com.android.application", action)
       project.pluginManager.withPlugin("com.android.library", action)
     }
+    // We set kotlin.jvm.target.validation.mode=warning on the root projects, as for projects
+    // on Gradle 8+ and Kotlin 1.8+ this value is set to `error`. This will cause the build to
+    // fail if the JDK version between compileKotlin and compileJava and jvmTarget are not
+    // aligned. This won't be necessary anymore from React Native 0.73. More on this:
+    // https://kotlinlang.org/docs/whatsnew18.html#obligatory-check-for-jvm-targets-of-related-kotlin-and-java-compile-tasks
+    input.rootProject.extensions.extraProperties.set("kotlin.jvm.target.validation.mode", "warning")
   }
 }
