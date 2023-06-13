@@ -33,25 +33,25 @@ end
 def compute_hermes_source(build_from_source, hermestag_file, git, version, react_native_path)
     source = {}
 
-    # if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
-    #     use_tarball(source)
-    # elsif ENV.has_key?('HERMES_COMMIT')
-    #     build_hermes_from_commit(source, git, ENV['HERMES_COMMIT'])
-    # elsif build_from_source
-    #     if File.exist?(hermestag_file)
-    #         build_from_tagfile(source, git, hermestag_file)
-    #     else
-    #         build_hermes_from_source(source, git)
-    #     end
-    # elsif hermes_artifact_exists(release_tarball_url(version, :debug))
+    if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
+        use_tarball(source)
+    elsif ENV.has_key?('HERMES_COMMIT')
+        build_hermes_from_commit(source, git, ENV['HERMES_COMMIT'])
+    elsif build_from_source
+        if File.exist?(hermestag_file)
+            build_from_tagfile(source, git, hermestag_file)
+        else
+            build_hermes_from_source(source, git)
+        end
+    elsif hermes_artifact_exists(release_tarball_url(version, :debug))
         use_release_tarball(source, version, :debug)
         download_stable_hermes(react_native_path, version, :debug)
         download_stable_hermes(react_native_path, version, :release)
-    # elsif hermes_artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
-    #     use_nightly_tarball(source, react_native_path, version)
-    # else
-    #     build_hermes_from_source(source, git)
-    # end
+    elsif hermes_artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
+        use_nightly_tarball(source, react_native_path, version)
+    else
+        build_hermes_from_source(source, git)
+    end
 
     return source
 end

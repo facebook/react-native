@@ -11,7 +11,6 @@ react_native_path = File.join(__dir__, "..", "..")
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
-version = "0.72.0-rc.5"
 
 # sdks/.hermesversion
 hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
@@ -57,19 +56,19 @@ Pod::Spec.new do |spec|
     end
 
 
-    # Right now, even reinstalling pods with the PRODUCTION flag turned on, does not change the version of hermes that is downloaded
-    # To remove the PRODUCTION flag, we want to download the right version of hermes on the flight
-    # we do so in a pre-build script we invoke from the Xcode build pipeline
-    # We use this only for Apps created using the template. RNTester and Nightlies should not be used to build for Release.
-    # We ignore this if we provide a specific tarball: the assumption here is that if you are providing a tarball, is because you want to
-    # test something specific for that tarball.
+    # To remove the PRODUCTION flag, we want to use the right version of hermes based on the configuration choosen in Xcode
+    # We do so in a pre-build script we invoke from the Xcode build script pipeline: we check the Configuration and we
+    # replace the hermes-engine before building and linking the app.
+    # We use this approach only for Apps created using the template: RNTester and Nightlies should not be used to build for Release.
+    # If a specific Hermes tarball is provided, that has priority on this logic. If a tarball is provided, is probably because there is
+    # something specific in that tarball that needs to be tested.
     if source[:http].include?('https://repo1.maven.org/')
       spec.script_phase = {
-        :name => "[Hermes] Download Hermes for the right configuration, if needed",
+        :name => "[Hermes] Replace Hermes for the right configuration, if needed",
         :execution_position => :before_compile,
         :script => <<-EOS
         . "$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh"
-        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}"
+        "$NODE_BINARY" "$REACT_NATIVE_PATH/sdks/hermes-engine/utils/replace_hermes_version.js" -c "$CONFIGURATION" -r "#{version}" -p "$REACT_NATIVE_PATH"
         EOS
       }
     end

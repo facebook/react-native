@@ -21,6 +21,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 **/.xcode.env.local
+/poackages/react-native/sdks/downloads/
 
 # Gradle
 /build/
