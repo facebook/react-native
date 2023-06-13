@@ -58,7 +58,7 @@ bool ParagraphLayoutManager::shoudMeasureString(
 
   bool hasMaximumSizeChanged =
       layoutConstraints.maximumSize.width != lastAvailableWidth_;
-  Float threshold = 0.01;
+  Float threshold = 0.01f;
   bool doesMaximumSizeMatchLastMeasurement =
       std::abs(
           layoutConstraints.maximumSize.width -
