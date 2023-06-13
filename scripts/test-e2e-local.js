@@ -22,7 +22,7 @@ const yargs = require('yargs');
 const fs = require('fs');
 
 const {
-  launchAndroidEmulator,
+  maybeLaunchAndroidEmulator,
   isPackagerRunning,
   launchPackagerInSeparateWindow,
 } = require('./testing-utils');
@@ -107,7 +107,7 @@ if (argv.target === 'RNTester') {
   } else {
     // we do the android path here
 
-    launchAndroidEmulator();
+    maybeLaunchAndroidEmulator();
 
     console.info(
       `We're going to test the ${
