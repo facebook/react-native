@@ -16,7 +16,7 @@
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTNetworking.h>
 
 // Fabric
@@ -83,7 +83,7 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTLocalAssetImageLoader new] ];
+          return @[ [RCTBundleAssetImageLoader new] ];
         }
         decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
           return @[ [RCTGIFImageDecoder new] ];
