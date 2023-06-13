@@ -26,6 +26,7 @@ import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlat
 import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
 import PointerEventClickTouch from './W3CPointerEventPlatformTests/PointerEventClickTouch';
 import PointerEventClickTouchHierarchy from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchy';
+import PointerEventCaptureMouse from './W3CPointerEventPlatformTests/PointerEventCaptureMouse';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 import PointerEventClickTouchHierarchyPointerEvents from './W3CPointerEventPlatformTests/PointerEventClickTouchHierarchyPointerEvents';
@@ -238,6 +239,13 @@ export default {
       title: 'WPT 11: Pointer Events pointercancel Tests',
       render(): React.Node {
         return <PointerEventPointerCancelTouch />;
+      },
+    },
+    {
+      name: 'pointerevent_caapture_mouse',
+      title: 'WPT 12: Pointer Events capture test',
+      render(): React.Node {
+        return <PointerEventCaptureMouse />;
       },
     },
     {
