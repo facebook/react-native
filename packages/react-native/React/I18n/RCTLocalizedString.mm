@@ -9,6 +9,8 @@
 
 #if !defined(WITH_FBI18N) || !(WITH_FBI18N)
 
+extern "C" {
+
 static NSString *FBTStringByConvertingIntegerToBase64(uint64_t number)
 {
   const NSUInteger base = 64;
@@ -39,4 +41,6 @@ NSString *RCTLocalizedStringFromKey(uint64_t key, NSString *defaultValue)
     return [bundle localizedStringForKey:FBTStringByConvertingIntegerToBase64(key) value:defaultValue table:nil];
   }
 }
+}
+
 #endif
