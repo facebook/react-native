@@ -48,6 +48,8 @@ project.xcworkspace
 buck-out
 /.lsp.buckd
 /.lsp-buck-out
+/.pylsp.buckd
+/.pylsp-buck-out
 /packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/
 /packages/react-native/ReactAndroid/src/main/gen
 
