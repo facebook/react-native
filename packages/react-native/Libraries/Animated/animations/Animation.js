@@ -11,9 +11,11 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -65,6 +67,21 @@ export default class Animation {
     onEnd && onEnd(result);
   }
 
+  __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps> {
+    const result = [];
+
+    if (node instanceof AnimatedProps) {
+      result.push(node);
+      return result;
+    }
+
+    for (const child of node.__getChildren()) {
+      result.push(...this.__findAnimatedPropsNodes(child));
+    }
+
+    return result;
+  }
+
   __startNativeAnimation(animatedValue: AnimatedValue): void {
     const startNativeAnimationWaitId = `${startNativeAnimationNextId}:startAnimation`;
     startNativeAnimationNextId += 1;
@@ -88,6 +105,12 @@ export default class Animation {
           const {value} = result;
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value);
+
+            // Once the JS side node is synced with the updated values, trigger an
+            // update on the AnimatedProps nodes to call any registered callbacks.
+            this.__findAnimatedPropsNodes(animatedValue).forEach(node =>
+              node.update(),
+            );
           }
         },
       );
