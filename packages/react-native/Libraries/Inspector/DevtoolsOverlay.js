@@ -49,7 +49,7 @@ export default function DevtoolsOverlay({
       }, 100);
     }
 
-    function onAgentShowNativeHighlight(node: any) {
+    function onAgentShowNativeHighlight(node: Object) {
       clearTimeout(hideTimeoutId);
 
       // `canonical.publicInstance` => Fabric
