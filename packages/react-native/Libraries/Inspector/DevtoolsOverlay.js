@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {DangerouslyImpreciseStyleProp} from '../StyleSheet/StyleSheet';
 import type {PointerEvent} from '../Types/CoreEventTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';
 import type {HostRef} from './getInspectorDataForViewAtPoint';
@@ -20,20 +21,30 @@ import ElementBox from './ElementBox';
 import * as React from 'react';
 
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
+const getInspectorDataForInstance = require('./getInspectorDataForInstance');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 
 const {useEffect, useState, useCallback, useRef} = React;
 
 const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
-export default function DevtoolsOverlay({
-  inspectedView,
-}: {
+type InspectedObjectFrame = {
+  +height: number,
+  +left: number,
+  +top: number,
+  +width: number,
+};
+type InspectedObject = {
+  frame: InspectedObjectFrame,
+  style: ?DangerouslyImpreciseStyleProp,
+};
+
+type Props = {
   inspectedView: ?HostRef,
-}): React.Node {
-  const [inspected, setInspected] = useState<null | {
-    frame: {+height: any, +left: any, +top: any, +width: any},
-  }>(null);
+};
+
+export default function DevtoolsOverlay({inspectedView}: Props): React.Node {
+  const [inspected, setInspected] = useState<?InspectedObject>(null);
   const [isInspecting, setIsInspecting] = useState(false);
   const devToolsAgentRef = useRef(null);
 
@@ -64,9 +75,13 @@ export default function DevtoolsOverlay({
         return;
       }
 
+      const inspectorData = getInspectorDataForInstance(node);
+
       component.measure((x, y, width, height, left, top) => {
+        // $FlowFixMe[incompatible-call] InspectorData defines props values as strings, which is incompatible with DangerouslyImpreciseStyleProp
         setInspected({
           frame: {left, top, width, height},
+          style: inspectorData?.props?.style,
         });
       });
     }
@@ -130,8 +145,9 @@ export default function DevtoolsOverlay({
       if (agent == null) {
         return;
       }
+
       getInspectorDataForViewAtPoint(inspectedView, x, y, viewData => {
-        const {touchedViewTag, closestInstance, frame} = viewData;
+        const {touchedViewTag, closestInstance, frame, props} = viewData;
         if (closestInstance != null || touchedViewTag != null) {
           // We call `selectNode` for both non-fabric(viewTag) and fabric(instance),
           // this makes sure it works for both architectures.
@@ -139,11 +155,16 @@ export default function DevtoolsOverlay({
           if (closestInstance != null) {
             agent.selectNode(closestInstance);
           }
+
+          // $FlowFixMe[incompatible-call] InspectorData defines props values as strings, which is incompatible with DangerouslyImpreciseStyleProp
           setInspected({
             frame,
+            style: props?.style,
           });
+
           return true;
         }
+
         return false;
       });
     },
@@ -185,7 +206,10 @@ export default function DevtoolsOverlay({
     [onResponderMove],
   );
 
-  let highlight = inspected ? <ElementBox frame={inspected.frame} /> : null;
+  const highlight = inspected ? (
+    <ElementBox frame={inspected.frame} style={inspected.style} />
+  ) : null;
+
   if (isInspecting) {
     const events =
       // Pointer events only work on fabric
@@ -200,6 +224,7 @@ export default function DevtoolsOverlay({
             onResponderMove: onResponderMove,
             onResponderRelease: stopInspecting,
           };
+
     return (
       <View
         nativeID="devToolsInspectorOverlay"
@@ -209,6 +234,7 @@ export default function DevtoolsOverlay({
       </View>
     );
   }
+
   return highlight;
 }
 
