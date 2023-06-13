@@ -30,7 +30,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPOutputStream;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.ByteString;
 import okio.Okio;
@@ -152,7 +151,7 @@ import okio.Source;
           source = Okio.source(inputStream);
           sink.writeAll(source);
         } finally {
-          Util.closeQuietly(source);
+          source.close();
         }
       }
     };
