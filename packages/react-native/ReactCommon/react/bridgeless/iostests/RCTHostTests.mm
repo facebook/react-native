@@ -7,16 +7,13 @@
 
 #import <XCTest/XCTest.h>
 
-#import <RCTTestUtils/RCTSwizzleHelpers.h>
+#import <RCTTestUtils/ShimRCTInstance.h>
 #import <ReactCommon/RCTHermesInstance.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTInstance.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <OCMock/OCMock.h>
-
-@interface ShimRCTInstance : NSObject
-@end
 
 @interface RCTHostTests : XCTestCase
 @end
@@ -47,32 +44,6 @@ static ShimRCTInstance *shimmedRCTInstance;
 {
   [_subject start];
   OCMVerify(OCMTimes(1), [_mockHostDelegate hostDidStart:_subject]);
-}
-
-@end
-
-@implementation ShimRCTInstance
-
-- (instancetype)init
-{
-  if (self = [super init]) {
-    RCTSwizzleInstanceSelector(
-        [RCTInstance class],
-        [ShimRCTInstance class],
-        @selector(initWithDelegate:
-                  jsEngineInstance:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
-  }
-  return self;
-}
-
-- (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
-                jsEngineInstance:(std::shared_ptr<facebook::react::JSEngineInstance>)jsEngineInstance
-                   bundleManager:(RCTBundleManager *)bundleManager
-      turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-{
-  return self;
 }
 
 @end
