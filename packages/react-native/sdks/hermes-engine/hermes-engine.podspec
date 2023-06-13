@@ -90,7 +90,7 @@ Pod::Spec.new do |spec|
 
     spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
 
-    CMAKE_BINARY = %x(command -v cmake | tr -d '\n')
+    CMAKE_BINARY = Pod::Executable::which!('cmake')
     # NOTE: Script phases are sorted alphabetically inside Xcode project
     spec.script_phases = [
       {
