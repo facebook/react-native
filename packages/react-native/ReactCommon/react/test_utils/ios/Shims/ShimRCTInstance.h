@@ -8,4 +8,9 @@
 #import <Foundation/Foundation.h>
 
 @interface ShimRCTInstance : NSObject
+
+@property (assign) int initCount;
+
+- (void)reset;
+
 @end
