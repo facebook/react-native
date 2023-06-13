@@ -28,7 +28,7 @@ function validateVersion(version) {
   }
 }
 
-function shouldDownloadRightHermesVersion(configuration) {
+function shouldReplaceHermesConfiguration(configuration) {
   const fileExists = fs.existsSync(LAST_BUILD_FILENAME);
 
   if (fileExists) {
@@ -51,18 +51,8 @@ function shouldDownloadRightHermesVersion(configuration) {
   return true;
 }
 
-function downloadRightHermesVersion(configuration, version) {
-  const tarballURL = `https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${configuration.toLowerCase()}.tar.gz`;
-  const destinationFolder = 'Pods/hermes-engine_tmp';
-  const fileName = 'tmp_hermes_ios.tar.gz';
-  const filePath = path.join(destinationFolder, fileName);
-
-  console.log('Creating the destination folder');
-  fs.mkdirSync(destinationFolder, {recursive: true});
-
-  console.log(`Downloading the tarball ${tarballURL} into ${filePath}`);
-  const command = `curl ${tarballURL} -Lo ${filePath}`;
-  execSync(command);
+function replaceHermesConfiguration(configuration, version, reactNativePath) {
+  const tarballURLPath = `${reactNativePath}/sdks/downloads/hermes-ios-${version}-${configuration}.tar.gz`;
 
   const finalLocation = 'Pods/hermes-engine';
   console.log('Preparing the final location');
@@ -70,24 +60,22 @@ function downloadRightHermesVersion(configuration, version) {
   fs.mkdirSync(finalLocation, {recursive: true});
 
   console.log('Extracting the tarball');
-  execSync(`tar -xf ${filePath} -C ${finalLocation}`);
-
-  fs.rmSync(destinationFolder, {force: true, recursive: true});
+  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
 }
 
 function updateLastBuildConfiguration(configuration) {
   fs.writeFileSync(LAST_BUILD_FILENAME, configuration);
 }
 
-function main(configuration, version) {
+function main(configuration, version, reactNativePath) {
   validateBuildConfiguration(configuration);
   validateVersion(version);
 
-  if (!shouldDownloadRightHermesVersion(configuration)) {
+  if (!shouldReplaceHermesConfiguration(configuration)) {
     return;
   }
 
-  downloadRightHermesVersion(configuration, version);
+  replaceHermesConfiguration(configuration, version, reactNativePath);
   updateLastBuildConfiguration(configuration);
 }
 
@@ -103,9 +91,15 @@ const argv = yargs
     description:
       'The Version of React Native associated with the Hermes tarball.',
   })
-  .usage('Usage: $0 -c Debug -r <version>').argv;
+  .option('p', {
+    alias: 'reactNativePath',
+    description: 'The path to the React Native root folder',
+  })
+  .usage('Usage: $0 -c Debug -r <version> -p <path/to/react-native>').argv;
 
 const configuration = argv.configuration;
 const version = argv.reactNativeVersion;
+const reactNativePath = argv.reactNativePath;
 
-main(configuration, version);
+throw new Error(`React native path is: ${reactNativePath}`);
+main(configuration, version, reactNativePath);
