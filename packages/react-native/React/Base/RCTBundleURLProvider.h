@@ -101,6 +101,7 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 
 @property (nonatomic, assign) BOOL enableMinification;
 @property (nonatomic, assign) BOOL enableDev;
+@property (nonatomic, assign) BOOL inlineSourceMap;
 
 /**
  * The scheme/protocol used of the packager, the default is the http protocol
@@ -133,7 +134,8 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
                         modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule;
+                          runModule:(BOOL)runModule
+                   inlineSourceMap:(BOOL)inlineSourceMap;
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
@@ -142,6 +144,6 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
                          packagerHost:(NSString *)packagerHost
                                scheme:(NSString *)scheme
-                                query:(NSString *)query;
+                           queryItems:(NSArray<NSURLQueryItem *> *)queryItems;
 
 @end

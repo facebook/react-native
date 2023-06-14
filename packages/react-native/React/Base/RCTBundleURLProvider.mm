@@ -26,6 +26,7 @@ static NSString *const kRCTPackagerSchemeKey = @"RCT_packager_scheme";
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
 static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
+static NSString *const kRCTinlineSourceMapKey = @"RCT_inlineSourceMap";
 
 @implementation RCTBundleURLProvider
 
@@ -43,6 +44,9 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   return @{
     kRCTEnableDevKey : @YES,
     kRCTEnableMinificationKey : @NO,
+#if !USE_HERMES
+    kRCTinlineSourceMapKey: @YES,
+#endif
   };
 }
 
@@ -188,7 +192,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                                                 enableDev:[self enableDev]
                                        enableMinification:[self enableMinification]
                                               modulesOnly:NO
-                                                runModule:YES];
+                                                runModule:YES
+                                          inlineSourceMap:[self inlineSourceMap]];
   }
 }
 
@@ -200,7 +205,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                                               enableDev:[self enableDev]
                                      enableMinification:[self enableMinification]
                                             modulesOnly:YES
-                                              runModule:NO];
+                                              runModule:NO
+                                        inlineSourceMap:NO];
 }
 
 - (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot fallbackExtension:(NSString *)extension
@@ -238,7 +244,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   return [[self class] resourceURLForResourcePath:path
                                      packagerHost:packagerServerHostPort
                                            scheme:packagerServerScheme
-                                            query:nil];
+                                      queryItems:nil];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -253,7 +259,8 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                               enableDev:enableDev
                      enableMinification:enableMinification
                             modulesOnly:NO
-                              runModule:YES];
+                              runModule:YES
+                       inlineSourceMap:NO];
 }
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -263,34 +270,37 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                  enableMinification:(BOOL)enableMinification
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule
+                   inlineSourceMap:(BOOL)inlineSourceMap;
+
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
-  BOOL lazy = enableDev;
-  // When we support only iOS 8 and above, use queryItems for a better API.
-  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&lazy=%@&minify=%@&modulesOnly=%@&runModule=%@",
-                                               enableDev ? @"true" : @"false",
-                                               lazy ? @"true" : @"false",
-                                               enableMinification ? @"true" : @"false",
-                                               modulesOnly ? @"true" : @"false",
-                                               runModule ? @"true" : @"false"];
+        
+  NSArray<NSURLQueryItem *> *queryItems = @[
+    [[NSURLQueryItem alloc] initWithName:@"dev" value:enableDev ? @"true" : @"false"],
+    [[NSURLQueryItem alloc] initWithName:@"lazy" value:enableMinification ? @"true" : @"false"],
+    [[NSURLQueryItem alloc] initWithName:@"minify" value:modulesOnly ? @"true" : @"false"],
+    [[NSURLQueryItem alloc] initWithName:@"modulesOnly" value:modulesOnly ? @"true" : @"false"],
+    [[NSURLQueryItem alloc] initWithName:@"runModule" value:runModule ? @"true" : @"false"],
+    [[NSURLQueryItem alloc] initWithName:@"inlineSourceMap" value:inlineSourceMap ? @"true" : @"false"],
+  ];
 
   NSString *bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleIdentifierKey];
   if (bundleID) {
-    query = [NSString stringWithFormat:@"%@&app=%@", query, bundleID];
+      queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"app" value:bundleID]];
   }
-  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme query:query];
+  return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme queryItems:queryItems];
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
                          packagerHost:(NSString *)packagerHost
                                scheme:(NSString *)scheme
-                                query:(NSString *)query
+                           queryItems:(NSArray<NSURLQueryItem *> *)queryItems
 {
   NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost, scheme)
                                            resolvingAgainstBaseURL:NO];
   components.path = path;
-  if (query != nil) {
-    components.query = query;
+  if (queryItems != nil) {
+    components.queryItems = queryItems;
   }
   return components.URL;
 }
@@ -310,6 +320,11 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 - (BOOL)enableMinification
 {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTEnableMinificationKey];
+}
+
+- (BOOL)inlineSourceMap
+{
+  return [[NSUserDefaults standardUserDefaults] boolForKey:kRCTinlineSourceMapKey];
 }
 
 - (NSString *)jsLocation
@@ -340,6 +355,12 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 {
   [self updateValue:@(enableMinification) forKey:kRCTEnableMinificationKey];
 }
+
+- (void)setInlineSourceMap:(BOOL)inlineSourceMap
+{
+  [self updateValue:@(inlineSourceMap) forKey:kRCTinlineSourceMapKey];
+}
+
 
 - (void)setPackagerScheme:(NSString *)packagerScheme
 {

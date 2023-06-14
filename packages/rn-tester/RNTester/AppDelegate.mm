@@ -47,6 +47,9 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+#if !USE_HERMES
+  [[RCTBundleURLProvider sharedSettings] setInlineSourceMap:YES];
+#endif
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
 }
 
