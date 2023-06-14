@@ -711,12 +711,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-
-    // This compileOnly dependency is needed to be able to update the offline
-    // mirror from a non-linux machine, while still executing inside a Linux CI
-    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
-    // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {

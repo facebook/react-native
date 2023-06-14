@@ -123,6 +123,7 @@ class ShadowNode : public Sealable,
   Props::Shared const &getProps() const;
   ListOfShared const &getChildren() const;
   SharedEventEmitter const &getEventEmitter() const;
+  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
 

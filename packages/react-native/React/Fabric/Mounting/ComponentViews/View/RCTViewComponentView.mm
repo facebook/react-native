@@ -14,9 +14,11 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
+#import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
+#import <react/renderer/components/view/accessibilityPropsConversions.h>
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
 #import <React/RCTComponentViewFactory.h>
@@ -722,35 +724,46 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSString *roleString = [NSString stringWithUTF8String:props.accessibilityRole.c_str()];
+  NSString *roleString = (props.role != Role::None) ? [NSString stringWithUTF8String:toString(props.role).c_str()]
+                                                    : [NSString stringWithUTF8String:props.accessibilityRole.c_str()];
 
   // In iOS, checkbox and radio buttons aren't recognized as traits. However,
   // because our apps use checkbox and radio buttons often, we should announce
   // these to screenreader users.  (They should already be familiar with them
   // from using web).
   if ([roleString isEqualToString:@"checkbox"]) {
-    [valueComponents addObject:@"checkbox"];
+    [valueComponents addObject:RCTLocalizedString("checkbox", "checkable interactive control")];
   }
 
   if ([roleString isEqualToString:@"radio"]) {
-    [valueComponents addObject:@"radio button"];
+    [valueComponents
+        addObject:
+            RCTLocalizedString(
+                "radio button",
+                "a checkable input that when associated with other radio buttons, only one of which can be checked at a time")];
   }
 
   // Handle states which haven't already been handled.
   if (props.accessibilityState.checked == AccessibilityState::Checked) {
-    [valueComponents addObject:@"checked"];
+    [valueComponents
+        addObject:RCTLocalizedString("checked", "a checkbox, radio button, or other widget which is checked")];
   }
   if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
-    [valueComponents addObject:@"unchecked"];
+    [valueComponents
+        addObject:RCTLocalizedString("unchecked", "a checkbox, radio button, or other widget which is unchecked")];
   }
   if (props.accessibilityState.checked == AccessibilityState::Mixed) {
-    [valueComponents addObject:@"mixed"];
+    [valueComponents
+        addObject:RCTLocalizedString(
+                      "mixed", "a checkbox, radio button, or other widget which is both checked and unchecked")];
   }
   if (props.accessibilityState.expanded) {
-    [valueComponents addObject:@"expanded"];
+    [valueComponents
+        addObject:RCTLocalizedString("expanded", "a menu, dialog, accordian panel, or other widget which is expanded")];
   }
+
   if (props.accessibilityState.busy) {
-    [valueComponents addObject:@"busy"];
+    [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 
   if (valueComponents.count > 0) {

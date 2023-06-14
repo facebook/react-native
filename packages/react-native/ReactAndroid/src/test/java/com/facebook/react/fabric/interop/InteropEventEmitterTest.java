@@ -39,9 +39,10 @@ public class InteropEventEmitterTest {
 
     eventEmitter.receiveEvent(42, "onTest", null);
 
-    assertEquals(1, mEventDispatcher.recordedDispatchedEvents.size());
-    assertEquals("onTest", mEventDispatcher.recordedDispatchedEvents.get(0).getEventName());
-    assertEquals(InteropEvent.class, mEventDispatcher.recordedDispatchedEvents.get(0).getClass());
+    assertEquals(1, mEventDispatcher.getRecordedDispatchedEvents().size());
+    assertEquals("onTest", mEventDispatcher.getRecordedDispatchedEvents().get(0).getEventName());
+    assertEquals(
+        InteropEvent.class, mEventDispatcher.getRecordedDispatchedEvents().get(0).getClass());
   }
 
   @Test
@@ -52,7 +53,7 @@ public class InteropEventEmitterTest {
 
     eventEmitter.receiveEvent(42, "onTest", eventData);
 
-    InteropEvent event = (InteropEvent) mEventDispatcher.recordedDispatchedEvents.get(0);
+    InteropEvent event = (InteropEvent) mEventDispatcher.getRecordedDispatchedEvents().get(0);
     WritableMap dispatchedEventData = event.getEventData();
     assertNotNull(dispatchedEventData);
     assertEquals("indigo", dispatchedEventData.getString("color"));

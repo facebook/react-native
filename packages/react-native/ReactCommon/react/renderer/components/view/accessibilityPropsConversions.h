@@ -30,7 +30,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::Link;
     return;
   }
-  if (string == "image") {
+  if (string == "image" || string == "img") {
     result = AccessibilityTraits::Image;
     return;
   }
@@ -78,7 +78,7 @@ inline void fromString(const std::string &string, AccessibilityTraits &result) {
     result = AccessibilityTraits::CausesPageTurn;
     return;
   }
-  if (string == "header") {
+  if (string == "header" || string == "heading") {
     result = AccessibilityTraits::Header;
     return;
   }

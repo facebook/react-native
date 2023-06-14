@@ -282,6 +282,10 @@ export class MockedParser implements Parser {
     return property.optional || false;
   }
 
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe {
+    return property.typeAnnotation.typeAnnotation;
+  }
+
   getGetTypeAnnotationFN(): GetTypeAnnotationFN {
     return () => {
       return {};
@@ -436,7 +440,7 @@ export class MockedParser implements Parser {
     extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
   } {
     const nonExtendsProps = this.removeKnownExtends(typeDefinition, types);
-    const props = flattenProperties(nonExtendsProps, types)
+    const props = flattenProperties(nonExtendsProps, types, this)
       .map(property => buildPropSchema(property, types, this))
       .filter(Boolean);
 
@@ -444,5 +448,38 @@ export class MockedParser implements Parser {
       props,
       extendsProps: this.getExtendsProps(typeDefinition, types),
     };
+  }
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe {
+    const typeAlias = types[typeName];
+    try {
+      return typeAlias.right.typeParameters.params[0].properties;
+    } catch (e) {
+      throw new Error(
+        `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
+      );
+    }
+  }
+
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.right;
+  }
+
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.body;
+  }
+
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
+    return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}') or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
+  }
+
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+    return typeAnnotation.type === 'GenericTypeAnnotation'
+      ? typeAnnotation.id.name
+      : typeAnnotation.type;
+  }
+
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.properties;
   }
 }

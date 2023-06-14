@@ -7,6 +7,7 @@
 
 #import "RCTAttributedTextUtils.h"
 
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
 #include <react/renderer/textlayoutmanager/RCTFontUtils.h>
@@ -288,130 +289,12 @@ NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(T
     attributes[RCTAttributedStringIsHighlightedAttributeName] = @YES;
   }
 
-  if (textAttributes.accessibilityRole.has_value()) {
-    auto accessibilityRole = textAttributes.accessibilityRole.value();
-    switch (accessibilityRole) {
-      case AccessibilityRole::None:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("none");
-        break;
-      case AccessibilityRole::Button:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("button");
-        break;
-      case AccessibilityRole::Dropdownlist:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("dropdownlist");
-        break;
-      case AccessibilityRole::Togglebutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("togglebutton");
-        break;
-      case AccessibilityRole::Link:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("link");
-        break;
-      case AccessibilityRole::Search:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("search");
-        break;
-      case AccessibilityRole::Image:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("image");
-        break;
-      case AccessibilityRole::Keyboardkey:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("keyboardkey");
-        break;
-      case AccessibilityRole::Text:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("text");
-        break;
-      case AccessibilityRole::Adjustable:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("adjustable");
-        break;
-      case AccessibilityRole::Imagebutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("imagebutton");
-        break;
-      case AccessibilityRole::Header:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("header");
-        break;
-      case AccessibilityRole::Summary:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("summary");
-        break;
-      case AccessibilityRole::Alert:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("alert");
-        break;
-      case AccessibilityRole::Checkbox:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("checkbox");
-        break;
-      case AccessibilityRole::Combobox:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("combobox");
-        break;
-      case AccessibilityRole::Menu:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menu");
-        break;
-      case AccessibilityRole::Menubar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menubar");
-        break;
-      case AccessibilityRole::Menuitem:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("menuitem");
-        break;
-      case AccessibilityRole::Progressbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("progressbar");
-        break;
-      case AccessibilityRole::Radio:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radio");
-        break;
-      case AccessibilityRole::Radiogroup:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("radiogroup");
-        break;
-      case AccessibilityRole::Scrollbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("scrollbar");
-        break;
-      case AccessibilityRole::Spinbutton:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("spinbutton");
-        break;
-      case AccessibilityRole::Switch:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("switch");
-        break;
-      case AccessibilityRole::Tab:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tab");
-        break;
-      case AccessibilityRole::Tabbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tabbar");
-        break;
-      case AccessibilityRole::Tablist:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("tablist");
-        break;
-      case AccessibilityRole::Timer:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("timer");
-        break;
-      case AccessibilityRole::List:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("list");
-        break;
-      case AccessibilityRole::Toolbar:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("toolbar");
-        break;
-      case AccessibilityRole::Grid:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("grid");
-        break;
-      case AccessibilityRole::Pager:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("pager");
-        break;
-      case AccessibilityRole::Scrollview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("scrollview");
-        break;
-      case AccessibilityRole::Horizontalscrollview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("horizontalscrollview");
-        break;
-      case AccessibilityRole::Viewgroup:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("viewgroup");
-        break;
-      case AccessibilityRole::Webview:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("webview");
-        break;
-      case AccessibilityRole::Drawerlayout:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("drawerlayout");
-        break;
-      case AccessibilityRole::Slidingdrawer:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("slidingdrawer");
-        break;
-      case AccessibilityRole::Iconmenu:
-        attributes[RCTTextAttributesAccessibilityRoleAttributeName] = @("iconmenu");
-        break;
-    };
+  if (textAttributes.role.has_value()) {
+    std::string roleStr = toString(textAttributes.role.value());
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithCString:roleStr.c_str()];
+  } else if (textAttributes.accessibilityRole.has_value()) {
+    std::string roleStr = toString(textAttributes.accessibilityRole.value());
+    attributes[RCTTextAttributesAccessibilityRoleAttributeName] = [NSString stringWithCString:roleStr.c_str()];
   }
 
   return [attributes copy];

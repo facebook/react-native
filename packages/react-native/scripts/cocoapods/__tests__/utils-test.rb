@@ -174,6 +174,40 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(result, true)
     end
 
+    # ======================================================== #
+    # Test -  Set GCC Preprocessor Definition for React-hermes #
+    # ======================================================== #
+
+    def test_SetGCCPreprocessorDefinitionForReactHermes_itSetsThePreprocessorForDebug
+        # Arrange
+        react_hermes_name = "React-hermes"
+        react_core_name = "React-Core"
+       react_hermes_debug_config = BuildConfigurationMock.new("Debug")
+       react_hermes_release_config = BuildConfigurationMock.new("Release")
+       react_core_debug_config = BuildConfigurationMock.new("Debug")
+       react_core_release_config = BuildConfigurationMock.new("Release")
+       react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
+       react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
+
+        installer = InstallerMock.new(
+          :pod_target_installation_results => {
+            react_hermes_name => TargetInstallationResultMock.new(react_hermes_target, react_hermes_target),
+            react_core_name => TargetInstallationResultMock.new(react_core_target, react_core_target),
+          }
+        )
+
+        # Act
+        ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+
+        # Assert
+        build_setting = "GCC_PREPROCESSOR_DEFINITIONS"
+        expected_value = "HERMES_ENABLE_DEBUGGER=1"
+        assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
+        assert_nil(react_hermes_release_config.build_settings[build_setting])
+        assert_nil(react_core_debug_config.build_settings[build_setting])
+        assert_nil(react_core_release_config.build_settings[build_setting])
+    end
+
     # ============================ #
     # Test - Exclude Architectures #
     # ============================ #
@@ -432,6 +466,60 @@ class UtilsTests < Test::Unit::TestCase
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
+    end
+
+    # ================================= #
+    # Test - Apply Xcode 15 Patch       #
+    # ================================= #
+
+    def test_applyXcode15Patch_correctlyAppliesNecessaryPatch
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        user_project_mock = UserProjectMock.new("a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.apply_xcode_15_patch(installer)
+
+        # Assert
+        first_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        second_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        third_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "SomeFlag=1" "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
     end
 
     # ==================================== #

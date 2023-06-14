@@ -118,7 +118,6 @@ def use_react_native! (
   pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
-  pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
@@ -131,7 +130,6 @@ def use_react_native! (
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
-  pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
@@ -239,11 +237,16 @@ def react_native_post_install(
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
 
+  if ReactNativePodsUtils.has_pod(installer, "React-hermes")
+    ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+  end
+
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
+  ReactNativePodsUtils.apply_xcode_15_patch(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"

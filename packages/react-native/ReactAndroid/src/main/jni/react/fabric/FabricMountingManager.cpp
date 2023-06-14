@@ -253,6 +253,8 @@ jni::local_ref<jobject> FabricMountingManager::getProps(
 
 void FabricMountingManager::executeMount(
     const MountingTransaction &transaction) {
+  SystraceSection section("FabricMountingManager::executeMount");
+
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
 

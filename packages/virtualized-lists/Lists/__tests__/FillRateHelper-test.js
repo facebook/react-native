@@ -21,9 +21,9 @@ const dataGlobal = [
   {key: 'd'},
   {key: 'footer'},
 ];
-function getFrameMetrics(index: number) {
+function getCellMetrics(index: number) {
   const frame = rowFramesGlobal[dataGlobal[index].key];
-  return {length: frame.height, offset: frame.y, inLayout: frame.inLayout};
+  return {length: frame.height, offset: frame.y, isMounted: frame.isMounted};
 }
 
 function computeResult({helper, props, state, scroll}): number {
@@ -47,11 +47,11 @@ describe('computeBlankness', function () {
   });
 
   it('computes correct blankness of viewport', function () {
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
-      header: {y: 0, height: 0, inLayout: true},
-      a: {y: 0, height: 50, inLayout: true},
-      b: {y: 50, height: 50, inLayout: true},
+      header: {y: 0, height: 0, isMounted: true},
+      a: {y: 0, height: 50, isMounted: true},
+      b: {y: 50, height: 50, isMounted: true},
     };
     let blankness = computeResult({helper});
     expect(blankness).toBe(0);
@@ -66,32 +66,32 @@ describe('computeBlankness', function () {
   });
 
   it('skips frames that are not in layout', function () {
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
-      header: {y: 0, height: 0, inLayout: false},
-      a: {y: 0, height: 10, inLayout: false},
-      b: {y: 10, height: 30, inLayout: true},
-      c: {y: 40, height: 40, inLayout: true},
-      d: {y: 80, height: 20, inLayout: false},
-      footer: {y: 100, height: 0, inLayout: false},
+      header: {y: 0, height: 0, isMounted: false},
+      a: {y: 0, height: 10, isMounted: false},
+      b: {y: 10, height: 30, isMounted: true},
+      c: {y: 40, height: 40, isMounted: true},
+      d: {y: 80, height: 20, isMounted: false},
+      footer: {y: 100, height: 0, isMounted: false},
     };
     const blankness = computeResult({helper, state: {last: 4}});
     expect(blankness).toBe(0.3);
   });
 
   it('sampling rate can disable', function () {
-    let helper = new FillRateHelper(getFrameMetrics);
+    let helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
-      header: {y: 0, height: 0, inLayout: true},
-      a: {y: 0, height: 40, inLayout: true},
-      b: {y: 40, height: 40, inLayout: true},
+      header: {y: 0, height: 0, isMounted: true},
+      a: {y: 0, height: 40, isMounted: true},
+      b: {y: 40, height: 40, isMounted: true},
     };
     let blankness = computeResult({helper});
     expect(blankness).toBe(0.2);
 
     FillRateHelper.setSampleRate(0);
 
-    helper = new FillRateHelper(getFrameMetrics);
+    helper = new FillRateHelper({getCellMetrics});
     blankness = computeResult({helper});
     expect(blankness).toBe(0);
   });
@@ -102,11 +102,11 @@ describe('computeBlankness', function () {
       FillRateHelper.addListener(listener),
     );
     subscriptions[1].remove();
-    const helper = new FillRateHelper(getFrameMetrics);
+    const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
-      header: {y: 0, height: 0, inLayout: true},
-      a: {y: 0, height: 40, inLayout: true},
-      b: {y: 40, height: 40, inLayout: true},
+      header: {y: 0, height: 0, isMounted: true},
+      a: {y: 0, height: 40, isMounted: true},
+      b: {y: 40, height: 40, isMounted: true},
     };
     const blankness = computeResult({helper});
     expect(blankness).toBe(0.2);

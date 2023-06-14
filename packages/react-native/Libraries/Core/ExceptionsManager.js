@@ -117,7 +117,8 @@ function reportException(
   }
 }
 
-declare var console: typeof console & {
+declare var console: {
+  error: typeof console.error,
   _errorOriginal: typeof console.error,
   reportErrorsAsExceptions: boolean,
   ...

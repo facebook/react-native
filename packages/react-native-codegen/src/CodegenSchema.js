@@ -134,6 +134,27 @@ export type EventTypeAnnotation =
       elementType: EventTypeAnnotation,
     }>;
 
+export type ArrayTypeAnnotation = $ReadOnly<{
+  type: 'ArrayTypeAnnotation',
+  elementType:
+    | BooleanTypeAnnotation
+    | StringTypeAnnotation
+    | DoubleTypeAnnotation
+    | FloatTypeAnnotation
+    | Int32TypeAnnotation
+    | $ReadOnly<{
+        type: 'StringEnumTypeAnnotation',
+        default: string,
+        options: $ReadOnlyArray<string>,
+      }>
+    | ObjectTypeAnnotation<PropTypeAnnotation>
+    | ReservedPropTypeAnnotation
+    | $ReadOnly<{
+        type: 'ArrayTypeAnnotation',
+        elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
+      }>,
+}>;
+
 export type PropTypeAnnotation =
   | $ReadOnly<{
       type: 'BooleanTypeAnnotation',
@@ -167,26 +188,7 @@ export type PropTypeAnnotation =
     }>
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
-  | $ReadOnly<{
-      type: 'ArrayTypeAnnotation',
-      elementType:
-        | BooleanTypeAnnotation
-        | StringTypeAnnotation
-        | DoubleTypeAnnotation
-        | FloatTypeAnnotation
-        | Int32TypeAnnotation
-        | $ReadOnly<{
-            type: 'StringEnumTypeAnnotation',
-            default: string,
-            options: $ReadOnlyArray<string>,
-          }>
-        | ObjectTypeAnnotation<PropTypeAnnotation>
-        | ReservedPropTypeAnnotation
-        | $ReadOnly<{
-            type: 'ArrayTypeAnnotation',
-            elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
-          }>,
-    }>
+  | ArrayTypeAnnotation
   | MixedTypeAnnotation;
 
 export type ReservedPropTypeAnnotation = $ReadOnly<{

@@ -8,9 +8,17 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp} from './PerformanceEntry';
+import type {HighResTimeStamp, PerformanceEntryJSON} from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
+
+export type PerformanceEventTimingJSON = {
+  ...PerformanceEntryJSON,
+  processingStart: HighResTimeStamp,
+  processingEnd: HighResTimeStamp,
+  interactionId: number,
+  ...
+};
 
 export class PerformanceEventTiming extends PerformanceEntry {
   processingStart: HighResTimeStamp;
@@ -34,5 +42,14 @@ export class PerformanceEventTiming extends PerformanceEntry {
     this.processingStart = init.processingStart ?? 0;
     this.processingEnd = init.processingEnd ?? 0;
     this.interactionId = init.interactionId ?? 0;
+  }
+
+  toJSON(): PerformanceEventTimingJSON {
+    return {
+      ...super.toJSON(),
+      processingStart: this.processingStart,
+      processingEnd: this.processingEnd,
+      interactionId: this.interactionId,
+    };
   }
 }

@@ -9,7 +9,11 @@
     "directory": "packages/eslint-config-react-native"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-config-react-native#readme",
-  "keywords": ["eslint", "config", "react-native"],
+  "keywords": [
+    "eslint",
+    "config",
+    "react-native"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=16"
@@ -36,6 +40,6 @@
   },
   "devDependencies": {
     "eslint": "^8.19.0",
-    "prettier": "^2.4.1"
+    "prettier": "2.8.8"
   }
 }

@@ -225,7 +225,7 @@ final class ReactInstance {
     mFabricUIManager =
         new FabricUIManager(mBridgelessReactContext, viewManagerRegistry, eventBeatManager);
 
-    ReactNativeConfig config = mDelegate.getReactNativeConfig(mBridgelessReactContext);
+    ReactNativeConfig config = mDelegate.getReactNativeConfig(mTurboModuleManager);
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mBridgelessReactContext);

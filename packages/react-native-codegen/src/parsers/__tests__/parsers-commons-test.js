@@ -25,6 +25,8 @@ import {
   getCommandOptions,
   getOptions,
   getCommandTypeNameAndOptionsExpression,
+  getTypeResolutionStatus,
+  handleGenericTypeAnnotation,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1542,5 +1544,122 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
       ];
       expect(propertyNames(properties)).toEqual([]);
     });
+  });
+});
+
+describe('getTypeResolutionStatus', () => {
+  it('returns type resolution status for a type declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    expect(
+      getTypeResolutionStatus('alias', typeAnnotation, flowParser),
+    ).toEqual({
+      successful: true,
+      type: 'alias',
+      name: 'TypeAnnotationName',
+    });
+  });
+
+  it('returns type resolution status for an enum declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    expect(getTypeResolutionStatus('enum', typeAnnotation, flowParser)).toEqual(
+      {
+        successful: true,
+        type: 'enum',
+        name: 'TypeAnnotationName',
+      },
+    );
+  });
+});
+
+describe('handleGenericTypeAnnotation', () => {
+  it('returns when TypeAnnotation is a type declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'TypeAlias',
+      right: {
+        type: 'TypeAnnotation',
+      },
+    };
+    expect(
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toEqual({
+      typeAnnotation: {
+        type: 'TypeAnnotation',
+      },
+      typeResolutionStatus: {
+        successful: true,
+        type: 'alias',
+        name: 'TypeAnnotationName',
+      },
+    });
+  });
+
+  it('returns when TypeAnnotation is an enum declaration', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'TypeAnnotationName',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'EnumDeclaration',
+      body: {
+        type: 'TypeAnnotation',
+      },
+    };
+    expect(
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toEqual({
+      typeAnnotation: {
+        type: 'TypeAnnotation',
+      },
+      typeResolutionStatus: {
+        successful: true,
+        type: 'enum',
+        name: 'TypeAnnotationName',
+      },
+    });
+  });
+
+  it('throws when the non GenericTypeAnnotation is unsupported', () => {
+    const typeAnnotation = {
+      type: 'UnsupportedTypeAnnotation',
+      id: {
+        name: 'UnsupportedType',
+      },
+    };
+    const resolvedTypeAnnotation = {
+      type: 'UnsupportedTypeAnnotation',
+    };
+    expect(() =>
+      handleGenericTypeAnnotation(
+        typeAnnotation,
+        resolvedTypeAnnotation,
+        flowParser,
+      ),
+    ).toThrow(
+      new Error(
+        parser.genericTypeAnnotationErrorMessage(resolvedTypeAnnotation),
+      ),
+    );
   });
 });

@@ -25,13 +25,15 @@ using namespace facebook::react;
 
 @implementation RCTHost {
   RCTInstance *_instance;
+
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
+  __weak id<RCTContextContainerHandling> _contextContainerHandler;
+
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
   RCTHostBundleURLProvider _bundleURLProvider;
-  facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
   RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
@@ -56,7 +58,6 @@ using namespace facebook::react;
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-              bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
@@ -64,7 +65,6 @@ using namespace facebook::react;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _surfaceStartBuffer = [NSMutableArray new];
     _bundleManager = [RCTBundleManager new];
-    _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
 
@@ -148,7 +148,6 @@ using namespace facebook::react;
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 }
@@ -216,7 +215,6 @@ using namespace facebook::react;
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 
@@ -231,11 +229,6 @@ using namespace facebook::react;
 }
 
 #pragma mark - RCTInstanceDelegate
-
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer
-{
-  return [_hostDelegate createContextContainer];
-}
 
 - (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
 {
@@ -261,6 +254,18 @@ using namespace facebook::react;
                      isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
 }
 
+- (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
+{
+  [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+#pragma mark - RCTContextContainerHandling
+
+- (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer
+{
+  [_contextContainerHandler didCreateContextContainer:contextContainer];
+}
+
 #pragma mark - Internal
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path
@@ -271,6 +276,11 @@ using namespace facebook::react;
 - (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
 {
   _bundleURLProvider = [bundleURLProvider copy];
+}
+
+- (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler
+{
+  _contextContainerHandler = contextContainerHandler;
 }
 
 #pragma mark - Private

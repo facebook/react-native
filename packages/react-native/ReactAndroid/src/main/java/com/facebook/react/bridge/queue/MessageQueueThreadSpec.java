@@ -16,7 +16,7 @@ public class MessageQueueThreadSpec {
   // The Thread constructor interprets zero the same as not specifying a stack size
   public static final long DEFAULT_STACK_SIZE_BYTES = 0;
 
-  protected static enum ThreadType {
+  protected enum ThreadType {
     MAIN_UI,
     NEW_BACKGROUND,
   }
