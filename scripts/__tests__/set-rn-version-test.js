@@ -7,7 +7,6 @@
  * @format
  */
 
-const execMock = jest.fn();
 const echoMock = jest.fn();
 const catMock = jest.fn();
 const sedMock = jest.fn();
@@ -16,23 +15,15 @@ const updateTemplatePackageMock = jest.fn();
 
 jest
   .mock('shelljs', () => ({
-    exec: execMock,
     echo: echoMock,
     cat: catMock,
     sed: sedMock,
   }))
   .mock('./../update-template-package', () => updateTemplatePackageMock)
-  .mock('./../scm-utils', () => ({
-    saveFiles: jest.fn(),
-  }))
-  .mock('path', () => ({
-    join: () => '../packages/react-native',
-  }))
   .mock('fs', () => ({
     writeFileSync: writeFileSyncMock,
     mkdtempSync: () => './rn-set-version/',
-  }))
-  .mock('os');
+  }));
 
 const setReactNativeVersion = require('../set-rn-version');
 
@@ -58,7 +49,6 @@ describe('set-rn-version', () => {
       }
     });
 
-    execMock.mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
     sedMock.mockReturnValueOnce({code: 0});
 
     const version = '0.81.0-nightly-29282302-abcd1234';
@@ -115,7 +105,6 @@ describe('set-rn-version', () => {
       return 'exports.version = {major: ${major}, minor: ${minor}, patch: ${patch}, prerelease: ${prerelease}}';
     });
 
-    execMock.mockReturnValueOnce({stdout: 'line1\nline2\nline3\n'});
     sedMock.mockReturnValueOnce({code: 0});
 
     const version = '0.81.0';
@@ -144,38 +133,5 @@ describe('set-rn-version', () => {
     expect(updateTemplatePackageMock).toHaveBeenCalledWith({
       'react-native': version,
     });
-    expect(execMock.mock.calls[0][0]).toBe(
-      `diff -r ./rn-set-version/ . | grep '^[>]' | grep -c ${version} `,
-    );
-  });
-
-  it('should fail validation', () => {
-    catMock.mockReturnValue('{}');
-
-    execMock.mockReturnValueOnce({stdout: 'line1\nline2\n'});
-    sedMock.mockReturnValueOnce({code: 0});
-    const filesToValidate = [
-      'packages/react-native/package.json',
-      'packages/react-native/template/package.json',
-    ];
-
-    const version = '0.81.0';
-    setReactNativeVersion(version, null, 'release');
-
-    expect(echoMock).toHaveBeenNthCalledWith(
-      1,
-      'The tmp versioning folder is ./rn-set-version/',
-    );
-
-    expect(echoMock).toHaveBeenNthCalledWith(2, 'WARNING:');
-
-    expect(echoMock.mock.calls[2][0]).toBe(
-      `Failed to update all the files: [${filesToValidate.join(
-        ', ',
-      )}] must have versions in them`,
-    );
-    expect(echoMock.mock.calls[3][0]).toBe(
-      `These files already had version ${version} set.`,
-    );
   });
 });
