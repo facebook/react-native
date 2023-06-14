@@ -46,8 +46,6 @@ typedef void (^RCTPromiseResolveBlock)(id result);
  */
 typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
 
-typedef void (^RCTInternalPromiseRejectBlock)(NSException *exception);
-
 RCT_EXTERN_C_BEGIN
 
 typedef struct RCTMethodInfo {

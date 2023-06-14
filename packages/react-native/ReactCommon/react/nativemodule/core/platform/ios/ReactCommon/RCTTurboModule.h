@@ -23,6 +23,12 @@
   ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
 
+/**
+ * Block used to reject the JS promise waiting for a result
+ * in cases when the native method throws an exception.
+ */
+typedef void (^RCTInternalPromiseRejectBlock)(NSException *exception);
+
 namespace facebook::react {
 
 class CallbackWrapper;
