@@ -52,13 +52,8 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local enable_bitcode enable_debugger cmake_build_type
+  local enable_debugger cmake_build_type
 
-  if [[ $1 == iphoneos || $1 == catalyst ]]; then
-    enable_bitcode="true"
-  else
-    enable_bitcode="false"
-  fi
   if [[ $BUILD_TYPE == "Debug" ]]; then
     enable_debugger="true"
   else
@@ -82,7 +77,7 @@ function configure_apple_framework {
       -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
       -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
       -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
-      -DHERMES_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
+      -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
       -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
       -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
       -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
