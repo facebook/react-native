@@ -155,14 +155,19 @@ function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
   // Create tmp folder for copies of files to verify files have changed
   const filesToValidate = [
     'packages/react-native/package.json',
-    'packages/react-native/ReactAndroid/gradle.properties',
     'packages/react-native/template/package.json',
   ];
   const tmpVersioningFolder = fs.mkdtempSync(
     path.join(os.tmpdir(), 'rn-set-version'),
   );
   echo(`The tmp versioning folder is ${tmpVersioningFolder}`);
-  saveFiles(tmpVersioningFolder);
+  saveFiles(
+    [
+      'packages/react-native/package.json',
+      'packages/react-native/template/package.json',
+    ],
+    tmpVersioningFolder,
+  );
 
   setSource(version);
   setPackage(version, dependencyVersions);

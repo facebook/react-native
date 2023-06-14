@@ -156,7 +156,6 @@ describe('set-rn-version', () => {
     sedMock.mockReturnValueOnce({code: 0});
     const filesToValidate = [
       'packages/react-native/package.json',
-      'packages/react-native/ReactAndroid/gradle.properties',
       'packages/react-native/template/package.json',
     ];
 
