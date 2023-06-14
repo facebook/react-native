@@ -22,13 +22,14 @@
 
 static UIFont *defaultPlaceholderFont(void)
 {
-  return [UIFont systemFontOfSize:17];
+  UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    return font;
 }
 
 static UIColor *defaultPlaceholderColor(void)
 {
   // Default placeholder color from UITextField.
-  return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [UIColor placeholderTextColor];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
