@@ -223,6 +223,7 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
+  ReactNativePodsUtils.apply_xcode_15_patch(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
