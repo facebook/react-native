@@ -159,4 +159,10 @@ public class ReactFeatureFlags {
 
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
+
+  /**
+   * Enables storing js caller stack when creating promise in native module.
+   * This is useful in case of Promise rejection and tracing the cause.
+   */
+  public static boolean traceTurboModulePromiseRejectionEnabled = false;
 }
