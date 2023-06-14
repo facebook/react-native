@@ -22,8 +22,7 @@
 
 static UIFont *defaultPlaceholderFont(void)
 {
-  UIFont *font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    return font;
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 static UIColor *defaultPlaceholderColor(void)
