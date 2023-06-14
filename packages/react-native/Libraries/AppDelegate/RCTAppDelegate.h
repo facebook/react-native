@@ -102,8 +102,7 @@
  *
  * @return: an instance of `UIViewController`
  */
-- (UIViewController *)attachRootView:(UIViewController *) rootViewController
-                            rootView:(UIView *)rootView;
+ *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
 
 /// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
