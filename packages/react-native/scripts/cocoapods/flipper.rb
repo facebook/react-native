@@ -20,8 +20,8 @@ $flipper_default_versions = {
 # when the dependencies are installed for a non production app.
 #
 # @parameter pathToReactNative: the path to the React Native installation
-def install_flipper_dependencies(pathToReactNative, configurations: ["Debug"])
-    pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/", :configurations => configurations
+def install_flipper_dependencies(pathToReactNative)
+    pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"
 end
 
 

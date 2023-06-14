@@ -166,7 +166,7 @@ def use_react_native! (
 
   # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
   if flipper_configuration.flipper_enabled
-    install_flipper_dependencies(prefix, :configurations => flipper_configuration.configurations)
+    install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
 

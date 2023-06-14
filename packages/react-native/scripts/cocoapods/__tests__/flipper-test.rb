@@ -22,8 +22,7 @@ class FlipperTests < Test::Unit::TestCase
 
         # Assert
         assert_equal($podInvocationCount, 1)
-        assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../" )
-        assert_equal($podInvocation['React-Core/DevSupport'][:configurations], ["Debug"] )
+        assert_equal($podInvocation['React-Core/DevSupport'][:path], "../../")
     end
 
     # ======================= #
