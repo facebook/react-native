@@ -127,6 +127,14 @@ import okio.Source;
     return RequestBody.create(mediaType, gzipByteArrayOutputStream.toByteArray());
   }
 
+  private static void closeQuietly(Source source) {
+    try {
+      source.close();
+    } catch (IOException e) {
+      // noop.
+    }
+  }
+
   /** Creates a RequestBody from a mediaType and inputStream given. */
   public static RequestBody create(final MediaType mediaType, final InputStream inputStream) {
     return new RequestBody() {
@@ -151,7 +159,7 @@ import okio.Source;
           source = Okio.source(inputStream);
           sink.writeAll(source);
         } finally {
-          source.close();
+          closeQuietly(source);
         }
       }
     };
