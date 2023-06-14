@@ -36,6 +36,8 @@
  *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
  *)initProps;
  *   - (UIViewController *)createRootViewController;
+ *   - (UIViewController *)attachRootView:(UIViewController *) rootViewController
+ rootView:(UIView *)rootView;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
  *   - (BOOL)turboModuleEnabled;
@@ -93,6 +95,16 @@
  * @return: an instance of `UIViewController`.
  */
 - (UIViewController *)createRootViewController;
+
+/**
+ * It assigns the rootView to the rootViewController
+ * By default, it assigns the rootView to the view property of the rootViewController
+ *
+ * @return: an instance of `UIViewController`
+ */
+- (UIViewController *)attachRootView:(UIViewController *) rootViewController
+                            rootView:(UIView *)rootView;
+
 
 /// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
 ///
