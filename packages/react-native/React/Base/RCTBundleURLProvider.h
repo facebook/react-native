@@ -119,6 +119,7 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
  * - enableDev: Whether to keep or remove `__DEV__` blocks from the bundle.
  * - enableMinification: Enables or disables minification. Usually production bundles are minified and development
  *     bundles are not.
+ * - inlineSourceMap: Determines whether the source map is inline in the JS bundle. This is useful for debugging with Safari /JavascriptCore.
  * - modulesOnly: When true, will only send module definitions without polyfills and without the require-runtime.
  * - runModule: When true, will run the main module after defining all modules. This is used in the main bundle but not
  *     in split bundles.
@@ -126,16 +127,17 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
-                 enableMinification:(BOOL)enableMinification;
+                 enableMinification:(BOOL)enableMinification
+                    inlineSourceMap:(BOOL)inlineSourceMap;
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
                        packagerHost:(NSString *)packagerHost
                      packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+                    inlineSourceMap:(BOOL)inlineSourceMap
                         modulesOnly:(BOOL)modulesOnly
-                          runModule:(BOOL)runModule
-                   inlineSourceMap:(BOOL)inlineSourceMap;
+                          runModule:(BOOL)runModule;
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
