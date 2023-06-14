@@ -102,4 +102,16 @@ static ShimRCTInstance *shimmedRCTInstance;
   RCT_MOCK_RESET(RCTHost, _RCTLogNativeInternal);
 }
 
+- (void)testCallFunctionOnJSModule
+{
+  [_subject start];
+
+  NSArray *args = @[ @"hi", @(5), @(NO) ];
+  [_subject callFunctionOnJSModule:@"jsModule" method:@"method" args:args];
+
+  XCTAssertEqualObjects(shimmedRCTInstance.jsModuleName, @"jsModule");
+  XCTAssertEqualObjects(shimmedRCTInstance.method, @"method");
+  XCTAssertEqualObjects(shimmedRCTInstance.args, args);
+}
+
 @end
