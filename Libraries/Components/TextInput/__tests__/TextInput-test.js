@@ -176,15 +176,6 @@ describe('TextInput tests', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
-        accessibilityState={
-          Object {
-            "busy": undefined,
-            "checked": undefined,
-            "disabled": undefined,
-            "expanded": undefined,
-            "selected": undefined,
-          }
-        }
         accessible={true}
         allowFontScaling={true}
         focusable={true}
