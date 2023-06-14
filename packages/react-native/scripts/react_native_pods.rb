@@ -57,7 +57,7 @@ end
 # - path: path to react_native installation.
 # - fabric_enabled: whether fabric should be enabled or not.
 # - new_arch_enabled: whether the new architecture should be enabled or not.
-# - production: whether the dependencies must be installed to target a Debug or a Release build.
+# - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
@@ -67,7 +67,7 @@ def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-  production: ENV['PRODUCTION'] == '1',
+  production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
@@ -164,12 +164,9 @@ def use_react_native! (
     build_codegen!(prefix, relative_installation_root)
   end
 
-  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
-  # but those dependencies are still built.
-  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
-  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
-  if flipper_configuration.flipper_enabled && !production
-    install_flipper_dependencies(prefix)
+  # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
+  if flipper_configuration.flipper_enabled
+    install_flipper_dependencies(prefix, :configurations => flipper_configuration.configurations)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
 

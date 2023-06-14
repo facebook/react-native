@@ -886,10 +886,6 @@ jobs:
           command: |
             cd /tmp/$PROJECT_NAME/ios
 
-            if [[ << parameters.flavor >> == "Release" ]]; then
-              export PRODUCTION=1
-            fi
-
             if [[ << parameters.architecture >> == "NewArch" ]]; then
               export RCT_NEW_ARCH_ENABLED=1
             fi
