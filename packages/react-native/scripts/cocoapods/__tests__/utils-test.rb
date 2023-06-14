@@ -178,21 +178,26 @@ class UtilsTests < Test::Unit::TestCase
     # Test -  Set GCC Preprocessor Definition for React-hermes #
     # ======================================================== #
 
-    def test_SetGCCPreprocessorDefinitionForReactHermes_itSetsThePreprocessorForDebug
+    def test_SetGCCPreprocessorDefinitionForHermes_itSetsThePreprocessorForDebug
         # Arrange
         react_hermes_name = "React-hermes"
         react_core_name = "React-Core"
-       react_hermes_debug_config = BuildConfigurationMock.new("Debug")
-       react_hermes_release_config = BuildConfigurationMock.new("Release")
-       react_core_debug_config = BuildConfigurationMock.new("Debug")
-       react_core_release_config = BuildConfigurationMock.new("Release")
-       react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
-       react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
+        hermes_engine_name = "hermes-engine"
+        react_hermes_debug_config = BuildConfigurationMock.new("Debug")
+        react_hermes_release_config = BuildConfigurationMock.new("Release")
+        react_core_debug_config = BuildConfigurationMock.new("Debug")
+        react_core_release_config = BuildConfigurationMock.new("Release")
+        hermes_engine_debug_config = BuildConfigurationMock.new("Debug")
+        hermes_engine_release_config = BuildConfigurationMock.new("Release")
+        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
+        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
+        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config])
 
         installer = InstallerMock.new(
           :pod_target_installation_results => {
             react_hermes_name => TargetInstallationResultMock.new(react_hermes_target, react_hermes_target),
             react_core_name => TargetInstallationResultMock.new(react_core_target, react_core_target),
+            hermes_engine_name => TargetInstallationResultMock.new(hermes_engine_target, hermes_engine_target),
           }
         )
 
@@ -201,11 +206,13 @@ class UtilsTests < Test::Unit::TestCase
 
         # Assert
         build_setting = "GCC_PREPROCESSOR_DEFINITIONS"
-        expected_value = "HERMES_ENABLE_DEBUGGER=1"
+        expected_value = "$(inherited) HERMES_ENABLE_DEBUGGER=1"
         assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
         assert_nil(react_hermes_release_config.build_settings[build_setting])
         assert_nil(react_core_debug_config.build_settings[build_setting])
         assert_nil(react_core_release_config.build_settings[build_setting])
+        assert_equal(expected_value, hermes_engine_debug_config.build_settings[build_setting])
+        assert_nil(hermes_engine_release_config.build_settings[build_setting])
     end
 
     # ============================ #

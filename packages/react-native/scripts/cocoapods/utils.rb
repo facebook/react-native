@@ -41,6 +41,7 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -153,7 +154,8 @@ class ReactNativePodsUtils
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
                         if configuration == nil || (configuration != nil && configuration == config.name)
-                            config.build_settings[settings_name] = settings_value
+                            config.build_settings[settings_name] ||= '$(inherited) '
+                            config.build_settings[settings_name] << settings_value
                         end
                     end
                 end
