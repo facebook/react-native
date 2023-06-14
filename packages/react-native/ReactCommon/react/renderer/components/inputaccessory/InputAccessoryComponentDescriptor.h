@@ -11,8 +11,7 @@
 #include <react/renderer/components/inputaccessory/InputAccessoryShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <InputAccessoryView> component.
@@ -42,5 +41,4 @@ class InputAccessoryComponentDescriptor final
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

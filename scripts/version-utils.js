@@ -19,7 +19,7 @@ const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
  * - stable: 0.68.1
  * - stable prerelease: 0.70.0-rc.0
  * - e2e-test: X.Y.Z-20221116-2018
- * - nightly: 0.0.0-20221116-2018-0bc4547fc
+ * - nightly: X.Y.Z-20221116-0bc4547fc
  * - dryrun: 1000.0.0
  *
  * Parameters:
@@ -106,7 +106,7 @@ function validateRelease(version) {
 function validateDryRun(version) {
   if (
     !isMain(version) &&
-    !isNightlyBuild(version) &&
+    !isNightly(version) &&
     !isStableRelease(version) &&
     !isStablePrerelease(version)
   ) {
@@ -116,7 +116,7 @@ function validateDryRun(version) {
 
 function validateNightly(version) {
   // a valid nightly is a prerelease
-  if (!isNightlyBuild(version)) {
+  if (!isNightly(version)) {
     throw new Error(`Version ${version.version} is not valid for nightlies`);
   }
 }
@@ -139,10 +139,13 @@ function isStablePrerelease(version) {
   );
 }
 
-function isNightlyBuild(version) {
-  return (
-    version.major === '0' && version.minor === '0' && version.patch === '0'
-  );
+function isNightly(version) {
+  // Check if older nightly version
+  if (version.major === '0' && version.minor === '0' && version.patch === '0') {
+    return true;
+  }
+
+  return version.version.includes('nightly');
 }
 
 function isMain(version) {
@@ -158,6 +161,7 @@ function isReleaseBranch(branch) {
 module.exports = {
   validateBuildType,
   parseVersion,
+  isNightly,
   isReleaseBranch,
   isMain,
   isStableRelease,

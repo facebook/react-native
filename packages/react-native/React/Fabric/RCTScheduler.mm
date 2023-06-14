@@ -12,7 +12,7 @@
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/scheduler/Scheduler.h>
 #import <react/renderer/scheduler/SchedulerDelegate.h>
-#include <react/utils/RunLoopObserver.h>
+#import <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -130,6 +130,11 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (void)animationTick
 {
   _scheduler->animationTick();
+}
+
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId
+{
+  _scheduler->reportMount(surfaceId);
 }
 
 - (void)dealloc

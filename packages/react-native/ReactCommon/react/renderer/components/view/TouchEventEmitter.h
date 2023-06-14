@@ -14,8 +14,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TouchEventEmitter;
 
@@ -53,5 +52,4 @@ class TouchEventEmitter : public EventEmitter {
       RawEvent::Category category) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

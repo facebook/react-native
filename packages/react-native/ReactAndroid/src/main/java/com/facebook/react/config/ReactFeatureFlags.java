@@ -43,10 +43,28 @@ public class ReactFeatureFlags {
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application
+   * will behave so that it can accept non-Fabric components and render them on Fabric. This toggle
+   * is controlling extra logic such as custom event dispatching that are needed for the Fabric
+   * Interop Layer to work correctly.
+   */
+  public static volatile boolean unstable_useFabricInterop = false;
+
+  /**
+   * Should this application always use the Native RuntimeScheduler? If yes, we'll be instantiating
+   * it over all the architectures (both Old and New). This is intentionally set to true as we want
+   * to use it more as a kill-switch to turn off this feature to potentially debug issues.
+   */
+  public static volatile boolean unstable_useRuntimeSchedulerAlways = true;
+
+  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   public static boolean enableBridgelessArchitecture = false;
+
+  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
+  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
 
   /**
    * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
@@ -85,9 +103,6 @@ public class ReactFeatureFlags {
 
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
-
-  /** Feature Flag to enable caching mechanism of text measurement at shadow node level */
-  public static boolean enableTextMeasureCachePerShadowNode = false;
 
   /**
    * Feature flag that controls how turbo modules are exposed to JS
@@ -141,4 +156,7 @@ public class ReactFeatureFlags {
    * HostObject pattern
    */
   public static boolean useNativeState = false;
+
+  /** Report mount operations from the host platform to notify mount hooks. */
+  public static boolean enableMountHooks = false;
 }

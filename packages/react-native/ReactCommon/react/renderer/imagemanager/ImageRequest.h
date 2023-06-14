@@ -13,8 +13,7 @@
 #include <react/renderer/imagemanager/ImageTelemetry.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents ongoing request for an image resource.
@@ -35,19 +34,23 @@ class ImageRequest final {
   /*
    * The move constructor.
    */
-  ImageRequest(ImageRequest &&other) noexcept;
+  ImageRequest(ImageRequest &&other) noexcept = default;
 
   /*
    * `ImageRequest` does not support copying by design.
    */
   ImageRequest(const ImageRequest &other) = delete;
 
-  ~ImageRequest();
-
   /**
    * Set cancelation function.
    */
   void setCancelationFunction(std::function<void(void)> cancelationFunction);
+
+  /*
+   * Calls cancel function if one is defined. Should be when downloading
+   * image isn't needed anymore. E.g. <ImageView /> was removed.
+   */
+  void cancel() const;
 
   /*
    * Returns the Image Source associated with the request.
@@ -96,5 +99,4 @@ class ImageRequest final {
   std::function<void(void)> cancelRequest_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

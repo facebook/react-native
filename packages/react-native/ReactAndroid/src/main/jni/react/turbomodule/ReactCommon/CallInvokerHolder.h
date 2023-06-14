@@ -11,8 +11,7 @@
 #include <fbjni/fbjni.h>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CallInvokerHolder : public jni::HybridClass<CallInvokerHolder> {
  public:
@@ -28,5 +27,4 @@ class CallInvokerHolder : public jni::HybridClass<CallInvokerHolder> {
   std::shared_ptr<CallInvoker> _callInvoker;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

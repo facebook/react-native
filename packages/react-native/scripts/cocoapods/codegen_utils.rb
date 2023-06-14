@@ -80,9 +80,11 @@ class CodegenUtils
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
+          "\"$(PODS_ROOT)/DoubleConversion\"",
           "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
+          "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
         ]
         framework_search_paths = []
 
@@ -91,12 +93,14 @@ class CodegenUtils
             "\"$(PODS_ROOT)/DoubleConversion\"",
             "\"$(PODS_TARGET_SRCROOT)\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
+            "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"",
           ])
         end
 
@@ -127,7 +131,9 @@ class CodegenUtils
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
-            "React-NativeModulesApple": [],
+            "React-NativeModulesApple": [], 
+            "glog": [],
+            "DoubleConversion": [],
           }
         }
 
@@ -135,6 +141,7 @@ class CodegenUtils
           spec[:'dependencies'].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-debug': [],
           });
         end
 

@@ -1,8 +1,14 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fb/fbjni.h>
 #include <jni.h>
@@ -16,17 +22,18 @@
 #include <react/jni/JSLoader.h>
 #include <react/jni/ReadableNativeMap.h>
 
+#include "JBindingsInstaller.h"
 #include "JJSEngineInstance.h"
 #include "JJSTimerExecutor.h"
 #include "JJavaTimerManager.h"
 #include "JReactExceptionManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactInstance : public jni::HybridClass<JReactInstance> {
  public:
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/venice/ReactInstance;";
+  constexpr static auto kJavaDescriptor =
+      "Lcom/facebook/react/bridgeless/ReactInstance;";
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jhybridobject>,
@@ -37,6 +44,7 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+      jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling);
 
   /*
@@ -81,19 +89,22 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
       jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
       jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
       jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+      jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
       bool isProfiling) noexcept;
 
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
-  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+  getNativeMethodCallInvokerHolder();
 
   std::unique_ptr<ReactInstance> instance_;
   jni::global_ref<JRuntimeExecutor::javaobject> unbufferedRuntimeExecutor_;
   jni::global_ref<JRuntimeExecutor::javaobject> bufferedRuntimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
-  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<NativeMethodCallInvokerHolder::javaobject>
+      nativeMethodCallInvokerHolder_;
   jni::global_ref<JReactExceptionManager::javaobject> jReactExceptionManager_;
+  jni::global_ref<JBindingsInstaller::javaobject> jBindingsInstaller_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

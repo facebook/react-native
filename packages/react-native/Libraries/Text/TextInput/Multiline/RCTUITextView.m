@@ -261,6 +261,19 @@ static UIColor *defaultPlaceholderColor(void)
   return [super canPerformAction:action withSender:sender];
 }
 
+#pragma mark - Dictation
+
+- (void)dictationRecordingDidEnd
+{
+  _dictationRecognizing = YES;
+}
+
+- (void)removeDictationResultPlaceholder:(id)placeholder willInsertResult:(BOOL)willInsertResult
+{
+  [super removeDictationResultPlaceholder:placeholder willInsertResult:willInsertResult];
+  _dictationRecognizing = NO;
+}
+
 #pragma mark - Placeholder
 
 - (void)_invalidatePlaceholderVisibility

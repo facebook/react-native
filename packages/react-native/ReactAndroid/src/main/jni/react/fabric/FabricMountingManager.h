@@ -12,12 +12,11 @@
 #include <butter/set.h>
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
-#include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/uimanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
+class MountingTransaction;
 class ReactNativeConfig;
 struct ShadowView;
 
@@ -26,6 +25,7 @@ class FabricMountingManager final {
   FabricMountingManager(
       std::shared_ptr<const ReactNativeConfig> &config,
       jni::global_ref<JFabricUIManager::javaobject> &javaUIManager);
+  FabricMountingManager(const FabricMountingManager &) = delete;
 
   void onSurfaceStart(SurfaceId surfaceId);
 
@@ -33,7 +33,7 @@ class FabricMountingManager final {
 
   void preallocateShadowView(SurfaceId surfaceId, ShadowView const &shadowView);
 
-  void executeMount(const MountingCoordinator::Shared &mountingCoordinator);
+  void executeMount(const MountingTransaction &transaction);
 
   void dispatchCommand(
       ShadowView const &shadowView,
@@ -68,5 +68,4 @@ class FabricMountingManager final {
       ShadowView const &newShadowView);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

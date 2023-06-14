@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -6,17 +11,15 @@
 #include <jni.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactExceptionManager
     : public facebook::jni::JavaClass<JReactExceptionManager> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/venice/exceptionmanager/ReactJsExceptionHandler;";
+      "Lcom/facebook/react/bridgeless/exceptionmanager/ReactJsExceptionHandler;";
 
   void reportJsException(const JReadableMapBuffer::javaobject errorMapBuffer);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

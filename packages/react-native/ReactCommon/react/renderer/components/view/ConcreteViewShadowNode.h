@@ -16,8 +16,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Template for all <View>-like classes (classes which have all same props
@@ -84,23 +83,6 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
     return BaseShadowNode::getConcreteProps().transform;
   }
 
-#pragma mark - DebugStringConvertible
-
-#if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const override {
-    auto list = SharedDebugStringConvertibleList{};
-
-    auto basePropsList = ShadowNode::getDebugProps();
-    std::move(
-        basePropsList.begin(), basePropsList.end(), std::back_inserter(list));
-
-    list.push_back(std::make_shared<DebugStringConvertibleItem>(
-        "layout", "", LayoutableShadowNode::getDebugProps()));
-
-    return list;
-  }
-#endif
-
  private:
   void initialize() noexcept {
     auto &props = BaseShadowNode::getConcreteProps();
@@ -120,5 +102,4 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

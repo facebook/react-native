@@ -37,8 +37,7 @@
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
     jni::alias_ref<jclass>) {
@@ -46,15 +45,17 @@ jni::local_ref<Binding::jhybriddata> Binding::initHybrid(
 }
 
 // Thread-safe getter
-const std::shared_ptr<Scheduler> &Binding::getScheduler() {
+std::shared_ptr<Scheduler> Binding::getScheduler() {
   std::shared_lock lock(installMutex_);
+  // Need to return a copy of the shared_ptr to make sure this is safe if called
+  // concurrently with uninstallFabricUIManager
   return scheduler_;
 }
 
 jni::local_ref<ReadableNativeMap::jhybridobject>
 Binding::getInspectorDataForInstance(
     jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
     return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
@@ -96,6 +97,15 @@ void Binding::driveCxxAnimations() {
   scheduler_->animationTick();
 }
 
+void Binding::reportMount(SurfaceId surfaceId) {
+  const auto &scheduler = getScheduler();
+  if (!scheduler) {
+    LOG(ERROR) << "Binding::reportMount: scheduler disappeared";
+    return;
+  }
+  scheduler->reportMount(surfaceId);
+}
+
 #pragma mark - Surface management
 
 void Binding::startSurface(
@@ -104,7 +114,7 @@ void Binding::startSurface(
     NativeMap *initialProps) {
   SystraceSection s("FabricUIManagerBinding::startSurface");
 
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurface: scheduler disappeared";
     return;
@@ -132,8 +142,7 @@ void Binding::startSurface(
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::startSurface");
+  auto mountingManager = getMountingManager("startSurface");
   if (!mountingManager) {
     return;
   }
@@ -160,7 +169,7 @@ void Binding::startSurfaceWithConstraints(
         << this << ", surfaceId: " << surfaceId << ").";
   }
 
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::startSurfaceWithConstraints: scheduler disappeared";
     return;
@@ -203,8 +212,7 @@ void Binding::startSurfaceWithConstraints(
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
 
-  auto &mountingManager = verifyMountingManager(
-      "FabricUIManagerBinding::startSurfaceWithConstraints");
+  auto mountingManager = getMountingManager("startSurfaceWithConstraints");
   if (!mountingManager) {
     return;
   }
@@ -214,7 +222,7 @@ void Binding::startSurfaceWithConstraints(
 void Binding::renderTemplateToSurface(jint surfaceId, jstring uiTemplate) {
   SystraceSection s("FabricUIManagerBinding::renderTemplateToSurface");
 
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::renderTemplateToSurface: scheduler disappeared";
     return;
@@ -234,7 +242,7 @@ void Binding::stopSurface(jint surfaceId) {
                  << ", surfaceId: " << surfaceId << ").";
   }
 
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::stopSurface: scheduler disappeared";
     return;
@@ -256,8 +264,7 @@ void Binding::stopSurface(jint surfaceId) {
     scheduler->unregisterSurface(surfaceHandler);
   }
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::stopSurface");
+  auto mountingManager = getMountingManager("stopSurface");
   if (!mountingManager) {
     return;
   }
@@ -273,8 +280,7 @@ void Binding::registerSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
   }
   scheduler->registerSurface(surfaceHandler);
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::registerSurface");
+  auto mountingManager = getMountingManager("registerSurface");
   if (!mountingManager) {
     return;
   }
@@ -290,8 +296,7 @@ void Binding::unregisterSurface(SurfaceHandlerBinding *surfaceHandlerBinding) {
   }
   scheduler->unregisterSurface(surfaceHandler);
 
-  auto &mountingManager =
-      verifyMountingManager("FabricUIManagerBinding::unregisterSurface");
+  auto mountingManager = getMountingManager("unregisterSurface");
   if (!mountingManager) {
     return;
   }
@@ -310,7 +315,7 @@ void Binding::setConstraints(
     jboolean doLeftAndRightSwapInRTL) {
   SystraceSection s("FabricUIManagerBinding::setConstraints");
 
-  auto &scheduler = getScheduler();
+  auto scheduler = getScheduler();
   if (!scheduler) {
     LOG(ERROR) << "Binding::setConstraints: scheduler disappeared";
     return;
@@ -422,8 +427,6 @@ void Binding::installFabricUIManager(
       "CalculateTransformedFramesEnabled",
       getFeatureFlagValue("calculateTransformedFramesEnabled"));
 
-  CoreFeatures::cacheLastTextMeasurement =
-      getFeatureFlagValue("enableTextMeasureCachePerShadowNode");
   CoreFeatures::enablePropIteratorSetter =
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
@@ -437,7 +440,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
 
-  // TODO: (T130208323) runtimeExecutor should execute lambdas after
+  // TODO: (T132338609) runtimeExecutor should execute lambdas after
   // main bundle eval, and bindingsInstallExecutor should execute before.
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
@@ -470,23 +473,30 @@ void Binding::uninstallFabricUIManager() {
   reactNativeConfig_ = nullptr;
 }
 
-const std::shared_ptr<FabricMountingManager> &Binding::verifyMountingManager(
+std::shared_ptr<FabricMountingManager> Binding::getMountingManager(
     const char *locationHint) {
   std::shared_lock lock(installMutex_);
   if (!mountingManager_) {
-    LOG(ERROR) << locationHint << " mounting manager disappeared.";
+    LOG(ERROR) << "FabricMountingManager::" << locationHint
+               << " mounting manager disappeared";
   }
+  // Need to return a copy of the shared_ptr to make sure this is safe if called
+  // concurrently with uninstallFabricUIManager
   return mountingManager_;
 }
 
 void Binding::schedulerDidFinishTransaction(
     const MountingCoordinator::Shared &mountingCoordinator) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidFinishTransaction");
+  auto mountingManager = getMountingManager("schedulerDidFinishTransaction");
   if (!mountingManager) {
     return;
   }
-  mountingManager->executeMount(mountingCoordinator);
+
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+  mountingManager->executeMount(*mountingTransaction);
 }
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
@@ -496,27 +506,18 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     return;
   }
 
-  preallocateView(surfaceId, shadowNode);
-}
-
-void Binding::preallocateView(
-    SurfaceId surfaceId,
-    ShadowNode const &shadowNode) {
-  auto name = std::string(shadowNode.getComponentName());
-  auto shadowView = ShadowView(shadowNode);
-  auto &mountingManager = verifyMountingManager("Binding::preallocateView");
+  auto mountingManager = getMountingManager("preallocateView");
   if (!mountingManager) {
     return;
   }
-  mountingManager->preallocateShadowView(surfaceId, shadowView);
+  mountingManager->preallocateShadowView(surfaceId, ShadowView(shadowNode));
 }
 
 void Binding::schedulerDidDispatchCommand(
     const ShadowView &shadowView,
     std::string const &commandName,
     folly::dynamic const &args) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidDispatchCommand");
+  auto mountingManager = getMountingManager("schedulerDidDispatchCommand");
   if (!mountingManager) {
     return;
   }
@@ -526,8 +527,8 @@ void Binding::schedulerDidDispatchCommand(
 void Binding::schedulerDidSendAccessibilityEvent(
     const ShadowView &shadowView,
     std::string const &eventType) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidSendAccessibilityEvent");
+  auto mountingManager =
+      getMountingManager("schedulerDidSendAccessibilityEvent");
   if (!mountingManager) {
     return;
   }
@@ -538,8 +539,7 @@ void Binding::schedulerDidSetIsJSResponder(
     ShadowView const &shadowView,
     bool isJSResponder,
     bool blockNativeResponder) {
-  auto &mountingManager =
-      verifyMountingManager("Binding::schedulerDidSetIsJSResponder");
+  auto mountingManager = getMountingManager("schedulerDidSetIsJSResponder");
   if (!mountingManager) {
     return;
   }
@@ -548,7 +548,7 @@ void Binding::schedulerDidSetIsJSResponder(
 }
 
 void Binding::onAnimationStarted() {
-  auto &mountingManager = verifyMountingManager("Binding::onAnimationStarted");
+  auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {
     return;
   }
@@ -556,7 +556,7 @@ void Binding::onAnimationStarted() {
 }
 
 void Binding::onAllAnimationsComplete() {
-  auto &mountingManager = verifyMountingManager("Binding::onAnimationComplete");
+  auto mountingManager = getMountingManager("onAnimationComplete");
   if (!mountingManager) {
     return;
   }
@@ -579,6 +579,7 @@ void Binding::registerNatives() {
       makeNativeMethod("setConstraints", Binding::setConstraints),
       makeNativeMethod("setPixelDensity", Binding::setPixelDensity),
       makeNativeMethod("driveCxxAnimations", Binding::driveCxxAnimations),
+      makeNativeMethod("reportMount", Binding::reportMount),
       makeNativeMethod(
           "uninstallFabricUIManager", Binding::uninstallFabricUIManager),
       makeNativeMethod("registerSurface", Binding::registerSurface),
@@ -586,5 +587,4 @@ void Binding::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

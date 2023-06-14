@@ -108,10 +108,13 @@ void SurfaceHandler::stop() const noexcept {
   // mounted views, so we need to commit an empty tree to trigger all
   // side-effects (including destroying and removing mounted views).
   react_native_assert(shadowTree && "`shadowTree` must not be null.");
-  shadowTree->commitEmptyTree();
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
+  auto parameters = Parameters{};
   {
     std::unique_lock lock(parametersMutex_);
     if (parameters_.displayMode == displayMode) {
@@ -119,6 +122,7 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     parameters_.displayMode = displayMode;
+    parameters = parameters_;
   }
 
   {
@@ -129,10 +133,10 @@ void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
     }
 
     link_.uiManager->setSurfaceProps(
-        parameters_.surfaceId,
-        parameters_.moduleName,
-        parameters_.props,
-        parameters_.displayMode);
+        parameters.surfaceId,
+        parameters.moduleName,
+        parameters.props,
+        parameters.displayMode);
 
     applyDisplayMode(displayMode);
   }
@@ -162,8 +166,25 @@ std::string SurfaceHandler::getModuleName() const noexcept {
 
 void SurfaceHandler::setProps(folly::dynamic const &props) const noexcept {
   SystraceSection s("SurfaceHandler::setProps");
-  std::unique_lock lock(parametersMutex_);
-  parameters_.props = props;
+  auto parameters = Parameters{};
+  {
+    std::unique_lock lock(parametersMutex_);
+
+    parameters_.props = props;
+    parameters = parameters_;
+  }
+
+  {
+    std::shared_lock lock(linkMutex_);
+
+    if (link_.status == Status::Running) {
+      link_.uiManager->setSurfaceProps(
+          parameters.surfaceId,
+          parameters.moduleName,
+          parameters.props,
+          parameters.displayMode);
+    }
+  }
 }
 
 folly::dynamic SurfaceHandler::getProps() const noexcept {
@@ -306,11 +327,9 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      link_.status == Status::Unregistered &&
-  //      "`SurfaceHandler` must be unregistered (or moved-from) before
-  //      deallocation.");
+  react_native_assert(
+      link_.status == Status::Unregistered &&
+      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
 }
 
 } // namespace facebook::react

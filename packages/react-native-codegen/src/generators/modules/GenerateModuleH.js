@@ -338,12 +338,12 @@ enum ${enumName} { ${values} };
 
 template <>
 struct Bridging<${enumName}> {
-  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}) {
     ${fromValueConversion}
     ${fromCases}
   }
 
-  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value) {
     ${toCases}
   }
 };`;

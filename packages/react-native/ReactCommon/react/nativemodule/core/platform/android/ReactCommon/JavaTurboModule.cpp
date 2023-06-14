@@ -10,6 +10,7 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
@@ -24,15 +25,14 @@
 
 #include "JavaTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TMPL = TurboModulePerfLogger;
 
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -43,15 +43,16 @@ JavaTurboModule::~JavaTurboModule() {
     return;
   }
 
-  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
-    /**
-     * Reset the global NativeModule ref on the NativeModules thread. Why:
-     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
-     *     global ref in ~JavaTurboModule(), we might access the JVM from a
-     *     non-JVM thread, which will crash the app.
-     */
-    instance.reset();
-  });
+  nativeMethodCallInvoker_->invokeAsync(
+      "~" + name_, [instance = std::move(instance_)]() mutable {
+        /**
+         * Reset the global NativeModule ref on the NativeModules thread. Why:
+         *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset
+         * the global ref in ~JavaTurboModule(), we might access the JVM from a
+         *     non-JVM thread, which will crash the app.
+         */
+        instance.reset();
+      });
 }
 
 namespace {
@@ -83,8 +84,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          throw std::runtime_error(
-              "Callback arg cannot be called more than once");
+          LOG(FATAL) << "callback arg cannot be called more than once";
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -401,6 +401,53 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
 
+jsi::Value createJSRuntimeError(
+    jsi::Runtime &runtime,
+    const std::string &message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+/**
+ * Creates JSError with current JS runtime stack and Throwable stack trace.
+ */
+jsi::JSError convertThrowableToJSError(
+    jsi::Runtime &runtime,
+    jni::local_ref<jni::JThrowable> throwable) {
+  auto stackTrace = throwable->getStackTrace();
+
+  jsi::Array stackElements(runtime, stackTrace->size());
+  for (int i = 0; i < stackTrace->size(); ++i) {
+    auto frame = stackTrace->getElement(i);
+
+    jsi::Object frameObject(runtime);
+    frameObject.setProperty(runtime, "className", frame->getClassName());
+    frameObject.setProperty(runtime, "fileName", frame->getFileName());
+    frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+    frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+    stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+  }
+
+  jsi::Object cause(runtime);
+  auto getName = throwable->getClass()
+                     ->getClass()
+                     ->getMethod<jni::local_ref<jni::JString>()>("getName");
+  auto getMessage =
+      throwable->getClass()->getMethod<jni::local_ref<jni::JString>()>(
+          "getMessage");
+  auto message = getMessage(throwable)->toStdString();
+  cause.setProperty(
+      runtime, "name", getName(throwable->getClass())->toStdString());
+  cause.setProperty(runtime, "message", message);
+  cause.setProperty(runtime, "stackElements", std::move(stackElements));
+
+  jsi::Value error =
+      createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
+}
+
 } // namespace
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
@@ -468,7 +515,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       } else {
         TMPL::asyncMethodCallFail(moduleName, methodName);
       }
-      throw;
+      auto exception = std::current_exception();
+      auto throwable = jni::getJavaExceptionForCppException(exception);
+      throw convertThrowableToJSError(runtime, throwable);
     }
   };
 
@@ -694,7 +743,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-      nativeInvoker_->invokeAsync(
+      nativeMethodCallInvoker_->invokeAsync(
+          methodName,
           [jargs,
            globalRefs,
            methodID,
@@ -793,7 +843,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
             TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-            nativeInvoker_->invokeAsync(
+            nativeMethodCallInvoker_->invokeAsync(
+                methodName,
                 [jargs,
                  globalRefs,
                  methodID,
@@ -850,5 +901,4 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

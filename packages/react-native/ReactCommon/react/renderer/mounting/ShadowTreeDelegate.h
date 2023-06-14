@@ -9,8 +9,7 @@
 
 #include <react/renderer/mounting/MountingCoordinator.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowTree;
 
@@ -40,5 +39,4 @@ class ShadowTreeDelegate {
   virtual ~ShadowTreeDelegate() noexcept = default;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

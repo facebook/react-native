@@ -1,18 +1,22 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
-#include <JsErrorHandler/JsErrorHandler.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <cxxreact/MessageQueueThread.h>
+#include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/bridgeless/BufferedRuntimeExecutor.h>
 #include <react/bridgeless/TimerManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct CallableModule {
   explicit CallableModule(jsi::Function factory)
@@ -71,5 +75,4 @@ class ReactInstance final {
   std::shared_ptr<bool> hasFatalJsError_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -1,9 +1,13 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JavaTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JavaTimerRegistry::JavaTimerRegistry(
     jni::global_ref<JJavaTimerManager::javaobject> javaTimerManager)
@@ -21,5 +25,4 @@ void JavaTimerRegistry::deleteTimer(uint32_t timerID) {
   javaTimerManager_->deleteTimer(timerID);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

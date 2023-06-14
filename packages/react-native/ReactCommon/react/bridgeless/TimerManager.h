@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -9,8 +14,7 @@
 
 #include "PlatformTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A HostObject subclass representing the result of a setTimeout call.
@@ -108,5 +112,4 @@ class TimerManager {
   std::vector<uint32_t> reactNativeMicrotasksQueue_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -8,15 +13,14 @@
 #include <react/bridgeless/TimerManager.h>
 #include <react/jni/WritableNativeArray.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
  public:
   JJSTimerExecutor() = default;
 
   constexpr static auto kJavaDescriptor =
-      "Lcom/facebook/venice/JSTimerExecutor;";
+      "Lcom/facebook/react/bridgeless/JSTimerExecutor;";
 
   static void registerNatives();
 
@@ -30,5 +34,4 @@ class JJSTimerExecutor : public jni::HybridClass<JJSTimerExecutor> {
   std::weak_ptr<TimerManager> timerManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

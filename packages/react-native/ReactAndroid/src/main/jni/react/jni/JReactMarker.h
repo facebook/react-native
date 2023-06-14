@@ -12,8 +12,7 @@
 
 #include <cxxreact/ReactMarker.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
  public:
@@ -41,5 +40,4 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
   static double getAppStartTime();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

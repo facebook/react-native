@@ -1,12 +1,16 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "TimerManager.h"
 
 #include <cxxreact/SystraceSection.h>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TimerManager::TimerManager(
     std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept
@@ -407,5 +411,4 @@ void TimerManager::attachGlobals(jsi::Runtime &runtime) {
           }));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

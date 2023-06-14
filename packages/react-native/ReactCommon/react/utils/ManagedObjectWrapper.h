@@ -24,8 +24,7 @@
 @property (nonatomic, weak) id object;
 @end
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace detail {
 
@@ -75,8 +74,7 @@ inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object) noexcep
   return weakWrapper.object;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif
 #endif

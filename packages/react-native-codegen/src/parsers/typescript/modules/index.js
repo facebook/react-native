@@ -28,14 +28,12 @@ import type {
 const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
-const {resolveTypeAnnotation} = require('../utils');
-
 const {parseObjectProperty} = require('../../parsers-commons');
 
 const {
   emitArrayType,
   emitFunction,
-  emitGenericObject,
+  emitDictionary,
   emitPromise,
   emitRootTag,
   emitUnion,
@@ -190,7 +188,9 @@ function translateTypeAnnotation(
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(typeScriptTypeAnnotation, types);
+    parser.getResolvedTypeAnnotation(typeScriptTypeAnnotation, types, parser);
+  const resolveTypeaAnnotationFn = parser.getResolveTypeAnnotationFN();
+  resolveTypeaAnnotationFn(typeScriptTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'TSArrayType': {
@@ -270,7 +270,7 @@ function translateTypeAnnotation(
       return translateObjectTypeAnnotation(
         hasteModuleName,
         nullable,
-        flattenProperties([typeAnnotation], types),
+        flattenProperties([typeAnnotation], types, parser),
         typeResolutionStatus,
         baseTypes,
         types,
@@ -288,6 +288,7 @@ function translateTypeAnnotation(
         flattenProperties(
           flattenIntersectionType(typeAnnotation, types),
           types,
+          parser,
         ),
         typeResolutionStatus,
         [],
@@ -309,7 +310,7 @@ function translateTypeAnnotation(
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
           const propertyType = indexSignatures[0].typeAnnotation;
-          translateTypeAnnotation(
+          const valueType = translateTypeAnnotation(
             hasteModuleName,
             propertyType,
             types,
@@ -320,7 +321,7 @@ function translateTypeAnnotation(
             parser,
           );
           // no need to do further checking
-          return emitGenericObject(nullable);
+          return emitDictionary(nullable, valueType);
         }
       }
 

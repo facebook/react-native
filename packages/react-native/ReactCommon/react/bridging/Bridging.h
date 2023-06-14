@@ -11,6 +11,7 @@
 #include <react/bridging/Array.h>
 #include <react/bridging/Bool.h>
 #include <react/bridging/Class.h>
+#include <react/bridging/Dynamic.h>
 #include <react/bridging/Error.h>
 #include <react/bridging/Function.h>
 #include <react/bridging/Number.h>

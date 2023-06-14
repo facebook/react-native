@@ -22,8 +22,7 @@
 #include "EventEmitterWrapper.h"
 #include "JFabricUIManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentFactory;
 class EventBeatManager;
@@ -43,7 +42,7 @@ class Binding : public jni::HybridClass<Binding>,
 
   static void registerNatives();
 
-  const std::shared_ptr<Scheduler> &getScheduler();
+  std::shared_ptr<Scheduler> getScheduler();
 
  private:
   void setConstraints(
@@ -117,11 +116,10 @@ class Binding : public jni::HybridClass<Binding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
-  void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
-
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
+  void reportMount(SurfaceId surfaceId);
 
   void uninstallFabricUIManager();
 
@@ -130,7 +128,7 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  const std::shared_ptr<FabricMountingManager> &verifyMountingManager(
+  std::shared_ptr<FabricMountingManager> getMountingManager(
       const char *locationHint);
 
   // LayoutAnimations
@@ -151,5 +149,4 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableFabricLogs_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

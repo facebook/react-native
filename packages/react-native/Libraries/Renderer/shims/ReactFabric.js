@@ -6,9 +6,8 @@
  *
  * @noformat
  * @flow
- * @generated SignedSource<<ef2742380b2b2c69cea8618289eea086>>
- *
- * This file was sync'd from the facebook/react repository.
+ * @nolint
+ * @generated SignedSource<<c1cc197c110e3a49a5e8f6bd5d32b23f>>
  */
 
 'use strict';
@@ -25,9 +24,9 @@ if (__DEV__) {
   ReactFabric = require('../implementations/ReactFabric-prod');
 }
 
-if (global.RN$Bridgeless) {
-  global.RN$stopSurface = ReactFabric.stopSurface;
-} else {
+global.RN$stopSurface = ReactFabric.stopSurface;
+
+if (global.RN$Bridgeless !== true) {
   BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
 }
 

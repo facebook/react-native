@@ -7,8 +7,7 @@
 
 #import "RCTNativeSampleTurboModuleSpec.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc(
     facebook::jsi::Runtime &rt,
@@ -227,5 +226,4 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboMo
   methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

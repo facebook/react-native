@@ -1,12 +1,16 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JJSTimerExecutor.h"
 
 #include <fb/fbjni.h>
 #include <jni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void JJSTimerExecutor::setTimerManager(
     std::weak_ptr<TimerManager> timerManager) {
@@ -28,5 +32,4 @@ void JJSTimerExecutor::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

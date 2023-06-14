@@ -9,8 +9,7 @@
 
 #include <jsireact/JSIExecutor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Creates a lambda used to bind a JSIRuntime in the context of
@@ -19,5 +18,4 @@ namespace react {
 JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

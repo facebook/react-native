@@ -86,6 +86,8 @@ public class BindingImpl implements Binding {
 
   public native void driveCxxAnimations();
 
+  public native void reportMount(int surfaceId);
+
   public native ReadableNativeMap getInspectorDataForInstance(
       EventEmitterWrapper eventEmitterWrapper);
 

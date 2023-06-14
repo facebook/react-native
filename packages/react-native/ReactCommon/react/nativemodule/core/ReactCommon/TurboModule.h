@@ -14,8 +14,7 @@
 
 #include <ReactCommon/CallInvoker.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * For now, support the same set of return types as existing impl.
@@ -139,5 +138,4 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
 using TurboModuleProviderFunctionType =
     std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

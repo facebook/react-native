@@ -117,6 +117,7 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private @Nullable String mPlaceholder = null;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -497,6 +498,13 @@ public class ReactEditText extends AppCompatEditText
     setKeyListener(mKeyListener);
   }
 
+  public void setPlaceholder(@Nullable String placeholder) {
+    if (!Objects.equals(placeholder, mPlaceholder)) {
+      mPlaceholder = placeholder;
+      setHint(placeholder);
+    }
+  }
+
   public void setFontFamily(String fontFamily) {
     mFontFamily = fontFamily;
     mTypefaceDirty = true;
@@ -706,12 +714,10 @@ public class ReactEditText extends AppCompatEditText
     stripSpansOfKind(
         sb, ReactUnderlineSpan.class, (span) -> (getPaintFlags() & Paint.UNDERLINE_TEXT_FLAG) != 0);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      stripSpansOfKind(
-          sb,
-          CustomLetterSpacingSpan.class,
-          (span) -> span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing());
-    }
+    stripSpansOfKind(
+        sb,
+        CustomLetterSpacingSpan.class,
+        (span) -> span.getSpacing() == mTextAttributes.getEffectiveLetterSpacing());
 
     stripSpansOfKind(
         sb,
@@ -769,15 +775,10 @@ public class ReactEditText extends AppCompatEditText
       workingText.setSpan(new ReactUnderlineSpan(), 0, workingText.length(), spanFlags);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)) {
-        workingText.setSpan(
-            new CustomLetterSpacingSpan(effectiveLetterSpacing),
-            0,
-            workingText.length(),
-            spanFlags);
-      }
+    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+    if (!Float.isNaN(effectiveLetterSpacing)) {
+      workingText.setSpan(
+          new CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length(), spanFlags);
     }
 
     if (mFontStyle != UNSET
@@ -1087,9 +1088,7 @@ public class ReactEditText extends AppCompatEditText
 
     float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
     if (!Float.isNaN(effectiveLetterSpacing)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        setLetterSpacing(effectiveLetterSpacing);
-      }
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 

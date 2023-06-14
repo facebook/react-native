@@ -13,8 +13,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class AccessibilityProps {
  public:
@@ -58,6 +57,7 @@ class AccessibilityProps {
   bool onAccessibilityAction{};
   ImportantForAccessibility importantForAccessibility{
       ImportantForAccessibility::Auto};
+  Role role{Role::None};
   std::string testId{""};
 
 #pragma mark - DebugStringConvertible
@@ -67,5 +67,4 @@ class AccessibilityProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

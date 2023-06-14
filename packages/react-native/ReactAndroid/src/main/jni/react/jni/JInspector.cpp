@@ -11,8 +11,7 @@
 
 #ifdef WITH_INSPECTOR
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -96,7 +95,9 @@ jni::local_ref<JLocalConnection::javaobject> JInspector::connect(
     jni::alias_ref<JRemoteConnection::javaobject> remote) {
   auto localConnection = inspector_->connect(
       pageId, std::make_unique<RemoteConnection>(std::move(remote)));
-  return JLocalConnection::newObjectCxxArgs(std::move(localConnection));
+  return localConnection
+      ? JLocalConnection::newObjectCxxArgs(std::move(localConnection))
+      : nullptr;
 }
 
 void JInspector::registerNatives() {
@@ -108,7 +109,6 @@ void JInspector::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

@@ -30,8 +30,7 @@
 #include <mutex>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Instance::~Instance() {
   if (nativeToJsBridge_) {
@@ -234,9 +233,11 @@ RuntimeExecutor Instance::getRuntimeExecutor() {
   return runtimeExecutor;
 }
 
-std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
-    std::shared_ptr<CallInvoker> nativeInvoker) {
-  return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);
+std::shared_ptr<NativeMethodCallInvoker>
+Instance::getDecoratedNativeMethodCallInvoker(
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) {
+  return nativeToJsBridge_->getDecoratedNativeMethodCallInvoker(
+      nativeMethodCallInvoker);
 }
 
 void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
@@ -292,5 +293,4 @@ void Instance::JSCallInvoker::scheduleAsync(std::function<void()> &&work) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

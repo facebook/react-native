@@ -19,8 +19,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
   using CompactValue = facebook::yoga::detail::CompactValue;
@@ -133,7 +132,9 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void adoptYogaChild(size_t index);
 
-  static YGConfig &initializeYogaConfig(YGConfig &config);
+  static YGConfig &initializeYogaConfig(
+      YGConfig &config,
+      YGConfigRef previousConfig = nullptr);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,
       YGNode *parentYogaNode,
@@ -202,5 +203,4 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   ListOfShared yogaLayoutableChildren_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

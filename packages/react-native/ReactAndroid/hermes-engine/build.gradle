@@ -125,8 +125,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion = "31.0.0"
+    compileSdkVersion 33
+    buildToolsVersion = "33.0.0"
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -139,7 +139,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdk = 21
 
         externalNativeBuild {
             cmake {
@@ -154,6 +154,9 @@ android {
                 // We intentionally build Hermes with Intl support only. This is to simplify
                 // the build setup and to avoid overcomplicating the build-type matrix.
                 arguments "-DHERMES_ENABLE_INTL=True"
+                // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                // specific compilation flags. This can be removed once we moved to NDK 25/26
+                arguments "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
                 targets "libhermes"
             }
         }
@@ -178,6 +181,9 @@ android {
                     // This has the (unlucky) side effect of letting AGP call the build
                     // tasks `configureCMakeRelease` while is actually building the debug flavor.
                     arguments "-DCMAKE_BUILD_TYPE=Release"
+                    // Adding -O3 to handle the issue here: https://github.com/android/ndk/issues/1740#issuecomment-1198438260
+                    // The old NDK toolchain is not passing -O3 correctly for release CMake builds. This is fixed in NDK 25 and can be removed once we're there.
+                    cppFlags "-O3"
                 }
             }
         }
@@ -188,6 +194,15 @@ android {
                 }
             }
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlin {
+        jvmToolchain(11)
     }
 
     sourceSets {

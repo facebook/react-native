@@ -16,8 +16,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Color.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Use this only when a prop update has definitely been sent from JS;
@@ -142,5 +141,4 @@ T convertRawProp(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

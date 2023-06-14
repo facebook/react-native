@@ -437,7 +437,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  if (!_isUserTriggeredScrolling) {
+  if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
     [self _updateStateWithContentOffset];
   }
 
@@ -492,7 +492,14 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   std::static_pointer_cast<ScrollViewEventEmitter const>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+
   [self _updateStateWithContentOffset];
+
+  if (!decelerate) {
+    // ScrollView will not decelerate and `scrollViewDidEndDecelerating` will not be called.
+    // `_isUserTriggeredScrolling` must be set to NO here.
+    _isUserTriggeredScrolling = NO;
+  }
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView

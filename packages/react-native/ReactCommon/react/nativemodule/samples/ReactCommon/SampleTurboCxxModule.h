@@ -11,8 +11,7 @@
 
 #include "NativeSampleTurboCxxModuleSpecJSI.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A sample implementation of the C++ spec. In practice, this class can just
@@ -41,5 +40,4 @@ class SampleTurboCxxModule : public NativeSampleTurboCxxModuleSpecJSI {
   jsi::Object getConstants(jsi::Runtime &rt) override;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

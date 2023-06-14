@@ -40,15 +40,21 @@ internal object NdkConfiguratorUtils {
         // Parameters should be provided in an additive manner (do not override what
         // the user provided, but allow for sensible defaults).
         val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
-        if ("-DPROJECT_BUILD_DIR" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
         }
-        if ("-DREACT_ANDROID_DIR" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
         }
-        if ("-DANDROID_STL" !in cmakeArgs) {
+        if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
+        }
+        // Due to the new NDK toolchain file, the C++ flags gets overridden between compilation
+        // units. This is causing some libraries to don't be compiled with -DANDROID and other
+        // crucial flags. This can be revisited once we bump to NDK 25/26
+        if (cmakeArgs.none { it.startsWith("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE") }) {
+          cmakeArgs.add("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
         }
 
         val architectures = project.getReactNativeArchitectures()

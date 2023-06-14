@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "JReactInstance.h"
 
@@ -6,7 +11,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <BindingsInstaller.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/RecoverableError.h>
 #include <fb/fbjni.h>
@@ -14,16 +18,15 @@
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <jsireact/JSIExecutor.h>
+#include <react/bridgeless/BridgelessJSCallInvoker.h>
+#include <react/bridgeless/BridgelessNativeMethodCallInvoker.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JSLogging.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
-#include "BridgelessJSCallInvoker.h"
-#include "BridgelessNativeCallInvoker.h"
 #include "JavaTimerRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JReactInstance::JReactInstance(
     jni::alias_ref<JJSEngineInstance::javaobject> jsEngineInstance,
@@ -32,6 +35,7 @@ JReactInstance::JReactInstance(
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+    jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling) noexcept {
   // TODO(janzer): Lazily create runtime
   auto sharedJSMessageQueueThread =
@@ -45,10 +49,6 @@ JReactInstance::JReactInstance(
   auto timerManager = std::make_shared<TimerManager>(std::move(timerRegistry));
   jsTimerExecutor->cthis()->setTimerManager(timerManager);
 
-  // Create the instance
-  std::unique_ptr<BindingsInstaller> bindingsInstaller =
-      std::make_unique<BindingsInstaller>();
-
   jReactExceptionManager_ = jni::make_global(jReactExceptionManager);
   auto jsErrorHandlingFunc = [this](MapBuffer errorMap) noexcept {
     if (jReactExceptionManager_ != nullptr) {
@@ -58,26 +58,31 @@ JReactInstance::JReactInstance(
     }
   };
 
+  jBindingsInstaller_ = jni::make_global(jBindingsInstaller);
+
   instance_ = std::make_unique<ReactInstance>(
       jsEngineInstance->cthis()->createJSRuntime(),
       sharedJSMessageQueueThread,
       timerManager,
       std::move(jsErrorHandlingFunc));
-  auto appBindingInstaller = bindingsInstaller->getBindingsInstallFunc();
 
   auto bufferedRuntimeExecutor = instance_->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   ReactInstance::JSRuntimeFlags options = {.isProfiling = isProfiling};
-  instance_->initializeRuntime(
-      options,
-      [appBindingInstaller, instance = instance_.get()](jsi::Runtime &runtime) {
-        react::Logger androidLogger =
-            static_cast<void (*)(const std::string &, unsigned int)>(
-                &reactAndroidLoggingHook);
-        react::bindNativeLogger(runtime, androidLogger);
+  instance_->initializeRuntime(options, [this](jsi::Runtime &runtime) {
+    react::Logger androidLogger =
+        static_cast<void (*)(const std::string &, unsigned int)>(
+            &reactAndroidLoggingHook);
+    react::bindNativeLogger(runtime, androidLogger);
+    if (jBindingsInstaller_ != nullptr) {
+      auto appBindingInstaller =
+          jBindingsInstaller_->cthis()->getBindingsInstallFunc();
+      if (appBindingInstaller != nullptr) {
         appBindingInstaller(runtime);
-      });
+      }
+    }
+  });
 
   auto unbufferedRuntimeExecutor = instance_->getUnbufferedRuntimeExecutor();
   // Set up the JS and native modules call invokers (for TurboModules)
@@ -85,10 +90,12 @@ JReactInstance::JReactInstance(
       std::make_unique<BridgelessJSCallInvoker>(unbufferedRuntimeExecutor);
   jsCallInvokerHolder_ = jni::make_global(
       CallInvokerHolder::newObjectCxxArgs(std::move(jsInvoker)));
-  auto nativeInvoker = std::make_unique<BridgelessNativeCallInvoker>(
-      sharedNativeMessageQueueThread);
-  nativeCallInvokerHolder_ = jni::make_global(
-      CallInvokerHolder::newObjectCxxArgs(std::move(nativeInvoker)));
+  auto nativeMethodCallInvoker =
+      std::make_unique<BridgelessNativeMethodCallInvoker>(
+          sharedNativeMessageQueueThread);
+  nativeMethodCallInvokerHolder_ =
+      jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+          std::move(nativeMethodCallInvoker)));
 
   // Storing this here to make sure the Java reference doesn't get destroyed
   unbufferedRuntimeExecutor_ = jni::make_global(
@@ -107,6 +114,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
     jni::alias_ref<JJavaTimerManager::javaobject> javaTimerManager,
     jni::alias_ref<JJSTimerExecutor::javaobject> jsTimerExecutor,
     jni::alias_ref<JReactExceptionManager::javaobject> jReactExceptionManager,
+    jni::alias_ref<JBindingsInstaller::javaobject> jBindingsInstaller,
     bool isProfiling) {
   return makeCxxInstance(
       jsEngineInstance,
@@ -115,6 +123,7 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
       javaTimerManager,
       jsTimerExecutor,
       jReactExceptionManager,
+      jBindingsInstaller,
       isProfiling);
 }
 
@@ -149,9 +158,9 @@ JReactInstance::getJSCallInvokerHolder() {
   return jsCallInvokerHolder_;
 }
 
-jni::alias_ref<CallInvokerHolder::javaobject>
-JReactInstance::getNativeCallInvokerHolder() {
-  return nativeCallInvokerHolder_;
+jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+JReactInstance::getNativeMethodCallInvokerHolder() {
+  return nativeMethodCallInvokerHolder_;
 }
 
 jni::global_ref<JJSTimerExecutor::javaobject>
@@ -204,8 +213,8 @@ void JReactInstance::registerNatives() {
       makeNativeMethod(
           "getJSCallInvokerHolder", JReactInstance::getJSCallInvokerHolder),
       makeNativeMethod(
-          "getNativeCallInvokerHolder",
-          JReactInstance::getNativeCallInvokerHolder),
+          "getNativeMethodCallInvokerHolder",
+          JReactInstance::getNativeMethodCallInvokerHolder),
       makeNativeMethod(
           "callFunctionOnModule", JReactInstance::callFunctionOnModule),
       makeNativeMethod(
@@ -224,5 +233,4 @@ void JReactInstance::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

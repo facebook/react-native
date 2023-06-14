@@ -15,6 +15,7 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -30,8 +31,7 @@
 
 #include <glog/logging.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline std::string toString(const DynamicTypeRamp &dynamicTypeRamp) {
   switch (dynamicTypeRamp) {
@@ -642,150 +642,6 @@ inline std::string toString(const TextDecorationStyle &textDecorationStyle) {
   return "solid";
 }
 
-inline std::string toString(const AccessibilityRole &accessibilityRole) {
-  switch (accessibilityRole) {
-    case AccessibilityRole::None:
-      return "none";
-    case AccessibilityRole::Button:
-      return "button";
-    case AccessibilityRole::Link:
-      return "link";
-    case AccessibilityRole::Search:
-      return "search";
-    case AccessibilityRole::Image:
-      return "image";
-    case AccessibilityRole::Imagebutton:
-      return "imagebutton";
-    case AccessibilityRole::Keyboardkey:
-      return "keyboardkey";
-    case AccessibilityRole::Text:
-      return "text";
-    case AccessibilityRole::Adjustable:
-      return "adjustable";
-    case AccessibilityRole::Summary:
-      return "summary";
-    case AccessibilityRole::Header:
-      return "header";
-    case AccessibilityRole::Alert:
-      return "alert";
-    case AccessibilityRole::Checkbox:
-      return "checkbox";
-    case AccessibilityRole::Combobox:
-      return "combobox";
-    case AccessibilityRole::Menu:
-      return "menu";
-    case AccessibilityRole::Menubar:
-      return "menubar";
-    case AccessibilityRole::Menuitem:
-      return "menuitem";
-    case AccessibilityRole::Progressbar:
-      return "progressbar";
-    case AccessibilityRole::Radio:
-      return "radio";
-    case AccessibilityRole::Radiogroup:
-      return "radiogroup";
-    case AccessibilityRole::Scrollbar:
-      return "scrollbar";
-    case AccessibilityRole::Spinbutton:
-      return "spinbutton";
-    case AccessibilityRole::Switch:
-      return "switch";
-    case AccessibilityRole::Tab:
-      return "tab";
-    case AccessibilityRole::TabBar:
-      return "tabbar";
-    case AccessibilityRole::Tablist:
-      return "tablist";
-    case AccessibilityRole::Timer:
-      return "timer";
-    case AccessibilityRole::Toolbar:
-      return "toolbar";
-  }
-
-  LOG(ERROR) << "Unsupported AccessibilityRole value";
-  react_native_expect(false);
-  // sane default for prod
-  return "none";
-}
-
-inline void fromRawValue(
-    const PropsParserContext &context,
-    const RawValue &value,
-    AccessibilityRole &result) {
-  react_native_expect(value.hasType<std::string>());
-  if (value.hasType<std::string>()) {
-    auto string = (std::string)value;
-    if (string == "none") {
-      result = AccessibilityRole::None;
-    } else if (string == "button" || string == "togglebutton") {
-      result = AccessibilityRole::Button;
-    } else if (string == "link") {
-      result = AccessibilityRole::Link;
-    } else if (string == "search") {
-      result = AccessibilityRole::Search;
-    } else if (string == "image") {
-      result = AccessibilityRole::Image;
-    } else if (string == "imagebutton") {
-      result = AccessibilityRole::Imagebutton;
-    } else if (string == "keyboardkey") {
-      result = AccessibilityRole::Keyboardkey;
-    } else if (string == "text") {
-      result = AccessibilityRole::Text;
-    } else if (string == "adjustable") {
-      result = AccessibilityRole::Adjustable;
-    } else if (string == "summary") {
-      result = AccessibilityRole::Summary;
-    } else if (string == "header") {
-      result = AccessibilityRole::Header;
-    } else if (string == "alert") {
-      result = AccessibilityRole::Alert;
-    } else if (string == "checkbox") {
-      result = AccessibilityRole::Checkbox;
-    } else if (string == "combobox") {
-      result = AccessibilityRole::Combobox;
-    } else if (string == "menu") {
-      result = AccessibilityRole::Menu;
-    } else if (string == "menubar") {
-      result = AccessibilityRole::Menubar;
-    } else if (string == "menuitem") {
-      result = AccessibilityRole::Menuitem;
-    } else if (string == "progressbar") {
-      result = AccessibilityRole::Progressbar;
-    } else if (string == "radio") {
-      result = AccessibilityRole::Radio;
-    } else if (string == "radiogroup") {
-      result = AccessibilityRole::Radiogroup;
-    } else if (string == "scrollbar") {
-      result = AccessibilityRole::Scrollbar;
-    } else if (string == "spinbutton") {
-      result = AccessibilityRole::Spinbutton;
-    } else if (string == "switch") {
-      result = AccessibilityRole::Switch;
-    } else if (string == "tab") {
-      result = AccessibilityRole::Tab;
-    } else if (string == "tabbar") {
-      result = AccessibilityRole::TabBar;
-    } else if (string == "tablist") {
-      result = AccessibilityRole::Tablist;
-    } else if (string == "timer") {
-      result = AccessibilityRole::Timer;
-    } else if (string == "toolbar") {
-      result = AccessibilityRole::Toolbar;
-    } else {
-      LOG(ERROR) << "Unsupported AccessibilityRole value: " << string;
-      react_native_expect(false);
-      // sane default for prod
-      result = AccessibilityRole::None;
-    }
-    return;
-  }
-
-  LOG(ERROR) << "Unsupported AccessibilityRole type";
-  react_native_expect(false);
-  // sane default for prod
-  result = AccessibilityRole::None;
-}
-
 inline std::string toString(const HyphenationFrequency &hyphenationFrequency) {
   switch (hyphenationFrequency) {
     case HyphenationFrequency::None:
@@ -1112,6 +968,7 @@ constexpr static MapBuffer::Key TA_KEY_IS_HIGHLIGHTED = 22;
 constexpr static MapBuffer::Key TA_KEY_LAYOUT_DIRECTION = 23;
 constexpr static MapBuffer::Key TA_KEY_ACCESSIBILITY_ROLE = 24;
 constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
+constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1264,6 +1121,9 @@ inline MapBuffer toMapBuffer(const TextAttributes &textAttributes) {
     builder.putString(
         TA_KEY_ACCESSIBILITY_ROLE, toString(*textAttributes.accessibilityRole));
   }
+  if (textAttributes.role.has_value()) {
+    builder.putInt(TA_KEY_ROLE, static_cast<int32_t>(*textAttributes.role));
+  }
   return builder.build();
 }
 
@@ -1306,5 +1166,4 @@ inline MapBuffer toMapBuffer(const AttributedString &attributedString) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

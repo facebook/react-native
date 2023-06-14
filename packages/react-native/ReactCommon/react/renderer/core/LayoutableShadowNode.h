@@ -20,8 +20,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Transform.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct LayoutConstraints;
 struct LayoutContext;
@@ -47,6 +46,7 @@ class LayoutableShadowNode : public ShadowNode {
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};
+    bool enableOverflowClipping{false};
   };
 
   using UnsharedList = butter::
@@ -61,6 +61,13 @@ class LayoutableShadowNode : public ShadowNode {
   static LayoutMetrics computeRelativeLayoutMetrics(
       ShadowNodeFamily const &descendantNodeFamily,
       LayoutableShadowNode const &ancestorNode,
+      LayoutInspectingPolicy policy);
+
+  /*
+   * Computes the layout metrics of a node relative to its specified ancestors.
+   */
+  static LayoutMetrics computeRelativeLayoutMetrics(
+      AncestorList const &ancestors,
       LayoutInspectingPolicy policy);
 
   /*
@@ -165,5 +172,4 @@ class LayoutableShadowNode : public ShadowNode {
   LayoutMetrics layoutMetrics_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

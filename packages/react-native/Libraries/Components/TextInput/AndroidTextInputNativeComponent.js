@@ -409,7 +409,12 @@ export type NativeProps = $ReadOnly<{|
   onSelectionChange?: ?DirectEventHandler<
     $ReadOnly<{|
       target: Int32,
-      selection: $ReadOnly<{|start: Double, end: Double|}>,
+      selection: $ReadOnly<{|
+        start: Double,
+        end: Double,
+        cursorPositionX: Double,
+        cursorPositionY: Double,
+      |}>,
     |}>,
   >,
 

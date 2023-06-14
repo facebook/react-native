@@ -9,8 +9,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 WritableNativeMap::WritableNativeMap() : HybridBase(folly::dynamic::object()) {}
 
@@ -100,5 +99,4 @@ void WritableNativeMap::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

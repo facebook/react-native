@@ -8,9 +8,9 @@
 #pragma once
 
 #include <optional>
+#include <tuple>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class ScrollViewSnapToAlignment { Start, Center, End };
 
@@ -40,5 +40,4 @@ class ScrollViewMaintainVisibleContentPosition final {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

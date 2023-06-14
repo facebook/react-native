@@ -16,9 +16,26 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
+import type {Parser} from '../../parser';
 const {flattenProperties} = require('./componentsUtils');
 const {parseTopLevelType} = require('../parseTopLevelType');
-
+const {
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
+} = require('../../error-utils');
+const {
+  getEventArgument,
+  buildPropertiesForEvent,
+} = require('../../parsers-commons');
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitFloatProp,
+  emitMixedProp,
+  emitStringProp,
+  emitInt32Prop,
+} = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -27,6 +44,7 @@ function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   annotation,
+  parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
@@ -38,52 +56,26 @@ function getPropertyType(
 
   switch (type) {
     case 'TSBooleanKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'TSStringKeyword':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'Int32TypeAnnotation',
-        },
-      };
+      return emitInt32Prop(name, optional);
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case 'TSTypeLiteral':
       return {
         name,
         optional,
         typeAnnotation: {
           type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.members.map(buildPropertiesForEvent),
+          properties: parser
+            .getObjectProperties(typeAnnotation)
+            .map(member =>
+              buildPropertiesForEvent(member, parser, getPropertyType),
+            ),
         },
       };
     case 'TSUnionType':
@@ -96,12 +88,12 @@ function getPropertyType(
         },
       };
     case 'UnsafeMixed':
+      return emitMixedProp(name, optional);
+    case 'TSArrayType':
       return {
         name,
         optional,
-        typeAnnotation: {
-          type: 'MixedTypeAnnotation',
-        },
+        typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
       };
     default:
       (type: empty);
@@ -109,7 +101,73 @@ function getPropertyType(
   }
 }
 
+function extractArrayElementType(
+  typeAnnotation: $FlowFixMe,
+  name: string,
+  parser: Parser,
+): EventTypeAnnotation {
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+
+  switch (type) {
+    case 'TSParenthesizedType':
+      return extractArrayElementType(
+        typeAnnotation.typeAnnotation,
+        name,
+        parser,
+      );
+    case 'TSBooleanKeyword':
+      return {type: 'BooleanTypeAnnotation'};
+    case 'TSStringKeyword':
+      return {type: 'StringTypeAnnotation'};
+    case 'Float':
+      return {
+        type: 'FloatTypeAnnotation',
+      };
+    case 'Int32':
+      return {
+        type: 'Int32TypeAnnotation',
+      };
+    case 'TSNumberKeyword':
+    case 'Double':
+      return {
+        type: 'DoubleTypeAnnotation',
+      };
+    case 'TSUnionType':
+      return {
+        type: 'StringEnumTypeAnnotation',
+        options: typeAnnotation.types.map(option => option.literal.value),
+      };
+    case 'TSTypeLiteral':
+      return {
+        type: 'ObjectTypeAnnotation',
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
+      };
+    case 'TSArrayType':
+      return {
+        type: 'ArrayTypeAnnotation',
+        elementType: extractArrayElementType(
+          typeAnnotation.elementType,
+          name,
+          parser,
+        ),
+      };
+    default:
+      throw new Error(
+        `Unrecognized ${type} for Array ${name} in events.\n${JSON.stringify(
+          typeAnnotation,
+          null,
+          2,
+        )}`,
+      );
+  }
+}
+
 function findEventArgumentsAndType(
+  parser: Parser,
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   bubblingType: void | 'direct' | 'bubble',
@@ -121,7 +179,7 @@ function findEventArgumentsAndType(
 } {
   if (typeAnnotation.type === 'TSInterfaceDeclaration') {
     return {
-      argumentProps: flattenProperties([typeAnnotation], types),
+      argumentProps: flattenProperties([typeAnnotation], types, parser),
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
@@ -129,18 +187,17 @@ function findEventArgumentsAndType(
 
   if (typeAnnotation.type === 'TSTypeLiteral') {
     return {
-      argumentProps: typeAnnotation.members,
+      argumentProps: parser.getObjectProperties(typeAnnotation),
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
   }
 
-  if (!typeAnnotation.typeName) {
-    throw new Error("typeAnnotation of event doesn't have a name");
-  }
+  throwIfEventHasNoName(typeAnnotation, parser);
   const name = typeAnnotation.typeName.name;
   if (name === 'Readonly') {
     return findEventArgumentsAndType(
+      parser,
       typeAnnotation.typeParameters.params[0],
       types,
       bubblingType,
@@ -154,8 +211,8 @@ function findEventArgumentsAndType(
         : null;
 
     switch (typeAnnotation.typeParameters.params[0].type) {
-      case 'TSNullKeyword':
-      case 'TSUndefinedKeyword':
+      case parser.nullLiteralTypeAnnotation:
+      case parser.undefinedLiteralTypeAnnotation:
         return {
           argumentProps: [],
           bubblingType: eventType,
@@ -163,6 +220,7 @@ function findEventArgumentsAndType(
         };
       default:
         return findEventArgumentsAndType(
+          parser,
           typeAnnotation.typeParameters.params[0],
           types,
           eventType,
@@ -175,6 +233,7 @@ function findEventArgumentsAndType(
       elementType = elementType.typeAnnotation;
     }
     return findEventArgumentsAndType(
+      parser,
       elementType,
       types,
       bubblingType,
@@ -189,32 +248,14 @@ function findEventArgumentsAndType(
   }
 }
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function buildPropertiesForEvent(property): NamedShape<EventTypeAnnotation> {
-  const name = property.key.name;
-  const optional = property.optional || false;
-  let typeAnnotation = property.typeAnnotation.typeAnnotation;
-
-  return getPropertyType(name, optional, typeAnnotation);
-}
-
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function getEventArgument(argumentProps, name: $FlowFixMe) {
-  return {
-    type: 'ObjectTypeAnnotation',
-    properties: argumentProps.map(buildPropertiesForEvent),
-  };
-}
-
 // $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
 type EventTypeAST = Object;
 
 function buildEventSchema(
   types: TypeDeclarationMap,
   property: EventTypeAST,
-): EventTypeShape {
+  parser: Parser,
+): ?EventTypeShape {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
@@ -225,43 +266,54 @@ function buildEventSchema(
   const typeAnnotation = topLevelType.type;
   const optional = property.optional || topLevelType.optional;
   const {argumentProps, bubblingType, paperTopLevelNameDeprecated} =
-    findEventArgumentsAndType(typeAnnotation, types);
+    findEventArgumentsAndType(parser, typeAnnotation, types);
 
-  if (!argumentProps) {
-    throw new Error(`Unable to determine event arguments for "${name}"`);
-  } else if (!bubblingType) {
-    throw new Error(`Unable to determine event bubbling type for "${name}"`);
-  } else {
-    if (paperTopLevelNameDeprecated != null) {
-      return {
-        name,
-        optional,
-        bubblingType,
-        paperTopLevelNameDeprecated,
-        typeAnnotation: {
-          type: 'EventTypeAnnotation',
-          argument: getEventArgument(argumentProps, name),
-        },
-      };
-    }
+  const nonNullableArgumentProps = throwIfArgumentPropsAreNull(
+    argumentProps,
+    name,
+  );
+  const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
+  if (paperTopLevelNameDeprecated != null) {
     return {
       name,
       optional,
-      bubblingType,
+      bubblingType: nonNullableBubblingType,
+      paperTopLevelNameDeprecated,
       typeAnnotation: {
         type: 'EventTypeAnnotation',
-        argument: getEventArgument(argumentProps, name),
+        argument: getEventArgument(
+          nonNullableArgumentProps,
+          parser,
+          getPropertyType,
+        ),
       },
     };
   }
+
+  return {
+    name,
+    optional,
+    bubblingType: nonNullableBubblingType,
+    typeAnnotation: {
+      type: 'EventTypeAnnotation',
+      argument: getEventArgument(
+        nonNullableArgumentProps,
+        parser,
+        getPropertyType,
+      ),
+    },
+  };
 }
 
 function getEvents(
   eventTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<EventTypeShape> {
-  return eventTypeAST.map(property => buildEventSchema(types, property));
+  return eventTypeAST
+    .map(property => buildEventSchema(types, property, parser))
+    .filter(Boolean);
 }
 
 module.exports = {

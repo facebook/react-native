@@ -54,9 +54,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
 
   reporter.startReporting(PerformanceEntryType::MARK);
 
-  reporter.mark("mark0", 0.0, 0.0);
-  reporter.mark("mark1", 0.0, 0.0);
-  reporter.mark("mark2", 0.0, 0.0);
+  reporter.mark("mark0", 0.0);
+  reporter.mark("mark1", 0.0);
+  reporter.mark("mark2", 0.0);
   reporter.measure("measure0", 0.0, 0.0);
 
   auto res = reporter.popPendingEntries();
@@ -73,7 +73,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestStopReporting) {
   reporter.stopReporting(PerformanceEntryType::MARK);
   reporter.startReporting(PerformanceEntryType::MEASURE);
 
-  reporter.mark("mark3", 0.0, 0.0);
+  reporter.mark("mark3");
   reporter.measure("measure1", 0.0, 0.0);
 
   res = reporter.popPendingEntries();
@@ -91,9 +91,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
 
   reporter.startReporting(PerformanceEntryType::MARK);
 
-  reporter.mark("mark0", 0.0, 1.0);
-  reporter.mark("mark1", 1.0, 3.0);
-  reporter.mark("mark2", 2.0, 4.0);
+  reporter.mark("mark0", 0.0);
+  reporter.mark("mark1", 1.0);
+  reporter.mark("mark2", 2.0);
 
   auto res = reporter.popPendingEntries();
   const auto &entries = res.entries;
@@ -105,21 +105,21 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMarks) {
       {"mark0",
        static_cast<int>(PerformanceEntryType::MARK),
        0.0,
-       1.0,
+       0.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
       {"mark1",
        static_cast<int>(PerformanceEntryType::MARK),
        1.0,
-       3.0,
+       0.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
       {"mark2",
        static_cast<int>(PerformanceEntryType::MARK),
        2.0,
-       4.0,
+       0.0,
        std::nullopt,
        std::nullopt,
        std::nullopt}};
@@ -136,15 +136,19 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter.startReporting(PerformanceEntryType::MARK);
   reporter.startReporting(PerformanceEntryType::MEASURE);
 
-  reporter.mark("mark0", 0.0, 1.0);
-  reporter.mark("mark1", 1.0, 3.0);
-  reporter.mark("mark2", 2.0, 4.0);
+  reporter.mark("mark0", 0.0);
+  reporter.mark("mark1", 1.0);
+  reporter.mark("mark2", 2.0);
 
   reporter.measure("measure0", 0.0, 2.0);
   reporter.measure("measure1", 0.0, 2.0, 4.0);
   reporter.measure("measure2", 0.0, 0.0, std::nullopt, "mark1", "mark2");
   reporter.measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter.measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
+
+  reporter.mark("mark3", 2.0);
+  reporter.measure("measure5", 2.0, 2.0);
+  reporter.mark("mark4", 2.0);
 
   auto res = reporter.popPendingEntries();
   const auto &entries = res.entries;
@@ -155,7 +159,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
       {"mark0",
        static_cast<int>(PerformanceEntryType::MARK),
        0.0,
-       1.0,
+       0.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
@@ -173,17 +177,17 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        std::nullopt,
        std::nullopt,
        std::nullopt},
+      {"mark1",
+       static_cast<int>(PerformanceEntryType::MARK),
+       1.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
       {"measure2",
        static_cast<int>(PerformanceEntryType::MEASURE),
        1.0,
        1.0,
-       std::nullopt,
-       std::nullopt,
-       std::nullopt},
-      {"mark1",
-       static_cast<int>(PerformanceEntryType::MARK),
-       1.0,
-       3.0,
        std::nullopt,
        std::nullopt,
        std::nullopt},
@@ -204,10 +208,32 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
       {"mark2",
        static_cast<int>(PerformanceEntryType::MARK),
        2.0,
-       4.0,
+       0.0,
        std::nullopt,
        std::nullopt,
-       std::nullopt}};
+       std::nullopt},
+      {"mark3",
+       static_cast<int>(PerformanceEntryType::MARK),
+       2.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"mark4",
+       static_cast<int>(PerformanceEntryType::MARK),
+       2.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"measure5",
+       static_cast<int>(PerformanceEntryType::MEASURE),
+       2.0,
+       0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+  };
 
   ASSERT_EQ(expected, entries);
 }
@@ -249,9 +275,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
   reporter.startReporting(PerformanceEntryType::MARK);
   reporter.startReporting(PerformanceEntryType::MEASURE);
 
-  reporter.mark("common_name", 0.0, 1.0);
-  reporter.mark("mark1", 1.0, 3.0);
-  reporter.mark("mark2", 2.0, 4.0);
+  reporter.mark("common_name", 0.0);
+  reporter.mark("mark1", 1.0);
+  reporter.mark("mark2", 2.0);
 
   reporter.measure("common_name", 0.0, 2.0);
   reporter.measure("measure1", 0.0, 2.0, 4.0);
@@ -296,9 +322,9 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearEntries) {
   reporter.startReporting(PerformanceEntryType::MARK);
   reporter.startReporting(PerformanceEntryType::MEASURE);
 
-  reporter.mark("common_name", 0.0, 1.0);
-  reporter.mark("mark1", 1.0, 3.0);
-  reporter.mark("mark2", 2.0, 4.0);
+  reporter.mark("common_name", 0.0);
+  reporter.mark("mark1", 1.0);
+  reporter.mark("mark2", 2.0);
 
   reporter.measure("common_name", 0.0, 2.0);
   reporter.measure("measure1", 0.0, 2.0, 4.0);

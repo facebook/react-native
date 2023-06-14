@@ -13,8 +13,7 @@
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents telemetry data associated with a particular running Surface.
@@ -65,5 +64,4 @@ class SurfaceTelemetry final {
           recentTransactionTelemetries_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

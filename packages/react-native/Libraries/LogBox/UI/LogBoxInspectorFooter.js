@@ -10,10 +10,10 @@
 
 import type {LogLevel} from '../Data/LogBoxLog';
 
+import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import DeviceInfo from '../../Utilities/DeviceInfo';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
@@ -52,38 +52,20 @@ type ButtonProps = $ReadOnly<{|
 
 function FooterButton(props: ButtonProps): React.Node {
   return (
-    <LogBoxButton
-      backgroundColor={{
-        default: 'transparent',
-        pressed: LogBoxStyle.getBackgroundDarkColor(),
-      }}
-      onPress={props.onPress}
-      style={buttonStyles.safeArea}>
-      <View style={buttonStyles.content}>
-        <Text style={buttonStyles.label}>{props.text}</Text>
-      </View>
-    </LogBoxButton>
+    <SafeAreaView style={styles.button}>
+      <LogBoxButton
+        backgroundColor={{
+          default: 'transparent',
+          pressed: LogBoxStyle.getBackgroundDarkColor(),
+        }}
+        onPress={props.onPress}>
+        <View style={styles.buttonContent}>
+          <Text style={styles.buttonLabel}>{props.text}</Text>
+        </View>
+      </LogBoxButton>
+    </SafeAreaView>
   );
 }
-
-const buttonStyles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    // $FlowFixMe[sketchy-null-bool]
-    paddingBottom: DeviceInfo.getConstants().isIPhoneX_deprecated ? 30 : 0,
-  },
-  content: {
-    alignItems: 'center',
-    height: 48,
-    justifyContent: 'center',
-  },
-  label: {
-    color: LogBoxStyle.getTextColor(1),
-    fontSize: 14,
-    includeFontPadding: false,
-    lineHeight: 20,
-  },
-});
 
 const styles = StyleSheet.create({
   root: {
@@ -96,6 +78,17 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+  },
+  buttonContent: {
+    alignItems: 'center',
+    height: 48,
+    justifyContent: 'center',
+  },
+  buttonLabel: {
+    color: LogBoxStyle.getTextColor(1),
+    fontSize: 14,
+    includeFontPadding: false,
+    lineHeight: 20,
   },
   syntaxErrorText: {
     textAlign: 'center',

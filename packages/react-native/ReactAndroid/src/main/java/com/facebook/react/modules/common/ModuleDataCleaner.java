@@ -43,6 +43,7 @@ public class ModuleDataCleaner {
    *
    * @deprecated
    */
+  @Deprecated
   public static void cleanDataFromModules(CatalystInstance catalystInstance) {
     for (NativeModule nativeModule : catalystInstance.getNativeModules()) {
       if (nativeModule instanceof Cleanable) {

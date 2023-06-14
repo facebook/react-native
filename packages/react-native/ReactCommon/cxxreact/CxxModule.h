@@ -16,13 +16,11 @@
 
 using namespace std::placeholders;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
-}
-} // namespace facebook
+} // namespace facebook::react
 
 namespace facebook {
 namespace xplat {

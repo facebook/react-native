@@ -16,6 +16,7 @@
 #include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
@@ -26,8 +27,7 @@
 #include <cmath>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 constexpr static auto kReactFeatureFlagsJavaDescriptor =
     "com/facebook/react/config/ReactFeatureFlags";
@@ -118,8 +118,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
     std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems,
-    ShadowViewMutationList &cppViewMutations) {
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (auto const &mountItem : cppCommonMountItems) {
@@ -178,11 +177,6 @@ static inline void computeBufferSizes(
       cppDeleteMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
-
-  if (cppViewMutations.size() > 0) {
-    batchMountItemIntsSize++;
-    batchMountItemObjectsSize++;
-  }
 }
 
 static inline void writeIntBufferTypePreamble(
@@ -258,24 +252,17 @@ jni::local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    const MountingCoordinator::Shared &mountingCoordinator) {
+    const MountingTransaction &transaction) {
+  SystraceSection section("FabricMountingManager::executeMount");
+
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
-
-  SystraceSection s(
-      "FabricUIManagerBinding::schedulerDidFinishTransactionIntBuffer");
   auto finishTransactionStartTime = telemetryTimePointNow();
-
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
-
-  if (!mountingTransaction.has_value()) {
-    return;
-  }
 
   auto env = jni::Environment::current();
 
-  auto telemetry = mountingTransaction->getTelemetry();
-  auto surfaceId = mountingTransaction->getSurfaceId();
-  auto &mutations = mountingTransaction->getMutations();
+  auto telemetry = transaction.getTelemetry();
+  auto surfaceId = transaction.getSurfaceId();
+  auto &mutations = transaction.getMutations();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -287,7 +274,7 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
-  auto cppViewMutations = ShadowViewMutationList();
+
   {
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
@@ -506,8 +493,7 @@ void FabricMountingManager::executeMount(
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
       cppUpdateOverflowInsetMountItems,
-      cppUpdateEventEmitterMountItems,
-      cppViewMutations);
+      cppUpdateEventEmitterMountItems);
 
   static auto createMountItemsIntBufferBatchContainer =
       JFabricUIManager::javaClassStatic()
@@ -959,5 +945,4 @@ void FabricMountingManager::onAllAnimationsComplete() {
   allAnimationsCompleteJNI(javaUIManager_);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,8 +11,7 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/graphics/ColorComponents.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline ColorComponents parsePlatformColor(
     const PropsParserContext &context,
@@ -25,5 +24,4 @@ inline ColorComponents parsePlatformColor(
   return {red, green, blue, alpha};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <butter/small_vector.h>
@@ -21,8 +22,7 @@
 #include <react/renderer/core/State.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
 
@@ -123,6 +123,7 @@ class ShadowNode : public Sealable,
   Props::Shared const &getProps() const;
   ListOfShared const &getChildren() const;
   SharedEventEmitter const &getEventEmitter() const;
+  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
 
@@ -226,5 +227,8 @@ class ShadowNode : public Sealable,
   ShadowNodeTraits traits_;
 };
 
-} // namespace react
-} // namespace facebook
+static_assert(
+    std::has_virtual_destructor<ShadowNode>::value,
+    "ShadowNode must have a virtual destructor");
+
+} // namespace facebook::react

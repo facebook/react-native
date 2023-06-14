@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.text;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
@@ -18,7 +16,6 @@ import android.text.style.MetricAffectingSpan;
  * <p>The letter spacing is specified in pixels, which are converted to ems at paint time; this span
  * must therefore be applied after any spans affecting font size.
  */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class CustomLetterSpacingSpan extends MetricAffectingSpan implements ReactSpan {
 
   private final float mLetterSpacing;

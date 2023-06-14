@@ -19,8 +19,7 @@
 #include <react/utils/ContextContainer.h>
 #include <react/utils/RunLoopObserver.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains all external dependencies of Scheduler.
@@ -76,8 +75,7 @@ struct SchedulerToolbox final {
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.
    */
-  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks;
+  std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

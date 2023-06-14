@@ -12,8 +12,7 @@
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <Paragraph> component.
@@ -44,5 +43,4 @@ class ParagraphComponentDescriptor final
   std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

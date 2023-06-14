@@ -12,8 +12,7 @@
 #include <react/renderer/imagemanager/ImageManager.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <Image> component.
@@ -40,5 +39,4 @@ class ImageComponentDescriptor final
   const SharedImageManager imageManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

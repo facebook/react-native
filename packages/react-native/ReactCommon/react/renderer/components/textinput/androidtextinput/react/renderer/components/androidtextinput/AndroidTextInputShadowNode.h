@@ -16,8 +16,7 @@
 
 #include <react/renderer/attributedstring/AttributedString.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[];
 
@@ -84,5 +83,4 @@ class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
   mutable std::optional<AttributedString> cachedAttributedString_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

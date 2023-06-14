@@ -9,8 +9,7 @@
 
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Exact type of float numbers which ideally should match a type behing
@@ -18,5 +17,4 @@ namespace react {
  */
 using Float = float;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

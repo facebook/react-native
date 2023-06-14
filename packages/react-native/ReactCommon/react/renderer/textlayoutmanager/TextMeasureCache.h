@@ -14,8 +14,7 @@
 #include <react/utils/FloatComparison.h>
 #include <react/utils/SimpleThreadSafeCache.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct LineMeasurement {
   std::string text;
@@ -203,8 +202,7 @@ inline bool operator!=(
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

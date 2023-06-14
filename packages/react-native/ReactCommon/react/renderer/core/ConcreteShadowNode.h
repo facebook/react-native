@@ -13,10 +13,10 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/ShadowNodeFamily.h>
 #include <react/renderer/core/StateData.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Base templace class for all `ShadowNode`s which connects exact `ShadowNode`
@@ -87,9 +87,9 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static ConcreteStateData initialStateData(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamilyFragment const &familyFragment,
-      ComponentDescriptor const &componentDescriptor) {
+      Props::Shared const & /*props*/,
+      ShadowNodeFamily::Shared const & /*family*/,
+      ComponentDescriptor const & /*componentDescriptor*/) {
     return {};
   }
 
@@ -132,5 +132,4 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -39,6 +39,10 @@ class ReactNativePodsUtils
         installer.pods_project.pod_group(name) != nil
     end
 
+    def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
+    end
+
     def self.turn_off_resource_bundle_react_core(installer)
         # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
         # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
@@ -121,6 +125,18 @@ class ReactNativePodsUtils
         end
     end
 
+    def self.apply_xcode_15_patch(installer)
+        installer.target_installation_results.pod_target_installation_results
+            .each do |pod_name, target_installation_result|
+                target_installation_result.native_target.build_configurations.each do |config|
+                    # unary_function and binary_function are no longer provided in C++17 and newer standard modes as part of Xcode 15. They can be re-enabled with setting _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+                    # Ref: https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Deprecations
+                    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) '
+                    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << '"_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION" '
+            end
+        end
+    end
+
     def self.apply_flags_for_fabric(installer, fabric_enabled: false)
         fabric_flag = "-DRN_FABRIC_ENABLED"
         if fabric_enabled
@@ -131,6 +147,18 @@ class ReactNativePodsUtils
     end
 
     private
+
+    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name.to_s == target_pod_name
+                target_installation_result.native_target.build_configurations.each do |config|
+                        if configuration == nil || (configuration != nil && configuration == config.name)
+                            config.build_settings[settings_name] = settings_value
+                        end
+                    end
+                end
+            end
+    end
 
     def self.fix_library_search_path(config)
         lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
@@ -218,13 +246,6 @@ class ReactNativePodsUtils
             self.set_rctfabric_search_paths(target_installation_result)
             self.set_imagemanager_search_path(target_installation_result)
         end
-    end
-
-    def self.enable_hermes_profiler(installer, enable_hermes_profiler: false)
-        return if !enable_hermes_profiler
-
-        Pod::UI.puts "[Hermes Profiler] Enable Hermes Sample profiler"
-        self.add_compiler_flag_to_pods(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
     end
 
     # ========= #
@@ -361,6 +382,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
         ])
@@ -384,6 +406,7 @@ class ReactNativePodsUtils
             "React-Core",
             "React-CoreModules",
             "React-Fabric",
+            "React-FabricImage",
             "React-ImageManager",
             "React-RCTActionSheet",
             "React-RCTAnimation",

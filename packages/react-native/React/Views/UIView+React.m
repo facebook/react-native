@@ -336,6 +336,16 @@
   objc_setAssociatedObject(self, @selector(accessibilityRole), accessibilityRole, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
+- (NSString *)role
+{
+  return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setRole:(NSString *)role
+{
+  objc_setAssociatedObject(self, @selector(role), role, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 - (NSDictionary<NSString *, id> *)accessibilityState
 {
   return objc_getAssociatedObject(self, _cmd);
@@ -354,6 +364,33 @@
 {
   objc_setAssociatedObject(
       self, @selector(accessibilityValueInternal), accessibilityValue, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIAccessibilityTraits)accessibilityRoleTraits
+{
+  NSNumber *traitsAsNumber = objc_getAssociatedObject(self, _cmd);
+  return traitsAsNumber ? [traitsAsNumber unsignedLongLongValue] : UIAccessibilityTraitNone;
+}
+
+- (void)setAccessibilityRoleTraits:(UIAccessibilityTraits)accessibilityRoleTraits
+{
+  objc_setAssociatedObject(
+      self,
+      @selector(accessibilityRoleTraits),
+      [NSNumber numberWithUnsignedLongLong:accessibilityRoleTraits],
+      OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UIAccessibilityTraits)roleTraits
+{
+  NSNumber *traitsAsNumber = objc_getAssociatedObject(self, _cmd);
+  return traitsAsNumber ? [traitsAsNumber unsignedLongLongValue] : UIAccessibilityTraitNone;
+}
+
+- (void)setRoleTraits:(UIAccessibilityTraits)roleTraits
+{
+  objc_setAssociatedObject(
+      self, @selector(roleTraits), [NSNumber numberWithUnsignedLongLong:roleTraits], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - Debug

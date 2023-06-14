@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -6,19 +11,16 @@
 #include <jni.h>
 #include <react/bridgeless/JSEngineInstance.h>
 
-namespace facebook {
-
-namespace react {
+namespace facebook::react {
 
 class JJSEngineInstance : public jni::HybridClass<JJSEngineInstance>,
                           public JSEngineInstance {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/venice/JSEngineInstance;";
+      "Lcom/facebook/react/bridgeless/JSEngineInstance;";
 
  private:
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

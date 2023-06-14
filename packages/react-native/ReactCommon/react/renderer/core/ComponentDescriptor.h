@@ -8,6 +8,8 @@
 #pragma once
 
 #include <react/renderer/core/EventDispatcher.h>
+#include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsParser.h>
@@ -17,8 +19,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptorParameters;
 class ComponentDescriptor;
@@ -122,7 +123,7 @@ class ComponentDescriptor {
    * State's data which can be constructed based on initial Props.
    */
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamily::Shared const &family) const = 0;
 
   /*
@@ -137,8 +138,13 @@ class ComponentDescriptor {
    * Creates a shadow node family for particular node.
    */
   virtual ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment,
-      SharedEventTarget eventTarget) const = 0;
+      ShadowNodeFamilyFragment const &fragment) const = 0;
+
+  /*
+   * Creates an event emitter for particular node.
+   */
+  virtual SharedEventEmitter createEventEmitter(
+      InstanceHandle::Shared const &instanceHandle) const = 0;
 
  protected:
   EventDispatcher::Weak eventDispatcher_;
@@ -158,5 +164,4 @@ class ComponentDescriptorParameters {
   ComponentDescriptor::Flavor flavor;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

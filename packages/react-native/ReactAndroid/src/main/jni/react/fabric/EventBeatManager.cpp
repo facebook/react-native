@@ -9,8 +9,7 @@
 #include <fbjni/fbjni.h>
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 EventBeatManager::EventBeatManager(
     jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject)
@@ -48,5 +47,4 @@ void EventBeatManager::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

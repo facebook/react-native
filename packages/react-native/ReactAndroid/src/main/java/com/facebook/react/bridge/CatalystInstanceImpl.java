@@ -28,6 +28,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -111,7 +112,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
-  public native CallInvokerHolderImpl getNativeCallInvokerHolder();
+  public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -457,7 +458,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Override
   public <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface) {
     String moduleName = getNameFromAnnotation(nativeModuleInterface);
-    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasNativeModule(moduleName)
+    return getTurboModuleRegistry() != null && getTurboModuleRegistry().hasModule(moduleName)
         ? true
         : mNativeModuleRegistry.hasModule(moduleName);
   }
@@ -482,7 +483,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Nullable
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
-      NativeModule module = getTurboModuleRegistry().getNativeModule(moduleName);
+      NativeModule module = getTurboModuleRegistry().getModule(moduleName);
       if (module != null) {
         return module;
       }
@@ -509,7 +510,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
     if (getTurboModuleRegistry() != null) {
-      for (NativeModule module : getTurboModuleRegistry().getNativeModules()) {
+      for (NativeModule module : getTurboModuleRegistry().getModules()) {
         nativeModules.add(module);
       }
     }

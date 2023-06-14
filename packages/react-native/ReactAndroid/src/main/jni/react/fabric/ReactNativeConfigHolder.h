@@ -12,8 +12,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Implementation of ReactNativeConfig that wraps a FabricMobileConfig Java
@@ -33,5 +32,4 @@ class ReactNativeConfigHolder : public ReactNativeConfig {
   jni::global_ref<jobject> reactNativeConfig_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

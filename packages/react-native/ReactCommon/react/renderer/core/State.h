@@ -15,8 +15,7 @@
 
 #include <react/renderer/core/ShadowNodeFamily.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * An abstract interface of State.
@@ -68,7 +67,7 @@ class State {
 #ifdef ANDROID
   virtual folly::dynamic getDynamic() const = 0;
   virtual MapBuffer getMapBuffer() const = 0;
-  virtual void updateState(folly::dynamic data) const = 0;
+  virtual void updateState(folly::dynamic &&data) const = 0;
 #endif
 
  protected:
@@ -110,5 +109,4 @@ class State {
   size_t revision_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

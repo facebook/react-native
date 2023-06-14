@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UITextAutocorrectionType)UITextAutocorrectionType:(nullable id)json;
 + (UITextSpellCheckingType)UITextSpellCheckingType:(nullable id)json;
 + (RCTTextTransform)RCTTextTransform:(nullable id)json;
++ (UITextSmartInsertDeleteType)UITextSmartInsertDeleteType:(nullable id)json;
 
 @end
 

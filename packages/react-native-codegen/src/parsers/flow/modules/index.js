@@ -22,7 +22,6 @@ import type {
 import type {Parser} from '../../parser';
 import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
 
-const {resolveTypeAnnotation} = require('../utils');
 const {
   unwrapNullable,
   wrapNullable,
@@ -32,7 +31,7 @@ const {
 const {
   emitArrayType,
   emitFunction,
-  emitGenericObject,
+  emitDictionary,
   emitPromise,
   emitRootTag,
   emitUnion,
@@ -59,8 +58,9 @@ function translateTypeAnnotation(
   cxxOnly: boolean,
   parser: Parser,
 ): Nullable<NativeModuleTypeAnnotation> {
+  const resolveTypeAnnotationFN = parser.getResolveTypeAnnotationFN();
   const {nullable, typeAnnotation, typeResolutionStatus} =
-    resolveTypeAnnotation(flowTypeAnnotation, types);
+    resolveTypeAnnotationFN(flowTypeAnnotation, types, parser);
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
@@ -152,7 +152,7 @@ function translateTypeAnnotation(
           // check the property type to prevent developers from using unsupported types
           // the return value from `translateTypeAnnotation` is unused
           const propertyType = indexers[0].value;
-          translateTypeAnnotation(
+          const valueType = translateTypeAnnotation(
             hasteModuleName,
             propertyType,
             types,
@@ -163,7 +163,7 @@ function translateTypeAnnotation(
             parser,
           );
           // no need to do further checking
-          return emitGenericObject(nullable);
+          return emitDictionary(nullable, valueType);
         }
       }
 

@@ -15,8 +15,7 @@
 #include <react/renderer/textlayoutmanager/TextMeasureCache.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TextLayoutManager;
 
@@ -61,5 +60,4 @@ class TextLayoutManager {
   TextMeasureCache measureCache_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,6 +11,8 @@
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTComponentViewFactory.h>
+#import <React/RCTComponentViewProtocol.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTLegacyViewManagerInteropComponentView.h>
@@ -24,7 +26,10 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface RCTAppDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
+@interface RCTAppDelegate () <
+    RCTTurboModuleManagerDelegate,
+    RCTCxxBridgeDelegate,
+    RCTComponentViewFactoryComponentProvider> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
@@ -64,6 +69,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
 
   [self unstable_registerLegacyComponents];
+  [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
@@ -123,6 +129,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   return [UIViewController new];
 }
 
+- (BOOL)runtimeSchedulerEnabled
+{
+  return YES;
+}
+
 #if RCT_NEW_ARCH_ENABLED
 #pragma mark - RCTCxxBridgeDelegate
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
@@ -130,13 +141,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   _runtimeScheduler = std::make_shared<facebook::react::RuntimeScheduler>(RCTRuntimeExecutorFromBridge(bridge));
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  self.turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:self jsInvoker:callInvoker];
+  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                                                   delegate:self
+                                                                                  jsInvoker:callInvoker];
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
-  return RCTAppSetupDefaultJsExecutorFactory(bridge, _turboModuleManager, _runtimeScheduler);
+  return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 
-#pragma mark RCTTurboModuleManagerDelegate
+#pragma mark - RCTTurboModuleManagerDelegate
 
 - (Class)getModuleClassFromName:(const char *)name
 {
@@ -159,6 +172,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
+}
+
+#pragma mark - RCTComponentViewFactoryComponentProvider
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  return @{};
 }
 
 #pragma mark - New Arch Enabled settings

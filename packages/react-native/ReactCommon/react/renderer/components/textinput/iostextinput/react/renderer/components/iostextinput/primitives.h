@@ -10,8 +10,7 @@
 #include <optional>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // iOS & Android.
 enum class AutocapitalizationType {
@@ -223,7 +222,15 @@ class TextInputTraits final {
    * Default value: `<empty string>` (no rules).
    */
   std::string passwordRules{};
+
+  /*
+   * If `false`, the iOS system will not insert an extra space after a paste
+   * operation neither delete one or two spaces after a cut or delete operation.
+   * iOS-only (inherently iOS-specific)
+   * Can be empty (`null` in JavaScript) which means `default`.
+   * Default value: `empty` (`null`).
+   */
+  std::optional<bool> smartInsertDelete{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

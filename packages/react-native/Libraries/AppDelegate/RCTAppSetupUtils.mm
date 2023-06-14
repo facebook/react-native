@@ -55,6 +55,12 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 #if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(turboModuleEnabled);
 #endif
+
+#if DEBUG
+  // Disable idle timer in dev builds to avoid putting application in background and complicating
+  // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
+  application.idleTimerDisabled = YES;
+#endif
 }
 
 UIView *
@@ -129,9 +135,7 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
             if (runtimeScheduler) {
               facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
             }
-            facebook::react::RuntimeExecutor syncRuntimeExecutor =
-                [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-            [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+            [turboModuleManager installJSBindings:runtime];
           }));
 }
 

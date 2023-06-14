@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
@@ -6,8 +11,7 @@
 #include <atomic>
 #include <queue>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BufferedRuntimeExecutor {
  public:
@@ -42,5 +46,4 @@ class BufferedRuntimeExecutor {
   std::priority_queue<BufferedWork> queue_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

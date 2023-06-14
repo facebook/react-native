@@ -18,8 +18,7 @@
 using namespace facebook::hermes;
 using namespace facebook::jsi;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef HERMES_ENABLE_DEBUGGER
 
@@ -119,5 +118,4 @@ std::unique_ptr<jsi::Runtime> HermesInstance::createJSRuntime(
   return hermesRuntime;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

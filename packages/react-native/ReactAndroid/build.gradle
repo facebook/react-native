@@ -444,9 +444,14 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(33)
+        minSdk = 21
+        targetSdk = 33
         versionCode(1)
         versionName("1.0")
 
@@ -468,7 +473,10 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21"
+                    "-DANDROID_PLATFORM=android-21",
+                    // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                    // specific compilation flags. This can be removed once we moved to NDK 25/26
+                    "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
 
                 targets "jsijniprofiler",
                     "reactnativeblob",
@@ -659,13 +667,8 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            // Robolectric tests are downloading JARs at runtime. This allows to specify
-            // a local file mirror with REACT_NATIVE_ROBOLECTRIC_MIRROR to go in offline more.
-            if (System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR") != null) {
-                systemProperty 'robolectric.offline', 'true'
-                systemProperty 'robolectric.dependency.dir', System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR")
-            }
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -708,12 +711,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-
-    // This compileOnly dependency is needed to be able to update the offline
-    // mirror from a non-linux machine, while still executing inside a Linux CI
-    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
-    // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {
@@ -723,11 +720,14 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
 tasks.withType(Test).all {
     // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
         jvmArgs += [
-            "-XX:+AllowRedefinitionToAddDeleteMethods",
             "--illegal-access=permit",
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",

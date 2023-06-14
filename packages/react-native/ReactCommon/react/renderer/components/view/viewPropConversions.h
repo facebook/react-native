@@ -16,8 +16,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -212,5 +211,4 @@ inline MapBuffer convertTransform(Transform const &transform) {
 }
 } // namespace
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

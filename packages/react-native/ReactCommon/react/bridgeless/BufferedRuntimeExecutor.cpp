@@ -1,11 +1,15 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "BufferedRuntimeExecutor.h"
 #include <cxxreact/MessageQueueThread.h>
 #include <algorithm>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 BufferedRuntimeExecutor::BufferedRuntimeExecutor(
     RuntimeExecutor runtimeExecutor)
@@ -53,5 +57,4 @@ void BufferedRuntimeExecutor::unsafeFlush() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

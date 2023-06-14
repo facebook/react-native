@@ -11,8 +11,7 @@
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/core/graphicsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 
@@ -43,5 +42,4 @@ TEST(AttributedStringTest, testToDynamic) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

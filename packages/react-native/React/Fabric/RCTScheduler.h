@@ -67,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)animationTick;
 
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId;
+
 - (void)addEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;
 
 - (void)removeEventListener:(std::shared_ptr<facebook::react::EventListener> const &)listener;

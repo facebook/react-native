@@ -32,8 +32,7 @@
 using fbsystrace::FbSystraceAsyncFlow;
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // This class manages calls from JS to native code.
 class JsToNativeBridge : public react::ExecutorDelegate {
@@ -311,34 +310,38 @@ void NativeToJsBridge::runOnExecutorQueue(
       });
 }
 
-std::shared_ptr<CallInvoker> NativeToJsBridge::getDecoratedNativeCallInvoker(
-    std::shared_ptr<CallInvoker> nativeInvoker) {
-  class NativeCallInvoker : public CallInvoker {
+std::shared_ptr<NativeMethodCallInvoker>
+NativeToJsBridge::getDecoratedNativeMethodCallInvoker(
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) const {
+  class NativeMethodCallInvokerImpl : public NativeMethodCallInvoker {
    private:
     std::weak_ptr<JsToNativeBridge> m_jsToNativeBridge;
-    std::shared_ptr<CallInvoker> m_nativeInvoker;
+    std::shared_ptr<NativeMethodCallInvoker> m_nativeInvoker;
 
    public:
-    NativeCallInvoker(
+    NativeMethodCallInvokerImpl(
         std::weak_ptr<JsToNativeBridge> jsToNativeBridge,
-        std::shared_ptr<CallInvoker> nativeInvoker)
-        : m_jsToNativeBridge(jsToNativeBridge),
-          m_nativeInvoker(nativeInvoker) {}
+        std::shared_ptr<NativeMethodCallInvoker> nativeInvoker)
+        : m_jsToNativeBridge(std::move(jsToNativeBridge)),
+          m_nativeInvoker(std::move(nativeInvoker)) {}
 
-    void invokeAsync(std::function<void()> &&func) override {
+    void invokeAsync(
+        const std::string &methodName,
+        std::function<void()> &&func) override {
       if (auto strongJsToNativeBridge = m_jsToNativeBridge.lock()) {
         strongJsToNativeBridge->recordTurboModuleAsyncMethodCall();
       }
-      m_nativeInvoker->invokeAsync(std::move(func));
+      m_nativeInvoker->invokeAsync(methodName, std::move(func));
     }
 
-    void invokeSync(std::function<void()> &&func) override {
-      m_nativeInvoker->invokeSync(std::move(func));
+    void invokeSync(const std::string &methodName, std::function<void()> &&func)
+        override {
+      m_nativeInvoker->invokeSync(methodName, std::move(func));
     }
   };
 
-  return std::make_shared<NativeCallInvoker>(m_delegate, nativeInvoker);
+  return std::make_shared<NativeMethodCallInvokerImpl>(
+      m_delegate, std::move(nativeMethodCallInvoker));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

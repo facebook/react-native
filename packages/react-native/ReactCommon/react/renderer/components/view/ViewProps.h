@@ -18,8 +18,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ViewProps;
 
@@ -110,5 +109,4 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

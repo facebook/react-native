@@ -14,8 +14,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowTree.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Owning registry of `ShadowTree`s.
@@ -68,5 +67,4 @@ class ShadowTreeRegistry final {
       registry_; // Protected by `mutex_`.
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

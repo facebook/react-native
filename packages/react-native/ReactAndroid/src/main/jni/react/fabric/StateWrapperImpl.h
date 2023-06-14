@@ -12,8 +12,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/core/State.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
@@ -38,5 +37,4 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

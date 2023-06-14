@@ -20,8 +20,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents the most generic props object.
@@ -65,5 +64,4 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

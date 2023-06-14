@@ -13,8 +13,7 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MountingCoordinator;
 
@@ -56,5 +55,4 @@ class TelemetryController final {
   mutable std::mutex mutex_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

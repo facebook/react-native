@@ -13,8 +13,7 @@
 @class RCTBridge;
 @class RCTModuleData;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class NativeModule;
@@ -25,5 +24,4 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
 NSError *tryAndReturnError(const std::function<void()> &func);
 NSString *deriveSourceURL(NSURL *url);
 
-}
-}
+} // namespace facebook::react

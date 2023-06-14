@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: fa_IR -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">واکنش منوی (%1$s) انحراف محلی</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">اجرای %1$s</string>
 </resources>

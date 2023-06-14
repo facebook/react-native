@@ -55,7 +55,7 @@ static SEL selectorForType(NSString *type)
     _viewPropBlocks = [NSMutableDictionary new];
     _shadowPropBlocks = [NSMutableDictionary new];
 
-    _name = moduleNameForClass(managerClass);
+    _name = RCTViewManagerModuleNameForClass(managerClass);
   }
   return self;
 }
@@ -385,7 +385,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
   }];
 }
 
-- (NSDictionary<NSString *, id> *)viewConfig
++ (NSDictionary<NSString *, id> *)viewConfigForViewMangerClass:(Class)managerClass
 {
   NSMutableArray<NSString *> *bubblingEvents = [NSMutableArray new];
   NSMutableArray<NSString *> *capturingEvents = [NSMutableArray new];
@@ -393,8 +393,8 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  if (RCTClassOverridesInstanceMethod(_managerClass, @selector(customBubblingEventTypes))) {
-    NSArray<NSString *> *events = [self.manager customBubblingEventTypes];
+  if (RCTClassOverridesInstanceMethod(managerClass, @selector(customBubblingEventTypes))) {
+    NSArray<NSString *> *events = [[managerClass new] customBubblingEventTypes];
     for (NSString *event in events) {
       [bubblingEvents addObject:RCTNormalizeInputEventName(event)];
     }
@@ -403,7 +403,7 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
 
   unsigned int count = 0;
   NSMutableDictionary *propTypes = [NSMutableDictionary new];
-  Method *methods = class_copyMethodList(object_getClass(_managerClass), &count);
+  Method *methods = class_copyMethodList(object_getClass(managerClass), &count);
   for (unsigned int i = 0; i < count; i++) {
     SEL selector = method_getName(methods[i]);
     const char *selectorName = sel_getName(selector);
@@ -418,13 +418,13 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
     }
 
     NSString *name = @(underscorePos + 1);
-    NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(_managerClass, selector)[0];
+    NSString *type = ((NSArray<NSString *> * (*)(id, SEL)) objc_msgSend)(managerClass, selector)[0];
     if (RCT_DEBUG && propTypes[name] && ![propTypes[name] isEqualToString:type]) {
       RCTLogError(
           @"Property '%@' of component '%@' redefined from '%@' "
            "to '%@'",
           name,
-          _name,
+          RCTViewManagerModuleNameForClass(managerClass),
           propTypes[name],
           type);
     }
@@ -450,24 +450,31 @@ static RCTPropBlock createNSInvocationSetter(NSMethodSignature *typeSignature, S
       RCTLogError(
           @"Component '%@' registered '%@' as both a bubbling event "
            "and a direct event",
-          _name,
+          RCTViewManagerModuleNameForClass(managerClass),
           event);
     }
   }
 #endif
 
-  Class superClass = [_managerClass superclass];
+  Class superClass = [managerClass superclass];
 
   return @{
     @"propTypes" : propTypes,
     @"directEvents" : directEvents,
     @"bubblingEvents" : bubblingEvents,
     @"capturingEvents" : capturingEvents,
-    @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : moduleNameForClass(superClass),
+    @"baseModuleName" : superClass == [NSObject class] ? (id)kCFNull : RCTViewManagerModuleNameForClass(superClass),
   };
 }
 
-static NSString *moduleNameForClass(Class managerClass)
+- (NSDictionary<NSString *, id> *)viewConfig
+{
+  // Make sure the manager is initialized before accessing view config.
+  [self manager];
+  return [RCTComponentData viewConfigForViewMangerClass:_managerClass];
+}
+
+NSString *RCTViewManagerModuleNameForClass(Class managerClass)
 {
   // Hackety hack, this partially re-implements RCTBridgeModuleNameForClass
   // We want to get rid of RCT and RK prefixes, but a lot of JS code still references

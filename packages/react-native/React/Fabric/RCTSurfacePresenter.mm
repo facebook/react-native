@@ -131,19 +131,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   return _contextContainer;
 }
 
-- (void)setContextContainer:(ContextContainer::Shared)contextContainer
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  _contextContainer = contextContainer;
-  _mountingManager.contextContainer = contextContainer;
-}
-
-- (RuntimeExecutor)runtimeExecutor
-{
-  std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
-  return _runtimeExecutor;
-}
-
 - (void)setRuntimeExecutor:(RuntimeExecutor)runtimeExecutor
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
@@ -281,8 +268,20 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::useNativeState = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_nstextstorage_caching")) {
-    CoreFeatures::cacheNSTextStorage = true;
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:cancel_image_downloads_on_recycle")) {
+    CoreFeatures::cancelImageDownloadsOnRecycle = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
+    CoreFeatures::disableTransactionCommit = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
+    CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
+    CoreFeatures::enableMountHooks = true;
   }
 
   auto componentRegistryFactory =
@@ -446,6 +445,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];
     }
+  }
+
+  RCTScheduler *scheduler = [self scheduler];
+  if (scheduler) {
+    // Notify mount when the effects are visible and prevent mount hooks to
+    // delay paint.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [scheduler reportMount:rootTag];
+    });
   }
 }
 

@@ -16,8 +16,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawPropsParser;
 
@@ -278,5 +277,4 @@ class RawValue {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

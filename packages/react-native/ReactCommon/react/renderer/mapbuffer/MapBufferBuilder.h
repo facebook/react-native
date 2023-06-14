@@ -11,8 +11,7 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Default reserved size for buckets_ vector
 constexpr uint32_t INITIAL_BUCKETS_SIZE = 10;
@@ -60,5 +59,4 @@ class MapBufferBuilder {
       uint32_t valueSize);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

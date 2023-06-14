@@ -43,8 +43,7 @@
 
 @end
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * The iOS TurboModule impl specific to SampleTurboModule.
@@ -54,5 +53,4 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
   NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -119,8 +119,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
                      }
                    }];
 
-  BOOL shouldFallbackToBareTextComparison =
-      [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
+  BOOL shouldFallbackDictation = [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"];
+  if (@available(iOS 16.0, *)) {
+    shouldFallbackDictation = self.backedTextInputView.dictationRecognizing;
+  }
+
+  BOOL shouldFallbackToBareTextComparison = shouldFallbackDictation ||
       [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"ko-KR"] ||
       self.backedTextInputView.markedTextRange || self.backedTextInputView.isSecureTextEntry ||
       fontHasBeenUpdatedBySystem;

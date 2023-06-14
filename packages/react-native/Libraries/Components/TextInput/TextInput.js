@@ -227,13 +227,16 @@ export type TextContentType =
   | 'oneTimeCode';
 
 export type enterKeyHintType =
-  | 'enter'
+  // Cross Platform
   | 'done'
   | 'go'
   | 'next'
-  | 'previous'
   | 'search'
-  | 'send';
+  | 'send'
+  // Android-only
+  | 'previous'
+  // iOS-only
+  | 'enter';
 
 type PasswordRules = string;
 
@@ -340,6 +343,16 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+
+  /**
+   * If `false`, the iOS system will not insert an extra space after a paste operation
+   * neither delete one or two spaces after a cut or delete operation.
+   *
+   * The default value is `true`.
+   *
+   * @platform ios
+   */
+  smartInsertDelete?: ?boolean,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -1073,27 +1086,19 @@ function InternalTextInput(props: Props): React.Node {
     accessibilityState,
     id,
     tabIndex,
+    selection: propsSelection,
     ...otherProps
   } = props;
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
-  // the same "most recent event count".
-  // For controlled selection, that means that immediately after text is updated,
-  // a controlled component will pass in the *previous* selection, even if the controlled
-  // component didn't mean to modify the selection at all.
-  // Therefore, we ignore selections and pass them through until the selection event has
-  // been sent.
-  // Note that this mitigation is NOT needed for Fabric.
-  // discovered when upgrading react-hooks
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  let selection: ?Selection =
-    props.selection == null
+  const selection: ?Selection =
+    propsSelection == null
       ? null
       : {
-          start: props.selection.start,
-          end: props.selection.end ?? props.selection.start,
+          start: propsSelection.start,
+          end: propsSelection.end ?? propsSelection.start,
           cursorPositionY: props.selection.cursorPositionY,
           cursorPositionX: props.selection.cursorPositionX,
         };
@@ -1107,12 +1112,6 @@ function InternalTextInput(props: Props): React.Node {
   |}>({selection, mostRecentEventCount});
 
   const lastNativeSelection = lastNativeSelectionState.selection;
-  const lastNativeSelectionEventCount =
-    lastNativeSelectionState.mostRecentEventCount;
-
-  if (lastNativeSelectionEventCount < mostRecentEventCount) {
-    selection = null;
-  }
 
   let viewCommands;
   if (AndroidTextInputCommands) {
@@ -1525,7 +1524,6 @@ function InternalTextInput(props: Props): React.Node {
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
-        selection={selection}
         style={style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}

@@ -1,4 +1,9 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ReactInstance.h"
 
@@ -17,8 +22,7 @@
 #include <tuple>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Looping on \c drainMicrotasks until it completes or hits the retries bound.
 static void performMicrotaskCheckpoint(jsi::Runtime &runtime) {
@@ -151,6 +155,12 @@ static void defineReadOnlyGlobal(
     jsi::Runtime &runtime,
     std::string propName,
     jsi::Value &&value) {
+  if (runtime.global().hasProperty(runtime, propName.c_str())) {
+    throw jsi::JSError(
+        runtime,
+        "Tried to redefine read-only global \"" + propName +
+            "\", but read-only globals can only be defined once.");
+  }
   jsi::Object jsObject =
       runtime.global().getProperty(runtime, "Object").asObject(runtime);
   jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
@@ -449,5 +459,4 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

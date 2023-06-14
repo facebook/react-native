@@ -134,6 +134,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   return super.surface.moduleName;
 }
 
+- (UIView *)view
+{
+  return (UIView *)super.surface.view;
+}
+
 - (UIView *)contentView
 {
   return self;

@@ -18,6 +18,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -57,6 +58,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mNumberOfLines;
   private TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
+  private float mFontSize = Float.NaN;
+  private float mLetterSpacing = Float.NaN;
   private int mLinkifyMaskType;
   private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
@@ -264,11 +267,14 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // the last offset in the layout will result in an endless loop. Work around
         // this bug by avoiding getPrimaryHorizontal in that case.
         if (start == text.length() - 1) {
+          boolean endsWithNewLine =
+              text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+          float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
           placeholderHorizontalPosition =
               isRtlParagraph
                   // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
                   // values when the paragraph is RTL and `setSingleLine(true)`.
-                  ? textViewWidth - (int) layout.getLineWidth(line)
+                  ? textViewWidth - (int) lineWidth
                   : (int) layout.getLineRight(line) - width;
         } else {
           // The direction of the paragraph may not be exactly the direction the string is heading
@@ -378,7 +384,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // operation
     // TODO T56559197: remove this condition when we migrate 100% to Fabric
     if (paddingLeft != UNSET
-        && paddingBottom != UNSET
+        && paddingTop != UNSET
         && paddingRight != UNSET
         && paddingBottom != UNSET) {
 
@@ -574,12 +580,34 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? ViewDefaults.NUMBER_OF_LINES : numberOfLines;
-    setSingleLine(mNumberOfLines == 1);
     setMaxLines(mNumberOfLines);
   }
 
   public void setAdjustFontSizeToFit(boolean adjustsFontSizeToFit) {
     mAdjustsFontSizeToFit = adjustsFontSizeToFit;
+  }
+
+  public void setFontSize(float fontSize) {
+    mFontSize =
+        mAdjustsFontSizeToFit
+            ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+            : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
+
+    applyTextAttributes();
+  }
+
+  public void setLetterSpacing(float letterSpacing) {
+    if (Float.isNaN(letterSpacing)) {
+      return;
+    }
+
+    float letterSpacingPixels = PixelUtil.toPixelFromDIP(letterSpacing);
+
+    // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
+    // yielding an accurate em value.
+    mLetterSpacing = letterSpacingPixels / mFontSize;
+
+    applyTextAttributes();
   }
 
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
@@ -650,5 +678,18 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     return super.dispatchHoverEvent(event);
+  }
+
+  private void applyTextAttributes() {
+    // Workaround for an issue where text can be cut off with an ellipsis when
+    // using certain font sizes and padding. Sets the provided text size and
+    // letter spacing to ensure consistent rendering and prevent cut-off.
+    if (!Float.isNaN(mFontSize)) {
+      setTextSize(TypedValue.COMPLEX_UNIT_PX, mFontSize);
+    }
+
+    if (!Float.isNaN(mLetterSpacing)) {
+      super.setLetterSpacing(mLetterSpacing);
+    }
   }
 }

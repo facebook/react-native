@@ -9,6 +9,7 @@
 #include <string>
 
 #include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
@@ -20,8 +21,7 @@
 #include "JavaModuleWrapper.h"
 #include "ModuleRegistryBuilder.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class JavaScriptExecutorHolder;
@@ -97,7 +97,8 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       NativeArray *arguments);
   void jniCallJSCallback(jint callbackId, NativeArray *arguments);
   jni::alias_ref<CallInvokerHolder::javaobject> getJSCallInvokerHolder();
-  jni::alias_ref<CallInvokerHolder::javaobject> getNativeCallInvokerHolder();
+  jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+  getNativeMethodCallInvokerHolder();
   jni::alias_ref<JRuntimeExecutor::javaobject> getRuntimeExecutor();
   jni::alias_ref<JRuntimeScheduler::javaobject> getRuntimeScheduler();
   void setGlobalVariable(std::string propName, std::string &&jsonValue);
@@ -112,10 +113,10 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
   std::shared_ptr<ModuleRegistry> moduleRegistry_;
   std::shared_ptr<JMessageQueueThread> moduleMessageQueue_;
   jni::global_ref<CallInvokerHolder::javaobject> jsCallInvokerHolder_;
-  jni::global_ref<CallInvokerHolder::javaobject> nativeCallInvokerHolder_;
+  jni::global_ref<NativeMethodCallInvokerHolder::javaobject>
+      nativeMethodCallInvokerHolder_;
   jni::global_ref<JRuntimeExecutor::javaobject> runtimeExecutor_;
   jni::global_ref<JRuntimeScheduler::javaobject> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -13,8 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Concrete and only template implementation of State interface.
@@ -44,7 +43,7 @@ class ConcreteState : public State {
       ShadowNodeFamily::Shared const &family)
       : State(data, family) {}
 
-  virtual ~ConcreteState() = default;
+  ~ConcreteState() override = default;
 
   /*
    * Returns stored data.
@@ -102,14 +101,14 @@ class ConcreteState : public State {
     return getData().getDynamic();
   }
 
-  void updateState(folly::dynamic data) const override {
-    updateState(std::move(Data(getData(), data)));
+  void updateState(folly::dynamic &&data) const override {
+    updateState(Data(getData(), std::move(data)));
   }
+
   MapBuffer getMapBuffer() const override {
     return getData().getMapBuffer();
   }
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
