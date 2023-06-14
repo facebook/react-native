@@ -20,6 +20,12 @@ export type PlatformSelectSpec<T> = {
 const Platform = {
   __constants: null,
   OS: 'android',
+  isAndroid: true,
+  isIOS: false,
+  isMacOS: false,
+  isNative: true,
+  isWeb: false,
+  isWindows: false,
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): number {
     // $FlowFixMe[object-this-reference]

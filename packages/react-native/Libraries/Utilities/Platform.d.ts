@@ -27,6 +27,12 @@ type PlatformConstants = {
   };
 };
 interface PlatformStatic {
+  isAndroid: boolean;
+  isIOS: boolean;
+  isMacOS: boolean;
+  isNative: boolean;
+  isWeb: boolean;
+  isWindows: boolean;
   isTV: boolean;
   isTesting: boolean;
   Version: number | string;
