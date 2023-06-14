@@ -134,15 +134,25 @@ static ShimRCTInstance *shimmedRCTInstance;
   stackFrame0[@"file"] = @"file2.js";
   [stack addObject:stackFrame1];
 
-  [instanceDelegate instance:OCMClassMock([RCTInstance class])
-      didReceiveJSErrorStack:stack
-                     message:@"message"
-                 exceptionId:5
-                     isFatal:YES];
+  [instanceDelegate instance:[OCMArg any] didReceiveJSErrorStack:stack message:@"message" exceptionId:5 isFatal:YES];
 
   OCMVerify(
       OCMTimes(1),
       [_mockHostDelegate host:_subject didReceiveJSErrorStack:stack message:@"message" exceptionId:5 isFatal:YES]);
+}
+
+- (void)testDidInitializeRuntime
+{
+  id<RCTHostRuntimeDelegate> mockRuntimeDelegate = OCMProtocolMock(@protocol(RCTHostRuntimeDelegate));
+  _subject.runtimeDelegate = mockRuntimeDelegate;
+
+  auto hermesRuntime = facebook::hermes::makeHermesRuntime();
+  facebook::jsi::Runtime *rt = hermesRuntime.get();
+
+  id<RCTInstanceDelegate> instanceDelegate = (id<RCTInstanceDelegate>)_subject;
+  [instanceDelegate instance:[OCMArg any] didInitializeRuntime:*rt];
+
+  OCMVerify(OCMTimes(1), [mockRuntimeDelegate host:_subject didInitializeRuntime:*rt]);
 }
 
 @end
