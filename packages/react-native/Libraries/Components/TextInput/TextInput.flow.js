@@ -41,6 +41,8 @@ export type TextInputEvent = SyntheticEvent<
     range: $ReadOnly<{|
       start: number,
       end: number,
+      cursorPositionX: number,
+      cursorPositionY: number,
     |}>,
     target: number,
     text: string,
@@ -69,6 +71,8 @@ export type FocusEvent = TargetEvent;
 type Selection = $ReadOnly<{|
   start: number,
   end: number,
+  cursorPositionX: number,
+  cursorPositionY: number,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -746,7 +750,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
-   * `{ nativeEvent: { selection: { start, end } } }`.
+   * `{ nativeEvent: { selection: { start, end, cursorPositionX, cursorPositionY } } }`.
    */
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
 
@@ -827,6 +831,8 @@ export type Props = $ReadOnly<{|
   selection?: ?$ReadOnly<{|
     start: number,
     end?: ?number,
+    cursorPositionX: number,
+    cursorPositionY: number,
   |}>,
 
   /**

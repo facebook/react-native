@@ -79,6 +79,8 @@ export type TextInputEvent = SyntheticEvent<
     range: $ReadOnly<{|
       start: number,
       end: number,
+      cursorPositionX: number,
+      cursorPositionY: number,
     |}>,
     target: number,
     text: string,
@@ -107,6 +109,8 @@ export type FocusEvent = TargetEvent;
 type Selection = $ReadOnly<{|
   start: number,
   end: number,
+  cursorPositionY: number,
+  cursorPositionX: number,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -785,7 +789,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
-   * `{ nativeEvent: { selection: { start, end } } }`.
+   * `{ nativeEvent: { selection: { start, end, cursorPositionX, cursorPositionY } } }`.
    */
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
 
@@ -862,10 +866,13 @@ export type Props = $ReadOnly<{|
   /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
+   * cursorPositionX and cursorPositionY specify the location of the cursor
    */
   selection?: ?$ReadOnly<{|
     start: number,
     end?: ?number,
+    cursorPositionX: number,
+    cursorPositionY: number,
   |}>,
 
   /**
@@ -1087,6 +1094,8 @@ function InternalTextInput(props: Props): React.Node {
       : {
           start: props.selection.start,
           end: props.selection.end ?? props.selection.start,
+          cursorPositionY: props.selection.cursorPositionY,
+          cursorPositionX: props.selection.cursorPositionX,
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
@@ -1137,7 +1146,9 @@ function InternalTextInput(props: Props): React.Node {
       selection &&
       lastNativeSelection &&
       (lastNativeSelection.start !== selection.start ||
-        lastNativeSelection.end !== selection.end)
+        lastNativeSelection.end !== selection.end ||
+        lastNativeSelection.cursorPositionY !== selection.cursorPositionY ||
+        lastNativeSelection.cursorPositionX !== selection.cursorPositionX)
     ) {
       nativeUpdate.selection = selection;
       setLastNativeSelection({selection, mostRecentEventCount});
@@ -1154,6 +1165,8 @@ function InternalTextInput(props: Props): React.Node {
         text,
         selection?.start ?? -1,
         selection?.end ?? -1,
+        selection?.cursorPositionX ?? -1,
+        selection?.cursorPositionY ?? -1,
       );
     }
   }, [
@@ -1221,6 +1234,8 @@ function InternalTextInput(props: Props): React.Node {
                 '',
                 0,
                 0,
+                0,
+                0,
               );
             }
           },
@@ -1231,7 +1246,12 @@ function InternalTextInput(props: Props): React.Node {
           getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
             return inputRef.current;
           },
-          setSelection(start: number, end: number): void {
+          setSelection(
+            start: number,
+            end: number,
+            cursorPositionX: number,
+            cursorPositionY: number,
+          ): void {
             if (inputRef.current != null) {
               viewCommands.setTextAndSelection(
                 inputRef.current,
@@ -1239,6 +1259,8 @@ function InternalTextInput(props: Props): React.Node {
                 null,
                 start,
                 end,
+                cursorPositionX,
+                cursorPositionY,
               );
             }
           },

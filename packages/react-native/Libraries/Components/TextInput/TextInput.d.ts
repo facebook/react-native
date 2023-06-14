@@ -114,7 +114,12 @@ export interface DocumentSelectionState extends EventEmitter {
   getFocusOffset(): number;
   getStartOffset(): number;
   getEndOffset(): number;
-  overlaps(start: number, end: number): boolean;
+  overlaps(
+    start: number,
+    end: number,
+    cursorPositionX: number,
+    cursorPositionY: number,
+  ): boolean;
 }
 
 /**
@@ -399,6 +404,8 @@ export interface TextInputSelectionChangeEventData extends TargetedEvent {
   selection: {
     start: number;
     end: number;
+    cursorPositionX: number;
+    cursorPositionY: number;
   };
 }
 
@@ -444,7 +451,12 @@ export interface TextInputSubmitEditingEventData {
 export interface TextInputTextInputEventData {
   text: string;
   previousText: string;
-  range: {start: number; end: number};
+  range: {
+    start: number;
+    end: number;
+    cursorPositionX: number;
+    cursorPositionY: number;
+  };
 }
 
 /**
@@ -732,7 +744,7 @@ export interface TextInputProps
 
   /**
    * Callback that is called on new text input with the argument
-   *  `{ nativeEvent: { text, previousText, range: { start, end } } }`.
+   *  `{ nativeEvent: { text, previousText, range: { start, end, cursorPositionX, cursorPositionY } } }`.
    *
    * This prop requires multiline={true} to be set.
    */
@@ -794,7 +806,14 @@ export interface TextInputProps
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: {start: number; end?: number | undefined} | undefined;
+  selection?:
+    | {
+        start: number;
+        end?: number | undefined;
+        cursorPositionX: number;
+        cursorPositionY: number;
+      }
+    | undefined;
 
   /**
    * The highlight (and cursor on ios) color of the text input
