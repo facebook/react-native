@@ -7,6 +7,7 @@
 
 #import <XCTest/XCTest.h>
 
+#import <RCTTestUtils/RCTMemoryUtils.h>
 #import <RCTTestUtils/ShimRCTInstance.h>
 #import <React/RCTLog.h>
 #import <React/RCTMockDef.h>
@@ -47,6 +48,8 @@ static ShimRCTInstance *shimmedRCTInstance;
 {
   [super setUp];
 
+  RCTAutoReleasePoolPush();
+
   shimmedRCTInstance = [ShimRCTInstance new];
 
   _mockHostDelegate = OCMProtocolMock(@protocol(RCTHostDelegate));
@@ -60,6 +63,14 @@ static ShimRCTInstance *shimmedRCTInstance;
 
 - (void)tearDown
 {
+  RCTAutoReleasePoolPop();
+
+  _subject = nil;
+  XCTAssertEqual(RCTGetRetainCount(_subject), 0);
+
+  _mockHostDelegate = nil;
+  XCTAssertEqual(RCTGetRetainCount(_mockHostDelegate), 0);
+
   [shimmedRCTInstance reset];
   gLogCalledTimes = 0;
   gLogMessage = nil;
