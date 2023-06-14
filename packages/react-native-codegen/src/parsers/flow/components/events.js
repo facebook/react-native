@@ -70,7 +70,7 @@ function getPropertyType(
         optional,
         parser,
         typeAnnotation,
-        getPropertyType,
+        extractArrayElementType,
       );
     case 'UnionTypeAnnotation':
       return {
@@ -311,5 +311,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
-  getPropertyType,
+  extractArrayElementType,
 };
