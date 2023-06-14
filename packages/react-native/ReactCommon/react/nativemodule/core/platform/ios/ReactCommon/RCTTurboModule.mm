@@ -449,7 +449,8 @@ id ObjCTurboModule::performMethodInvocation(
         if (optionalInternalRejectBlock != nil) {
           optionalInternalRejectBlock(exception);
         } else {
-          // JSFunction returning void
+          // Crash on native layer there is no promise in JS to reject.
+          // We executed JSFunction returning void asynchrounously.
           throw;
         }
       }
