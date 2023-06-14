@@ -10,6 +10,7 @@
 @interface ShimRCTInstance : NSObject
 
 @property (assign) int initCount;
+@property (assign) int invalidateCount;
 
 - (void)reset;
 

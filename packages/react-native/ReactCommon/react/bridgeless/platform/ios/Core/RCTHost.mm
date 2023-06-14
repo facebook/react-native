@@ -15,8 +15,12 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
+#import <React/RCTMockDef.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+
+RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
+#define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
 
 using namespace facebook::react;
 
