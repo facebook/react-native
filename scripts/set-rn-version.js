@@ -10,12 +10,9 @@
 'use strict';
 
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const {cat, echo, exec, exit, sed} = require('shelljs');
+const {cat, echo, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion, validateBuildType} = require('./version-utils');
-const {saveFiles} = require('./scm-utils');
 const updateTemplatePackage = require('./update-template-package');
 const {applyPackageVersions} = require('./npm-utils');
 
@@ -152,23 +149,6 @@ function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
 
   const version = parseVersion(argVersion, buildType);
 
-  // Create tmp folder for copies of files to verify files have changed
-  const filesToValidate = [
-    'packages/react-native/package.json',
-    'packages/react-native/template/package.json',
-  ];
-  const tmpVersioningFolder = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-set-version'),
-  );
-  echo(`The tmp versioning folder is ${tmpVersioningFolder}`);
-  saveFiles(
-    [
-      'packages/react-native/package.json',
-      'packages/react-native/template/package.json',
-    ],
-    tmpVersioningFolder,
-  );
-
   setSource(version);
   setPackage(version, dependencyVersions);
 
@@ -179,28 +159,6 @@ function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
   updateTemplatePackage(templateDependencyVersions);
 
   setGradle(version);
-
-  // Validate changes
-  // We just do a git diff and check how many times version is added across files
-  const numberOfChangedLinesWithNewVersion = exec(
-    `diff -r ${tmpVersioningFolder} . | grep '^[>]' | grep -c ${version.version} `,
-    {silent: true},
-  ).stdout.trim();
-
-  if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
-    // TODO: the logic that checks whether all the changes have been applied
-    // is missing several files. For example, it is not checking Ruby version nor that
-    // the Objecive-C files, the codegen and other files are properly updated.
-    // We are going to work on this in another PR.
-    echo('WARNING:');
-    echo(
-      `Failed to update all the files: [${filesToValidate.join(
-        ', ',
-      )}] must have versions in them`,
-    );
-    echo(`These files already had version ${version.version} set.`);
-  }
-
   return;
 }
 
