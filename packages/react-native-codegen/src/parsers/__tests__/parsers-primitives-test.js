@@ -42,12 +42,14 @@ const {
   typeEnumResolution,
   Visitor,
   emitStringProp,
+  emitObjectProp,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
 const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
+const {getPropertyType} = require('../flow/components/events');
 
 const parser = new MockedParser();
 const flowParser = new FlowParser();
@@ -1664,6 +1666,101 @@ describe('emitBoolProp', () => {
         optional: false,
         typeAnnotation: {
           type: 'BooleanTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitObjectProp', () => {
+  const name = 'someProp';
+  describe('when property is optional', () => {
+    it('returns optional Object Prop', () => {
+      const typeAnnotation = {
+        properties: [
+          {
+            key: {
+              name: 'someKey',
+            },
+            optional: true,
+            value: {
+              type: 'StringTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+        ],
+      };
+      const result = emitObjectProp(
+        name,
+        true,
+        flowParser,
+        typeAnnotation,
+        getPropertyType,
+      );
+      const expected = {
+        name: 'someProp',
+        optional: true,
+        typeAnnotation: {
+          properties: [
+            {
+              name: 'someKey',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when property is required', () => {
+    it('returns required Object Prop', () => {
+      const typeAnnotation = {
+        properties: [
+          {
+            key: {
+              name: 'someKey',
+            },
+            optional: false,
+            value: {
+              type: 'StringTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+        ],
+      };
+      const result = emitObjectProp(
+        name,
+        false,
+        flowParser,
+        typeAnnotation,
+        getPropertyType,
+      );
+      const expected = {
+        name: 'someProp',
+        optional: false,
+        typeAnnotation: {
+          properties: [
+            {
+              name: 'someKey',
+              optional: false,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
         },
       };
 

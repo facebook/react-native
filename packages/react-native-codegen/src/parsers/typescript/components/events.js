@@ -35,6 +35,7 @@ const {
   emitMixedProp,
   emitStringProp,
   emitInt32Prop,
+  emitObjectProp,
 } = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -66,18 +67,13 @@ function getPropertyType(
     case 'Float':
       return emitFloatProp(name, optional);
     case 'TSTypeLiteral':
-      return {
+      return emitObjectProp(
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: parser
-            .getObjectProperties(typeAnnotation)
-            .map(member =>
-              buildPropertiesForEvent(member, parser, getPropertyType),
-            ),
-        },
-      };
+        parser,
+        typeAnnotation,
+        getPropertyType,
+      );
     case 'TSUnionType':
       return {
         name,

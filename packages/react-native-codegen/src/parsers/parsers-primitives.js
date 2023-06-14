@@ -60,6 +60,7 @@ const {
   wrapNullable,
   unwrapNullable,
   translateFunctionTypeAnnotation,
+  buildPropertiesForEvent,
 } = require('./parsers-commons');
 
 const {isModuleRegistryCall} = require('./utils');
@@ -657,6 +658,32 @@ function emitMixedProp(
   };
 }
 
+function emitObjectProp(
+  name: string,
+  optional: boolean,
+  parser: Parser,
+  typeAnnotation: $FlowFixMe,
+  getPropertyType: (
+    name: $FlowFixMe,
+    optional: boolean,
+    typeAnnotation: $FlowFixMe,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'ObjectTypeAnnotation',
+      properties: parser
+        .getObjectProperties(typeAnnotation)
+        .map(member =>
+          buildPropertiesForEvent(member, parser, getPropertyType),
+        ),
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -687,4 +714,5 @@ module.exports = {
   typeEnumResolution,
   translateArrayTypeAnnotation,
   Visitor,
+  emitObjectProp,
 };
