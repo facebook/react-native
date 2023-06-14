@@ -33,6 +33,7 @@ const {
   emitMixedProp,
   emitStringProp,
   emitInt32Prop,
+  emitObjectProp,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
@@ -64,18 +65,13 @@ function getPropertyType(
         parser,
       );
     case 'ObjectTypeAnnotation':
-      return {
+      return emitObjectProp(
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: parser
-            .getObjectProperties(typeAnnotation)
-            .map(member =>
-              buildPropertiesForEvent(member, parser, getPropertyType),
-            ),
-        },
-      };
+        parser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
     case 'UnionTypeAnnotation':
       return {
         name,
@@ -315,4 +311,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };
