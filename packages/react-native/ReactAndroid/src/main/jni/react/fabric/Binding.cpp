@@ -440,7 +440,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
 
-  // TODO: (T130208323) runtimeExecutor should execute lambdas after
+  // TODO: (T132338609) runtimeExecutor should execute lambdas after
   // main bundle eval, and bindingsInstallExecutor should execute before.
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
