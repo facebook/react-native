@@ -36,11 +36,16 @@ export function ScrollViewKeyboardInsetsExample() {
         ]}
         automaticallyAdjustKeyboardInsets={automaticallyAdjustKeyboardInsets}
         keyboardDismissMode={'interactive'}>
-        {[...Array(20).keys()].map(item => (
-          <View key={item} style={styles.textInputRow}>
-            <TextInput placeholder={item.toString()} style={styles.textInput}/>
-          </View>
-        ))}
+        {[...Array(20).keys()].map((item, index) => {
+          const largeInput = (index % 5) === 4;
+          return (
+            <View key={item} style={styles.textInputRow}>
+              <TextInput placeholder={item.toString()}
+                         multiline={largeInput}
+                         style={[styles.textInput, largeInput && styles.textInputLarger]}/>
+            </View>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -66,6 +71,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 24,
     padding: 8,
+  },
+  textInputLarger: {
+    minHeight: 200,
   },
   controlRow: {
     padding: 10,
