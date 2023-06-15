@@ -10,6 +10,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTScrollView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -19,12 +20,39 @@
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
 
+#define EMPTY_TEXT_KEYBOARD_BOTTOM_OFFSET 15 // Native iOS empty text field bottom keyboard offset amount
+
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
   __weak id<RCTEventDispatcherProtocol> _eventDispatcher;
   BOOL _hasInputAccessoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
+}
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
+{
+  if (![self isDescendantOfView:scrollView]) {
+    // View is outside scroll view
+    return;
+  }
+
+  UITextRange *selectedTextRange = self.backedTextInputView.selectedTextRange;
+  UITextSelectionRect *selection = [self.backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  if (selection == nil) {
+    // No active selection or caret - fallback to entire input frame
+    scrollView.firstResponderFocus = [self convertRect:self.frame toView:nil];
+    return;
+  }
+
+  // Focus on text selection frame
+  CGRect focusRect = CGRectMake(
+    selection.rect.origin.x,
+    selection.rect.origin.y,
+    selection.rect.size.width,
+    selection.rect.size.height + (selectedTextRange.empty ? EMPTY_TEXT_KEYBOARD_BOTTOM_OFFSET : 0)
+  );
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge

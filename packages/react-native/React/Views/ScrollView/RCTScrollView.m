@@ -20,7 +20,6 @@
 #import "RCTViewUtils.h"
 #import "UIView+Private.h"
 #import "UIView+React.h"
-#import "UIResponder+FirstResponder.h"
 
 /**
  * Include a custom scroll view subclass because we want to limit certain
@@ -326,20 +325,17 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
-  UIResponder *firstResponder = [UIResponder currentFirstResponder];
-  if ([firstResponder isKindOfClass: [UITextField class]] && [(UITextField *) firstResponder isDescendantOfView:_scrollView]) {
-    UITextField *textField = [UIResponder currentFirstResponder];
-    CGRect textFieldFrame = [textField.superview convertRect:textField.frame toView:nil];
-    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height;
-    CGFloat contentDiff = textFieldBottom - endFrame.origin.y;
-    if (textFieldBottom > endFrame.origin.y && endFrame.origin.y < beginFrame.origin.y) {
-      if (self.inverted) {
-        newContentOffset.y -= contentDiff;
-      } else {
-        newContentOffset.y += contentDiff;
-      }
+  self.firstResponderFocus = CGRectNull;
+
+  if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:) to:nil from:self forEvent:nil]) {
+    // Inner text field focused
+    CGFloat focusEnd = self.firstResponderFocus.origin.y + self.firstResponderFocus.size.height;
+    if (focusEnd > endFrame.origin.y) {
+      // Text field active region is below visible area with keyboard - update offset to bring into view
+      newContentOffset.y += focusEnd - endFrame.origin.y;
     }
-  } else {
+  } else if (endFrame.origin.y <= beginFrame.origin.y) {
+    // Keyboard opened for other reason
     CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
     if (self.inverted) {
       newContentOffset.y += contentDiff;
