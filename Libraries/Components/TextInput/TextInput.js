@@ -1061,6 +1061,18 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 function InternalTextInput(props: Props): React.Node {
+  const {
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-selected': ariaSelected,
+    accessibilityState,
+    id,
+    tabIndex,
+    ...otherProps
+  } = props;
+
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
   // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
@@ -1381,13 +1393,25 @@ function InternalTextInput(props: Props): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
 
-  const _accessibilityState = {
-    busy: props['aria-busy'] ?? props.accessibilityState?.busy,
-    checked: props['aria-checked'] ?? props.accessibilityState?.checked,
-    disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
-    expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
-    selected: props['aria-selected'] ?? props.accessibilityState?.selected,
-  };
+  let _accessibilityState;
+  if (
+    accessibilityState != null ||
+    ariaBusy != null ||
+    ariaChecked != null ||
+    ariaDisabled != null ||
+    ariaExpanded != null ||
+    ariaSelected != null
+  ) {
+    _accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+  }
+
+  let style = flattenStyle(props.style);
 
   if (Platform.OS === 'ios') {
     const RCTTextInputView =
@@ -1395,10 +1419,7 @@ function InternalTextInput(props: Props): React.Node {
         ? RCTMultilineTextInputView
         : RCTSinglelineTextInputView;
 
-    const style =
-      props.multiline === true
-        ? StyleSheet.flatten([styles.multilineInput, props.style])
-        : props.style;
+    style = props.multiline === true ? [styles.multilineInput, style] : style;
 
     const useOnChangeSync =
       (props.unstable_onChangeSync || props.unstable_onChangeTextSync) &&
@@ -1407,15 +1428,16 @@ function InternalTextInput(props: Props): React.Node {
     textInput = (
       <RCTTextInputView
         ref={_setNativeRef}
-        {...props}
+        {...otherProps}
         {...eventHandlers}
-        accessible={accessible}
         accessibilityState={_accessibilityState}
+        accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         dataDetectorTypes={props.dataDetectorTypes}
-        focusable={focusable}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
+        nativeID={id ?? props.nativeID}
         onBlur={_onBlur}
         onKeyPressSync={props.unstable_onKeyPressSync}
         onChange={_onChange}
@@ -1431,7 +1453,6 @@ function InternalTextInput(props: Props): React.Node {
       />
     );
   } else if (Platform.OS === 'android') {
-    const style = [props.style];
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
@@ -1457,18 +1478,19 @@ function InternalTextInput(props: Props): React.Node {
        * fixed */
       <AndroidTextInput
         ref={_setNativeRef}
-        {...props}
+        {...otherProps}
         {...eventHandlers}
-        accessible={accessible}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessible={accessible}
         autoCapitalize={autoCapitalize}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
-        focusable={focusable}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
+        nativeID={id ?? props.nativeID}
         numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onChange={_onChange}
@@ -1598,11 +1620,12 @@ const ExportedForwardRef: React.AbstractComponent<
     React.ElementRef<HostComponent<mixed>> & ImperativeMethods,
   >,
 ) {
-  const style = flattenStyle(restProps.style);
+  let style = flattenStyle(restProps.style);
 
   if (style?.verticalAlign != null) {
     style.textAlignVertical =
       verticalAlignToTextAlignVerticalMap[style.verticalAlign];
+    delete style.verticalAlign;
   }
 
   return (
@@ -1642,6 +1665,8 @@ const ExportedForwardRef: React.AbstractComponent<
     />
   );
 });
+
+ExportedForwardRef.displayName = 'TextInput';
 
 /**
  * Switch to `deprecated-react-native-prop-types` for compatibility with future

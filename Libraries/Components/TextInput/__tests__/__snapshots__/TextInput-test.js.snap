@@ -2,15 +2,6 @@
 
 exports[`TextInput tests should render as expected: should deep render when mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
-  accessibilityState={
-    Object {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
   accessible={true}
   allowFontScaling={true}
   focusable={true}
@@ -40,15 +31,6 @@ exports[`TextInput tests should render as expected: should deep render when mock
 
 exports[`TextInput tests should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
 <RCTSinglelineTextInputView
-  accessibilityState={
-    Object {
-      "busy": undefined,
-      "checked": undefined,
-      "disabled": undefined,
-      "expanded": undefined,
-      "selected": undefined,
-    }
-  }
   accessible={true}
   allowFontScaling={true}
   focusable={true}
@@ -76,6 +58,6 @@ exports[`TextInput tests should render as expected: should deep render when not 
 />
 `;
 
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when mocked 1`] = `<ForwardRef(TextInput) />`;
+exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when mocked 1`] = `<TextInput />`;
 
-exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when not mocked 1`] = `<ForwardRef(TextInput) />`;
+exports[`TextInput tests should render as expected: should shallow render as <TextInput /> when not mocked 1`] = `<TextInput />`;
