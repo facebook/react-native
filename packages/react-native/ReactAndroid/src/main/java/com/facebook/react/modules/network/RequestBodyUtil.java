@@ -127,10 +127,16 @@ import okio.Source;
     return RequestBody.create(mediaType, gzipByteArrayOutputStream.toByteArray());
   }
 
+  /**
+   * Reference: https://github.com/square/okhttp/blob/8c8c3dbcfa91e28de2e13975ec414e07f153fde4/okhttp/src/commonMain/kotlin/okhttp3/internal/-UtilCommon.kt#L281-L288
+   * Checked exceptions will be ignored
+   */
   private static void closeQuietly(Source source) {
     try {
       source.close();
-    } catch (IOException e) {
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
       // noop.
     }
   }
