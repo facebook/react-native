@@ -18,7 +18,7 @@ import processColor from '../StyleSheet/processColor';
 import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
-import {NativeText, NativeVirtualText} from './TextNativeComponent';
+import {NativeText, NativeVirtualText, CONTAINS_MAX_NUMBER_OF_LINES_RENAME} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
@@ -201,6 +201,14 @@ const Text: React.AbstractComponent<
     numberOfLinesValue = 0;
   }
 
+  const numberOfLinesProps = useMemo(() => {
+    return {
+      [CONTAINS_MAX_NUMBER_OF_LINES_RENAME
+        ? 'maximumNumberOfLines'
+        : 'numberOfLines']: numberOfLinesValue,
+    };
+  }, [numberOfLinesValue]);
+
   const hasTextAncestor = useContext(TextAncestor);
 
   const _accessible = Platform.select({
@@ -252,6 +260,7 @@ const Text: React.AbstractComponent<
       <NativeText
         {...restProps}
         {...eventHandlersForText}
+        {...numberOfLinesProps}
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
         accessibilityRole={
           role ? getAccessibilityRoleFromRole(role) : accessibilityRole
@@ -267,7 +276,6 @@ const Text: React.AbstractComponent<
         ellipsizeMode={ellipsizeMode ?? 'tail'}
         isHighlighted={isHighlighted}
         nativeID={id ?? nativeID}
-        maximumNumberOfLines={numberOfLinesValue}
         ref={forwardedRef}
         selectable={_selectable}
         selectionColor={selectionColor}

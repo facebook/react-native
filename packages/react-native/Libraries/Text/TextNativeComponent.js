@@ -15,6 +15,7 @@ import {type HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import {type ProcessedColorValue} from '../StyleSheet/processColor';
 import {type PressEvent} from '../Types/CoreEventTypes';
 import {type TextProps} from './TextProps';
+import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 
 type NativeTextProps = $ReadOnly<{
   ...TextProps,
@@ -73,6 +74,10 @@ export const NativeText: HostComponent<NativeTextProps> =
   (createReactNativeComponentClass('RCTText', () =>
     createViewConfig(textViewConfig),
   ): any);
+
+export const CONTAINS_MAX_NUMBER_OF_LINES_RENAME =
+  getNativeComponentAttributes('RCTText')?.NativeProps?.maximumNumberOfLines ===
+  'number';
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
