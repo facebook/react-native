@@ -143,5 +143,5 @@ React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
 
-[l]: https://github.com/facebook/react-native/blob/HEAD/LICENSE
+[l]: https://github.com/facebook/react-native/blob/main/packages/react-native/LICENSE
 [ld]: https://github.com/facebook/react-native/blob/HEAD/LICENSE-docs
