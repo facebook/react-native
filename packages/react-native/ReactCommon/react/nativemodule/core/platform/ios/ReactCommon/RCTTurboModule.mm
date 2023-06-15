@@ -238,6 +238,16 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
 }
 
 /**
+ * Creates JSError with current JS runtime and NSDictionary data as cause.
+ */
+static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const std::string &message, NSDictionary *cause)
+{
+  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  error.asObject(runtime).setProperty(runtime, "cause", convertNSDictionaryToJSIObject(runtime, cause));
+  return {runtime, std::move(error)};
+}
+
+/**
  * Creates JSErrorValue with given stack trace.
  */
 static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::string jsStack)
@@ -389,13 +399,8 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           handlePromiseRejection(reason);
         };
 
-        RCTNSExceptionHandler internalRejectBlock = ^(NSException *exception) {
-          handlePromiseRejection(@{
-            @"name": exception.name,
-            @"message": exception.reason,
-            @"stackSymbols": exception.callStackSymbols,
-            @"stackReturnAddresses": exception.callStackReturnAddresses,
-          });
+        RCTNSDictionaryPromiseRejectBlock internalRejectBlock = ^(NSDictionary *dict) {
+          handlePromiseRejection(dict);
         };
 
         invokeCopy(resolveBlock, rejectBlock, internalRejectBlock);
@@ -403,6 +408,32 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
       });
 
   return Promise.callAsConstructor(runtime, fn);
+}
+
+static void handleCause(
+    jsi::Runtime &runtime,
+    bool isSync,
+    NSDictionary *cause,
+    NSMutableArray *retainedObjectsForInvocation,
+    RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock)
+{
+  [retainedObjectsForInvocation removeAllObjects];
+  if (isSync) {
+    NSString *message = cause[@"message"];
+    if (message) {
+      throw convertNSDictionaryToJSError(runtime, std::string([message UTF8String]), cause);
+    } else {
+      throw convertNSDictionaryToJSError(runtime, "<unknown>", cause);
+    }
+  } else {
+    if (optionalInternalRejectBlock != nil) {
+      optionalInternalRejectBlock(cause);
+    } else {
+      // Crash on native layer there is no promise in JS to reject.
+      // We executed JSFunction returning void asynchrounously.
+      throw;
+    }
+  }
 }
 
 /**
@@ -420,7 +451,7 @@ id ObjCTurboModule::performMethodInvocation(
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTNSExceptionHandler optionalInternalRejectBlock)
+    RCTNSDictionaryPromiseRejectBlock optionalInternalRejectBlock)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -440,22 +471,47 @@ id ObjCTurboModule::performMethodInvocation(
       TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
     }
 
-    @try {
+    try {
       [inv invokeWithTarget:strongModule];
-    } @catch (NSException *exception) {
-      if (isSync) {
-        throw convertNSExceptionToJSError(runtime, exception);
-      } else {
-        if (optionalInternalRejectBlock != nil) {
-          optionalInternalRejectBlock(exception);
-        } else {
-          // Crash on native layer there is no promise in JS to reject.
-          // We executed JSFunction returning void asynchrounously.
-          throw;
-        }
-      }
-    } @finally {
-      [retainedObjectsForInvocation removeAllObjects];
+    } catch (NSException *exception) {
+      NSDictionary *cause = @{
+        @"name": exception.name,
+        @"message": exception.reason,
+        @"stackSymbols": exception.callStackSymbols,
+        @"stackReturnAddresses": exception.callStackReturnAddresses,
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (NSError *error) {
+      NSDictionary *cause = @{
+        @"userInfo": error.userInfo,
+        @"domain": error.domain,
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (NSString *errorMessage) {
+      NSDictionary *cause = @{
+        @"message": errorMessage,
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (id e) {
+      NSDictionary *cause = @{
+        @"message": @"Unknown Objective-C Object thrown.",
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (const std::exception &exception) {
+      NSDictionary *cause = @{
+        @"message": [NSString stringWithUTF8String:exception.what()],
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (const std::string &errorMessage) {
+      NSDictionary *cause = @{
+        @"message": [NSString stringWithUTF8String:errorMessage.c_str()],
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
+    } catch (...) {
+      NSDictionary *cause = @{
+        @"message": @"Unknown C++ exception thrown.",
+      };
+      handleCause(runtime, isSync, cause, retainedObjectsForInvocation, optionalInternalRejectBlock);
     }
 
     if (!isSync) {
@@ -766,10 +822,10 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 
   if (returnType == PromiseKind) {
     returnValue = createPromise(
-        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTNSExceptionHandler internalRejectBlock) {
+        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTNSDictionaryPromiseRejectBlock internalRejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTNSExceptionHandler internalRejectCopy = [internalRejectBlock copy];
+          RCTNSDictionaryPromiseRejectBlock internalRejectCopy = [internalRejectBlock copy];
 
           [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
           [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
