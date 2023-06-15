@@ -89,9 +89,10 @@ module.exports = {
     );
   },
 
-  getCacheKey: (createCacheKeyFunction([
+  // $FlowFixMe[signature-verification-failure]
+  getCacheKey: createCacheKeyFunction([
     __filename,
     require.resolve('metro-react-native-babel-transformer'),
     require.resolve('@babel/core/package.json'),
-  ]) /*: any */),
+  ]),
 };
