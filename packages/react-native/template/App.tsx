@@ -25,6 +25,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import DrawerLayoutIos from './DrawerLayoutIos';
+
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -62,8 +64,8 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
+  return <>
+   <SafeAreaView style={backgroundStyle}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
@@ -93,7 +95,15 @@ function App(): JSX.Element {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
+    <DrawerLayoutIos>
+      <View style={styles.drawer}>
+        <Section title="Welcome">
+          Drawer
+        </Section>
+      </View>
+    </DrawerLayoutIos>
+  </>
+   
 }
 
 const styles = StyleSheet.create({
@@ -113,6 +123,15 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  drawer: {
+    height: '100%',
+    width: 400,
+    backgroundColor: '#fff',
+    margin: 20,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 });
 
 export default App;
