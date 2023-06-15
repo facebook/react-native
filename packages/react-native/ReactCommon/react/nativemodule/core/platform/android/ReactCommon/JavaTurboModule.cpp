@@ -73,11 +73,13 @@ struct JNIArgs {
   std::vector<jobject> globalRefs_;
 };
 
+using CallbackWrapperExecutor = std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>;
+
 jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    std::function<void(const std::shared_ptr<CallbackWrapper>&, const std::vector<jsi::Value>&)>&& executor) {
+    CallbackWrapperExecutor&& callbackWrapperExecutor) {
   auto weakWrapper =
       CallbackWrapper::createWeak(std::move(function), rt, jsInvoker);
 
@@ -94,7 +96,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
       [weakWrapper = std::move(weakWrapper),
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false,
-       executor = std::move(executor)](folly::dynamic responses) mutable {
+       callbackWrapperExecutor = std::move(callbackWrapperExecutor)](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           LOG(FATAL) << "callback arg cannot be called more than once";
         }
@@ -108,7 +110,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
             [weakWrapper = std::move(weakWrapper),
              callbackWrapperOwner = std::move(callbackWrapperOwner),
              responses = std::move(responses),
-             executor = std::move(executor)]() {
+             callbackWrapperExecutor = std::move(callbackWrapperExecutor)]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
@@ -121,7 +123,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
                     jsi::valueFromDynamic(strongWrapper2->runtime(), val));
               }
 
-              executor(strongWrapper2, args);
+              callbackWrapperExecutor(strongWrapper2, args);
             });
 
         wrapperWasCalled = true;
