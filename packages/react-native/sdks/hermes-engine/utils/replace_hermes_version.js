@@ -34,15 +34,17 @@ function shouldReplaceHermesConfiguration(configuration) {
     console.log(`Found ${LAST_BUILD_FILENAME} file`);
     const oldConfiguration = fs.readFileSync(LAST_BUILD_FILENAME).toString();
     if (oldConfiguration === configuration) {
-      console.log('No need to download a new build of Hermes!');
+      console.log(
+        'Same config of the previous build. No need to replace Hermes engine',
+      );
       return false;
     }
   }
 
   // Assumption: if there is no stored last build, we assume that it was build for debug.
-  if (!fs.existsSync && configuration === 'Debug') {
+  if (!fileExists && configuration === 'Debug') {
     console.log(
-      'File does not exists, but Debug configuration. No need to download a new build of Hermes!',
+      'No previous build detected, but Debug Configuration. No need to replace Hermes engine',
     );
     return false;
   }
