@@ -31,7 +31,7 @@ type TaskCancelProvider = () => TaskCanceller;
 
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
-  component: ComponentProvider,
+  component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger,
 ) => React$ComponentType<any>;
 export type AppConfig = {
