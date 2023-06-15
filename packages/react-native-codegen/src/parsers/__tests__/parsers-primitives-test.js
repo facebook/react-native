@@ -49,7 +49,7 @@ const {emitUnion} = require('../parsers-primitives');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
 const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
-const {getPropertyType} = require('../flow/components/events');
+const {extractArrayElementType} = require('../flow/components/events');
 
 const parser = new MockedParser();
 const flowParser = new FlowParser();
@@ -1679,6 +1679,10 @@ describe('emitObjectProp', () => {
   describe('when property is optional', () => {
     it('returns optional Object Prop', () => {
       const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'ObjectTypeAnnotation',
+        },
         properties: [
           {
             key: {
@@ -1699,7 +1703,7 @@ describe('emitObjectProp', () => {
         true,
         flowParser,
         typeAnnotation,
-        getPropertyType,
+        extractArrayElementType,
       );
       const expected = {
         name: 'someProp',
@@ -1725,6 +1729,10 @@ describe('emitObjectProp', () => {
   describe('when property is required', () => {
     it('returns required Object Prop', () => {
       const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'ObjectTypeAnnotation',
+        },
         properties: [
           {
             key: {
@@ -1745,7 +1753,7 @@ describe('emitObjectProp', () => {
         false,
         flowParser,
         typeAnnotation,
-        getPropertyType,
+        extractArrayElementType,
       );
       const expected = {
         name: 'someProp',

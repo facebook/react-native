@@ -50,10 +50,7 @@ function getPropertyType(
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
-  const type =
-    typeAnnotation.type === 'TSTypeReference'
-      ? typeAnnotation.typeName.name
-      : typeAnnotation.type;
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'TSBooleanKeyword':
@@ -72,7 +69,7 @@ function getPropertyType(
         optional,
         parser,
         typeAnnotation,
-        getPropertyType,
+        extractArrayElementType,
       );
     case 'TSUnionType':
       return {
@@ -92,7 +89,6 @@ function getPropertyType(
         typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
       };
     default:
-      (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
   }
 }
@@ -314,4 +310,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };
