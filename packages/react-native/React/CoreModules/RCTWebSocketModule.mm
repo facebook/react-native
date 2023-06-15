@@ -207,6 +207,15 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
 
 @end
 
+@implementation RCTBridgeProxy (RCTWebSocketModule)
+
+- (RCTWebSocketModule *)webSocketModule
+{
+  return [self moduleForClass:[RCTWebSocketModule class]];
+}
+
+@end
+
 Class RCTWebSocketModuleCls(void)
 {
   return RCTWebSocketModule.class;

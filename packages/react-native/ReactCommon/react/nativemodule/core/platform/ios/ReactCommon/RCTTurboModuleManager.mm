@@ -17,6 +17,7 @@
 
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTInitializing.h>
@@ -198,6 +199,8 @@ static Class getFallbackClassFromName(const char *name)
 
   NSDictionary<NSString *, id<RCTBridgeModule>> *_legacyEagerlyInitializedModules;
   NSDictionary<NSString *, Class> *_legacyEagerlyRegisteredModuleClasses;
+
+  RCTBridgeProxy *_bridgeProxy;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -241,6 +244,11 @@ static Class getFallbackClassFromName(const char *name)
                                                object:_bridge.parentBridge];
   }
   return self;
+}
+
+- (void)setBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+{
+  _bridgeProxy = bridgeProxy;
 }
 
 - (void)notifyAboutTurboModuleSetup:(const char *)name
@@ -441,6 +449,15 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   Class moduleClass = [self _getModuleClassFromName:moduleName];
+  return [self _isLegacyModuleClass:moduleClass];
+}
+
+- (BOOL)_isLegacyModuleClass:(Class)moduleClass
+{
+  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
+    return YES;
+  }
+
   return moduleClass != nil &&
       (!RCT_IS_TURBO_MODULE_CLASS(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
@@ -617,7 +634,7 @@ static Class getFallbackClassFromName(const char *name)
    * this method exists to know if we can safely set the bridge to the
    * NativeModule.
    */
-  if ([module respondsToSelector:@selector(bridge)] && _bridge) {
+  if ([module respondsToSelector:@selector(bridge)] && (_bridge || _bridgeProxy)) {
     /**
      * Just because a NativeModule has the `bridge` method, it doesn't mean
      * that it has synthesized the bridge in its implementation. Therefore,
@@ -634,7 +651,11 @@ static Class getFallbackClassFromName(const char *name)
        * generated, so we have have to rely on the KVC API of ObjC to set
        * the bridge property of these NativeModules.
        */
-      [(id)module setValue:_bridge forKey:@"bridge"];
+      if (_bridge) {
+        [(id)module setValue:_bridge forKey:@"bridge"];
+      } else if (_bridgeProxy && [self _isLegacyModuleClass:[module class]]) {
+        [(id)module setValue:_bridgeProxy forKey:@"bridge"];
+      }
     } @catch (NSException *exception) {
       RCTLogError(
           @"%@ has no setter or ivar for its bridge, which is not "
