@@ -29,7 +29,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.zip.GZIPOutputStream;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import okhttp3.internal.Util;
 import okio.BufferedSink;
 import okio.ByteString;
 import okio.Okio;
@@ -122,6 +121,21 @@ import okio.Source;
     return RequestBody.create(mediaType, gzipByteArrayOutputStream.toByteArray());
   }
 
+  /**
+   * Reference:
+   * https://github.com/square/okhttp/blob/8c8c3dbcfa91e28de2e13975ec414e07f153fde4/okhttp/src/commonMain/kotlin/okhttp3/internal/-UtilCommon.kt#L281-L288
+   * Checked exceptions will be ignored
+   */
+  private static void closeQuietly(Source source) {
+    try {
+      source.close();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      // noop.
+    }
+  }
+
   /** Creates a RequestBody from a mediaType and inputStream given. */
   public static RequestBody create(final MediaType mediaType, final InputStream inputStream) {
     return new RequestBody() {
@@ -146,7 +160,7 @@ import okio.Source;
           source = Okio.source(inputStream);
           sink.writeAll(source);
         } finally {
-          Util.closeQuietly(source);
+          closeQuietly(source);
         }
       }
     };
