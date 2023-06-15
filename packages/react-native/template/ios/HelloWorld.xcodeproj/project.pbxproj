@@ -14,6 +14,10 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		7699B88040F8A987B510C191 /* libPods-HelloWorld-HelloWorldTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-HelloWorld-HelloWorldTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		D6FB119A2A3BA66700778B6F /* RCTDrawerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FB11992A3BA66700778B6F /* RCTDrawerViewManager.m */; };
+		D6FB119D2A3BA70600778B6F /* RCTDrawerView.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FB119C2A3BA70600778B6F /* RCTDrawerView.m */; };
+		D6FB11A02A3BA7C000778B6F /* RCTDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FB119F2A3BA7C000778B6F /* RCTDrawerViewController.m */; };
+		D6FB11A32A3BAEB300778B6F /* RCTDrawerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = D6FB11A22A3BAEB300778B6F /* RCTDrawerModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +47,13 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-HelloWorld.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-HelloWorld.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = HelloWorld/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-HelloWorld-HelloWorldTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HelloWorld-HelloWorldTests.release.xcconfig"; path = "Target Support Files/Pods-HelloWorld-HelloWorldTests/Pods-HelloWorld-HelloWorldTests.release.xcconfig"; sourceTree = "<group>"; };
+		D6FB11992A3BA66700778B6F /* RCTDrawerViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDrawerViewManager.m; sourceTree = "<group>"; };
+		D6FB119B2A3BA6BE00778B6F /* RCTDrawerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDrawerView.h; sourceTree = "<group>"; };
+		D6FB119C2A3BA70600778B6F /* RCTDrawerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDrawerView.m; sourceTree = "<group>"; };
+		D6FB119E2A3BA7A100778B6F /* RCTDrawerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDrawerViewController.h; sourceTree = "<group>"; };
+		D6FB119F2A3BA7C000778B6F /* RCTDrawerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDrawerViewController.m; sourceTree = "<group>"; };
+		D6FB11A12A3BAE8500778B6F /* RCTDrawerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDrawerModule.h; sourceTree = "<group>"; };
+		D6FB11A22A3BAEB300778B6F /* RCTDrawerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDrawerModule.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -92,6 +103,13 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				D6FB11992A3BA66700778B6F /* RCTDrawerViewManager.m */,
+				D6FB119B2A3BA6BE00778B6F /* RCTDrawerView.h */,
+				D6FB119C2A3BA70600778B6F /* RCTDrawerView.m */,
+				D6FB119E2A3BA7A100778B6F /* RCTDrawerViewController.h */,
+				D6FB119F2A3BA7C000778B6F /* RCTDrawerViewController.m */,
+				D6FB11A12A3BAE8500778B6F /* RCTDrawerModule.h */,
+				D6FB11A22A3BAEB300778B6F /* RCTDrawerModule.m */,
 			);
 			name = HelloWorld;
 			sourceTree = "<group>";
@@ -412,8 +430,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6FB119A2A3BA66700778B6F /* RCTDrawerViewManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				D6FB119D2A3BA70600778B6F /* RCTDrawerView.m in Sources */,
+				D6FB11A32A3BAEB300778B6F /* RCTDrawerModule.m in Sources */,
+				D6FB11A02A3BA7C000778B6F /* RCTDrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,8 +522,12 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HelloWorld;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -526,7 +552,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = HelloWorld;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -564,7 +594,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -592,12 +622,14 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -635,7 +667,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -655,12 +687,14 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "$(inherited)";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
