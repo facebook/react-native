@@ -14,6 +14,7 @@ import type {
   LayoutEvent,
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
+import Platform from 'react-native/Libraries/Utilities/Platform';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
