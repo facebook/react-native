@@ -27,7 +27,7 @@
  * Block used to reject the JS promise waiting for a result
  * in cases when the native method throws an exception.
  */
-typedef void (^RCTInternalPromiseRejectBlock)(NSException *exception);
+typedef void (^RCTNSExceptionHandler)(NSException *exception);
 
 namespace facebook::react {
 
@@ -144,9 +144,9 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
       const char *methodName,
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation,
-      RCTInternalPromiseRejectBlock optionalInternalRejectBlock);
+      RCTNSExceptionHandler optionalInternalRejectBlock);
 
-  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper, RCTInternalPromiseRejectBlock internalRejectWrapper);
+  using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper, RCTNSExceptionHandler internalRejectWrapper);
   jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
 };
 

@@ -389,7 +389,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           handlePromiseRejection(reason);
         };
 
-        RCTInternalPromiseRejectBlock internalRejectBlock = ^(NSException *exception) {
+        RCTNSExceptionHandler internalRejectBlock = ^(NSException *exception) {
           handlePromiseRejection(@{
             @"name": exception.name,
             @"message": exception.reason,
@@ -420,7 +420,7 @@ id ObjCTurboModule::performMethodInvocation(
     const char *methodName,
     NSInvocation *inv,
     NSMutableArray *retainedObjectsForInvocation,
-    RCTInternalPromiseRejectBlock optionalInternalRejectBlock)
+    RCTNSExceptionHandler optionalInternalRejectBlock)
 {
   __block id result;
   __weak id<RCTBridgeModule> weakModule = instance_;
@@ -766,10 +766,10 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 
   if (returnType == PromiseKind) {
     returnValue = createPromise(
-        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTInternalPromiseRejectBlock internalRejectBlock) {
+        runtime, methodNameStr, ^(RCTPromiseResolveBlock resolveBlock, RCTPromiseRejectBlock rejectBlock, RCTNSExceptionHandler internalRejectBlock) {
           RCTPromiseResolveBlock resolveCopy = [resolveBlock copy];
           RCTPromiseRejectBlock rejectCopy = [rejectBlock copy];
-          RCTInternalPromiseRejectBlock internalRejectCopy = [internalRejectBlock copy];
+          RCTNSExceptionHandler internalRejectCopy = [internalRejectBlock copy];
 
           [inv setArgument:(void *)&resolveCopy atIndex:count + 2];
           [inv setArgument:(void *)&rejectCopy atIndex:count + 3];
