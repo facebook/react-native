@@ -47,8 +47,8 @@ references:
   # -------------------------
   dependency_versions:
     xcode_version: &xcode_version "14.3.0"
-    nodelts_image: &nodelts_image "cimg/node:18.12.1"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
+    nodelts_image: &nodelts_image "cimg/node:20.2.0"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
 
   # -------------------------
   #        Cache Key Anchors
@@ -1128,7 +1128,7 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:11
+      - image: debian:bullseye
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"
