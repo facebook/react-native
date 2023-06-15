@@ -128,6 +128,21 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+__deprecated_msg("Use version with inlineSourceMap parameter instead");
+
+ + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                        packagerHost:(NSString *)packagerHost
+                      packagerScheme:(NSString *)scheme
+                           enableDev:(BOOL)enableDev
+                  enableMinification:(BOOL)enableMinification
+                         modulesOnly:(BOOL)modulesOnly
+                           runModule:(BOOL)runModule
+__deprecated_msg("Use version with inlineSourceMap parameter instead");
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
                     inlineSourceMap:(BOOL)inlineSourceMap;
 
 + (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
@@ -138,6 +153,17 @@ RCT_EXTERN void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed);
                     inlineSourceMap:(BOOL)inlineSourceMap
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule;
+/**
+ * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
+ * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged
+ * resource if it is not: -resourceURLForResourceRoot:resourceName:resourceExtension:offlineBundle:
+ */
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                               scheme:(NSString *)scheme
+                                query:(NSString *)query
+__deprecated_msg("Use version with queryItems parameter instead");
+
 /**
  * Given a hostname for the packager and a resource path (including "/"), return the URL to the resource.
  * In general, please use the instance method to decide if the packager is running and fallback to the pre-packaged

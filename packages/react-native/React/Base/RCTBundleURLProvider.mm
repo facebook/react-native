@@ -22,6 +22,7 @@ void RCTBundleURLProviderAllowPackagerServerAccess(BOOL allowed)
   kRCTAllowPackagerAccess = allowed;
 }
 #endif
+static NSString *const kRCTPlatformName = @"ios";
 static NSString *const kRCTPackagerSchemeKey = @"RCT_packager_scheme";
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
@@ -248,6 +249,21 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                        packagerHost:(NSString *)packagerHost
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+{
+  return [self jsBundleURLForBundleRoot:bundleRoot
+                           packagerHost:packagerHost
+                         packagerScheme:nil
+                              enableDev:enableDev
+                     enableMinification:enableMinification
+                        inlineSourceMap:NO
+                            modulesOnly:NO
+                              runModule:YES];
+}
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
                     inlineSourceMap:(BOOL)inlineSourceMap
 
 {
@@ -266,6 +282,24 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
                      packagerScheme:(NSString *)scheme
                           enableDev:(BOOL)enableDev
                  enableMinification:(BOOL)enableMinification
+                        modulesOnly:(BOOL)modulesOnly
+                          runModule:(BOOL)runModule
+{
+	return [self jsBundleURLForBundleRoot:bundleRoot
+                           packagerHost:packagerHost
+                         packagerScheme:nil
+                              enableDev:enableDev
+                     enableMinification:enableMinification
+                        inlineSourceMap:NO
+                            modulesOnly:modulesOnly
+                              runModule:runModule];
+}
+
++ (NSURL *)jsBundleURLForBundleRoot:(NSString *)bundleRoot
+                       packagerHost:(NSString *)packagerHost
+                     packagerScheme:(NSString *)scheme
+                          enableDev:(BOOL)enableDev
+                 enableMinification:(BOOL)enableMinification
                     inlineSourceMap:(BOOL)inlineSourceMap
                         modulesOnly:(BOOL)modulesOnly
                           runModule:(BOOL)runModule
@@ -273,6 +307,7 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   BOOL lazy = enableDev;
   NSArray<NSURLQueryItem *> *queryItems = @[
+		[[NSURLQueryItem alloc] initWithName:@"platform" value:kRCTPlatformName],
     [[NSURLQueryItem alloc] initWithName:@"dev" value:enableDev ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"lazy" value:lazy ? @"true" : @"false"],
     [[NSURLQueryItem alloc] initWithName:@"minify" value:enableMinification ? @"true" : @"false"],
@@ -286,6 +321,20 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
       queryItems = [queryItems arrayByAddingObject:[[NSURLQueryItem alloc] initWithName:@"app" value:bundleID]];
   }
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost scheme:scheme queryItems:queryItems];
+}
+
++ (NSURL *)resourceURLForResourcePath:(NSString *)path
+                         packagerHost:(NSString *)packagerHost
+                               scheme:(NSString *)scheme
+                                query:(NSString *)query
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost, scheme)
+                                           resolvingAgainstBaseURL:NO];
+  components.path = path;
+  if (query != nil) {
+    components.query = query;
+  }
+  return components.URL;
 }
 
 + (NSURL *)resourceURLForResourcePath:(NSString *)path
@@ -357,7 +406,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
 {
   [self updateValue:@(inlineSourceMap) forKey:kRCTInlineSourceMapKey];
 }
-
 
 - (void)setPackagerScheme:(NSString *)packagerScheme
 {
