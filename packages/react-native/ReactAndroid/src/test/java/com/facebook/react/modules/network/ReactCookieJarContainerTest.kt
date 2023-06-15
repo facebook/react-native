@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.network
 
-import java.lang.Exception
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
@@ -17,54 +16,51 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.`when` as whenever
 import org.powermock.core.classloader.annotations.PowerMockIgnore
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.robolectric.RobolectricTestRunner
 
 /** Tests for {@link NetworkingModule}. */
-@PrepareForTest(ReactCookieJarContainer::class)
 @RunWith(RobolectricTestRunner::class)
+@PrepareForTest(ReactCookieJarContainer::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactCookieJarContainerTest {
+  private val httpUrl: HttpUrl = "http://example.com".toHttpUrl()
 
   @Test
-  @Throws(Exception::class)
   fun testMissingJar() {
     val jarContainer: ReactCookieJarContainer = mock(ReactCookieJarContainer::class.java)
-    assertThat(jarContainer.loadForRequest("http://example.com".toHttpUrl()).size).isEqualTo(0)
+    assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(0)
   }
 
   @Test
-  @Throws(Exception::class)
   fun testEmptyCookies() {
     val jarContainer: ReactCookieJarContainer = mock(ReactCookieJarContainer::class.java)
-    val cookies: List<Cookie> = listOf<Cookie>()
-    `when`(jarContainer.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
-    assertThat(jarContainer.loadForRequest("http://example.com".toHttpUrl()).size).isEqualTo(0)
+    val cookies: List<Cookie> = emptyList()
+    whenever(jarContainer.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
+    assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(0)
   }
 
   @Test
-  @Throws(Exception::class)
   fun testValidCookies() {
     val jarContainer = ReactCookieJarContainer()
     val cookieJar: CookieJar = mock(CookieJar::class.java)
     jarContainer.setCookieJar(cookieJar)
-    val cookies: MutableList<Cookie> = mutableListOf<Cookie>()
+    val cookies: MutableList<Cookie> = mutableListOf()
     cookies.add(Cookie.Builder().name("valid").value("valid value").domain("domain").build())
-    `when`(cookieJar.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
-    assertThat(jarContainer.loadForRequest("http://example.com".toHttpUrl()).size).isEqualTo(1)
+    whenever(cookieJar.loadForRequest(httpUrl)).thenReturn(cookies)
+    assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(1)
   }
 
   @Test
-  @Throws(Exception::class)
   fun testInvalidCookies() {
     val jarContainer = ReactCookieJarContainer()
     val cookieJar: CookieJar = mock(CookieJar::class.java)
     jarContainer.setCookieJar(cookieJar)
-    val cookies: MutableList<Cookie> = mutableListOf<Cookie>()
+    val cookies: MutableList<Cookie> = mutableListOf()
     cookies.add(Cookie.Builder().name("valid").value("înválíd välūė").domain("domain").build())
-    `when`(cookieJar.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
-    assertThat(jarContainer.loadForRequest("http://example.com".toHttpUrl()).size).isEqualTo(0)
+    whenever(cookieJar.loadForRequest(httpUrl)).thenReturn(cookies)
+    assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(0)
   }
 }
