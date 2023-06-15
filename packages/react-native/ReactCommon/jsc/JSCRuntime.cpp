@@ -398,6 +398,11 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
       stringCounter_(0)
 #endif
 {
+#ifndef NDEBUG
+  if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
+    JSGlobalContextSetInspectable(ctx_, true);
+  }
+#endif
 }
 
 JSCRuntime::~JSCRuntime() {
