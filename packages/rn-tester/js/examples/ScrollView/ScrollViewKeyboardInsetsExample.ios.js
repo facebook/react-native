@@ -30,6 +30,9 @@ export function ScrollViewKeyboardInsetsExample() {
           value={automaticallyAdjustKeyboardInsets}
           style={styles.controlSwitch}/>
       </View>
+      <View style={styles.controlRow}>
+        <TextInput placeholder={'Text input outside scroll view'} style={styles.controlTextInput} />
+      </View>
       <ScrollView
         contentContainerStyle={[
           styles.scrollViewContent,
@@ -92,10 +95,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 10,
-    marginVertical: -10,
-    marginRight: -10,
-    fontSize: 20,
-    textAlign: 'right',
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderRadius: 8,
   },
   code: {
     fontSize: 12,
