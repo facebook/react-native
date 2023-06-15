@@ -20,7 +20,6 @@ import {
 
 export function ScrollViewKeyboardInsetsExample() {
   const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = React.useState(true);
-  const [bottomKeyboardOffset, setBottomKeyboardOffset] = React.useState(0);
 
   return (
     <View style={styles.container}>
@@ -31,20 +30,11 @@ export function ScrollViewKeyboardInsetsExample() {
           value={automaticallyAdjustKeyboardInsets}
           style={styles.controlSwitch}/>
       </View>
-      <View style={styles.controlRow}>
-          <Text style={styles.code}>bottomKeyboardOffset</Text>
-          <TextInput
-            placeholder={bottomKeyboardOffset + ''}
-            keyboardType={'numeric'}
-            onChangeText={v => setBottomKeyboardOffset(parseInt(v || '0', 10))}
-            style={styles.controlTextInput}/>
-      </View>
       <ScrollView
         contentContainerStyle={[
           styles.scrollViewContent,
         ]}
         automaticallyAdjustKeyboardInsets={automaticallyAdjustKeyboardInsets}
-        bottomKeyboardOffset={bottomKeyboardOffset}
         keyboardDismissMode={'interactive'}>
         {[...Array(20).keys()].map(item => (
           <View key={item} style={styles.textInputRow}>

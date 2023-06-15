@@ -330,7 +330,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if ([firstResponder isKindOfClass: [UITextField class]] && [(UITextField *) firstResponder isDescendantOfView:_scrollView]) {
     UITextField *textField = [UIResponder currentFirstResponder];
     CGRect textFieldFrame = [textField.superview convertRect:textField.frame toView:nil];
-    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height + _bottomKeyboardOffset;
+    CGFloat textFieldBottom = textFieldFrame.origin.y + textFieldFrame.size.height;
     CGFloat contentDiff = textFieldBottom - endFrame.origin.y;
     if (textFieldBottom > endFrame.origin.y && endFrame.origin.y < beginFrame.origin.y) {
       if (self.inverted) {
