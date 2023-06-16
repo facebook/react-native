@@ -326,7 +326,8 @@ public class ReactHost implements ReactHostInterface {
   @ThreadConfined(UI)
   @Override
   public void onHostResume(
-      final @Nullable Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+      final @Nullable Activity activity,
+      @Nullable DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     mDefaultHardwareBackBtnHandler = defaultBackButtonImpl;
     onHostResume(activity);
   }
