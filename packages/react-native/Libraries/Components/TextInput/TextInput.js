@@ -39,7 +39,11 @@ type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
   +clear: () => void,
   +isFocused: () => boolean,
   +getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
-  +setSelection: (start: number, end: number) => void,
+  +setSelection: (
+    start: number,
+    end: number,
+    cursorPosition: {x: number, y: number},
+  ) => void,
 };
 
 let AndroidTextInput;
@@ -79,8 +83,10 @@ export type TextInputEvent = SyntheticEvent<
     range: $ReadOnly<{|
       start: number,
       end: number,
-      cursorPositionX: number,
-      cursorPositionY: number,
+      cursorPosition: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
     |}>,
     target: number,
     text: string,
@@ -109,8 +115,10 @@ export type FocusEvent = TargetEvent;
 type Selection = $ReadOnly<{|
   start: number,
   end: number,
-  cursorPositionY: number,
-  cursorPositionX: number,
+  cursorPosition: $ReadOnly<{|
+    x: number,
+    y: number,
+  |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -802,7 +810,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
-   * `{ nativeEvent: { selection: { start, end, cursorPositionX, cursorPositionY } } }`.
+   * `{ nativeEvent: { selection: { start, end, cursorPosition: {x, y}} } }`.
    */
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
 
@@ -879,13 +887,15 @@ export type Props = $ReadOnly<{|
   /**
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
-   * cursorPositionX and cursorPositionY specify the location of the cursor
+   * cursorPosition specify the location of the cursor
    */
   selection?: ?$ReadOnly<{|
     start: number,
     end?: ?number,
-    cursorPositionX: number,
-    cursorPositionY: number,
+    cursorPosition: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
   |}>,
 
   /**
@@ -1093,14 +1103,13 @@ function InternalTextInput(props: Props): React.Node {
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const selection: ?Selection =
-    propsSelection == null
+  let selection: ?Selection =
+    props.selection == null
       ? null
       : {
-          start: propsSelection.start,
-          end: propsSelection.end ?? propsSelection.start,
-          cursorPositionY: props.selection.cursorPositionY,
-          cursorPositionX: props.selection.cursorPositionX,
+          start: props.selection.start,
+          end: props.selection.end ?? props.selection.start,
+          cursorPosition: {x: props.selection.cursorPosition.x, y: props.selection.cursorPosition.y},
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
@@ -1145,9 +1154,7 @@ function InternalTextInput(props: Props): React.Node {
       selection &&
       lastNativeSelection &&
       (lastNativeSelection.start !== selection.start ||
-        lastNativeSelection.end !== selection.end ||
-        lastNativeSelection.cursorPositionY !== selection.cursorPositionY ||
-        lastNativeSelection.cursorPositionX !== selection.cursorPositionX)
+        lastNativeSelection.end !== selection.end)
     ) {
       nativeUpdate.selection = selection;
       setLastNativeSelection({selection, mostRecentEventCount});
@@ -1164,8 +1171,6 @@ function InternalTextInput(props: Props): React.Node {
         text,
         selection?.start ?? -1,
         selection?.end ?? -1,
-        selection?.cursorPositionX ?? -1,
-        selection?.cursorPositionY ?? -1,
       );
     }
   }, [
@@ -1233,8 +1238,6 @@ function InternalTextInput(props: Props): React.Node {
                 '',
                 0,
                 0,
-                0,
-                0,
               );
             }
           },
@@ -1245,12 +1248,7 @@ function InternalTextInput(props: Props): React.Node {
           getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
             return inputRef.current;
           },
-          setSelection(
-            start: number,
-            end: number,
-            cursorPositionX: number,
-            cursorPositionY: number,
-          ): void {
+          setSelection(start: number, end: number): void {
             if (inputRef.current != null) {
               viewCommands.setTextAndSelection(
                 inputRef.current,
@@ -1258,8 +1256,6 @@ function InternalTextInput(props: Props): React.Node {
                 null,
                 start,
                 end,
-                cursorPositionX,
-                cursorPositionY,
               );
             }
           },

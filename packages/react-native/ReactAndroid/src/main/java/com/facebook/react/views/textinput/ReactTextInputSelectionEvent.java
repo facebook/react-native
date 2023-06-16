@@ -1,10 +1,3 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 package com.facebook.react.views.textinput;
 
 import androidx.annotation.Nullable;
@@ -12,6 +5,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.common.ViewUtil;
 
 /** Event emitted by EditText native view when the text selection changes. */
 /* package */ class ReactTextInputSelectionEvent extends Event<ReactTextInputSelectionEvent> {
@@ -20,17 +14,17 @@ import com.facebook.react.uimanager.events.Event;
 
   private int mSelectionStart;
   private int mSelectionEnd;
-  private float mCursorPositionX;
-  private float mCursorPositionY;
+  private int mCursorPositionStartX;
+  private int mCursorPositionStartY;
 
   @Deprecated
   public ReactTextInputSelectionEvent(
       int viewId,
       int selectionStart,
       int selectionEnd,
-      float cursorPositionX,
-      float cursorPositionY) {
-    this(-1, viewId, selectionStart, selectionEnd, cursorPositionX, cursorPositionY);
+      int cursorPositionStartX,
+      int cursorPositionStartY) {
+    this(ViewUtil.NO_SURFACE_ID, viewId, selectionStart, selectionEnd, cursorPositionStartX, cursorPositionStartY);
   }
 
   public ReactTextInputSelectionEvent(
@@ -38,13 +32,13 @@ import com.facebook.react.uimanager.events.Event;
       int viewId,
       int selectionStart,
       int selectionEnd,
-      float cursorPositionX,
-      float cursorPositionY) {
+      int cursorPositionStartX,
+      int cursorPositionStartY) {
     super(surfaceId, viewId);
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
-    mCursorPositionX = cursorPositionX;
-    mCursorPositionY = cursorPositionY;
+    mCursorPositionStartX = cursorPositionStartX;
+    mCursorPositionStartY = cursorPositionStartY;
   }
 
   @Override
@@ -58,10 +52,14 @@ import com.facebook.react.uimanager.events.Event;
     WritableMap eventData = Arguments.createMap();
 
     WritableMap selectionData = Arguments.createMap();
+
+    WritableMap cursorPosition = Arguments.createMap();
+    cursorPosition.putInt("x", mCursorPositionStartX);
+    cursorPosition.putInt("y", mCursorPositionStartY);
+
     selectionData.putInt("end", mSelectionEnd);
     selectionData.putInt("start", mSelectionStart);
-    selectionData.putDouble("cursorPositionX", mCursorPositionX);
-    selectionData.putDouble("cursorPositionY", mCursorPositionY);
+    selectionData.putMap("cursorPosition", cursorPosition);
 
     eventData.putMap("selection", selectionData);
     return eventData;

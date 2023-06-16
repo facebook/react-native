@@ -1232,9 +1232,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onSelectionChanged(int start, int end) {
-      // Calculate cursor position
       Layout layout = mReactEditText.getLayout();
-      if (mReactEditText.getLayout() == null) {
+      if (layout == null) {
         mReactEditText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -1244,30 +1243,31 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
           });
           return;
       }
-      int line = layout.getLineForOffset(start);
-      int baseline = layout.getLineBaseline(line);
-      int ascent = layout.getLineAscent(line);
-      float cursorPositionX = layout.getPrimaryHorizontal(start);
-      float cursorPositionY = baseline + ascent;
-
-      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
-      // To prevent double calling back into js we cache the result of the previous call and only
-      // forward it on if we have new values
-
-      // Apparently Android might call this with an end value that is less than the start value
-      // Lets normalize them. See https://github.com/facebook/react-native/issues/18579
       int realStart = Math.min(start, end);
       int realEnd = Math.max(start, end);
+      int cursorPositionStartX = 0;
+      int cursorPositionStartY = 0;
+
+    if (realStart == realEnd && realStart != 0) {
+      int lineStart = layout.getLineForOffset(realStart);
+      int baselineStart = layout.getLineBaseline(lineStart);
+      int ascentStart = layout.getLineAscent(lineStart);
+      cursorPositionStartX = (int) Math.round(PixelUtil.toDIPFromPixel(layout.getPrimaryHorizontal(realStart)));
+      cursorPositionStartY = (int) Math.round(PixelUtil.toDIPFromPixel(baselineStart + ascentStart));
+    }
+
 
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(
-                mSurfaceId,
-                mReactEditText.getId(),
-                realStart,
-                realEnd,
-                PixelUtil.toDIPFromPixel(cursorPositionX),
-                PixelUtil.toDIPFromPixel(cursorPositionY)));
+          new ReactTextInputSelectionEvent(
+            mSurfaceId,
+            mReactEditText.getId(),
+            realStart,
+            realEnd,
+            cursorPositionStartX,
+            cursorPositionStartY
+          )
+        );
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;

@@ -478,8 +478,10 @@ type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
     end: number,
-    cursorPositionY: number,
-    cursorPositionX: number,
+    cursorPosition: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
   |}>,
   value: string,
   ...
@@ -496,7 +498,11 @@ class SelectionExample extends React.Component<
   constructor(props) {
     super(props);
     this.state = {
-      selection: {start: 0, end: 0, cursorPositionY: 0, cursorPositionX: 0},
+      selection: {
+        start: 0,
+        end: 0,
+        cursorPosition: {x: 0, y: 0},
+      },
       value: props.value,
     };
   }
@@ -512,21 +518,13 @@ class SelectionExample extends React.Component<
     return Math.round(Math.random() * length);
   }
 
-  select(
-    start: number,
-    end: number,
-    cursorPositionY?: number,
-    cursorPositionX?: number,
-  ) {
+  select(start: number, end: number) {
     this._textInput?.focus();
     this.setState({
       selection: {
         start,
         end,
-        cursorPositionY:
-          cursorPositionY ?? this.state.selection.cursorPositionY,
-        cursorPositionX:
-          cursorPositionX ?? this.state.selection.cursorPositionX,
+        cursorPosition: {x: 0, y: 0},
       },
     });
     if (this.props.imperative) {
@@ -573,9 +571,10 @@ class SelectionExample extends React.Component<
             selection ={' '}
             {`{
               start:${this.state.selection.start}, end:${this.state.selection.end},
-              cursorPositionX:${this.state.selection.cursorPositionX},
-              cursorPositionY:${this.state.selection.cursorPositionY}
-            }`}
+              cursorPosition: {
+                x: ${this.state.selection.cursorPosition.x},
+                y: ${this.state.selection.cursorPosition.y}
+              }`}
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-start`}

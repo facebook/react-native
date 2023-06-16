@@ -512,6 +512,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   }
 }
 
+- (NSString *)formatPositionValue:(CGFloat)positionValue {
+  if (positionValue < 0) {
+    return @"0";
+  }
+  NSInteger roundedValue = round(positionValue);
+  NSString *formattedValue = [NSString stringWithFormat:@"%ld", (long)roundedValue];
+  return formattedValue;
+}
+
+
 - (void)textInputDidChangeSelection
 {
   if (!_onSelectionChange) {
@@ -520,16 +530,26 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   RCTTextSelection *selection = self.selection;
   UITextRange *selectedTextRange = self.backedTextInputView.selectedTextRange;
-  CGPoint selectionOrigin = [self.backedTextInputView caretRectForPosition:selectedTextRange.start].origin;
+  CGPoint selectionOriginStart = [self.backedTextInputView caretRectForPosition:selectedTextRange.start].origin;
 
-  _onSelectionChange(@{
-    @"selection" : @{
-      @"start" : @(selection.start),
-      @"end" : @(selection.end),
-      @"cursorPositionY": @(selectionOrigin.y),
-      @"cursorPositionX": @(selectionOrigin.x),
-    },
-  });
+  NSString *formattedStartY = @"0";
+  NSString *formattedStartX = @"0";
+
+  if (selection.start == selection.end && selection.start != 0) {
+    formattedStartY = [self formatPositionValue:selectionOriginStart.y];
+    formattedStartX = [self formatPositionValue:selectionOriginStart.x];
+  }
+    
+    _onSelectionChange(@{
+      @"selection" : @{
+        @"start" : @(selection.start),
+        @"end" : @(selection.end),
+        @"cursorPosition": @{
+            @"x": @([formattedStartX doubleValue]),
+            @"y": @([formattedStartY doubleValue])
+          },
+      }
+    });
 }
 
 - (void)updateLocalData
