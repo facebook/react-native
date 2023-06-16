@@ -27,7 +27,7 @@ const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally 
 const WEB_PERFORMANCE_PREFIX = 'global_perf_';
 
 export const getCurrentTimestamp: () => number =
-  global.nativeQPLTimestamp ?? global.performance.now.bind(global.performance);
+  global.nativeQPLTimestamp ?? (() => global.performance.now());
 
 class PerformanceLogger implements IPerformanceLogger {
   _timespans: {[key: string]: ?Timespan} = {};
