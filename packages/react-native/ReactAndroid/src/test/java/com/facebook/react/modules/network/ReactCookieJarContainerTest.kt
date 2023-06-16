@@ -25,7 +25,7 @@ import org.robolectric.RobolectricTestRunner
 @PrepareForTest(ReactCookieJarContainer::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactCookieJarContainerTest {
-  private val httpUrl: HttpUrl = HttpUrl.parse("http://example.com")
+  private val httpUrl: HttpUrl = HttpUrl.Builder().host("example.com").scheme("http").build()
 
   @Test
   fun testMissingJar() {
