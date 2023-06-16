@@ -28,9 +28,10 @@
   if ([json isKindOfClass:[NSDictionary class]]) {
     NSInteger start = [self NSInteger:json[@"start"]];
     NSInteger end = [self NSInteger:json[@"end"]];
+    NSDictionary *cursorPositionDict = json[@"cursorPosition"];
     CGPoint cursorPosition = CGPointMake(
-      [self CGFloat:json[@"cursorPositionX"]],
-      [self CGFloat:json[@"cursorPositionY"]]
+      [self CGFloat:cursorPositionDict[@"x"]],
+      [self CGFloat:cursorPositionDict[@"y"]]
     );
     return [[RCTTextSelection alloc] initWithStart:start
                                                end:end 

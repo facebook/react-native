@@ -123,12 +123,7 @@ export interface DocumentSelectionState extends EventEmitter {
   getFocusOffset(): number;
   getStartOffset(): number;
   getEndOffset(): number;
-  overlaps(
-    start: number,
-    end: number,
-    cursorPositionX: number,
-    cursorPositionY: number,
-  ): boolean;
+  overlaps(start: number, end: number): boolean;
 }
 
 /**
@@ -421,8 +416,10 @@ export interface TextInputSelectionChangeEventData extends TargetedEvent {
   selection: {
     start: number;
     end: number;
-    cursorPositionX: number;
-    cursorPositionY: number;
+    cursorPosition: {
+      x: number;
+      y: number;
+    };
   };
 }
 
@@ -471,8 +468,6 @@ export interface TextInputTextInputEventData {
   range: {
     start: number;
     end: number;
-    cursorPositionX: number;
-    cursorPositionY: number;
   };
 }
 
@@ -761,7 +756,7 @@ export interface TextInputProps
 
   /**
    * Callback that is called on new text input with the argument
-   *  `{ nativeEvent: { text, previousText, range: { start, end, cursorPositionX, cursorPositionY } } }`.
+   *  `{ nativeEvent: { text, previousText, range: { start, end } } }`.
    *
    * This prop requires multiline={true} to be set.
    */
@@ -833,8 +828,12 @@ export interface TextInputProps
     | {
         start: number;
         end?: number | undefined;
-        cursorPositionX: number;
-        cursorPositionY: number;
+        cursorPosition:
+          | {
+              x: number;
+              y: number;
+            }
+          | undefined;
       }
     | undefined;
 

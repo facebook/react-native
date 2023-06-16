@@ -21,8 +21,6 @@ export interface TextInputNativeCommands<T> {
     value: ?string, // in theory this is nullable
     start: Int32,
     end: Int32,
-    cursorPositionX: Int32,
-    cursorPositionY: Int32,
   ) => void;
 }
 
