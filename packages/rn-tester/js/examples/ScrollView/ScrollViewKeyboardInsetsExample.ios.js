@@ -11,6 +11,7 @@ import * as React from 'react';
 
 import {
   ScrollView,
+  FlatList,
   StyleSheet,
   Switch,
   Text,
@@ -20,6 +21,26 @@ import {
 
 export function ScrollViewKeyboardInsetsExample() {
   const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = React.useState(true);
+  const [flatList, setFlatList] = React.useState(false);
+  const [inverted, setInverted] = React.useState(false);
+
+  const scrollViewProps = {
+    contentContainerStyle: styles.scrollViewContent,
+    automaticallyAdjustKeyboardInsets: automaticallyAdjustKeyboardInsets,
+    keyboardDismissMode: 'interactive',
+  };
+
+  const data = [...Array(20).keys()];
+  const renderItem = ({ item, index }) => {
+    const largeInput = (index % 5) === 4;
+    return (
+      <View key={item} style={styles.textInputRow}>
+        <TextInput placeholder={item.toString()}
+                   multiline={largeInput}
+                   style={[styles.textInput, largeInput && styles.textInputLarger]}/>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -31,25 +52,38 @@ export function ScrollViewKeyboardInsetsExample() {
           style={styles.controlSwitch}/>
       </View>
       <View style={styles.controlRow}>
+        <Text><Text style={styles.code}>FlatList</Text> is {flatList + ''}</Text>
+        <Switch
+          onValueChange={v => setFlatList(v)}
+          value={flatList}
+          style={styles.controlSwitch}/>
+      </View>
+      {flatList && (
+        <View style={styles.controlRow}>
+          <Text><Text style={styles.code}>inverted</Text> is {inverted + ''}</Text>
+          <Switch
+            onValueChange={v => setInverted(v)}
+            value={inverted}
+            style={styles.controlSwitch}/>
+        </View>
+      )}
+      <View style={styles.controlRow}>
         <TextInput placeholder={'Text input outside scroll view'} style={styles.controlTextInput} />
       </View>
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollViewContent,
-        ]}
-        automaticallyAdjustKeyboardInsets={automaticallyAdjustKeyboardInsets}
-        keyboardDismissMode={'interactive'}>
-        {[...Array(20).keys()].map((item, index) => {
-          const largeInput = (index % 5) === 4;
-          return (
-            <View key={item} style={styles.textInputRow}>
-              <TextInput placeholder={item.toString()}
-                         multiline={largeInput}
-                         style={[styles.textInput, largeInput && styles.textInputLarger]}/>
-            </View>
-          );
-        })}
-      </ScrollView>
+      {flatList
+        ? (
+          <FlatList
+            {...scrollViewProps}
+            inverted={inverted}
+            data={data}
+            renderItem={renderItem}/>
+        )
+        : (
+          <ScrollView {...scrollViewProps}>
+            {data.map((item, index) => renderItem({ item, index }))}
+          </ScrollView>
+        )
+      }
     </View>
   );
 }
