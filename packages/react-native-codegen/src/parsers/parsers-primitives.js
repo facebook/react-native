@@ -657,6 +657,24 @@ function emitMixedProp(
   };
 }
 
+function emitObjectProp(
+  name: string,
+  optional: boolean,
+  parser: Parser,
+  typeAnnotation: $FlowFixMe,
+  extractArrayElementType: (
+    typeAnnotation: $FlowFixMe,
+    name: string,
+    parser: Parser,
+  ) => EventTypeAnnotation,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -687,4 +705,5 @@ module.exports = {
   typeEnumResolution,
   translateArrayTypeAnnotation,
   Visitor,
+  emitObjectProp,
 };

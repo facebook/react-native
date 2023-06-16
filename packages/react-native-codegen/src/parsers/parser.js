@@ -400,4 +400,18 @@ export interface Parser {
    * Given a unsupported typeAnnotation, returns an error message.
    */
   genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a type annotation, it extracts the type.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the extracted type.
+   */
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a typeAnnotation return the properties of an object.
+   * @parameter property
+   * @returns: the properties of an object represented by a type annotation.
+   */
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }

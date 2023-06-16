@@ -547,6 +547,16 @@ class TypeScriptParser implements Parser {
   genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
     return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}'), an interface ('${this.interfaceDeclaration}'), or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
   }
+
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+    return typeAnnotation.type === 'TSTypeReference'
+      ? typeAnnotation.typeName.name
+      : typeAnnotation.type;
+  }
+
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.members;
+  }
 }
 
 module.exports = {

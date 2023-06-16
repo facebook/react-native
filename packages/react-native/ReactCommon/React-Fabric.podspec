@@ -52,7 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "React-Core"
   s.dependency "React-debug"
-  # s.dependency "React-utils"
+  s.dependency "React-utils"
   # s.dependency "React-runtimescheduler"
   s.dependency "React-cxxreact"
 
@@ -324,10 +324,4 @@ Pod::Spec.new do |s|
     ss.header_dir           = "react/renderer/runtimescheduler"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
-
-  s.subspec "utils" do |ss|
-    ss.source_files         = "react/utils/*.{m,mm,cpp,h}"
-    ss.header_dir           = "react/utils"
-  end
-
 end

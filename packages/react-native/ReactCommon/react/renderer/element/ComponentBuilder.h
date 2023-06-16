@@ -12,7 +12,6 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
 #include <react/renderer/element/Element.h>

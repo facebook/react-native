@@ -112,6 +112,14 @@ export default class TimingAnimation extends Animation {
     this.__onEnd = onEnd;
 
     const start = () => {
+      if (!this._useNativeDriver && animatedValue.__isNative === true) {
+        throw new Error(
+          'Attempting to run JS driven animation on animated node ' +
+            'that has been moved to "native" earlier by starting an ' +
+            'animation with `useNativeDriver: true`',
+        );
+      }
+
       // Animations that sometimes have 0 duration and sometimes do not
       // still need to use the native driver when duration is 0 so as to
       // not cause intermixed JS and native animations.

@@ -16,13 +16,13 @@ import type {
 } from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
-  FrameMetricProps,
   Item,
   Props,
   RenderItemProps,
   RenderItemType,
   Separators,
 } from './VirtualizedListProps';
+import type {CellMetricProps} from './ListMetricsAggregator';
 
 import {
   RefreshControl,
@@ -37,6 +37,7 @@ import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
 import ChildListCollection from './ChildListCollection';
 import FillRateHelper from './FillRateHelper';
+import ListMetricsAggregator from './ListMetricsAggregator';
 import StateSafePureComponent from './StateSafePureComponent';
 import ViewabilityHelper from './ViewabilityHelper';
 import CellRenderer from './VirtualizedListCellRenderer';
@@ -176,7 +177,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (veryLast < 0) {
       return;
     }
-    const frame = this.__getFrameMetricsApprox(veryLast, this.props);
+    const frame = this._listMetrics.getCellMetricsApprox(veryLast, this.props);
     const offset = Math.max(
       0,
       frame.offset +
@@ -237,24 +238,31 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         getItemCount(data) - 1
       }`,
     );
-    if (!getItemLayout && index > this._highestMeasuredFrameIndex) {
+    if (
+      !getItemLayout &&
+      index > this._listMetrics.getHighestMeasuredCellIndex()
+    ) {
       invariant(
         !!onScrollToIndexFailed,
         'scrollToIndex should be used in conjunction with getItemLayout or onScrollToIndexFailed, ' +
           'otherwise there is no way to know the location of offscreen indices or handle failures.',
       );
       onScrollToIndexFailed({
-        averageItemLength: this._averageCellLength,
-        highestMeasuredFrameIndex: this._highestMeasuredFrameIndex,
+        averageItemLength: this._listMetrics.getAverageCellLength(),
+        highestMeasuredFrameIndex:
+          this._listMetrics.getHighestMeasuredCellIndex(),
         index,
       });
       return;
     }
-    const frame = this.__getFrameMetricsApprox(Math.floor(index), this.props);
+    const frame = this._listMetrics.getCellMetricsApprox(
+      Math.floor(index),
+      this.props,
+    );
     const offset =
       Math.max(
         0,
-        this._getOffsetApprox(index, this.props) -
+        this._listMetrics.getCellOffsetApprox(index, this.props) -
           (viewPosition || 0) *
             (this._scrollMetrics.visibleLength - frame.length),
       ) - (viewOffset || 0);
@@ -427,7 +435,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     super(props);
     this._checkProps(props);
 
-    this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
+    this._fillRateHelper = new FillRateHelper(this._listMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
       this._updateCellsToRender,
       this.props.updateCellsBatchingPeriod ?? 50,
@@ -683,7 +691,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         maxToRenderPerBatchOrDefault(props.maxToRenderPerBatch),
         windowSizeOrDefault(props.windowSize),
         cellsAroundViewport,
-        this.__getFrameMetricsApprox,
+        this._listMetrics,
         this._scrollMetrics,
       );
       invariant(
@@ -1037,15 +1045,18 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
             ? clamp(
                 section.first - 1,
                 section.last,
-                this._highestMeasuredFrameIndex,
+                this._listMetrics.getHighestMeasuredCellIndex(),
               )
             : section.last;
 
-          const firstMetrics = this.__getFrameMetricsApprox(
+          const firstMetrics = this._listMetrics.getCellMetricsApprox(
             section.first,
             this.props,
           );
-          const lastMetrics = this.__getFrameMetricsApprox(last, this.props);
+          const lastMetrics = this._listMetrics.getCellMetricsApprox(
+            last,
+            this.props,
+          );
           const spacerSize =
             lastMetrics.offset + lastMetrics.length - firstMetrics.offset;
           cells.push(
@@ -1223,17 +1234,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  _averageCellLength = 0;
   _cellRefs: {[string]: null | CellRenderer<any>} = {};
   _fillRateHelper: FillRateHelper;
-  _frames: {
-    [string]: {
-      inLayout?: boolean,
-      index: number,
-      length: number,
-      offset: number,
-    },
-  } = {};
+  _listMetrics: ListMetricsAggregator = new ListMetricsAggregator();
   _footerLength = 0;
   // Used for preventing scrollToIndex from being called multiple times for initialScrollIndex
   _hasTriggeredInitialScrollToIndex = false;
@@ -1242,7 +1245,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _hasWarned: {[string]: boolean} = {};
   _headerLength = 0;
   _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
-  _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
   _lastFocusedCellKey: ?string = null;
   _nestedChildLists: ChildListCollection<VirtualizedList> =
@@ -1263,8 +1265,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _scrollRef: ?React.ElementRef<any> = null;
   _sentStartForContentLength = 0;
   _sentEndForContentLength = 0;
-  _totalCellLength = 0;
-  _totalCellsMeasured = 0;
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
@@ -1324,31 +1324,17 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   _onCellLayout = (e: LayoutEvent, cellKey: string, index: number): void => {
     const layout = e.nativeEvent.layout;
-    const next = {
-      offset: this._selectOffset(layout),
-      length: this._selectLength(layout),
+    const offset = this._selectOffset(layout);
+    const length = this._selectLength(layout);
+
+    const layoutHasChanged = this._listMetrics.notifyCellLayout(
+      cellKey,
       index,
-      inLayout: true,
-    };
-    const curr = this._frames[cellKey];
-    if (
-      !curr ||
-      next.offset !== curr.offset ||
-      next.length !== curr.length ||
-      index !== curr.index
-    ) {
-      this._totalCellLength += next.length - (curr ? curr.length : 0);
-      this._totalCellsMeasured += curr ? 0 : 1;
-      this._averageCellLength =
-        this._totalCellLength / this._totalCellsMeasured;
-      this._frames[cellKey] = next;
-      this._highestMeasuredFrameIndex = Math.max(
-        this._highestMeasuredFrameIndex,
-        index,
-      );
+      length,
+      offset,
+    );
+    if (layoutHasChanged) {
       this._scheduleCellsToRenderUpdate();
-    } else {
-      this._frames[cellKey].inLayout = true;
     }
 
     this._triggerRemeasureForChildListsInCell(cellKey);
@@ -1364,10 +1350,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   _onCellUnmount = (cellKey: string) => {
     delete this._cellRefs[cellKey];
-    const curr = this._frames[cellKey];
-    if (curr) {
-      this._frames[cellKey] = {...curr, inLayout: false};
-    }
+    this._listMetrics.notifyCellUnmounted(cellKey);
   };
 
   _triggerRemeasureForChildListsInCell(cellKey: string): void {
@@ -1467,19 +1450,16 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
-      const frame = this.__getFrameMetricsApprox(ii, this.props);
-      /* $FlowFixMe[prop-missing] (>=0.68.0 site=react_native_fb) This comment
-       * suppresses an error found when Flow v0.68 was deployed. To see the
-       * error delete this comment and run Flow. */
-      if (frame.inLayout) {
+      const frame = this._listMetrics.getCellMetricsApprox(ii, this.props);
+      if (frame.isMounted) {
         framesInLayout.push(frame);
       }
     }
-    const windowTop = this.__getFrameMetricsApprox(
+    const windowTop = this._listMetrics.getCellMetricsApprox(
       this.state.cellsAroundViewport.first,
       this.props,
     ).offset;
-    const frameLast = this.__getFrameMetricsApprox(
+    const frameLast = this._listMetrics.getCellMetricsApprox(
       this.state.cellsAroundViewport.last,
       this.props,
     );
@@ -1774,7 +1754,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // But only if there are items before the first rendered item
     if (first > 0) {
       const distTop =
-        offset - this.__getFrameMetricsApprox(first, this.props).offset;
+        offset -
+        this._listMetrics.getCellMetricsApprox(first, this.props).offset;
       hiPri =
         distTop < 0 ||
         (velocity < -2 &&
@@ -1785,7 +1766,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // But only if there are items after the last rendered item
     if (!hiPri && last >= 0 && last < itemCount - 1) {
       const distBottom =
-        this.__getFrameMetricsApprox(last, this.props).offset -
+        this._listMetrics.getCellMetricsApprox(last, this.props).offset -
         (offset + visibleLength);
       hiPri =
         distBottom < 0 ||
@@ -1802,7 +1783,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // We shouldn't do another hipri cellToRenderUpdate
     if (
       hiPri &&
-      (this._averageCellLength || this.props.getItemLayout) &&
+      (this._listMetrics.getAverageCellLength() || this.props.getItemLayout) &&
       !this._hiPriInProgress
     ) {
       this._hiPriInProgress = true;
@@ -1885,7 +1866,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _createViewToken = (
     index: number,
     isViewable: boolean,
-    props: FrameMetricProps,
+    props: CellMetricProps,
     // $FlowFixMe[missing-local-annot]
   ) => {
     const {data, getItem} = props;
@@ -1898,81 +1879,12 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   };
 
-  /**
-   * Gets an approximate offset to an item at a given index. Supports
-   * fractional indices.
-   */
-  _getOffsetApprox = (index: number, props: FrameMetricProps): number => {
-    if (Number.isInteger(index)) {
-      return this.__getFrameMetricsApprox(index, props).offset;
-    } else {
-      const frameMetrics = this.__getFrameMetricsApprox(
-        Math.floor(index),
-        props,
-      );
-      const remainder = index - Math.floor(index);
-      return frameMetrics.offset + remainder * frameMetrics.length;
-    }
-  };
-
-  __getFrameMetricsApprox: (
-    index: number,
-    props: FrameMetricProps,
-  ) => {
-    length: number,
-    offset: number,
-    ...
-  } = (index, props) => {
-    const frame = this._getFrameMetrics(index, props);
-    if (frame && frame.index === index) {
-      // check for invalid frames due to row re-ordering
-      return frame;
-    } else {
-      const {data, getItemCount, getItemLayout} = props;
-      invariant(
-        index >= 0 && index < getItemCount(data),
-        'Tried to get frame for out of range index ' + index,
-      );
-      invariant(
-        !getItemLayout,
-        'Should not have to estimate frames when a measurement metrics function is provided',
-      );
-      return {
-        length: this._averageCellLength,
-        offset: this._averageCellLength * index,
-      };
-    }
-  };
-
-  _getFrameMetrics = (
-    index: number,
-    props: FrameMetricProps,
-  ): ?{
-    length: number,
-    offset: number,
-    index: number,
-    inLayout?: boolean,
-    ...
-  } => {
-    const {data, getItemCount, getItemLayout} = props;
-    invariant(
-      index >= 0 && index < getItemCount(data),
-      'Tried to get frame for out of range index ' + index,
-    );
-    const frame = this._frames[VirtualizedList._getItemKey(props, index)];
-    if (!frame || frame.index !== index) {
-      if (getItemLayout) {
-        /* $FlowFixMe[prop-missing] (>=0.63.0 site=react_native_fb) This comment
-         * suppresses an error found when Flow v0.63 was deployed. To see the error
-         * delete this comment and run Flow. */
-        return getItemLayout(data, index);
-      }
-    }
-    return frame;
-  };
+  __getListMetrics(): ListMetricsAggregator {
+    return this._listMetrics;
+  }
 
   _getNonViewportRenderRegions = (
-    props: FrameMetricProps,
+    props: CellMetricProps,
   ): $ReadOnlyArray<{
     first: number,
     last: number,
@@ -2008,7 +1920,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       i--
     ) {
       first--;
-      heightOfCellsBeforeFocused += this.__getFrameMetricsApprox(
+      heightOfCellsBeforeFocused += this._listMetrics.getCellMetricsApprox(
         i,
         props,
       ).length;
@@ -2023,7 +1935,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       i++
     ) {
       last++;
-      heightOfCellsAfterFocused += this.__getFrameMetricsApprox(
+      heightOfCellsAfterFocused += this._listMetrics.getCellMetricsApprox(
         i,
         props,
       ).length;
@@ -2033,7 +1945,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   };
 
   _updateViewableItems(
-    props: FrameMetricProps,
+    props: CellMetricProps,
     cellsAroundViewport: {first: number, last: number},
   ) {
     // If we have any pending scroll updates it means that the scroll metrics
@@ -2046,7 +1958,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
         props,
         this._scrollMetrics.offset,
         this._scrollMetrics.visibleLength,
-        this._getFrameMetrics,
+        this._listMetrics,
         this._createViewToken,
         tuple.onViewableItemsChanged,
         cellsAroundViewport,

@@ -19,7 +19,6 @@ $flipper_default_versions = {
 # This function installs the `React-Core/DevSupport` subpods
 # when the dependencies are installed for a non production app.
 #
-# @parameter production: a boolean that indicates whether we are in production or not.
 # @parameter pathToReactNative: the path to the React Native installation
 def install_flipper_dependencies(pathToReactNative)
     pod 'React-Core/DevSupport', :path => "#{pathToReactNative}/"

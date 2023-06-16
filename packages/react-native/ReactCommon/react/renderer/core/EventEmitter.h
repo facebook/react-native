@@ -38,7 +38,6 @@ class EventEmitter {
 
   EventEmitter(
       SharedEventTarget eventTarget,
-      Tag tag,
       EventDispatcher::Weak eventDispatcher);
 
   virtual ~EventEmitter() = default;
@@ -54,8 +53,6 @@ class EventEmitter {
    * `DispatchMutex` must be acquired before calling.
    */
   void setEnabled(bool enabled) const;
-
-  SharedEventTarget const &getEventTarget() const;
 
  protected:
 #ifdef ANDROID

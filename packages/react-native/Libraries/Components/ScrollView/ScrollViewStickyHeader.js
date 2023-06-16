@@ -246,7 +246,18 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
         clearTimeout(_timer.current);
       }
     };
-  }, [nextHeaderLayoutY, measured, layoutHeight, layoutY, scrollViewHeight, scrollAnimatedValue, inverted, offset, animatedValueListener, isFabric]);
+  }, [
+    nextHeaderLayoutY,
+    measured,
+    layoutHeight,
+    layoutY,
+    scrollViewHeight,
+    scrollAnimatedValue,
+    inverted,
+    offset,
+    animatedValueListener,
+    isFabric,
+  ]);
 
   const _onLayout = (event: LayoutEvent) => {
     setLayoutY(event.nativeEvent.layout.y);
@@ -262,17 +273,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
 
   const child = React.Children.only<$FlowFixMe>(props.children);
 
-  // TODO T68319535: remove this if NativeAnimated is rewritten for Fabric
-  const passthroughAnimatedPropExplicitValues =
-    isFabric && translateY != null
-      ? {
-          style: {transform: [{translateY: translateY}]},
-        }
-      : null;
-
   return (
-    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
-       included in the Animated.View flow type. */
     <Animated.View
       collapsable={false}
       nativeID={props.nativeID}
@@ -282,10 +283,7 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
         child.props.style,
         styles.header,
         {transform: [{translateY: animatedTranslateY}]},
-      ]}
-      passthroughAnimatedPropExplicitValues={
-        passthroughAnimatedPropExplicitValues
-      }>
+      ]}>
       {React.cloneElement(child, {
         style: styles.fill, // We transfer the child style to the wrapper.
         onLayout: undefined, // we call this manually through our this._onLayout

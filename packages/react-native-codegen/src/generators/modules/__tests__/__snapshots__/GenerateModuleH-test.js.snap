@@ -222,7 +222,7 @@ struct Bridging<SampleTurboModuleCxxNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxNumEnum value) {
     if (value == SampleTurboModuleCxxNumEnum::ONE) {
       return bridging::toJs(rt, 1);
     } else if (value == SampleTurboModuleCxxNumEnum::TWO) {
@@ -252,7 +252,7 @@ struct Bridging<SampleTurboModuleCxxFloatEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxFloatEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxFloatEnum value) {
     if (value == SampleTurboModuleCxxFloatEnum::POINT_ZERO) {
       return bridging::toJs(rt, 0.0f);
     } else if (value == SampleTurboModuleCxxFloatEnum::POINT_ONE) {
@@ -282,7 +282,7 @@ struct Bridging<SampleTurboModuleCxxStringEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxStringEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxStringEnum value) {
     if (value == SampleTurboModuleCxxStringEnum::HELLO) {
       return bridging::toJs(rt, \\"hello\\");
     } else if (value == SampleTurboModuleCxxStringEnum::GoodBye) {
@@ -1220,7 +1220,7 @@ struct Bridging<SampleTurboModuleNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleNumEnum value) {
     if (value == SampleTurboModuleNumEnum::ONE) {
       return bridging::toJs(rt, 1);
     } else if (value == SampleTurboModuleNumEnum::TWO) {
@@ -1250,7 +1250,7 @@ struct Bridging<SampleTurboModuleFloatEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value) {
     if (value == SampleTurboModuleFloatEnum::POINT_ZERO) {
       return bridging::toJs(rt, 0.0f);
     } else if (value == SampleTurboModuleFloatEnum::POINT_ONE) {
@@ -1280,7 +1280,7 @@ struct Bridging<SampleTurboModuleStringEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleStringEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleStringEnum value) {
     if (value == SampleTurboModuleStringEnum::HELLO) {
       return bridging::toJs(rt, \\"hello\\");
     } else if (value == SampleTurboModuleStringEnum::GoodBye) {

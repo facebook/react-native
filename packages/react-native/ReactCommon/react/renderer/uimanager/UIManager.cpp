@@ -68,7 +68,7 @@ ShadowNode::Shared UIManager::createNode(
     std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
-    SharedEventTarget eventTarget) const {
+    const InstanceHandle::Shared &instanceHandle) const {
   SystraceSection s("UIManager::createNode");
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
@@ -77,9 +77,9 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family =
-      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto const fragment =
+      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
+  auto family = componentDescriptor.createFamily(fragment);
   auto const props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(props, family);
@@ -231,19 +231,19 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
+  if (shadowTree) {
+    // We execute JavaScript/React part of the process at the very end to
+    // minimize any visible side-effects of stopping the Surface. Any possible
+    // commits from the JavaScript side will not be able to reference a
+    // `ShadowTree` and will fail silently.
+    runtimeExecutor_([=](jsi::Runtime &runtime) {
+      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+    });
 
-  // We execute JavaScript/React part of the process at the very end to minimize
-  // any visible side-effects of stopping the Surface. Any possible commits from
-  // the JavaScript side will not be able to reference a `ShadowTree` and will
-  // fail silently.
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
-  });
-
-  if (leakChecker_) {
-    leakChecker_->stopSurface(surfaceId);
+    if (leakChecker_) {
+      leakChecker_->stopSurface(surfaceId);
+    }
   }
-
   return shadowTree;
 }
 

@@ -10,7 +10,6 @@ package com.facebook.react.packagerconnection
 import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback
 import java.io.IOException
 import okio.ByteString
-import okio.ByteString.encodeUtf8
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -147,4 +146,7 @@ class JSPackagerClientTest {
       action: String,
       handler: RequestHandler
   ): Map<String, RequestHandler> = mapOf(action to handler)
+
+  private fun encodeUtf8(input: String): ByteString =
+      ByteString.of(*input.toByteArray(Charsets.UTF_8))
 }

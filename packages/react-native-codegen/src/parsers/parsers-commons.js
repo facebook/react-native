@@ -894,16 +894,18 @@ function buildPropSchema(
  * LTI update could not be added via codemod */
 function getEventArgument(
   argumentProps: PropAST,
-  buildPropertiesForEvent: (
-    property: PropAST,
+  parser: Parser,
+  getPropertyType: (
+    name: $FlowFixMe,
+    optional: boolean,
+    typeAnnotation: $FlowFixMe,
     parser: Parser,
   ) => NamedShape<EventTypeAnnotation>,
-  parser: Parser,
 ): ObjectTypeAnnotation<EventTypeAnnotation> {
   return {
     type: 'ObjectTypeAnnotation',
     properties: argumentProps.map(member =>
-      buildPropertiesForEvent(member, parser),
+      buildPropertiesForEvent(member, parser, getPropertyType),
     ),
   };
 }
@@ -1053,6 +1055,23 @@ function handleGenericTypeAnnotation(
   };
 }
 
+function buildPropertiesForEvent(
+  property: $FlowFixMe,
+  parser: Parser,
+  getPropertyType: (
+    name: $FlowFixMe,
+    optional: boolean,
+    typeAnnotation: $FlowFixMe,
+    parser: Parser,
+  ) => NamedShape<EventTypeAnnotation>,
+): NamedShape<EventTypeAnnotation> {
+  const name = property.key.name;
+  const optional = parser.isOptionalProperty(property);
+  const typeAnnotation = parser.getTypeAnnotationFromProperty(property);
+
+  return getPropertyType(name, optional, typeAnnotation, parser);
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1079,4 +1098,5 @@ module.exports = {
   getCommandProperties,
   handleGenericTypeAnnotation,
   getTypeResolutionStatus,
+  buildPropertiesForEvent,
 };
