@@ -54,8 +54,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldUnimplementedViewProps = *std::static_pointer_cast<UnimplementedViewProps const>(_props);
-  auto const &newUnimplementedViewProps = *std::static_pointer_cast<UnimplementedViewProps const>(props);
+  const auto &oldUnimplementedViewProps = static_cast<UnimplementedViewProps const &>(*_props);
+  const auto &newUnimplementedViewProps = static_cast<UnimplementedViewProps const &>(*props);
 
   if (oldUnimplementedViewProps.getComponentName() != newUnimplementedViewProps.getComponentName()) {
     _label.text =

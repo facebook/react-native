@@ -193,8 +193,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
-  auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
+  const auto &oldViewProps = static_cast<ViewProps const &>(*_props);
+  const auto &newViewProps = static_cast<ViewProps const &>(*props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -425,7 +425,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
 
   // If view was managed by animated, its props need to align with UIView's properties.
-  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+  const auto &props = static_cast<ViewProps const &>(*_props);
   if ([_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(props.transform);
   }
@@ -712,7 +712,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSString *)accessibilityValue
 {
-  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+  const auto &props = static_cast<ViewProps const &>(*_props);
 
   // Handle Switch.
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {

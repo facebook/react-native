@@ -316,7 +316,7 @@ static void RCTPerformMountInstructions(
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 
-  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+  const auto &newViewProps = static_cast<ViewProps const &>(*newProps);
 
   if (props[@"transform"] &&
       !CATransform3DEqualToTransform(

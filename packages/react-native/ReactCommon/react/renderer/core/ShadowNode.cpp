@@ -227,9 +227,8 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
-  auto nonConstChildren =
-      std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
-  nonConstChildren->push_back(child);
+  auto &children = const_cast<ShadowNode::ListOfShared &>(*children_);
+  children.push_back(child);
 
   child->family_->setParent(family_);
 }
@@ -241,11 +240,9 @@ void ShadowNode::replaceChild(
   ensureUnsealed();
 
   cloneChildrenIfShared();
-
   newChild->family_->setParent(family_);
 
-  auto &children =
-      *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
+  auto &children = const_cast<ShadowNode::ListOfShared &>(*children_);
   auto size = children.size();
 
   if (suggestedIndex != -1 && suggestedIndex < size) {
