@@ -8,39 +8,14 @@
  * @flow
  */
 
-import type {
-  HostComponent,
-  TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {TouchedViewDataAtPoint} from '../Renderer/shims/ReactNativeTypes';
+import type {HostRef} from './findRenderers';
 
-const invariant = require('invariant');
-const React = require('react');
+const findRenderers = require('./findRenderers');
 
-export type HostRef = React.ElementRef<HostComponent<mixed>>;
-export type ReactRenderer = {
-  rendererConfig: {
-    getInspectorDataForViewAtPoint: (
-      inspectedView: ?HostRef,
-      locationX: number,
-      locationY: number,
-      callback: Function,
-    ) => void,
-    ...
-  },
-};
-
-const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 const renderers = findRenderers();
 
-function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Array.from(hook.renderers.values());
-  invariant(
-    allRenderers.length >= 1,
-    'Expected to find at least one React Native renderer on DevTools hook.',
-  );
-  return allRenderers;
-}
-
+export type {HostRef};
 module.exports = function getInspectorDataForViewAtPoint(
   inspectedView: ?HostRef,
   locationX: number,
