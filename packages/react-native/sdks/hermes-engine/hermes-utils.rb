@@ -131,7 +131,7 @@ end
 # Returns: the path to the downloaded Hermes tarball
 def download_nightly_hermes(react_native_path, version)
     tarball_url = nightly_tarball_url(version)
-    return download_stable_hermes(react_native_path, tarball_url, version, nil)
+    return download_hermes_tarball(react_native_path, tarball_url, version, nil)
 end
 
 def nightly_tarball_url(version)
