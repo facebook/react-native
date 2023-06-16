@@ -71,8 +71,8 @@ type Selection = $ReadOnly<{|
   end: number,
   cursorPosition: $ReadOnly<{|
     x: number,
-    y: ?number,
-  |}>
+    y: number,
+  |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
