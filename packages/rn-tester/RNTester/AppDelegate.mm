@@ -48,6 +48,8 @@
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if !USE_HERMES
+  // With direct debugging via Safari Web Inspector, we need an
+  // inline source map in order it to be recognized
   [[RCTBundleURLProvider sharedSettings] setInlineSourceMap:YES];
 #endif
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"js/RNTesterApp.ios"];
