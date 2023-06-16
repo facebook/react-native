@@ -60,6 +60,7 @@ static void *AccessibilityVoiceOverChangeContext = &AccessibilityVoiceOverChange
 
 RCT_EXPORT_METHOD(announceForAccessibility:(NSString *)announcement)
 {
+  dispatch_async(dispatch_get_main_queue(), ^{
     NSAccessibilityPostNotificationWithUserInfo(
                                                     NSApp,
                                                     NSAccessibilityAnnouncementRequestedNotification,
@@ -67,6 +68,7 @@ RCT_EXPORT_METHOD(announceForAccessibility:(NSString *)announcement)
                                                       NSAccessibilityPriorityKey : @(NSAccessibilityPriorityHigh)
                                                     }
                                                 );
+  });
 }
 
 RCT_EXPORT_METHOD(getCurrentHighContrastState:(RCTResponseSenderBlock)callback
