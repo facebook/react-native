@@ -15,7 +15,9 @@ import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import AnimatedColor from '../nodes/AnimatedColor';
 import AnimatedProps from '../nodes/AnimatedProps';
+import AnimatedValueXY from '../nodes/AnimatedValueXY';
 
 export type EndResult = {finished: boolean, value?: number, ...};
 export type EndCallback = (result: EndResult) => void;
@@ -72,6 +74,17 @@ export default class Animation {
 
     if (node instanceof AnimatedProps) {
       result.push(node);
+      return result;
+    }
+
+    // Vectorized animations (animations on AnimatedValueXY, AnimatedColor nodes)
+    // are split into multiple animations for each component that execute in parallel.
+    // Calling update() on AnimatedProps when each animation completes results in
+    // potential flickering as all animations that are part of the vectorized animation
+    // may not have completed yet. For example, only the animation for the red channel of
+    // an animating color may have been completed, resulting in a temporary red color
+    // being rendered. So, for now, ignore AnimatedProps that use a vectorized animation.
+    if (node instanceof AnimatedValueXY || node instanceof AnimatedColor) {
       return result;
     }
 
