@@ -36,8 +36,7 @@ import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -149,7 +148,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   private class ConcurrentOperationQueue {
-    private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<UIThreadOperation> mQueue = new LinkedBlockingQueue<>();
     @Nullable private UIThreadOperation mPeekedOperation = null;
 
     @AnyThread
