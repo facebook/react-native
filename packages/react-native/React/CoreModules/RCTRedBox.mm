@@ -702,6 +702,15 @@ RCT_EXPORT_METHOD(dismiss)
 
 @end
 
+@implementation RCTBridgeProxy (RCTRedBox)
+
+- (RCTRedBox *)redBox
+{
+  return RCTRedBoxGetEnabled() ? [self moduleForClass:[RCTRedBox class]] : nil;
+}
+
+@end
+
 #else // Disabled
 
 @interface RCTRedBox () <NativeRedBoxSpec>
@@ -779,6 +788,15 @@ RCT_EXPORT_METHOD(dismiss)
 @end
 
 @implementation RCTBridge (RCTRedBox)
+
+- (RCTRedBox *)redBox
+{
+  return nil;
+}
+
+@end
+
+@implementation RCTBridgeProxy (RCTRedBox)
 
 - (RCTRedBox *)redBox
 {
