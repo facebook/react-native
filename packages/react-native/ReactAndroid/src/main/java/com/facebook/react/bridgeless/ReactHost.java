@@ -48,6 +48,7 @@ import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -77,7 +78,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ReactHost {
+public class ReactHost implements ReactHostInterface {
 
   // TODO T61403233 Make this configurable by product code
   private static final boolean DEV = ReactBuildConfig.DEBUG;
@@ -183,6 +184,7 @@ public class ReactHost {
     };
   }
 
+  @Override
   public LifecycleState getLifecycleState() {
     return mReactLifecycleStateManager.getLifecycleState();
   }
@@ -322,13 +324,16 @@ public class ReactHost {
    * @param activity The host activity
    */
   @ThreadConfined(UI)
+  @Override
   public void onHostResume(
-      final @Nullable Activity activity, DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
+      final @Nullable Activity activity,
+      @Nullable DefaultHardwareBackBtnHandler defaultBackButtonImpl) {
     mDefaultHardwareBackBtnHandler = defaultBackButtonImpl;
     onHostResume(activity);
   }
 
   @ThreadConfined(UI)
+  @Override
   public void onHostResume(final @Nullable Activity activity) {
     final String method = "onHostResume(activity)";
     log(method);
@@ -341,6 +346,7 @@ public class ReactHost {
   }
 
   @ThreadConfined(UI)
+  @Override
   public void onHostPause(final @Nullable Activity activity) {
     final String method = "onHostPause(activity)";
     log(method);
@@ -368,6 +374,7 @@ public class ReactHost {
 
   /** To be called when the host activity is paused. */
   @ThreadConfined(UI)
+  @Override
   public void onHostPause() {
     final String method = "onHostPause()";
     log(method);
@@ -381,6 +388,7 @@ public class ReactHost {
 
   /** To be called when the host activity is destroyed. */
   @ThreadConfined(UI)
+  @Override
   public void onHostDestroy() {
     final String method = "onHostDestroy()";
     log(method);
@@ -390,6 +398,7 @@ public class ReactHost {
   }
 
   @ThreadConfined(UI)
+  @Override
   public void onHostDestroy(@Nullable Activity activity) {
     final String method = "onHostDestroy(activity)";
     log(method);
@@ -413,10 +422,12 @@ public class ReactHost {
    *
    * @return The {@link BridgelessReactContext} associated with ReactInstance.
    */
+  @Override
   public @Nullable ReactContext getCurrentReactContext() {
     return mBridgelessReactContextRef.getNullable();
   }
 
+  @Override
   public DevSupportManager getDevSupportManager() {
     return assertNotNull(mDevSupportManager);
   }
@@ -484,7 +495,7 @@ public class ReactHost {
     return null;
   }
 
-  public DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
+  /* package */ DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
     return () -> {
       UiThreadUtil.assertOnUiThread();
       if (mDefaultHardwareBackBtnHandler != null) {
@@ -503,6 +514,7 @@ public class ReactHost {
   }
 
   @ThreadConfined(UI)
+  @Override
   public boolean onBackPressed() {
     UiThreadUtil.assertOnUiThread();
     final ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();

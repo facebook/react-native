@@ -56,10 +56,10 @@ async function main() {
       if (latest !== currentVersion) {
         const msg = `
   ${chalk.bold.yellow('WARNING:')} You should run ${chalk.white.bold(
-          'npx react-native@latest',
-        )} to ensure you're always using the most current version of the CLI. NPX has cached version (${chalk.bold.yellow(
-          currentVersion,
-        )}) != current release (${chalk.bold.green(latest)})
+    'npx react-native@latest',
+  )} to ensure you're always using the most current version of the CLI. NPX has cached version (${chalk.bold.yellow(
+    currentVersion,
+  )}) != current release (${chalk.bold.green(latest)})
   `;
         console.warn(msg);
       }

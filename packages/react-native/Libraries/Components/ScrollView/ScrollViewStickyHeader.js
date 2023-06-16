@@ -246,7 +246,18 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
         clearTimeout(_timer.current);
       }
     };
-  }, [nextHeaderLayoutY, measured, layoutHeight, layoutY, scrollViewHeight, scrollAnimatedValue, inverted, offset, animatedValueListener, isFabric]);
+  }, [
+    nextHeaderLayoutY,
+    measured,
+    layoutHeight,
+    layoutY,
+    scrollViewHeight,
+    scrollAnimatedValue,
+    inverted,
+    offset,
+    animatedValueListener,
+    isFabric,
+  ]);
 
   const _onLayout = (event: LayoutEvent) => {
     setLayoutY(event.nativeEvent.layout.y);

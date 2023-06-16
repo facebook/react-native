@@ -6,11 +6,13 @@
  */
 
 #import "RCTInstance.h"
+#import <React/RCTBridgeProxy.h>
 
 #import <memory>
 
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTComponentViewFactory.h>
@@ -228,6 +230,21 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [[RCTTurboModuleManager alloc] initWithBridge:nil
                                            delegate:self
                                           jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+
+  if (RCTTurboModuleInteropEnabled() && RCTTurboModuleInteropBridgeProxyEnabled()) {
+    RCTBridgeProxy *bridgeProxy = [[RCTBridgeProxy alloc]
+        initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
+              moduleRegistry:_bridgeModuleDecorator.moduleRegistry
+               bundleManager:_bridgeModuleDecorator.bundleManager
+           callableJSModules:_bridgeModuleDecorator.callableJSModules
+          dispatchToJSThread:^(dispatch_block_t block) {
+            __strong __typeof(self) strongSelf = weakSelf;
+            if (strongSelf && strongSelf->_valid) {
+              strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
+            }
+          }];
+    [_turboModuleManager setBridgeProxy:bridgeProxy];
+  }
 
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
