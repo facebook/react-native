@@ -327,21 +327,22 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   CGPoint newContentOffset = _scrollView.contentOffset;
   self.firstResponderFocus = CGRectNull;
 
+  CGFloat contentDiff = 0;
   if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:) to:nil from:self forEvent:nil]) {
     // Inner text field focused
     CGFloat focusEnd = self.firstResponderFocus.origin.y + self.firstResponderFocus.size.height;
     if (focusEnd > endFrame.origin.y && focusEnd != INFINITY) {
-      // Text field active region is below visible area with keyboard - update offset to bring into view
-      newContentOffset.y += focusEnd - endFrame.origin.y;
+      // Text field active region is below visible area with keyboard - update diff to bring into view
+      contentDiff = endFrame.origin.y - focusEnd;
     }
   } else if (endFrame.origin.y <= beginFrame.origin.y) {
     // Keyboard opened for other reason
-    CGFloat contentDiff = endFrame.origin.y - beginFrame.origin.y;
-    if (self.inverted) {
-      newContentOffset.y += contentDiff;
-    } else {
-      newContentOffset.y -= contentDiff;
-    }
+    contentDiff = endFrame.origin.y - beginFrame.origin.y;
+  }
+  if (self.inverted) {
+    newContentOffset.y += contentDiff;
+  } else {
+    newContentOffset.y -= contentDiff;
   }
 
   if (@available(iOS 14.0, *)) {
