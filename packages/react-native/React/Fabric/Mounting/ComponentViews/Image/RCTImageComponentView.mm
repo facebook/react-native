@@ -54,8 +54,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
-  auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
+  const auto &oldImageProps = static_cast<ImageProps const &>(*_props);
+  const auto &newImageProps = static_cast<ImageProps const &>(*props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -88,7 +88,7 @@ using namespace facebook::react;
       (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
-    std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
+    static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadStart();
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
@@ -138,10 +138,10 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoad();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadEnd();
 
-  const auto &imageProps = *std::static_pointer_cast<ImageProps const>(_props);
+  const auto &imageProps = static_cast<ImageProps const &>(*_props);
 
   if (imageProps.tintColor) {
     image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -176,7 +176,7 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onProgress(progress);
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onProgress(progress);
 }
 
 - (void)didReceiveFailureFromObserver:(void const *)observer
@@ -187,8 +187,8 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onError();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadEnd();
 }
 
 @end

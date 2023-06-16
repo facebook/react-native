@@ -201,19 +201,14 @@ static inline void writeIntBufferTypePreamble(
 // TODO: this method will be removed when binding for components are code-gen
 jni::local_ref<jstring> getPlatformComponentName(ShadowView const &shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
-
-  jni::local_ref<jstring> componentName;
   if (scrollViewComponentName == shadowView.componentName) {
-    auto newViewProps =
-        std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
-    if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
-      componentName = jni::make_jstring("AndroidHorizontalScrollView");
-      return componentName;
+    const auto &newViewProps =
+        static_cast<const ScrollViewProps &>(*shadowView.props);
+    if (newViewProps.getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
+      return jni::make_jstring("AndroidHorizontalScrollView");
     }
   }
-
-  componentName = jni::make_jstring(shadowView.componentName);
-  return componentName;
+  return jni::make_jstring(shadowView.componentName);
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {

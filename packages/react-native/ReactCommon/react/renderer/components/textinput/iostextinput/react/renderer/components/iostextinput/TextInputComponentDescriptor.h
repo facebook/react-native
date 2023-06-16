@@ -28,10 +28,8 @@ class TextInputComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto concreteShadowNode =
-        std::static_pointer_cast<TextInputShadowNode>(shadowNode);
-
-    concreteShadowNode->setTextLayoutManager(textLayoutManager_);
+    auto &concreteShadowNode = static_cast<TextInputShadowNode &>(*shadowNode);
+    concreteShadowNode.setTextLayoutManager(textLayoutManager_);
   }
 
  private:
