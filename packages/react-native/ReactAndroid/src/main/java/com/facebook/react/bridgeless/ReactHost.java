@@ -494,7 +494,7 @@ public class ReactHost implements ReactHostInterface {
     return null;
   }
 
-  public DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
+  /* package */ DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
     return () -> {
       UiThreadUtil.assertOnUiThread();
       if (mDefaultHardwareBackBtnHandler != null) {
