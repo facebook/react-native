@@ -79,11 +79,19 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [self.window makeKeyAndVisible];
   return YES;
 #else // [macOS
-  self.window = [[NSWindow alloc] init];
-  NSViewController *rootViewController = [self createRootViewController];
+  NSRect frame = NSMakeRect(0,0,1024,768);
+  self.window = [[NSWindow alloc] initWithContentRect:NSZeroRect
+                                            styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
+                                              backing:NSBackingStoreBuffered
+                                                defer:NO];
+  self.window.title = self.moduleName;
+  self.window.autorecalculatesKeyViewLoop = YES;
+  NSViewController *rootViewController = [NSViewController new];
   rootViewController.view = rootView;
+  rootView.frame = frame;
   self.window.contentViewController = rootViewController;
   [self.window makeKeyAndOrderFront:self];
+  [self.window center];
 #endif // macOS]
 }
 

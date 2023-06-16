@@ -1,9 +1,6 @@
+#import <RCTAppDelegate.h>
 #import <Cocoa/Cocoa.h>
 
-@class RCTBridge;
-
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
-@property (nonatomic, readonly) RCTBridge *bridge;
+@interface AppDelegate : RCTAppDelegate
 
 @end
