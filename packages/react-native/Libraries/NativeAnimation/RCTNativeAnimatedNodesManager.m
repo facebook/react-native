@@ -346,7 +346,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   RCTAnimatedNode *node = _animationNodes[nodeTag];
 
   if (!node) {
-    RCTLogError(@"Animated node with tag %@ does not exists", nodeTag);
+    RCTLogError(@"Animated node with tag %@ does not exist", nodeTag);
     return;
   }
 
