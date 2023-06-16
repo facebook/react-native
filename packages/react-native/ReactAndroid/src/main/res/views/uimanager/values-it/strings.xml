@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: it_IT -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_expanded_description" gender="unknown">aperto</string>
+    <string name="state_collapsed_description" gender="unknown">chiuso</string>
 </resources>
