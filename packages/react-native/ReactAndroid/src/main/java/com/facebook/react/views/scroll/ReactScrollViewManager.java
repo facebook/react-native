@@ -390,7 +390,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     // is inverted.
     // See also:
     //  - https://github.com/facebook/react-native/issues/35350
-    //  - https://issuetracker.google.com/u/1/issues/287304310
+    //  - https://issuetracker.google.com/issues/287304310
     if (inverted) {
       view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
     } else {
