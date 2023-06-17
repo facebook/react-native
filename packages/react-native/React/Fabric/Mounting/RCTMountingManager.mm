@@ -17,11 +17,11 @@
 #import <React/RCTUtils.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>

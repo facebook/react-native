@@ -13,12 +13,12 @@
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>

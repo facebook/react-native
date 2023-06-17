@@ -77,6 +77,7 @@ Pod::Spec.new do |s|
   s.dependency "DoubleConversion"
   s.dependency "React-ImageManager"
   s.dependency "React-Fabric"
+  s.dependency "React-utils"
   s.dependency "Yoga"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
