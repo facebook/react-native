@@ -12,10 +12,10 @@
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/text/RawTextShadowNode.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
