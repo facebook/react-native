@@ -48,7 +48,7 @@ class PerformanceLogger implements IPerformanceLogger {
   //
   // In most of the other cases this kind of check for `performance` being defined
   // wouldn't be necessary.
-  performanceMark(key: string, startTime: number) {
+  _performanceMark(key: string, startTime: number) {
     if (this._isLoggingForWebPerformance) {
       global.performance?.mark?.(key, {
         startTime,
@@ -56,7 +56,7 @@ class PerformanceLogger implements IPerformanceLogger {
     }
   }
 
-  performanceMeasure(
+  _performanceMeasure(
     key: string,
     start: number | string,
     end: number | string,
@@ -100,7 +100,7 @@ class PerformanceLogger implements IPerformanceLogger {
       endExtras,
     };
 
-    this.performanceMeasure(
+    this._performanceMeasure(
       `${WEB_PERFORMANCE_PREFIX}_${key}`,
       startTime,
       endTime,
@@ -220,7 +220,7 @@ class PerformanceLogger implements IPerformanceLogger {
       this._pointExtras[key] = extras;
     }
 
-    this.performanceMark(`${WEB_PERFORMANCE_PREFIX}_${key}`, timestamp);
+    this._performanceMark(`${WEB_PERFORMANCE_PREFIX}_${key}`, timestamp);
   }
 
   removeExtra(key: string): ?ExtraValue {
@@ -283,7 +283,7 @@ class PerformanceLogger implements IPerformanceLogger {
       infoLog('PerformanceLogger.js', 'start: ' + key);
     }
 
-    this.performanceMark(
+    this._performanceMark(
       `${WEB_PERFORMANCE_PREFIX}_timespan_start_${key}`,
       timestamp,
     );
@@ -333,7 +333,7 @@ class PerformanceLogger implements IPerformanceLogger {
       delete _cookies[key];
     }
 
-    this.performanceMeasure(
+    this._performanceMeasure(
       `${WEB_PERFORMANCE_PREFIX}_${key}`,
       `${WEB_PERFORMANCE_PREFIX}_timespan_start_${key}`,
       timestamp,
