@@ -3,4 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: ro_RO -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_busy_description" gender="unknown">ocupat</string>
+    <string name="state_expanded_description" gender="unknown">extins</string>
+    <string name="state_collapsed_description" gender="unknown">restrâns</string>
+    <string name="state_mixed_description" gender="unknown">mixt</string>
 </resources>
