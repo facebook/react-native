@@ -3,4 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: tr_TR -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_busy_description" gender="unknown">meşgul</string>
+    <string name="state_expanded_description" gender="unknown">genişletilmiş</string>
+    <string name="state_collapsed_description" gender="unknown">daraltılmış</string>
+    <string name="state_mixed_description" gender="unknown">karışık</string>
 </resources>
