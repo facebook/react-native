@@ -38,7 +38,12 @@ FB_RUNTIME_PROTOCOL
 
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 
-- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap;
+- (void)instance:(RCTInstance *)instance
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal;
+
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 
 @end

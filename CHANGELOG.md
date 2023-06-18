@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.71.11
+
+### Changed
+
+- Bump CLI to 10.2.4 and Metro to 0.73.10 ([69804c70cb](https://github.com/facebook/react-native/commit/69804c70cb5c1afba934e55d7c4d694450c918f0) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Prefer `Content-Location` header in bundle response as JS source URL ([671ea383fe](https://github.com/facebook/react-native/commit/671ea383fe45dd9834a0c0481360de050df7f0c9) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### Android specific
+
+- Fixed crash occurring in certain native views when handling keyboard events. ([f7e35d4ef7](https://github.com/facebook/react-native/commit/f7e35d4ef7d68d06fba1439c0aa6d9ed05b58a7f) by [@aleqsio](https://github.com/aleqsio))
+- Prevent crash on OnePlus/Oppo devices in runAnimationStep ([f2c05142](https://github.com/facebook/react-native/commit/f2c05142259563b892e593b5a018bdbb6a0cf177) by [@hsource](https://github.com/hsource))
+- Revert "fix: border width top/bottom not matching the border radius" to fix border styling issues ([fd8a19d](https://github.com/facebook/react-native/commit/fd8a19d5e2bc00f29b3cd992d24790084cc34cbd) by [@kelset](https://github.com/kelset))
+
+#### iOS specific
+
+- Make 0.71 compatible with Xcode 15 (thanks to @AlexanderEggers for the commit in main) ([5bd1a4256e](https://github.com/facebook/react-native/commit/5bd1a4256e0f55bada2b3c277e1dc8aba67a57ce) by [@kelset](https://github.com/kelset))
+
 ## v0.71.10
 
 ### Fixed

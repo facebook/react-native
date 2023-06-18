@@ -47,8 +47,8 @@ references:
   # -------------------------
   dependency_versions:
     xcode_version: &xcode_version "14.3.0"
-    nodelts_image: &nodelts_image "cimg/node:18.12.1"
-    nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
+    nodelts_image: &nodelts_image "cimg/node:20.2.0"
+    nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
 
   # -------------------------
   #        Cache Key Anchors
@@ -60,8 +60,8 @@ references:
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
-    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
+    hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
@@ -795,7 +795,7 @@ jobs:
           name: Create Android template project
           command: |
             REPO_ROOT=$(pwd)
-            node ./scripts/set-rn-template-version.js "file:$REPO_ROOT/build/$(cat build/react-native-package-version)"
+            node ./scripts/update-template-package.js "{\"react-native\":\"file:$REPO_ROOT/build/$(cat build/react-native-package-version)\"}"
             node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Build the template application for << parameters.flavor >> with Architecture set to << parameters.architecture >>, and using the << parameters.jsengine>> JS engine.
@@ -879,16 +879,12 @@ jobs:
             REPO_ROOT=$(pwd)
             PACKAGE=$(cat build/react-native-package-version)
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
-            node ./scripts/set-rn-template-version.js "file:$PATH_TO_PACKAGE"
+            node ./scripts/update-template-package.js "{\"react-native\":\"file:$PATH_TO_PACKAGE\"}"
             node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
       - run:
           name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
           command: |
             cd /tmp/$PROJECT_NAME/ios
-
-            if [[ << parameters.flavor >> == "Release" ]]; then
-              export PRODUCTION=1
-            fi
 
             if [[ << parameters.architecture >> == "NewArch" ]]; then
               export RCT_NEW_ARCH_ENABLED=1
@@ -1132,7 +1128,7 @@ jobs:
   # -------------------------
   prepare_hermes_workspace:
     docker:
-      - image: debian:11
+      - image: debian:bullseye
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
       - HERMES_VERSION_FILE: "packages/react-native/sdks/.hermesversion"

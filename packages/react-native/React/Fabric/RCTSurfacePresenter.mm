@@ -29,12 +29,12 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "PlatformRunLoopObserver.h"

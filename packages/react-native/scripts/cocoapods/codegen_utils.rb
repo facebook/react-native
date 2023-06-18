@@ -101,6 +101,7 @@ class CodegenUtils
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
           ])
         end
 
@@ -142,6 +143,7 @@ class CodegenUtils
             'React-graphics': [],
             'React-Fabric': [],
             'React-debug': [],
+            'React-utils': [],
           });
         end
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: nb_NO -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="state_busy_description" gender="unknown">opptatt</string>
+    <string name="state_expanded_description" gender="unknown">utvidet</string>
+    <string name="state_collapsed_description" gender="unknown">skjult</string>
+    <string name="state_mixed_description" gender="unknown">blandet</string>
+</resources>

@@ -7,8 +7,20 @@
 
 package com.facebook.react;
 
+import androidx.annotation.Nullable;
+import com.facebook.react.interfaces.ReactHostInterface;
+
+/** Interface that represents an instance of a React Native application */
 public interface ReactApplication {
 
   /** Get the default {@link ReactNativeHost} for this app. */
   ReactNativeHost getReactNativeHost();
+
+  /**
+   * Get the default {@link ReactHostInterface} for this app. This method will be used by the new
+   * architecture of react native
+   */
+  default @Nullable ReactHostInterface getReactHostInterface() {
+    return null;
+  }
 }

@@ -13,7 +13,6 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -21,6 +20,7 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -87,11 +87,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
       const ShadowNode::Shared &childShadowNode) const override {
-    auto concreteParentShadowNode =
-        std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
-    auto concreteNonConstParentShadowNode =
-        std::const_pointer_cast<ShadowNodeT>(concreteParentShadowNode);
-    concreteNonConstParentShadowNode->appendChild(childShadowNode);
+    auto &concreteParentShadowNode =
+        static_cast<const ShadowNodeT &>(*parentShadowNode);
+    const_cast<ShadowNodeT &>(concreteParentShadowNode)
+        .appendChild(childShadowNode);
   }
 
   virtual Props::Shared cloneProps(

@@ -14,6 +14,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTConversions.h>
+#import <React/RCTLocalizedString.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
 #import <react/renderer/components/view/ViewProps.h>
@@ -192,8 +193,8 @@ using namespace facebook::react;
       NSStringFromClass([self class]));
 #endif
 
-  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(_props);
-  auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
+  const auto &oldViewProps = static_cast<ViewProps const &>(*_props);
+  const auto &newViewProps = static_cast<ViewProps const &>(*props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -431,7 +432,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
 
   // If view was managed by animated, its props need to align with UIView's properties.
-  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+  const auto &props = static_cast<ViewProps const &>(*_props);
   if ([_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
     self.layer.transform = RCTCATransform3DFromTransformMatrix(props.transform);
   }
@@ -718,7 +719,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSString *)accessibilityValue
 {
-  auto const &props = *std::static_pointer_cast<ViewProps const>(_props);
+  const auto &props = static_cast<ViewProps const &>(*_props);
 
   // Handle Switch.
   if ((self.accessibilityTraits & AccessibilityTraitSwitch) == AccessibilityTraitSwitch) {
@@ -738,28 +739,38 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   // these to screenreader users.  (They should already be familiar with them
   // from using web).
   if ([roleString isEqualToString:@"checkbox"]) {
-    [valueComponents addObject:@"checkbox"];
+    [valueComponents addObject:RCTLocalizedString("checkbox", "checkable interactive control")];
   }
 
   if ([roleString isEqualToString:@"radio"]) {
-    [valueComponents addObject:@"radio button"];
+    [valueComponents
+        addObject:
+            RCTLocalizedString(
+                "radio button",
+                "a checkable input that when associated with other radio buttons, only one of which can be checked at a time")];
   }
 
   // Handle states which haven't already been handled.
   if (props.accessibilityState.checked == AccessibilityState::Checked) {
-    [valueComponents addObject:@"checked"];
+    [valueComponents
+        addObject:RCTLocalizedString("checked", "a checkbox, radio button, or other widget which is checked")];
   }
   if (props.accessibilityState.checked == AccessibilityState::Unchecked) {
-    [valueComponents addObject:@"unchecked"];
+    [valueComponents
+        addObject:RCTLocalizedString("unchecked", "a checkbox, radio button, or other widget which is unchecked")];
   }
   if (props.accessibilityState.checked == AccessibilityState::Mixed) {
-    [valueComponents addObject:@"mixed"];
+    [valueComponents
+        addObject:RCTLocalizedString(
+                      "mixed", "a checkbox, radio button, or other widget which is both checked and unchecked")];
   }
   if (props.accessibilityState.expanded) {
-    [valueComponents addObject:@"expanded"];
+    [valueComponents
+        addObject:RCTLocalizedString("expanded", "a menu, dialog, accordian panel, or other widget which is expanded")];
   }
+
   if (props.accessibilityState.busy) {
-    [valueComponents addObject:@"busy"];
+    [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 
   if (valueComponents.count > 0) {

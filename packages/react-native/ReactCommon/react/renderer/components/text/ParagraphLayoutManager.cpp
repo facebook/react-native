@@ -7,7 +7,7 @@
 
 #include "ParagraphLayoutManager.h"
 #include <folly/Hash.h>
-#include <react/renderer/core/CoreFeatures.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -58,7 +58,7 @@ bool ParagraphLayoutManager::shoudMeasureString(
 
   bool hasMaximumSizeChanged =
       layoutConstraints.maximumSize.width != lastAvailableWidth_;
-  Float threshold = 0.01;
+  Float threshold = 0.01f;
   bool doesMaximumSizeMatchLastMeasurement =
       std::abs(
           layoutConstraints.maximumSize.width -

@@ -383,6 +383,53 @@ describe('FlowParser', () => {
       );
     });
   });
+
+  describe('getObjectProperties', () => {
+    it('returns properties of an object represented by a type annotation', () => {
+      const properties = [
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          value: {
+            type: 'StringTypeAnnotation',
+            range: [],
+          },
+        },
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          value: {
+            type: 'BooleanTypeAnnotation',
+            range: [],
+          },
+        },
+      ];
+
+      const typeAnnotation = {
+        type: 'TypeAlias',
+        properties: properties,
+      };
+
+      const expected = properties;
+
+      expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
+    });
+
+    it('returns undefined if typeAnnotation does not have properties', () => {
+      const declaration = {
+        type: 'TypeAlias',
+      };
+
+      expect(parser.getObjectProperties(declaration)).toEqual(undefined);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -725,6 +772,53 @@ describe('TypeScriptParser', () => {
       expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
         'SomeOtherType',
       );
+    });
+  });
+
+  describe('getObjectProperties', () => {
+    it('returns members of an object represented by a type annotation', () => {
+      const members = [
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          value: {
+            type: 'StringTypeAnnotation',
+            range: [],
+          },
+        },
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          value: {
+            type: 'BooleanTypeAnnotation',
+            range: [],
+          },
+        },
+      ];
+
+      const typeAnnotation = {
+        type: 'TypeAlias',
+        members: members,
+      };
+
+      const expected = members;
+
+      expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
+    });
+
+    it('returns undefined if typeAnnotation does not have members', () => {
+      const declaration = {
+        type: 'TypeAlias',
+      };
+
+      expect(parser.getObjectProperties(declaration)).toEqual(undefined);
     });
   });
 });

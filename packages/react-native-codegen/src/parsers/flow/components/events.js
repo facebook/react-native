@@ -33,12 +33,13 @@ const {
   emitMixedProp,
   emitStringProp,
   emitInt32Prop,
+  emitObjectProp,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  name,
+  name: string,
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   parser: Parser,
@@ -64,16 +65,13 @@ function getPropertyType(
         parser,
       );
     case 'ObjectTypeAnnotation':
-      return {
+      return emitObjectProp(
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
-          ),
-        },
-      };
+        parser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
     case 'UnionTypeAnnotation':
       return {
         name,
@@ -128,9 +126,11 @@ function extractArrayElementType(
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.properties.map(member =>
-          buildPropertiesForEvent(member, parser, getPropertyType),
-        ),
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
       };
     case 'ArrayTypeAnnotation':
       return {
@@ -311,4 +311,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };

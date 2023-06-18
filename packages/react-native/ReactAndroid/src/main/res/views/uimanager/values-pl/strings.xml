@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: pl_PL -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="state_busy_description" gender="unknown">zajęte</string>
+    <string name="state_expanded_description" gender="unknown">rozwinięte</string>
+    <string name="state_collapsed_description" gender="unknown">zwinięte</string>
+    <string name="state_mixed_description" gender="unknown">mieszane</string>
+</resources>

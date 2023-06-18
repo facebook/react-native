@@ -17,11 +17,12 @@
  */
 
 const {exec, exit, pushd, popd, pwd, cd, cp} = require('shelljs');
+const updateTemplatePackage = require('../scripts/update-template-package');
 const yargs = require('yargs');
 const fs = require('fs');
 
 const {
-  launchAndroidEmulator,
+  maybeLaunchAndroidEmulator,
   isPackagerRunning,
   launchPackagerInSeparateWindow,
 } = require('./testing-utils');
@@ -106,7 +107,7 @@ if (argv.target === 'RNTester') {
   } else {
     // we do the android path here
 
-    launchAndroidEmulator();
+    maybeLaunchAndroidEmulator();
 
     console.info(
       `We're going to test the ${
@@ -208,7 +209,9 @@ if (argv.target === 'RNTester') {
   );
 
   const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
-  exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
+  updateTemplatePackage({
+    'react-native': `file:${localNodeTGZPath}`,
+  });
 
   // create locally the node module
   exec('npm pack', {cwd: reactNativePackagePath});
