@@ -3,4 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: nl_NL -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_busy_description" gender="unknown">bezig</string>
+    <string name="state_expanded_description" gender="unknown">uitgevouwen</string>
+    <string name="state_collapsed_description" gender="unknown">samengevouwen</string>
+    <string name="state_mixed_description" gender="unknown">gemengd</string>
 </resources>
