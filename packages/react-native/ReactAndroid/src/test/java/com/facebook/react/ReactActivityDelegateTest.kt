@@ -24,6 +24,7 @@ class ReactActivityDelegateTest {
     val delegate =
         object : ReactActivityDelegate(nullDelegate, "test-delegate") {
           override fun isFabricEnabled() = true
+
           public val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
@@ -38,6 +39,7 @@ class ReactActivityDelegateTest {
     val delegate =
         object : ReactActivityDelegate(nullDelegate, "test-delegate") {
           override fun isFabricEnabled() = false
+
           public val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
@@ -50,8 +52,10 @@ class ReactActivityDelegateTest {
     val delegate =
         object : ReactActivityDelegate(nullDelegate, "test-delegate") {
           override fun isFabricEnabled() = true
+
           override fun getLaunchOptions(): Bundle =
               Bundle().apply { putString("test-property", "test-value") }
+
           public val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
