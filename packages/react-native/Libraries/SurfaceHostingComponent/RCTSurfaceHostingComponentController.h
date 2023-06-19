@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <ComponentKit/CKComponentController.h>
+#import <ComponentKit/ComponentKit.h>
 
 @interface RCTSurfaceHostingComponentController : CKComponentController
 

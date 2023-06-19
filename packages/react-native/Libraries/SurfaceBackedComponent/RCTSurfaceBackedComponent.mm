@@ -10,7 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <ComponentKit/CKComponentSubclass.h>
-#import <ComponentKit/CKOverlayLayoutComponent.h>
+#import <ComponentKit/ComponentKit.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponent.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurface.h>

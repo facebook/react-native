@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <ComponentKit/CKComponent.h>
+#import <ComponentKit/ComponentKit.h>
 
 typedef CKComponent * (^RCTSurfaceHostingComponentOptionsActivityIndicatorComponentFactory)();
 

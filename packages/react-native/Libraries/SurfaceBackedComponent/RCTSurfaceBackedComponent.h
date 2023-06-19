@@ -5,8 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <ComponentKit/CKComponent.h>
-#import <ComponentKit/CKCompositeComponent.h>
+#import <ComponentKit/ComponentKit.h>
 #import <RCTSurfaceHostingComponent/RCTSurfaceHostingComponentOptions.h>
 #import <React/RCTSurfacePresenter.h>
 
