@@ -105,7 +105,8 @@ class NativeAnimatedNodeTraversalTest {
             uiManagerMock?.constants?.get("customDirectEventTypes")
               as? Map<String, Map<String, String>>?
           if (directEventTypes != null) {
-            val customEventType: Map<String, String>? = directEventTypes[eventName] as? Map<String, String>?
+            val customEventType: Map<String, String>? =
+              directEventTypes[eventName] as? Map<String, String>?
             if (customEventType != null) {
               return customEventType["registrationName"] ?: eventName
             }
@@ -114,8 +115,8 @@ class NativeAnimatedNodeTraversalTest {
         }
       }
     }
-    whenever(uiManagerMock.resolveCustomDirectEventName(any(String::class.java))).thenAnswer { invocation
-      ->
+    whenever(uiManagerMock.resolveCustomDirectEventName(any(String::class.java))).thenAnswer {
+      invocation ->
       val arg = invocation.arguments[0].toString()
       "on${arg.substring(3)}"
     }
@@ -457,131 +458,151 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testDecayAnimation() {
-    createSimpleAnimatedViewWithOpacity(1000, 0.0);
+    createSimpleAnimatedViewWithOpacity(1000, 0.0)
 
-    val animationCallback: Callback = mock(Callback::class.java);
+    val animationCallback: Callback = mock(Callback::class.java)
     nativeAnimatedNodesManager.startAnimatingNode(
       1,
       1,
       JavaOnlyMap.of("type", "decay", "velocity", 0.5, "deceleration", 0.998),
-      animationCallback);
+      animationCallback
+    )
 
-    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java);
+    val stylesCaptor: ArgumentCaptor<ReadableMap> =
+      ArgumentCaptor.forClass(ReadableMap::class.java)
 
-    reset(uiManagerMock);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
     verify(uiManagerMock, atMost(1))
-      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    var previousValue: Double = stylesCaptor.getValue().getDouble("opacity");
-    var previousDiff: Double = Double.POSITIVE_INFINITY;
+      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+    var previousValue: Double = stylesCaptor.getValue().getDouble("opacity")
+    var previousDiff: Double = Double.POSITIVE_INFINITY
     /* run 3 secs of animation */
     for (i in 0 until 3 * 60) {
-      reset(uiManagerMock);
-      nativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      reset(uiManagerMock)
+      nativeAnimatedNodesManager.runUpdates(nextFrameTime())
       verify(uiManagerMock, atMost(1))
-        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      val currentValue: Double = stylesCaptor.getValue().getDouble("opacity");
-      val currentDiff: Double = currentValue - previousValue;
+        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+      val currentValue: Double = stylesCaptor.getValue().getDouble("opacity")
+      val currentDiff: Double = currentValue - previousValue
       // verify monotonicity
       // greater *or equal* because the animation stops during these 3 seconds
-      assertThat(currentValue).`as`("on frame " + i).isGreaterThanOrEqualTo(previousValue);
+      assertThat(currentValue).`as`("on frame " + i).isGreaterThanOrEqualTo(previousValue)
       // verify decay
       if (i > 3) {
         // i > 3 because that's how long it takes to settle previousDiff
         if (i % 3 != 0) {
           // i % 3 != 0 because every 3 frames we go a tiny
           // bit faster, because frame length is 16.(6)ms
-          assertThat(currentDiff).`as`("on frame " + i).isLessThanOrEqualTo(previousDiff);
+          assertThat(currentDiff).`as`("on frame " + i).isLessThanOrEqualTo(previousDiff)
         } else {
-          assertThat(currentDiff).`as`("on frame " + i).isGreaterThanOrEqualTo(previousDiff);
+          assertThat(currentDiff)
+            .`as`("on frame " + i)
+            .isGreaterThanOrEqualTo(previousDiff)
         }
       }
-      previousValue = currentValue;
-      previousDiff = currentDiff;
+      previousValue = currentValue
+      previousDiff = currentDiff
     }
     // should be done in 3s
-    reset(uiManagerMock);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(uiManagerMock);
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(uiManagerMock)
   }
 
   @Test
   fun testDecayAnimationLoopsFiveTimes() {
-    createSimpleAnimatedViewWithOpacity(1000, 0.0);
+    createSimpleAnimatedViewWithOpacity(1000, 0.0)
 
-    val animationCallback: Callback = mock(Callback::class.java);
+    val animationCallback: Callback = mock(Callback::class.java)
     nativeAnimatedNodesManager.startAnimatingNode(
       1,
       1,
-      JavaOnlyMap.of("type", "decay", "velocity", 0.5, "deceleration", 0.998, "iterations", 5),
-      animationCallback);
+      JavaOnlyMap.of(
+        "type",
+        "decay",
+        "velocity",
+        0.5,
+        "deceleration",
+        0.998,
+        "iterations",
+        5
+      ),
+      animationCallback
+    )
 
-    val stylesCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java);
+    val stylesCaptor: ArgumentCaptor<ReadableMap> =
+      ArgumentCaptor.forClass(ReadableMap::class.java)
 
-    reset(uiManagerMock);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
     verify(uiManagerMock, atMost(1))
-      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    var previousValue: Double = stylesCaptor.getValue().getDouble("opacity");
-    val initialValue: Double = stylesCaptor.getValue().getDouble("opacity");
-    var didComeToRest: Boolean = false;
-    var numberOfResets: Int = 0;
+      .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+    var previousValue: Double = stylesCaptor.getValue().getDouble("opacity")
+    val initialValue: Double = stylesCaptor.getValue().getDouble("opacity")
+    var didComeToRest: Boolean = false
+    var numberOfResets: Int = 0
     /* run 3 secs of animation, five times */
     for (i in 0 until 3 * 60 * 5) {
-      reset(uiManagerMock);
-      nativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      reset(uiManagerMock)
+      nativeAnimatedNodesManager.runUpdates(nextFrameTime())
       verify(uiManagerMock, atMost(1))
-        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      val currentValue: Double = stylesCaptor.getValue().getDouble("opacity");
-      val currentDiff: Double = currentValue - previousValue;
+        .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
+      val currentValue: Double = stylesCaptor.getValue().getDouble("opacity")
+      val currentDiff: Double = currentValue - previousValue
       // Test to see if it reset after coming to rest (i.e. dropped back to )
       if (didComeToRest && currentValue == initialValue) {
-        numberOfResets++;
+        numberOfResets++
       }
 
       // verify monotonicity, unless it has come to rest and reset
       // greater *or equal* because the animation stops during these 3 seconds
       if (!didComeToRest) {
-        assertThat(currentValue).`as`("on frame " + i).isGreaterThanOrEqualTo(previousValue);
+        assertThat(currentValue).`as`("on frame " + i).isGreaterThanOrEqualTo(previousValue)
       }
 
       // Test if animation has come to rest using the 0.1 threshold from DecayAnimation.java
-      didComeToRest = Math.abs(currentDiff) < 0.1;
-      previousValue = currentValue;
+      didComeToRest = Math.abs(currentDiff) < 0.1
+      previousValue = currentValue
     }
 
     // verify that value reset (looped) 4 times after finishing a full animation
-    assertThat(numberOfResets).isEqualTo(4);
-    reset(uiManagerMock);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(uiManagerMock);
+    assertThat(numberOfResets).isEqualTo(4)
+    reset(uiManagerMock)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(uiManagerMock)
   }
 
   @Test
   fun testAnimationCallbackFinish() {
-    createSimpleAnimatedViewWithOpacity(1000, 0.0);
+    createSimpleAnimatedViewWithOpacity(1000, 0.0)
 
-    val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0);
-    val animationCallback: Callback = mock(Callback::class.java);
+    val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 1.0)
+    val animationCallback: Callback = mock(Callback::class.java)
     nativeAnimatedNodesManager.startAnimatingNode(
-      1, 1, JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0), animationCallback);
+      1,
+      1,
+      JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1.0),
+      animationCallback
+    )
 
-    val callbackResponseCaptor: ArgumentCaptor<ReadableMap> = ArgumentCaptor.forClass(ReadableMap::class.java);
+    val callbackResponseCaptor: ArgumentCaptor<ReadableMap> =
+      ArgumentCaptor.forClass(ReadableMap::class.java)
 
-    reset(animationCallback);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(animationCallback);
+    reset(animationCallback)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(animationCallback)
 
-    reset(animationCallback);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(animationCallback).invoke(callbackResponseCaptor.capture());
+    reset(animationCallback)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verify(animationCallback).invoke(callbackResponseCaptor.capture())
 
-    assertThat(callbackResponseCaptor.getValue().hasKey("finished")).isTrue();
-    assertThat(callbackResponseCaptor.getValue().getBoolean("finished")).isTrue();
+    assertThat(callbackResponseCaptor.getValue().hasKey("finished")).isTrue()
+    assertThat(callbackResponseCaptor.getValue().getBoolean("finished")).isTrue()
 
-    reset(animationCallback);
-    nativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(animationCallback);
+    reset(animationCallback)
+    nativeAnimatedNodesManager.runUpdates(nextFrameTime())
+    verifyNoMoreInteractions(animationCallback)
   }
 
   /**
