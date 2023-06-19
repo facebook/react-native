@@ -1067,6 +1067,11 @@ public class ReactEditText extends AppCompatEditText
     applyTextAttributes();
   }
 
+  public void setLineHeight(float lineHeight) {
+    mTextAttributes.setLineHeight(lineHeight);
+    applyTextAttributes();
+  }
+
   public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
     if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
       mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);

@@ -10,6 +10,8 @@ package com.facebook.react.views.textinput;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -25,6 +27,10 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.views.text.CustomLetterSpacingSpan;
+import com.facebook.react.views.text.CustomLineHeightSpan;
+import com.facebook.react.views.text.CustomStyleSpan;
+import com.facebook.react.views.text.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.ReactBaseTextShadowNode;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTextViewManagerCallback;
@@ -124,13 +130,71 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
       }
     }
 
-    // make sure the placeholder content is also being measured
-    editText.setHint(getPlaceholder());
+    // Measure something so we have the correct height, taking into consideration
+    // the provided text attributes.
+    SpannableStringBuilder sb = new SpannableStringBuilder();
+    if (getPlaceholder() != null && getPlaceholder().length() > 0) {
+      sb.append(getPlaceholder());
+    } else {
+      // Measure something so we have correct height, even if there's no string.
+      sb.append("I");
+    }
+    addSpansFromSizeStyleAttributes(sb);
+    editText.setText(sb);
+
     editText.measure(
         MeasureUtil.getMeasureSpec(width, widthMode),
         MeasureUtil.getMeasureSpec(height, heightMode));
 
     return YogaMeasureOutput.make(editText.getMeasuredWidth(), editText.getMeasuredHeight());
+  }
+
+  public void addSpansFromSizeStyleAttributes(SpannableStringBuilder workingText) {
+    EditText editText = Assertions.assertNotNull(mInternalEditText);
+
+    int spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
+
+    // Set all bits for SPAN_PRIORITY so that this span has the highest possible priority
+    // (least precedence). This ensures the span is behind any overlapping spans.
+    spanFlags |= Spannable.SPAN_PRIORITY;
+
+    workingText.setSpan(
+      new ReactAbsoluteSizeSpan(mTextAttributes.getEffectiveFontSize()),
+      0,
+      workingText.length(),
+      spanFlags);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        workingText.setSpan(
+          new CustomLetterSpacingSpan(effectiveLetterSpacing),
+          0,
+          workingText.length(),
+          spanFlags);
+      }
+    }
+
+    if (mFontStyle != UNSET
+      || mFontWeight != UNSET
+      || mFontFamily != null
+      || editText.getFontFeatureSettings() != null) {
+      workingText.setSpan(
+        new CustomStyleSpan(
+          mFontStyle,
+          mFontWeight,
+          editText.getFontFeatureSettings(),
+          mFontFamily,
+          editText.getContext().getAssets()),
+        0,
+        workingText.length(),
+        spanFlags);
+    }
+
+    float lineHeight = mTextAttributes.getEffectiveLineHeight();
+    if (!Float.isNaN(lineHeight)) {
+      workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+    }
   }
 
   @Override

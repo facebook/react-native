@@ -387,6 +387,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "lineHeight")
+  public void setLineHeight(ReactEditText view, @Nullable float lineHeight) {
+    view.setLineHeight(lineHeight);
+  }
+
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
     view.setFontSize(fontSize);
