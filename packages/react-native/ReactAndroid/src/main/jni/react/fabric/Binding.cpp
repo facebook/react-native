@@ -26,6 +26,7 @@
 #include <jsi/jsi.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
@@ -35,7 +36,6 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

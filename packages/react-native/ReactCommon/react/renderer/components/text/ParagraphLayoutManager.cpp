@@ -7,7 +7,7 @@
 
 #include "ParagraphLayoutManager.h"
 #include <folly/Hash.h>
-#include <react/utils/CoreFeatures.h>
+#include <react/renderer/core/CoreFeatures.h>
 
 namespace facebook::react {
 
