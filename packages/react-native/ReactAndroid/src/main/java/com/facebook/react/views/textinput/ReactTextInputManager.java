@@ -1245,17 +1245,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       }
       int realStart = Math.min(start, end);
       int realEnd = Math.max(start, end);
-      int cursorPositionStartX = 0;
-      int cursorPositionStartY = 0;
+      int cursorStartPositionX, cursorStartPositionY, cursorEndPositionX, cursorEndPositionY = 0;
 
-    if (realStart == realEnd && realStart != 0) {
       int lineStart = layout.getLineForOffset(realStart);
       int baselineStart = layout.getLineBaseline(lineStart);
       int ascentStart = layout.getLineAscent(lineStart);
-      cursorPositionStartX = (int) Math.round(PixelUtil.toDIPFromPixel(layout.getPrimaryHorizontal(realStart)));
-      cursorPositionStartY = (int) Math.round(PixelUtil.toDIPFromPixel(baselineStart + ascentStart));
-    }
+      cursorStartPositionX = (int) Math.round(PixelUtil.toDIPFromPixel(layout.getPrimaryHorizontal(realStart)));
+      cursorStartPositionY = (int) Math.round(PixelUtil.toDIPFromPixel(baselineStart + ascentStart));
 
+      int lineEnd = layout.getLineForOffset(realEnd);
+      int baselineEnd = layout.getLineBaseline(lineEnd);
+      int ascentEnd = layout.getLineAscent(lineEnd);
+      cursorEndPositionX = (int) Math.round(PixelUtil.toDIPFromPixel(layout.getPrimaryHorizontal(realEnd)));
+      cursorEndPositionY = (int) Math.round(PixelUtil.toDIPFromPixel(baselineEnd + ascentEnd));
 
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
@@ -1264,8 +1266,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             mReactEditText.getId(),
             realStart,
             realEnd,
-            cursorPositionStartX,
-            cursorPositionStartY
+            cursorStartPositionX,
+            cursorStartPositionY,
+            cursorEndPositionX,
+            cursorEndPositionY
           )
         );
 

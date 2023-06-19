@@ -417,8 +417,14 @@ export interface TextInputSelectionChangeEventData extends TargetedEvent {
     start: number;
     end: number;
     cursorPosition: {
-      x: number;
-      y: number;
+      start: {
+        x: number;
+        y: number;
+      };
+      end: {
+        x: number;
+        y: number;
+      };
     };
   };
 }
@@ -830,8 +836,18 @@ export interface TextInputProps
         end?: number | undefined;
         cursorPosition:
           | {
-              x: number;
-              y: number;
+              start:
+                | {
+                    x: number;
+                    y: number;
+                  }
+                | undefined;
+              end:
+                | {
+                    x: number;
+                    y: number;
+                  }
+                | undefined;
             }
           | undefined;
       }

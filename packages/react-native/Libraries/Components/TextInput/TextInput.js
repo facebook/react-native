@@ -42,7 +42,10 @@ type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
   +setSelection: (
     start: number,
     end: number,
-    cursorPosition: {x: number, y: number},
+    cursorPosition: {
+      start: {x: number, y: number},
+      end: {x: number, y: number},
+    },
   ) => void,
 };
 
@@ -84,9 +87,14 @@ export type TextInputEvent = SyntheticEvent<
       start: number,
       end: number,
       cursorPosition: $ReadOnly<{|
-        x: number,
-        y: number,
-      |}>,
+        start: $ReadOnly<{|
+          x: Double,
+          y: Double,
+        |}>,
+        end: $ReadOnly<{|
+          x: Double,
+          y: Double,
+        |}>,
     |}>,
     target: number,
     text: string,
@@ -116,9 +124,14 @@ type Selection = $ReadOnly<{|
   start: number,
   end: number,
   cursorPosition: $ReadOnly<{|
-    x: number,
-    y: number,
-  |}>,
+    start: $ReadOnly<{|
+      x: Double,
+      y: Double,
+    |}>,
+    end: $ReadOnly<{|
+      x: Double,
+      y: Double,
+    |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -810,7 +823,7 @@ export type Props = $ReadOnly<{|
   /**
    * Callback that is called when the text input selection is changed.
    * This will be called with
-   * `{ nativeEvent: { selection: { start, end, cursorPosition: {x, y}} } }`.
+   * `{ nativeEvent: { selection: { start, end, cursorPosition: {start: {x, y}, end: {x, y}}} } }`.
    */
   onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
 
@@ -893,9 +906,14 @@ export type Props = $ReadOnly<{|
     start: number,
     end?: ?number,
     cursorPosition: $ReadOnly<{|
-      x: number,
-      y: number,
-    |}>,
+      start: $ReadOnly<{|
+        x: Double,
+        y: Double,
+      |}>,
+      end: $ReadOnly<{|
+        x: Double,
+        y: Double,
+      |}>,
   |}>,
 
   /**
@@ -1110,9 +1128,14 @@ function InternalTextInput(props: Props): React.Node {
           start: props.selection.start,
           end: props.selection.end ?? props.selection.start,
           cursorPosition: {
-            x: props.selection.cursorPosition.x,
-            y: props.selection.cursorPosition.y,
-          },
+            start: {
+              x: props.selection.cursorPosition.start.x,
+              y: props.selection.cursorPosition.start.y,
+            },
+            end: {
+              x: props.selection.cursorPosition.end.x,
+              y: props.selection.cursorPosition.end.y
+            },
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);

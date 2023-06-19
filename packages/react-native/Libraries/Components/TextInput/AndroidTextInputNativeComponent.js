@@ -413,8 +413,14 @@ export type NativeProps = $ReadOnly<{|
         start: Double,
         end: Double,
         cursorPosition: $ReadOnly<{|
-          x: Double,
-          y: Double,
+          start: $ReadOnly<{|
+            x: Double,
+            y: Double,
+          |}>,
+          end: $ReadOnly<{|
+            x: Double,
+            y: Double,
+          |}>,
         |}>,
       |}>,
     |}>,

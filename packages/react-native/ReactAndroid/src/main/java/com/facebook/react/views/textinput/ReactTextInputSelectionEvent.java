@@ -16,6 +16,8 @@ import com.facebook.react.uimanager.common.ViewUtil;
   private int mSelectionEnd;
   private int mCursorPositionStartX;
   private int mCursorPositionStartY;
+  private int mCursorPositionEndX;
+  private int mCursorPositionEndY;
 
   @Deprecated
   public ReactTextInputSelectionEvent(
@@ -23,8 +25,10 @@ import com.facebook.react.uimanager.common.ViewUtil;
       int selectionStart,
       int selectionEnd,
       int cursorPositionStartX,
-      int cursorPositionStartY) {
-    this(ViewUtil.NO_SURFACE_ID, viewId, selectionStart, selectionEnd, cursorPositionStartX, cursorPositionStartY);
+      int cursorPositionStartY,
+      int cursorPositionEndX,
+      int cursorPositionEndY) {
+    this(ViewUtil.NO_SURFACE_ID, viewId, selectionStart, selectionEnd, cursorPositionStartX, cursorPositionStartY, cursorPositionEndX, cursorPositionEndY);
   }
 
   public ReactTextInputSelectionEvent(
@@ -33,12 +37,16 @@ import com.facebook.react.uimanager.common.ViewUtil;
       int selectionStart,
       int selectionEnd,
       int cursorPositionStartX,
-      int cursorPositionStartY) {
+      int cursorPositionStartY,
+      int cursorPositionEndX,
+      int cursorPositionEndY) {
     super(surfaceId, viewId);
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
     mCursorPositionStartX = cursorPositionStartX;
     mCursorPositionStartY = cursorPositionStartY;
+    mCursorPositionEndX = cursorPositionEndX;
+    mCursorPositionEndY = cursorPositionEndY;
   }
 
   @Override
@@ -53,13 +61,21 @@ import com.facebook.react.uimanager.common.ViewUtil;
 
     WritableMap selectionData = Arguments.createMap();
 
-    WritableMap cursorPosition = Arguments.createMap();
-    cursorPosition.putInt("x", mCursorPositionStartX);
-    cursorPosition.putInt("y", mCursorPositionStartY);
+    WritableMap startPosition = Arguments.createMap();
+    startPosition.putInt("x", mCursorPositionStartX);
+    startPosition.putInt("y", mCursorPositionStartY);
+
+    WritableMap endPosition = Arguments.createMap();
+    endPosition.putInt("x", mCursorPositionEndX);
+    endPosition.putInt("y", mCursorPositionEndY);
+
+    WritableMap selectionPosition = Arguments.createMap();
+    selectionPosition.putMap("start", startPosition);
+    selectionPosition.putMap("end", endPosition);
 
     selectionData.putInt("end", mSelectionEnd);
     selectionData.putInt("start", mSelectionStart);
-    selectionData.putMap("cursorPosition", cursorPosition);
+    selectionData.putMap("cursorPosition", selectionPosition);
 
     eventData.putMap("selection", selectionData);
     return eventData;
