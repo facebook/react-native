@@ -6,4 +6,5 @@
     <string name="state_busy_description" gender="unknown">ಕಾರ್ಯನಿರತ</string>
     <string name="state_expanded_description" gender="unknown">ವಿಸ್ತರಿಸಲಾಗಿದೆ</string>
     <string name="state_collapsed_description" gender="unknown">ಮುಚ್ಚಿದೆ</string>
+    <string name="state_mixed_description" gender="unknown">ಬಗೆಬಗೆಯ</string>
 </resources>
