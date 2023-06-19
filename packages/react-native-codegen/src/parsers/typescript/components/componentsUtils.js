@@ -15,7 +15,7 @@ const {
 } = require('../parseTopLevelType');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
-import {verifyPropNotAlreadyDefined} from "../../parsers-commons";
+import {verifyPropNotAlreadyDefined} from '../../parsers-commons';
 
 function getUnionOfLiterals(
   name: string,
