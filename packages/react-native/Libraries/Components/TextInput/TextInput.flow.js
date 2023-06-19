@@ -70,8 +70,14 @@ type Selection = $ReadOnly<{|
   start: number,
   end: number,
   cursorPosition: $ReadOnly<{|
-    x: number,
-    y: number,
+    start: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
+    end: $ReadOnly<{|
+      x: number,
+      y: number,
+    |}>,
   |}>,
 |}>;
 
@@ -842,8 +848,14 @@ export type Props = $ReadOnly<{|
     start: number,
     end?: ?number,
     cursorPosition: $ReadOnly<{|
-      x: number,
-      y: ?number,
+      start: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+      end: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
     |}>,
   |}>,
 

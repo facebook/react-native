@@ -471,10 +471,7 @@ export interface TextInputSubmitEditingEventData {
 export interface TextInputTextInputEventData {
   text: string;
   previousText: string;
-  range: {
-    start: number;
-    end: number;
-  };
+  range: {start: number; end: number};
 }
 
 /**
