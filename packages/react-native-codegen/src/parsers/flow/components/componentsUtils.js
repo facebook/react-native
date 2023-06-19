@@ -13,6 +13,7 @@
 const {getValueFromTypes} = require('../utils.js');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
+import {verifyPropNotAlreadyDefined} from "../../parsers-commons";
 
 function getTypeAnnotationForArray<+T>(
   name: string,
@@ -204,17 +205,6 @@ function flattenProperties(
       }
     }, [])
     .filter(Boolean);
-}
-
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
 }
 
 function getTypeAnnotation<+T>(
