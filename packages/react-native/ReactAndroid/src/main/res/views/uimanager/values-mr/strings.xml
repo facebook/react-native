@@ -21,7 +21,11 @@
     <string name="timer_description" gender="unknown">टायमर</string>
     <string name="toolbar_description" gender="unknown">टूल बार</string>
     <string name="summary_description" gender="unknown">सारांश</string>
+    <string name="state_busy_description" gender="unknown">व्यग्र</string>
+    <string name="state_expanded_description" gender="unknown">विस्तारित केले</string>
+    <string name="state_collapsed_description" gender="unknown">संकुचित केले</string>
     <string name="state_unselected_description" gender="unknown">निवड रद्द केलेले</string>
     <string name="state_on_description" gender="unknown">चालू</string>
     <string name="state_off_description" gender="unknown">बंद</string>
+    <string name="state_mixed_description" gender="unknown">मिश्र</string>
 </resources>
