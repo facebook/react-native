@@ -152,6 +152,9 @@ public class ReactImageView extends GenericDraweeView {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mGlobalImageLoadListener = globalImageLoadListener;
     mCallerContext = callerContext;
+    // Workaround Android bug where ImageView visibility is not propagated to the Drawable, so you
+    // have to manually update visibility. Will be resolved once we move to VitoView.
+    setLegacyVisibilityHandlingEnabled(true);
   }
 
   public void setShouldNotifyLoadEvents(boolean shouldNotify) {
