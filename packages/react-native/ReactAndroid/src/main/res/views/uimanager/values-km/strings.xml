@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: km_KH -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="state_off_description" gender="unknown">បិទ</string>
 </resources>
