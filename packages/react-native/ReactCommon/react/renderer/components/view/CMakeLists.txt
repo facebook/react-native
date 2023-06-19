@@ -27,6 +27,7 @@ target_link_libraries(rrc_view
         jsi
         logger
         react_debug
+        react_utils
         react_render_core
         react_render_debug
         react_render_graphics
