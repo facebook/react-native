@@ -11,9 +11,9 @@
 'use strict';
 
 const {getValueFromTypes} = require('../utils.js');
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
-import {verifyPropNotAlreadyDefined} from '../../parsers-commons';
 
 function getTypeAnnotationForArray<+T>(
   name: string,

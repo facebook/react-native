@@ -13,9 +13,9 @@ const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
-import {verifyPropNotAlreadyDefined} from '../../parsers-commons';
 
 function getUnionOfLiterals(
   name: string,
