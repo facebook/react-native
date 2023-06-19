@@ -14,9 +14,9 @@
 
 @property (nonatomic, assign, readonly) NSInteger start;
 @property (nonatomic, assign, readonly) NSInteger end;
-@property (nonatomic, assign, readonly) CGPoint cursorPosition;
+@property (nonatomic, strong, readonly) NSDictionary *cursorPosition;
 
-- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end cursorPosition:(CGPoint)cursorPosition;
+- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end cursorPosition:(NSDictionary *)cursorPosition;
 
 @end
 

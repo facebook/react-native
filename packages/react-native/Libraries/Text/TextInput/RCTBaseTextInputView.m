@@ -184,13 +184,28 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
   UITextRange *selectedTextRange = backedTextInputView.selectedTextRange;
+  
+  CGRect caretRectStart = [backedTextInputView caretRectForPosition:selectedTextRange.start];
+  CGPoint cursorPositionStart = caretRectStart.origin;
+  NSValue *startValue = [NSValue valueWithCGPoint:cursorPositionStart];
+  
+  CGRect caretRectEnd = [backedTextInputView caretRectForPosition:selectedTextRange.end];
+  CGPoint cursorPositionEnd = caretRectEnd.origin;
+  NSValue *endValue = [NSValue valueWithCGPoint:cursorPositionEnd];
+  
+  NSDictionary *cursorPosition = @{
+      @"start": startValue,
+      @"end": endValue
+  };
+
   return [[RCTTextSelection new]
       initWithStart:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
                                                  toPosition:selectedTextRange.start]
                 end:[backedTextInputView offsetFromPosition:backedTextInputView.beginningOfDocument
                                                  toPosition:selectedTextRange.end]
-   cursorPosition:[backedTextInputView caretRectForPosition:selectedTextRange.start].origin];
+       cursorPosition:cursorPosition];
 }
+
 
 - (void)setSelection:(RCTTextSelection *)selection
 {
@@ -532,21 +547,39 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   UITextRange *selectedTextRange = self.backedTextInputView.selectedTextRange;
   CGPoint selectionOriginStart = [self.backedTextInputView caretRectForPosition:selectedTextRange.start].origin;
 
+  CGRect caretRectEnd = [self.backedTextInputView caretRectForPosition:selectedTextRange.end];
+
+  CGPoint selectionOriginEnd = caretRectEnd.origin;
+  CGFloat cursorHeightEnd = caretRectEnd.size.height;
+  CGFloat cursorWidthEnd = caretRectEnd.size.width;
+
   NSString *formattedStartY = @"0";
   NSString *formattedStartX = @"0";
+  NSString *formattedEndY = @"0";
+  NSString *formattedEndX = @"0";
 
   if (selection.start == selection.end && selection.start != 0) {
     formattedStartY = [self formatPositionValue:selectionOriginStart.y];
     formattedStartX = [self formatPositionValue:selectionOriginStart.x];
   }
-    
-    _onSelectionChange(@{
+
+    // We add the height/width of the cursor to the position of the caret to get the bottom right position of the end of the selection
+    formattedEndY = [self formatPositionValue:(selectionOriginEnd.y + cursorHeightEnd)];
+    formattedEndX = [self formatPositionValue:(selectionOriginEnd.x + cursorWidthEnd)];
+
+     _onSelectionChange(@{
       @"selection" : @{
         @"start" : @(selection.start),
         @"end" : @(selection.end),
         @"cursorPosition": @{
-            @"x": @([formattedStartX doubleValue]),
-            @"y": @([formattedStartY doubleValue])
+            @"start": @{
+                @"x": @([formattedStartX doubleValue]),
+                @"y": @([formattedStartY doubleValue])
+            },
+            @"end": @{
+                @"x": @([formattedEndX doubleValue]),
+                @"y": @([formattedEndY doubleValue])
+            }
           },
       }
     });

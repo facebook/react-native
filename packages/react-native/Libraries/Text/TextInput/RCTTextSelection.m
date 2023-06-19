@@ -9,7 +9,7 @@
 
 @implementation RCTTextSelection
 
-- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end cursorPosition:(CGPoint)cursorPosition
+- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end cursorPosition:(NSDictionary *)cursorPosition
 {
   if (self = [super init]) {
     _start = start;
@@ -28,11 +28,7 @@
   if ([json isKindOfClass:[NSDictionary class]]) {
     NSInteger start = [self NSInteger:json[@"start"]];
     NSInteger end = [self NSInteger:json[@"end"]];
-    NSDictionary *cursorPositionDict = json[@"cursorPosition"];
-    CGPoint cursorPosition = CGPointMake(
-      [self CGFloat:cursorPositionDict[@"x"]],
-      [self CGFloat:cursorPositionDict[@"y"]]
-    );
+    NSDictionary *cursorPosition = json[@"cursorPosition"];
     return [[RCTTextSelection alloc] initWithStart:start
                                                end:end 
                                     cursorPosition:cursorPosition];
