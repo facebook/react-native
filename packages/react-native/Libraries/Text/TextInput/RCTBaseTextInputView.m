@@ -20,8 +20,8 @@
 #import <React/RCTTextAttributes.h>
 #import <React/RCTTextSelection.h>
 
-/** Native iOS empty text field bottom keyboard offset amount */
-static const CGFloat kEmptyKeyboardBottomOffset = 15.0;
+/** Native iOS text field bottom keyboard offset amount */
+static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -45,11 +45,12 @@ static const CGFloat kEmptyKeyboardBottomOffset = 15.0;
     scrollView.firstResponderFocus = [self convertRect:self.bounds toView:nil];
   } else {
     // Focus on text selection frame
+    BOOL isMultiline = [self.backedTextInputView isKindOfClass:[UITextView class]];
     CGRect focusRect = CGRectMake(
       selection.rect.origin.x,
       selection.rect.origin.y,
       selection.rect.size.width,
-      selection.rect.size.height + (selectedTextRange.empty ? kEmptyKeyboardBottomOffset : 0)
+      selection.rect.size.height + (isMultiline ? 0 : kSingleLineKeyboardBottomOffset)
     );
     scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
   }

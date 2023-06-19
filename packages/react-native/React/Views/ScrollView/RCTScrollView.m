@@ -331,7 +331,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:) to:nil from:self forEvent:nil]) {
     // Inner text field focused
     CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
-    if (focusEnd > endFrame.origin.y && focusEnd != INFINITY) {
+    BOOL didFocusExternalTextField = focusEnd == INFINITY;
+    if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
       // Text field active region is below visible area with keyboard - update diff to bring into view
       contentDiff = endFrame.origin.y - focusEnd;
     }
