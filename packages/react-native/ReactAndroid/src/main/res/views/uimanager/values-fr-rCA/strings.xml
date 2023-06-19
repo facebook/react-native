@@ -3,6 +3,7 @@
 <!-- @generated -->
 <!-- FB Locale: fr_CA -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="combobox_description" gender="unknown">Zone combinée</string>
     <string name="state_busy_description" gender="unknown">en cours de traitement</string>
     <string name="state_expanded_description" gender="unknown">agrandi</string>
     <string name="state_collapsed_description" gender="unknown">réduit</string>
