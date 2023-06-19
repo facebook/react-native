@@ -479,8 +479,14 @@ type SelectionExampleState = {
     start: number,
     end: number,
     cursorPosition: $ReadOnly<{|
-      x: number,
-      y: number,
+      start: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+      end: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
     |}>,
   |}>,
   value: string,
@@ -501,7 +507,10 @@ class SelectionExample extends React.Component<
       selection: {
         start: 0,
         end: 0,
-        cursorPosition: {x: 0, y: 0},
+        cursorPosition: {
+          start: {x: 0, y: 0},
+          end: {x: 0, y: 0},
+        },
       },
       value: props.value,
     };
@@ -524,7 +533,10 @@ class SelectionExample extends React.Component<
       selection: {
         start,
         end,
-        cursorPosition: {x: 0, y: 0},
+        cursorPosition: {
+          start: {x: 0, y: 0},
+          end: {x: 0, y: 0},
+        },
       },
     });
     if (this.props.imperative) {
@@ -572,8 +584,14 @@ class SelectionExample extends React.Component<
             {`{
               start:${this.state.selection.start}, end:${this.state.selection.end},
               cursorPosition: {
-                x: ${this.state.selection.cursorPosition.x},
-                y: ${this.state.selection.cursorPosition.y}
+                start: {
+                  x: ${this.state.selection.cursorPosition.start.x},
+                  y: ${this.state.selection.cursorPosition.start.y}
+                },
+                end: {
+                  x: ${this.state.selection.cursorPosition.end.x},
+                  y: ${this.state.selection.cursorPosition.end.y}
+                },
               }`}
           </Text>
           <Text
