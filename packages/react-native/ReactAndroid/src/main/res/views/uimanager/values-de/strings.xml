@@ -14,7 +14,7 @@
     <string name="progressbar_description" gender="unknown">Statusanzeige</string>
     <string name="radiogroup_description" gender="unknown">Gruppe von Buttons</string>
     <string name="scrollbar_description" gender="unknown">Scroll-Leiste</string>
-    <string name="spinbutton_description" gender="unknown">Drehfeld</string>
+    <string name="spinbutton_description" gender="unknown">Auswahl-Button</string>
     <string name="tablist_description" gender="unknown">Tab-Liste</string>
     <string name="toolbar_description" gender="unknown">Symbolleiste</string>
     <string name="summary_description" gender="unknown">Übersicht</string>
