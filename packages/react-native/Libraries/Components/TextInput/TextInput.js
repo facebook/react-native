@@ -133,6 +133,7 @@ type Selection = $ReadOnly<{|
       x: Double,
       y: Double,
     |}>,
+  |}>,
 |}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
@@ -915,6 +916,7 @@ export type Props = $ReadOnly<{|
         x: Double,
         y: Double,
       |}>,
+    |}>,
   |}>,
 
   /**
