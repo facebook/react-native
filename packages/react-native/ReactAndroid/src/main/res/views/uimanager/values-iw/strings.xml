@@ -3,14 +3,20 @@
 <!-- @generated -->
 <!-- FB Locale: he_IL -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">קישור</string>
+    <string name="image_description" gender="unknown">תמונה</string>
     <string name="imagebutton_description" gender="unknown">לחצן, תמונה</string>
     <string name="header_description" gender="unknown">כותרת</string>
     <string name="alert_description" gender="unknown">התראה</string>
     <string name="combobox_description" gender="unknown">תיבה משולבת</string>
+    <string name="menuitem_description" gender="unknown">פריט בתפריט</string>
     <string name="progressbar_description" gender="unknown">סרגל התקדמות</string>
     <string name="radiogroup_description" gender="unknown">קבוצת רדיו</string>
     <string name="spinbutton_description" gender="unknown">לחצן מסתובב</string>
+    <string name="rn_tab_description" gender="unknown">לשונית</string>
+    <string name="tablist_description" gender="unknown">רשימת לשוניות</string>
     <string name="timer_description" gender="unknown">טיימר</string>
+    <string name="summary_description" gender="unknown">סיכום</string>
     <string name="state_busy_description" gender="unknown">תפוס</string>
     <string name="state_expanded_description" gender="unknown">מורחב</string>
     <string name="state_collapsed_description" gender="unknown">מצומצם</string>
