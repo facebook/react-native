@@ -7,7 +7,7 @@
 
 #include "JJSTimerExecutor.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 
 namespace facebook::react {
