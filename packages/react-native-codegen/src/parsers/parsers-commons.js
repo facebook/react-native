@@ -1072,6 +1072,17 @@ function buildPropertiesForEvent(
   return getPropertyType(name, optional, typeAnnotation, parser);
 }
 
+function verifyPropNotAlreadyDefined(
+  props: $ReadOnlyArray<PropAST>,
+  needleProp: PropAST,
+) {
+  const propName = needleProp.key.name;
+  const foundProp = props.some(prop => prop.key.name === propName);
+  if (foundProp) {
+    throw new Error(`A prop was already defined with the name ${propName}`);
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1099,4 +1110,5 @@ module.exports = {
   handleGenericTypeAnnotation,
   getTypeResolutionStatus,
   buildPropertiesForEvent,
+  verifyPropNotAlreadyDefined,
 };
