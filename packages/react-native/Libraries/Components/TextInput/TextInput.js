@@ -88,12 +88,12 @@ export type TextInputEvent = SyntheticEvent<
       end: number,
       cursorPosition: $ReadOnly<{|
         start: $ReadOnly<{|
-          x: Double,
-          y: Double,
+          x: number,
+          y: number,
         |}>,
         end: $ReadOnly<{|
-          x: Double,
-          y: Double,
+          x: number,
+          y: number,
         |}>,
       |}>,
     |}>,
@@ -126,12 +126,12 @@ type Selection = $ReadOnly<{|
   end: number,
   cursorPosition: $ReadOnly<{|
     start: $ReadOnly<{|
-      x: Double,
-      y: Double,
+      x: number,
+      y: number,
     |}>,
     end: $ReadOnly<{|
-      x: Double,
-      y: Double,
+      x: number,
+      y: number,
     |}>,
   |}>,
 |}>;
@@ -909,12 +909,12 @@ export type Props = $ReadOnly<{|
     end?: ?number,
     cursorPosition: $ReadOnly<{|
       start: $ReadOnly<{|
-        x: Double,
-        y: Double,
+        x: number,
+        y: number,
       |}>,
       end: $ReadOnly<{|
-        x: Double,
-        y: Double,
+        x: number,
+        y: number,
       |}>,
     |}>,
   |}>,
