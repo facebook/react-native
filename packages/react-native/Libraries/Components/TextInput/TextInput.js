@@ -1117,6 +1117,7 @@ function InternalTextInput(props: Props): React.Node {
     accessibilityState,
     id,
     tabIndex,
+    selection: propsSelection,
     ...otherProps
   } = props;
 
