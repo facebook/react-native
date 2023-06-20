@@ -3,8 +3,21 @@
 <!-- @generated -->
 <!-- FB Locale: gu_IN -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="header_description" gender="unknown">શીર્ષક</string>
+    <string name="alert_description" gender="unknown">એલર્ટ</string>
+    <string name="menubar_description" gender="unknown">મેનૂ બાર</string>
+    <string name="menuitem_description" gender="unknown">મેનૂ આઇટમ</string>
+    <string name="progressbar_description" gender="unknown">પ્રગતિ બાર</string>
+    <string name="radiogroup_description" gender="unknown">રેડિયો ગ્રૂપ</string>
+    <string name="scrollbar_description" gender="unknown">સ્ક્રોલ બાર</string>
+    <string name="tablist_description" gender="unknown">ટેબ લિસ્ટ</string>
+    <string name="toolbar_description" gender="unknown">ટૂલ બાર</string>
+    <string name="summary_description" gender="unknown">સારાંશ</string>
     <string name="state_busy_description" gender="unknown">વ્યસ્ત</string>
     <string name="state_expanded_description" gender="unknown">વિસ્તૃત</string>
     <string name="state_collapsed_description" gender="unknown">નાનું</string>
+    <string name="state_unselected_description" gender="unknown">પસંદગીમાંથી કાઢી નાખ્યું</string>
+    <string name="state_on_description" gender="unknown">ચાલુ</string>
+    <string name="state_off_description" gender="unknown">બંધ</string>
     <string name="state_mixed_description" gender="unknown">મિક્સ કરેલ</string>
 </resources>
