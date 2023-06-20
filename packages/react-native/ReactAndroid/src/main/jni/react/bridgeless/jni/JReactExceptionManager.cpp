@@ -6,7 +6,7 @@
  */
 
 #include "JReactExceptionManager.h"
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jni.h>
 #include <iostream>
