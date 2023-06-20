@@ -814,7 +814,7 @@ jobs:
             ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
       - store_artifacts:
-          path: /tmp/$PROJECT_NAME/android/app/build/outputs/apk/
+          path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
           destination: template-apk
 
   # -------------------------
