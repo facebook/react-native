@@ -95,6 +95,7 @@ export type TextInputEvent = SyntheticEvent<
           x: Double,
           y: Double,
         |}>,
+      |}>,
     |}>,
     target: number,
     text: string,
