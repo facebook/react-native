@@ -28,4 +28,5 @@ target_link_libraries(rrc_native
         react_render_core
         react_render_debug
         react_utils
+        callinvoker
 )

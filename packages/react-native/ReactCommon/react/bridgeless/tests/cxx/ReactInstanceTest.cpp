@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <hermes/API/hermes/hermes.h>
+#include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/bridgeless/ReactInstance.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
