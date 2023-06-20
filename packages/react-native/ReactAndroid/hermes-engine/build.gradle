@@ -202,6 +202,8 @@ android {
     }
 
     kotlin {
+        // We intentionally don't build on JDK 17 to keep this version aligned with
+        // the JVM toolchain of :ReactAndroid
         jvmToolchain(11)
     }
 
