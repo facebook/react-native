@@ -14,7 +14,6 @@ namespace facebook::react {
 
 void JJSTimerExecutor::setTimerManager(
     std::weak_ptr<TimerManager> timerManager) {
-  assert(timerManager && "`timerManager` must not be `nullptr`.");
   timerManager_ = timerManager;
 }
 

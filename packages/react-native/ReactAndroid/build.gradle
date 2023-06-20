@@ -336,6 +336,23 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
+task downloadGtest(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
+    onlyIfModified(true)
+    overwrite(false)
+    retries(5)
+    dest(new File(downloadsDir, "gtest.tar.gz"))
+}
+
+task prepareGtest(dependsOn: dependenciesPath ? [] : [downloadGtest], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadGtest.dest))
+    eachFile { fname -> {
+        fname.path = (fname.path - "googletest-release-${GTEST_VERSION}/")
+     }
+    }
+    into(new File(thirdPartyNdkDir,"googletest"))
+}
+
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
@@ -360,6 +377,7 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGlog)
     dependsOn(downloadFmt)
     dependsOn(downloadLibevent)
+    dependsOn(downloadGtest)
 }
 
 /**
@@ -485,6 +503,10 @@ android {
                 targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "bridgeless",
+                    "rninstance",
+                    "hermesinstancejni",
+                    "uimanagerjni",
                     // prefab targets
                     "reactnativejni",
                     "react_render_debug",
@@ -541,7 +563,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
