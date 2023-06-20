@@ -1122,30 +1122,20 @@ function InternalTextInput(props: Props): React.Node {
 
   const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
 
-  // Android sends a "onTextChanged" event followed by a "onSelectionChanged" event, for
-  // the same "most recent event count".
-  // For controlled selection, that means that immediately after text is updated,
-  // a controlled component will pass in the *previous* selection, even if the controlled
-  // component didn't mean to modify the selection at all.
-  // Therefore, we ignore selections and pass them through until the selection event has
-  // been sent.
-  // Note that this mitigation is NOT needed for Fabric.
-  // discovered when upgrading react-hooks
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  let selection: ?Selection =
-    props.selection == null
+  const selection: ?Selection =
+    propsSelection == null
       ? null
       : {
-          start: props.selection.start,
-          end: props.selection.end ?? props.selection.start,
+          start: propsSelection.start,
+          end: propsSelection.end ?? propsSelection.start,
           cursorPosition: {
             start: {
-              x: props.selection.cursorPosition.start.x,
-              y: props.selection.cursorPosition.start.y,
+              x: propsSelection.cursorPosition.start.x,
+              y: propsSelection.cursorPosition.start.y,
             },
             end: {
-              x: props.selection.cursorPosition.end.x,
-              y: props.selection.cursorPosition.end.y,
+              x: propsSelection.cursorPosition.end.x,
+              y: propsSelection.cursorPosition.end.y,
             },
           },
         };
@@ -1159,12 +1149,6 @@ function InternalTextInput(props: Props): React.Node {
   |}>({selection, mostRecentEventCount});
 
   const lastNativeSelection = lastNativeSelectionState.selection;
-  const lastNativeSelectionEventCount =
-    lastNativeSelectionState.mostRecentEventCount;
-
-  if (lastNativeSelectionEventCount < mostRecentEventCount) {
-    selection = null;
-  }
 
   let viewCommands;
   if (AndroidTextInputCommands) {
@@ -1564,7 +1548,6 @@ function InternalTextInput(props: Props): React.Node {
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
-        selection={selection}
         style={style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}
