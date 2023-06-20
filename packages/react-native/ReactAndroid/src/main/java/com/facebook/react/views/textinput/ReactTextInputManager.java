@@ -1232,6 +1232,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onSelectionChanged(int start, int end) {
+      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
+      // To prevent double calling back into js we cache the result of the previous call and only
+      // forward it on if we have new values
+
+      // Apparently Android might call this with an end value that is less than the start value
+      // Lets normalize them. See https://github.com/facebook/react-native/issues/18579
+
       Layout layout = mReactEditText.getLayout();
       if (layout == null) {
         mReactEditText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

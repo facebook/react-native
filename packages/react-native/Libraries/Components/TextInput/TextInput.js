@@ -1137,8 +1137,9 @@ function InternalTextInput(props: Props): React.Node {
             },
             end: {
               x: props.selection.cursorPosition.end.x,
-              y: props.selection.cursorPosition.end.y
+              y: props.selection.cursorPosition.end.y,
             },
+          },
         };
 
   const [mostRecentEventCount, setMostRecentEventCount] = useState<number>(0);
