@@ -1,0 +1,240 @@
+id: 
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 3
+      filters:
+      - isPullRequest
+      - isOpen
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      - hasLabel:
+          label: no-recent-activity
+      - noActivitySince:
+          days: 7
+      actions:
+      - closeIssue
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 3
+      filters:
+      - isPullRequest
+      - isOpen
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      - noActivitySince:
+          days: 7
+      - isNotLabeledWith:
+          label: no-recent-activity
+      actions:
+      - addLabel:
+          label: no-recent-activity
+      - addReply:
+          reply: This pull request has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **7 days**. It will be closed if no further activity occurs **within 7 days of this comment**.
+    eventResponderTasks:
+    - if:
+      - payloadType: Pull_Request_Review
+      - isAction:
+          action: Submitted
+      - isReviewState:
+          reviewState: Changes_requested
+      then:
+      - addLabel:
+          label: 'Needs: Author Feedback'
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      - isActivitySender:
+          issueAuthor: True
+      - not:
+          isAction:
+            action: Closed
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      then:
+      - removeLabel:
+          label: 'Needs: Author Feedback'
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      - not:
+          isAction:
+            action: Closed
+      - hasLabel:
+          label: no-recent-activity
+      then:
+      - removeLabel:
+          label: no-recent-activity
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      - hasLabel:
+          label: AutoMerge
+      then:
+      - enableAutoMerge:
+          mergeMethod: Squash
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      - labelRemoved:
+          label: AutoMerge
+      then:
+      - disableAutoMerge
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      then:
+      - removeLabel:
+          label: 'Needs: Author Feedback'
+      description: 
+    - if:
+      - payloadType: Pull_Request_Review
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      then:
+      - removeLabel:
+          label: 'Needs: Author Feedback'
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - hasLabel:
+          label: no-recent-activity
+      then:
+      - removeLabel:
+          label: no-recent-activity
+      description: 
+    - if:
+      - payloadType: Pull_Request_Review
+      - hasLabel:
+          label: no-recent-activity
+      then:
+      - removeLabel:
+          label: no-recent-activity
+      description: 
+    - if:
+      - payloadType: Issues
+      - isAction:
+          action: Opened
+      then:
+      - addLabel:
+          label: 'Needs: Triage :mag:'
+      description: 
+    - if:
+      - payloadType: Issues
+      - isAction:
+          action: Opened
+      - or:
+        - isActivitySender:
+            user: TheSavior
+            issueAuthor: False
+        - isActivitySender:
+            user: fmsanchez
+            issueAuthor: False
+        - isActivitySender:
+            user: AkshatGiri
+            issueAuthor: False
+        - isActivitySender:
+            user: sahrens
+            issueAuthor: False
+        - isActivitySender:
+            user: jackerghan
+            issueAuthor: False
+        - isActivitySender:
+            user: appden
+            issueAuthor: False
+        - isActivitySender:
+            user: lyahdav
+            issueAuthor: False
+      then:
+      - addLabel:
+          label: 'Partner: Facebook'
+      description: 
+    - if:
+      - payloadType: Issues
+      - labelAdded:
+          label: 'Needs: Environment Info'
+      then:
+      - addReply:
+          reply: >-
+            This issue lacks the environment info requested in the bug template. Please edit your issue report to add this information.
+
+
+            1. `react-native -v`:
+
+            3. `npm ls react-native-macos`:
+
+            4. `node -v`:
+
+            5. `npm -v`:
+
+            6. `yarn --version`<!-- (if you use Yarn) -->:
+
+            7. `xcodebuild -version`:
+      - addLabel:
+          label: 'Needs: Author Feedback'
+      - removeLabel:
+          label: 'Needs: Triage :mag:'
+      description: 
+    - if:
+      - payloadType: Issues
+      - labelAdded:
+          label: 'Needs: Verify on Latest Version'
+      then:
+      - addReply:
+          reply: >-
+            This issue is reported on an older version of React Native for macOS than is current, and is believed to be fixed in the latest version. Please try to update to the latest version and confirm if your issue still occurs.
+
+            Per-version documentation is available [here](https://microsoft.github.io/react-native-windows/versions)
+      - addLabel:
+          label: 'Needs: Author Feedback'
+      - removeLabel:
+          label: 'Needs: Triage :mag:'
+      description: 
+    - if:
+      - payloadType: Pull_Request
+      then:
+      - labelSync:
+          pattern: 'Area:'
+      - labelSync:
+          pattern: Backport
+      description: 
+    - if:
+      - payloadType: Issues
+      - labelAdded:
+          label: 'Resolution: For StackOverflow'
+      then:
+      - addReply:
+          reply: We use github to track issues exclusive to React Native for macOS. This issue seems to pertain to something outside of that scope. Please try asking over on [Stack Overflow](https://stackoverflow.com/questions/tagged/macOS) as it is better suited for general macOS platform questions.
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: 'Needs: Author Feedback'
+      then:
+      - addLabel:
+          label: 'Needs: Attention :wave:'
+      - removeLabel:
+          label: 'Needs: Author Feedback'
+      description: 
+onFailure: 
+onSuccess: 
