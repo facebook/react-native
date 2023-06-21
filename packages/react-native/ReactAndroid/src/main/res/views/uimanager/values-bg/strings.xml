@@ -7,13 +7,18 @@
     <string name="header_description" gender="unknown">Заглавие</string>
     <string name="alert_description" gender="unknown">Сигнал</string>
     <string name="combobox_description" gender="unknown">Комбинирана кутия</string>
+    <string name="menubar_description" gender="unknown">Лента с менюта</string>
     <string name="progressbar_description" gender="unknown">Лента за напредък</string>
     <string name="radiogroup_description" gender="unknown">Радио група</string>
+    <string name="scrollbar_description" gender="unknown">Лента за превъртане</string>
     <string name="spinbutton_description" gender="unknown">Бутон за завъртане</string>
     <string name="timer_description" gender="unknown">Таймер</string>
+    <string name="toolbar_description" gender="unknown">Лента с инструменти</string>
     <string name="state_busy_description" gender="unknown">заето</string>
     <string name="state_expanded_description" gender="unknown">разширено</string>
     <string name="state_collapsed_description" gender="unknown">свито</string>
+    <string name="state_unselected_description" gender="unknown">неизбрано</string>
+    <string name="state_on_description" gender="unknown">включено</string>
     <string name="state_off_description" gender="unknown">изключено</string>
     <string name="state_mixed_description" gender="unknown">смесено</string>
 </resources>
