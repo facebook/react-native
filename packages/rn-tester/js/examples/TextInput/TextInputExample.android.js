@@ -81,10 +81,15 @@ class LineHeightExample extends React.Component<
         />
         <TextInput
           multiline
-          textAlignVertical="top"
           style={[
             styles.singleLine,
-            {lineHeight: 40, height: 200, borderColor: 'black', borderWidth: 1},
+            {
+              lineHeight: 40,
+              height: 200,
+              borderColor: 'black',
+              borderWidth: 1,
+              textAlignVertical: 'top',
+            },
           ]}
           value={this.state.valueMultiline}
           onChangeText={value => this.setState({valueMultiline: value})}
