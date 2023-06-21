@@ -17,6 +17,7 @@
     <string name="scrollbar_description" gender="unknown">Barra de desplazamiento</string>
     <string name="spinbutton_description" gender="unknown">Botón de selección</string>
     <string name="rn_tab_description" gender="unknown">Pestaña</string>
+    <string name="tablist_description" gender="unknown">Lista de pestañas</string>
     <string name="timer_description" gender="unknown">Temporizador</string>
     <string name="toolbar_description" gender="unknown">Barra de herramientas</string>
     <string name="summary_description" gender="unknown">Resumen</string>

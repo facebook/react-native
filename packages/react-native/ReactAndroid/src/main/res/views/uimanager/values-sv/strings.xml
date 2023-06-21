@@ -13,7 +13,7 @@
     <string name="menubar_description" gender="unknown">Menyfält</string>
     <string name="menuitem_description" gender="unknown">Menyobjekt</string>
     <string name="progressbar_description" gender="unknown">Förloppsfält</string>
-    <string name="radiogroup_description" gender="unknown">Alternativgrupp</string>
+    <string name="radiogroup_description" gender="unknown">Radiogrupp</string>
     <string name="scrollbar_description" gender="unknown">Bläddringslist</string>
     <string name="spinbutton_description" gender="unknown">Rotationsknapp</string>
     <string name="rn_tab_description" gender="unknown">Flik</string>
