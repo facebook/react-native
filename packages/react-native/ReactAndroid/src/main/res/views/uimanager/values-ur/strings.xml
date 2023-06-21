@@ -9,11 +9,11 @@
     <string name="alert_description" gender="unknown">الرٹ</string>
     <string name="combobox_description" gender="unknown">کومبو باکس</string>
     <string name="menuitem_description" gender="unknown">مینیو آئٹم</string>
-    <string name="progressbar_description" gender="unknown">پیش رفت بار</string>
+    <string name="progressbar_description" gender="unknown">پیشرفت کی بار</string>
     <string name="radiogroup_description" gender="unknown">ریڈیو گروپ</string>
     <string name="scrollbar_description" gender="unknown">سکرول بار</string>
-    <string name="spinbutton_description" gender="unknown">سپن بٹن</string>
-    <string name="tablist_description" gender="unknown">ٹیب لسٹ</string>
+    <string name="spinbutton_description" gender="unknown">گھمانے کا بٹن</string>
+    <string name="tablist_description" gender="unknown">ٹیب کی لسٹ</string>
     <string name="timer_description" gender="unknown">ٹائمر</string>
     <string name="toolbar_description" gender="unknown">ٹول بار</string>
     <string name="state_busy_description" gender="unknown">مصروف</string>

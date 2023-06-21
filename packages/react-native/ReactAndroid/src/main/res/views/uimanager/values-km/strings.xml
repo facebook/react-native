@@ -3,5 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: km_KH -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">តំណ</string>
+    <string name="scrollbar_description" gender="unknown">របាររំកិល</string>
+    <string name="state_expanded_description" gender="unknown">បានពង្រីក</string>
     <string name="state_off_description" gender="unknown">បិទ</string>
 </resources>
