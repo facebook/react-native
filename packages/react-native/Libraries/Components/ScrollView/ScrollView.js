@@ -167,7 +167,7 @@ export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
 type NativeScrollViewInstance = React.ElementRef<HostComponent<mixed>>;
-type PublicScrollViewInstance = $ReadOnly<{|
+export type PublicScrollViewInstance = $ReadOnly<{|
   ...$Exact<NativeScrollViewInstance>,
   ...ScrollViewImperativeMethods,
 |}>;

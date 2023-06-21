@@ -9,6 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {PublicScrollViewInstance} from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
@@ -511,7 +512,7 @@ const AndroidScrollBarOptions = () => {
 
 const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
   const {direction} = props;
-  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const scrollRef = React.useRef<?PublicScrollViewInstance>();
   const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
   return (
     <View style={{direction}}>
@@ -943,7 +944,7 @@ const KeyboardExample = () => {
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = React.useRef<?PublicScrollViewInstance>(null);
   return (
     <View>
       <ScrollView
@@ -983,7 +984,7 @@ const InvertStickyHeaders = () => {
 };
 
 const MultipleStickyHeaders = () => {
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = React.useRef<?PublicScrollViewInstance>(null);
   const stickyHeaderStyle = {backgroundColor: 'yellow'};
   return (
     <View>

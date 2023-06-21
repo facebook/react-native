@@ -1043,11 +1043,13 @@ export type TextInputComponentStatics = $ReadOnly<{|
   |}>,
 |}>;
 
+export type PublicTextInputInstance = $ReadOnly<{
+  ...React.ElementRef<HostComponent<mixed>>,
+  ...ImperativeMethods,
+}>;
+
 export type TextInputType = React.AbstractComponent<
   React.ElementConfig<InternalTextInput>,
-  $ReadOnly<{|
-    ...React.ElementRef<HostComponent<mixed>>,
-    ...ImperativeMethods,
-  |}>,
+  PublicTextInputInstance,
 > &
   TextInputComponentStatics;
