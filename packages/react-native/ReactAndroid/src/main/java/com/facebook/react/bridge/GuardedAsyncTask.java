@@ -20,7 +20,6 @@ public abstract class GuardedAsyncTask<Params, Progress> extends AsyncTask<Param
 
   private final JSExceptionHandler mExceptionHandler;
 
-  @Deprecated
   protected GuardedAsyncTask(ReactContext reactContext) {
     this(reactContext.getExceptionHandler());
   }
