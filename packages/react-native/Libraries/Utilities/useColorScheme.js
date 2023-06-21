@@ -16,9 +16,9 @@ import Appearance from './Appearance';
 import {useCallback, useSyncExternalStore} from 'react';
 
 export default function useColorScheme(): ?ColorSchemeName {
-  const subscribe = useCallback(callback => {
-    const appearanceSubscription = Appearance.addChangeListener(callback);
-    return appearanceSubscription.remove;
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    const appearanceSubscription = Appearance.addChangeListener(onStoreChange);
+    return () => appearanceSubscription.remove();
   }, []);
 
   return useSyncExternalStore(subscribe, Appearance.getColorScheme);
