@@ -65,7 +65,7 @@ GEM
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     json (2.6.3)
-    minitest (5.18.0)
+    minitest (5.18.1)
     molinillo (0.8.0)
     nanaimo (0.3.0)
     nap (1.1.0)
