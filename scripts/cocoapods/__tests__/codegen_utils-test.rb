@@ -361,7 +361,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
             :fabric_enabled => false,
             :folly_version=>"2021.07.22.00",
-            :package_json_file => "#{app_path}../node_modules/react-native/package.json",
+            :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
         assert_equal(codegen_utils_mock.generate_react_codegen_spec_params,  [{
