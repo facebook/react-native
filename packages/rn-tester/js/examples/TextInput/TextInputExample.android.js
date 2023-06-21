@@ -50,17 +50,6 @@ class LineHeightExample extends React.Component<
   constructor(props) {
     super(props);
     this.state = {value: '', valueMultiline: ''};
-
-    this.setValue = this.setValue.bind(this);
-    this.setValueMultiline = this.setValueMultiline.bind(this);
-  }
-
-  setValue(value: string) {
-    this.setState({value});
-  }
-
-  setValueMultiline(value: string) {
-    this.setState({valueMultiline: value});
   }
 
   render(): React.Node {
@@ -69,25 +58,25 @@ class LineHeightExample extends React.Component<
         <TextInput
           style={[styles.singleLine, {lineHeight: 10}]}
           value={this.state.value}
-          onChangeText={this.setValue}
+          onChangeText={value => this.setState({value})}
           placeholder="lineHeight = 10"
         />
         <TextInput
           style={[styles.singleLine, {lineHeight: 20}]}
           value={this.state.value}
-          onChangeText={this.setValue}
+          onChangeText={value => this.setState({value})}
           placeholder="lineHeight = 20"
         />
         <TextInput
           style={[styles.singleLine, {lineHeight: 40}]}
           value={this.state.value}
-          onChangeText={this.setValue}
+          onChangeText={value => this.setState({value})}
           placeholder="lineHeight = 40"
         />
         <TextInput
           style={[styles.singleLine, {lineHeight: 60}]}
           value={this.state.value}
-          onChangeText={this.setValue}
+          onChangeText={value => this.setState({value})}
           placeholder="lineHeight = 60"
         />
         <TextInput
@@ -98,7 +87,7 @@ class LineHeightExample extends React.Component<
             {lineHeight: 40, height: 200, borderColor: 'black', borderWidth: 1},
           ]}
           value={this.state.valueMultiline}
-          onChangeText={this.setValueMultiline}
+          onChangeText={value => this.setState({valueMultiline: value})}
           placeholder="lineHeight = 40 + multiline"
         />
       </View>
