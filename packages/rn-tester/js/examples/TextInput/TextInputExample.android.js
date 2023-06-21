@@ -41,6 +41,71 @@ class ToggleDefaultPaddingExample extends React.Component<
   }
 }
 
+class LineHeightExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+   * LTI update could not be added via codemod */
+  constructor(props) {
+    super(props);
+    this.state = {value: '', valueMultiline: ''};
+
+    this.setValue = this.setValue.bind(this);
+    this.setValueMultiline = this.setValueMultiline.bind(this);
+  }
+
+  setValue(value: string) {
+    this.setState({value});
+  }
+
+  setValueMultiline(value: string) {
+    this.setState({valueMultiline: value});
+  }
+
+  render(): React.Node {
+    return (
+      <View>
+        <TextInput
+          style={[styles.singleLine, {lineHeight: 10}]}
+          value={this.state.value}
+          onChangeText={this.setValue}
+          placeholder="lineHeight = 10"
+        />
+        <TextInput
+          style={[styles.singleLine, {lineHeight: 20}]}
+          value={this.state.value}
+          onChangeText={this.setValue}
+          placeholder="lineHeight = 20"
+        />
+        <TextInput
+          style={[styles.singleLine, {lineHeight: 40}]}
+          value={this.state.value}
+          onChangeText={this.setValue}
+          placeholder="lineHeight = 40"
+        />
+        <TextInput
+          style={[styles.singleLine, {lineHeight: 60}]}
+          value={this.state.value}
+          onChangeText={this.setValue}
+          placeholder="lineHeight = 60"
+        />
+        <TextInput
+          multiline
+          textAlignVertical="top"
+          style={[
+            styles.singleLine,
+            {lineHeight: 40, height: 200, borderColor: 'black', borderWidth: 1},
+          ]}
+          value={this.state.valueMultiline}
+          onChangeText={this.setValueMultiline}
+          placeholder="lineHeight = 40 + multiline"
+        />
+      </View>
+    );
+  }
+}
+
 class AutogrowingTextInputExample extends React.Component<{...}> {
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -273,6 +338,12 @@ exports.examples = ([
           />
         </View>
       );
+    },
+  },
+  {
+    title: 'lineHeight',
+    render: function (): React.Node {
+      return <LineHeightExample />;
     },
   },
   {
