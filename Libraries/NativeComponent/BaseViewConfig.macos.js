@@ -54,6 +54,7 @@ const validAttributesForNonEventProps = {
   tooltip: true,
   validKeysDown: true,
   validKeysUp: true,
+  mouseDownCanMoveWindow: true,
 };
 
 // Props for bubbling and direct events

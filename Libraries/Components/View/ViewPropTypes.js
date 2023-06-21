@@ -474,14 +474,14 @@ type IOSViewProps = $ReadOnly<{|
 // [macOS
 type MacOSViewProps = $ReadOnly<{|
   /**
-   * Fired when a dragged element enters a valid drop target
+   * Fired when a file is dragged into the view via the mouse.
    *
    * @platform macos
    */
   onDragEnter?: (event: MouseEvent) => void,
 
   /**
-   * Fired when a dragged element leaves a valid drop target
+   * Fired when a file is dragged out of the view via the mouse.
    *
    * @platform macos
    */
@@ -509,14 +509,23 @@ type MacOSViewProps = $ReadOnly<{|
   acceptsFirstMouse?: ?boolean,
 
   /**
-   * Specifies whether focus ring should be drawn when the view has the first responder status.
+   * Specifies whether clicking and dragging the view can move the window. This is useful
+   * to disable in Button like components like Pressable where mouse the user should still
+   * be able to click and drag off the view to cancel the click without accidentally moving the window.
+   *
+   * @platform macos
+   */
+  mouseDownCanMoveWindow?: ?boolean,
+
+  /**
+   * Specifies whether system focus ring should be drawn when the view has keyboard focus.
    *
    * @platform macos
    */
   enableFocusRing?: ?boolean,
 
   /**
-   * Enables Drag'n'Drop Support for certain types of dragged types
+   * The types of dragged files that the view will accept.
    *
    * Possible values for `draggedTypes` are:
    *

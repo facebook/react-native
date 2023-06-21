@@ -215,6 +215,7 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *bezierPath)
   NSColor *_backgroundColor;
   BOOL _clipsToBounds;
   BOOL _userInteractionEnabled;
+  BOOL _mouseDownCanMoveWindow;
 }
 
 + (NSSet<NSString *> *)keyPathsForValuesAffectingValueForKey:(NSString *)key
@@ -243,6 +244,7 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
     self.wantsLayer = YES;
     self->_userInteractionEnabled = YES;
     self->_enableFocusRing = YES;
+    self->_mouseDownCanMoveWindow = YES;
   }
   return self;
 }
@@ -286,6 +288,14 @@ static RCTUIView *RCTUIViewCommonInit(RCTUIView *self)
 - (void)viewDidMoveToWindow
 {
   [self didMoveToWindow];
+}
+
+- (BOOL)mouseDownCanMoveWindow{
+	return _mouseDownCanMoveWindow;
+}
+
+- (void)setMouseDownCanMoveWindow:(BOOL)mouseDownCanMoveWindow{
+	_mouseDownCanMoveWindow = mouseDownCanMoveWindow;
 }
 
 - (BOOL)isFlipped

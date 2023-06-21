@@ -404,6 +404,9 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
  * containing window is in the background.
  */
 @property (nonatomic, assign) BOOL acceptsFirstMouse;
+
+@property (nonatomic, assign) BOOL mouseDownCanMoveWindow;
+
 /**
  * Specifies whether the view participates in the key view loop as user tabs through different controls
  * This is equivalent to acceptsFirstResponder on mac OS.

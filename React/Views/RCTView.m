@@ -133,6 +133,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
 #if TARGET_OS_OSX // [macOS
   NSTrackingArea *_trackingArea;
   BOOL _hasMouseOver;
+  BOOL _mouseDownCanMoveWindow;
 #endif // macOS]
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
   NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
@@ -176,6 +177,7 @@ static NSString *RCTRecursiveAccessibilityLabel(RCTUIView *view) // [macOS]
 #if TARGET_OS_OSX // [macOS
     _transform3D = CATransform3DIdentity;
     _shadowColor = nil;
+    _mouseDownCanMoveWindow = YES;
 #endif // macOS]
 
     _backgroundColor = super.backgroundColor;
@@ -1504,6 +1506,15 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
                   modifierFlags:event.modifierFlags
                  additionalData:nil];
 }
+
+- (BOOL)mouseDownCanMoveWindow{
+	return _mouseDownCanMoveWindow;
+}
+
+- (void)setMouseDownCanMoveWindow:(BOOL)mouseDownCanMoveWindow{
+	_mouseDownCanMoveWindow = mouseDownCanMoveWindow;
+}
+
 
 - (NSDictionary*)locationInfoFromEvent:(NSEvent*)event
 {
