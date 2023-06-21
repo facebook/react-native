@@ -13,14 +13,13 @@
 import type {ColorSchemeName} from './NativeAppearance';
 
 import Appearance from './Appearance';
-import {useSyncExternalStore} from 'react';
+import {useCallback, useSyncExternalStore} from 'react';
 
 export default function useColorScheme(): ?ColorSchemeName {
-  return useSyncExternalStore(
-    callback => {
-      const appearanceSubscription = Appearance.addChangeListener(callback);
-      return () => appearanceSubscription.remove();
-    },
-    () => Appearance.getColorScheme(),
-  );
+  const subscribe = useCallback(callback => {
+    const appearanceSubscription = Appearance.addChangeListener(callback);
+    return appearanceSubscription.remove;
+  }, []);
+
+  return useSyncExternalStore(subscribe, Appearance.getColorScheme);
 }
