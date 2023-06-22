@@ -9,12 +9,11 @@ package com.facebook.react.bridgeless
 
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.turbomodule.core.TurboModuleManager
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
 /**
  * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
@@ -49,7 +48,7 @@ interface ReactHostDelegate {
   val jSBundleLoader: JSBundleLoader
 
   /** TODO: combine getTurboModuleManagerDelegate inside [ReactPackage] */
-  fun getTurboModuleManagerDelegate(context: ReactApplicationContext): TurboModuleManagerDelegate
+  val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 
   /**
    * Callback that can be used by React Native host applications to react to exceptions thrown by
@@ -68,16 +67,13 @@ interface ReactHostDelegate {
       override val jSMainModulePath: String,
       override val jSBundleLoader: JSBundleLoader,
       override val jSEngineInstance: JSEngineInstance,
+      override val turboModuleManagerDelegateBuilder:
+          ReactPackageTurboModuleManagerDelegate.Builder,
       override val reactPackages: List<ReactPackage> = emptyList(),
       override val bindingsInstaller: BindingsInstaller? = null,
-      private val turboModuleManagerDelegate:
-          (context: ReactApplicationContext) -> TurboModuleManagerDelegate,
       private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
       private val exceptionHandler: (error: Exception) -> Unit = {}
   ) : ReactHostDelegate {
-
-    override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
-        turboModuleManagerDelegate(context)
 
     override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
 
