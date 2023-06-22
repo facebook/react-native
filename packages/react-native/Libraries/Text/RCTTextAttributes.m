@@ -247,19 +247,19 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (UIColor *)effectiveForegroundColor
 {
-  UIColor *effectiveForegroundColor = _foregroundColor ?: [UIColor blackColor];
+  UIColor *effectiveForegroundColor = _foregroundColor;
 
-  if (!isnan(_opacity)) {
+  if (effectiveForegroundColor && !isnan(_opacity)) {
     effectiveForegroundColor =
         [effectiveForegroundColor colorWithAlphaComponent:CGColorGetAlpha(effectiveForegroundColor.CGColor) * _opacity];
   }
 
-  return effectiveForegroundColor;
+  return effectiveForegroundColor ?: [UIColor blackColor];
 }
 
 - (UIColor *)effectiveBackgroundColor
 {
-  UIColor *effectiveBackgroundColor = _backgroundColor; // ?: [[UIColor whiteColor] colorWithAlphaComponent:0];
+  UIColor *effectiveBackgroundColor = _backgroundColor;
 
   if (effectiveBackgroundColor && !isnan(_opacity)) {
     effectiveBackgroundColor =
