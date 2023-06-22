@@ -17,7 +17,7 @@ describe('NativePerformanceMock', () => {
     () => require('../__mocks__/NativePerformanceObserver').default,
   );
 
-  it('marks get reported', async () => {
+  test('marks get reported', async () => {
     let entries = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
@@ -35,7 +35,7 @@ describe('NativePerformanceMock', () => {
     expect(entries.map(e => e.startTime)).toStrictEqual([0, 5, 10]);
   });
 
-  it('measures get reported', async () => {
+  test('measures get reported', async () => {
     let entries = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];

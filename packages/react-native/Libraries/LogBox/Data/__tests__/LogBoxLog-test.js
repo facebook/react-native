@@ -71,7 +71,7 @@ describe('LogBoxLog', () => {
     }));
   });
 
-  it('creates a LogBoxLog object', () => {
+  test('creates a LogBoxLog object', () => {
     const log = getLogBoxLog();
 
     expect(log.level).toEqual('warn');
@@ -92,7 +92,7 @@ describe('LogBoxLog', () => {
     });
   });
 
-  it('increments LogBoxLog count', () => {
+  test('increments LogBoxLog count', () => {
     const log = getLogBoxLog();
 
     expect(log.count).toEqual(1);
@@ -102,7 +102,7 @@ describe('LogBoxLog', () => {
     expect(log.count).toEqual(2);
   });
 
-  it('starts without a symbolicated stack', () => {
+  test('starts without a symbolicated stack', () => {
     const log = getLogBoxLog();
 
     expect(log.symbolicated).toEqual({
@@ -112,7 +112,7 @@ describe('LogBoxLog', () => {
     });
   });
 
-  it('updates when symbolication is in progress', () => {
+  test('updates when symbolication is in progress', () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -136,7 +136,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('updates when symbolication finishes', async () => {
+  test('updates when symbolication finishes', async () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -167,7 +167,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('updates when symbolication fails', async () => {
+  test('updates when symbolication fails', async () => {
     const error = new Error('...');
     getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;
@@ -203,7 +203,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('retry updates when symbolication is in progress', () => {
+  test('retry updates when symbolication is in progress', () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -227,7 +227,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('retry updates when symbolication finishes', async () => {
+  test('retry updates when symbolication finishes', async () => {
     const log = getLogBoxLog();
 
     const callback = jest.fn();
@@ -257,7 +257,7 @@ describe('LogBoxLog', () => {
     expect(getLogBoxSymbolication().symbolicate).not.toBeCalled();
   });
 
-  it('retry updates when symbolication fails', async () => {
+  test('retry updates when symbolication fails', async () => {
     const error = new Error('...');
     getLogBoxSymbolication().symbolicate.mockImplementation(async stack => {
       throw error;

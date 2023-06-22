@@ -12,7 +12,7 @@
 import {createNodeList} from '../NodeList';
 
 describe('NodeList', () => {
-  it('provides an array-like interface', () => {
+  test('provides an array-like interface', () => {
     const collection = createNodeList(['a', 'b', 'c']);
 
     expect(collection[0]).toBe('a');
@@ -22,7 +22,7 @@ describe('NodeList', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('provides indexed access through the item method', () => {
+  test('provides indexed access through the item method', () => {
     const collection = createNodeList(['a', 'b', 'c']);
 
     expect(collection.item(0)).toBe('a');
@@ -31,7 +31,7 @@ describe('NodeList', () => {
     expect(collection.item(3)).toBe(null);
   });
 
-  it('is immutable (loose mode)', () => {
+  test('is immutable (loose mode)', () => {
     const collection = createNodeList(['a', 'b', 'c']);
 
     collection[0] = 'replacement';
@@ -42,7 +42,7 @@ describe('NodeList', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('is immutable (strict mode)', () => {
+  test('is immutable (strict mode)', () => {
     'use strict';
 
     const collection = createNodeList(['a', 'b', 'c']);
@@ -59,14 +59,14 @@ describe('NodeList', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('can be converted to an array through common methods', () => {
+  test('can be converted to an array through common methods', () => {
     const collection = createNodeList(['a', 'b', 'c']);
 
     expect(Array.from(collection)).toEqual(['a', 'b', 'c']);
     expect([...collection]).toEqual(['a', 'b', 'c']);
   });
 
-  it('can be traversed with for-of', () => {
+  test('can be traversed with for-of', () => {
     const collection = createNodeList(['a', 'b', 'c']);
 
     let i = 0;
@@ -77,7 +77,7 @@ describe('NodeList', () => {
   });
 
   describe('keys()', () => {
-    it('returns an iterator for keys', () => {
+    test('returns an iterator for keys', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       const keys = collection.keys();
@@ -95,7 +95,7 @@ describe('NodeList', () => {
   });
 
   describe('values()', () => {
-    it('returns an iterator for values', () => {
+    test('returns an iterator for values', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       const values = collection.values();
@@ -113,7 +113,7 @@ describe('NodeList', () => {
   });
 
   describe('entries()', () => {
-    it('returns an iterator for entries', () => {
+    test('returns an iterator for entries', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       const entries = collection.entries();
@@ -131,7 +131,7 @@ describe('NodeList', () => {
   });
 
   describe('forEach()', () => {
-    it('iterates over the elements like array.forEach (implicit `this`)', () => {
+    test('iterates over the elements like array.forEach (implicit `this`)', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       let i = 0;
@@ -144,7 +144,7 @@ describe('NodeList', () => {
       });
     });
 
-    it('iterates over the elements like array.forEach (explicit `this`)', () => {
+    test('iterates over the elements like array.forEach (explicit `this`)', () => {
       const collection = createNodeList(['a', 'b', 'c']);
 
       let i = 0;

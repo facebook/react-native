@@ -16,7 +16,7 @@ const LogBoxButton = require('../LogBoxButton').default;
 const React = require('react');
 
 describe('LogBoxButton', () => {
-  it('should render only a view without an onPress', () => {
+  test('should render only a view without an onPress', () => {
     const output = render.shallowRender(
       <LogBoxButton
         backgroundColor={{
@@ -30,7 +30,7 @@ describe('LogBoxButton', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render TouchableWithoutFeedback and pass through props', () => {
+  test('should render TouchableWithoutFeedback and pass through props', () => {
     const output = render.shallowRender(
       <LogBoxButton
         backgroundColor={{

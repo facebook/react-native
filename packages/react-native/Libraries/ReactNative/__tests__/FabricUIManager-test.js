@@ -21,11 +21,11 @@ describe('FabricUIManager', () => {
   });
 
   describe('getFabricUIManager', () => {
-    it('should return undefined if the global binding is not set', () => {
+    test('should return undefined if the global binding is not set', () => {
       expect(getFabricUIManager()).toBeUndefined();
     });
 
-    it('should return an object with the same properties as the global binding', () => {
+    test('should return an object with the same properties as the global binding', () => {
       const createNode = jest.fn();
       const customProp = 'some prop';
       global.nativeFabricUIManager = {
@@ -40,7 +40,7 @@ describe('FabricUIManager', () => {
       expect(fabricUIManager?.customProp).toBe(customProp);
     });
 
-    it('should only access the cached properties of global binding once', () => {
+    test('should only access the cached properties of global binding once', () => {
       let incrementingProp = 0;
       global.nativeFabricUIManager = {
         get createNode() {

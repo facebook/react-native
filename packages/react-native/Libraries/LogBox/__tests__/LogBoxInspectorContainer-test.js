@@ -19,7 +19,7 @@ const {
 const React = require('react');
 
 describe('LogBoxNotificationContainer', () => {
-  it('should render null with no logs', () => {
+  test('should render null with no logs', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer selectedLogIndex={-1} logs={[]} />,
     );
@@ -27,7 +27,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null with no selected log and disabled', () => {
+  test('should render null with no selected log and disabled', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         isDisabled
@@ -51,7 +51,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the latest warning notification', () => {
+  test('should render the latest warning notification', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
@@ -85,7 +85,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the latest error notification', () => {
+  test('should render the latest error notification', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
@@ -119,7 +119,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render both an error and warning notification', () => {
+  test('should render both an error and warning notification', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         selectedLogIndex={-1}
@@ -153,7 +153,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render selected fatal error even when disabled', () => {
+  test('should render selected fatal error even when disabled', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         isDisabled
@@ -177,7 +177,7 @@ describe('LogBoxNotificationContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render selected syntax error even when disabled', () => {
+  test('should render selected syntax error even when disabled', () => {
     const output = render.shallowRender(
       <LogBoxNotificationContainer
         isDisabled

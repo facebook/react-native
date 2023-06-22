@@ -17,7 +17,7 @@ function expectToBeCalledOnce(fn) {
 describe('Batchinator', () => {
   const Batchinator = require('../Batchinator');
 
-  it('executes vanilla tasks', () => {
+  test('executes vanilla tasks', () => {
     const callback = jest.fn();
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();
@@ -25,7 +25,7 @@ describe('Batchinator', () => {
     expectToBeCalledOnce(callback);
   });
 
-  it('batches up tasks', () => {
+  test('batches up tasks', () => {
     const callback = jest.fn();
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();
@@ -37,7 +37,7 @@ describe('Batchinator', () => {
     expectToBeCalledOnce(callback);
   });
 
-  it('flushes on dispose', () => {
+  test('flushes on dispose', () => {
     const callback = jest.fn();
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();
@@ -48,7 +48,7 @@ describe('Batchinator', () => {
     expectToBeCalledOnce(callback);
   });
 
-  it('should call tasks scheduled by the callback', () => {
+  test('should call tasks scheduled by the callback', () => {
     let batcher = null;
     let hasRescheduled = false;
     const callback = jest.fn(() => {
@@ -63,7 +63,7 @@ describe('Batchinator', () => {
     expect(callback.mock.calls.length).toBe(2);
   });
 
-  it('does not run callbacks more than once', () => {
+  test('does not run callbacks more than once', () => {
     const callback = jest.fn();
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();

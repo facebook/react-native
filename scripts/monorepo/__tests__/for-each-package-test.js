@@ -18,7 +18,7 @@ jest.mock('fs', () => ({
 }));
 
 describe('forEachPackage', () => {
-  it('executes callback call with parameters', () => {
+  test('executes callback call with parameters', () => {
     const callback = jest.fn();
     const mockedPackageManifest = '{"name": "my-new-package"}';
     const mockedParsedPackageManifest = JSON.parse(mockedPackageManifest);
@@ -38,7 +38,7 @@ describe('forEachPackage', () => {
     );
   });
 
-  it('filters react-native folder by default', () => {
+  test('filters react-native folder by default', () => {
     const callback = jest.fn();
     readdirSync.mockImplementationOnce(() => [
       {name: 'react-native', isDirectory: () => true},
@@ -49,7 +49,7 @@ describe('forEachPackage', () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it('includes react-native, if such option is provided', () => {
+  test('includes react-native, if such option is provided', () => {
     const callback = jest.fn();
     const mockedPackageManifest = '{"name": "react-native"}';
     const mockedParsedPackageManifest = JSON.parse(mockedPackageManifest);

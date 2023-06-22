@@ -17,7 +17,7 @@ const LogBoxInspectorSourceMapStatus =
 const React = require('react');
 
 describe('LogBoxInspectorSourceMapStatus', () => {
-  it('should render for failed', () => {
+  test('should render for failed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="FAILED" />,
     );
@@ -25,7 +25,7 @@ describe('LogBoxInspectorSourceMapStatus', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render for pending', () => {
+  test('should render for pending', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="PENDING" />,
     );
@@ -33,7 +33,7 @@ describe('LogBoxInspectorSourceMapStatus', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for complete', () => {
+  test('should render null for complete', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSourceMapStatus onPress={() => {}} status="COMPLETE" />,
     );

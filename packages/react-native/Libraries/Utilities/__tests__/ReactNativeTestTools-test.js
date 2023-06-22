@@ -21,7 +21,7 @@ const ReactTestRenderer = require('react-test-renderer');
 describe('ReactNativeTestTools', () => {
   const ExampleNull = () => null;
 
-  it('matches byTestID()', () => {
+  test('matches byTestID()', () => {
     const renderSimple = ReactTestRenderer.create(<ExampleNull testID="foo" />);
     const foo = renderSimple.root.find(byTestID('foo'));
     expect(foo).toEqual(renderSimple.root);
@@ -43,7 +43,7 @@ describe('ReactNativeTestTools', () => {
     expect(renderNested.root.findAll(byTestID('impossible'))).toHaveLength(0);
   });
 
-  it('matches byTextMatching()', () => {
+  test('matches byTextMatching()', () => {
     const hasFooText = byTextMatching(/foo/);
     const hasBarText = byTextMatching(/bar/);
     const renderSimple = ReactTestRenderer.create(<Text>foobarbaz</Text>);
@@ -72,7 +72,7 @@ describe('ReactNativeTestTools', () => {
     expect(barAllShallow).toHaveLength(1);
   });
 
-  it('interacts via tap()', () => {
+  test('interacts via tap()', () => {
     const touchFn = jest.fn();
     const renderTouch = ReactTestRenderer.create(
       <TouchableWithoutFeedback onPress={touchFn}>
@@ -89,7 +89,7 @@ describe('ReactNativeTestTools', () => {
     expect(textFn).toBeCalled();
   });
 
-  it('interacts via enter()', () => {
+  test('interacts via enter()', () => {
     const changeFn = jest.fn();
     const changeTextFn = jest.fn();
     const renderInput = ReactTestRenderer.create(

@@ -16,7 +16,7 @@ const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 describe('VirtualizedSectionList', () => {
-  it('renders simple list', () => {
+  test('renders simple list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         sections={[
@@ -32,7 +32,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list', () => {
+  test('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         sections={[]}
@@ -44,7 +44,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list with empty component', () => {
+  test('renders empty list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         sections={[]}
@@ -59,7 +59,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders list with empty component', () => {
+  test('renders list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         // $FlowFixMe[incompatible-type]
@@ -73,7 +73,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders all the bells and whistles', () => {
+  test('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         ItemSeparatorComponent={() => <separator />}
@@ -105,7 +105,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('handles separators correctly', () => {
+  test('handles separators correctly', () => {
     const infos = [];
     let component;
     ReactTestRenderer.act(() => {
@@ -141,7 +141,7 @@ describe('VirtualizedSectionList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('handles nested lists', () => {
+  test('handles nested lists', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedSectionList
         // $FlowFixMe[incompatible-type]
@@ -211,7 +211,7 @@ describe('VirtualizedSectionList', () => {
       };
     };
 
-    it('when sticky stickySectionHeadersEnabled={true}, header height is added to the developer-provided viewOffset', () => {
+    test('when sticky stickySectionHeadersEnabled={true}, header height is added to the developer-provided viewOffset', () => {
       const {instance, spy} = createVirtualizedSectionList({
         stickySectionHeadersEnabled: true,
       });
@@ -232,7 +232,7 @@ describe('VirtualizedSectionList', () => {
       });
     });
 
-    it.each([
+    test.each([
       [
         // prevents #18098
         {sectionIndex: 0, itemIndex: 0},

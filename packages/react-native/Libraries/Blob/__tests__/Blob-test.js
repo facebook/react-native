@@ -17,7 +17,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 const Blob = require('../Blob');
 
 describe('Blob', function () {
-  it('should create empty blob', () => {
+  test('should create empty blob', () => {
     const blob = new Blob();
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.data.offset).toBe(0);
@@ -26,7 +26,7 @@ describe('Blob', function () {
     expect(blob.type).toBe('');
   });
 
-  it('should create blob from other blobs and strings', () => {
+  test('should create blob from other blobs and strings', () => {
     const blobA = new Blob();
     const blobB = new Blob();
     const textA = 'i \u2665 dogs';
@@ -55,7 +55,7 @@ describe('Blob', function () {
     expect(blob.type).toBe('');
   });
 
-  it('should slice a blob', () => {
+  test('should slice a blob', () => {
     const blob = new Blob();
 
     blob.data.size = 34546;
@@ -78,7 +78,7 @@ describe('Blob', function () {
     expect(sliceC.size).toBe(Math.min(blob.data.size, 34569) - 34543);
   });
 
-  it('should close a blob', () => {
+  test('should close a blob', () => {
     const blob = new Blob();
 
     blob.close();

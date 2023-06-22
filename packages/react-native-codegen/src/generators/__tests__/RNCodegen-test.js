@@ -20,7 +20,7 @@ describe('RNCodegen.generate', () => {
     jest.resetModules();
   });
 
-  it('when type `all`, with default paths', () => {
+  test('when type `all`, with default paths', () => {
     jest.mock('fs', () => ({
       existsSync: location => {
         return true;

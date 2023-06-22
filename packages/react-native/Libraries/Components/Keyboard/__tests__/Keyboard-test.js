@@ -21,7 +21,7 @@ describe('Keyboard', () => {
     jest.resetAllMocks();
   });
 
-  it('uses dismissKeyboard utility', () => {
+  test('uses dismissKeyboard utility', () => {
     Keyboard.dismiss();
     expect(dismissKeyboard).toHaveBeenCalled();
   });
@@ -38,7 +38,7 @@ describe('Keyboard', () => {
       // $FlowFixMe[incompatible-call]
       Keyboard.scheduleLayoutAnimation({duration, easing});
 
-    it('triggers layout animation', () => {
+    test('triggers layout animation', () => {
       scheduleLayoutAnimation(12, 'spring');
       expect(LayoutAnimation.configureNext).toHaveBeenCalledWith({
         duration: 12,
@@ -49,12 +49,12 @@ describe('Keyboard', () => {
       });
     });
 
-    it('does not trigger animation when duration is null', () => {
+    test('does not trigger animation when duration is null', () => {
       scheduleLayoutAnimation(null, 'spring');
       expect(LayoutAnimation.configureNext).not.toHaveBeenCalled();
     });
 
-    it('does not trigger animation when duration is 0', () => {
+    test('does not trigger animation when duration is 0', () => {
       scheduleLayoutAnimation(0, 'spring');
       expect(LayoutAnimation.configureNext).not.toHaveBeenCalled();
     });
@@ -70,17 +70,17 @@ describe('Keyboard', () => {
           }),
         );
 
-      it('retrieves type from LayoutAnimation', () => {
+      test('retrieves type from LayoutAnimation', () => {
         scheduleLayoutAnimation(12, 'linear');
         assertAnimationUpdateType('linear');
       });
 
-      it("defaults to 'keyboard' when key in LayoutAnimation is not found", () => {
+      test("defaults to 'keyboard' when key in LayoutAnimation is not found", () => {
         scheduleLayoutAnimation(12, 'some-unknown-animation-type');
         assertAnimationUpdateType('keyboard');
       });
 
-      it("defaults to 'keyboard' when easing is null", () => {
+      test("defaults to 'keyboard' when easing is null", () => {
         scheduleLayoutAnimation(12, null);
         assertAnimationUpdateType('keyboard');
       });

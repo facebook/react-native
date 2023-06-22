@@ -14,12 +14,12 @@ import AnimatedImplementation from '../AnimatedImplementation';
 import AnimatedMock from '../AnimatedMock';
 
 describe('Animated Mock', () => {
-  it('matches implementation keys', () => {
+  test('matches implementation keys', () => {
     expect(Object.keys(AnimatedMock)).toEqual(
       Object.keys(AnimatedImplementation),
     );
   });
-  it('matches implementation params', done => {
+  test('matches implementation params', done => {
     Object.keys(AnimatedImplementation).forEach(key => {
       if (AnimatedImplementation[key].length !== AnimatedMock[key].length) {
         done(

@@ -18,7 +18,7 @@ describe('YellowBox', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
-  it('calling ignoreWarnings proxies to LogBox.ignoreLogs', () => {
+  test('calling ignoreWarnings proxies to LogBox.ignoreLogs', () => {
     jest.spyOn(LogBox, 'ignoreLogs');
     const consoleWarn = jest
       .spyOn(console, 'warn')
@@ -32,7 +32,7 @@ describe('YellowBox', () => {
     );
   });
 
-  it('calling install proxies to LogBox.install', () => {
+  test('calling install proxies to LogBox.install', () => {
     jest.spyOn(LogBox, 'install');
     const consoleWarn = jest
       .spyOn(console, 'warn')
@@ -46,7 +46,7 @@ describe('YellowBox', () => {
     );
   });
 
-  it('calling uninstall proxies to LogBox.uninstall', () => {
+  test('calling uninstall proxies to LogBox.uninstall', () => {
     jest.spyOn(LogBox, 'uninstall');
     const consoleWarn = jest
       .spyOn(console, 'warn')

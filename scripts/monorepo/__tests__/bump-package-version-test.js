@@ -20,7 +20,7 @@ jest.mock('fs', () => ({
 jest.mock('../for-each-package', () => callback => {});
 
 describe('bumpPackageVersionTest', () => {
-  it('updates patch version of the package', () => {
+  test('updates patch version of the package', () => {
     const mockedPackageLocation = '~/packages/assets';
     const mockedPackageManifest = {
       name: '@react-native/test',

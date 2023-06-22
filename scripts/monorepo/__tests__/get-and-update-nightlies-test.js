@@ -56,7 +56,7 @@ describe('getAndUpdateNightlies', () => {
     jest.clearAllMocks();
   });
 
-  it('publishes because there are changes', () => {
+  test('publishes because there are changes', () => {
     const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
     publishPackageMock.mockImplementationOnce(() => ({code: 0}));
     diffPackagesMock.mockImplementationOnce(() => 'some-file-name.js\n');
@@ -99,7 +99,7 @@ describe('getAndUpdateNightlies', () => {
       console.error = consoleError;
     });
 
-    it('doesnt update nightly version when fails to publish', () => {
+    test('doesnt update nightly version when fails to publish', () => {
       const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
       publishPackageMock.mockImplementationOnce(() => ({
         code: 1,
@@ -114,7 +114,7 @@ describe('getAndUpdateNightlies', () => {
     });
   });
 
-  it('doesnt publish because no changes', () => {
+  test('doesnt publish because no changes', () => {
     const nightlyVersion = '0.73.0-nightly-202108-shortcommit';
     diffPackagesMock.mockImplementationOnce(() => '\n');
 

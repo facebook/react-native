@@ -17,7 +17,7 @@ const LogBoxInspectorStackFrame =
 const React = require('react');
 
 describe('LogBoxInspectorStackFrame', () => {
-  it('should render stack frame', () => {
+  test('should render stack frame', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrame
         onPress={() => {}}
@@ -34,7 +34,7 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render stack frame without press feedback', () => {
+  test('should render stack frame without press feedback', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrame
         frame={{
@@ -51,7 +51,7 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render collapsed stack frame with dimmed text', () => {
+  test('should render collapsed stack frame with dimmed text', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrame
         onPress={() => {}}

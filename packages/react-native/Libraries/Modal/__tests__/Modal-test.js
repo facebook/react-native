@@ -17,7 +17,7 @@ const Modal = require('../Modal');
 const React = require('react');
 
 describe('<Modal />', () => {
-  it('should render as <Modal> when mocked', () => {
+  test('should render as <Modal> when mocked', () => {
     const instance = render.create(
       <Modal>
         <View />
@@ -26,7 +26,7 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should not render its children when mocked with visible=false', () => {
+  test('should not render its children when mocked with visible=false', () => {
     const instance = render.create(
       <Modal visible={false}>
         <View testID="child" />
@@ -35,7 +35,7 @@ describe('<Modal />', () => {
     expect(instance.root.findAllByProps({testID: 'child'})).toHaveLength(0);
   });
 
-  it('should shallow render as <Modal> when mocked', () => {
+  test('should shallow render as <Modal> when mocked', () => {
     const output = render.shallow(
       <Modal>
         <View />
@@ -44,7 +44,7 @@ describe('<Modal />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should shallow render as <Modal> when not mocked', () => {
+  test('should shallow render as <Modal> when not mocked', () => {
     jest.dontMock('../Modal');
 
     const output = render.shallow(
@@ -55,7 +55,7 @@ describe('<Modal />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render as <RCTModalHostView> when not mocked', () => {
+  test('should render as <RCTModalHostView> when not mocked', () => {
     jest.dontMock('../Modal');
 
     const instance = render.create(

@@ -23,7 +23,7 @@ describe('FlowParser', () => {
   const parser = new FlowParser();
   describe('getKeyName', () => {
     describe('when propertyOrIndex is ObjectTypeProperty', () => {
-      it('returns property name', () => {
+      test('returns property name', () => {
         const property = {
           type: 'ObjectTypeProperty',
           key: {
@@ -38,7 +38,7 @@ describe('FlowParser', () => {
     });
 
     describe('when propertyOrIndex is not ObjectTypeProperty or ObjectTypeIndexer', () => {
-      it('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
+      test('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
         const indexer = {
           type: 'EnumDeclaration',
           memberType: 'NumberTypeAnnotation',
@@ -52,7 +52,7 @@ describe('FlowParser', () => {
   });
 
   describe('remapUnionTypeAnnotationMemberNames', () => {
-    it('returns remaped union annotation member types without duplicates', () => {
+    test('returns remaped union annotation member types without duplicates', () => {
       const membersType = [
         {type: 'NumberLiteralTypeAnnotation'},
         {type: 'ObjectTypeAnnotation'},
@@ -69,7 +69,7 @@ describe('FlowParser', () => {
   });
 
   describe('isModuleInterface', () => {
-    it('returns true if it is a valid node', () => {
+    test('returns true if it is a valid node', () => {
       const node = {
         type: 'InterfaceDeclaration',
         extends: [
@@ -84,20 +84,20 @@ describe('FlowParser', () => {
       expect(parser.isModuleInterface(node)).toBe(true);
     });
 
-    it('returns false if it is a invalid node', () => {
+    test('returns false if it is a invalid node', () => {
       const node = {};
       expect(parser.isModuleInterface(node)).toBe(false);
     });
   });
 
   describe('isGenericTypeAnnotation', () => {
-    it('returns true if it is a generic type annotation', () => {
+    test('returns true if it is a generic type annotation', () => {
       expect(parser.isGenericTypeAnnotation('GenericTypeAnnotation')).toBe(
         true,
       );
     });
 
-    it('returns false if it is not a generic type annotation', () => {
+    test('returns false if it is not a generic type annotation', () => {
       expect(parser.isGenericTypeAnnotation('StringTypeAnnotation')).toBe(
         false,
       );
@@ -105,7 +105,7 @@ describe('FlowParser', () => {
   });
 
   describe('callExpressionTypeParameters', () => {
-    it('returns type arguments if it is a valid node', () => {
+    test('returns type arguments if it is a valid node', () => {
       const node = {
         type: 'CallExpression',
         typeArguments: {
@@ -119,14 +119,14 @@ describe('FlowParser', () => {
       });
     });
 
-    it('returns null if it is a invalid node', () => {
+    test('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
     });
   });
 
   describe('computePartialProperties', () => {
-    it('returns partial properties', () => {
+    test('returns partial properties', () => {
       const properties = [
         {
           type: 'ObjectTypeProperty',
@@ -181,7 +181,7 @@ describe('FlowParser', () => {
   });
 
   describe('getTypeArgumentParamsFromDeclaration', () => {
-    it('returns type arguments params from declaration', () => {
+    test('returns type arguments params from declaration', () => {
       const declaration = {
         type: 'TypeAlias',
         typeArguments: {
@@ -207,7 +207,7 @@ describe('FlowParser', () => {
       );
     });
 
-    it('returns undefined if declaration type argument params is Invalid', () => {
+    test('returns undefined if declaration type argument params is Invalid', () => {
       const declaration = {
         type: 'TypeAlias',
         typeArguments: {
@@ -222,7 +222,7 @@ describe('FlowParser', () => {
   });
 
   describe('getNativeComponentType', () => {
-    it('returns native component type when typeArgumentParams & funcArgumentParams are valid', () => {
+    test('returns native component type when typeArgumentParams & funcArgumentParams are valid', () => {
       const typeArgumentParams = [
         {
           type: 'TypeParameter',
@@ -250,7 +250,7 @@ describe('FlowParser', () => {
       ).toEqual(expected);
     });
 
-    it('returns undefined when typeArgumentParams & funcArgumentParams are invalid', () => {
+    test('returns undefined when typeArgumentParams & funcArgumentParams are invalid', () => {
       const typeArgumentParams = [
         {
           type: 'TypeParameter',
@@ -272,7 +272,7 @@ describe('FlowParser', () => {
   });
 
   describe('isOptionalProperty', () => {
-    it('when property is optional', () => {
+    test('when property is optional', () => {
       const property = {
         value: {
           type: 'TypeAnnotation',
@@ -283,7 +283,7 @@ describe('FlowParser', () => {
       expect(parser.isOptionalProperty(property)).toEqual(true);
     });
 
-    it('when property is not optional', () => {
+    test('when property is not optional', () => {
       const property = {
         value: {
           type: 'TypeAnnotation',
@@ -294,7 +294,7 @@ describe('FlowParser', () => {
       expect(parser.isOptionalProperty(property)).toEqual(false);
     });
 
-    it('when property value type is NullableTypeAnnotation', () => {
+    test('when property value type is NullableTypeAnnotation', () => {
       const property = {
         value: {
           type: 'NullableTypeAnnotation',
@@ -308,7 +308,7 @@ describe('FlowParser', () => {
 
   describe('getTypeAnnotationFromProperty', () => {
     describe('when property value type is NullableTypeAnnotation', () => {
-      it('returns typeAnnotation of the value', () => {
+      test('returns typeAnnotation of the value', () => {
         const typeAnnotation = {
           type: 'StringTypeAnnotation',
         };
@@ -327,7 +327,7 @@ describe('FlowParser', () => {
     });
 
     describe('when property value type is not NullableTypeAnnotation', () => {
-      it('returns the value', () => {
+      test('returns the value', () => {
         const value = {
           type: 'StringTypeAnnotation',
         };
@@ -342,25 +342,25 @@ describe('FlowParser', () => {
   });
 
   describe('typeAlias', () => {
-    it('returns typeAlias Property', () => {
+    test('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TypeAlias');
     });
   });
 
   describe('enumDeclaration', () => {
-    it('returns enumDeclaration Property', () => {
+    test('returns enumDeclaration Property', () => {
       expect(parser.enumDeclaration).toEqual('EnumDeclaration');
     });
   });
 
   describe('interfaceDeclaration', () => {
-    it('returns interfaceDeclaration Property', () => {
+    test('returns interfaceDeclaration Property', () => {
       expect(parser.interfaceDeclaration).toEqual('InterfaceDeclaration');
     });
   });
 
   describe('extractTypeFromTypeAnnotation', () => {
-    it('should return the name if typeAnnotation is GenericTypeAnnotation', () => {
+    test('should return the name if typeAnnotation is GenericTypeAnnotation', () => {
       const typeAnnotation = {
         type: 'GenericTypeAnnotation',
         id: {
@@ -373,7 +373,7 @@ describe('FlowParser', () => {
       );
     });
 
-    it('should return the type if typeAnnotation is not GenericTypeAnnotation', () => {
+    test('should return the type if typeAnnotation is not GenericTypeAnnotation', () => {
       const typeAnnotation = {
         type: 'SomeOtherType',
       };
@@ -385,7 +385,7 @@ describe('FlowParser', () => {
   });
 
   describe('getObjectProperties', () => {
-    it('returns properties of an object represented by a type annotation', () => {
+    test('returns properties of an object represented by a type annotation', () => {
       const properties = [
         {
           type: 'ObjectTypeProperty',
@@ -422,7 +422,7 @@ describe('FlowParser', () => {
       expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
     });
 
-    it('returns undefined if typeAnnotation does not have properties', () => {
+    test('returns undefined if typeAnnotation does not have properties', () => {
       const declaration = {
         type: 'TypeAlias',
       };
@@ -436,7 +436,7 @@ describe('TypeScriptParser', () => {
   const parser = new TypeScriptParser();
   describe('getKeyName', () => {
     describe('when propertyOrIndex is TSPropertySignature', () => {
-      it('returns property name', () => {
+      test('returns property name', () => {
         const property = {
           type: 'TSPropertySignature',
           key: {
@@ -451,7 +451,7 @@ describe('TypeScriptParser', () => {
     });
 
     describe('when propertyOrIndex is not TSPropertySignature or TSIndexSignature', () => {
-      it('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
+      test('throw UnsupportedObjectPropertyTypeAnnotationParserError', () => {
         const indexer = {
           type: 'TSEnumDeclaration',
           memberType: 'NumberTypeAnnotation',
@@ -464,7 +464,7 @@ describe('TypeScriptParser', () => {
     });
   });
   describe('remapUnionTypeAnnotationMemberNames', () => {
-    it('returns remaped union annotation member types without duplicates', () => {
+    test('returns remaped union annotation member types without duplicates', () => {
       const membersType = [
         {literal: {type: 'NumericLiteral'}},
         {type: 'ObjectTypeAnnotation'},
@@ -481,7 +481,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('isModuleInterface', () => {
-    it('returns true if it is a valid node', () => {
+    test('returns true if it is a valid node', () => {
       const node = {
         type: 'TSInterfaceDeclaration',
         extends: [
@@ -496,18 +496,18 @@ describe('TypeScriptParser', () => {
       expect(parser.isModuleInterface(node)).toBe(true);
     });
 
-    it('returns false if it is a invalid node', () => {
+    test('returns false if it is a invalid node', () => {
       const node = {};
       expect(parser.isModuleInterface(node)).toBe(false);
     });
   });
 
   describe('isGenericTypeAnnotation', () => {
-    it('returns true if it is a generic type annotation', () => {
+    test('returns true if it is a generic type annotation', () => {
       expect(parser.isGenericTypeAnnotation('TSTypeReference')).toBe(true);
     });
 
-    it('returns false if it is not a generic type annotation', () => {
+    test('returns false if it is not a generic type annotation', () => {
       expect(parser.isGenericTypeAnnotation('StringTypeAnnotation')).toBe(
         false,
       );
@@ -515,7 +515,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('callExpressionTypeParameters', () => {
-    it('returns type parameters if it is a valid node', () => {
+    test('returns type parameters if it is a valid node', () => {
       const node = {
         type: 'CallExpression',
         typeParameters: {
@@ -529,14 +529,14 @@ describe('TypeScriptParser', () => {
       });
     });
 
-    it('returns null if it is a invalid node', () => {
+    test('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
     });
   });
 
   describe('computePartialProperties', () => {
-    it('returns partial properties', () => {
+    test('returns partial properties', () => {
       const properties = [
         {
           type: 'TSPropertySignature',
@@ -605,7 +605,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('getTypeArgumentParamsFromDeclaration', () => {
-    it('returns type argument params from declaration', () => {
+    test('returns type argument params from declaration', () => {
       const declaration = {
         type: 'TypeAlias',
         typeParameters: {
@@ -631,7 +631,7 @@ describe('TypeScriptParser', () => {
       );
     });
 
-    it('returns undefined if declaration type arguments params is Invalid', () => {
+    test('returns undefined if declaration type arguments params is Invalid', () => {
       const declaration = {
         type: 'TypeAlias',
         typeParameters: {},
@@ -644,7 +644,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('getNativeComponentType', () => {
-    it('returns native component type when typeArgumentParams & funcArgumentParams are valid', () => {
+    test('returns native component type when typeArgumentParams & funcArgumentParams are valid', () => {
       const typeArgumentParams = [
         {
           typeName: {
@@ -671,7 +671,7 @@ describe('TypeScriptParser', () => {
       ).toEqual(expected);
     });
 
-    it('returns undefined when typeArgumentParams & funcArgumentParams are invalid', () => {
+    test('returns undefined when typeArgumentParams & funcArgumentParams are invalid', () => {
       const typeArgumentParams = [
         {
           typeName: {
@@ -693,14 +693,14 @@ describe('TypeScriptParser', () => {
   });
 
   describe('isOptionalProperty', () => {
-    it('when property is optional', () => {
+    test('when property is optional', () => {
       const property = {
         optional: true,
       };
       expect(parser.isOptionalProperty(property)).toEqual(true);
     });
 
-    it('when property is undefined or not optional', () => {
+    test('when property is undefined or not optional', () => {
       const property = {
         optional: false,
       };
@@ -709,7 +709,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('getTypeAnnotationFromProperty', () => {
-    it('returns the type annotation', () => {
+    test('returns the type annotation', () => {
       const typeAnnotation = {
         type: 'TSStringKeyword',
         key: {
@@ -733,25 +733,25 @@ describe('TypeScriptParser', () => {
   });
 
   describe('typeAlias', () => {
-    it('returns typeAlias Property', () => {
+    test('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
     });
   });
 
   describe('enumDeclaration', () => {
-    it('returns enumDeclaration Property', () => {
+    test('returns enumDeclaration Property', () => {
       expect(parser.enumDeclaration).toEqual('TSEnumDeclaration');
     });
   });
 
   describe('interfaceDeclaration', () => {
-    it('returns interfaceDeclaration Property', () => {
+    test('returns interfaceDeclaration Property', () => {
       expect(parser.interfaceDeclaration).toEqual('TSInterfaceDeclaration');
     });
   });
 
   describe('extractTypeFromTypeAnnotation', () => {
-    it('should return the name if typeAnnotation is TSTypeReference', () => {
+    test('should return the name if typeAnnotation is TSTypeReference', () => {
       const typeAnnotation = {
         type: 'TSTypeReference',
         typeName: {
@@ -764,7 +764,7 @@ describe('TypeScriptParser', () => {
       );
     });
 
-    it('should return the type if typeAnnotation is not TSTypeReference', () => {
+    test('should return the type if typeAnnotation is not TSTypeReference', () => {
       const typeAnnotation = {
         type: 'SomeOtherType',
       };
@@ -776,7 +776,7 @@ describe('TypeScriptParser', () => {
   });
 
   describe('getObjectProperties', () => {
-    it('returns members of an object represented by a type annotation', () => {
+    test('returns members of an object represented by a type annotation', () => {
       const members = [
         {
           type: 'ObjectTypeProperty',
@@ -813,7 +813,7 @@ describe('TypeScriptParser', () => {
       expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
     });
 
-    it('returns undefined if typeAnnotation does not have members', () => {
+    test('returns undefined if typeAnnotation does not have members', () => {
       const declaration = {
         type: 'TypeAlias',
       };

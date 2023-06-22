@@ -13,7 +13,7 @@
 describe('logError', () => {
   const logError = require('../logError');
 
-  it('logs error messages to the console', () => {
+  test('logs error messages to the console', () => {
     console.error.apply = jest.fn();
 
     logError('This is a log message');
@@ -23,7 +23,7 @@ describe('logError', () => {
     ]);
   });
 
-  it('logs error messages with multiple arguments to the console', () => {
+  test('logs error messages with multiple arguments to the console', () => {
     console.error.apply = jest.fn();
 
     const data = 'log';
@@ -36,7 +36,7 @@ describe('logError', () => {
     ]);
   });
 
-  it('logs errors to the console', () => {
+  test('logs errors to the console', () => {
     console.error = jest.fn();
 
     logError(new Error('The error message'));

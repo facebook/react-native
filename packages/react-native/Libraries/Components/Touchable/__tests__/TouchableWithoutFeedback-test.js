@@ -17,7 +17,7 @@ import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
 describe('TouchableWithoutFeedback', () => {
-  it('renders correctly', () => {
+  test('renders correctly', () => {
     const instance = ReactTestRenderer.create(
       <TouchableWithoutFeedback style={{}}>
         <Text>Touchable</Text>
@@ -27,7 +27,7 @@ describe('TouchableWithoutFeedback', () => {
     expect(instance.toJSON()).toMatchSnapshot();
   });
 
-  it('has displayName', () => {
+  test('has displayName', () => {
     expect(TouchableWithoutFeedback.displayName).toEqual(
       'TouchableWithoutFeedback',
     );
@@ -35,7 +35,7 @@ describe('TouchableWithoutFeedback', () => {
 });
 
 describe('TouchableWithoutFeedback with disabled state', () => {
-  it('should be disabled when disabled is true', () => {
+  test('should be disabled when disabled is true', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback disabled={true}>
@@ -45,7 +45,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     ).toMatchSnapshot();
   });
 
-  it('should be disabled when disabled is true and accessibilityState is empty', () => {
+  test('should be disabled when disabled is true and accessibilityState is empty', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback disabled={true} accessibilityState={{}}>
@@ -55,7 +55,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     ).toMatchSnapshot();
   });
 
-  it('should keep accessibilityState when disabled is true', () => {
+  test('should keep accessibilityState when disabled is true', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
@@ -67,7 +67,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     ).toMatchSnapshot();
   });
 
-  it('should overwrite accessibilityState with value of disabled prop', () => {
+  test('should overwrite accessibilityState with value of disabled prop', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback
@@ -79,7 +79,7 @@ describe('TouchableWithoutFeedback with disabled state', () => {
     ).toMatchSnapshot();
   });
 
-  it('should disable button when accessibilityState is disabled', () => {
+  test('should disable button when accessibilityState is disabled', () => {
     expect(
       ReactTestRenderer.create(
         <TouchableWithoutFeedback accessibilityState={{disabled: true}}>

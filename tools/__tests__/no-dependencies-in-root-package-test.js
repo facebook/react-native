@@ -24,7 +24,7 @@ const manifest = JSON.parse(
 );
 
 describe('@react-native/monorepo root package', () => {
-  it('expected not to list any dependencies', () => {
+  test('expected not to list any dependencies', () => {
     expect(manifest).not.toHaveProperty('dependencies');
   });
 });

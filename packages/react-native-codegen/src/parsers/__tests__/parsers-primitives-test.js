@@ -57,7 +57,7 @@ const typeScriptParser = new TypeScriptParser();
 
 describe('emitBoolean', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitBoolean(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -70,7 +70,7 @@ describe('emitBoolean', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitBoolean(false);
       const expected = {
         type: 'BooleanTypeAnnotation',
@@ -83,7 +83,7 @@ describe('emitBoolean', () => {
 
 describe('emitInt32', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitInt32(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -96,7 +96,7 @@ describe('emitInt32', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitInt32(false);
       const expected = {
         type: 'Int32TypeAnnotation',
@@ -109,7 +109,7 @@ describe('emitInt32', () => {
 
 describe('emitInt32Prop', () => {
   describe('when optional is true', () => {
-    it('returns optional Int32TypeAnnotation', () => {
+    test('returns optional Int32TypeAnnotation', () => {
       const result = emitInt32Prop('myProp', true);
       const expected = {
         name: 'myProp',
@@ -124,7 +124,7 @@ describe('emitInt32Prop', () => {
   });
 
   describe('when nullable is false', () => {
-    it('returns required Int32TypeAnnotation', () => {
+    test('returns required Int32TypeAnnotation', () => {
       const result = emitInt32Prop('myProp', false);
       const expected = {
         name: 'myProp',
@@ -141,7 +141,7 @@ describe('emitInt32Prop', () => {
 
 describe('emitNumber', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitNumber(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -154,7 +154,7 @@ describe('emitNumber', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitNumber(false);
       const expected = {
         type: 'NumberTypeAnnotation',
@@ -172,7 +172,7 @@ describe('emitRootTag', () => {
   };
 
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitRootTag(true);
 
       expect(result).toEqual({
@@ -183,7 +183,7 @@ describe('emitRootTag', () => {
   });
 
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitRootTag(false);
 
       expect(result).toEqual(reservedTypeAnnotation);
@@ -193,7 +193,7 @@ describe('emitRootTag', () => {
 
 describe('emitStringProp', () => {
   describe('when optional is true', () => {
-    it('returns optional StringTypeAnnotation', () => {
+    test('returns optional StringTypeAnnotation', () => {
       const result = emitStringProp('myProp', true);
       const expected = {
         name: 'myProp',
@@ -208,7 +208,7 @@ describe('emitStringProp', () => {
   });
 
   describe('when nullable is false', () => {
-    it('returns required StringTypeAnnotatio', () => {
+    test('returns required StringTypeAnnotatio', () => {
       const result = emitStringProp('myProp', false);
       const expected = {
         name: 'myProp',
@@ -225,7 +225,7 @@ describe('emitStringProp', () => {
 
 describe('emitStringish', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitStringish(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -239,7 +239,7 @@ describe('emitStringish', () => {
   });
 
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitStringish(false);
       const expected = {
         type: 'StringTypeAnnotation',
@@ -252,7 +252,7 @@ describe('emitStringish', () => {
 
 describe('emitString', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitString(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -266,7 +266,7 @@ describe('emitString', () => {
   });
 
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitString(false);
       const expected = {
         type: 'StringTypeAnnotation',
@@ -279,7 +279,7 @@ describe('emitString', () => {
 
 describe('emitDouble', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitDouble(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -292,7 +292,7 @@ describe('emitDouble', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitDouble(false);
       const expected = {
         type: 'DoubleTypeAnnotation',
@@ -305,7 +305,7 @@ describe('emitDouble', () => {
 
 describe('emitDoubleProp', () => {
   describe('when optional is true', () => {
-    it('returns optional type annotation', () => {
+    test('returns optional type annotation', () => {
       const result = emitDoubleProp('Foo', true);
       const expected: NamedShape<DoubleTypeAnnotation> = {
         name: 'Foo',
@@ -318,7 +318,7 @@ describe('emitDoubleProp', () => {
     });
   });
   describe('when optional is false', () => {
-    it('returns required type annotation', () => {
+    test('returns required type annotation', () => {
       const result = emitDoubleProp('Foo', false);
       const expected: NamedShape<DoubleTypeAnnotation> = {
         name: 'Foo',
@@ -334,7 +334,7 @@ describe('emitDoubleProp', () => {
 
 describe('emitVoid', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitVoid(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -347,7 +347,7 @@ describe('emitVoid', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitVoid(false);
       const expected = {
         type: 'VoidTypeAnnotation',
@@ -376,7 +376,7 @@ describe('typeAliasResolution', () => {
     const typeResolution = {successful: true, type: 'alias', name: 'Foo'};
 
     describe('when nullable is true', () => {
-      it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+      test('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
           typeResolution,
@@ -397,7 +397,7 @@ describe('typeAliasResolution', () => {
     });
 
     describe('when nullable is false', () => {
-      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+      test('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
           typeResolution,
@@ -419,7 +419,7 @@ describe('typeAliasResolution', () => {
     const typeResolution = {successful: false};
 
     describe('when nullable is true', () => {
-      it('returns nullable ObjectTypeAnnotation', () => {
+      test('returns nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
           typeResolution,
@@ -437,7 +437,7 @@ describe('typeAliasResolution', () => {
     });
 
     describe('when nullable is false', () => {
-      it('returns non nullable ObjectTypeAnnotation', () => {
+      test('returns non nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
           typeResolution,
@@ -456,7 +456,7 @@ describe('typeAliasResolution', () => {
 describe('typeEnumResolution', () => {
   describe('when typeResolution is successful', () => {
     describe('when nullable is true', () => {
-      it('returns nullable EnumDeclaration and map it in enumMap', () => {
+      test('returns nullable EnumDeclaration and map it in enumMap', () => {
         const enumMap = {};
         const mockTypeAnnotation = {type: 'StringTypeAnnotation'};
 
@@ -499,7 +499,7 @@ describe('typeEnumResolution', () => {
     });
 
     describe('when nullable is false', () => {
-      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+      test('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const enumMap = {};
         const mockTypeAnnotation = {type: 'NumberTypeAnnotation'};
 
@@ -584,7 +584,7 @@ describe('emitPromise', () => {
         name: 'typeAnnotationName',
       },
     };
-    it('throws an IncorrectlyParameterizedGenericParserError error', () => {
+    test('throws an IncorrectlyParameterizedGenericParserError error', () => {
       const nullable = false;
       expect(() => emitPromiseForUnitTest(typeAnnotation, nullable)).toThrow();
     });
@@ -603,7 +603,7 @@ describe('emitPromise', () => {
 
     describe('when nullable is true', () => {
       const nullable = true;
-      it('returns nullable type annotation', () => {
+      test('returns nullable type annotation', () => {
         const result = emitPromiseForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'NullableTypeAnnotation',
@@ -618,7 +618,7 @@ describe('emitPromise', () => {
     });
     describe('when nullable is false', () => {
       const nullable = false;
-      it('returns non nullable type annotation', () => {
+      test('returns non nullable type annotation', () => {
         const result = emitPromiseForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'PromiseTypeAnnotation',
@@ -633,7 +633,7 @@ describe('emitPromise', () => {
 
 describe('emitGenericObject', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitGenericObject(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -646,7 +646,7 @@ describe('emitGenericObject', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitGenericObject(false);
       const expected = {
         type: 'GenericObjectTypeAnnotation',
@@ -659,7 +659,7 @@ describe('emitGenericObject', () => {
 
 describe('emitObject', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const props = [
         {
           name: 'a',
@@ -691,7 +691,7 @@ describe('emitObject', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const props = [
         {
           name: 'a',
@@ -723,7 +723,7 @@ describe('emitObject', () => {
 
 describe('emitFloat', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitFloat(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -736,7 +736,7 @@ describe('emitFloat', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitFloat(false);
       const expected = {
         type: 'FloatTypeAnnotation',
@@ -749,7 +749,7 @@ describe('emitFloat', () => {
 
 describe('emitFloatProp', () => {
   describe('when optional is true', () => {
-    it('returns optional FloatTypeAnnotation', () => {
+    test('returns optional FloatTypeAnnotation', () => {
       const result = emitFloatProp('myProp', true);
       const expected = {
         name: 'myProp',
@@ -764,7 +764,7 @@ describe('emitFloatProp', () => {
   });
 
   describe('when optional is false', () => {
-    it('returns required FloatTypeAnnotation', () => {
+    test('returns required FloatTypeAnnotation', () => {
       const result = emitFloatProp('myProp', false);
       const expected = {
         name: 'myProp',
@@ -781,7 +781,7 @@ describe('emitFloatProp', () => {
 
 describe('emitMixed', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = emitMixed(true);
       const expected = {
         type: 'NullableTypeAnnotation',
@@ -794,7 +794,7 @@ describe('emitMixed', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = emitMixed(false);
       const expected = {
         type: 'MixedTypeAnnotation',
@@ -818,7 +818,7 @@ describe('emitUnion', () => {
         ],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -839,7 +839,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -866,7 +866,7 @@ describe('emitUnion', () => {
         ],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -887,7 +887,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -911,7 +911,7 @@ describe('emitUnion', () => {
         types: [{type: 'ObjectTypeAnnotation'}, {type: 'ObjectTypeAnnotation'}],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -932,7 +932,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -965,7 +965,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an exception', () => {
+        test('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -979,7 +979,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an exception', () => {
+        test('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1010,7 +1010,7 @@ describe('emitUnion', () => {
         ],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -1031,7 +1031,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -1064,7 +1064,7 @@ describe('emitUnion', () => {
         ],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -1085,7 +1085,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -1116,7 +1116,7 @@ describe('emitUnion', () => {
         ],
       };
       describe('when nullable is true', () => {
-        it('returns nullable type annotation', () => {
+        test('returns nullable type annotation', () => {
           const result = emitUnion(
             true,
             hasteModuleName,
@@ -1137,7 +1137,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('returns non nullable type annotation', () => {
+        test('returns non nullable type annotation', () => {
           const result = emitUnion(
             false,
             hasteModuleName,
@@ -1178,7 +1178,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an exception', () => {
+        test('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1192,7 +1192,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an exception', () => {
+        test('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1245,7 +1245,7 @@ describe('emitArrayType', () => {
       },
     };
 
-    it('throws an IncorrectlyParameterizedGenericParserError error', () => {
+    test('throws an IncorrectlyParameterizedGenericParserError error', () => {
       expect(() =>
         emitArrayTypeForUnitTest(typeAnnotation, nullable),
       ).toThrow();
@@ -1265,7 +1265,7 @@ describe('emitArrayType', () => {
 
     describe('when nullable is true', () => {
       const nullable = true;
-      it('returns nullable type annotation', () => {
+      test('returns nullable type annotation', () => {
         const result = emitArrayTypeForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'NullableTypeAnnotation',
@@ -1280,7 +1280,7 @@ describe('emitArrayType', () => {
     });
     describe('when nullable is false', () => {
       const nullable = false;
-      it('returns non nullable type annotation', () => {
+      test('returns non nullable type annotation', () => {
         const result = emitArrayTypeForUnitTest(typeAnnotation, nullable);
         const expected = {
           type: 'ArrayTypeAnnotation',
@@ -1295,7 +1295,7 @@ describe('emitArrayType', () => {
 
 describe('Visitor', () => {
   describe('CallExpression', () => {
-    it('sets isComponent to true if callee type is Identifier and callee name is codegenNativeComponent', () => {
+    test('sets isComponent to true if callee type is Identifier and callee name is codegenNativeComponent', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {
         callee: {type: 'Identifier', name: 'codegenNativeComponent'},
@@ -1306,7 +1306,7 @@ describe('Visitor', () => {
       expect(infoMap.isComponent).toBe(true);
     });
 
-    it('should not set isComponent to true if callee type is not Identifier or callee name is not codegenNativeComponent', () => {
+    test('should not set isComponent to true if callee type is not Identifier or callee name is not codegenNativeComponent', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {
         callee: {type: '', name: ''},
@@ -1317,7 +1317,7 @@ describe('Visitor', () => {
       expect(infoMap.isComponent).toBe(false);
     });
 
-    it('sets isModule to true if isModuleRegistryCall', () => {
+    test('sets isModule to true if isModuleRegistryCall', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {
         type: 'CallExpression',
@@ -1333,7 +1333,7 @@ describe('Visitor', () => {
       expect(infoMap.isModule).toBe(true);
     });
 
-    it('should not set isModule to true if not isModuleRegistryCall', () => {
+    test('should not set isModule to true if not isModuleRegistryCall', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {
         callee: {
@@ -1348,7 +1348,7 @@ describe('Visitor', () => {
   });
 
   describe('InterfaceExtends', () => {
-    it('sets isModule to true if module interface extends TurboModule', () => {
+    test('sets isModule to true if module interface extends TurboModule', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {id: {name: 'TurboModule'}};
 
@@ -1358,7 +1358,7 @@ describe('Visitor', () => {
       expect(infoMap.isModule).toBe(true);
     });
 
-    it('should not set isModule to true if module interface does not extends TurboModule', () => {
+    test('should not set isModule to true if module interface does not extends TurboModule', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {id: {name: ''}};
 
@@ -1370,7 +1370,7 @@ describe('Visitor', () => {
   });
 
   describe('TSInterfaceDeclaration', () => {
-    it('sets isModule to true if TypeScript Interface Declaration extends TurboModule', () => {
+    test('sets isModule to true if TypeScript Interface Declaration extends TurboModule', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {extends: [{expression: {name: 'TurboModule'}}]};
 
@@ -1380,7 +1380,7 @@ describe('Visitor', () => {
       expect(infoMap.isModule).toBe(true);
     });
 
-    it('should not set isModule to true if TypeScript Interface Declaration does not extends TurboModule', () => {
+    test('should not set isModule to true if TypeScript Interface Declaration does not extends TurboModule', () => {
       const infoMap = {isComponent: false, isModule: false};
       const node = {extends: [{expression: {name: ''}}]};
 
@@ -1431,7 +1431,7 @@ describe('emitPartial', () => {
       },
     };
 
-    it('throws an error', () => {
+    test('throws an error', () => {
       expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
         'Partials only support annotating exactly one parameter.',
       );
@@ -1455,7 +1455,7 @@ describe('emitPartial', () => {
       },
     };
 
-    it('throws an error', () => {
+    test('throws an error', () => {
       expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
         'Partials only support annotating a type parameter.',
       );
@@ -1506,7 +1506,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'StringTypeAnnotation'", () => {
+    test("returns 'StringTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1526,7 +1526,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'Int32TypeAnnotation'", () => {
+    test("returns 'Int32TypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1546,7 +1546,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'DoubleTypeAnnotation'", () => {
+    test("returns 'DoubleTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1566,7 +1566,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'FloatTypeAnnotation'", () => {
+    test("returns 'FloatTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1586,7 +1586,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'GenericObjectTypeAnnotation'", () => {
+    test("returns 'GenericObjectTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1606,7 +1606,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'GenericObjectTypeAnnotation'", () => {
+    test("returns 'GenericObjectTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1626,7 +1626,7 @@ describe('emitCommonTypes', () => {
     };
     const result = emitCommonTypesForUnitTest(typeAnnotation, false);
 
-    it("returns 'GenericObjectTypeAnnotation'", () => {
+    test("returns 'GenericObjectTypeAnnotation'", () => {
       expect(result).toEqual(expected);
     });
   });
@@ -1637,7 +1637,7 @@ describe('emitCommonTypes', () => {
         name: 'InvalidName',
       },
     };
-    it('returns null', () => {
+    test('returns null', () => {
       expect(emitCommonTypesForUnitTest(typeAnnotation, false)).toBeNull();
     });
   });
@@ -1645,7 +1645,7 @@ describe('emitCommonTypes', () => {
 
 describe('emitBoolProp', () => {
   describe('when optional is true', () => {
-    it('returns optional type annotation', () => {
+    test('returns optional type annotation', () => {
       const result = emitBoolProp('someProp', true);
       const expected = {
         name: 'someProp',
@@ -1659,7 +1659,7 @@ describe('emitBoolProp', () => {
     });
   });
   describe('when optional is false', () => {
-    it('returns required type annotation', () => {
+    test('returns required type annotation', () => {
       const result = emitBoolProp('someProp', false);
       const expected = {
         name: 'someProp',
@@ -1677,7 +1677,7 @@ describe('emitBoolProp', () => {
 describe('emitObjectProp', () => {
   const name = 'someProp';
   describe('when property is optional', () => {
-    it('returns optional Object Prop', () => {
+    test('returns optional Object Prop', () => {
       const typeAnnotation = {
         type: 'GenericTypeAnnotation',
         id: {
@@ -1727,7 +1727,7 @@ describe('emitObjectProp', () => {
   });
 
   describe('when property is required', () => {
-    it('returns required Object Prop', () => {
+    test('returns required Object Prop', () => {
       const typeAnnotation = {
         type: 'GenericTypeAnnotation',
         id: {

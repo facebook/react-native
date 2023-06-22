@@ -11,7 +11,7 @@
 const deepFreezeAndThrowOnMutationInDev = require('../deepFreezeAndThrowOnMutationInDev');
 
 describe('deepFreezeAndThrowOnMutationInDev', function () {
-  it('should be a noop on non object values', () => {
+  test('should be a noop on non object values', () => {
     __DEV__ = true;
     expect(() => deepFreezeAndThrowOnMutationInDev('')).not.toThrow();
     expect(() => deepFreezeAndThrowOnMutationInDev(null)).not.toThrow();
@@ -26,14 +26,14 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(() => deepFreezeAndThrowOnMutationInDev()).not.toThrow();
   });
 
-  it('should not throw on object without prototype', () => {
+  test('should not throw on object without prototype', () => {
     __DEV__ = true;
     const o = Object.create(null);
     o.key = 'Value';
     expect(() => deepFreezeAndThrowOnMutationInDev(o)).not.toThrow();
   });
 
-  it('should throw on mutation in dev with strict', () => {
+  test('should throw on mutation in dev with strict', () => {
     'use strict';
     __DEV__ = true;
     const o = {key: 'oldValue'};
@@ -47,7 +47,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.key).toBe('oldValue');
   });
 
-  it('should throw on mutation in dev without strict', () => {
+  test('should throw on mutation in dev without strict', () => {
     __DEV__ = true;
     const o = {key: 'oldValue'};
     deepFreezeAndThrowOnMutationInDev(o);
@@ -60,7 +60,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.key).toBe('oldValue');
   });
 
-  it('should throw on nested mutation in dev with strict', () => {
+  test('should throw on nested mutation in dev with strict', () => {
     'use strict';
     __DEV__ = true;
     const o = {key1: {key2: {key3: 'oldValue'}}};
@@ -74,7 +74,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.key1.key2.key3).toBe('oldValue');
   });
 
-  it('should throw on nested mutation in dev without strict', () => {
+  test('should throw on nested mutation in dev without strict', () => {
     __DEV__ = true;
     const o = {key1: {key2: {key3: 'oldValue'}}};
     deepFreezeAndThrowOnMutationInDev(o);
@@ -87,7 +87,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.key1.key2.key3).toBe('oldValue');
   });
 
-  it('should throw on insertion in dev with strict', () => {
+  test('should throw on insertion in dev with strict', () => {
     'use strict';
     __DEV__ = true;
     const o = {oldKey: 'value'};
@@ -100,7 +100,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.newKey).toBe(undefined);
   });
 
-  it('should not throw on insertion in dev without strict', () => {
+  test('should not throw on insertion in dev without strict', () => {
     __DEV__ = true;
     const o = {oldKey: 'value'};
     deepFreezeAndThrowOnMutationInDev(o);
@@ -110,7 +110,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.newKey).toBe(undefined);
   });
 
-  it('should mutate and not throw on mutation in prod', () => {
+  test('should mutate and not throw on mutation in prod', () => {
     'use strict';
     __DEV__ = false;
     const o = {key: 'oldValue'};
@@ -122,7 +122,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
   });
 
   // This is a limitation of the technique unfortunately
-  it('should not deep freeze already frozen objects', () => {
+  test('should not deep freeze already frozen objects', () => {
     'use strict';
     __DEV__ = true;
     const o = {key1: {key2: 'oldValue'}};
@@ -134,7 +134,7 @@ describe('deepFreezeAndThrowOnMutationInDev', function () {
     expect(o.key1.key2).toBe('newValue');
   });
 
-  it("shouldn't recurse infinitely", () => {
+  test("shouldn't recurse infinitely", () => {
     __DEV__ = true;
     const o = {};
     o.circular = o;

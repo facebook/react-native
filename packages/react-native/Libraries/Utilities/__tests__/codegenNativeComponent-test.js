@@ -29,33 +29,33 @@ jest
   );
 
 describe('codegenNativeComponent', () => {
-  it('should require component as is ', () => {
+  test('should require component as is ', () => {
     const component = codegenNativeComponent('ComponentName');
     expect(component).toBe('ComponentName');
   });
 
-  it('should require paperComponentName', () => {
+  test('should require paperComponentName', () => {
     const component = codegenNativeComponent('ComponentName', {
       paperComponentName: 'PaperComponentName',
     });
     expect(component).toBe('PaperComponentName');
   });
 
-  it('should fall back to requiring the deprecated paper component name', () => {
+  test('should fall back to requiring the deprecated paper component name', () => {
     const component = codegenNativeComponent('ComponentNameDoesNotExist', {
       paperComponentNameDeprecated: 'ComponentName',
     });
     expect(component).toBe('ComponentName');
   });
 
-  it('should require the new component name', () => {
+  test('should require the new component name', () => {
     const component = codegenNativeComponent('ComponentName', {
       paperComponentNameDeprecated: 'ComponentNameDoesNotExist',
     });
     expect(component).toBe('ComponentName');
   });
 
-  it('should throw if neither component names exist', () => {
+  test('should throw if neither component names exist', () => {
     expect(() =>
       codegenNativeComponent('ComponentNameDoesNotExistOne', {
         paperComponentNameDeprecated: 'ComponentNameDoesNotExistTwo',

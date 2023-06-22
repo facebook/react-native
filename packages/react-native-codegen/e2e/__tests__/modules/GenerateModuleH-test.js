@@ -38,13 +38,13 @@ function getModules(): SchemaType {
 }
 
 describe('GenerateModuleH', () => {
-  it('can generate a header file NativeModule specs', () => {
+  test('can generate a header file NativeModule specs', () => {
     const libName = 'RNCodegenModuleFixtures';
     const output = generator.generate(libName, getModules(), undefined, false);
     expect(output.get(libName + 'JSI.h')).toMatchSnapshot();
   });
 
-  it('can generate a header file NativeModule specs with assume nonnull enabled', () => {
+  test('can generate a header file NativeModule specs with assume nonnull enabled', () => {
     const libName = 'RNCodegenModuleFixtures';
     const output = generator.generate(libName, getModules(), undefined, true);
     expect(output.get(libName + 'JSI.h')).toMatchSnapshot();

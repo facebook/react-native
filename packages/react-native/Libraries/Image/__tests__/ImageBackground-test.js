@@ -16,7 +16,7 @@ const ImageBackground = require('../ImageBackground');
 const React = require('react');
 
 describe('<ImageBackground />', () => {
-  it('should render as <ImageBackground> when mocked', () => {
+  test('should render as <ImageBackground> when mocked', () => {
     const instance = render.create(
       <ImageBackground
         style={{width: 150, height: 50}}
@@ -26,7 +26,7 @@ describe('<ImageBackground />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <ImageBackground> when mocked', () => {
+  test('should shallow render as <ImageBackground> when mocked', () => {
     const output = render.shallow(
       <ImageBackground
         style={{width: 150, height: 50}}
@@ -36,7 +36,7 @@ describe('<ImageBackground />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should shallow render as <ForwardRef(ImageBackground)> when not mocked', () => {
+  test('should shallow render as <ForwardRef(ImageBackground)> when not mocked', () => {
     jest.dontMock('../ImageBackground');
 
     const output = render.shallow(
@@ -48,7 +48,7 @@ describe('<ImageBackground />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render as <RCTImageView> when not mocked', () => {
+  test('should render as <RCTImageView> when not mocked', () => {
     jest.dontMock('../ImageBackground');
 
     const instance = render.create(
@@ -60,7 +60,7 @@ describe('<ImageBackground />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should be set importantForAccessibility in <View> and <Image>', () => {
+  test('should be set importantForAccessibility in <View> and <Image>', () => {
     const instance = render.create(
       <ImageBackground
         importantForAccessibility={'no'}

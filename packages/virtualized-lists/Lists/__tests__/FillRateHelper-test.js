@@ -46,7 +46,7 @@ describe('computeBlankness', function () {
     FillRateHelper.setMinSampleCount(0);
   });
 
-  it('computes correct blankness of viewport', function () {
+  test('computes correct blankness of viewport', function () {
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -65,7 +65,7 @@ describe('computeBlankness', function () {
     expect(blankness).toBe(1);
   });
 
-  it('skips frames that are not in layout', function () {
+  test('skips frames that are not in layout', function () {
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: false},
@@ -79,7 +79,7 @@ describe('computeBlankness', function () {
     expect(blankness).toBe(0.3);
   });
 
-  it('sampling rate can disable', function () {
+  test('sampling rate can disable', function () {
     let helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -96,7 +96,7 @@ describe('computeBlankness', function () {
     expect(blankness).toBe(0);
   });
 
-  it('can handle multiple listeners and unsubscribe', function () {
+  test('can handle multiple listeners and unsubscribe', function () {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
     const subscriptions = listeners.map(listener =>
       FillRateHelper.addListener(listener),

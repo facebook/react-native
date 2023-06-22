@@ -29,7 +29,7 @@ const log = new LogBoxLog({
 });
 
 describe('LogBoxNotification', () => {
-  it('should render log', () => {
+  test('should render log', () => {
     const output = render.shallowRender(
       <LogBoxNotification
         log={log}

@@ -21,7 +21,7 @@ jest.mock(
 );
 
 describe('PerformanceObserver', () => {
-  it('can be mocked by a reference NativePerformanceObserver implementation', async () => {
+  test('can be mocked by a reference NativePerformanceObserver implementation', async () => {
     expect(NativePerformanceObserver).not.toBe(undefined);
 
     let totalEntries = 0;
@@ -48,7 +48,7 @@ describe('PerformanceObserver', () => {
     observer.disconnect();
   });
 
-  it('prevents durationThreshold to be used together with entryTypes', async () => {
+  test('prevents durationThreshold to be used together with entryTypes', async () => {
     const observer = new PerformanceObserver((list, _observer) => {});
 
     expect(() =>
@@ -56,7 +56,7 @@ describe('PerformanceObserver', () => {
     ).toThrow();
   });
 
-  it('handles durationThreshold argument as expected', async () => {
+  test('handles durationThreshold argument as expected', async () => {
     let entries = [];
     const observer = new PerformanceObserver((list, _observer) => {
       entries = [...entries, ...list.getEntries()];
@@ -97,7 +97,7 @@ describe('PerformanceObserver', () => {
     expect(entries.map(e => e.name)).toStrictEqual(['mark1', 'mark3', 'mark4']);
   });
 
-  it('correctly works with multiple PerformanceObservers with durationThreshold', async () => {
+  test('correctly works with multiple PerformanceObservers with durationThreshold', async () => {
     let entries1 = [];
     const observer1 = new PerformanceObserver((list, _observer) => {
       entries1 = [...entries1, ...list.getEntries()];

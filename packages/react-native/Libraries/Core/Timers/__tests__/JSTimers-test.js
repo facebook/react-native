@@ -36,7 +36,7 @@ describe('JSTimers', function () {
     console.warn.mockRestore();
   });
 
-  it('should call function with setTimeout', function () {
+  test('should call function with setTimeout', function () {
     let didCall = false;
     const id = JSTimers.setTimeout(function () {
       didCall = true;
@@ -45,7 +45,7 @@ describe('JSTimers', function () {
     expect(didCall).toBe(true);
   });
 
-  it('should call nested setTimeout when cleared', function () {
+  test('should call nested setTimeout when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
@@ -65,7 +65,7 @@ describe('JSTimers', function () {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested queueReactNativeMicrotask when cleared', function () {
+  test('should call nested queueReactNativeMicrotask when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
@@ -85,7 +85,7 @@ describe('JSTimers', function () {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested requestAnimationFrame when cleared', function () {
+  test('should call nested requestAnimationFrame when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
@@ -105,7 +105,7 @@ describe('JSTimers', function () {
     expect(callCount).toBe(1);
   });
 
-  it('should call nested setInterval when cleared', function () {
+  test('should call nested setInterval when cleared', function () {
     let id1, id2, id3;
     let callCount = 0;
 
@@ -125,21 +125,21 @@ describe('JSTimers', function () {
     expect(callCount).toBe(1);
   });
 
-  it('should call function with setInterval', function () {
+  test('should call function with setInterval', function () {
     const callback = jest.fn();
     const id = JSTimers.setInterval(callback);
     JSTimers.callTimers([id]);
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should call function with queueReactNativeMicrotask', function () {
+  test('should call function with queueReactNativeMicrotask', function () {
     const callback = jest.fn();
     JSTimers.queueReactNativeMicrotask(callback);
     JSTimers.callReactNativeMicrotasks();
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('should not call function with clearReactNativeMicrotask', function () {
+  test('should not call function with clearReactNativeMicrotask', function () {
     const callback = jest.fn();
     const id = JSTimers.queueReactNativeMicrotask(callback);
     JSTimers.clearReactNativeMicrotask(id);
@@ -147,7 +147,7 @@ describe('JSTimers', function () {
     expect(callback).not.toBeCalled();
   });
 
-  it('should call functions in the right order with queueReactNativeMicrotask', function () {
+  test('should call functions in the right order with queueReactNativeMicrotask', function () {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
@@ -162,7 +162,7 @@ describe('JSTimers', function () {
     expect(secondCalled).toBe(1);
   });
 
-  it('should call functions in the right order with nested queueReactNativeMicrotask', function () {
+  test('should call functions in the right order with nested queueReactNativeMicrotask', function () {
     let count = 0;
     let firstCalled = null;
     let secondCalled = null;
@@ -180,7 +180,7 @@ describe('JSTimers', function () {
     expect(thirdCalled).toBe(2);
   });
 
-  it('should call nested queueReactNativeMicrotask', function () {
+  test('should call nested queueReactNativeMicrotask', function () {
     let firstCalled = false;
     let secondCalled = false;
     JSTimers.queueReactNativeMicrotask(function () {
@@ -194,14 +194,14 @@ describe('JSTimers', function () {
     expect(secondCalled).toBe(true);
   });
 
-  it('should call function with requestAnimationFrame', function () {
+  test('should call function with requestAnimationFrame', function () {
     const callback = jest.fn();
     const id = JSTimers.requestAnimationFrame(callback);
     JSTimers.callTimers([id]);
     expect(callback).toBeCalledTimes(1);
   });
 
-  it("should not call function if we don't callTimers", function () {
+  test("should not call function if we don't callTimers", function () {
     const callback = jest.fn();
     JSTimers.setTimeout(callback, 10);
     expect(callback).not.toBeCalled();
@@ -211,7 +211,7 @@ describe('JSTimers', function () {
     expect(callback).not.toBeCalled();
   });
 
-  it('should call setInterval as many times as callTimers is called', function () {
+  test('should call setInterval as many times as callTimers is called', function () {
     const callback = jest.fn();
     const id = JSTimers.setInterval(callback, 10);
     JSTimers.callTimers([id]);
@@ -221,7 +221,7 @@ describe('JSTimers', function () {
     expect(callback).toBeCalledTimes(4);
   });
 
-  it("should only call the function who's id we pass in", function () {
+  test("should only call the function who's id we pass in", function () {
     let firstCalled = false;
     let secondCalled = false;
     JSTimers.setTimeout(function () {
@@ -235,7 +235,7 @@ describe('JSTimers', function () {
     expect(secondCalled).toBe(true);
   });
 
-  it('should work with calling multiple timers', function () {
+  test('should work with calling multiple timers', function () {
     let firstCalled = false;
     let secondCalled = false;
     const firstID = JSTimers.setTimeout(function () {
@@ -249,7 +249,7 @@ describe('JSTimers', function () {
     expect(secondCalled).toBe(true);
   });
 
-  it('should still execute all callbacks even if one throws', function () {
+  test('should still execute all callbacks even if one throws', function () {
     const firstID = JSTimers.setTimeout(function () {
       throw new Error('error');
     }, 10);
@@ -261,7 +261,7 @@ describe('JSTimers', function () {
     expect(secondCalled).toBe(true);
   });
 
-  it('should clear timers even if callback throws', function () {
+  test('should clear timers even if callback throws', function () {
     const timerID = JSTimers.setTimeout(function () {
       throw new Error('error');
     }, 10);
@@ -269,7 +269,7 @@ describe('JSTimers', function () {
     JSTimers.callTimers.bind(null, [timerID]);
   });
 
-  it('should not warn if callback is called on cancelled timer', function () {
+  test('should not warn if callback is called on cancelled timer', function () {
     const callback = jest.fn();
     const timerID = JSTimers.setTimeout(callback, 10);
     JSTimers.clearTimeout(timerID);
@@ -278,12 +278,12 @@ describe('JSTimers', function () {
     expect(console.warn).not.toBeCalled();
   });
 
-  it('should warn when callTimers is called with garbage timer id', function () {
+  test('should warn when callTimers is called with garbage timer id', function () {
     JSTimers.callTimers([1337]);
     expect(console.warn).toBeCalled();
   });
 
-  it('should only call callback once for setTimeout', function () {
+  test('should only call callback once for setTimeout', function () {
     const callback = jest.fn();
     const timerID = JSTimers.setTimeout(callback, 10);
     // First time the timer fires, should call callback
@@ -295,7 +295,7 @@ describe('JSTimers', function () {
     expect(console.warn).not.toBeCalled();
   });
 
-  it('should only call callback once for requestAnimationFrame', function () {
+  test('should only call callback once for requestAnimationFrame', function () {
     const callback = jest.fn();
     const timerID = JSTimers.requestAnimationFrame(callback, 10);
     // First time the timer fires, should call callback
@@ -307,7 +307,7 @@ describe('JSTimers', function () {
     expect(console.warn).not.toBeCalled();
   });
 
-  it('should re-throw first exception', function () {
+  test('should re-throw first exception', function () {
     const timerID1 = JSTimers.setTimeout(function () {
       throw new Error('first error');
     });
@@ -319,7 +319,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should pass along errors thrown from queueReactNativeMicrotask', function () {
+  test('should pass along errors thrown from queueReactNativeMicrotask', function () {
     JSTimers.queueReactNativeMicrotask(function () {
       throw new Error('error within queueReactNativeMicrotask');
     });
@@ -336,7 +336,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should throw all errors from queueReactNativeMicrotask', function () {
+  test('should throw all errors from queueReactNativeMicrotask', function () {
     JSTimers.queueReactNativeMicrotask(function () {
       throw new Error('first error');
     });
@@ -361,7 +361,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should pass along errors thrown from setTimeout', function () {
+  test('should pass along errors thrown from setTimeout', function () {
     const timerID = JSTimers.setTimeout(function () {
       throw new Error('error within setTimeout');
     });
@@ -371,7 +371,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should throw all errors from setTimeout', function () {
+  test('should throw all errors from setTimeout', function () {
     const firstTimerID = JSTimers.setTimeout(function () {
       throw new Error('first error');
     });
@@ -391,7 +391,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should pass along errors thrown from setInterval', function () {
+  test('should pass along errors thrown from setInterval', function () {
     const timerID = JSTimers.setInterval(function () {
       throw new Error('error within setInterval');
     });
@@ -400,7 +400,7 @@ describe('JSTimers', function () {
     );
   });
 
-  it('should not call to native when clearing a null timer', function () {
+  test('should not call to native when clearing a null timer', function () {
     const timerID = JSTimers.setTimeout(() => {});
     JSTimers.clearTimeout(timerID);
     NativeTiming.deleteTimer = jest.fn();

@@ -14,7 +14,7 @@ describe('Dimensions', () => {
   const Dimensions = require('../Dimensions').default;
   const Platform = require('../Platform');
 
-  it('should set window dimensions', () => {
+  test('should set window dimensions', () => {
     Dimensions.set({
       windowPhysicalPixels: {
         width: 400,
@@ -30,7 +30,7 @@ describe('Dimensions', () => {
     expect(Dimensions.get('window').fontScale).toEqual(3);
   });
 
-  it('should set screen dimensions on Android', () => {
+  test('should set screen dimensions on Android', () => {
     Platform.OS = 'android';
     const dimensions = {
       width: 400,
@@ -49,7 +49,7 @@ describe('Dimensions', () => {
     expect(Dimensions.get('screen').fontScale).toEqual(3);
   });
 
-  it('should set screen dimensions on iOS', () => {
+  test('should set screen dimensions on iOS', () => {
     Platform.OS = 'ios';
     const dimensions = {
       width: 400,

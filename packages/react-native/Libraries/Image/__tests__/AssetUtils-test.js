@@ -16,7 +16,7 @@ describe('AssetUtils', () => {
     jest.clearAllMocks();
   });
 
-  it('should return empty string and warn once if no cacheBreaker set (DEV)', () => {
+  test('should return empty string and warn once if no cacheBreaker set (DEV)', () => {
     const mockWarn = jest.spyOn(console, 'warn').mockReturnValue(undefined);
     global.__DEV__ = true;
     expect(getUrlCacheBreaker()).toEqual('');
@@ -24,14 +24,14 @@ describe('AssetUtils', () => {
     expect(mockWarn).toHaveBeenCalledTimes(1);
   });
 
-  it('should return empty string if no cacheBreaker set in prod', () => {
+  test('should return empty string if no cacheBreaker set in prod', () => {
     const mockWarn = jest.spyOn(console, 'warn');
     global.__DEV__ = false;
     expect(getUrlCacheBreaker()).toEqual('');
     expect(mockWarn).not.toHaveBeenCalled();
   });
 
-  it('should return set cacheBreaker value', () => {
+  test('should return set cacheBreaker value', () => {
     setUrlCacheBreaker('my-cache-breaker-value');
     expect(getUrlCacheBreaker()).toEqual('my-cache-breaker-value');
   });

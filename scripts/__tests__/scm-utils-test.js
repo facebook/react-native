@@ -48,20 +48,20 @@ describe('scm-utils', () => {
   });
 
   describe('isTaggedLatest', () => {
-    it('it should identify commit as tagged `latest`', () => {
+    test('it should identify commit as tagged `latest`', () => {
       execResult = '6c19dc3266b84f47a076b647a1c93b3c3b69d2c5\n';
       expect(isTaggedLatest('6c19dc3266b84f47a076b647a1c93b3c3b69d2c5')).toBe(
         true,
       );
     });
-    it('it should not identify commit as tagged `latest`', () => {
+    test('it should not identify commit as tagged `latest`', () => {
       execResult = '6c19dc3266b84f47a076b647a1c93b3c3b69d2c5\n';
       expect(isTaggedLatest('6c19dc3266b8')).toBe(false);
     });
   });
 
   describe('saveFiles', () => {
-    it('it should save files in the temp folder', () => {
+    test('it should save files in the temp folder', () => {
       const tmpFolder = '/tmp';
       saveFiles(['package.json', 'android/package.json'], tmpFolder);
       expect(mkdirpSyncMock).toHaveBeenCalledWith(`${tmpFolder}/android`);
@@ -79,7 +79,7 @@ describe('scm-utils', () => {
   });
 
   describe('revertFiles', () => {
-    it('it should revert files from the temp folder', () => {
+    test('it should revert files from the temp folder', () => {
       const tmpFolder = '/tmp';
       revertFiles(['package.json', 'android/package.json'], tmpFolder);
       expect(cpMock).toHaveBeenNthCalledWith(

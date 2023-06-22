@@ -28,7 +28,7 @@ describe('Babel plugin inline view configs', () => {
   Object.keys(fixtures)
     .sort()
     .forEach(fixtureName => {
-      it(`can inline config for ${fixtureName}`, () => {
+      test(`can inline config for ${fixtureName}`, () => {
         expect(transform(fixtures[fixtureName], fixtureName)).toMatchSnapshot();
       });
     });
@@ -36,7 +36,7 @@ describe('Babel plugin inline view configs', () => {
   Object.keys(failures)
     .sort()
     .forEach(fixtureName => {
-      it(`fails on inline config for ${fixtureName}`, () => {
+      test(`fails on inline config for ${fixtureName}`, () => {
         expect(() => {
           try {
             transform(failures[fixtureName], fixtureName);

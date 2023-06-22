@@ -33,7 +33,7 @@ describe('set-rn-version', () => {
     jest.resetAllMocks();
   });
 
-  it('should set nightly version', () => {
+  test('should set nightly version', () => {
     catMock.mockImplementation(path => {
       if (path === 'packages/react-native/package.json') {
         return '{"name": "myPackage", "version": 2, "dependencies": {"@react-native/package-a": "nightly", "@react-native/package-b": "^0.73.0"}}';
@@ -97,7 +97,7 @@ describe('set-rn-version', () => {
     });
   });
 
-  it('should set release version', () => {
+  test('should set release version', () => {
     catMock.mockImplementation(path => {
       if (path === 'packages/react-native/package.json') {
         return '{"name": "myPackage", "version": 2}';

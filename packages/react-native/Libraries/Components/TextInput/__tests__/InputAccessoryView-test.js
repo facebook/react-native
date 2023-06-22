@@ -17,7 +17,7 @@ const InputAccessoryView = require('../InputAccessoryView');
 const React = require('react');
 
 describe('<InputAccessoryView />', () => {
-  it('should render as <RCTInputAccessoryView> when mocked', () => {
+  test('should render as <RCTInputAccessoryView> when mocked', () => {
     const instance = render.create(
       <InputAccessoryView nativeID="1">
         <View />
@@ -26,7 +26,7 @@ describe('<InputAccessoryView />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <InputAccessoryView> when mocked', () => {
+  test('should shallow render as <InputAccessoryView> when mocked', () => {
     const output = render.shallow(
       <InputAccessoryView nativeID="1">
         <View />
@@ -35,7 +35,7 @@ describe('<InputAccessoryView />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should shallow render as <InputAccessoryView> when not mocked', () => {
+  test('should shallow render as <InputAccessoryView> when not mocked', () => {
     jest.dontMock('../InputAccessoryView');
 
     const output = render.shallow(
@@ -46,7 +46,7 @@ describe('<InputAccessoryView />', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render as <RCTInputAccessoryView> when not mocked', () => {
+  test('should render as <RCTInputAccessoryView> when not mocked', () => {
     jest.dontMock('../InputAccessoryView');
 
     const instance = render.create(

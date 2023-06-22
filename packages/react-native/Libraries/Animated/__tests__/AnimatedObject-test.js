@@ -17,7 +17,7 @@ describe('AnimatedObject', () => {
     jest.resetModules();
   });
 
-  it('should get the proper value', () => {
+  test('should get the proper value', () => {
     const anim = new Animated.Value(0);
     const translateAnim = anim.interpolate({
       inputRange: [0, 1],
@@ -41,7 +41,7 @@ describe('AnimatedObject', () => {
     ]);
   });
 
-  it('should make all AnimatedNodes native', () => {
+  test('should make all AnimatedNodes native', () => {
     const anim = new Animated.Value(0);
     const translateAnim = anim.interpolate({
       inputRange: [0, 1],
@@ -66,7 +66,7 @@ describe('AnimatedObject', () => {
   });
 
   describe('hasAnimatedNode', () => {
-    it('should detect any animated nodes', () => {
+    test('should detect any animated nodes', () => {
       expect(hasAnimatedNode(10)).toBe(false);
 
       const anim = new Animated.Value(0);

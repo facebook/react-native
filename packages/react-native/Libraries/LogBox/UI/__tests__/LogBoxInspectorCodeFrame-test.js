@@ -16,7 +16,7 @@ const LogBoxInspectorCodeFrame = require('../LogBoxInspectorCodeFrame').default;
 const React = require('react');
 
 describe('LogBoxInspectorCodeFrame', () => {
-  it('should render null for no code frame', () => {
+  test('should render null for no code frame', () => {
     const output = render.shallowRender(
       <LogBoxInspectorCodeFrame codeFrame={null} />,
     );
@@ -24,7 +24,7 @@ describe('LogBoxInspectorCodeFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame', () => {
+  test('should render a code frame', () => {
     const output = render.shallowRender(
       <LogBoxInspectorCodeFrame
         codeFrame={{
@@ -42,7 +42,7 @@ describe('LogBoxInspectorCodeFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a code frame without a location', () => {
+  test('should render a code frame without a location', () => {
     const output = render.shallowRender(
       <LogBoxInspectorCodeFrame
         codeFrame={{

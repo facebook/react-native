@@ -19,7 +19,7 @@ const Blob = require('../Blob');
 const FileReader = require('../FileReader');
 
 describe('FileReader', function () {
-  it('should read blob as text', async () => {
+  test('should read blob as text', async () => {
     const e = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = resolve;
@@ -29,7 +29,7 @@ describe('FileReader', function () {
     expect(e.target.result).toBe('');
   });
 
-  it('should read blob as data URL', async () => {
+  test('should read blob as data URL', async () => {
     const e = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = resolve;
@@ -39,7 +39,7 @@ describe('FileReader', function () {
     expect(e.target.result).toBe('data:text/plain;base64,NDI=');
   });
 
-  it('should read blob as ArrayBuffer', async () => {
+  test('should read blob as ArrayBuffer', async () => {
     const e = await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = resolve;

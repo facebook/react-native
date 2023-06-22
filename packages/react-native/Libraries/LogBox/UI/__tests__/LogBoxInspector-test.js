@@ -53,7 +53,7 @@ const logs = [
 ];
 
 describe('LogBoxContainer', () => {
-  it('should render null with no logs', () => {
+  test('should render null with no logs', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}
@@ -67,7 +67,7 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render warning with selectedIndex 0', () => {
+  test('should render warning with selectedIndex 0', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}
@@ -81,7 +81,7 @@ describe('LogBoxContainer', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render fatal with selectedIndex 2', () => {
+  test('should render fatal with selectedIndex 2', () => {
     const output = render.shallowRender(
       <LogBoxInspector
         onDismiss={() => {}}

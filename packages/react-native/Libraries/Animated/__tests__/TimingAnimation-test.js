@@ -13,7 +13,7 @@
 import TimingAnimation from '../animations/TimingAnimation';
 
 describe('Timing Animation', () => {
-  it('should return array of 61 items', () => {
+  test('should return array of 61 items', () => {
     const timingAnim = new TimingAnimation({
       duration: 1000,
       useNativeDriver: false,
@@ -25,7 +25,7 @@ describe('Timing Animation', () => {
     expect(config.frames[59]).toBeLessThan(1);
   });
 
-  it('should cope with zero duration', () => {
+  test('should cope with zero duration', () => {
     const timingAnim = new TimingAnimation({
       duration: 0,
       useNativeDriver: false,

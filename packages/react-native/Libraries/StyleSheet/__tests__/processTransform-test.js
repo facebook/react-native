@@ -14,15 +14,15 @@ const processTransform = require('../processTransform');
 
 describe('processTransform', () => {
   describe('validation', () => {
-    it('should accept an empty array', () => {
+    test('should accept an empty array', () => {
       processTransform([]);
     });
 
-    it('should accept an empty string', () => {
+    test('should accept an empty string', () => {
       processTransform('');
     });
 
-    it('should accept a simple valid transform', () => {
+    test('should accept a simple valid transform', () => {
       processTransform([
         {scale: 0.5},
         {translateX: 10},
@@ -34,13 +34,13 @@ describe('processTransform', () => {
       );
     });
 
-    it('should throw on object with multiple properties', () => {
+    test('should throw on object with multiple properties', () => {
       expect(() =>
         processTransform([{scale: 0.5, translateY: 10}]),
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should throw on invalid transform property', () => {
+    test('should throw on invalid transform property', () => {
       expect(() =>
         processTransform([{translateW: 10}]),
       ).toThrowErrorMatchingSnapshot();
@@ -49,7 +49,7 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should throw when not passing an array to an array prop', () => {
+    test('should throw when not passing an array to an array prop', () => {
       expect(() =>
         processTransform([{matrix: 'not-a-matrix'}]),
       ).toThrowErrorMatchingSnapshot();
@@ -58,7 +58,7 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should accept a valid matrix', () => {
+    test('should accept a valid matrix', () => {
       processTransform([{matrix: [1, 1, 1, 1, 1, 1, 1, 1, 1]}]);
       processTransform('matrix(1, 1, 1, 1, 1, 1, 1, 1, 1)');
       processTransform([
@@ -69,7 +69,7 @@ describe('processTransform', () => {
       );
     });
 
-    it('should throw when passing a matrix of the wrong size', () => {
+    test('should throw when passing a matrix of the wrong size', () => {
       expect(() =>
         processTransform([{matrix: [1, 1, 1, 1]}]),
       ).toThrowErrorMatchingSnapshot();
@@ -78,14 +78,14 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should accept a valid translate', () => {
+    test('should accept a valid translate', () => {
       processTransform([{translate: [1, 1]}]);
       processTransform('translate(1px)');
       processTransform('translate(1px, 1px)');
       processTransform([{translate: [1, 1, 1]}]);
     });
 
-    it('should throw when passing a translate of the wrong size', () => {
+    test('should throw when passing a translate of the wrong size', () => {
       expect(() =>
         processTransform([{translate: [1]}]),
       ).toThrowErrorMatchingSnapshot();
@@ -97,7 +97,7 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should throw when passing an invalid value to a number prop', () => {
+    test('should throw when passing an invalid value to a number prop', () => {
       expect(() =>
         processTransform([{translateY: '20deg'}]),
       ).toThrowErrorMatchingSnapshot();
@@ -109,20 +109,20 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should throw when passing a perspective of 0', () => {
+    test('should throw when passing a perspective of 0', () => {
       expect(() =>
         processTransform([{perspective: 0}]),
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should accept an angle in degrees or radians', () => {
+    test('should accept an angle in degrees or radians', () => {
       processTransform([{skewY: '10deg'}]);
       processTransform('skewY(10deg)');
       processTransform([{rotateX: '1.16rad'}]);
       processTransform('rotateX(1.16rad)');
     });
 
-    it('should throw when passing an invalid angle prop', () => {
+    test('should throw when passing an invalid angle prop', () => {
       expect(() =>
         processTransform([{rotate: 10}]),
       ).toThrowErrorMatchingSnapshot();
@@ -137,7 +137,7 @@ describe('processTransform', () => {
       ).toThrowErrorMatchingSnapshot();
     });
 
-    it('should throw when passing an Animated.Value', () => {
+    test('should throw when passing an Animated.Value', () => {
       expect(() =>
         processTransform([{rotate: {getValue: () => {}}}]),
       ).toThrowErrorMatchingSnapshot();

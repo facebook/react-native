@@ -13,7 +13,7 @@
 const {OS} = require('../../Utilities/Platform');
 const normalizeColor = require('../normalizeColor');
 
-it('forwards calls to @react-native/normalize-colors', () => {
+test('forwards calls to @react-native/normalize-colors', () => {
   jest.resetModules().mock('@react-native/normalize-colors', () => jest.fn());
 
   expect(require('../normalizeColor')('#abc')).not.toBe(null);
@@ -27,14 +27,14 @@ describe('iOS', () => {
     const DynamicColorIOS =
       require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 
-    it('should normalize iOS PlatformColor colors', () => {
+    test('should normalize iOS PlatformColor colors', () => {
       const color = PlatformColor('systemRedColor');
       const normalizedColor = normalizeColor(color);
       const expectedColor = {semantic: ['systemRedColor']};
       expect(normalizedColor).toEqual(expectedColor);
     });
 
-    it('should normalize iOS Dynamic colors with named colors', () => {
+    test('should normalize iOS Dynamic colors with named colors', () => {
       const color = DynamicColorIOS({light: 'black', dark: 'white'});
       const normalizedColor = normalizeColor(color);
       const expectedColor = {
@@ -46,7 +46,7 @@ describe('iOS', () => {
       expect(normalizedColor).toEqual(expectedColor);
     });
 
-    it('should normalize iOS Dynamic colors with accessible colors', () => {
+    test('should normalize iOS Dynamic colors with accessible colors', () => {
       const color = DynamicColorIOS({
         light: 'black',
         dark: 'white',
@@ -65,7 +65,7 @@ describe('iOS', () => {
       expect(normalizedColor).toEqual(expectedColor);
     });
 
-    it('should normalize iOS Dynamic colors with PlatformColor colors', () => {
+    test('should normalize iOS Dynamic colors with PlatformColor colors', () => {
       const color = DynamicColorIOS({
         light: PlatformColor('systemBlackColor'),
         dark: PlatformColor('systemWhiteColor'),
@@ -87,7 +87,7 @@ describe('Android', () => {
     const PlatformColor =
       require('../PlatformColorValueTypes.android').PlatformColor;
 
-    it('should normalize Android PlatformColor colors', () => {
+    test('should normalize Android PlatformColor colors', () => {
       const color = PlatformColor('?attr/colorPrimary');
       const normalizedColor = normalizeColor(color);
       const expectedColor = {resource_paths: ['?attr/colorPrimary']};

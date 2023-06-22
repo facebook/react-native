@@ -11,23 +11,23 @@
 import {CellRenderMask} from '../CellRenderMask';
 
 describe('CellRenderMask', () => {
-  it('throws when constructed with invalid size', () => {
+  test('throws when constructed with invalid size', () => {
     expect(() => new CellRenderMask(-1)).toThrow();
   });
 
-  it('allows creation of empty mask', () => {
+  test('allows creation of empty mask', () => {
     const renderMask = new CellRenderMask(0);
     expect(renderMask.enumerateRegions()).toEqual([]);
   });
 
-  it('allows creation of single-cell mask', () => {
+  test('allows creation of single-cell mask', () => {
     const renderMask = new CellRenderMask(1);
     expect(renderMask.enumerateRegions()).toEqual([
       {first: 0, last: 0, isSpacer: true},
     ]);
   });
 
-  it('throws when adding invalid cell ranges', () => {
+  test('throws when adding invalid cell ranges', () => {
     const renderMask = new CellRenderMask(5);
 
     expect(() => renderMask.addCells({first: -2, last: -1})).toThrow();
@@ -36,7 +36,7 @@ describe('CellRenderMask', () => {
     expect(() => renderMask.addCells({first: 6, last: 7})).toThrow();
   });
 
-  it('allows adding single cell at beginning', () => {
+  test('allows adding single cell at beginning', () => {
     const renderMask = new CellRenderMask(5);
     renderMask.addCells({first: 0, last: 0});
 
@@ -46,7 +46,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('allows adding single cell at end', () => {
+  test('allows adding single cell at end', () => {
     const renderMask = new CellRenderMask(5);
     renderMask.addCells({first: 4, last: 4});
 
@@ -56,7 +56,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('allows adding single cell in middle', () => {
+  test('allows adding single cell in middle', () => {
     const renderMask = new CellRenderMask(5);
     renderMask.addCells({first: 2, last: 2});
 
@@ -67,7 +67,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('allows marking entire cell range', () => {
+  test('allows marking entire cell range', () => {
     const renderMask = new CellRenderMask(5);
     renderMask.addCells({first: 0, last: 4});
 
@@ -76,7 +76,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('allows adding empty cell range', () => {
+  test('allows adding empty cell range', () => {
     const renderMask = new CellRenderMask(5);
     renderMask.addCells({first: 0, last: -1});
 
@@ -85,7 +85,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('correctly replaces fragmented cell ranges', () => {
+  test('correctly replaces fragmented cell ranges', () => {
     const renderMask = new CellRenderMask(10);
 
     renderMask.addCells({first: 3, last: 3});
@@ -108,7 +108,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('left-expands region', () => {
+  test('left-expands region', () => {
     const renderMask = new CellRenderMask(5);
 
     renderMask.addCells({first: 3, last: 3});
@@ -128,7 +128,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('right-expands region', () => {
+  test('right-expands region', () => {
     const renderMask = new CellRenderMask(5);
 
     renderMask.addCells({first: 3, last: 3});
@@ -147,7 +147,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('left+right expands region', () => {
+  test('left+right expands region', () => {
     const renderMask = new CellRenderMask(5);
 
     renderMask.addCells({first: 3, last: 3});
@@ -166,7 +166,7 @@ describe('CellRenderMask', () => {
     ]);
   });
 
-  it('does nothing when adding existing cells', () => {
+  test('does nothing when adding existing cells', () => {
     const renderMask = new CellRenderMask(5);
 
     renderMask.addCells({first: 2, last: 3});

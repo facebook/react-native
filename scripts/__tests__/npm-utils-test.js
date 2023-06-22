@@ -25,7 +25,7 @@ describe('npm-utils', () => {
   });
 
   describe('applyPackageVersions', () => {
-    it('should replace package.json with dependencies', () => {
+    test('should replace package.json with dependencies', () => {
       const originalPackageJson = {
         name: 'my-package',
         dependencies: {
@@ -66,12 +66,12 @@ describe('npm-utils', () => {
   });
 
   describe('getPackageVersionStrByTag', () => {
-    it('should return package version string', () => {
+    test('should return package version string', () => {
       execMock.mockImplementationOnce(() => ({code: 0, stdout: '0.34.2 \n'}));
       const versionStr = getPackageVersionStrByTag('my-package', 'next');
       expect(versionStr).toBe('0.34.2');
     });
-    it('should throw error when invalid result', () => {
+    test('should throw error when invalid result', () => {
       execMock.mockImplementationOnce(() => ({
         code: 1,
         stderr: 'Some error message',
@@ -84,7 +84,7 @@ describe('npm-utils', () => {
   });
 
   describe('publishPackage', () => {
-    it('should run publish command', () => {
+    test('should run publish command', () => {
       publishPackage(
         'path/to/my-package',
         {tag: 'latest', otp: 'otp'},
@@ -96,7 +96,7 @@ describe('npm-utils', () => {
       );
     });
 
-    it('should run publish command when no execOptions', () => {
+    test('should run publish command when no execOptions', () => {
       publishPackage('path/to/my-package', {tag: 'latest', otp: 'otp'});
       expect(execMock).toHaveBeenCalledWith(
         'npm publish --tag latest --otp otp',

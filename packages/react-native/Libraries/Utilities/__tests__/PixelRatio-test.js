@@ -25,15 +25,15 @@ describe('PixelRatio', () => {
     });
   });
 
-  it('should give the pixel density', () => {
+  test('should give the pixel density', () => {
     expect(PixelRatio.get()).toEqual(2);
   });
 
-  it('should give the font scale when present', () => {
+  test('should give the font scale when present', () => {
     expect(PixelRatio.getFontScale()).toEqual(3);
   });
 
-  it('should give the pixel density instead of the font scale when the front scale is not present', () => {
+  test('should give the pixel density instead of the font scale when the front scale is not present', () => {
     Dimensions.set({
       windowPhysicalPixels: {
         scale: 2,
@@ -42,11 +42,11 @@ describe('PixelRatio', () => {
     expect(PixelRatio.getFontScale()).toEqual(2);
   });
 
-  it('should convert a layout size to pixel size', () => {
+  test('should convert a layout size to pixel size', () => {
     expect(PixelRatio.getPixelSizeForLayoutSize(400)).toEqual(800);
   });
 
-  it('should round a layout size to pixel size', () => {
+  test('should round a layout size to pixel size', () => {
     expect(PixelRatio.roundToNearestPixel(8.4)).toEqual(8.5);
   });
 });

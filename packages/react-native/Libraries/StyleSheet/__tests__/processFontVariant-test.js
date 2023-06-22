@@ -13,7 +13,7 @@
 const processFontVariant = require('../processFontVariant');
 
 describe('processFontVariant', () => {
-  it('should accept arrays', () => {
+  test('should accept arrays', () => {
     expect(processFontVariant([])).toEqual([]);
     expect(processFontVariant(['oldstyle-nums'])).toEqual(['oldstyle-nums']);
     expect(processFontVariant(['proportional-nums', 'lining-nums'])).toEqual([
@@ -22,13 +22,13 @@ describe('processFontVariant', () => {
     ]);
   });
 
-  it('should accept string values', () => {
+  test('should accept string values', () => {
     expect(processFontVariant('oldstyle-nums')).toEqual(['oldstyle-nums']);
     expect(processFontVariant('lining-nums  ')).toEqual(['lining-nums']);
     expect(processFontVariant('   tabular-nums')).toEqual(['tabular-nums']);
   });
 
-  it('should accept string with multiple values', () => {
+  test('should accept string with multiple values', () => {
     expect(processFontVariant('oldstyle-nums lining-nums')).toEqual([
       'oldstyle-nums',
       'lining-nums',

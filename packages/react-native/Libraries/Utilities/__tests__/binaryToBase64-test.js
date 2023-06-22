@@ -16,25 +16,25 @@ const {TextDecoder, TextEncoder} = require('util');
 describe('binaryToBase64', () => {
   const binaryToBase64 = require('../binaryToBase64');
 
-  it('should encode a Uint8Array', () => {
+  test('should encode a Uint8Array', () => {
     const input = new TextEncoder().encode('Test string');
 
     expect(base64ToString(binaryToBase64(input))).toEqual('Test string');
   });
 
-  it('should encode an ArrayBuffer', () => {
+  test('should encode an ArrayBuffer', () => {
     const input = new TextEncoder().encode('Test string').buffer;
 
     expect(base64ToString(binaryToBase64(input))).toEqual('Test string');
   });
 
-  it('should encode a DataView', () => {
+  test('should encode a DataView', () => {
     const input = new DataView(new TextEncoder().encode('Test string').buffer);
 
     expect(base64ToString(binaryToBase64(input))).toEqual('Test string');
   });
 
-  it('should not encode a non ArrayBuffer or non typed array', () => {
+  test('should not encode a non ArrayBuffer or non typed array', () => {
     const input = ['i', 'n', 'v', 'a', 'l', 'i', 'd'];
 
     expect(() => binaryToBase64(input)).toThrowError();

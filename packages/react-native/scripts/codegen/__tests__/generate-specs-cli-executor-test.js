@@ -15,7 +15,7 @@ const fixtures = require('../__test_fixtures__/fixtures');
 const {normalize} = require('path');
 
 describe('generateSpec', () => {
-  it('invokes RNCodegen with the right params', () => {
+  test('invokes RNCodegen with the right params', () => {
     const platform = 'ios';
     const libraryType = 'all';
     const schemaPath = './';

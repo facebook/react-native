@@ -16,7 +16,7 @@ const LogBoxInspectorFooter = require('../LogBoxInspectorFooter').default;
 const React = require('react');
 
 describe('LogBoxInspectorFooter', () => {
-  it('should render two buttons for warning', () => {
+  test('should render two buttons for warning', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
@@ -28,7 +28,7 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for error', () => {
+  test('should render two buttons for error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
@@ -40,7 +40,7 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for fatal', () => {
+  test('should render two buttons for fatal', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}
@@ -52,7 +52,7 @@ describe('LogBoxInspectorFooter', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render no buttons and a message for syntax error', () => {
+  test('should render no buttons and a message for syntax error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorFooter
         onMinimize={() => {}}

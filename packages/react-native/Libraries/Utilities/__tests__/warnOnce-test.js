@@ -13,7 +13,7 @@
 describe('warnOnce', () => {
   const warnOnce = require('../warnOnce');
 
-  it('logs warning messages to the console exactly once', () => {
+  test('logs warning messages to the console exactly once', () => {
     jest.spyOn(console, 'warn').mockReturnValue(undefined);
 
     warnOnce('test-message', 'This is a log message');

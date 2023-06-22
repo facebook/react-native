@@ -20,12 +20,12 @@ describe('GenerateViewConfigJs', () => {
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 
-      it(`can generate fixture ${fixtureName}`, () => {
+      test(`can generate fixture ${fixtureName}`, () => {
         expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
       });
     });
 
-  it('can generate fixture with a deprecated view config name', () => {
+  test('can generate fixture with a deprecated view config name', () => {
     expect(
       generator.generate('DEPRECATED_VIEW_CONFIG_NAME', {
         modules: {

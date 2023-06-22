@@ -71,7 +71,7 @@ describe.skip('LogBox', () => {
     (console: any).warn = warn;
   });
 
-  it('integrates with React and handles a key error in LogBox', () => {
+  test('integrates with React and handles a key error in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 
@@ -98,7 +98,7 @@ describe.skip('LogBox', () => {
     expect(mockError.mock.calls[0][0].startsWith('Warning: ')).toBe(true);
   });
 
-  it('integrates with React and handles a fragment warning in LogBox', () => {
+  test('integrates with React and handles a fragment warning in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 

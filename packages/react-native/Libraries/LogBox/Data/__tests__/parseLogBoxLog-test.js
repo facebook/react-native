@@ -16,7 +16,7 @@ import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 const {parseLogBoxException, parseLogBoxLog} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
-  it('parses strings', () => {
+  test('parses strings', () => {
     expect(parseLogBoxLog(['A'])).toEqual({
       componentStack: [],
       category: 'A',
@@ -27,7 +27,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses strings with arguments', () => {
+  test('parses strings with arguments', () => {
     expect(parseLogBoxLog(['A', 'B', 'C'])).toEqual({
       componentStack: [],
       category: 'A B C',
@@ -38,7 +38,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses formatted strings', () => {
+  test('parses formatted strings', () => {
     expect(parseLogBoxLog(['%s', 'A'])).toEqual({
       componentStack: [],
       category: '\ufeff%s',
@@ -54,7 +54,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses formatted strings with insufficient arguments', () => {
+  test('parses formatted strings with insufficient arguments', () => {
     expect(parseLogBoxLog(['%s %s', 'A'])).toEqual({
       componentStack: [],
       category: '\ufeff%s %s',
@@ -74,7 +74,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses formatted strings with excess arguments', () => {
+  test('parses formatted strings with excess arguments', () => {
     expect(parseLogBoxLog(['%s', 'A', 'B'])).toEqual({
       componentStack: [],
       category: '\ufeff%s B',
@@ -90,7 +90,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('treats "%s" in arguments as literals', () => {
+  test('treats "%s" in arguments as literals', () => {
     expect(parseLogBoxLog(['%s', '%s', 'A'])).toEqual({
       componentStack: [],
       category: '\ufeff%s A',
@@ -106,7 +106,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('detects a component stack in an interpolated warning', () => {
+  test('detects a component stack in an interpolated warning', () => {
     expect(
       parseLogBoxLog([
         'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
@@ -141,7 +141,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('detects a component stack in the first argument', () => {
+  test('detects a component stack in the first argument', () => {
     expect(
       parseLogBoxLog([
         'Some kind of message\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
@@ -167,7 +167,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('detects a component stack in the second argument', () => {
+  test('detects a component stack in the second argument', () => {
     expect(
       parseLogBoxLog([
         'Some kind of message',
@@ -194,7 +194,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('detects a component stack in the nth argument', () => {
+  test('detects a component stack in the nth argument', () => {
     expect(
       parseLogBoxLog([
         'Some kind of message',
@@ -225,7 +225,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses a transform error as a fatal', () => {
+  test('parses a transform error as a fatal', () => {
     const error = {
       message: 'TransformError failed to transform file.',
       originalMessage: 'TransformError failed to transform file.',
@@ -250,7 +250,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses a babel transform syntax error', () => {
+  test('parses a babel transform syntax error', () => {
     const error = {
       message: `
 
@@ -296,7 +296,7 @@ describe('parseLogBoxLog', () => {
     });
   });
 
-  it('parses an invalid require syntax error', () => {
+  test('parses an invalid require syntax error', () => {
     const error = {
       message: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
 
@@ -364,7 +364,7 @@ If you are sure the module exists, try these steps:
     });
   });
 
-  it('parses a reference error', () => {
+  test('parses a reference error', () => {
     const error = {
       message: `
 
@@ -410,7 +410,7 @@ If you are sure the module exists, try these steps:
     });
   });
 
-  it('parses a babel codeframe error', () => {
+  test('parses a babel codeframe error', () => {
     const error = {
       message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
 
@@ -460,7 +460,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses a babel codeframe error with ansi', () => {
+  test('parses a babel codeframe error with ansi', () => {
     const error = {
       message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
 
@@ -503,7 +503,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses an error log with `error.componentStack`', () => {
+  test('parses an error log with `error.componentStack`', () => {
     const error = {
       id: 0,
       isFatal: false,
@@ -556,7 +556,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses an error log with a component stack in the message', () => {
+  test('parses an error log with a component stack in the message', () => {
     const error = {
       id: 0,
       isFatal: false,
@@ -609,7 +609,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses a fatal exception', () => {
+  test('parses a fatal exception', () => {
     const error = {
       id: 0,
       isFatal: true,
@@ -650,7 +650,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('parses a render error', () => {
+  test('parses a render error', () => {
     const error = {
       id: 0,
       isComponentError: true,
@@ -691,7 +691,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
   });
 
-  it('a malformed syntax error falls back to a syntax error', () => {
+  test('a malformed syntax error falls back to a syntax error', () => {
     const error = {
       id: 0,
       isFatal: true,
@@ -739,7 +739,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
 
   describe('Handles component stack frames formatted as call stacks', () => {
     // In new versions of React, the component stack frame format changed to match call stacks.
-    it('detects a component stack in an interpolated warning', () => {
+    test('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
           'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
@@ -778,7 +778,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the first argument', () => {
+    test('detects a component stack in the first argument', () => {
       expect(
         parseLogBoxLog([
           'Some kind of message\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n     at MyAppComponent (/path/to/app.js:100:20)',
@@ -808,7 +808,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the second argument', () => {
+    test('detects a component stack in the second argument', () => {
       expect(
         parseLogBoxLog([
           'Some kind of message',
@@ -839,7 +839,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the nth argument', () => {
+    test('detects a component stack in the nth argument', () => {
       expect(
         parseLogBoxLog([
           'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
@@ -883,7 +883,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('parses an error log with `error.componentStack`', () => {
+    test('parses an error log with `error.componentStack`', () => {
       const error = {
         id: 0,
         isFatal: false,
@@ -943,7 +943,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
 
   describe('Handles component stack frames formatted as call stacks in JSC', () => {
     // In new versions of React, the component stack frame format changed to match call stacks.
-    it('detects a component stack in an interpolated warning', () => {
+    test('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
           'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
@@ -986,7 +986,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the first argument', () => {
+    test('detects a component stack in the first argument', () => {
       expect(
         parseLogBoxLog([
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
@@ -1020,7 +1020,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the first argument (JSC)', () => {
+    test('detects a component stack in the first argument (JSC)', () => {
       expect(
         parseLogBoxLog([
           'Some kind of message\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
@@ -1054,7 +1054,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the second argument', () => {
+    test('detects a component stack in the second argument', () => {
       expect(
         parseLogBoxLog([
           'Some kind of message',
@@ -1089,7 +1089,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('detects a component stack in the nth argument', () => {
+    test('detects a component stack in the nth argument', () => {
       expect(
         parseLogBoxLog([
           'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
@@ -1137,7 +1137,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('parses an error log with `error.componentStack`', () => {
+    test('parses an error log with `error.componentStack`', () => {
       const error = {
         id: 0,
         isFatal: false,
@@ -1198,7 +1198,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
       });
     });
 
-    it('parses an error log with a component stack in the message', () => {
+    test('parses an error log with a component stack in the message', () => {
       const error = {
         id: 0,
         isFatal: false,

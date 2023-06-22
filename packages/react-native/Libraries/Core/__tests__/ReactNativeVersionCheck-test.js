@@ -56,7 +56,7 @@ function _defineCheckVersionTests() {
     spyOnConsoleError.mockReset();
   });
 
-  it('passes when all the versions are zero', () => {
+  test('passes when all the versions are zero', () => {
     _mockJsVersion(0, 0, 0);
     _mockNativeVersion(0, 0, 0);
 
@@ -68,7 +68,7 @@ function _defineCheckVersionTests() {
     expect(() => ReactNativeVersionCheck.checkVersions()).not.toThrow();
   });
 
-  it('passes when the minor matches when the major is zero', () => {
+  test('passes when the minor matches when the major is zero', () => {
     _mockJsVersion(0, 1, 0);
     _mockNativeVersion(0, 1, 0);
 
@@ -76,7 +76,7 @@ function _defineCheckVersionTests() {
     expect(() => ReactNativeVersionCheck.checkVersions()).not.toThrow();
   });
 
-  it("logs error when the minor doesn't match when the major is zero", () => {
+  test("logs error when the minor doesn't match when the major is zero", () => {
     _mockJsVersion(0, 1, 0);
     _mockNativeVersion(0, 2, 0);
 
@@ -87,7 +87,7 @@ function _defineCheckVersionTests() {
     expect(consoleOutput).toMatch(/React Native version mismatch/);
   });
 
-  it("logs error when the major doesn't match", () => {
+  test("logs error when the major doesn't match", () => {
     _mockJsVersion(1, 0, 0);
     _mockNativeVersion(2, 0, 0);
 
@@ -97,7 +97,7 @@ function _defineCheckVersionTests() {
     expect(consoleOutput).toMatch(/React Native version mismatch/);
   });
 
-  it("doesn't log error if the patch doesn't match", () => {
+  test("doesn't log error if the patch doesn't match", () => {
     _mockJsVersion(0, 1, 0);
     _mockNativeVersion(0, 1, 2);
 
@@ -106,7 +106,7 @@ function _defineCheckVersionTests() {
     expect(spyOnConsoleError).toHaveBeenCalledTimes(0);
   });
 
-  it("doesn't log error if the prerelease doesn't match", () => {
+  test("doesn't log error if the prerelease doesn't match", () => {
     _mockJsVersion(0, 1, 0, 'beta.0');
     _mockNativeVersion(0, 1, 0, 'alpha.1');
 

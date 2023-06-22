@@ -26,7 +26,7 @@ describe('resolveAssetSource', () => {
     Platform = require('../../Utilities/Platform');
   });
 
-  it('returns same source for simple static and network images', () => {
+  test('returns same source for simple static and network images', () => {
     const source1 = {uri: 'https://www.facebook.com/logo'};
     expect(resolveAssetSource(source1)).toBe(source1);
 
@@ -34,7 +34,7 @@ describe('resolveAssetSource', () => {
     expect(resolveAssetSource(source2)).toBe(source2);
   });
 
-  it('does not change deprecated assets', () => {
+  test('does not change deprecated assets', () => {
     expect(
       resolveAssetSource({
         deprecated: true,
@@ -50,7 +50,7 @@ describe('resolveAssetSource', () => {
     });
   });
 
-  it('ignores any weird data', () => {
+  test('ignores any weird data', () => {
     expect(resolveAssetSource(null)).toBe(null);
     expect(resolveAssetSource(42)).toBe(null);
     expect(resolveAssetSource('nonsense')).toBe(null);
@@ -64,7 +64,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'ios';
     });
 
-    it('uses network image', () => {
+    test('uses network image', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -87,7 +87,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('picks matching scale', () => {
+    test('picks matching scale', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -119,7 +119,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'ios';
     });
 
-    it('uses pre-packed image', () => {
+    test('uses pre-packed image', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -142,7 +142,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('resolves an image with a relative path outside of root', () => {
+    test('resolves an image with a relative path outside of root', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -174,7 +174,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'android';
     });
 
-    it('uses pre-packed image', () => {
+    test('uses pre-packed image', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -197,7 +197,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('resolves an image with a relative path outside of root', () => {
+    test('resolves an image with a relative path outside of root', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -229,7 +229,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'android';
     });
 
-    it('uses pre-packed image', () => {
+    test('uses pre-packed image', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -261,7 +261,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'android';
     });
 
-    it('uses sideloaded image', () => {
+    test('uses sideloaded image', () => {
       expectResolvesAsset(
         {
           __packager_asset: true,
@@ -293,7 +293,7 @@ describe('resolveAssetSource', () => {
       Platform.OS = 'android';
     });
 
-    it('uses bundled source, event when js is sideloaded', () => {
+    test('uses bundled source, event when js is sideloaded', () => {
       resolveAssetSource.setCustomSourceTransformer(resolver =>
         resolver.resourceIdentifierWithoutScale(),
       );
@@ -319,7 +319,7 @@ describe('resolveAssetSource', () => {
       );
     });
 
-    it('allows any customization', () => {
+    test('allows any customization', () => {
       resolveAssetSource.setCustomSourceTransformer(resolver =>
         resolver.fromSource('TEST'),
       );
@@ -355,7 +355,7 @@ describe('resolveAssetSource', () => {
 describe('resolveAssetSource.pickScale', () => {
   const resolveAssetSource = require('../resolveAssetSource');
 
-  it('picks matching scale', () => {
+  test('picks matching scale', () => {
     expect(resolveAssetSource.pickScale([1], 2)).toBe(1);
     expect(resolveAssetSource.pickScale([1, 2, 3], 2)).toBe(2);
     expect(resolveAssetSource.pickScale([1, 2], 3)).toBe(2);

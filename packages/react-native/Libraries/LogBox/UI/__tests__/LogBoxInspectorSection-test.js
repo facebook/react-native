@@ -16,7 +16,7 @@ const LogBoxInspectorSection = require('../LogBoxInspectorSection').default;
 const React = require('react');
 
 describe('LogBoxInspectorSection', () => {
-  it('should render with only heading', () => {
+  test('should render with only heading', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSection heading="Test Section">
         <Text>Child</Text>
@@ -26,7 +26,7 @@ describe('LogBoxInspectorSection', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render with action on the right', () => {
+  test('should render with action on the right', () => {
     const output = render.shallowRender(
       <LogBoxInspectorSection
         heading="Test Section"

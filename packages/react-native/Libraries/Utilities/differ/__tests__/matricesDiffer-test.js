@@ -13,7 +13,7 @@
 const matricesDiffer = require('../matricesDiffer');
 
 describe('matricesDiffer', function () {
-  it('diffs matrices with single element', () => {
+  test('diffs matrices with single element', () => {
     var x = [1];
     var y = [2];
     expect(matricesDiffer(x, y)).toBe(true);
@@ -23,13 +23,13 @@ describe('matricesDiffer', function () {
     expect(matricesDiffer(x, y)).toBe(false);
   });
 
-  it('diffs matrices with different number of elements', () => {
+  test('diffs matrices with different number of elements', () => {
     var x = [1, 1, 1, 1];
     var y = [1, 1, 1, 2];
     expect(matricesDiffer(x, y)).toBe(true);
   });
 
-  it('diffs matrices with 16 elements', () => {
+  test('diffs matrices with 16 elements', () => {
     var x = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     var y = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     expect(matricesDiffer(x, y)).toBe(false);

@@ -18,7 +18,7 @@ const Blob = require('../Blob');
 const BlobManager = require('../BlobManager');
 
 describe('BlobManager', function () {
-  it('should create blob from parts', () => {
+  test('should create blob from parts', () => {
     const blob = BlobManager.createFromParts([], {type: 'text/html'});
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.type).toBe('text/html');

@@ -13,7 +13,7 @@
 const SceneTracker = require('../SceneTracker');
 
 describe('setActiveScene', function () {
-  it('can handle multiple listeners and unsubscribe', function () {
+  test('can handle multiple listeners and unsubscribe', function () {
     const listeners = [jest.fn(), jest.fn(), jest.fn()];
     const subscriptions = listeners.map(listener =>
       SceneTracker.addActiveSceneChangedListener(listener),

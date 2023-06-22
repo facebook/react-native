@@ -15,19 +15,19 @@ const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 describe('StatusBar', () => {
-  it('renders the statusbar', () => {
+  test('renders the statusbar', () => {
     const component = ReactTestRenderer.create(<StatusBar />);
     expect(component).not.toBeNull();
   });
-  it('renders the statusbar animated enabled', () => {
+  test('renders the statusbar animated enabled', () => {
     const component = ReactTestRenderer.create(<StatusBar animated={true} />);
     expect(component.toTree().props.animated).toBe(true);
   });
-  it('renders the statusbar with fade transition on hide', () => {
+  test('renders the statusbar with fade transition on hide', () => {
     const component = ReactTestRenderer.create(<StatusBar hidden={true} />);
     expect(component.toTree().props.hidden).toBe(true);
   });
-  it('renders the statusbar with a background color', () => {
+  test('renders the statusbar with a background color', () => {
     const component = ReactTestRenderer.create(
       <StatusBar backgroundColor={'#fff'} />,
     );
@@ -36,7 +36,7 @@ describe('StatusBar', () => {
       false,
     );
   });
-  it('renders the statusbar with default barStyle', () => {
+  test('renders the statusbar with default barStyle', () => {
     const component = ReactTestRenderer.create(<StatusBar />);
     StatusBar.setBarStyle('default');
     expect(component.toTree().type._defaultProps.barStyle.value).toBe(
@@ -44,7 +44,7 @@ describe('StatusBar', () => {
     );
     expect(component.toTree().type._defaultProps.barStyle.animated).toBe(false);
   });
-  it('renders the statusbar but should not be visible', () => {
+  test('renders the statusbar but should not be visible', () => {
     const component = ReactTestRenderer.create(<StatusBar hidden={true} />);
     expect(component.toTree().props.hidden).toBe(true);
     expect(component.toTree().type._defaultProps.hidden.animated).toBe(false);
@@ -52,7 +52,7 @@ describe('StatusBar', () => {
       'fade',
     );
   });
-  it('renders the statusbar with networkActivityIndicatorVisible true', () => {
+  test('renders the statusbar with networkActivityIndicatorVisible true', () => {
     const component = ReactTestRenderer.create(
       <StatusBar networkActivityIndicatorVisible={true} />,
     );

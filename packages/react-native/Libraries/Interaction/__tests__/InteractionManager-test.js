@@ -44,11 +44,11 @@ describe('InteractionManager', () => {
     );
   });
 
-  it('throws when clearing an undefined handle', () => {
+  test('throws when clearing an undefined handle', () => {
     expect(() => InteractionManager.clearInteractionHandle()).toThrow();
   });
 
-  it('notifies asynchronously when interaction starts', () => {
+  test('notifies asynchronously when interaction starts', () => {
     InteractionManager.createInteractionHandle();
     expect(interactionStart).not.toBeCalled();
 
@@ -57,7 +57,7 @@ describe('InteractionManager', () => {
     expect(interactionComplete).not.toBeCalled();
   });
 
-  it('notifies asynchronously when interaction stops', () => {
+  test('notifies asynchronously when interaction stops', () => {
     const handle = InteractionManager.createInteractionHandle();
     jest.runAllTimers();
     interactionStart.mockClear();
@@ -69,7 +69,7 @@ describe('InteractionManager', () => {
     expect(interactionComplete).toBeCalled();
   });
 
-  it('does not notify when started & stopped in same event loop', () => {
+  test('does not notify when started & stopped in same event loop', () => {
     const handle = InteractionManager.createInteractionHandle();
     InteractionManager.clearInteractionHandle(handle);
 
@@ -78,7 +78,7 @@ describe('InteractionManager', () => {
     expect(interactionComplete).not.toBeCalled();
   });
 
-  it('does not notify when going from two -> one active interactions', () => {
+  test('does not notify when going from two -> one active interactions', () => {
     InteractionManager.createInteractionHandle();
     const handle = InteractionManager.createInteractionHandle();
     jest.runAllTimers();
@@ -92,7 +92,7 @@ describe('InteractionManager', () => {
     expect(interactionComplete).not.toBeCalled();
   });
 
-  it('runs tasks asynchronously when there are interactions', () => {
+  test('runs tasks asynchronously when there are interactions', () => {
     const task = jest.fn();
     InteractionManager.runAfterInteractions(task);
     expect(task).not.toBeCalled();
@@ -101,7 +101,7 @@ describe('InteractionManager', () => {
     expect(task).toBeCalled();
   });
 
-  it('runs tasks when interactions complete', () => {
+  test('runs tasks when interactions complete', () => {
     const task = jest.fn();
     const handle = InteractionManager.createInteractionHandle();
     InteractionManager.runAfterInteractions(task);
@@ -114,7 +114,7 @@ describe('InteractionManager', () => {
     expect(task).toBeCalled();
   });
 
-  it('does not run tasks twice', () => {
+  test('does not run tasks twice', () => {
     const task1 = jest.fn();
     const task2 = jest.fn();
     InteractionManager.runAfterInteractions(task1);
@@ -126,7 +126,7 @@ describe('InteractionManager', () => {
     expectToBeCalledOnce(task1);
   });
 
-  it('runs tasks added while processing previous tasks', () => {
+  test('runs tasks added while processing previous tasks', () => {
     const task1 = jest.fn(() => {
       InteractionManager.runAfterInteractions(task2);
     });
@@ -141,7 +141,7 @@ describe('InteractionManager', () => {
     expect(task2).toBeCalled();
   });
 
-  it('allows tasks to be cancelled', () => {
+  test('allows tasks to be cancelled', () => {
     const task1 = jest.fn();
     const task2 = jest.fn();
     const promise1 = InteractionManager.runAfterInteractions(task1);
@@ -175,7 +175,7 @@ describe('promise tasks', () => {
     jest.useRealTimers();
   });
 
-  it('should run a basic promise task', () => {
+  test('should run a basic promise task', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       return new Promise(resolve => resolve());
@@ -185,7 +185,7 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task1);
   });
 
-  it('should handle nested promises', () => {
+  test('should handle nested promises', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       return new Promise(resolve => {
@@ -205,7 +205,7 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  it('should pause promise tasks during interactions then resume', () => {
+  test('should pause promise tasks during interactions then resume', () => {
     const task1 = createSequenceTask(1);
     const task2 = jest.fn(() => {
       expect(++sequenceId).toBe(2);
@@ -230,7 +230,7 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task3);
   });
 
-  it('should execute tasks in loop within deadline', () => {
+  test('should execute tasks in loop within deadline', () => {
     InteractionManager.setDeadline(100);
     BatchedBridge.getEventLoopRunningTime.mockReturnValue(10);
     const task1 = createSequenceTask(1);
@@ -244,7 +244,7 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  it('should execute tasks one at a time if deadline exceeded', () => {
+  test('should execute tasks one at a time if deadline exceeded', () => {
     InteractionManager.setDeadline(100);
     BatchedBridge.getEventLoopRunningTime.mockReturnValue(200);
     const task1 = createSequenceTask(1);

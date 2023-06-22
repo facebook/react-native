@@ -15,7 +15,7 @@ import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
 describe('VirtualizedList', () => {
-  it('renders simple list', () => {
+  test('renders simple list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
@@ -27,7 +27,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders simple list using ListItemComponent', () => {
+  test('renders simple list using ListItemComponent', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
@@ -42,7 +42,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
+  test('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
     jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
     function ListItemComponent({item}) {
       return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
@@ -66,7 +66,7 @@ describe('VirtualizedList', () => {
     console.warn.mockRestore();
   });
 
-  it('throws if no renderItem or ListItemComponent', () => {
+  test('throws if no renderItem or ListItemComponent', () => {
     // Silence the React error boundary warning; we expect an uncaught error.
     const consoleError = console.error;
     jest.spyOn(console, 'error').mockImplementation(message => {
@@ -91,7 +91,7 @@ describe('VirtualizedList', () => {
     console.error.mockRestore();
   });
 
-  it('renders empty list', () => {
+  test('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[]}
@@ -103,7 +103,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders empty list after batch', () => {
+  test('renders empty list after batch', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[]}
@@ -125,7 +125,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders null list', () => {
+  test('renders null list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={undefined}
@@ -137,7 +137,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('scrollToEnd works with null list', () => {
+  test('scrollToEnd works with null list', () => {
     const listRef = React.createRef(null);
     ReactTestRenderer.create(
       <VirtualizedList
@@ -151,7 +151,7 @@ describe('VirtualizedList', () => {
     listRef.current.scrollToEnd();
   });
 
-  it('renders empty list with empty component', () => {
+  test('renders empty list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[]}
@@ -166,7 +166,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders list with empty component', () => {
+  test('renders list with empty component', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'hello'}]}
@@ -179,7 +179,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders all the bells and whistles', () => {
+  test('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         ItemSeparatorComponent={() => <separator />}
@@ -200,7 +200,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('test getItem functionality where data is not an Array', () => {
+  test('test getItem functionality where data is not an Array', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={new Map([['id_0', {key: 'item_0'}]])}
@@ -212,7 +212,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('handles separators correctly', () => {
+  test('handles separators correctly', () => {
     const infos = [];
     const component = ReactTestRenderer.create(
       <VirtualizedList
@@ -234,7 +234,7 @@ describe('VirtualizedList', () => {
     infos[1].separators.unhighlight();
   });
 
-  it('handles nested lists', () => {
+  test('handles nested lists', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'outer0'}, {key: 'outer1'}]}
@@ -259,7 +259,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('handles nested list in ListEmptyComponent', () => {
+  test('handles nested list in ListEmptyComponent', () => {
     const ListEmptyComponent = (
       <VirtualizedList {...baseItemProps(generateItems(1))} />
     );
@@ -285,7 +285,7 @@ describe('VirtualizedList', () => {
     });
   });
 
-  it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
+  test('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
     const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
     const nativeEvent = {
@@ -344,7 +344,7 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('getScrollRef for case where it returns a ScrollView', () => {
+  test('getScrollRef for case where it returns a ScrollView', () => {
     const listRef = React.createRef(null);
 
     ReactTestRenderer.create(
@@ -364,7 +364,7 @@ describe('VirtualizedList', () => {
     expect(scrollRef.scrollTo).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('getScrollRef for case where it returns a View', () => {
+  test('getScrollRef for case where it returns a View', () => {
     const listRef = React.createRef(null);
 
     ReactTestRenderer.create(
@@ -397,7 +397,7 @@ describe('VirtualizedList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('calls onStartReached when near the start', () => {
+  test('calls onStartReached when near the start', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(40)
@@ -461,7 +461,7 @@ describe('VirtualizedList', () => {
     expect(onStartReached).toHaveBeenCalled();
   });
 
-  it('calls onStartReached initially', () => {
+  test('calls onStartReached initially', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(40)
@@ -495,7 +495,7 @@ describe('VirtualizedList', () => {
     expect(onStartReached).toHaveBeenCalled();
   });
 
-  it('calls onEndReached when near the end', () => {
+  test('calls onEndReached when near the end', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(40)
@@ -558,7 +558,7 @@ describe('VirtualizedList', () => {
     expect(onEndReached).toHaveBeenCalled();
   });
 
-  it('does not call onEndReached when onContentSizeChange happens after onLayout', () => {
+  test('does not call onEndReached when onContentSizeChange happens after onLayout', () => {
     const ITEM_HEIGHT = 40;
     const layout = {width: 300, height: 600};
     let data = Array(20)
@@ -612,7 +612,7 @@ describe('VirtualizedList', () => {
     expect(onEndReached).toHaveBeenCalled();
   });
 
-  it('throws if using scrollToIndex with index less than 0', () => {
+  test('throws if using scrollToIndex with index less than 0', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
@@ -628,7 +628,7 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('throws if using scrollToIndex when item length is less than 1', () => {
+  test('throws if using scrollToIndex when item length is less than 1', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[]}
@@ -644,7 +644,7 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
+  test('throws if using scrollToIndex when requested index is bigger than or equal to item length', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
@@ -660,7 +660,7 @@ describe('VirtualizedList', () => {
     );
   });
 
-  it('forwards correct stickyHeaderIndices when all in initial render window', () => {
+  test('forwards correct stickyHeaderIndices when all in initial render window', () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
@@ -678,7 +678,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('forwards correct stickyHeaderIndices when ListHeaderComponent present', () => {
+  test('forwards correct stickyHeaderIndices when ListHeaderComponent present', () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
@@ -697,7 +697,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('forwards correct stickyHeaderIndices when partially in initial render window', () => {
+  test('forwards correct stickyHeaderIndices when partially in initial render window', () => {
     const items = generateItemsStickyEveryN(10, 3);
 
     const ITEM_HEIGHT = 10;
@@ -716,7 +716,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders sticky headers in viewport on batched render', () => {
+  test('renders sticky headers in viewport on batched render', () => {
     const items = generateItemsStickyEveryN(10, 3);
     const ITEM_HEIGHT = 10;
 
@@ -746,7 +746,7 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('keeps sticky headers above viewport visualized', () => {
+  test('keeps sticky headers above viewport visualized', () => {
     const items = generateItemsStickyEveryN(20, 3);
     const ITEM_HEIGHT = 10;
 
@@ -785,7 +785,7 @@ describe('VirtualizedList', () => {
   });
 });
 
-it('unmounts sticky headers moved below viewport', () => {
+test('unmounts sticky headers moved below viewport', () => {
   const items = generateItemsStickyEveryN(20, 3);
   const ITEM_HEIGHT = 10;
 
@@ -825,7 +825,7 @@ it('unmounts sticky headers moved below viewport', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('gracefully handles negative initialScrollIndex', () => {
+test('gracefully handles negative initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -855,7 +855,7 @@ it('gracefully handles negative initialScrollIndex', () => {
   mockWarn.mockRestore();
 });
 
-it('gracefully handles too large initialScrollIndex', () => {
+test('gracefully handles too large initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -892,7 +892,7 @@ it('gracefully handles too large initialScrollIndex', () => {
   });
 });
 
-it('renders offset cells in initial render when initialScrollIndex set', () => {
+test('renders offset cells in initial render when initialScrollIndex set', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -909,7 +909,7 @@ it('renders offset cells in initial render when initialScrollIndex set', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('scrolls after content sizing with integer initialScrollIndex', () => {
+test('scrolls after content sizing with integer initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -938,7 +938,7 @@ it('scrolls after content sizing with integer initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 10, animated: false});
 });
 
-it('scrolls after content sizing with near-zero initialScrollIndex', () => {
+test('scrolls after content sizing with near-zero initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -967,7 +967,7 @@ it('scrolls after content sizing with near-zero initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 0.001, animated: false});
 });
 
-it('scrolls after content sizing with near-end initialScrollIndex', () => {
+test('scrolls after content sizing with near-end initialScrollIndex', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -996,7 +996,7 @@ it('scrolls after content sizing with near-end initialScrollIndex', () => {
   expect(scrollTo).toHaveBeenLastCalledWith({y: 99.999, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (getItemLayout())', () => {
+test('scrolls after content sizing with fractional initialScrollIndex (getItemLayout())', () => {
   const items = generateItems(10);
   const itemHeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const getItemLayout = (_, index) => ({
@@ -1030,7 +1030,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (getItemLayo
   expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (cached layout)', () => {
+test('scrolls after content sizing with fractional initialScrollIndex (cached layout)', () => {
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
@@ -1068,7 +1068,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (cached layo
   expect(scrollTo).toHaveBeenLastCalledWith({y: 2.0, animated: false});
 });
 
-it('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', () => {
+test('scrolls after content sizing with fractional initialScrollIndex (layout estimation)', () => {
   const items = generateItems(10);
   const listRef = React.createRef(null);
 
@@ -1106,7 +1106,7 @@ it('scrolls after content sizing with fractional initialScrollIndex (layout esti
   expect(scrollTo).toHaveBeenLastCalledWith({y: 12, animated: false});
 });
 
-it('initially renders nothing when initialNumToRender is 0', () => {
+test('initially renders nothing when initialNumToRender is 0', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1123,7 +1123,7 @@ it('initially renders nothing when initialNumToRender is 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not over-render when there is less than initialNumToRender cells', () => {
+test('does not over-render when there is less than initialNumToRender cells', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1141,7 +1141,7 @@ it('does not over-render when there is less than initialNumToRender cells', () =
   expect(component).toMatchSnapshot();
 });
 
-it('retains intitial render if initialScrollIndex == 0', () => {
+test('retains intitial render if initialScrollIndex == 0', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1177,7 +1177,7 @@ it('retains intitial render if initialScrollIndex == 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('discards intitial render if initialScrollIndex != 0', () => {
+test('discards intitial render if initialScrollIndex != 0', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1212,7 +1212,7 @@ it('discards intitial render if initialScrollIndex != 0', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('expands render area by maxToRenderPerBatch on tick', () => {
+test('expands render area by maxToRenderPerBatch on tick', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1248,7 +1248,7 @@ it('expands render area by maxToRenderPerBatch on tick', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not adjust render area until content area layed out', () => {
+test('does not adjust render area until content area layed out', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1276,7 +1276,7 @@ it('does not adjust render area until content area layed out', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('does not move render area when initialScrollIndex is > 0 and offset not yet known', () => {
+test('does not move render area when initialScrollIndex is > 0 and offset not yet known', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1307,7 +1307,7 @@ it('does not move render area when initialScrollIndex is > 0 and offset not yet 
   expect(component).toMatchSnapshot();
 });
 
-it('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', () => {
+test('clamps render area when items removed for initialScrollIndex > 0 and scroller position not yet known', () => {
   const items = generateItems(20);
   const lessItems = generateItems(15);
   const ITEM_HEIGHT = 10;
@@ -1350,7 +1350,7 @@ it('clamps render area when items removed for initialScrollIndex > 0 and scrolle
   expect(component).toMatchSnapshot();
 });
 
-it('adjusts render area with non-zero initialScrollIndex', () => {
+test('adjusts render area with non-zero initialScrollIndex', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -1383,7 +1383,7 @@ it('adjusts render area with non-zero initialScrollIndex', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders new items when data is updated with non-zero initialScrollIndex', () => {
+test('renders new items when data is updated with non-zero initialScrollIndex', () => {
   const items = generateItems(2);
   const ITEM_HEIGHT = 10;
 
@@ -1432,7 +1432,7 @@ it('renders new items when data is updated with non-zero initialScrollIndex', ()
   expect(component).toMatchSnapshot();
 });
 
-it('renders initialNumToRender cells when virtualization disabled', () => {
+test('renders initialNumToRender cells when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1451,7 +1451,7 @@ it('renders initialNumToRender cells when virtualization disabled', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders no spacers up to initialScrollIndex on first render when virtualization disabled', () => {
+test('renders no spacers up to initialScrollIndex on first render when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1475,7 +1475,7 @@ it('renders no spacers up to initialScrollIndex on first render when virtualizat
   expect(component).toMatchSnapshot();
 });
 
-it('expands first in viewport to render up to maxToRenderPerBatch on initial render', () => {
+test('expands first in viewport to render up to maxToRenderPerBatch on initial render', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1498,7 +1498,7 @@ it('expands first in viewport to render up to maxToRenderPerBatch on initial ren
   expect(component).toMatchSnapshot();
 });
 
-it('renders items before initialScrollIndex on first batch tick when virtualization disabled', () => {
+test('renders items before initialScrollIndex on first batch tick when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1532,7 +1532,7 @@ it('renders items before initialScrollIndex on first batch tick when virtualizat
   expect(component).toMatchSnapshot();
 });
 
-it('eventually renders all items when virtualization disabled', () => {
+test('eventually renders all items when virtualization disabled', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1564,7 +1564,7 @@ it('eventually renders all items when virtualization disabled', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('retains initial render region when an item is appended', () => {
+test('retains initial render region when an item is appended', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1596,7 +1596,7 @@ it('retains initial render region when an item is appended', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('retains batch render region when an item is appended', () => {
+test('retains batch render region when an item is appended', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1641,7 +1641,7 @@ it('retains batch render region when an item is appended', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('constrains batch render region when an item is removed', () => {
+test('constrains batch render region when an item is removed', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1683,7 +1683,7 @@ it('constrains batch render region when an item is removed', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders a zero-height tail spacer on initial render if getItemLayout not defined', () => {
+test('renders a zero-height tail spacer on initial render if getItemLayout not defined', () => {
   const items = generateItems(10);
 
   const component = ReactTestRenderer.create(
@@ -1696,7 +1696,7 @@ it('renders a zero-height tail spacer on initial render if getItemLayout not def
   expect(component).toMatchSnapshot();
 });
 
-it('renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined', () => {
+test('renders zero-height tail spacer on batch render if cells not yet measured and getItemLayout not defined', () => {
   const items = generateItems(10);
 
   let component;
@@ -1725,7 +1725,7 @@ it('renders zero-height tail spacer on batch render if cells not yet measured an
   expect(component).toMatchSnapshot();
 });
 
-it('renders tail spacer up to last measured index if getItemLayout not defined', () => {
+test('renders tail spacer up to last measured index if getItemLayout not defined', () => {
   const items = generateItems(10);
 
   let component;
@@ -1765,7 +1765,7 @@ it('renders tail spacer up to last measured index if getItemLayout not defined',
   expect(component).toMatchSnapshot();
 });
 
-it('renders tail spacer up to last measured with irregular layout when getItemLayout undefined', () => {
+test('renders tail spacer up to last measured with irregular layout when getItemLayout undefined', () => {
   const items = generateItems(10);
 
   let component;
@@ -1808,7 +1808,7 @@ it('renders tail spacer up to last measured with irregular layout when getItemLa
   expect(component).toMatchSnapshot();
 });
 
-it('renders full tail spacer if all cells measured', () => {
+test('renders full tail spacer if all cells measured', () => {
   const items = generateItems(10);
 
   let component;
@@ -1846,7 +1846,7 @@ it('renders full tail spacer if all cells measured', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region at top', () => {
+test('renders windowSize derived region at top', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1879,7 +1879,7 @@ it('renders windowSize derived region at top', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region in middle', () => {
+test('renders windowSize derived region in middle', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1918,7 +1918,7 @@ it('renders windowSize derived region in middle', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('renders windowSize derived region at bottom', () => {
+test('renders windowSize derived region at bottom', () => {
   const items = generateItems(10);
   const ITEM_HEIGHT = 10;
 
@@ -1956,7 +1956,7 @@ it('renders windowSize derived region at bottom', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('calls _onCellLayout properly', () => {
+test('calls _onCellLayout properly', () => {
   const items = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
   const mock = jest.fn();
   const component = ReactTestRenderer.create(
@@ -1986,7 +1986,7 @@ it('calls _onCellLayout properly', () => {
   expect(mock).not.toHaveBeenCalledWith(event, 'i3', 2);
 });
 
-it('keeps viewport below last focused rendered', () => {
+test('keeps viewport below last focused rendered', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -2024,7 +2024,7 @@ it('keeps viewport below last focused rendered', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('virtualizes away last focused item if focus changes to a new cell', () => {
+test('virtualizes away last focused item if focus changes to a new cell', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -2067,7 +2067,7 @@ it('virtualizes away last focused item if focus changes to a new cell', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('keeps viewport above last focused rendered', () => {
+test('keeps viewport above last focused rendered', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -2114,7 +2114,7 @@ it('keeps viewport above last focused rendered', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('virtualizes away last focused index if item removed', () => {
+test('virtualizes away last focused index if item removed', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 
@@ -2164,7 +2164,7 @@ it('virtualizes away last focused index if item removed', () => {
   expect(component).toMatchSnapshot();
 });
 
-it('handles maintainVisibleContentPosition', () => {
+test('handles maintainVisibleContentPosition', () => {
   const items = generateItems(20);
   const ITEM_HEIGHT = 10;
 

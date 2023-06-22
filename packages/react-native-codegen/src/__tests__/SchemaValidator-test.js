@@ -26,7 +26,7 @@ const simpleProp = {
 };
 
 describe('SchemaValidator', () => {
-  it('fails on components across modules with same name', () => {
+  test('fails on components across modules with same name', () => {
     const fixture: SchemaType = {
       modules: {
         Module1: {
@@ -73,7 +73,7 @@ describe('SchemaValidator', () => {
       .forEach(fixtureName => {
         const fixture = fixtures[fixtureName];
 
-        it(`${fixtureName} has no errors`, () => {
+        test(`${fixtureName} has no errors`, () => {
           expect(schemaValidator.getErrors(fixture)).toHaveLength(0);
         });
       });

@@ -17,11 +17,11 @@ const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 const ActivityIndicator = require('../ActivityIndicator').default;
 
 describe('<ActivityIndicator />', () => {
-  it('should set displayName to prevent <Component /> regressions', () => {
+  test('should set displayName to prevent <Component /> regressions', () => {
     expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
   });
 
-  it('should render as expected', () => {
+  test('should render as expected', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ActivityIndicator',
       () => <ActivityIndicator size="large" color="#0000ff" />,

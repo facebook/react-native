@@ -46,7 +46,7 @@ describe('LogBox', () => {
     console.warn = warn;
   });
 
-  it('can call `ignoreAllLogs` after installing', () => {
+  test('can call `ignoreAllLogs` after installing', () => {
     expect(LogBoxData.isDisabled()).toBe(false);
 
     LogBox.install();
@@ -58,7 +58,7 @@ describe('LogBox', () => {
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
-  it('can call `ignoreAllLogs` before installing', () => {
+  test('can call `ignoreAllLogs` before installing', () => {
     expect(LogBoxData.isDisabled()).toBe(false);
 
     LogBox.ignoreAllLogs(true);
@@ -70,7 +70,7 @@ describe('LogBox', () => {
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
-  it('will not ignore logs for `ignoreAllLogs(false)`', () => {
+  test('will not ignore logs for `ignoreAllLogs(false)`', () => {
     expect(LogBoxData.isDisabled()).toBe(false);
 
     LogBox.install();
@@ -82,7 +82,7 @@ describe('LogBox', () => {
     expect(LogBoxData.isDisabled()).toBe(false);
   });
 
-  it('will ignore logs for `ignoreAllLogs()`', () => {
+  test('will ignore logs for `ignoreAllLogs()`', () => {
     expect(LogBoxData.isDisabled()).toBe(false);
 
     LogBox.install();
@@ -94,7 +94,7 @@ describe('LogBox', () => {
     expect(LogBoxData.isDisabled()).toBe(true);
   });
 
-  it('registers warnings', () => {
+  test('registers warnings', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -104,7 +104,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).toBeCalled();
   });
 
-  it('reports a LogBox exception if we fail to add warnings', () => {
+  test('reports a LogBox exception if we fail to add warnings', () => {
     jest.mock('../Data/LogBoxData');
     const mockError = new Error('Simulated error');
 
@@ -122,7 +122,7 @@ describe('LogBox', () => {
     expect(LogBoxData.reportLogBoxError).toBeCalledWith(mockError);
   });
 
-  it('only registers errors beginning with "Warning: "', () => {
+  test('only registers errors beginning with "Warning: "', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -132,7 +132,7 @@ describe('LogBox', () => {
     expect(LogBoxData.checkWarningFilter).not.toBeCalled();
   });
 
-  it('registers warning module errors with the formatting from filter', () => {
+  test('registers warning module errors with the formatting from filter', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
@@ -151,7 +151,7 @@ describe('LogBox', () => {
     expect(LogBoxData.checkWarningFilter).toBeCalledWith('...');
   });
 
-  it('registers warning module errors as errors by default', () => {
+  test('registers warning module errors as errors by default', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
@@ -165,7 +165,7 @@ describe('LogBox', () => {
     expect(LogBoxData.checkWarningFilter).toBeCalledWith('...');
   });
 
-  it('registers warning module errors with only legacy suppression as warning', () => {
+  test('registers warning module errors with only legacy suppression as warning', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
@@ -180,7 +180,7 @@ describe('LogBox', () => {
     );
   });
 
-  it('registers warning module errors with a forced dialog as fatals', () => {
+  test('registers warning module errors with a forced dialog as fatals', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
@@ -195,7 +195,7 @@ describe('LogBox', () => {
     );
   });
 
-  it('ignores warning module errors that are suppressed completely', () => {
+  test('ignores warning module errors that are suppressed completely', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({
@@ -208,7 +208,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('ignores warning module errors that are pattern ignored', () => {
+  test('ignores warning module errors that are pattern ignored', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
@@ -220,7 +220,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('ignores warning module errors that are from LogBox itself', () => {
+  test('ignores warning module errors that are from LogBox itself', () => {
     jest.mock('../Data/LogBoxData');
 
     mockFilterResult({});
@@ -232,7 +232,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('ignores logs that are pattern ignored"', () => {
+  test('ignores logs that are pattern ignored"', () => {
     jest.mock('../Data/LogBoxData');
     (LogBoxData.isMessageIgnored: any).mockReturnValue(true);
 
@@ -242,7 +242,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('does not add logs that are from LogBox itself"', () => {
+  test('does not add logs that are from LogBox itself"', () => {
     jest.mock('../Data/LogBoxData');
     (LogBoxData.isLogBoxErrorMessage: any).mockReturnValue(true);
 
@@ -252,7 +252,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('ignores logs starting with "(ADVICE)"', () => {
+  test('ignores logs starting with "(ADVICE)"', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -261,7 +261,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toBeCalled();
   });
 
-  it('does not ignore logs formatted to start with "(ADVICE)"', () => {
+  test('does not ignore logs formatted to start with "(ADVICE)"', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -278,7 +278,7 @@ describe('LogBox', () => {
     });
   });
 
-  it('ignores console methods after uninstalling', () => {
+  test('ignores console methods after uninstalling', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -291,7 +291,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toHaveBeenCalled();
   });
 
-  it('does not add logs after uninstalling', () => {
+  test('does not add logs after uninstalling', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -307,7 +307,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addLog).not.toHaveBeenCalled();
   });
 
-  it('does not add exceptions after uninstalling', () => {
+  test('does not add exceptions after uninstalling', () => {
     jest.mock('../Data/LogBoxData');
 
     LogBox.install();
@@ -327,7 +327,7 @@ describe('LogBox', () => {
     expect(LogBoxData.addException).not.toHaveBeenCalled();
   });
 
-  it('preserves decorations of console.error after installing/uninstalling', () => {
+  test('preserves decorations of console.error after installing/uninstalling', () => {
     const consoleError = console.error;
 
     LogBox.install();
@@ -356,7 +356,7 @@ describe('LogBox', () => {
     );
   });
 
-  it('preserves decorations of console.warn after installing/uninstalling', () => {
+  test('preserves decorations of console.warn after installing/uninstalling', () => {
     const consoleWarn = console.warn;
 
     LogBox.install();

@@ -67,7 +67,7 @@ describe('publish-npm', () => {
   });
 
   describe('dry-run', () => {
-    it('should set version and not publish', () => {
+    test('should set version and not publish', () => {
       publishNpm('dry-run');
 
       expect(exitMock).toHaveBeenCalledWith(0);
@@ -84,7 +84,7 @@ describe('publish-npm', () => {
   });
 
   describe('nightly', () => {
-    it('should publish', () => {
+    test('should publish', () => {
       execMock
         .mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0})
         .mockReturnValueOnce({code: 0});
@@ -106,7 +106,7 @@ describe('publish-npm', () => {
       expect(exitMock).toHaveBeenCalledWith(0);
     });
 
-    it('should fail to set version', () => {
+    test('should fail to set version', () => {
       execMock.mockReturnValueOnce({stdout: '0.81.0-rc.1\n', code: 0});
       const expectedVersion = '0.82.0-nightly-20230420-currentco';
       setReactNativeVersionMock.mockImplementation(() => {
@@ -127,7 +127,7 @@ describe('publish-npm', () => {
   });
 
   describe('release', () => {
-    it('should fail with invalid release version', () => {
+    test('should fail with invalid release version', () => {
       process.env.CIRCLE_TAG = '1.0.1';
       expect(() => {
         publishNpm('release');
@@ -135,7 +135,7 @@ describe('publish-npm', () => {
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
     });
 
-    it('should publish non-latest', () => {
+    test('should publish non-latest', () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(false);
       process.env.CIRCLE_TAG = '0.81.1';
@@ -159,7 +159,7 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should publish latest stable', () => {
+    test('should publish latest stable', () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.1';
@@ -183,7 +183,7 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should fail to publish latest stable', () => {
+    test('should fail to publish latest stable', () => {
       execMock.mockReturnValueOnce({code: 1});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.1';
@@ -205,7 +205,7 @@ describe('publish-npm', () => {
       expect(execMock.mock.calls).toHaveLength(1);
     });
 
-    it('should publish next', () => {
+    test('should publish next', () => {
       execMock.mockReturnValueOnce({code: 0});
       isTaggedLatestMock.mockReturnValueOnce(true);
       process.env.CIRCLE_TAG = '0.81.0-rc.4';

@@ -26,7 +26,7 @@ function getFixture() {
 }
 
 describe('flattenStyle', () => {
-  it('should merge style objects', () => {
+  test('should merge style objects', () => {
     const style1 = {width: 10};
     const style2 = {height: 20};
     const flatStyle = flattenStyle([style1, style2]);
@@ -34,7 +34,7 @@ describe('flattenStyle', () => {
     expect(flatStyle.height).toBe(20);
   });
 
-  it('should override style properties', () => {
+  test('should override style properties', () => {
     const style1 = {backgroundColor: '#000', width: 10};
     const style2 = {backgroundColor: '#023c69', width: null};
     const flatStyle = flattenStyle([style1, style2]);
@@ -42,18 +42,18 @@ describe('flattenStyle', () => {
     expect(flatStyle.width).toBe(null);
   });
 
-  it('should overwrite properties with `undefined`', () => {
+  test('should overwrite properties with `undefined`', () => {
     const style1 = {backgroundColor: '#000'};
     const style2 = {backgroundColor: undefined};
     const flatStyle = flattenStyle([style1, style2]);
     expect(flatStyle.backgroundColor).toBe(undefined);
   });
 
-  it('should not fail on falsy values', () => {
+  test('should not fail on falsy values', () => {
     expect(() => flattenStyle([null, false, undefined])).not.toThrow();
   });
 
-  it('should recursively flatten arrays', () => {
+  test('should recursively flatten arrays', () => {
     const style1 = {width: 10};
     const style2 = {height: 20};
     const style3 = {width: 30};
@@ -62,7 +62,7 @@ describe('flattenStyle', () => {
     expect(flatStyle.height).toBe(20);
   });
 
-  it('should not allocate an object when there is no style', () => {
+  test('should not allocate an object when there is no style', () => {
     const nullStyle = flattenStyle(null);
     const nullStyleAgain = flattenStyle(null);
 
@@ -70,14 +70,14 @@ describe('flattenStyle', () => {
     expect(nullStyle).toBe(undefined);
   });
 
-  it('should not allocate an object when there is a style', () => {
+  test('should not allocate an object when there is a style', () => {
     const style = {a: 'b'};
     const nullStyle = flattenStyle(style);
 
     expect(nullStyle).toBe(style);
   });
 
-  it('should not allocate an object when there is a single class', () => {
+  test('should not allocate an object when there is a single class', () => {
     const fixture = getFixture();
     const singleStyle = flattenStyle(fixture.elementA);
     const singleStyleAgain = flattenStyle(fixture.elementA);
@@ -89,7 +89,7 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should merge single class and style properly', () => {
+  test('should merge single class and style properly', () => {
     const fixture = getFixture();
     const style = {styleA: 'overrideA', styleC: 'overrideC'};
     const arrayStyle = flattenStyle([fixture.elementA, style]);
@@ -101,7 +101,7 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should merge multiple classes', () => {
+  test('should merge multiple classes', () => {
     const fixture = getFixture();
     const AthenB = flattenStyle([fixture.elementA, fixture.elementB]);
     const BthenA = flattenStyle([fixture.elementB, fixture.elementA]);
@@ -116,7 +116,7 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should merge multiple classes with style', () => {
+  test('should merge multiple classes with style', () => {
     const fixture = getFixture();
     const style = {styleA: 'overrideA'};
     const AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
@@ -132,7 +132,7 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should flatten recursively', () => {
+  test('should flatten recursively', () => {
     const fixture = getFixture();
     const style = [{styleA: 'newA', styleB: 'newB'}, {styleA: 'newA2'}];
     const AthenB = flattenStyle([fixture.elementA, fixture.elementB, style]);
@@ -143,7 +143,7 @@ describe('flattenStyle', () => {
     });
   });
 
-  it('should ignore invalid class names', () => {
+  test('should ignore invalid class names', () => {
     const invalid = flattenStyle(1234, null);
 
     expect(invalid).toEqual(undefined);

@@ -166,23 +166,23 @@ describe('hermes-utils', () => {
 
   describe('Versioning Hermes', () => {
     describe('readHermesTag', () => {
-      it('should return main if .hermesversion does not exist', () => {
+      test('should return main if .hermesversion does not exist', () => {
         expect(readHermesTag()).toEqual('main');
       });
-      it('should fail if hermes tag is empty', () => {
+      test('should fail if hermes tag is empty', () => {
         fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), '');
         expect(() => {
           readHermesTag();
         }).toThrow('[Hermes] .hermesversion file is empty.');
       });
-      it('should return tag from .hermesversion if file exists', () => {
+      test('should return tag from .hermesversion if file exists', () => {
         fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
         expect(readHermesTag()).toEqual(hermesTag);
       });
     });
 
     describe('setHermesTag', () => {
-      it('should write tag to .hermesversion file', () => {
+      test('should write tag to .hermesversion file', () => {
         setHermesTag(hermesTag);
         expect(
           fs.readFileSync(path.join(SDKS_DIR, '.hermesversion'), {
@@ -191,14 +191,14 @@ describe('hermes-utils', () => {
           }),
         ).toEqual(hermesTag);
       });
-      it('should set Hermes tag and read it back', () => {
+      test('should set Hermes tag and read it back', () => {
         setHermesTag(hermesTag);
         expect(readHermesTag()).toEqual(hermesTag);
       });
     });
 
     describe('getHermesTagSHA', () => {
-      it('should return trimmed commit SHA for Hermes tag', () => {
+      test('should return trimmed commit SHA for Hermes tag', () => {
         expect(getHermesTagSHA(hermesTag)).toEqual(hermesTagSha);
         expect(execCalls.git).toBe(true);
       });
@@ -207,7 +207,7 @@ describe('hermes-utils', () => {
 
   describe('Downloading Hermes', () => {
     describe('getHermesTarballDownloadPath', () => {
-      it('returns download path with Hermes tag sha', () => {
+      test('returns download path with Hermes tag sha', () => {
         const hermesTarballDownloadPath =
           getHermesTarballDownloadPath(hermesTag);
         expect(hermesTarballDownloadPath).toEqual(
@@ -220,7 +220,7 @@ describe('hermes-utils', () => {
       });
     });
     describe('downloadHermesSourceTarball', () => {
-      it('should download Hermes source tarball to download dir', () => {
+      test('should download Hermes source tarball to download dir', () => {
         fs.writeFileSync(path.join(SDKS_DIR, '.hermesversion'), hermesTag);
         const hermesTarballDownloadPath =
           getHermesTarballDownloadPath(hermesTag);
@@ -233,7 +233,7 @@ describe('hermes-utils', () => {
           }),
         ).toEqual(tarballContents);
       });
-      it('should not re-download Hermes source tarball if tarball exists', () => {
+      test('should not re-download Hermes source tarball if tarball exists', () => {
         fs.mkdirSync(path.join(SDKS_DIR, 'download'), {recursive: true});
         fs.writeFileSync(
           path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -246,7 +246,7 @@ describe('hermes-utils', () => {
     });
 
     describe('expandHermesSourceTarball', () => {
-      it('should expand Hermes source tarball to Hermes source dir', () => {
+      test('should expand Hermes source tarball to Hermes source dir', () => {
         fs.mkdirSync(path.join(SDKS_DIR, 'download'), {recursive: true});
         fs.writeFileSync(
           path.join(SDKS_DIR, 'download', `hermes-${hermesTagSha}.tgz`),
@@ -256,7 +256,7 @@ describe('hermes-utils', () => {
         expandHermesSourceTarball();
         expect(fs.existsSync(path.join(SDKS_DIR, 'hermes'))).toBe(true);
       });
-      it('should fail if Hermes source tarball does not exist', () => {
+      test('should fail if Hermes source tarball does not exist', () => {
         expect(() => {
           expandHermesSourceTarball();
         }).toThrow('[Hermes] Could not locate Hermes tarball.');
@@ -266,7 +266,7 @@ describe('hermes-utils', () => {
 
   describe('Configuring Hermes Build', () => {
     describe('copyBuildScripts', () => {
-      it('should copy React Native Hermes build scripts to Hermes source directory', () => {
+      test('should copy React Native Hermes build scripts to Hermes source directory', () => {
         copyBuildScripts();
 
         [
@@ -295,7 +295,7 @@ describe('hermes-utils', () => {
       });
     });
     describe('copyPodSpec', () => {
-      it('should copy React Native Hermes Podspec to Hermes source directory', () => {
+      test('should copy React Native Hermes Podspec to Hermes source directory', () => {
         copyPodSpec();
         expect(
           fs.readFileSync(path.join(SDKS_DIR, 'hermes/hermes-engine.podspec'), {
@@ -312,7 +312,7 @@ describe('hermes-utils', () => {
           ),
         );
       });
-      it('should copy hermes-utils.rb to Hermes source directory', () => {
+      test('should copy hermes-utils.rb to Hermes source directory', () => {
         copyPodSpec();
         expect(
           fs.readFileSync(path.join(SDKS_DIR, 'hermes/hermes-utils.rb'), {
@@ -331,13 +331,13 @@ describe('hermes-utils', () => {
       });
     });
     describe('shouldUsePrebuiltHermesC', () => {
-      it('returns false if path to osx hermesc does not exist', () => {
+      test('returns false if path to osx hermesc does not exist', () => {
         expect(shouldUsePrebuiltHermesC('macos')).toBeFalsy();
       });
-      it('returns false for non-macOS', () => {
+      test('returns false for non-macOS', () => {
         expect(shouldUsePrebuiltHermesC('windows')).toBeFalsy();
       });
-      it('return true only if path to hermesc exists', () => {
+      test('return true only if path to hermesc exists', () => {
         fs.mkdirSync(path.join(SDKS_DIR, 'hermesc/osx-bin'), {
           recursive: true,
         });
@@ -350,7 +350,7 @@ describe('hermes-utils', () => {
     });
 
     describe('configureMakeForPrebuiltHermesC', () => {
-      it('creates ImportHermesC file', () => {
+      test('creates ImportHermesC file', () => {
         fs.mkdirSync(path.join(SDKS_DIR, 'hermesc/osx-bin'), {
           recursive: true,
         });
@@ -370,7 +370,7 @@ describe('hermes-utils', () => {
     });
 
     describe('createTarballFromDirectory', () => {
-      it('should create the tarball', () => {
+      test('should create the tarball', () => {
         fs.mkdirSync(path.join(SDKS_DIR, 'downloads'), {recursive: true});
         const tarballFilename = path.join(
           SDKS_DIR,
@@ -386,12 +386,12 @@ describe('hermes-utils', () => {
     });
 
     describe('getHermesPrebuiltArtifactsTarballName', () => {
-      it('should return Hermes prebuilts tarball name', () => {
+      test('should return Hermes prebuilts tarball name', () => {
         expect(getHermesPrebuiltArtifactsTarballName('Debug')).toEqual(
           'hermes-ios-debug.tar.gz',
         );
       });
-      it('should throw if build type is undefined', () => {
+      test('should throw if build type is undefined', () => {
         expect(() => {
           getHermesPrebuiltArtifactsTarballName();
         }).toThrow('Did not specify build type.');
@@ -399,7 +399,7 @@ describe('hermes-utils', () => {
     });
 
     describe('createHermesPrebuiltArtifactsTarball', () => {
-      it('creates tarball', () => {
+      test('creates tarball', () => {
         const tarballOutputDir = fs.mkdtempSync(
           path.join(os.tmpdir(), 'hermes-prebuilts-'),
         );
@@ -420,7 +420,7 @@ describe('hermes-utils', () => {
         expect(spawnCalls.rsyncArgs.length).toEqual(3);
       });
 
-      it('creates tarball with debug symbols excluded', () => {
+      test('creates tarball with debug symbols excluded', () => {
         const tarballOutputDir = fs.mkdtempSync(
           path.join(os.tmpdir(), 'hermes-prebuilts-'),
         );

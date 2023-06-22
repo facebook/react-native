@@ -16,7 +16,7 @@ const LogBoxInspectorHeader = require('../LogBoxInspectorHeader').default;
 const React = require('react');
 
 describe('LogBoxInspectorHeader', () => {
-  it('should render no buttons for one total', () => {
+  test('should render no buttons for one total', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
@@ -29,7 +29,7 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render both buttons for two total', () => {
+  test('should render both buttons for two total', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
@@ -42,7 +42,7 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render two buttons for three or more total', () => {
+  test('should render two buttons for three or more total', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}
@@ -55,7 +55,7 @@ describe('LogBoxInspectorHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render syntax error header', () => {
+  test('should render syntax error header', () => {
     const output = render.shallowRender(
       <LogBoxInspectorHeader
         onSelectIndex={() => {}}

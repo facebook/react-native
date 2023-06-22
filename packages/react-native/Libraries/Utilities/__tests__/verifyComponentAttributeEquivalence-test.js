@@ -50,12 +50,12 @@ describe('verifyComponentAttributeEquivalence', () => {
     jest.resetModules();
   });
 
-  it('should not verify in prod', () => {
+  test('should not verify in prod', () => {
     global.__DEV__ = false;
     verifyComponentAttributeEquivalence(TestComponentNativeViewConfig, {});
   });
 
-  it('should not error with native config that is a subset of the given config', () => {
+  test('should not error with native config that is a subset of the given config', () => {
     const configWithAdditionalProperties = {
       ...TestComponentNativeViewConfig,
       bubblingEventTypes: {
@@ -86,7 +86,7 @@ describe('verifyComponentAttributeEquivalence', () => {
     expect(console.error).not.toBeCalled();
   });
 
-  it('should error if given config is missing native config properties', () => {
+  test('should error if given config is missing native config properties', () => {
     verifyComponentAttributeEquivalence(TestComponentNativeViewConfig, {});
 
     expect(console.error).toBeCalledTimes(3);

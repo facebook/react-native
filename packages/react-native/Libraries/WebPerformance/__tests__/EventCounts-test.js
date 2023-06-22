@@ -21,12 +21,12 @@ jest.mock(
 );
 
 describe('EventCounts', () => {
-  it('defines EventCounts for Performance', () => {
+  test('defines EventCounts for Performance', () => {
     const eventCounts = new Performance().eventCounts;
     expect(eventCounts).not.toBeUndefined();
   });
 
-  it('consistently implements the API for EventCounts', async () => {
+  test('consistently implements the API for EventCounts', async () => {
     NativePerformanceObserver.logRawEntry({
       name: 'click',
       entryType: RawPerformanceEntryTypeValues.EVENT,

@@ -18,7 +18,7 @@ const Blob = require('../Blob');
 const File = require('../File');
 
 describe('babel 7 smoke test', function () {
-  it('should be able to extend a class with native name', function () {
+  test('should be able to extend a class with native name', function () {
     let called = false;
     class Array {
       constructor() {
@@ -41,14 +41,14 @@ describe('babel 7 smoke test', function () {
 });
 
 describe('Blob', function () {
-  it('regression caused by circular dep && babel 7', function () {
+  test('regression caused by circular dep && babel 7', function () {
     const blob = new Blob([], {type: 'image/jpeg'});
     expect(blob).toBeInstanceOf(Blob);
   });
 });
 
 describe('File', function () {
-  it('should create empty file', () => {
+  test('should create empty file', () => {
     const file = new File([], 'test.jpg');
     expect(file).toBeInstanceOf(File);
     expect(file.data.offset).toBe(0);
@@ -59,17 +59,17 @@ describe('File', function () {
     expect(file.lastModified).toEqual(expect.any(Number));
   });
 
-  it('should create empty file with type', () => {
+  test('should create empty file with type', () => {
     const file = new File([], 'test.jpg', {type: 'image/jpeg'});
     expect(file.type).toBe('image/jpeg');
   });
 
-  it('should create empty file with lastModified', () => {
+  test('should create empty file with lastModified', () => {
     const file = new File([], 'test.jpg', {lastModified: 1337});
     expect(file.lastModified).toBe(1337);
   });
 
-  it('should throw on invalid arguments', () => {
+  test('should throw on invalid arguments', () => {
     expect(() => new File()).toThrow();
     expect(() => new File([])).toThrow();
   });

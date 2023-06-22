@@ -56,7 +56,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Value', () => {
-    it('proxies `setValue` correctly', () => {
+    test('proxies `setValue` correctly', () => {
       const opacity = new Animated.Value(0);
       const ref = React.createRef(null);
 
@@ -80,7 +80,7 @@ describe('Native Animated', () => {
       expect(ref.current.setNativeProps).not.toHaveBeenCalled();
     });
 
-    it('should set offset', () => {
+    test('should set offset', () => {
       const opacity = new Animated.Value(0);
       opacity.setOffset(10);
       opacity.__makeNative();
@@ -98,7 +98,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should flatten offset', () => {
+    test('should flatten offset', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
@@ -114,7 +114,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should save value on unmount', () => {
+    test('should save value on unmount', () => {
       NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
         saveCallback(1);
       });
@@ -134,7 +134,7 @@ describe('Native Animated', () => {
       expect(opacity.__getValue()).toBe(1);
     });
 
-    it('should deduct offset when saving value on unmount', () => {
+    test('should deduct offset when saving value on unmount', () => {
       NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
         // Assume current raw value of value node is 0.5, the NativeAnimated
         // getValue API returns the sum of raw value and offset, so return 1.
@@ -156,7 +156,7 @@ describe('Native Animated', () => {
       expect(opacity.__getValue()).toBe(1);
     });
 
-    it('should extract offset', () => {
+    test('should extract offset', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 
@@ -174,7 +174,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Listeners', () => {
-    it('should get updates', () => {
+    test('should get updates', () => {
       const value1 = new Animated.Value(0);
       value1.__makeNative();
       const listener = jest.fn();
@@ -212,7 +212,7 @@ describe('Native Animated', () => {
       expect(value1.__getValue()).toBe(7);
     });
 
-    it('should removeAll', () => {
+    test('should removeAll', () => {
       const value1 = new Animated.Value(0);
       value1.__makeNative();
       const listener = jest.fn();
@@ -242,7 +242,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Events', () => {
-    it('should map events', () => {
+    test('should map events', () => {
       const value = new Animated.Value(0);
       value.__makeNative();
       const event = Animated.event([{nativeEvent: {state: {foo: value}}}], {
@@ -270,7 +270,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should map AnimatedValueXY', () => {
+    test('should map AnimatedValueXY', () => {
       const value = new Animated.ValueXY({x: 0, y: 0});
       value.__makeNative();
       const event = Animated.event([{nativeEvent: {state: value}}], {
@@ -288,7 +288,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('should throw on invalid event path', () => {
+    test('should throw on invalid event path', () => {
       const value = new Animated.Value(0);
       value.__makeNative();
       const event = Animated.event([{notNativeEvent: {foo: value}}], {
@@ -310,7 +310,7 @@ describe('Native Animated', () => {
       console.error.mockRestore();
     });
 
-    it('should call listeners', () => {
+    test('should call listeners', () => {
       const value = new Animated.Value(0);
       value.__makeNative();
       const listener = jest.fn();
@@ -326,7 +326,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Graph', () => {
-    it('creates and detaches nodes', () => {
+    test('creates and detaches nodes', () => {
       const opacity = new Animated.Value(0);
       const root = TestRenderer.create(<Animated.View style={{opacity}} />);
 
@@ -366,7 +366,7 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(3);
     });
 
-    it('sends a valid description for value, style and props nodes', () => {
+    test('sends a valid description for value, style and props nodes', () => {
       const opacity = new Animated.Value(0);
       TestRenderer.create(<Animated.View style={{opacity}} />);
 
@@ -390,7 +390,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.add nodes', () => {
+    test('sends a valid graph description for Animated.add nodes', () => {
       const first = new Animated.Value(1);
       const second = new Animated.Value(2);
       first.__makeNative();
@@ -434,7 +434,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.subtract nodes', () => {
+    test('sends a valid graph description for Animated.subtract nodes', () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);
       first.__makeNative();
@@ -478,7 +478,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.multiply nodes', () => {
+    test('sends a valid graph description for Animated.multiply nodes', () => {
       const first = new Animated.Value(2);
       const second = new Animated.Value(1);
       first.__makeNative();
@@ -522,7 +522,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.divide nodes', () => {
+    test('sends a valid graph description for Animated.divide nodes', () => {
       const first = new Animated.Value(4);
       const second = new Animated.Value(2);
       first.__makeNative();
@@ -566,7 +566,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.modulo nodes', () => {
+    test('sends a valid graph description for Animated.modulo nodes', () => {
       const value = new Animated.Value(4);
       value.__makeNative();
 
@@ -600,7 +600,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for interpolate() nodes', () => {
+    test('sends a valid graph description for interpolate() nodes', () => {
       const value = new Animated.Value(10);
       value.__makeNative();
 
@@ -644,7 +644,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for transform nodes', () => {
+    test('sends a valid graph description for transform nodes', () => {
       const translateX = new Animated.Value(0);
       translateX.__makeNative();
 
@@ -672,7 +672,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated style props', () => {
+    test('sends create operations before connect operations for multiple animated style props', () => {
       const opacity = new Animated.Value(0);
       const borderRadius = new Animated.Value(0);
       TestRenderer.create(<Animated.View style={{borderRadius, opacity}} />);
@@ -766,7 +766,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated transform props', () => {
+    test('sends create operations before connect operations for multiple animated transform props', () => {
       const translateX = new Animated.Value(0);
       const translateY = new Animated.Value(0);
       TestRenderer.create(
@@ -888,7 +888,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends create operations before connect operations for multiple animated props', () => {
+    test('sends create operations before connect operations for multiple animated props', () => {
       const propA = new Animated.Value(0);
       const propB = new Animated.Value(0);
       TestRenderer.create(<Animated.View propA={propA} propB={propB} />);
@@ -960,7 +960,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid graph description for Animated.diffClamp nodes', () => {
+    test('sends a valid graph description for Animated.diffClamp nodes', () => {
       const value = new Animated.Value(2);
       value.__makeNative();
 
@@ -994,7 +994,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it("doesn't call into native API if useNativeDriver is set to false", () => {
+    test("doesn't call into native API if useNativeDriver is set to false", () => {
       const opacity = new Animated.Value(0);
 
       const root = TestRenderer.create(<Animated.View style={{opacity}} />);
@@ -1010,7 +1010,7 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.createAnimatedNode).not.toBeCalled();
     });
 
-    it('fails when trying to run non-native animation on native node', () => {
+    test('fails when trying to run non-native animation on native node', () => {
       const opacity = new Animated.Value(0);
       const ref = React.createRef(null);
 
@@ -1040,7 +1040,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('fails for unsupported styles', () => {
+    test('fails for unsupported styles', () => {
       const left = new Animated.Value(0);
 
       TestRenderer.create(<Animated.View style={{left}} />);
@@ -1053,7 +1053,7 @@ describe('Native Animated', () => {
       expect(animation.start).toThrowError(/left/);
     });
 
-    it('works for any `static` props and styles', () => {
+    test('works for any `static` props and styles', () => {
       // Passing "unsupported" props should work just fine as long as they are not animated
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
@@ -1077,7 +1077,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animations', () => {
-    it('sends a valid timing animation description', () => {
+    test('sends a valid timing animation description', () => {
       const anim = new Animated.Value(0);
       Animated.timing(anim, {
         toValue: 10,
@@ -1098,7 +1098,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid spring animation description', () => {
+    test('sends a valid spring animation description', () => {
       const anim = new Animated.Value(0);
       Animated.spring(anim, {
         toValue: 10,
@@ -1174,7 +1174,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends a valid decay animation description', () => {
+    test('sends a valid decay animation description', () => {
       const anim = new Animated.Value(0);
       Animated.decay(anim, {
         velocity: 10,
@@ -1190,7 +1190,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('works with Animated.loop', () => {
+    test('works with Animated.loop', () => {
       const anim = new Animated.Value(0);
       Animated.loop(
         Animated.decay(anim, {
@@ -1209,7 +1209,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('sends stopAnimation command to native', () => {
+    test('sends stopAnimation command to native', () => {
       const value = new Animated.Value(0);
       const animation = Animated.timing(value, {
         toValue: 10,
@@ -1236,7 +1236,7 @@ describe('Native Animated', () => {
       expect(NativeAnimatedModule.stopAnimation).toBeCalledWith(animationId);
     });
 
-    it('calls stopAnimation callback with native value', () => {
+    test('calls stopAnimation callback with native value', () => {
       NativeAnimatedModule.getValue = jest.fn((tag, saveCallback) => {
         saveCallback(1);
       });
@@ -1262,7 +1262,7 @@ describe('Native Animated', () => {
   });
 
   describe('Animated Components', () => {
-    it('Should restore default values on prop updates only', () => {
+    test('Should restore default values on prop updates only', () => {
       const opacity = new Animated.Value(0);
       opacity.__makeNative();
 

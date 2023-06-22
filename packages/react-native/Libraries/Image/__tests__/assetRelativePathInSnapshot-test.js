@@ -17,7 +17,7 @@ const Image = require('../Image');
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
-it('renders assets based on relative path', () => {
+test('renders assets based on relative path', () => {
   expect(
     ReactTestRenderer.create(
       <View>

@@ -18,7 +18,7 @@ const LogBoxInspectorReactFrames =
 const React = require('react');
 
 describe('LogBoxInspectorReactFrames', () => {
-  it('should render null for no componentStack frames', () => {
+  test('should render null for no componentStack frames', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
@@ -40,7 +40,7 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames without full path pressable', () => {
+  test('should render componentStack frames without full path pressable', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
@@ -71,7 +71,7 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with full path pressable', () => {
+  test('should render componentStack frames with full path pressable', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
@@ -102,7 +102,7 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with parent folder of index.js', () => {
+  test('should render componentStack frames with parent folder of index.js', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={
@@ -133,7 +133,7 @@ describe('LogBoxInspectorReactFrames', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render componentStack frames with more than 3 stacks', () => {
+  test('should render componentStack frames with more than 3 stacks', () => {
     const output = render.shallowRender(
       <LogBoxInspectorReactFrames
         log={

@@ -15,7 +15,7 @@ const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 describe('FlatList', () => {
-  it('renders simple list', () => {
+  test('renders simple list', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
@@ -24,7 +24,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list (multiple columns)', () => {
+  test('renders simple list (multiple columns)', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
@@ -34,7 +34,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list using ListItemComponent', () => {
+  test('renders simple list using ListItemComponent', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
@@ -46,7 +46,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders simple list using ListItemComponent (multiple columns)', () => {
+  test('renders simple list using ListItemComponent (multiple columns)', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
     }
@@ -59,13 +59,13 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders empty list', () => {
+  test('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <FlatList data={[]} renderItem={({item}) => <item value={item.key} />} />,
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders null list', () => {
+  test('renders null list', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         data={undefined}
@@ -74,7 +74,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders all the bells and whistles', () => {
+  test('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         ItemSeparatorComponent={() => <separator />}
@@ -92,7 +92,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('getNativeScrollRef for case where it returns a native view', () => {
+  test('getNativeScrollRef for case where it returns a native view', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
@@ -125,7 +125,7 @@ describe('FlatList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('getNativeScrollRef for case where it returns a native scroll view', () => {
+  test('getNativeScrollRef for case where it returns a native scroll view', () => {
     jest.resetModules();
     jest.unmock('../../Components/ScrollView/ScrollView');
 
@@ -152,7 +152,7 @@ describe('FlatList', () => {
     expect(scrollRef.measureInWindow).toBeInstanceOf(jest.fn().constructor);
   });
 
-  it('calls renderItem for all data items', () => {
+  test('calls renderItem for all data items', () => {
     const data = [
       {key: 'i1'},
       null,
@@ -182,7 +182,7 @@ describe('FlatList', () => {
 
     expect(renderItemInThreeColumns).toHaveBeenCalledTimes(7);
   });
-  it('renders array-like data', () => {
+  test('renders array-like data', () => {
     const arrayLike = {
       length: 3,
       0: {key: 'i1'},
@@ -198,7 +198,7 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('ignores invalid data', () => {
+  test('ignores invalid data', () => {
     const component = ReactTestRenderer.create(
       <FlatList
         data={123456}

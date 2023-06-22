@@ -15,7 +15,7 @@ import Pressable from '../Pressable';
 import * as React from 'react';
 
 describe('<Pressable />', () => {
-  it('should render as expected', () => {
+  test('should render as expected', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
@@ -31,7 +31,7 @@ describe('<Pressable />', () => {
 });
 
 describe('<Pressable disabled={true} />', () => {
-  it('should be disabled when disabled is true', () => {
+  test('should be disabled when disabled is true', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
@@ -47,7 +47,7 @@ describe('<Pressable disabled={true} />', () => {
 });
 
 describe('<Pressable disabled={true} accessibilityState={{}} />', () => {
-  it('should be disabled when disabled is true and accessibilityState is empty', () => {
+  test('should be disabled when disabled is true and accessibilityState is empty', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
@@ -63,7 +63,7 @@ describe('<Pressable disabled={true} accessibilityState={{}} />', () => {
 });
 
 describe('<Pressable disabled={true} accessibilityState={{checked: true}} />', () => {
-  it('should keep accessibilityState when disabled is true', () => {
+  test('should keep accessibilityState when disabled is true', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (
@@ -79,7 +79,7 @@ describe('<Pressable disabled={true} accessibilityState={{checked: true}} />', (
 });
 
 describe('<Pressable disabled={true} accessibilityState={{disabled: false}} />', () => {
-  it('should overwrite accessibilityState with value of disabled prop', () => {
+  test('should overwrite accessibilityState with value of disabled prop', () => {
     expectRendersMatchingSnapshot(
       'Pressable',
       () => (

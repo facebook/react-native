@@ -15,7 +15,7 @@ import * as React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 
 describe('SectionList', () => {
-  it('renders empty list', () => {
+  test('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         sections={[]}
@@ -24,7 +24,7 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('rendering empty section headers is fine', () => {
+  test('rendering empty section headers is fine', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         sections={[{key: 's1', data: [{key: 'i1'}, {key: 'i2'}]}]}
@@ -34,7 +34,7 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders all the bells and whistles', () => {
+  test('renders all the bells and whistles', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         initialNumToRender={Infinity}
@@ -75,7 +75,7 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders a footer when there is no data', () => {
+  test('renders a footer when there is no data', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         sections={[{key: 's1', data: []}]}
@@ -86,7 +86,7 @@ describe('SectionList', () => {
     );
     expect(component).toMatchSnapshot();
   });
-  it('renders a footer when there is no data and no header', () => {
+  test('renders a footer when there is no data and no header', () => {
     const component = ReactTestRenderer.create(
       <SectionList
         sections={[{key: 's1', data: []}]}

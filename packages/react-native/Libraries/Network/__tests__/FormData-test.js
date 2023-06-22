@@ -23,7 +23,7 @@ describe('FormData', function () {
     formData = null;
   });
 
-  it('should return non blob null', function () {
+  test('should return non blob null', function () {
     formData.append('null', null);
 
     const expectedPart = {
@@ -36,7 +36,7 @@ describe('FormData', function () {
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 
-  it('should return blob', function () {
+  test('should return blob', function () {
     formData.append('photo', {
       uri: 'arbitrary/path',
       type: 'image/jpeg',
@@ -56,7 +56,7 @@ describe('FormData', function () {
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 
-  it('should return non blob array', function () {
+  test('should return non blob array', function () {
     formData.append('array', [
       true,
       false,
@@ -78,7 +78,7 @@ describe('FormData', function () {
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
 
-  it('should return values based on the given key', function () {
+  test('should return values based on the given key', function () {
     formData.append('username', 'Chris');
     formData.append('username', 'Bob');
 

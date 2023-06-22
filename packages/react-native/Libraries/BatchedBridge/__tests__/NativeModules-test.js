@@ -45,13 +45,13 @@ describe('MessageQueue', function () {
     NativeModules = require('../NativeModules');
   });
 
-  it('should generate native modules', () => {
+  test('should generate native modules', () => {
     NativeModules.RemoteModule1.remoteMethod('foo');
     const flushedQueue = BatchedBridge.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 0, ['foo']);
   });
 
-  it('should make round trip and clear memory', function () {
+  test('should make round trip and clear memory', function () {
     const onFail = jest.fn();
     const onSucc = jest.fn();
 
@@ -113,7 +113,7 @@ describe('MessageQueue', function () {
     expect(onSucc.mock.calls.length).toBe(1);
   });
 
-  it('promise-returning methods (type=promise)', async function () {
+  test('promise-returning methods (type=promise)', async function () {
     // Perform communication
     const promise1 = NativeModules.RemoteModule1.promiseReturningMethod(
       'paloAlto',
@@ -178,7 +178,7 @@ describe('MessageQueue', function () {
       delete global.nativeCallSyncHook;
     });
 
-    it('throwing an exception', function () {
+    test('throwing an exception', function () {
       global.nativeCallSyncHook = jest.fn(() => {
         throw new Error('firstFailure');
       });
@@ -202,7 +202,7 @@ describe('MessageQueue', function () {
       });
     });
 
-    it('returning a value', function () {
+    test('returning a value', function () {
       global.nativeCallSyncHook = jest.fn(() => {
         return 'secondSucc';
       });

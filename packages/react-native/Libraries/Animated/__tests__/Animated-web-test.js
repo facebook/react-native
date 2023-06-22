@@ -22,7 +22,7 @@ describe('Animated tests', () => {
   });
 
   describe('Animated', () => {
-    it('works end to end', () => {
+    test('works end to end', () => {
       const anim = new Animated.Value(0);
       const translateAnim = anim.interpolate({
         inputRange: [0, 1],
@@ -129,7 +129,7 @@ describe('Animated tests', () => {
      * The behavior matters when the input style is a mix of values
      * from StyleSheet.create and an inline style with an animation
      */
-    it('does not discard initial style', () => {
+    test('does not discard initial style', () => {
       const value1 = new Animated.Value(1);
       const scale = value1.interpolate({
         inputRange: [0, 1],

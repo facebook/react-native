@@ -46,26 +46,26 @@ describe('MessageQueue', function () {
     ]);
   });
 
-  it('should enqueue native calls', () => {
+  test('should enqueue native calls', () => {
     queue.enqueueNativeCall(0, 1, [2]);
     const flushedQueue = queue.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 1, [2]);
   });
 
-  it('should call a local function with the function name', () => {
+  test('should call a local function with the function name', () => {
     MessageQueueTestModule.testHook2 = jest.fn();
     expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(0);
     queue.__callFunction('MessageQueueTestModule', 'testHook2', [2]);
     expect(MessageQueueTestModule.testHook2.mock.calls.length).toEqual(1);
   });
 
-  it('should store callbacks', () => {
+  test('should store callbacks', () => {
     queue.enqueueNativeCall(0, 1, ['foo'], null, null);
     const flushedQueue = queue.flushedQueue();
     assertQueue(flushedQueue, 0, 0, 1, ['foo']);
   });
 
-  it('should call the stored callback', () => {
+  test('should call the stored callback', () => {
     let done = false;
     queue.enqueueNativeCall(
       0,
@@ -80,7 +80,7 @@ describe('MessageQueue', function () {
     expect(done).toEqual(true);
   });
 
-  it('should throw when calling the same callback twice', () => {
+  test('should throw when calling the same callback twice', () => {
     queue.enqueueNativeCall(
       0,
       1,
@@ -92,7 +92,7 @@ describe('MessageQueue', function () {
     expect(() => queue.__invokeCallback(1, [])).toThrow();
   });
 
-  it('should throw when calling both success and failure callback', () => {
+  test('should throw when calling both success and failure callback', () => {
     queue.enqueueNativeCall(
       0,
       1,
@@ -104,7 +104,7 @@ describe('MessageQueue', function () {
     expect(() => queue.__invokeCallback(0, [])).toThrow();
   });
 
-  it('should throw when calling with unknown module', () => {
+  test('should throw when calling with unknown module', () => {
     const unknownModule = 'UnknownModule',
       unknownMethod = 'UnknownMethod';
     expect(() => queue.__callFunction(unknownModule, unknownMethod)).toThrow(
@@ -113,7 +113,7 @@ describe('MessageQueue', function () {
     );
   });
 
-  it('should return lazily registered module', () => {
+  test('should return lazily registered module', () => {
     const dummyModule = {},
       name = 'modulesName';
     queue.registerLazyCallableModule(name, () => dummyModule);
@@ -121,7 +121,7 @@ describe('MessageQueue', function () {
     expect(queue.getCallableModule(name)).toEqual(dummyModule);
   });
 
-  it('should not initialize lazily registered module before it was used for the first time', () => {
+  test('should not initialize lazily registered module before it was used for the first time', () => {
     const dummyModule = {},
       name = 'modulesName';
     const factory = jest.fn(() => dummyModule);
@@ -129,7 +129,7 @@ describe('MessageQueue', function () {
     expect(factory).not.toHaveBeenCalled();
   });
 
-  it('should initialize lazily registered module only once', () => {
+  test('should initialize lazily registered module only once', () => {
     const dummyModule = {},
       name = 'modulesName';
     const factory = jest.fn(() => dummyModule);
@@ -139,7 +139,7 @@ describe('MessageQueue', function () {
     expect(factory).toHaveBeenCalledTimes(1);
   });
 
-  it('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
+  test('should check if the global error handler is not overridden by the DebuggerInternal object', () => {
     const dummyModule = {
       dummy: function () {},
     };
@@ -151,7 +151,7 @@ describe('MessageQueue', function () {
     expect(queue.__shouldPauseOnThrow).toHaveBeenCalledTimes(2);
   });
 
-  it('should check if the global error handler is overridden by the DebuggerInternal object', () => {
+  test('should check if the global error handler is overridden by the DebuggerInternal object', () => {
     const dummyModule = {
       dummy: function () {},
     };

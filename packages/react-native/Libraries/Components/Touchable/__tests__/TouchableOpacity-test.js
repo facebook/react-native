@@ -16,7 +16,7 @@ const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 
 describe('TouchableOpacity', () => {
-  it('renders correctly', () => {
+  test('renders correctly', () => {
     const instance = ReactTestRenderer.create(
       <TouchableOpacity>
         <Text>Touchable</Text>
@@ -26,7 +26,7 @@ describe('TouchableOpacity', () => {
     expect(instance.toJSON()).toMatchSnapshot();
   });
 
-  it('renders in disabled state when a disabled prop is passed', () => {
+  test('renders in disabled state when a disabled prop is passed', () => {
     const instance = ReactTestRenderer.create(
       <TouchableOpacity disabled={true}>
         <Text>Touchable</Text>
@@ -36,7 +36,7 @@ describe('TouchableOpacity', () => {
     expect(instance.toJSON()).toMatchSnapshot();
   });
 
-  it('renders in disabled state when a key disabled in accessibilityState is passed', () => {
+  test('renders in disabled state when a key disabled in accessibilityState is passed', () => {
     const instance = ReactTestRenderer.create(
       <TouchableOpacity accessibilityState={{disabled: true}}>
         <Text>Touchable</Text>
@@ -46,7 +46,7 @@ describe('TouchableOpacity', () => {
     expect(instance.toJSON()).toMatchSnapshot();
   });
 
-  it('has displayName', () => {
+  test('has displayName', () => {
     expect(TouchableOpacity.displayName).toEqual('TouchableOpacity');
   });
 });

@@ -17,7 +17,7 @@ const LogBoxInspectorMessageHeader =
 const React = require('react');
 
 describe('LogBoxInspectorMessageHeader', () => {
-  it('should render error', () => {
+  test('should render error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Error"
@@ -34,7 +34,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render fatal', () => {
+  test('should render fatal', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Fatal Error"
@@ -51,7 +51,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render syntax error', () => {
+  test('should render syntax error', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Syntax Error"
@@ -68,7 +68,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should not render See More button for short content', () => {
+  test('should not render See More button for short content', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"
@@ -85,7 +85,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should not render "See More" if expanded', () => {
+  test('should not render "See More" if expanded', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"
@@ -99,7 +99,7 @@ describe('LogBoxInspectorMessageHeader', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render "See More" if collapsed', () => {
+  test('should render "See More" if collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorMessageHeader
         title="Warning"

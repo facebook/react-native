@@ -26,25 +26,25 @@ const platformSpecific =
 
 describe('processColor', () => {
   describe('predefined color names', () => {
-    it('should convert red', () => {
+    test('should convert red', () => {
       const colorFromString = processColor('red');
       const expectedInt = 0xffff0000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
-    it('should convert white', () => {
+    test('should convert white', () => {
       const colorFromString = processColor('white');
       const expectedInt = 0xffffffff;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
-    it('should convert black', () => {
+    test('should convert black', () => {
       const colorFromString = processColor('black');
       const expectedInt = 0xff000000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
     });
 
-    it('should convert transparent', () => {
+    test('should convert transparent', () => {
       const colorFromString = processColor('transparent');
       const expectedInt = 0x00000000;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -52,7 +52,7 @@ describe('processColor', () => {
   });
 
   describe('RGB strings', () => {
-    it('should convert rgb(x, y, z)', () => {
+    test('should convert rgb(x, y, z)', () => {
       const colorFromString = processColor('rgb(10, 20, 30)');
       const expectedInt = 0xff0a141e;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -60,7 +60,7 @@ describe('processColor', () => {
   });
 
   describe('RGBA strings', () => {
-    it('should convert rgba(x, y, z, a)', () => {
+    test('should convert rgba(x, y, z, a)', () => {
       const colorFromString = processColor('rgba(10, 20, 30, 0.4)');
       const expectedInt = 0x660a141e;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -68,7 +68,7 @@ describe('processColor', () => {
   });
 
   describe('HSL strings', () => {
-    it('should convert hsl(x, y%, z%)', () => {
+    test('should convert hsl(x, y%, z%)', () => {
       const colorFromString = processColor('hsl(318, 69%, 55%)');
       const expectedInt = 0xffdb3dac;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -76,7 +76,7 @@ describe('processColor', () => {
   });
 
   describe('HSLA strings', () => {
-    it('should convert hsla(x, y%, z%, a)', () => {
+    test('should convert hsla(x, y%, z%, a)', () => {
       const colorFromString = processColor('hsla(318, 69%, 55%, 0.25)');
       const expectedInt = 0x40db3dac;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -84,7 +84,7 @@ describe('processColor', () => {
   });
 
   describe('hex strings', () => {
-    it('should convert #xxxxxx', () => {
+    test('should convert #xxxxxx', () => {
       const colorFromString = processColor('#1e83c9');
       const expectedInt = 0xff1e83c9;
       expect(colorFromString).toEqual(platformSpecific(expectedInt));
@@ -93,14 +93,14 @@ describe('processColor', () => {
 
   describe('iOS', () => {
     if (OS === 'ios') {
-      it('should process iOS PlatformColor colors', () => {
+      test('should process iOS PlatformColor colors', () => {
         const color = PlatformColorIOS('systemRedColor');
         const processedColor = processColor(color);
         const expectedColor = {semantic: ['systemRedColor']};
         expect(processedColor).toEqual(expectedColor);
       });
 
-      it('should process iOS Dynamic colors', () => {
+      test('should process iOS Dynamic colors', () => {
         const color = DynamicColorIOS({light: 'black', dark: 'white'});
         const processedColor = processColor(color);
         const expectedColor = {dynamic: {light: 0xff000000, dark: 0xffffffff}};
@@ -111,7 +111,7 @@ describe('processColor', () => {
 
   describe('Android', () => {
     if (OS === 'android') {
-      it('should process Android PlatformColor colors', () => {
+      test('should process Android PlatformColor colors', () => {
         const color = PlatformColorAndroid('?attr/colorPrimary');
         const processedColor = processColor(color);
         const expectedColor = {resource_paths: ['?attr/colorPrimary']};

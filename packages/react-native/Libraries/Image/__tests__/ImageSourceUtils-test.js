@@ -15,14 +15,14 @@ describe('ImageSourceUtils', () => {
     jest.clearAllMocks();
   });
 
-  it('source prop provided', () => {
+  test('source prop provided', () => {
     const imageProps = {source: require('./img/img1.png')};
     const sources = getImageSourcesFromImageProps(imageProps);
 
     expect(sources).toBeDefined();
   });
 
-  it('should ignore source when src is provided', () => {
+  test('should ignore source when src is provided', () => {
     let uri = 'imageURI';
     const imageProps = {source: require('./img/img1.png'), src: uri};
     const sources = getImageSourcesFromImageProps(imageProps);
@@ -32,7 +32,7 @@ describe('ImageSourceUtils', () => {
     expect(sources[0].uri).toBe(uri);
   });
 
-  it('should ignore source and src when srcSet is provided', () => {
+  test('should ignore source and src when srcSet is provided', () => {
     let uri = 'imageURI';
 
     let uri1 = 'uri1';
@@ -54,7 +54,7 @@ describe('ImageSourceUtils', () => {
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 2}));
   });
 
-  it('should use src as default when 1x scale is not provided in srcSet', () => {
+  test('should use src as default when 1x scale is not provided in srcSet', () => {
     let uri = 'imageURI';
 
     let uri1 = 'uri1';
@@ -76,7 +76,7 @@ describe('ImageSourceUtils', () => {
     expect(sources[2]).toEqual(expect.objectContaining({uri: uri, scale: 1}));
   });
 
-  it('should use 1x as default scale if only url is provided in srcSet', () => {
+  test('should use 1x as default scale if only url is provided in srcSet', () => {
     let uri1 = 'uri1';
     let scale1 = '2x';
 
@@ -93,7 +93,7 @@ describe('ImageSourceUtils', () => {
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 1}));
   });
 
-  it('should warn when an unsupported scale is provided in srcSet', () => {
+  test('should warn when an unsupported scale is provided in srcSet', () => {
     const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     let uri1 = 'uri1';
     let scale1 = '300w';
@@ -110,7 +110,7 @@ describe('ImageSourceUtils', () => {
     expect(mockWarn).toHaveBeenCalled();
   });
 
-  it('should contain crossorigin headers when provided with src', () => {
+  test('should contain crossorigin headers when provided with src', () => {
     let uri = 'imageURI';
 
     const imageProps = {
@@ -126,7 +126,7 @@ describe('ImageSourceUtils', () => {
     });
   });
 
-  it('should contain referrerPolicy headers when provided with src', () => {
+  test('should contain referrerPolicy headers when provided with src', () => {
     let uri = 'imageURI';
 
     let referrerPolicy = 'origin-when-cross-origin';

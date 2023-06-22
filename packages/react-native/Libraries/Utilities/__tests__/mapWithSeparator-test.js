@@ -13,7 +13,7 @@
 describe('mapWithSeparator', () => {
   const mapWithSeparator = require('../mapWithSeparator');
 
-  it('mapWithSeparator returns expected results', () => {
+  test('mapWithSeparator returns expected results', () => {
     const array = [1, 2, 3];
     const result = mapWithSeparator(
       array,
@@ -27,7 +27,7 @@ describe('mapWithSeparator', () => {
     expect(result).toEqual([2, 0, 4, 0, 6]);
   });
 
-  it('mapWithSeparator indices are correct', () => {
+  test('mapWithSeparator indices are correct', () => {
     const array = [1, 2, 3];
     const result = mapWithSeparator(
       array,
@@ -41,7 +41,7 @@ describe('mapWithSeparator', () => {
     expect(result).toEqual([0, 0, 1, 1, 2]);
   });
 
-  it('mapWithSeparator passes correct array and indices', () => {
+  test('mapWithSeparator passes correct array and indices', () => {
     const array = [3, 2, 1];
     const result = mapWithSeparator(
       array,
@@ -55,7 +55,7 @@ describe('mapWithSeparator', () => {
     expect(result).toEqual([3, 0, 2, 1, 1]);
   });
 
-  it('mapWithSeparator returns empty array when empty array is given as input', () => {
+  test('mapWithSeparator returns empty array when empty array is given as input', () => {
     const array = [];
     const result = mapWithSeparator(
       array,

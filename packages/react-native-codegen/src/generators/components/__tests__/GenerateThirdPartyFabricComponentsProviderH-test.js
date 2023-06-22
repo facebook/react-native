@@ -15,7 +15,7 @@ const fixtures = require('../__test_fixtures__/fixtures.js');
 const generator = require('../GenerateThirdPartyFabricComponentsProviderH.js');
 
 describe('GenerateThirdPartyFabricComponentsProviderH', () => {
-  it(`can generate fixtures`, () => {
+  test(`can generate fixtures`, () => {
     expect(generator.generate(fixtures)).toMatchSnapshot();
   });
 });

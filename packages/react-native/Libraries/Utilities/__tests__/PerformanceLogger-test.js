@@ -33,23 +33,23 @@ describe('PerformanceLogger', () => {
       perfLogger = createPerformanceLogger();
     });
 
-    it('does not markPoint', () => {
+    test('does not markPoint', () => {
       perfLogger.close();
       perfLogger.markPoint(POINT, POINT_TIMESTAMP);
       expect(perfLogger.getPoints()).toEqual({});
     });
-    it('does not startTimespan', () => {
+    test('does not startTimespan', () => {
       perfLogger.close();
       perfLogger.startTimespan(TIMESPAN_1);
       expect(perfLogger.getTimespans()).toEqual({});
     });
-    it('does not setExtra', () => {
+    test('does not setExtra', () => {
       perfLogger.close();
       perfLogger.setExtra('extra', 'an extra value');
       expect(perfLogger.getTimespans()).toEqual({});
     });
 
-    it('does not stopTimespan', () => {
+    test('does not stopTimespan', () => {
       perfLogger.startTimespan(TIMESPAN_1);
       perfLogger.close();
       let timespan = perfLogger.getTimespans()[TIMESPAN_1];
@@ -62,7 +62,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('starts & stops a timespan', () => {
+  test('starts & stops a timespan', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1);
     perfLogger.stopTimespan(TIMESPAN_1);
@@ -74,7 +74,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('starts & stops a timespan with custom timestamps', () => {
+  test('starts & stops a timespan with custom timestamps', () => {
     let perfLogger = createPerformanceLogger();
     const startTime = 25;
     const endTime = 35;
@@ -88,7 +88,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('does not override a timespan', () => {
+  test('does not override a timespan', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1);
     let old = perfLogger.getTimespans()[TIMESPAN_1];
@@ -96,7 +96,7 @@ describe('PerformanceLogger', () => {
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toBe(old);
   });
 
-  it('adds a timespan with start and end timestamps', () => {
+  test('adds a timespan with start and end timestamps', () => {
     let perfLogger = createPerformanceLogger();
     const startTime = 0;
     const endTime = 100;
@@ -108,7 +108,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('adds a timespan with same key will not override existing', () => {
+  test('adds a timespan with same key will not override existing', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1);
     perfLogger.stopTimespan(TIMESPAN_1);
@@ -117,7 +117,7 @@ describe('PerformanceLogger', () => {
     expect(perfLogger.getTimespans()[TIMESPAN_1]).toEqual(existing);
   });
 
-  it('logs an extra', () => {
+  test('logs an extra', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.setExtra(EXTRA_KEY, EXTRA_VALUE);
     expect(perfLogger.getExtras()).toEqual({
@@ -125,7 +125,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('does not override a extra', () => {
+  test('does not override a extra', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.setExtra(EXTRA_KEY, EXTRA_VALUE);
     expect(perfLogger.getExtras()).toEqual({
@@ -137,7 +137,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('removes an extra', () => {
+  test('removes an extra', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.setExtra(EXTRA_KEY, EXTRA_VALUE);
     expect(perfLogger.getExtras()).toEqual({
@@ -147,7 +147,7 @@ describe('PerformanceLogger', () => {
     expect(perfLogger.getExtras()).toEqual({});
   });
 
-  it('logs a point', () => {
+  test('logs a point', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.markPoint(POINT, POINT_TIMESTAMP);
     expect(perfLogger.getPoints()).toEqual({
@@ -155,7 +155,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('does not override a point', () => {
+  test('does not override a point', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.markPoint(POINT, POINT_TIMESTAMP);
     expect(perfLogger.getPoints()).toEqual({
@@ -167,7 +167,7 @@ describe('PerformanceLogger', () => {
     });
   });
 
-  it('global and local loggers do not conflict', () => {
+  test('global and local loggers do not conflict', () => {
     let checkLogger = (logger: IPerformanceLogger, shouldBeEmpty: boolean) => {
       expect(Object.keys(logger.getTimespans())).toEqual(
         shouldBeEmpty ? [] : [TIMESPAN_1],
@@ -217,7 +217,7 @@ describe('PerformanceLogger', () => {
     checkLogger(GlobalPerformanceLogger, true);
   });
 
-  it('records extras for a timespan', () => {
+  test('records extras for a timespan', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.startTimespan(TIMESPAN_1, undefined, POINT_ANNOTATION_1);
     perfLogger.stopTimespan(TIMESPAN_1, undefined, POINT_ANNOTATION_2);
@@ -229,7 +229,7 @@ describe('PerformanceLogger', () => {
     );
   });
 
-  it('records extras for a point', () => {
+  test('records extras for a point', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.markPoint(POINT, POINT_TIMESTAMP, POINT_ANNOTATION_1);
 
@@ -237,7 +237,7 @@ describe('PerformanceLogger', () => {
     expect(perfLogger.getPointExtras()[POINT]).toEqual(POINT_ANNOTATION_1);
   });
 
-  it('should allow extended logger to stopTimespan', () => {
+  test('should allow extended logger to stopTimespan', () => {
     const loggerA = createPerformanceLogger();
     loggerA.startTimespan('loggerA_timespan');
     const loggerB = createPerformanceLogger();
@@ -250,7 +250,7 @@ describe('PerformanceLogger', () => {
     expect(loggerA.isClosed()).toBe(false);
   });
 
-  it('should append logger', () => {
+  test('should append logger', () => {
     const loggerA = createPerformanceLogger();
     loggerA.addTimespan('loggerA_timespan1', 0, 10);
     loggerA.addTimespan(

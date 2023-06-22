@@ -19,11 +19,11 @@ describe('Object (ES8)', () => {
   });
 
   describe('Object.entries', () => {
-    it('should have a length of 1', () => {
+    test('should have a length of 1', () => {
       expect(Object.entries.length).toBe(1);
     });
 
-    it('should check for type', () => {
+    test('should check for type', () => {
       expect(Object.entries.bind(null, null)).toThrow(
         TypeError('Object.entries called on non-object'),
       );
@@ -36,7 +36,7 @@ describe('Object (ES8)', () => {
       expect(Object.entries.bind(null, 'abc')).not.toThrow();
     });
 
-    it('should return enumerable entries', () => {
+    test('should return enumerable entries', () => {
       const foo = Object.defineProperties(
         {},
         {
@@ -54,7 +54,7 @@ describe('Object (ES8)', () => {
       ]);
     });
 
-    it('should work with proto-less objects', () => {
+    test('should work with proto-less objects', () => {
       const foo = Object.create(null, {
         x: {value: 10, enumerable: true},
         y: {value: 20},
@@ -63,7 +63,7 @@ describe('Object (ES8)', () => {
       expect(Object.entries(foo)).toEqual([['x', 10]]);
     });
 
-    it('should return only own entries', () => {
+    test('should return only own entries', () => {
       const foo = Object.create(
         {z: 30},
         {
@@ -75,7 +75,7 @@ describe('Object (ES8)', () => {
       expect(Object.entries(foo)).toEqual([['x', 10]]);
     });
 
-    it('should convert to object primitive string', () => {
+    test('should convert to object primitive string', () => {
       expect(Object.entries('ab')).toEqual([
         ['0', 'a'],
         ['1', 'b'],
@@ -84,11 +84,11 @@ describe('Object (ES8)', () => {
   });
 
   describe('Object.values', () => {
-    it('should have a length of 1', () => {
+    test('should have a length of 1', () => {
       expect(Object.values.length).toBe(1);
     });
 
-    it('should check for type', () => {
+    test('should check for type', () => {
       expect(Object.values.bind(null, null)).toThrow(
         TypeError('Object.values called on non-object'),
       );
@@ -97,7 +97,7 @@ describe('Object (ES8)', () => {
       expect(Object.values.bind(null, {})).not.toThrow();
     });
 
-    it('should return enumerable values', () => {
+    test('should return enumerable values', () => {
       const foo = Object.defineProperties(
         {},
         {
@@ -112,7 +112,7 @@ describe('Object (ES8)', () => {
       expect(Object.values(bar)).toEqual([10, 20]);
     });
 
-    it('should work with proto-less objects', () => {
+    test('should work with proto-less objects', () => {
       const foo = Object.create(null, {
         x: {value: 10, enumerable: true},
         y: {value: 20},
@@ -121,7 +121,7 @@ describe('Object (ES8)', () => {
       expect(Object.values(foo)).toEqual([10]);
     });
 
-    it('should return only own values', () => {
+    test('should return only own values', () => {
       const foo = Object.create(
         {z: 30},
         {
@@ -133,7 +133,7 @@ describe('Object (ES8)', () => {
       expect(Object.values(foo)).toEqual([10]);
     });
 
-    it('should convert to object primitive string', () => {
+    test('should convert to object primitive string', () => {
       expect(Object.values('ab')).toEqual(['a', 'b']);
     });
   });

@@ -13,7 +13,7 @@
 describe('DeviceInfo', () => {
   const DeviceInfo = require('../DeviceInfo');
 
-  it('should give device info', () => {
+  test('should give device info', () => {
     expect(DeviceInfo.getConstants()).toHaveProperty('Dimensions');
   });
 });

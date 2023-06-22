@@ -50,7 +50,7 @@ describe('TextInput tests', () => {
     const renderTree = ReactTestRenderer.create(<TextInputWrapper />);
     input = renderTree.root.findByType(TextInput);
   });
-  it('has expected instance functions', () => {
+  test('has expected instance functions', () => {
     expect(inputRef.current.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
     expect(inputRef.current.clear).toBeInstanceOf(Function);
     expect(inputRef.current.focus).toBeInstanceOf(jest.fn().constructor);
@@ -66,7 +66,7 @@ describe('TextInput tests', () => {
       jest.fn().constructor,
     );
   });
-  it('calls onChange callbacks', () => {
+  test('calls onChange callbacks', () => {
     expect(input.props.value).toBe(initialValue);
     const message = 'This is a test message';
     ReactTestRenderer.act(() => {
@@ -87,7 +87,7 @@ describe('TextInput tests', () => {
     return textInputRef;
   }
 
-  it('focus() should not do anything if the TextInput is not editable', () => {
+  test('focus() should not do anything if the TextInput is not editable', () => {
     const textInputRef = createTextInput({editable: false});
     // currentProps is the property actually containing props at runtime
     textInputRef.current.currentProps = textInputRef.current.props;
@@ -97,7 +97,7 @@ describe('TextInput tests', () => {
     expect(textInputRef.current.isFocused()).toBe(false);
   });
 
-  it('should have support for being focused and blurred', () => {
+  test('should have support for being focused and blurred', () => {
     const textInputRef = createTextInput();
 
     expect(textInputRef.current.isFocused()).toBe(false);
@@ -125,7 +125,7 @@ describe('TextInput tests', () => {
     expect(TextInput.State.currentlyFocusedInput()).toBe(null);
   });
 
-  it('should unfocus when other TextInput is focused', () => {
+  test('should unfocus when other TextInput is focused', () => {
     const textInputRe1 = React.createRef(null);
     const textInputRe2 = React.createRef(null);
 
@@ -169,7 +169,7 @@ describe('TextInput tests', () => {
     expect(TextInput.State.currentlyFocusedInput()).toBe(textInputRe2.current);
   });
 
-  it('should give precedence to `textContentType` when set', () => {
+  test('should give precedence to `textContentType` when set', () => {
     const instance = ReactTestRenderer.create(
       <TextInput autoComplete="tel" textContentType="emailAddress" />,
     );
@@ -205,7 +205,7 @@ describe('TextInput tests', () => {
     `);
   });
 
-  it('should render as expected', () => {
+  test('should render as expected', () => {
     expectRendersMatchingSnapshot(
       'TextInput',
       () => <TextInput />,
@@ -217,7 +217,7 @@ describe('TextInput tests', () => {
 });
 
 describe('TextInput', () => {
-  it('default render', () => {
+  test('default render', () => {
     const instance = ReactTestRenderer.create(<TextInput />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
@@ -250,13 +250,13 @@ describe('TextInput', () => {
     `);
   });
 
-  it('has displayName', () => {
+  test('has displayName', () => {
     expect(TextInput.displayName).toEqual('TextInput');
   });
 });
 
 describe('TextInput compat with web', () => {
-  it('renders core props', () => {
+  test('renders core props', () => {
     const props = {
       id: 'id',
       tabIndex: 0,
@@ -297,7 +297,7 @@ describe('TextInput compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  test('renders "aria-*" props', () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -429,7 +429,7 @@ describe('TextInput compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  test('renders styles', () => {
     const style = {
       display: 'flex',
       flex: 1,

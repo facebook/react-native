@@ -26,7 +26,7 @@ function createInterpolation(config) {
 }
 
 describe('Interpolation', () => {
-  it('should work with defaults', () => {
+  test('should work with defaults', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
@@ -38,7 +38,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe(1);
   });
 
-  it('should work with output range', () => {
+  test('should work with output range', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [100, 200],
@@ -50,7 +50,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe(200);
   });
 
-  it('should work with input range', () => {
+  test('should work with input range', () => {
     const interpolation = createInterpolation({
       inputRange: [100, 200],
       outputRange: [0, 1],
@@ -62,7 +62,7 @@ describe('Interpolation', () => {
     expect(interpolation(200)).toBe(1);
   });
 
-  it('should throw for non monotonic input ranges', () => {
+  test('should throw for non monotonic input ranges', () => {
     expect(
       () =>
         new AnimatedInterpolation(null, {
@@ -80,7 +80,7 @@ describe('Interpolation', () => {
     ).not.toThrow();
   });
 
-  it('should work with empty input range', () => {
+  test('should work with empty input range', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 10, 10],
       outputRange: [1, 2, 3],
@@ -94,7 +94,7 @@ describe('Interpolation', () => {
     expect(interpolation(15)).toBe(3);
   });
 
-  it('should work with empty output range', () => {
+  test('should work with empty output range', () => {
     const interpolation = createInterpolation({
       inputRange: [1, 2, 3],
       outputRange: [0, 10, 10],
@@ -109,7 +109,7 @@ describe('Interpolation', () => {
     expect(interpolation(4)).toBe(10);
   });
 
-  it('should work with easing', () => {
+  test('should work with easing', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
@@ -122,7 +122,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe(1);
   });
 
-  it('should work with extrapolate', () => {
+  test('should work with extrapolate', () => {
     let interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
@@ -154,7 +154,7 @@ describe('Interpolation', () => {
     expect(interpolation(2)).toBe(2);
   });
 
-  it('should work with keyframes with extrapolate', () => {
+  test('should work with keyframes with extrapolate', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 10, 100, 1000],
       outputRange: [0, 5, 50, 500],
@@ -172,7 +172,7 @@ describe('Interpolation', () => {
     expect(interpolation(2000)).toBe(1000);
   });
 
-  it('should work with keyframes without extrapolate', () => {
+  test('should work with keyframes without extrapolate', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1, 2],
       outputRange: [0.2, 1, 0.2],
@@ -182,7 +182,7 @@ describe('Interpolation', () => {
     expect(interpolation(5)).toBeCloseTo(0.2);
   });
 
-  it('should throw for an infinite input range', () => {
+  test('should throw for an infinite input range', () => {
     expect(
       () =>
         new AnimatedInterpolation(null, {
@@ -200,7 +200,7 @@ describe('Interpolation', () => {
     ).not.toThrow();
   });
 
-  it('should work with negative infinite', () => {
+  test('should work with negative infinite', () => {
     const interpolation = createInterpolation({
       inputRange: [-Infinity, 0],
       outputRange: [-Infinity, 0],
@@ -216,7 +216,7 @@ describe('Interpolation', () => {
     expect(interpolation(100)).toBeCloseTo(100);
   });
 
-  it('should work with positive infinite', () => {
+  test('should work with positive infinite', () => {
     const interpolation = createInterpolation({
       inputRange: [5, Infinity],
       outputRange: [5, Infinity],
@@ -234,7 +234,7 @@ describe('Interpolation', () => {
     expect(interpolation(Infinity)).toBe(Infinity);
   });
 
-  it('should work with output ranges as string', () => {
+  test('should work with output ranges as string', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(0, 100, 200, 0)', 'rgba(50, 150, 250, 0.4)'],
@@ -245,7 +245,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('rgba(50, 150, 250, 0.4)');
   });
 
-  it('should work with output ranges as short hex string', () => {
+  test('should work with output ranges as short hex string', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['#024', '#9BF'],
@@ -256,7 +256,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('rgba(153, 187, 255, 1)');
   });
 
-  it('should work with output ranges as long hex string', () => {
+  test('should work with output ranges as long hex string', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['#FF9500', '#87FC70'],
@@ -267,7 +267,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
   });
 
-  it('should work with output ranges with mixed hex and rgba strings', () => {
+  test('should work with output ranges with mixed hex and rgba strings', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(100, 120, 140, .4)', '#87FC70'],
@@ -278,7 +278,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('rgba(135, 252, 112, 1)');
   });
 
-  it('should work with negative and decimal values in string ranges', () => {
+  test('should work with negative and decimal values in string ranges', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['-100.5deg', '100deg'],
@@ -289,7 +289,7 @@ describe('Interpolation', () => {
     expect(interpolation(1)).toBe('100deg');
   });
 
-  it('should crash when chaining an interpolation that returns a string', () => {
+  test('should crash when chaining an interpolation that returns a string', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: [0, 1],
@@ -299,7 +299,7 @@ describe('Interpolation', () => {
     }).toThrow();
   });
 
-  it('should support a mix of color patterns', () => {
+  test('should support a mix of color patterns', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1, 2],
       outputRange: ['rgba(0, 100, 200, 0)', 'rgb(50, 150, 250)', 'red'],
@@ -311,7 +311,7 @@ describe('Interpolation', () => {
     expect(interpolation(2)).toBe('rgba(255, 0, 0, 1)');
   });
 
-  it('should crash when defining output range with different pattern', () => {
+  test('should crash when defining output range with different pattern', () => {
     expect(() =>
       createInterpolation({
         inputRange: [0, 1],
@@ -320,7 +320,7 @@ describe('Interpolation', () => {
     ).toThrow();
   });
 
-  it('should interpolate values with arbitrary suffixes', () => {
+  test('should interpolate values with arbitrary suffixes', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['-10foo', '10foo'],
@@ -330,7 +330,7 @@ describe('Interpolation', () => {
     expect(interpolation(0.5)).toBe('0foo');
   });
 
-  it('should interpolate numeric values of arbitrary format', () => {
+  test('should interpolate numeric values of arbitrary format', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['M20,20L20,80L80,80L80,20Z', 'M40,40L33,60L60,60L65,40Z'],
@@ -340,7 +340,7 @@ describe('Interpolation', () => {
     expect(interpolation(0.5)).toBe('M30,30L26.5,70L70,70L72.5,30Z');
   });
 
-  it('should round the alpha channel of a color to the nearest thousandth', () => {
+  test('should round the alpha channel of a color to the nearest thousandth', () => {
     const interpolation = createInterpolation({
       inputRange: [0, 1],
       outputRange: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 1)'],
@@ -350,7 +350,7 @@ describe('Interpolation', () => {
     expect(interpolation(2 / 3)).toBe('rgba(0, 0, 0, 0.667)');
   });
 
-  it.each([
+  test.each([
     ['radians', ['1rad', '2rad'], [1, 2]],
     ['degrees', ['90deg', '180deg'], [Math.PI / 2, Math.PI]],
     ['numbers', [1024, Math.PI], [1024, Math.PI]],

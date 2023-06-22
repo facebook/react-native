@@ -18,19 +18,19 @@ jest.unmock('../View');
 jest.unmock('../ViewNativeComponent');
 
 describe('View', () => {
-  it('default render', () => {
+  test('default render', () => {
     const instance = render.create(<View />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`<RCTView />`);
   });
 
-  it('has displayName', () => {
+  test('has displayName', () => {
     expect(View.displayName).toEqual('View');
   });
 });
 
 describe('View compat with web', () => {
-  it('renders core props', () => {
+  test('renders core props', () => {
     const props = {
       id: 'id',
       tabIndex: 0,
@@ -48,7 +48,7 @@ describe('View compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  test('renders "aria-*" props', () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -165,7 +165,7 @@ describe('View compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  test('renders styles', () => {
     const style = {
       display: 'flex',
       flex: 1,

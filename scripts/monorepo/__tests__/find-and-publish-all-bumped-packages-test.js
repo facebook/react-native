@@ -17,7 +17,7 @@ jest.mock('child_process', () => ({spawnSync: jest.fn()}));
 jest.mock('../for-each-package', () => jest.fn());
 
 describe('findAndPublishAllBumpedPackages', () => {
-  it('throws an error if updated version is not 0.x.y', () => {
+  test('throws an error if updated version is not 0.x.y', () => {
     const mockedPackageNewVersion = '1.0.0';
 
     forEachPackage.mockImplementationOnce(callback => {

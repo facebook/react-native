@@ -21,7 +21,7 @@ jest.mock(
 );
 
 describe('Performance', () => {
-  it('clearEntries removes correct entry types', async () => {
+  test('clearEntries removes correct entry types', async () => {
     const performance = new Performance();
     performance.mark('entry1', 0, 0);
     performance.mark('mark2', 0, 0);
@@ -51,7 +51,7 @@ describe('Performance', () => {
     expect(performance.getEntries().map(e => e.name)).toStrictEqual([]);
   });
 
-  it('getEntries only works with allowed entry types', async () => {
+  test('getEntries only works with allowed entry types', async () => {
     const performance = new Performance();
     performance.clearMarks();
     performance.clearMeasures();
@@ -80,7 +80,7 @@ describe('Performance', () => {
     expect(console.warn).toHaveBeenCalled();
   });
 
-  it('getEntries works with marks and measures', async () => {
+  test('getEntries works with marks and measures', async () => {
     const performance = new Performance();
     performance.clearMarks();
     performance.clearMeasures();

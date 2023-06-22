@@ -16,7 +16,7 @@ const LogBoxMessage = require('../LogBoxMessage').default;
 const React = require('react');
 
 describe('LogBoxMessage', () => {
-  it('should render message', () => {
+  test('should render message', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -30,7 +30,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message truncated to 6 chars', () => {
+  test('should render message truncated to 6 chars', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -45,7 +45,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the whole message when maxLength = message length', () => {
+  test('should render the whole message when maxLength = message length', () => {
     const message = 'Some kind of message';
     const output = render.create(
       <LogBoxMessage
@@ -61,7 +61,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution', () => {
+  test('should render message with substitution', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -75,7 +75,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the first word 3 letters in', () => {
+  test('should render message with substitution, truncating the first word 3 letters in', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -90,7 +90,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the second word 6 letters in', () => {
+  test('should render message with substitution, truncating the second word 6 letters in', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -105,7 +105,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render message with substitution, truncating the third word 2 letters in', () => {
+  test('should render message with substitution, truncating the third word 2 letters in', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -120,7 +120,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render the whole message with substitutions when maxLength = message length', () => {
+  test('should render the whole message with substitutions when maxLength = message length', () => {
     const message = 'normal substitution normal';
     const output = render.create(
       <LogBoxMessage
@@ -136,7 +136,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a plaintext message with no substitutions', () => {
+  test('should render a plaintext message with no substitutions', () => {
     const output = render.create(
       <LogBoxMessage
         plaintext
@@ -151,7 +151,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render a plaintext message and clean the content', () => {
+  test('should render a plaintext message and clean the content', () => {
     const output = render.create(
       <LogBoxMessage
         plaintext
@@ -166,7 +166,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "TransformError " without breaking substitution', () => {
+  test('Should strip "TransformError " without breaking substitution', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -180,7 +180,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "Warning: " without breaking substitution', () => {
+  test('Should strip "Warning: " without breaking substitution', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -194,7 +194,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should strip "Warning: Warning: " without breaking substitution', () => {
+  test('Should strip "Warning: Warning: " without breaking substitution', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -208,7 +208,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should make links tappable', () => {
+  test('Should make links tappable', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -222,7 +222,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should handle multiple links', () => {
+  test('Should handle multiple links', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}
@@ -236,7 +236,7 @@ describe('LogBoxMessage', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('Should handle truncated links', () => {
+  test('Should handle truncated links', () => {
     const output = render.create(
       <LogBoxMessage
         style={{}}

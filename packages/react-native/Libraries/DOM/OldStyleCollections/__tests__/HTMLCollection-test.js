@@ -12,7 +12,7 @@
 import {createHTMLCollection} from '../HTMLCollection';
 
 describe('HTMLCollection', () => {
-  it('provides an array-like interface', () => {
+  test('provides an array-like interface', () => {
     const collection = createHTMLCollection(['a', 'b', 'c']);
 
     expect(collection[0]).toBe('a');
@@ -22,7 +22,7 @@ describe('HTMLCollection', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('is immutable (loose mode)', () => {
+  test('is immutable (loose mode)', () => {
     const collection = createHTMLCollection(['a', 'b', 'c']);
 
     collection[0] = 'replacement';
@@ -33,7 +33,7 @@ describe('HTMLCollection', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('is immutable (strict mode)', () => {
+  test('is immutable (strict mode)', () => {
     'use strict';
 
     const collection = createHTMLCollection(['a', 'b', 'c']);
@@ -50,14 +50,14 @@ describe('HTMLCollection', () => {
     expect(collection.length).toBe(3);
   });
 
-  it('can be converted to an array through common methods', () => {
+  test('can be converted to an array through common methods', () => {
     const collection = createHTMLCollection(['a', 'b', 'c']);
 
     expect(Array.from(collection)).toEqual(['a', 'b', 'c']);
     expect([...collection]).toEqual(['a', 'b', 'c']);
   });
 
-  it('can be traversed with for-of', () => {
+  test('can be traversed with for-of', () => {
     const collection = createHTMLCollection(['a', 'b', 'c']);
 
     let i = 0;
@@ -68,7 +68,7 @@ describe('HTMLCollection', () => {
   });
 
   describe('item()', () => {
-    it('returns elements at the specified position, or null', () => {
+    test('returns elements at the specified position, or null', () => {
       const collection = createHTMLCollection(['a', 'b', 'c']);
 
       expect(collection.item(0)).toBe('a');

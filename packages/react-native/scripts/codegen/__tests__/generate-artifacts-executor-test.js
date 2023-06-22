@@ -26,7 +26,7 @@ describe('generateCode', () => {
     jest.resetAllMocks();
   });
 
-  it('executeNodes with the right arguments', () => {
+  test('executeNodes with the right arguments', () => {
     // Define variables and expected values
     const iosOutputDir = 'app/ios/build/generated/ios';
     const library = {config: {name: 'library', type: 'all'}};
@@ -76,7 +76,7 @@ describe('generateCode', () => {
 });
 
 describe('extractLibrariesFromJSON', () => {
-  it('throws if in react-native and no dependencies found', () => {
+  test('throws if in react-native and no dependencies found', () => {
     let libraries = [];
     let configFile = {};
     expect(() => {
@@ -88,7 +88,7 @@ describe('extractLibrariesFromJSON', () => {
     }).toThrow();
   });
 
-  it('it skips if not into react-native and no dependencies found', () => {
+  test('it skips if not into react-native and no dependencies found', () => {
     let libraries = [];
     let configFile = {};
 
@@ -102,7 +102,7 @@ describe('extractLibrariesFromJSON', () => {
     expect(libraries.length).toBe(0);
   });
 
-  it('extracts a single dependency when config has no libraries', () => {
+  test('extracts a single dependency when config has no libraries', () => {
     let libraries = [];
     let configFile = fixtures.noLibrariesConfigFile;
     underTest._extractLibrariesFromJSON(
@@ -124,7 +124,7 @@ describe('extractLibrariesFromJSON', () => {
     });
   });
 
-  it("extract codegenConfig when it's empty", () => {
+  test("extract codegenConfig when it's empty", () => {
     const configFile = {codegenConfig: {libraries: []}};
     let libraries = [];
     underTest._extractLibrariesFromJSON(
@@ -137,7 +137,7 @@ describe('extractLibrariesFromJSON', () => {
     expect(libraries.length).toBe(0);
   });
 
-  it('extract codegenConfig when dependency is one', () => {
+  test('extract codegenConfig when dependency is one', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
     let libraries = [];
     underTest._extractLibrariesFromJSON(
@@ -159,7 +159,7 @@ describe('extractLibrariesFromJSON', () => {
     });
   });
 
-  it('extract codegenConfig with multiple dependencies', () => {
+  test('extract codegenConfig with multiple dependencies', () => {
     const configFile = fixtures.multipleLibrariesCodegenConfig;
     const myDependency = 'my-dependency';
     const myDependencyPath = path.join(__dirname, myDependency);
@@ -212,7 +212,7 @@ describe('findCodegenEnabledLibraries', () => {
     mock.restore();
   });
 
-  it('returns libraries defined in react-native.config.js', () => {
+  test('returns libraries defined in react-native.config.js', () => {
     const projectDir = path.join(__dirname, '../../../../test-project');
     const baseCodegenConfigFileDir = path.join(__dirname, '../../..');
     const baseCodegenConfigFilePath = path.join(
@@ -284,7 +284,7 @@ describe('delete empty files and folders', () => {
     jest.resetModules();
   });
 
-  it('when path is empty file, deletes it', () => {
+  test('when path is empty file, deletes it', () => {
     const targetFilepath = 'my-file.txt';
     let statSyncInvocationCount = 0;
     let rmSyncInvocationCount = 0;
@@ -315,7 +315,7 @@ describe('delete empty files and folders', () => {
     expect(rmdirSyncInvocationCount).toBe(0);
   });
 
-  it('when path is not an empty file, does nothing', () => {
+  test('when path is not an empty file, does nothing', () => {
     const targetFilepath = 'my-file.txt';
     const size = 128;
 
@@ -348,7 +348,7 @@ describe('delete empty files and folders', () => {
     expect(rmdirSyncInvocationCount).toBe(0);
   });
 
-  it("when path is folder and it's empty, removes it", () => {
+  test("when path is folder and it's empty, removes it", () => {
     const targetFolder = 'build';
     const content = [];
 
@@ -387,7 +387,7 @@ describe('delete empty files and folders', () => {
     expect(rmdirSyncInvocationCount).toBe(1);
   });
 
-  it("when path is folder and it's not empty, removes only empty folders and files", () => {
+  test("when path is folder and it's not empty, removes only empty folders and files", () => {
     const targetFolder = 'build';
     const content = ['emptyFolder', 'emptyFile', 'notEmptyFile'];
 
@@ -446,7 +446,7 @@ describe('delete empty files and folders', () => {
     expect(rmdirSyncInvocation).toEqual([path.normalize('build/emptyFolder')]);
   });
 
-  it('when path is folder and it contains only empty folders, removes everything', () => {
+  test('when path is folder and it contains only empty folders, removes everything', () => {
     const targetFolder = 'build';
     const content = ['emptyFolder1', 'emptyFolder2'];
     const emptyContent = [];

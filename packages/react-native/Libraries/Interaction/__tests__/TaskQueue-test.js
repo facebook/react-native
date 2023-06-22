@@ -41,7 +41,7 @@ describe('TaskQueue', () => {
     sequenceId = 0;
   });
 
-  it('should run a basic task', () => {
+  test('should run a basic task', () => {
     const task1 = createSequenceTask(1);
     taskQueue.enqueue({run: task1, name: 'run1'});
     expect(taskQueue.hasTasksToProcess()).toBe(true);
@@ -49,7 +49,7 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task1);
   });
 
-  it('should handle blocking promise task', () => {
+  test('should handle blocking promise task', () => {
     const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
@@ -75,7 +75,7 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task2);
   });
 
-  it('should handle nested simple tasks', () => {
+  test('should handle nested simple tasks', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);
       taskQueue.enqueue({run: task3, name: 'run3'});
@@ -92,7 +92,7 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task3);
   });
 
-  it('should handle nested promises', () => {
+  test('should handle nested promises', () => {
     const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {
@@ -124,7 +124,7 @@ describe('TaskQueue', () => {
     expectToBeCalledOnce(task4);
   });
 
-  it('should be able to cancel tasks', () => {
+  test('should be able to cancel tasks', () => {
     const task1 = jest.fn();
     const task2 = createSequenceTask(1);
     const task3 = jest.fn();
@@ -142,7 +142,7 @@ describe('TaskQueue', () => {
     expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
 
-  it('should not crash when last task is cancelled', () => {
+  test('should not crash when last task is cancelled', () => {
     const task1 = jest.fn();
     taskQueue.enqueue(task1);
     taskQueue.cancelTasks([task1]);
@@ -151,7 +151,7 @@ describe('TaskQueue', () => {
     expect(taskQueue.hasTasksToProcess()).toBe(false);
   });
 
-  it('should not crash when task is cancelled between being started and resolved', () => {
+  test('should not crash when task is cancelled between being started and resolved', () => {
     const task1 = jest.fn(() => {
       return new Promise(resolve => {
         setTimeout(() => {

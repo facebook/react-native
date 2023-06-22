@@ -23,7 +23,7 @@ describe('ScrollView', () => {
     jest.resetModules();
   });
 
-  it('renders its children', () => {
+  test('renders its children', () => {
     ReactNativeTestTools.expectRendersMatchingSnapshot(
       'ScrollView',
       () => (
@@ -39,7 +39,7 @@ describe('ScrollView', () => {
     );
   });
 
-  it('mocks native methods and instance methods', () => {
+  test('mocks native methods and instance methods', () => {
     jest.mock('../ScrollView');
 
     const ref = React.createRef();
@@ -50,7 +50,7 @@ describe('ScrollView', () => {
   });
 
   describe('ref', () => {
-    it('receives an instance or null', () => {
+    test('receives an instance or null', () => {
       jest.dontMock('../ScrollView');
 
       const scrollViewRef = jest.fn();
@@ -67,7 +67,7 @@ describe('ScrollView', () => {
       expect(scrollViewRef).toHaveBeenLastCalledWith(null);
     });
 
-    it('transitions between refs', () => {
+    test('transitions between refs', () => {
       jest.dontMock('../ScrollView');
 
       const scrollViewRefA = jest.fn();
@@ -90,7 +90,7 @@ describe('ScrollView', () => {
   });
 
   describe('innerViewRef', () => {
-    it('receives an instance or null', () => {
+    test('receives an instance or null', () => {
       jest.dontMock('../ScrollView');
 
       const innerViewRef = jest.fn();
@@ -107,7 +107,7 @@ describe('ScrollView', () => {
       expect(innerViewRef).toHaveBeenLastCalledWith(null);
     });
 
-    it('transitions between refs', () => {
+    test('transitions between refs', () => {
       jest.dontMock('../ScrollView');
 
       const innerViewRefA = jest.fn();
@@ -130,7 +130,7 @@ describe('ScrollView', () => {
   });
 
   describe('getInnerViewRef', () => {
-    it('returns an instance', () => {
+    test('returns an instance', () => {
       jest.dontMock('../ScrollView');
 
       const scrollViewRef = React.createRef(null);

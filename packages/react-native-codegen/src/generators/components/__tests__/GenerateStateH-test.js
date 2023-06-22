@@ -20,7 +20,7 @@ describe('GenerateStateH', () => {
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 
-      it(`can generate fixture ${fixtureName}`, () => {
+      test(`can generate fixture ${fixtureName}`, () => {
         expect(generator.generate(fixtureName, fixture)).toMatchSnapshot();
       });
     });

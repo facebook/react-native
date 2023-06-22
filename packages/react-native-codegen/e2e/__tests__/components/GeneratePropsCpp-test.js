@@ -22,7 +22,7 @@ const fixtures = fs.readdirSync(FIXTURE_DIR);
 const parser = new FlowParser();
 
 fixtures.forEach(fixture => {
-  it(`GeneratePropsCpp can generate for '${fixture}'`, () => {
+  test(`GeneratePropsCpp can generate for '${fixture}'`, () => {
     const libName = 'RNCodegenModuleFixtures';
     const schema = parser.parseFile(`${FIXTURE_DIR}/${fixture}`);
     const output = generator.generate(libName, schema);

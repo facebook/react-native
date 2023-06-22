@@ -19,7 +19,7 @@ const {
 const React = require('react');
 
 describe('LogBoxNotificationContainer', () => {
-  it('should render inspector with logs, even when disabled', () => {
+  test('should render inspector with logs, even when disabled', () => {
     const output = render.shallowRender(
       <LogBoxInspectorContainer
         isDisabled

@@ -22,7 +22,7 @@ describe(setStyleAttributePreprocessor, () => {
     console.warn = originalConsoleWarn;
   });
 
-  it('should not show warning when set preprocessor first time', () => {
+  test('should not show warning when set preprocessor first time', () => {
     const spyConsole = jest.spyOn(global.console, 'warn');
     setStyleAttributePreprocessor(
       'fontFamily',
@@ -31,7 +31,7 @@ describe(setStyleAttributePreprocessor, () => {
     expect(spyConsole).not.toHaveBeenCalled();
   });
 
-  it('should show warning when overwrite the preprocessor', () => {
+  test('should show warning when overwrite the preprocessor', () => {
     const spyConsole = jest.spyOn(global.console, 'warn');
     setStyleAttributePreprocessor(
       'fontFamily',

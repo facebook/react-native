@@ -18,7 +18,7 @@ jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
 
 describe('Text', () => {
-  it('default render', () => {
+  test('default render', () => {
     const instance = render.create(<Text />);
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
@@ -32,13 +32,13 @@ describe('Text', () => {
     `);
   });
 
-  it('has displayName', () => {
+  test('has displayName', () => {
     expect(Text.displayName).toEqual('Text');
   });
 });
 
 describe('Text compat with web', () => {
-  it('renders core props', () => {
+  test('renders core props', () => {
     const props = {
       id: 'id',
       tabIndex: 0,
@@ -61,7 +61,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders "aria-*" props', () => {
+  test('renders "aria-*" props', () => {
     const props = {
       'aria-activedescendant': 'activedescendant',
       'aria-atomic': true,
@@ -175,7 +175,7 @@ describe('Text compat with web', () => {
     `);
   });
 
-  it('renders styles', () => {
+  test('renders styles', () => {
     const style = {
       display: 'flex',
       flex: 1,

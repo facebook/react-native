@@ -26,7 +26,7 @@ const platformSpecific =
 
 describe('processColorArray', () => {
   describe('predefined color name array', () => {
-    it('should convert array of color name type', () => {
+    test('should convert array of color name type', () => {
       const colorFromStringArray = processColorArray(['red', 'white', 'black']);
       const expectedIntArray = [0xffff0000, 0xffffffff, 0xff000000].map(
         platformSpecific,
@@ -34,7 +34,7 @@ describe('processColorArray', () => {
       expect(colorFromStringArray).toEqual(expectedIntArray);
     });
 
-    it('should convert array of color type rgb(x, y, z)', () => {
+    test('should convert array of color type rgb(x, y, z)', () => {
       const colorFromRGBArray = processColorArray([
         'rgb(10, 20, 30)',
         'rgb(30, 20, 10)',
@@ -46,7 +46,7 @@ describe('processColorArray', () => {
       expect(colorFromRGBArray).toEqual(platformSpecific(expectedIntArray));
     });
 
-    it('should convert array of color type hsl(x, y%, z%)', () => {
+    test('should convert array of color type hsl(x, y%, z%)', () => {
       const colorFromHSLArray = processColorArray([
         'hsl(318, 69%, 55%)',
         'hsl(218, 59%, 33%)',
@@ -58,12 +58,12 @@ describe('processColorArray', () => {
       expect(colorFromHSLArray).toEqual(platformSpecific(expectedIntArray));
     });
 
-    it('should return null if no array', () => {
+    test('should return null if no array', () => {
       const colorFromNoArray = processColorArray(null);
       expect(colorFromNoArray).toEqual(null);
     });
 
-    it('converts invalid colors to transparent', () => {
+    test('converts invalid colors to transparent', () => {
       const spy = jest.spyOn(console, 'error').mockReturnValue(undefined);
 
       const colors = ['red', '???', null, undefined, false];
@@ -86,7 +86,7 @@ describe('processColorArray', () => {
 
   describe('iOS', () => {
     if (OS === 'ios') {
-      it('should convert array of iOS PlatformColor colors', () => {
+      test('should convert array of iOS PlatformColor colors', () => {
         const colorFromArray = processColorArray([
           PlatformColorIOS('systemColorWhite'),
           PlatformColorIOS('systemColorBlack'),
@@ -98,7 +98,7 @@ describe('processColorArray', () => {
         expect(colorFromArray).toEqual(expectedColorValueArray);
       });
 
-      it('should process iOS Dynamic colors', () => {
+      test('should process iOS Dynamic colors', () => {
         const colorFromArray = processColorArray([
           DynamicColorIOS({light: 'black', dark: 'white'}),
           DynamicColorIOS({light: 'white', dark: 'black'}),
@@ -114,7 +114,7 @@ describe('processColorArray', () => {
 
   describe('Android', () => {
     if (OS === 'android') {
-      it('should convert array of Android PlatformColor colors', () => {
+      test('should convert array of Android PlatformColor colors', () => {
         const colorFromArray = processColorArray([
           PlatformColorAndroid('?attr/colorPrimary'),
           PlatformColorAndroid('?colorPrimaryDark'),

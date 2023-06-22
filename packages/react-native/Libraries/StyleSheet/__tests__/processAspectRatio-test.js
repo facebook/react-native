@@ -13,13 +13,13 @@
 const processAspectRatio = require('../processAspectRatio');
 
 describe('processAspectRatio', () => {
-  it('should accept numbers', () => {
+  test('should accept numbers', () => {
     expect(processAspectRatio(1)).toBe(1);
     expect(processAspectRatio(0)).toBe(0);
     expect(processAspectRatio(1.5)).toBe(1.5);
   });
 
-  it('should accept string numbers', () => {
+  test('should accept string numbers', () => {
     expect(processAspectRatio('1')).toBe(1);
     expect(processAspectRatio('0')).toBe(0);
     expect(processAspectRatio('1.5')).toBe(1.5);
@@ -28,13 +28,13 @@ describe('processAspectRatio', () => {
     expect(processAspectRatio('   0    ')).toBe(0);
   });
 
-  it('should accept `auto`', () => {
+  test('should accept `auto`', () => {
     expect(processAspectRatio('auto')).toBe(undefined);
     expect(processAspectRatio(' auto')).toBe(undefined);
     expect(processAspectRatio(' auto  ')).toBe(undefined);
   });
 
-  it('should accept ratios', () => {
+  test('should accept ratios', () => {
     expect(processAspectRatio('+1/1')).toBe(1);
     expect(processAspectRatio('0 / 10')).toBe(0);
     expect(processAspectRatio('117/ 13')).toBe(9);
@@ -42,20 +42,20 @@ describe('processAspectRatio', () => {
     expect(processAspectRatio('1/0')).toBe(Infinity);
   });
 
-  it('should not accept invalid formats', () => {
+  test('should not accept invalid formats', () => {
     expect(() => processAspectRatio('0a')).toThrowErrorMatchingSnapshot();
     expect(() => processAspectRatio('1 / 1 1')).toThrowErrorMatchingSnapshot();
     expect(() => processAspectRatio('auto 1/1')).toThrowErrorMatchingSnapshot();
   });
 
-  it('should ignore non string falsy types', () => {
+  test('should ignore non string falsy types', () => {
     const invalidThings = [undefined, null, false];
     invalidThings.forEach(thing => {
       expect(processAspectRatio(thing)).toBe(undefined);
     });
   });
 
-  it('should not accept non string truthy types', () => {
+  test('should not accept non string truthy types', () => {
     const invalidThings = [() => {}, [1, 2, 3], {}];
     invalidThings.forEach(thing => {
       expect(() => processAspectRatio(thing)).toThrowErrorMatchingSnapshot();

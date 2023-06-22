@@ -67,7 +67,7 @@ beforeEach(() => {
 
 describe('wrapNullable', () => {
   describe('when nullable is true', () => {
-    it('returns nullable type annotation', () => {
+    test('returns nullable type annotation', () => {
       const result = wrapNullable(true, {
         type: 'BooleanTypeAnnotation',
       });
@@ -82,7 +82,7 @@ describe('wrapNullable', () => {
     });
   });
   describe('when nullable is false', () => {
-    it('returns non nullable type annotation', () => {
+    test('returns non nullable type annotation', () => {
       const result = wrapNullable(false, {
         type: 'BooleanTypeAnnotation',
       });
@@ -97,7 +97,7 @@ describe('wrapNullable', () => {
 
 describe('unwrapNullable', () => {
   describe('when type annotation is nullable', () => {
-    it('returns original type annotation', () => {
+    test('returns original type annotation', () => {
       // $FlowFixMe[incompatible-call]
       const result = unwrapNullable<{
         type: 'NullableTypeAnnotation',
@@ -119,7 +119,7 @@ describe('unwrapNullable', () => {
     });
   });
   describe('when type annotation is not nullable', () => {
-    it('returns original type annotation', () => {
+    test('returns original type annotation', () => {
       const result = unwrapNullable<{type: 'BooleanTypeAnnotation'}>({
         type: 'BooleanTypeAnnotation',
       });
@@ -138,7 +138,7 @@ describe('unwrapNullable', () => {
 describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
   const moduleName = 'testModuleName';
 
-  it("doesn't throw any Error when typeAnnotation has exactly one typeParameter", () => {
+  test("doesn't throw any Error when typeAnnotation has exactly one typeParameter", () => {
     const typeAnnotation = {
       typeParameters: {
         type: 'TypeParameterInstantiation',
@@ -154,7 +154,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     ).not.toThrow();
   });
 
-  it('throws a MissingTypeParameterGenericParserError if typeParameters is null', () => {
+  test('throws a MissingTypeParameterGenericParserError if typeParameters is null', () => {
     const typeAnnotation = {
       typeParameters: null,
       id: {
@@ -172,7 +172,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     );
   });
 
-  it('throws an error if typeAnnotation.typeParameters.type is not equal to parser.typeParameterInstantiation', () => {
+  test('throws an error if typeAnnotation.typeParameters.type is not equal to parser.typeParameterInstantiation', () => {
     const flowTypeAnnotation = {
       typeParameters: {
         type: 'wrongType',
@@ -193,7 +193,7 @@ describe('assertGenericTypeAnnotationHasExactlyOneTypeParameter', () => {
     );
   });
 
-  it("throws a MoreThanOneTypeParameterGenericParserError if typeParameters don't have 1 exactly parameter", () => {
+  test("throws a MoreThanOneTypeParameterGenericParserError if typeParameters don't have 1 exactly parameter", () => {
     const typeAnnotationWithTwoParams = {
       typeParameters: {
         params: [1, 2],
@@ -246,7 +246,7 @@ describe('isObjectProperty', () => {
 
   describe("when 'language' is 'Flow'", () => {
     const language: ParserType = 'Flow';
-    it("returns 'true' if 'property.type' is 'ObjectTypeProperty'", () => {
+    test("returns 'true' if 'property.type' is 'ObjectTypeProperty'", () => {
       const result = isObjectProperty(
         {
           type: 'ObjectTypeProperty',
@@ -257,7 +257,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'false' if 'property.type' is not 'ObjectTypeProperty'", () => {
+    test("returns 'false' if 'property.type' is not 'ObjectTypeProperty'", () => {
       const result = isObjectProperty(
         {
           type: 'notObjectTypeProperty',
@@ -271,7 +271,7 @@ describe('isObjectProperty', () => {
 
   describe("when 'language' is 'TypeScript'", () => {
     const language: ParserType = 'TypeScript';
-    it("returns 'true' if 'property.type' is 'TSPropertySignature'", () => {
+    test("returns 'true' if 'property.type' is 'TSPropertySignature'", () => {
       const result = isObjectProperty(
         {
           type: 'TSPropertySignature',
@@ -282,7 +282,7 @@ describe('isObjectProperty', () => {
       expect(result).toEqual(true);
     });
 
-    it("returns 'false' if 'property.type' is not 'TSPropertySignature'", () => {
+    test("returns 'false' if 'property.type' is not 'TSPropertySignature'", () => {
       const result = isObjectProperty(
         {
           type: 'notTSPropertySignature',
@@ -306,7 +306,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'Flow'", () => {
     const language: ParserType = 'Flow';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty'.", () => {
+    test("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'ObjectTypeProperty'.", () => {
       const property = {
         type: 'notObjectTypeProperty',
         typeAnnotation: {
@@ -341,7 +341,7 @@ describe('parseObjectProperty', () => {
 
   describe("when 'language' is 'TypeScript'", () => {
     const language: ParserType = 'TypeScript';
-    it("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature'.", () => {
+    test("throws an 'UnsupportedObjectPropertyTypeAnnotationParserError' error if 'property.type' is not 'TSPropertySignature'.", () => {
       const property = {
         type: 'notTSPropertySignature',
         typeAnnotation: {
@@ -429,7 +429,7 @@ describe('buildSchemaFromConfigType', () => {
     );
 
   describe('when configType is none', () => {
-    it('returns an empty schema', () => {
+    test('returns an empty schema', () => {
       const schema = buildSchemaFromConfigTypeHelper('none');
 
       expect(schema).toEqual({modules: {}});
@@ -437,7 +437,7 @@ describe('buildSchemaFromConfigType', () => {
   });
 
   describe('when configType is component', () => {
-    it('calls buildComponentSchema with ast and wrapComponentSchema with the result', () => {
+    test('calls buildComponentSchema with ast and wrapComponentSchema with the result', () => {
       buildSchemaFromConfigTypeHelper('component');
 
       expect(buildComponentSchemaMock).toHaveBeenCalledTimes(1);
@@ -451,7 +451,7 @@ describe('buildSchemaFromConfigType', () => {
 
   describe('when configType is module', () => {
     describe('when filename is undefined', () => {
-      it('throws an error', () => {
+      test('throws an error', () => {
         expect(() => buildSchemaFromConfigTypeHelper('module')).toThrow(
           'Filepath expected while parasing a module',
         );
@@ -459,7 +459,7 @@ describe('buildSchemaFromConfigType', () => {
     });
 
     describe('when filename is null', () => {
-      it('throws an error', () => {
+      test('throws an error', () => {
         expect(() => buildSchemaFromConfigTypeHelper('module', null)).toThrow(
           'Filepath expected while parasing a module',
         );
@@ -468,7 +468,7 @@ describe('buildSchemaFromConfigType', () => {
 
     describe('when filename is defined and not null', () => {
       describe('when buildModuleSchema throws', () => {
-        it('throws the error', () => {
+        test('throws the error', () => {
           const parserError = new ParserError(
             'moduleName',
             astMock,
@@ -485,7 +485,7 @@ describe('buildSchemaFromConfigType', () => {
       });
 
       describe('when buildModuleSchema returns null', () => {
-        it('throws an error', () => {
+        test('throws an error', () => {
           // $FlowIgnore[incompatible-call] - This is to test an invariant
           buildModuleSchemaMock.mockReturnValueOnce(null);
 
@@ -498,7 +498,7 @@ describe('buildSchemaFromConfigType', () => {
       });
 
       describe('when buildModuleSchema returns a schema', () => {
-        it('calls buildModuleSchema with ast and wrapModuleSchema with the result', () => {
+        test('calls buildModuleSchema with ast and wrapModuleSchema with the result', () => {
           buildSchemaFromConfigTypeHelper('module', 'filename');
 
           expect(buildModuleSchemaMock).toHaveBeenCalledTimes(1);
@@ -519,7 +519,7 @@ describe('buildSchemaFromConfigType', () => {
 
   describe('isModuleRegistryCall', () => {
     describe('when node is not of CallExpression type', () => {
-      it('returns false', () => {
+      test('returns false', () => {
         const node = {
           type: 'NotCallExpression',
         };
@@ -529,7 +529,7 @@ describe('buildSchemaFromConfigType', () => {
 
     describe('when node is of CallExpressionType', () => {
       describe('when callee type is not of MemberExpression type', () => {
-        it('returns false', () => {
+        test('returns false', () => {
           const node = {
             type: 'CallExpression',
             callee: {
@@ -542,7 +542,7 @@ describe('buildSchemaFromConfigType', () => {
 
       describe('when callee type is of MemberExpression type', () => {
         describe('when memberExpression has an object of type different than "Identifier"', () => {
-          it('returns false', () => {
+          test('returns false', () => {
             const node = {
               type: 'CallExpression',
               callee: {
@@ -558,7 +558,7 @@ describe('buildSchemaFromConfigType', () => {
         });
 
         describe('when memberExpression has an object of name different than "TurboModuleRegistry"', () => {
-          it('returns false', () => {
+          test('returns false', () => {
             const node = {
               type: 'CallExpression',
               callee: {
@@ -575,7 +575,7 @@ describe('buildSchemaFromConfigType', () => {
 
         describe('when memberExpression has an object of type "Identifier" and name "TurboModuleRegistry', () => {
           describe('when memberExpression has a property of type different than "Identifier"', () => {
-            it('returns false', () => {
+            test('returns false', () => {
               const node = {
                 type: 'CallExpression',
                 callee: {
@@ -595,7 +595,7 @@ describe('buildSchemaFromConfigType', () => {
           });
 
           describe('when memberExpression has a property of name different than "get" or "getEnforcing', () => {
-            it('returns false', () => {
+            test('returns false', () => {
               const node = {
                 type: 'CallExpression',
                 callee: {
@@ -616,7 +616,7 @@ describe('buildSchemaFromConfigType', () => {
 
           describe('when memberExpression has a property of type "Identifier" and of name "get" or "getEnforcing', () => {
             describe('when memberExpression is computed', () => {
-              it('returns false', () => {
+              test('returns false', () => {
                 const node = {
                   type: 'CallExpression',
                   callee: {
@@ -637,7 +637,7 @@ describe('buildSchemaFromConfigType', () => {
             });
 
             describe('when memberExpression is not computed', () => {
-              it('returns true', () => {
+              test('returns true', () => {
                 const node = {
                   type: 'CallExpression',
                   callee: {
@@ -669,7 +669,7 @@ describe('buildSchema', () => {
   describe('when there is no codegenNativeComponent and no TurboModule', () => {
     const contents = '';
 
-    it('returns an empty module', () => {
+    test('returns an empty module', () => {
       const schema = buildSchema(
         contents,
         'fileName',
@@ -702,7 +702,7 @@ describe('buildSchema', () => {
       ): HostComponent<ModuleProps>);
     `;
 
-    it('returns a module with good properties', () => {
+    test('returns a module with good properties', () => {
       const schema = buildSchema(
         contents,
         'fileName',
@@ -756,7 +756,7 @@ describe('buildSchema', () => {
       ): Spec);
     `;
 
-    it('returns a module with good properties', () => {
+    test('returns a module with good properties', () => {
       const schema = buildSchema(
         contents,
         'fileName',
@@ -819,7 +819,7 @@ describe('parseModuleName', () => {
   );
 
   describe('throwIfUnusedModuleInterfaceParserError', () => {
-    it("throws an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'empty'", () => {
+    test("throws an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'empty'", () => {
       const expected = new UnusedModuleInterfaceParserError(
         hasteModuleName,
         moduleSpecs[0],
@@ -830,7 +830,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'NOT empty'", () => {
+    test("doesn't throw an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'NOT empty'", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -843,7 +843,7 @@ describe('parseModuleName', () => {
   });
 
   describe('throwIfMoreThanOneModuleRegistryCalls', () => {
-    it("throws an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains more than one 'callExpression'", () => {
+    test("throws an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains more than one 'callExpression'", () => {
       const flowAstWithTwoCallExpressions = parser.getAst(
         "export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule'); TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');",
       );
@@ -867,7 +867,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains extactly one 'callExpression'", () => {
+    test("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains extactly one 'callExpression'", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -880,7 +880,7 @@ describe('parseModuleName', () => {
   });
 
   describe('throwIfWrongNumberOfCallExpressionArgs', () => {
-    it("throws an 'IncorrectModuleRegistryCallArityParserError' error if wrong number of call expression args is used", () => {
+    test("throws an 'IncorrectModuleRegistryCallArityParserError' error if wrong number of call expression args is used", () => {
       const flowAstWithZeroCallExpressionArgs = parser.getAst(
         'export default TurboModuleRegistry.getEnforcing();',
       );
@@ -908,7 +908,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'IncorrectModuleRegistryCallArityParserError' error if correct number of call expression args is used", () => {
+    test("doesn't throw an 'IncorrectModuleRegistryCallArityParserError' error if correct number of call expression args is used", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -921,7 +921,7 @@ describe('parseModuleName', () => {
   });
 
   describe('throwIfIncorrectModuleRegistryCallArgument', () => {
-    it("throws an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is NOT a string literal", () => {
+    test("throws an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is NOT a string literal", () => {
       const flowAstWithNonStringLiteralCallExpressionArg = parser.getAst(
         'export default TurboModuleRegistry.getEnforcing(Spec);',
       );
@@ -947,7 +947,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is a string literal", () => {
+    test("doesn't throw an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is a string literal", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -960,7 +960,7 @@ describe('parseModuleName', () => {
   });
 
   describe('throwIfUntypedModule', () => {
-    it("throws an 'UntypedModuleRegistryCallParserError' error if call expression is untyped", () => {
+    test("throws an 'UntypedModuleRegistryCallParserError' error if call expression is untyped", () => {
       const flowAstWithUntypedCallExpression = parser.getAst(
         "export default TurboModuleRegistry.getEnforcing('SampleTurboModule');",
       );
@@ -985,7 +985,7 @@ describe('parseModuleName', () => {
       ).toThrow(expected);
     });
 
-    it("doesn't throw an 'UntypedModuleRegistryCallParserError' error if call expression is typed", () => {
+    test("doesn't throw an 'UntypedModuleRegistryCallParserError' error if call expression is typed", () => {
       expect(() =>
         parseModuleName(
           hasteModuleName,
@@ -998,7 +998,7 @@ describe('parseModuleName', () => {
   });
 
   describe('when flow ast with valid module is passed', () => {
-    it("returns the correct ModuleName and doesn't throw any error", () => {
+    test("returns the correct ModuleName and doesn't throw any error", () => {
       const moduleType = 'Spec';
       const moduleName = 'SampleTurboModule';
       const flowAstWithValidModule = parser.getAst(
@@ -1046,7 +1046,7 @@ describe('buildModuleSchema', () => {
   `;
 
   describe('throwIfModuleInterfaceNotFound', () => {
-    it('should throw ModuleInterfaceNotFoundParserError if no module interface is found', () => {
+    test('should throw ModuleInterfaceNotFoundParserError if no module interface is found', () => {
       const ast = flowParser.getAst('');
       const expected = new ModuleInterfaceNotFoundParserError(
         hasteModuleName,
@@ -1065,7 +1065,7 @@ describe('buildModuleSchema', () => {
       ).toThrow(expected);
     });
 
-    it('should not throw ModuleInterfaceNotFoundParserError if module interface is found', () => {
+    test('should not throw ModuleInterfaceNotFoundParserError if module interface is found', () => {
       const ast = flowParser.getAst(NATIVE_MODULE);
 
       expect(() =>
@@ -1081,7 +1081,7 @@ describe('buildModuleSchema', () => {
   });
 
   describe('throwIfMoreThanOneModuleInterfaceParser', () => {
-    it('should throw an error if mulitple module interfaces are found', () => {
+    test('should throw an error if mulitple module interfaces are found', () => {
       const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
         import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
@@ -1115,7 +1115,7 @@ describe('buildModuleSchema', () => {
       ).toThrow(expected);
     });
 
-    it('should not throw an error if exactly one module interface is found', () => {
+    test('should not throw an error if exactly one module interface is found', () => {
       const ast = flowParser.getAst(NATIVE_MODULE);
 
       expect(() =>
@@ -1131,7 +1131,7 @@ describe('buildModuleSchema', () => {
   });
 
   describe('throwIfModuleInterfaceIsMisnamed', () => {
-    it('should throw an error if module interface is misnamed', () => {
+    test('should throw an error if module interface is misnamed', () => {
       const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
         import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
@@ -1168,7 +1168,7 @@ describe('buildModuleSchema', () => {
       ).toThrow(expected);
     });
 
-    it('should not throw an error if module interface is correctly named', () => {
+    test('should not throw an error if module interface is correctly named', () => {
       const ast = flowParser.getAst(NATIVE_MODULE);
 
       expect(() =>
@@ -1183,7 +1183,7 @@ describe('buildModuleSchema', () => {
     });
   });
 
-  it('should return valid module schema', () => {
+  test('should return valid module schema', () => {
     const ast = flowParser.getAst(NATIVE_MODULE);
     const schmeaMock = {
       aliasMap: {},
@@ -1233,7 +1233,7 @@ describe('createComponentConfig', () => {
   };
 
   describe('when commandTypeNames contains an object as first element', () => {
-    it('returns expected config', () => {
+    test('returns expected config', () => {
       const commandsTypeNames = [
         {
           commandTypeName: 'testTypeName',
@@ -1254,7 +1254,7 @@ describe('createComponentConfig', () => {
   });
 
   describe('when commandTypeNames is an empty array', () => {
-    it('returns the foundConfig and null for the command parameters', () => {
+    test('returns the foundConfig and null for the command parameters', () => {
       // $FlowFixMe[missing-empty-array-annot]
       const commandsTypeNames = [];
 
@@ -1272,12 +1272,12 @@ describe('createComponentConfig', () => {
 });
 
 describe('getCommandOptions', () => {
-  it('returns null when commandOptionsExpression is null', () => {
+  test('returns null when commandOptionsExpression is null', () => {
     const result = getCommandOptions(null);
     expect(result).toBeNull();
   });
 
-  it('parses and returns command options correctly', () => {
+  test('parses and returns command options correctly', () => {
     const commandOptionsExpression = {
       properties: [
         {
@@ -1304,7 +1304,7 @@ describe('getCommandOptions', () => {
     });
   });
 
-  it('should throw an error if command options are not defined correctly', () => {
+  test('should throw an error if command options are not defined correctly', () => {
     const commandOptionsExpression = {
       properties: null,
     };
@@ -1315,7 +1315,7 @@ describe('getCommandOptions', () => {
 });
 
 describe('getOptions', () => {
-  it('returns null if optionsExpression is falsy', () => {
+  test('returns null if optionsExpression is falsy', () => {
     expect(getOptions(null)).toBeNull();
     expect(getOptions(undefined)).toBeNull();
     expect(getOptions(false)).toBeNull();
@@ -1323,7 +1323,7 @@ describe('getOptions', () => {
     expect(getOptions('')).toBeNull();
   });
 
-  it('parses and returns options correctly if codegen options are defined correctly', () => {
+  test('parses and returns options correctly if codegen options are defined correctly', () => {
     const optionsExpression = {
       properties: [
         {
@@ -1347,7 +1347,7 @@ describe('getOptions', () => {
     });
   });
 
-  it('throws an error if codegen options are not defined correctly', () => {
+  test('throws an error if codegen options are not defined correctly', () => {
     const optionsExpression = {
       properties: null,
     };
@@ -1356,7 +1356,7 @@ describe('getOptions', () => {
     );
   });
 
-  it('throws an error if both paperComponentName and paperComponentNameDeprecated are used', () => {
+  test('throws an error if both paperComponentName and paperComponentNameDeprecated are used', () => {
     const optionsExpression = {
       properties: [
         {
@@ -1374,7 +1374,7 @@ describe('getOptions', () => {
     );
   });
 
-  it('returns options if only paperComponentName is used', () => {
+  test('returns options if only paperComponentName is used', () => {
     const optionsExpression = {
       properties: [
         {
@@ -1387,7 +1387,7 @@ describe('getOptions', () => {
     expect(getOptions(optionsExpression)).toEqual(expectedOptions);
   });
 
-  it('returns options if only paperComponentNameDeprecated is used', () => {
+  test('returns options if only paperComponentNameDeprecated is used', () => {
     const optionsExpression = {
       properties: [
         {
@@ -1402,7 +1402,7 @@ describe('getOptions', () => {
 });
 
 describe('getCommandTypeNameAndOptionsExpression', () => {
-  it("returns undefined when namedExport isn't well formatted", () => {
+  test("returns undefined when namedExport isn't well formatted", () => {
     expect(
       getCommandTypeNameAndOptionsExpression(null, flowParser),
     ).toBeUndefined();
@@ -1416,7 +1416,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
     ).toBeUndefined();
   });
 
-  it('returns undefined when the called expression name is not codegenNativeCommands', () => {
+  test('returns undefined when the called expression name is not codegenNativeCommands', () => {
     const namedExportMock = {
       declaration: {
         declarations: [
@@ -1436,7 +1436,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
     ).toBeUndefined();
   });
 
-  it("throws when the called expression doesn't have 1 argument", () => {
+  test("throws when the called expression doesn't have 1 argument", () => {
     const namedExportMock = {
       declaration: {
         declarations: [
@@ -1461,7 +1461,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
     );
   });
 
-  it('throws when the type of the argument is not a generic type annotation', () => {
+  test('throws when the type of the argument is not a generic type annotation', () => {
     const namedExportMock = {
       declaration: {
         declarations: [
@@ -1487,7 +1487,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
     );
   });
 
-  it('returns the command TypeName and options expression when the named export is valid', () => {
+  test('returns the command TypeName and options expression when the named export is valid', () => {
     const commandTypeName = 'MyCommandType';
     const commandOptionsExpression = {
       type: 'ObjectExpression',
@@ -1528,7 +1528,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
   });
 
   describe('propertyNames', () => {
-    it('returns propertyNames with valid properties', () => {
+    test('returns propertyNames with valid properties', () => {
       const properties = [
         {key: {name: 'testName'}},
         {key: {name: 'testName2'}},
@@ -1537,7 +1537,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
       expect(propertyNames(properties)).toEqual(expected);
     });
 
-    it('returns empty propertyNames with incorrect properties', () => {
+    test('returns empty propertyNames with incorrect properties', () => {
       const properties = [
         {key: {invalid: 'testName'}},
         {key: {invalid: 'testName2'}},
@@ -1548,7 +1548,7 @@ describe('getCommandTypeNameAndOptionsExpression', () => {
 });
 
 describe('getTypeResolutionStatus', () => {
-  it('returns type resolution status for a type declaration', () => {
+  test('returns type resolution status for a type declaration', () => {
     const typeAnnotation = {
       id: {
         name: 'TypeAnnotationName',
@@ -1563,7 +1563,7 @@ describe('getTypeResolutionStatus', () => {
     });
   });
 
-  it('returns type resolution status for an enum declaration', () => {
+  test('returns type resolution status for an enum declaration', () => {
     const typeAnnotation = {
       id: {
         name: 'TypeAnnotationName',
@@ -1580,7 +1580,7 @@ describe('getTypeResolutionStatus', () => {
 });
 
 describe('handleGenericTypeAnnotation', () => {
-  it('returns when TypeAnnotation is a type declaration', () => {
+  test('returns when TypeAnnotation is a type declaration', () => {
     const typeAnnotation = {
       id: {
         name: 'TypeAnnotationName',
@@ -1610,7 +1610,7 @@ describe('handleGenericTypeAnnotation', () => {
     });
   });
 
-  it('returns when TypeAnnotation is an enum declaration', () => {
+  test('returns when TypeAnnotation is an enum declaration', () => {
     const typeAnnotation = {
       id: {
         name: 'TypeAnnotationName',
@@ -1640,7 +1640,7 @@ describe('handleGenericTypeAnnotation', () => {
     });
   });
 
-  it('throws when the non GenericTypeAnnotation is unsupported', () => {
+  test('throws when the non GenericTypeAnnotation is unsupported', () => {
     const typeAnnotation = {
       type: 'UnsupportedTypeAnnotation',
       id: {

@@ -12,7 +12,7 @@ import NativePerformanceObserverMock from '../__mocks__/NativePerformanceObserve
 import {RawPerformanceEntryTypeValues} from '../RawPerformanceEntry';
 
 describe('NativePerformanceObserver', () => {
-  it('correctly starts and stops listening to entries in a nominal scenario', async () => {
+  test('correctly starts and stops listening to entries in a nominal scenario', async () => {
     NativePerformanceObserverMock.startReporting(
       RawPerformanceEntryTypeValues.MARK,
     );
@@ -54,7 +54,7 @@ describe('NativePerformanceObserver', () => {
     NativePerformanceObserverMock.stopReporting('mark');
   });
 
-  it('correctly clears/gets entries', async () => {
+  test('correctly clears/gets entries', async () => {
     NativePerformanceObserverMock.logRawEntry({
       name: 'mark1',
       entryType: RawPerformanceEntryTypeValues.MARK,

@@ -20,7 +20,7 @@ describe('GenerateModuleMm', () => {
     .forEach(fixtureName => {
       const fixture = fixtures[fixtureName];
 
-      it(`can generate fixture ${fixtureName}`, () => {
+      test(`can generate fixture ${fixtureName}`, () => {
         const output = generator.generate(
           fixtureName,
           fixture,

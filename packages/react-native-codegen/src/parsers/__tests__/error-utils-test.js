@@ -56,7 +56,7 @@ const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
 
 describe('throwIfModuleInterfaceIsMisnamed', () => {
-  it("don't throw error if module interface name is Spec", () => {
+  test("don't throw error if module interface name is Spec", () => {
     const nativeModuleName = 'moduleName';
     const specId = {name: 'Spec'};
     const parserType = 'Flow';
@@ -65,7 +65,7 @@ describe('throwIfModuleInterfaceIsMisnamed', () => {
       throwIfModuleInterfaceIsMisnamed(nativeModuleName, specId, parserType);
     }).not.toThrow(MisnamedModuleInterfaceParserError);
   });
-  it('throw error if module interface is misnamed', () => {
+  test('throw error if module interface is misnamed', () => {
     const nativeModuleName = 'moduleName';
     const specId = {name: 'Name'};
     const parserType = 'TypeScript';
@@ -77,7 +77,7 @@ describe('throwIfModuleInterfaceIsMisnamed', () => {
 });
 
 describe('throwIfModuleInterfaceNotFound', () => {
-  it('throw error if there are zero module specs', () => {
+  test('throw error if there are zero module specs', () => {
     const nativeModuleName = 'moduleName';
     const specId = {name: 'Name'};
     const parserType = 'TypeScript';
@@ -87,7 +87,7 @@ describe('throwIfModuleInterfaceNotFound', () => {
     }).toThrow(ModuleInterfaceNotFoundParserError);
   });
 
-  it("don't throw error if there is at least one module spec", () => {
+  test("don't throw error if there is at least one module spec", () => {
     const nativeModuleName = 'moduleName';
     const specId = {name: 'Spec'};
     const parserType = 'Flow';
@@ -99,7 +99,7 @@ describe('throwIfModuleInterfaceNotFound', () => {
 });
 
 describe('throwIfMoreThanOneModuleRegistryCalls', () => {
-  it('throw error if module registry calls more than one', () => {
+  test('throw error if module registry calls more than one', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [
       {name: 'callExpression1'},
@@ -114,7 +114,7 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
       );
     }).toThrow(MoreThanOneModuleRegistryCallsParserError);
   });
-  it("don't throw error if single module registry call", () => {
+  test("don't throw error if single module registry call", () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
 
@@ -129,7 +129,7 @@ describe('throwIfMoreThanOneModuleRegistryCalls', () => {
 });
 
 describe('throwIfUnusedModuleInterfaceParserError', () => {
-  it('throw error if unused module', () => {
+  test('throw error if unused module', () => {
     const nativeModuleName = 'moduleName';
     const callExpressions: Array<$FlowFixMe> = [];
     const spec = {name: 'Spec'};
@@ -142,7 +142,7 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
     }).toThrow(UnusedModuleInterfaceParserError);
   });
 
-  it("don't throw error if module is used", () => {
+  test("don't throw error if module is used", () => {
     const nativeModuleName = 'moduleName';
     const callExpressions = [{name: 'callExpression1'}];
     const spec = {name: 'Spec'};
@@ -157,7 +157,7 @@ describe('throwIfUnusedModuleInterfaceParserError', () => {
 });
 
 describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
-  it('throw error if wrong number of call expression args is used', () => {
+  test('throw error if wrong number of call expression args is used', () => {
     const nativeModuleName = 'moduleName';
     const flowCallExpression: {argument: Array<$FlowFixMe>} = {argument: []};
     const methodName = 'methodName';
@@ -172,7 +172,7 @@ describe('throwErrorIfWrongNumberOfCallExpressionArgs', () => {
     }).toThrow(IncorrectModuleRegistryCallArityParserError);
   });
 
-  it("don't throw error if correct number of call expression args is used", () => {
+  test("don't throw error if correct number of call expression args is used", () => {
     const nativeModuleName = 'moduleName';
     const flowCallExpression = {argument: ['argument']};
     const methodName = 'methodName';
@@ -195,7 +195,7 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
     nativeModuleName = 'moduleName',
     invalidReturnType = 'FunctionTypeAnnotation';
 
-  it('do not throw error if cxxOnly is true', () => {
+  test('do not throw error if cxxOnly is true', () => {
     const cxxOnly = true,
       returnType = 'FunctionTypeAnnotation';
 
@@ -210,7 +210,7 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
     }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
 
-  it('do not throw error if returnTypeAnnotation type is not FunctionTypeAnnotation', () => {
+  test('do not throw error if returnTypeAnnotation type is not FunctionTypeAnnotation', () => {
     const cxxOnly = false,
       returnType = '';
 
@@ -225,7 +225,7 @@ describe('throwIfUnsupportedFunctionReturnTypeAnnotationParserError', () => {
     }).not.toThrow(UnsupportedFunctionReturnTypeAnnotationParserError);
   });
 
-  it('throw error if cxxOnly is false and returnTypeAnnotation type is FunctionTypeAnnotation', () => {
+  test('throw error if cxxOnly is false and returnTypeAnnotation type is FunctionTypeAnnotation', () => {
     const cxxOnly = false,
       returnType = 'FunctionTypeAnnotation';
 
@@ -248,7 +248,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
   const flowParser = new FlowParser();
   const typescriptParser = new TypeScriptParser();
 
-  it('throw error if flowTypeArguments type is incorrect', () => {
+  test('throw error if flowTypeArguments type is incorrect', () => {
     const flowTypeArguments = {
       type: '',
       params: [
@@ -272,7 +272,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params length is not 1', () => {
+  test('throw error if flowTypeArguments params length is not 1', () => {
     const flowTypeArguments: $FlowFixMe = {
       type: 'TypeParameterInstantiation',
       params: [],
@@ -289,7 +289,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params type is not GenericTypeAnnotation', () => {
+  test('throw error if flowTypeArguments params type is not GenericTypeAnnotation', () => {
     const flowTypeArguments = {
       type: 'TypeParameterInstantiation',
       params: [
@@ -313,7 +313,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if flowTypeArguments params id name is not Spec', () => {
+  test('throw error if flowTypeArguments params id name is not Spec', () => {
     const flowTypeArguments = {
       type: 'TypeParameterInstantiation',
       params: [
@@ -337,7 +337,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('do not throw error if flowTypeArguments are correct', () => {
+  test('do not throw error if flowTypeArguments are correct', () => {
     const flowTypeArguments = {
       type: 'TypeParameterInstantiation',
       params: [
@@ -361,7 +361,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).not.toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if typeScriptTypeArguments type not correct', () => {
+  test('throw error if typeScriptTypeArguments type not correct', () => {
     const typeScriptTypeArguments = {
       type: '',
       params: [
@@ -385,7 +385,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if typeScriptTypeArguments params length is not equal to 1', () => {
+  test('throw error if typeScriptTypeArguments params length is not equal to 1', () => {
     const typeScriptTypeArguments: $FlowFixMe = {
       type: 'TSTypeParameterInstantiation',
       params: [],
@@ -402,7 +402,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if typeScriptTypeArguments params type is not TSTypeReference', () => {
+  test('throw error if typeScriptTypeArguments params type is not TSTypeReference', () => {
     const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
@@ -426,7 +426,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('throw error if typeScriptTypeArguments params typeName name is not Spec', () => {
+  test('throw error if typeScriptTypeArguments params typeName name is not Spec', () => {
     const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
@@ -450,7 +450,7 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
     }).toThrow(IncorrectModuleRegistryCallTypeParameterParserError);
   });
 
-  it('do not throw error if typeScriptTypeArguments are correct', () => {
+  test('do not throw error if typeScriptTypeArguments are correct', () => {
     const typeScriptTypeArguments = {
       type: 'TSTypeParameterInstantiation',
       params: [
@@ -479,7 +479,7 @@ describe('throwIfIncorrectModuleRegistryCallArgument', () => {
   const nativeModuleName = 'moduleName';
   const methodName = 'methodName';
 
-  it('throw error if callExpressionArg type is unsupported in Flow', () => {
+  test('throw error if callExpressionArg type is unsupported in Flow', () => {
     const callExpressionArg = {type: 'NotLiteral'};
     expect(() => {
       throwIfIncorrectModuleRegistryCallArgument(
@@ -490,7 +490,7 @@ describe('throwIfIncorrectModuleRegistryCallArgument', () => {
     }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
   });
 
-  it("don't throw error if callExpressionArg type is `Literal` in Flow", () => {
+  test("don't throw error if callExpressionArg type is `Literal` in Flow", () => {
     const callExpressionArg = {type: 'Literal'};
     expect(() => {
       throwIfIncorrectModuleRegistryCallArgument(
@@ -501,7 +501,7 @@ describe('throwIfIncorrectModuleRegistryCallArgument', () => {
     }).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
   });
 
-  it('throw error if callExpressionArg type is unsupported in TypeScript', () => {
+  test('throw error if callExpressionArg type is unsupported in TypeScript', () => {
     const callExpressionArg = {type: 'NotStringLiteral'};
     expect(() => {
       throwIfIncorrectModuleRegistryCallArgument(
@@ -512,7 +512,7 @@ describe('throwIfIncorrectModuleRegistryCallArgument', () => {
     }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
   });
 
-  it("don't throw error if callExpressionArg type is `StringLiteral` in TypeScript", () => {
+  test("don't throw error if callExpressionArg type is `StringLiteral` in TypeScript", () => {
     const callExpressionArg = {type: 'StringLiteral'};
     expect(() => {
       throwIfIncorrectModuleRegistryCallArgument(
@@ -530,7 +530,7 @@ describe('throwIfUntypedModule', () => {
   const moduleName = 'moduleName';
   const callExpressions: Array<$FlowFixMe> = [];
 
-  it('should throw error if module does not have a type', () => {
+  test('should throw error if module does not have a type', () => {
     const typeArguments = null;
     expect(() =>
       throwIfUntypedModule(
@@ -543,7 +543,7 @@ describe('throwIfUntypedModule', () => {
     ).toThrowError(UntypedModuleRegistryCallParserError);
   });
 
-  it('should not throw error if module have a type', () => {
+  test('should not throw error if module have a type', () => {
     const typeArguments: $FlowFixMe = {
       type: 'TSTypeParameterInstantiations',
       params: [],
@@ -567,7 +567,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
   const flowParser = new FlowParser();
   const typescriptParser = new TypeScriptParser();
 
-  it("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
+  test("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
     const value = {type: 'FunctionTypeAnnotation'};
 
     expect(() => {
@@ -580,7 +580,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
-  it('throw error if module type is unsupported in Flow', () => {
+  test('throw error if module type is unsupported in Flow', () => {
     const value = {type: ''};
 
     expect(() => {
@@ -593,7 +593,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
       );
     }).toThrow(UnsupportedModulePropertyParserError);
   });
-  it("don't throw error if module type is TSFunctionType in TypeScript", () => {
+  test("don't throw error if module type is TSFunctionType in TypeScript", () => {
     const value = {type: 'TSFunctionType'};
 
     expect(() => {
@@ -606,7 +606,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
-  it("don't throw error if module type is TSMethodSignature in TypeScript", () => {
+  test("don't throw error if module type is TSMethodSignature in TypeScript", () => {
     const value = {type: 'TSMethodSignature'};
 
     expect(() => {
@@ -619,7 +619,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
-  it('throw error if module type is unsupported in TypeScript', () => {
+  test('throw error if module type is unsupported in TypeScript', () => {
     const value = {type: ''};
 
     expect(() => {
@@ -635,7 +635,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
 });
 
 describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
-  it("don't throw error if module specs length is <= 1", () => {
+  test("don't throw error if module specs length is <= 1", () => {
     const nativeModuleName = 'moduleName';
     const moduleSpecs: $ReadOnlyArray<$FlowFixMe> = [];
     const parserType = 'Flow';
@@ -648,7 +648,7 @@ describe('throwIfMoreThanOneModuleInterfaceParserError', () => {
       );
     }).not.toThrow(MoreThanOneModuleInterfaceParserError);
   });
-  it('throw error if module specs is > 1 ', () => {
+  test('throw error if module specs is > 1 ', () => {
     const nativeModuleName = 'moduleName';
     const moduleSpecs = [{id: {name: 'Name-1'}}, {id: {name: 'Name-2'}}];
     const parserType = 'TypeScript';
@@ -667,7 +667,7 @@ describe('throwIfUnsupportedFunctionParamTypeAnnotationParserError', () => {
   const nativeModuleName = 'moduleName';
   const languageParamTypeAnnotation = {type: 'VoidTypeAnnotation'};
   const paramName = 'paramName';
-  it('throws an UnsupportedFunctionParamTypeAnnotationParserError', () => {
+  test('throws an UnsupportedFunctionParamTypeAnnotationParserError', () => {
     const paramTypeAnnotationType = 'VoidTypeAnnotation';
     expect(() => {
       throwIfUnsupportedFunctionParamTypeAnnotationParserError(
@@ -686,7 +686,7 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
   } = require('../errors.js');
   const moduleName = 'moduleName';
 
-  it('throws the error if it is the type is void type annotation', () => {
+  test('throws the error if it is the type is void type annotation', () => {
     expect(() => {
       throwIfArrayElementTypeAnnotationIsUnsupported(
         moduleName,
@@ -697,7 +697,7 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
 
-  it('throws the error if it is the type is promise type annotation', () => {
+  test('throws the error if it is the type is promise type annotation', () => {
     expect(() => {
       throwIfArrayElementTypeAnnotationIsUnsupported(
         moduleName,
@@ -708,7 +708,7 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
 
-  it('throws the error if it is the type is function type annotation', () => {
+  test('throws the error if it is the type is function type annotation', () => {
     expect(() => {
       throwIfArrayElementTypeAnnotationIsUnsupported(
         moduleName,
@@ -719,7 +719,7 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
     }).toThrow(UnsupportedArrayElementTypeAnnotationParserError);
   });
 
-  it('does not throw the error if the type is NativeModuleTypeAnnotation', () => {
+  test('does not throw the error if the type is NativeModuleTypeAnnotation', () => {
     expect(() => {
       throwIfArrayElementTypeAnnotationIsUnsupported(
         moduleName,
@@ -757,7 +757,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
     },
   };
 
-  it('throw error if Partial Not Annotating Type Parameter in Flow', () => {
+  test('throw error if Partial Not Annotating Type Parameter in Flow', () => {
     const types = {};
 
     expect(() => {
@@ -769,7 +769,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
     }).toThrowError('Partials only support annotating a type parameter.');
   });
 
-  it('throw error if Partial Not Annotating Type Parameter in TypeScript', () => {
+  test('throw error if Partial Not Annotating Type Parameter in TypeScript', () => {
     const types = {};
 
     expect(() => {
@@ -781,7 +781,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
     }).toThrowError('Partials only support annotating a type parameter.');
   });
 
-  it('does not throw error if Partial Annotating Type Parameter in Flow', () => {
+  test('does not throw error if Partial Annotating Type Parameter in Flow', () => {
     const types = {TypeDeclaration: {}};
 
     expect(() => {
@@ -793,7 +793,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
     }).not.toThrowError();
   });
 
-  it('does not throw error if Partial Annotating Type Parameter in TypeScript', () => {
+  test('does not throw error if Partial Annotating Type Parameter in TypeScript', () => {
     const types = {TypeDeclaration: {}};
 
     expect(() => {
@@ -807,7 +807,7 @@ describe('throwIfPartialNotAnnotatingTypeParameter', () => {
 });
 
 describe('throwIfPartialWithMoreParameter', () => {
-  it('throw error if Partial does not have exactly one parameter', () => {
+  test('throw error if Partial does not have exactly one parameter', () => {
     const typeAnnotation = {
       type: '',
       typeParameters: {params: [{}, {}]},
@@ -817,7 +817,7 @@ describe('throwIfPartialWithMoreParameter', () => {
     }).toThrowError('Partials only support annotating exactly one parameter.');
   });
 
-  it('does not throw error if Partial has exactly one parameter', () => {
+  test('does not throw error if Partial has exactly one parameter', () => {
     const typeAnnotation = {
       type: '',
       typeParameters: {params: [{}]},
@@ -830,7 +830,7 @@ describe('throwIfPartialWithMoreParameter', () => {
 });
 
 describe('throwIfMoreThanOneCodegenNativecommands', () => {
-  it('throws an error if given more than one codegenNativeCommands', () => {
+  test('throws an error if given more than one codegenNativeCommands', () => {
     const commandsTypeNames = [
       {
         commandTypeName: '',
@@ -846,7 +846,7 @@ describe('throwIfMoreThanOneCodegenNativecommands', () => {
     }).toThrowError('codegenNativeCommands may only be called once in a file');
   });
 
-  it('does not throw an error if given exactly one codegenNativeCommand', () => {
+  test('does not throw an error if given exactly one codegenNativeCommand', () => {
     const commandsTypeNames = [
       {
         commandTypeName: '',
@@ -860,14 +860,14 @@ describe('throwIfMoreThanOneCodegenNativecommands', () => {
 });
 
 describe('throwIfConfigNotfound', () => {
-  it('throws an error if config is not found', () => {
+  test('throws an error if config is not found', () => {
     const configs: Array<{[string]: string}> = [];
     expect(() => {
       throwIfConfigNotfound(configs);
     }).toThrowError('Could not find component config for native component');
   });
 
-  it('does not throw an error if config contains some elements', () => {
+  test('does not throw an error if config contains some elements', () => {
     const configs: Array<{[string]: string}> = [
       {
         propsTypeName: 'testPropsTypeName',
@@ -881,7 +881,7 @@ describe('throwIfConfigNotfound', () => {
 });
 
 describe('throwIfMoreThanOneConfig', () => {
-  it('throws an error if config is not found', () => {
+  test('throws an error if config is not found', () => {
     const configs: Array<{[string]: string}> = [
       {
         propsTypeName: 'testPropsTypeName1',
@@ -897,7 +897,7 @@ describe('throwIfMoreThanOneConfig', () => {
     }).toThrowError('Only one component is supported per file');
   });
 
-  it('does not throw an error if config contains some elements', () => {
+  test('does not throw an error if config contains some elements', () => {
     const configs: Array<{[string]: string}> = [
       {
         propsTypeName: 'testPropsTypeName',
@@ -914,14 +914,14 @@ describe('throwIfEventHasNoName', () => {
   const flowParser = new FlowParser();
   const typescriptParser = new TypeScriptParser();
 
-  it('throws an error if typeAnnotation of event have no name in Flow', () => {
+  test('throws an error if typeAnnotation of event have no name in Flow', () => {
     const typeAnnotation = {};
     expect(() => {
       throwIfEventHasNoName(typeAnnotation, flowParser);
     }).toThrowError(`typeAnnotation of event doesn't have a name`);
   });
 
-  it('does not throw an error if typeAnnotation of event have a name in Flow', () => {
+  test('does not throw an error if typeAnnotation of event have a name in Flow', () => {
     const typeAnnotation = {
       id: {
         name: 'BubblingEventHandler',
@@ -933,7 +933,7 @@ describe('throwIfEventHasNoName', () => {
     }).not.toThrow();
   });
 
-  it('throws an error if typeAnnotation of event have no name in TypeScript', () => {
+  test('throws an error if typeAnnotation of event have no name in TypeScript', () => {
     const typeAnnotation = {};
 
     expect(() => {
@@ -941,7 +941,7 @@ describe('throwIfEventHasNoName', () => {
     }).toThrowError(`typeAnnotation of event doesn't have a name`);
   });
 
-  it('does not throw an error if typeAnnotation of event have a name in TypeScript', () => {
+  test('does not throw an error if typeAnnotation of event have a name in TypeScript', () => {
     const typeAnnotation = {
       typeName: {
         name: 'BubblingEventHandler',
@@ -955,7 +955,7 @@ describe('throwIfEventHasNoName', () => {
 });
 
 describe('throwIfBubblingTypeIsNull', () => {
-  it('throw an error if unable to determine event bubbling type', () => {
+  test('throw an error if unable to determine event bubbling type', () => {
     const bubblingType = null;
     const eventName = 'Event';
 
@@ -966,7 +966,7 @@ describe('throwIfBubblingTypeIsNull', () => {
     );
   });
 
-  it('does not throw an error if able to determine event bubbling type', () => {
+  test('does not throw an error if able to determine event bubbling type', () => {
     const bubblingType = 'direct';
     const eventName = 'Event';
 
@@ -977,7 +977,7 @@ describe('throwIfBubblingTypeIsNull', () => {
 });
 
 describe('throwIfArgumentPropsAreNull', () => {
-  it('throws an error if unable to determine event arguments', () => {
+  test('throws an error if unable to determine event arguments', () => {
     const argumentProps = null;
     const eventName = 'Event';
 
@@ -986,7 +986,7 @@ describe('throwIfArgumentPropsAreNull', () => {
     }).toThrowError(`Unable to determine event arguments for "${eventName}"`);
   });
 
-  it('does not throw an error if able to determine event arguments', () => {
+  test('does not throw an error if able to determine event arguments', () => {
     const argumentProps = [{}];
     const eventName = 'Event';
 
@@ -1000,7 +1000,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
   const flowParser = new FlowParser();
   const typescriptParser = new TypeScriptParser();
 
-  it('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
+  test('throws an error if type argument for codegenNativeCommands is not an interface in Flow', () => {
     const typeAlias = {
       type: '',
     };
@@ -1011,7 +1011,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
     );
   });
 
-  it('does not throw an error if type argument for codegenNativeCommands is an interface in Flow', () => {
+  test('does not throw an error if type argument for codegenNativeCommands is an interface in Flow', () => {
     const typeAlias = {
       type: 'InterfaceDeclaration',
     };
@@ -1020,7 +1020,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
     }).not.toThrow();
   });
 
-  it('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
+  test('throws an error if type argument for codegenNativeCommands is not an interface in Trypscript', () => {
     const typeAlias = {
       type: '',
     };
@@ -1031,7 +1031,7 @@ describe('throwIfTypeAliasIsNotInterface', () => {
     );
   });
 
-  it('does not throw an error if type argument for codegenNativeCommands is an interface in Typescript', () => {
+  test('does not throw an error if type argument for codegenNativeCommands is an interface in Typescript', () => {
     const typeAlias = {
       type: 'TSInterfaceDeclaration',
     };

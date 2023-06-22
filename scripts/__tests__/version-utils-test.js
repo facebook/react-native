@@ -31,19 +31,19 @@ jest.mock('shelljs', () => ({
 
 describe('version-utils', () => {
   describe('isReleaseBranch', () => {
-    it('should identify as release branch', () => {
+    test('should identify as release branch', () => {
       expect(isReleaseBranch('v0.66-stable')).toBe(true);
       expect(isReleaseBranch('0.66-stable')).toBe(true);
       expect(isReleaseBranch('made-up-stuff-stable')).toBe(true);
     });
-    it('should not identify as release branch', () => {
+    test('should not identify as release branch', () => {
       expect(isReleaseBranch('main')).toBe(false);
       expect(isReleaseBranch('pull/32659')).toBe(false);
     });
   });
 
   describe('parseVersion', () => {
-    it('should throw error if buildType is undefined', () => {
+    test('should throw error if buildType is undefined', () => {
       function testInvalidVersion() {
         parseVersion('v0.10.5');
       }
@@ -52,7 +52,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should throw error if buildType is not `release`, `dry-run` or `nightly`', () => {
+    test('should throw error if buildType is not `release`, `dry-run` or `nightly`', () => {
       function testInvalidVersion() {
         parseVersion('v0.10.5', 'invalid_build_type');
       }
@@ -60,7 +60,7 @@ describe('version-utils', () => {
         `"Unsupported build type: invalid_build_type"`,
       );
     });
-    it('should throw error if invalid match with release', () => {
+    test('should throw error if invalid match with release', () => {
       function testInvalidVersion() {
         parseVersion('<invalid version>', 'release');
       }
@@ -68,7 +68,7 @@ describe('version-utils', () => {
         `"You must pass a correctly formatted version; couldn't parse <invalid version>"`,
       );
     });
-    it('should throw error if invalid match with dry-run', () => {
+    test('should throw error if invalid match with dry-run', () => {
       function testInvalidVersion() {
         parseVersion('<invalid version>', 'dry-run');
       }
@@ -76,7 +76,7 @@ describe('version-utils', () => {
         `"You must pass a correctly formatted version; couldn't parse <invalid version>"`,
       );
     });
-    it('should throw error if invalid match with nightly', () => {
+    test('should throw error if invalid match with nightly', () => {
       function testInvalidVersion() {
         parseVersion('<invalid version>', 'nightly');
       }
@@ -85,7 +85,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should parse pre-release version with release and `.`', () => {
+    test('should parse pre-release version with release and `.`', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.66.0-rc.4',
         'release',
@@ -97,7 +97,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.4');
     });
 
-    it('should parse pre-release version with release and `-`', () => {
+    test('should parse pre-release version with release and `-`', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.66.0-rc-4',
         'release',
@@ -109,7 +109,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc-4');
     });
 
-    it('should reject pre-release version with random prerelease pattern', () => {
+    test('should reject pre-release version with random prerelease pattern', () => {
       function testInvalidVersion() {
         parseVersion('0.66.0-something_invalid', 'release');
       }
@@ -118,7 +118,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should parse stable version', () => {
+    test('should parse stable version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.66.0',
         'release',
@@ -130,7 +130,7 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should parse pre-release version from tag', () => {
+    test('should parse pre-release version from tag', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         'v0.66.0-rc.4',
         'release',
@@ -142,7 +142,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.4');
     });
 
-    it('should reject pre-release version from tag with random prerelease pattern', () => {
+    test('should reject pre-release version from tag with random prerelease pattern', () => {
       function testInvalidVersion() {
         parseVersion('v0.66.0-something_invalid', 'release');
       }
@@ -151,7 +151,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should parse stable version from tag', () => {
+    test('should parse stable version from tag', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         'v0.66.0',
         'release',
@@ -163,7 +163,7 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should parse nightly with no prerelease', () => {
+    test('should parse nightly with no prerelease', () => {
       // this should fail
 
       const {version, major, minor, patch, prerelease} = parseVersion(
@@ -178,7 +178,7 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should reject nightly with prerelease but wrong version numbers', () => {
+    test('should reject nightly with prerelease but wrong version numbers', () => {
       // this should fail
       function testInvalidFunction() {
         parseVersion('1.2.3-pre-release', 'nightly');
@@ -188,7 +188,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should parse nightly with 0.0.0 and a prerelease part', () => {
+    test('should parse nightly with 0.0.0 and a prerelease part', () => {
       // this should fail
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.0.0-pre-release',
@@ -201,7 +201,7 @@ describe('version-utils', () => {
       expect(patch).toBe('0');
       expect(prerelease).toBe('pre-release');
     });
-    it('should parse dryrun with release version', () => {
+    test('should parse dryrun with release version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.7.3',
         'dry-run',
@@ -213,7 +213,7 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should parse dryrun with prerelease . version', () => {
+    test('should parse dryrun with prerelease . version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.20.0-rc.0',
         'dry-run',
@@ -225,7 +225,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc.0');
     });
 
-    it('should parse dryrun with prerelease - version', () => {
+    test('should parse dryrun with prerelease - version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.20.0-rc-0',
         'dry-run',
@@ -237,7 +237,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('rc-0');
     });
 
-    it('should parse dryrun with main version', () => {
+    test('should parse dryrun with main version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '1000.0.0',
         'dry-run',
@@ -249,7 +249,7 @@ describe('version-utils', () => {
       expect(prerelease).toBeUndefined();
     });
 
-    it('should fail for dryrun with v1000.0.1 version', () => {
+    test('should fail for dryrun with v1000.0.1 version', () => {
       function testInvalidFunction() {
         parseVersion('v1000.0.1', 'dry-run');
       }
@@ -257,7 +257,7 @@ describe('version-utils', () => {
         `"Version 1000.0.1 is not valid for dry-runs"`,
       );
     });
-    it('should parse dryrun with nightly version', () => {
+    test('should parse dryrun with nightly version', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.0.0-something-else',
         'dry-run',
@@ -269,7 +269,7 @@ describe('version-utils', () => {
       expect(prerelease).toBe('something-else');
     });
 
-    it('should reject dryrun invalid values', () => {
+    test('should reject dryrun invalid values', () => {
       function testInvalidFunction() {
         parseVersion('1000.0.4', 'dry-run');
       }
@@ -278,7 +278,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should reject dryrun for invalid prerelease', () => {
+    test('should reject dryrun for invalid prerelease', () => {
       function testInvalidFunction() {
         parseVersion('0.6.4-something-else', 'dry-run');
       }
@@ -287,7 +287,7 @@ describe('version-utils', () => {
       );
     });
 
-    it('should parse dryrun for nightlies with no prerelease', () => {
+    test('should parse dryrun for nightlies with no prerelease', () => {
       const {version, major, minor, patch, prerelease} = parseVersion(
         '0.0.0',
         'dry-run',
@@ -302,7 +302,7 @@ describe('version-utils', () => {
   });
 
   describe('isNightly', () => {
-    it('should match old version of nightlies', () => {
+    test('should match old version of nightlies', () => {
       expect(
         isNightly({
           version: '0.0.0-20230420-2108-f84256a92',
@@ -314,7 +314,7 @@ describe('version-utils', () => {
       ).toBe(true);
     });
 
-    it('should match nightlies', () => {
+    test('should match nightlies', () => {
       expect(
         isNightly({
           version: '0.81.0-nightly-20230420-f84256a92',
@@ -328,7 +328,7 @@ describe('version-utils', () => {
   });
 
   describe('Validate version', () => {
-    it('Throw error if the buildType is unknown', () => {
+    test('Throw error if the buildType is unknown', () => {
       function testInvalidFunction() {
         validateBuildType('wrong_build');
       }
@@ -336,19 +336,19 @@ describe('version-utils', () => {
         `"Unsupported build type: wrong_build"`,
       );
     });
-    it('Does not throw if the buildType is release', () => {
+    test('Does not throw if the buildType is release', () => {
       function testValidCall() {
         validateBuildType('release');
       }
       expect(testValidCall).not.toThrowError();
     });
-    it('Does not throw if the buildType is nightly', () => {
+    test('Does not throw if the buildType is nightly', () => {
       function testValidCall() {
         validateBuildType('nightly');
       }
       expect(testValidCall).not.toThrowError();
     });
-    it('Does not throw if the buildType is dry-run', () => {
+    test('Does not throw if the buildType is dry-run', () => {
       function testValidCall() {
         validateBuildType('dry-run');
       }

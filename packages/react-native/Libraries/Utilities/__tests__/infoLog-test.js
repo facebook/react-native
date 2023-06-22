@@ -13,7 +13,7 @@
 describe('infoLog', () => {
   const infoLog = require('../infoLog');
 
-  it('logs messages to the console', () => {
+  test('logs messages to the console', () => {
     console.log = jest.fn();
 
     infoLog('This is a log message');
@@ -21,7 +21,7 @@ describe('infoLog', () => {
     expect(console.log).toHaveBeenCalledWith('This is a log message');
   });
 
-  it('logs messages with multiple arguments to the console', () => {
+  test('logs messages with multiple arguments to the console', () => {
     console.log = jest.fn();
 
     const data = 'log';

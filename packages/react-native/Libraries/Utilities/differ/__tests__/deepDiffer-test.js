@@ -13,7 +13,7 @@
 const deepDiffer = require('../deepDiffer');
 
 describe('deepDiffer', function () {
-  it('should diff primitives of the same type', () => {
+  test('should diff primitives of the same type', () => {
     expect(deepDiffer(1, 2)).toBe(true);
     expect(deepDiffer(42, 42)).toBe(false);
     expect(deepDiffer('foo', 'bar')).toBe(true);
@@ -25,7 +25,7 @@ describe('deepDiffer', function () {
     expect(deepDiffer(null, null)).toBe(false);
     expect(deepDiffer(undefined, undefined)).toBe(false);
   });
-  it('should diff primitives of different types', () => {
+  test('should diff primitives of different types', () => {
     expect(deepDiffer(1, '1')).toBe(true);
     expect(deepDiffer(true, 'true')).toBe(true);
     expect(deepDiffer(true, 1)).toBe(true);
@@ -38,7 +38,7 @@ describe('deepDiffer', function () {
     expect(deepDiffer(undefined, false)).toBe(true);
     expect(deepDiffer(undefined, '')).toBe(true);
   });
-  it('should diff Objects', () => {
+  test('should diff Objects', () => {
     expect(deepDiffer({}, {})).toBe(false);
     expect(deepDiffer({}, null)).toBe(true);
     expect(deepDiffer(null, {})).toBe(true);
@@ -62,7 +62,7 @@ describe('deepDiffer', function () {
       ),
     ).toBe(true);
   });
-  it('should diff Arrays', () => {
+  test('should diff Arrays', () => {
     expect(deepDiffer([], [])).toBe(false);
     expect(deepDiffer([], null)).toBe(true);
     expect(deepDiffer(null, [])).toBe(true);
@@ -76,7 +76,7 @@ describe('deepDiffer', function () {
     expect(deepDiffer([0, null, false, ''], [0, null, false, ''])).toBe(false);
     expect(deepDiffer([0, null, false, ''], ['', false, null, 0])).toBe(true);
   });
-  it('should diff mixed types', () => {
+  test('should diff mixed types', () => {
     expect(deepDiffer({}, [])).toBe(true);
     expect(deepDiffer([], {})).toBe(true);
     expect(
@@ -104,15 +104,15 @@ describe('deepDiffer', function () {
       ),
     ).toBe(true);
   });
-  it('should distinguish between proper Array and Object', () => {
+  test('should distinguish between proper Array and Object', () => {
     expect(deepDiffer(['a', 'b'], {0: 'a', 1: 'b', length: 2})).toBe(true);
     expect(deepDiffer(['a', 'b'], {length: 2, 0: 'a', 1: 'b'})).toBe(true);
   });
-  it('should diff same object', () => {
+  test('should diff same object', () => {
     const obj = [1, [2, 3]];
     expect(deepDiffer(obj, obj)).toBe(false);
   });
-  it('should respect maxDepth arg', () => {
+  test('should respect maxDepth arg', () => {
     expect(
       deepDiffer(
         {a: {A: {aA: 1, bB: 1}}, b: 1},
@@ -128,7 +128,7 @@ describe('deepDiffer', function () {
       ),
     ).toBe(false);
   });
-  it('should consider all functions equal', () => {
+  test('should consider all functions equal', () => {
     expect(
       deepDiffer(
         () => {},
@@ -138,7 +138,7 @@ describe('deepDiffer', function () {
     const f = () => {};
     expect(deepDiffer(f, f)).toBe(false);
   });
-  it('should compare functions if unsafelyIgnoreFunctions is false', () => {
+  test('should compare functions if unsafelyIgnoreFunctions is false', () => {
     expect(
       deepDiffer(
         () => {},
@@ -162,7 +162,7 @@ describe('deepDiffer', function () {
     ).toBe(true);
     expect(deepDiffer(f, f, {unsafelyIgnoreFunctions: false})).toBe(false);
   });
-  it('should log when implicitly considering two different functions equal', () => {
+  test('should log when implicitly considering two different functions equal', () => {
     function a() {}
     function b() {}
     const listeners = {onDifferentFunctionsIgnored: jest.fn()};
@@ -179,7 +179,7 @@ describe('deepDiffer', function () {
       deepDiffer.unstable_setLogListeners(null);
     }
   });
-  it('should not log when explicitly considering two different functions equal', () => {
+  test('should not log when explicitly considering two different functions equal', () => {
     function a() {}
     function b() {}
     const listeners = {onDifferentFunctionsIgnored: jest.fn()};

@@ -45,7 +45,7 @@ const createCollapsedFrames = (collapsedOptions: Array<?boolean>) => {
 };
 
 describe('LogBoxInspectorStackFrame', () => {
-  it('should render stack frames with 1 frame collapsed', () => {
+  test('should render stack frames with 1 frame collapsed', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
@@ -56,7 +56,7 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it('should render null for empty stack frames', () => {
+  test('should render null for empty stack frames', () => {
     const output = render.shallowRender(
       <LogBoxInspectorStackFrames
         onRetry={() => {}}
@@ -67,7 +67,7 @@ describe('LogBoxInspectorStackFrame', () => {
     expect(output).toMatchSnapshot();
   });
 
-  it.each([
+  test.each([
     [null, null, null, true, 'No frames to show'],
     [true, null, null, true, 'See 1 collapsed frame'],
     [true, null, null, false, 'Collapse 1 frame'],

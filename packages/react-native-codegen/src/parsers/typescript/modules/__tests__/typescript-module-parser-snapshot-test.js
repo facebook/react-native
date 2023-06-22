@@ -33,7 +33,7 @@ describe('RN Codegen TypeScript Parser', () => {
   Object.keys(fixtures)
     .sort()
     .forEach(fixtureName => {
-      it(`can generate fixture ${fixtureName}`, () => {
+      test(`can generate fixture ${fixtureName}`, () => {
         const schema = typeScriptParser.parseModuleFixture(fixtureName);
         const serializedSchema = JSON.stringify(schema, null, 2).replace(
           /"/g,
@@ -47,7 +47,7 @@ describe('RN Codegen TypeScript Parser', () => {
   Object.keys(failureFixtures)
     .sort()
     .forEach(fixtureName => {
-      it(`Fails with error message ${fixtureName}`, () => {
+      test(`Fails with error message ${fixtureName}`, () => {
         expect(() => {
           typeScriptParser.parseModuleFixture(fixtureName);
         }).toThrowErrorMatchingSnapshot();

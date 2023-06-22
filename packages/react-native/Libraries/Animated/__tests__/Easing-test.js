@@ -12,7 +12,7 @@
 
 import Easing from '../Easing';
 describe('Easing', () => {
-  it('should work with linear', () => {
+  test('should work with linear', () => {
     const easing = Easing.linear;
 
     expect(easing(0)).toBe(0);
@@ -21,7 +21,7 @@ describe('Easing', () => {
     expect(easing(1)).toBe(1);
   });
 
-  it('should work with ease in linear', () => {
+  test('should work with ease in linear', () => {
     const easing = Easing.in(Easing.linear);
     expect(easing(0)).toBe(0);
     expect(easing(0.5)).toBe(0.5);
@@ -29,7 +29,7 @@ describe('Easing', () => {
     expect(easing(1)).toBe(1);
   });
 
-  it('should work with easy out linear', () => {
+  test('should work with easy out linear', () => {
     const easing = Easing.out(Easing.linear);
     expect(easing(0)).toBe(0);
     expect(easing(0.5)).toBe(0.5);
@@ -37,7 +37,7 @@ describe('Easing', () => {
     expect(easing(1)).toBe(1);
   });
 
-  it('should work with ease in quad', () => {
+  test('should work with ease in quad', () => {
     function easeInQuad(t) {
       return t * t;
     }
@@ -47,7 +47,7 @@ describe('Easing', () => {
     }
   });
 
-  it('should work with ease out quad', () => {
+  test('should work with ease out quad', () => {
     function easeOutQuad(t) {
       return -t * (t - 2);
     }
@@ -57,7 +57,7 @@ describe('Easing', () => {
     }
   });
 
-  it('should work with ease in-out quad', () => {
+  test('should work with ease in-out quad', () => {
     function easeInOutQuad(t) {
       t = t * 2;
       if (t < 1) {
@@ -71,7 +71,7 @@ describe('Easing', () => {
     }
   });
 
-  it('should satisfy boundary conditions with elastic', () => {
+  test('should satisfy boundary conditions with elastic', () => {
     for (let b = 0; b < 4; b += 0.3) {
       const easing = Easing.elastic(b);
       expect(easing(0)).toBe(0);
@@ -229,7 +229,7 @@ describe('Easing', () => {
   };
 
   Object.keys(Samples).forEach(function (type) {
-    it('should ease ' + type, function () {
+    test('should ease ' + type, function () {
       const [modeName, easingName, isFunction] = type.split('_');
       let easing = Easing[easingName];
       if (isFunction !== undefined) {
