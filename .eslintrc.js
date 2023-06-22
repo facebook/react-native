@@ -18,7 +18,7 @@ module.exports = {
 
   extends: ['@react-native'],
 
-  plugins: ['@react-native/eslint-plugin-specs', 'lint'],
+  plugins: ['@react-native/eslint-plugin-specs', 'jest', 'lint'],
 
   overrides: [
     // overriding the JS config from @react-native/eslint-config to ensure
@@ -69,6 +69,12 @@ module.exports = {
         beforeEach: true,
         expect: true,
         jest: true,
+      },
+      rules: {
+        'jest/consistent-test-it': [
+          'warn',
+          {fn: 'test', withinDescribe: 'test'},
+        ],
       },
     },
     {
