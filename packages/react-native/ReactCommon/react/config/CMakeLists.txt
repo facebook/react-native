@@ -13,6 +13,7 @@ add_compile_options(
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
+        -fstack-protector-all
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_config_SRC CONFIGURE_DEPENDS *.cpp)

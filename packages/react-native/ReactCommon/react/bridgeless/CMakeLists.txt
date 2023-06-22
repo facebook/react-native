@@ -17,6 +17,7 @@ target_compile_options(
         PRIVATE
         $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
         -std=c++17
+        -fstack-protector-all
         -fexceptions
 )
 target_include_directories(bridgeless PUBLIC .)

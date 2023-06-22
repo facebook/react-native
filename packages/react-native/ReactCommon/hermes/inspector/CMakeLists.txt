@@ -17,6 +17,7 @@ target_compile_options(
         PRIVATE
         -DHERMES_INSPECTOR_FOLLY_KLUDGE=1
         -std=c++17
+        -fstack-protector-all
         -fexceptions
 )
 

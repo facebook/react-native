@@ -13,6 +13,7 @@ add_compile_options(
         -std=c++17
         -Wall
         -Wpedantic
+        -fstack-protector-all
         -Wno-gnu-zero-variadic-macro-arguments)
 
 add_library(butter INTERFACE)

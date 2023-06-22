@@ -11,6 +11,7 @@ add_compile_options(
         -frtti
         -std=c++17
         -Wno-unused-lambda-capture
+        -fstack-protector-all
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB reactnative_SRC CONFIGURE_DEPENDS *.cpp)

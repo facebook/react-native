@@ -10,6 +10,7 @@ add_compile_options(
         -fexceptions
         -frtti
         -std=c++17
+        -fstack-protector-all
         -O3)
 
 add_library(jsireact

@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions)
+add_compile_options(-fexceptions -fstack-protector-all)
 
 file(GLOB logger_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(logger SHARED ${logger_SRC})

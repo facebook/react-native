@@ -15,6 +15,7 @@ add_compile_options(
         -frtti
         -O3
         -Wno-unused-lambda-capture
+        -fstack-protector-all
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB jsi_SRC CONFIGURE_DEPENDS jsi/*.cpp)

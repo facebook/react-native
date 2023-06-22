@@ -13,6 +13,7 @@ add_compile_options(
         -Wall
         -Wpedantic
         -Wno-gnu-zero-variadic-macro-arguments
+        -fstack-protector-all
         -DFOLLY_NO_CONFIG=1
         -DLOG_TAG=\"ReactNative\")
 

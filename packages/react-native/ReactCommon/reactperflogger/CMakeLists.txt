@@ -12,6 +12,7 @@ add_compile_options(
         -std=c++17
         -Wall
         -Wpedantic
+        -fstack-protector-all
         -Wno-gnu-zero-variadic-macro-arguments)
 
 file(GLOB reactperflogger_SRC CONFIGURE_DEPENDS reactperflogger/*.cpp)

@@ -8,6 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(
         -fexceptions
+        -fstack-protector-all
         -std=c++17)
 
 file(GLOB jsinspector_SRC CONFIGURE_DEPENDS *.cpp)
