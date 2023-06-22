@@ -14,7 +14,6 @@ import type {
   LayoutEvent,
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
-import Platform from 'react-native/Libraries/Utilities/Platform';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
@@ -1970,15 +1969,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
 const styles = StyleSheet.create({
   verticallyInverted: {
-    transform:
-      // Android 13 Bug Workaround:
-      // On Android, we need to invert both axes to mitigate a native bug
-      // that could lead to ANRs.
-      // Simply using scaleY: -1 leads to the application of scaleY and
-      // rotationX natively, resulting in the ANR.
-      // For more information, refer to the following Android tracking issue:
-      // https://issuetracker.google.com/issues/287304310
-      Platform.OS === 'android' ? [{scale: -1}] : [{scaleY: -1}],
+    transform: [{scaleY: -1}],
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
