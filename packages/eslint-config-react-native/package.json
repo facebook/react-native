@@ -16,7 +16,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "main": "index.js",
   "dependencies": {
