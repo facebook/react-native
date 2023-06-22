@@ -20,7 +20,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.util.LruCache;
 import android.view.View;
@@ -67,7 +66,6 @@ public class TextLayoutManagerMapBuffer {
   public static final short PA_KEY_ADJUST_FONT_SIZE_TO_FIT = 3;
   public static final short PA_KEY_INCLUDE_FONT_PADDING = 4;
   public static final short PA_KEY_HYPHENATION_FREQUENCY = 5;
-  public static final short PA_KEY_NUMBER_OF_LINES = 6;
 
   private static final boolean ENABLE_MEASURE_LOGGING = ReactBuildConfig.DEBUG && false;
 
@@ -418,46 +416,6 @@ public class TextLayoutManagerMapBuffer {
         paragraphAttributes.contains(PA_KEY_MAX_NUMBER_OF_LINES)
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : UNSET;
-
-    int numberOfLines =
-      paragraphAttributes.contains(PA_KEY_NUMBER_OF_LINES)
-        ? paragraphAttributes.getInt(PA_KEY_NUMBER_OF_LINES)
-        : UNSET;
-
-    int lines = layout.getLineCount();
-    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines > lines && text.length() > 0) {
-      int numberOfEmptyLines = numberOfLines - lines;
-      SpannableStringBuilder ssb = new SpannableStringBuilder();
-
-      // for some reason a newline on end causes issues with computing height so we add a character
-      if (text.toString().endsWith("\n")) {
-        ssb.append("A");
-      }
-
-      for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append("\nA");
-      }
-
-      Object[] spans = text.getSpans(0, 0, Object.class);
-      for (Object span : spans) { // It's possible we need to set exl-exl
-        ssb.setSpan(span, 0, ssb.length(), text.getSpanFlags(span));
-      };
-
-      text = new SpannableStringBuilder(TextUtils.concat(text, ssb));
-      boring = null;
-      layout = createLayout(
-        text,
-          boring,
-          width,
-          widthYogaMeasureMode,
-          includeFontPadding,
-          textBreakStrategy,
-          hyphenationFrequency);
-    }
-
-    if (numberOfLines != UNSET && numberOfLines != 0) {
-      maximumNumberOfLines = numberOfLines;
-    }
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0

@@ -310,7 +310,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable Role mRole = null;
 
   protected int mNumberOfLines = UNSET;
-  protected int mMaxNumberOfLines = UNSET;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
@@ -392,12 +391,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = UNSET)
   public void setNumberOfLines(int numberOfLines) {
     mNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
-    markUpdated();
-  }
-
-  @ReactProp(name = ViewProps.MAXIMUM_NUMBER_OF_LINES, defaultInt = UNSET)
-  public void setMaxNumberOfLines(int numberOfLines) {
-    mMaxNumberOfLines = numberOfLines == 0 ? UNSET : numberOfLines;
     markUpdated();
   }
 

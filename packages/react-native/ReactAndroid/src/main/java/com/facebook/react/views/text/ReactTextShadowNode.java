@@ -82,7 +82,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             int minimumFontSize =
                 (int) Math.max(mMinimumFontScale * initialFontSize, PixelUtil.toPixelFromDIP(4));
             while (currentFontSize > minimumFontSize
-                && (mMaxNumberOfLines != UNSET && layout.getLineCount() > mMaxNumberOfLines
+                && (mNumberOfLines != UNSET && layout.getLineCount() > mNumberOfLines
                     || heightMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)) {
               // TODO: We could probably use a smarter algorithm here. This will require 0(n)
               // measurements
@@ -124,9 +124,9 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
           }
 
           final int lineCount =
-            mMaxNumberOfLines == UNSET
+              mNumberOfLines == UNSET
                   ? layout.getLineCount()
-                  : Math.min(mMaxNumberOfLines, layout.getLineCount());
+                  : Math.min(mNumberOfLines, layout.getLineCount());
 
           // Instead of using `layout.getWidth()` (which may yield a significantly larger width for
           // text that is wrapping), compute width using the longest line.

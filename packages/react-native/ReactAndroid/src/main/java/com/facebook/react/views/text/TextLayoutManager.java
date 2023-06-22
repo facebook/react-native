@@ -19,7 +19,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.util.LruCache;
 import android.view.View;
@@ -69,7 +68,6 @@ public class TextLayoutManager {
   private static final String TEXT_BREAK_STRATEGY_KEY = "textBreakStrategy";
   private static final String HYPHENATION_FREQUENCY_KEY = "android_hyphenationFrequency";
   private static final String MAXIMUM_NUMBER_OF_LINES_KEY = "maximumNumberOfLines";
-  private static final String NUMBER_OF_LINES_KEY = "numberOfLines";
   private static final LruCache<ReadableNativeMap, Spannable> sSpannableCache =
       new LruCache<>(spannableCacheSize);
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
@@ -396,47 +394,6 @@ public class TextLayoutManager {
         paragraphAttributes.hasKey(MAXIMUM_NUMBER_OF_LINES_KEY)
             ? paragraphAttributes.getInt(MAXIMUM_NUMBER_OF_LINES_KEY)
             : UNSET;
-
-    int numberOfLines =
-      paragraphAttributes.hasKey(NUMBER_OF_LINES_KEY)
-        ? paragraphAttributes.getInt(NUMBER_OF_LINES_KEY)
-        : UNSET;
-
-    int lines = layout.getLineCount();
-    if (numberOfLines != UNSET && numberOfLines != 0 && numberOfLines >= lines && text.length() > 0) {
-      int numberOfEmptyLines = numberOfLines - lines;
-      SpannableStringBuilder ssb = new SpannableStringBuilder();
-
-      // for some reason a newline on end causes issues with computing height so we add a character
-      if (text.toString().endsWith("\n")) {
-        ssb.append("A");
-      }
-
-      for (int i = 0; i < numberOfEmptyLines; ++i) {
-        ssb.append("\nA");
-      }
-
-      Object[] spans = text.getSpans(0, 0, Object.class);
-      for (Object span : spans) { // It's possible we need to set exl-exl
-        ssb.setSpan(span, 0, ssb.length(), text.getSpanFlags(span));
-      };
-
-      text = new SpannableStringBuilder(TextUtils.concat(text, ssb));
-      boring = null;
-      layout = createLayout(
-        text,
-        boring,
-        width,
-        widthYogaMeasureMode,
-        includeFontPadding,
-        textBreakStrategy,
-        hyphenationFrequency);
-    }
-
-
-    if (numberOfLines != UNSET && numberOfLines != 0) {
-      maximumNumberOfLines = numberOfLines;
-    }
 
     int calculatedLineCount =
         maximumNumberOfLines == UNSET || maximumNumberOfLines == 0
