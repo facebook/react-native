@@ -122,7 +122,6 @@ repositories {
     // those repositories as there is no app module there.
     mavenCentral()
     google()
-    mavenLocal()
 }
 
 android {
