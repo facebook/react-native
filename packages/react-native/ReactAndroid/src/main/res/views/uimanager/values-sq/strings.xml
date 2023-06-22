@@ -4,4 +4,5 @@
 <!-- FB Locale: sq_AL -->
 <resources exclude-from-buck-resource-map="true">
     <string name="imagebutton_description" gender="unknown">Buton, imazh</string>
+    <string name="combobox_description" gender="unknown">Kuti kombinimi</string>
 </resources>
