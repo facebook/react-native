@@ -319,7 +319,15 @@ ScrollViewProps::ScrollViewProps(
                     rawProps,
                     "scrollToOverflowEnabled",
                     sourceProps.scrollToOverflowEnabled,
-                    {})) {}
+                    {})),
+      inverted(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.inverted
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "inverted",
+                                                       sourceProps.inverted,
+                                                       {})) {}
 
 void ScrollViewProps::setProp(
     const PropsParserContext &context,
@@ -368,6 +376,7 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(snapToEnd);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(inverted);
   }
 }
 
@@ -492,7 +501,9 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
           debugStringConvertibleItem(
               "snapToStart", snapToStart, defaultScrollViewProps.snapToStart),
           debugStringConvertibleItem(
-              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd)};
+              "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd),
+          debugStringConvertibleItem(
+              "inverted", inverted, defaultScrollViewProps.inverted)};
 }
 #endif
 
