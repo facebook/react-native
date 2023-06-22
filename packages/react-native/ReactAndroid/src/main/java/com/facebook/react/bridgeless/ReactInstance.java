@@ -189,7 +189,7 @@ final class ReactInstance {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
 
-    mReactPackages = mDelegate.getReactPackages();
+    mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
     mReactPackages.add(
         new BridgelessReactPackage(
             bridgelessReactContext.getDevSupportManager(),
