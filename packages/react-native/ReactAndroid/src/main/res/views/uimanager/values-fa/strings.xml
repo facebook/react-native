@@ -3,4 +3,13 @@
 <!-- @generated -->
 <!-- FB Locale: fa_IR -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">پیوند</string>
+    <string name="image_description" gender="unknown">تصویر</string>
+    <string name="alert_description" gender="unknown">هشدار</string>
+    <string name="combobox_description" gender="unknown">جعبه گفتگو</string>
+    <string name="rn_tab_description" gender="unknown">برگه</string>
+    <string name="tablist_description" gender="unknown">فهرست برگه</string>
+    <string name="summary_description" gender="unknown">خلاصه</string>
+    <string name="state_expanded_description" gender="unknown">بزرگ‌شده</string>
+    <string name="state_off_description" gender="unknown">خاموش</string>
 </resources>
