@@ -88,6 +88,10 @@ final class ReactInstance {
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
 
+  static {
+    loadLibraryIfNeeded();
+  }
+
   private static volatile boolean sIsLibraryLoaded;
 
   /* package */ ReactInstance(
@@ -100,7 +104,6 @@ final class ReactInstance {
       boolean useDevSupport) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
-    loadLibraryIfNeeded();
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize");
 
