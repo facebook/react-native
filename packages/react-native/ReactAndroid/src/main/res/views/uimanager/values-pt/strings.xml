@@ -11,9 +11,13 @@
     <string name="menu_description" gender="unknown">Menu</string>
     <string name="menuitem_description" gender="unknown">Item do menu</string>
     <string name="progressbar_description" gender="unknown">Barra de progresso</string>
+    <string name="radiogroup_description" gender="unknown">Botão de grupo de opções</string>
+    <string name="scrollbar_description" gender="unknown">Barra de rolamento</string>
     <string name="spinbutton_description" gender="unknown">Botão para girar</string>
     <string name="rn_tab_description" gender="unknown">Aba</string>
+    <string name="tablist_description" gender="unknown">Lista de abas</string>
     <string name="timer_description" gender="unknown">Temporizador</string>
+    <string name="toolbar_description" gender="unknown">Barra de ferramentas</string>
     <string name="summary_description" gender="unknown">Resumo</string>
     <string name="state_busy_description" gender="unknown">ocupado</string>
     <string name="state_expanded_description" gender="unknown">expandido</string>
