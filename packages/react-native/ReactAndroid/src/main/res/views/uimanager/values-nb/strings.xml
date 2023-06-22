@@ -3,8 +3,12 @@
 <!-- @generated -->
 <!-- FB Locale: nb_NO -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="menu_description" gender="unknown">Meny</string>
+    <string name="spinbutton_description" gender="unknown">Rotasjonsknapp</string>
     <string name="state_busy_description" gender="unknown">opptatt</string>
     <string name="state_expanded_description" gender="unknown">utvidet</string>
     <string name="state_collapsed_description" gender="unknown">skjult</string>
+    <string name="state_unselected_description" gender="unknown">valgt bort</string>
+    <string name="state_off_description" gender="unknown">av</string>
     <string name="state_mixed_description" gender="unknown">blandet</string>
 </resources>
