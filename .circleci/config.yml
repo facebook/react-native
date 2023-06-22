@@ -1139,7 +1139,7 @@ jobs:
           command: |
             apt update
             apt install -y wget git curl
-            curl -sL https://deb.nodesource.com/setup_16.x | bash -
+            curl -sL https://deb.nodesource.com/setup_18.x | bash -
             apt install -y nodejs
             npm install --global yarn
       - checkout
