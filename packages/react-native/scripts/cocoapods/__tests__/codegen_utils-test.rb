@@ -373,7 +373,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             '[Codegen] warn: using experimental new codegen integration'
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_script_phases_params,  [{
-            :app_path => "~/app",
+            :app_path => app_path,
             :config_file_dir => "",
             :config_key => "codegenConfig",
             :fabric_enabled => false,
@@ -382,7 +382,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
             :fabric_enabled => false,
             :folly_version=>"2021.07.22.00",
-            :package_json_file => "../node_modules/react-native/package.json",
+            :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
         assert_equal(codegen_utils_mock.generate_react_codegen_spec_params,  [{

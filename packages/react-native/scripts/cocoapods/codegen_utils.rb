@@ -133,7 +133,7 @@ class CodegenUtils
             "React-jsi": [],
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
-            "React-NativeModulesApple": [], 
+            "React-NativeModulesApple": [],
             "glog": [],
             "DoubleConversion": [],
           }
@@ -318,7 +318,7 @@ class CodegenUtils
         :config_key => config_key
       )
       react_codegen_spec = codegen_utils.get_react_codegen_spec(
-        file_manager.join(react_native_path, "package.json"),
+        file_manager.join(relative_installation_root, react_native_path, "package.json"),
         :folly_version => folly_version,
         :fabric_enabled => fabric_enabled,
         :hermes_enabled => hermes_enabled,
