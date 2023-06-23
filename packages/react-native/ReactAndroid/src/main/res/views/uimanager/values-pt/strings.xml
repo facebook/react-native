@@ -15,7 +15,7 @@
     <string name="progressbar_description" gender="unknown">Barra de progresso</string>
     <string name="radiogroup_description" gender="unknown">Botão de grupo de opções</string>
     <string name="scrollbar_description" gender="unknown">Barra de rolamento</string>
-    <string name="spinbutton_description" gender="unknown">Botão para girar</string>
+    <string name="spinbutton_description" gender="unknown">Botão de rotação</string>
     <string name="rn_tab_description" gender="unknown">Aba</string>
     <string name="tablist_description" gender="unknown">Lista de abas</string>
     <string name="timer_description" gender="unknown">Temporizador</string>
