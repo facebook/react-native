@@ -274,7 +274,7 @@ class CodegenUtils
         :config_key => config_key
       )
       react_codegen_spec = codegen_utils.get_react_codegen_spec(
-        File.join(react_native_path, "package.json"),
+        File.join(relative_installation_root, react_native_path, "package.json"),
         :folly_version => folly_version,
         :fabric_enabled => fabric_enabled,
         :hermes_enabled => hermes_enabled,
