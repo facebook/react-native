@@ -147,16 +147,16 @@ public class ReactSurface implements ReactSurfaceInterface {
     return host.prerenderSurface(this);
   }
 
-  public Task<Void> start() {
+  public Future<Void> start() {
     if (mSurfaceView.get() == null) {
-      return Task.forError(
+      return new FailedFuture<>(
           new IllegalStateException(
               "Trying to call ReactSurface.start(), but view is not created."));
     }
 
     ReactHost host = mReactHost.get();
     if (host == null) {
-      return Task.forError(
+      return new FailedFuture<>(
           new IllegalStateException(
               "Trying to call ReactSurface.start(), but no ReactHost is attached."));
     }
