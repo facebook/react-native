@@ -4,6 +4,8 @@
 <!-- FB Locale: jv_ID -->
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Pranala</string>
+    <string name="image_description" gender="unknown">Gambar</string>
+    <string name="imagebutton_description" gender="unknown">Tombol, Gambar</string>
     <string name="header_description" gender="unknown">Judhul</string>
     <string name="alert_description" gender="unknown">Pengenget</string>
     <string name="combobox_description" gender="unknown">Kothak Kombo</string>

@@ -21,10 +21,10 @@
     <string name="timer_description" gender="unknown">အချိန်တိုင်းစက်</string>
     <string name="toolbar_description" gender="unknown">ကိရိယာ ဘားတန်း</string>
     <string name="summary_description" gender="unknown">အနှစ်ချုပ်</string>
-    <string name="state_busy_description" gender="unknown">အလုပ်များနေပါတယ်</string>
+    <string name="state_busy_description" gender="unknown">လုပ်ဆောင်နေဆဲ</string>
     <string name="state_expanded_description" gender="unknown">ချဲ့ထားပြီး</string>
     <string name="state_collapsed_description" gender="unknown">ခေါက်သိမ်းထားပါတယ်</string>
-    <string name="state_unselected_description" gender="unknown">မရွေးချယ်ထား</string>
+    <string name="state_unselected_description" gender="unknown">ရွေးမထားပါ</string>
     <string name="state_on_description" gender="unknown">ဖွင့်</string>
     <string name="state_off_description" gender="unknown">ပိတ်</string>
     <string name="state_mixed_description" gender="unknown">ရောစပ်ထားပြီး</string>
