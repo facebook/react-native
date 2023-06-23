@@ -100,8 +100,7 @@ public class ReactSurfaceTest {
 
     mReactSurface.start().get();
 
-    Task<Void> task = mReactSurface.stop();
-    task.waitForCompletion();
+    mReactSurface.stop().get();
 
     verify(mReactHost).stopSurface(mReactSurface);
   }
@@ -149,7 +148,7 @@ public class ReactSurfaceTest {
 
     assertThat(mReactSurface.isRunning()).isTrue();
 
-    mReactSurface.stop().waitForCompletion();
+    mReactSurface.stop().get();
 
     assertThat(mReactSurface.isRunning()).isFalse();
   }

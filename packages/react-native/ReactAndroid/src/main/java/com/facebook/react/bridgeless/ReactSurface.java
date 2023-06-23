@@ -19,7 +19,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
@@ -163,14 +162,14 @@ public class ReactSurface implements ReactSurfaceInterface {
     return host.startSurface(this);
   }
 
-  public Task<Void> stop() {
+  public Future<Boolean> stop() {
     ReactHost host = mReactHost.get();
     if (host == null) {
-      return Task.forError(
+      return new FailedFuture<>(
           new IllegalStateException(
               "Trying to call ReactSurface.stop(), but no ReactHost is attached."));
     }
-    return host.stopSurface(this).makeVoid();
+    return host.stopSurface(this);
   }
 
   public int getSurfaceID() {
