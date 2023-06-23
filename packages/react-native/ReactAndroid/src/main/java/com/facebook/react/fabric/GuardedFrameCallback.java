@@ -16,7 +16,6 @@ public abstract class GuardedFrameCallback extends ChoreographerCompat.FrameCall
 
   @NonNull private final JSExceptionHandler mExceptionHandler;
 
-  @Deprecated
   protected GuardedFrameCallback(@NonNull ReactContext reactContext) {
     this(reactContext.getExceptionHandler());
   }
