@@ -23,6 +23,7 @@ import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,10 +76,9 @@ public class ReactSurfaceTest {
   }
 
   @Test
-  public void testPrerender() throws InterruptedException {
+  public void testPrerender() throws InterruptedException, ExecutionException {
     mReactSurface.attach(mReactHost);
-    Task<Void> task = mReactSurface.prerender();
-    task.waitForCompletion();
+    mReactSurface.prerender().get();
 
     verify(mReactHost).prerenderSurface(mReactSurface);
     assertThat(mSurfaceHandler.isRunning).isTrue();
