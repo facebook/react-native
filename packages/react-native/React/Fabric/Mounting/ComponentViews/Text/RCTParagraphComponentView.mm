@@ -81,8 +81,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldParagraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
-  auto const &newParagraphProps = *std::static_pointer_cast<ParagraphProps const>(props);
+  const auto &oldParagraphProps = static_cast<ParagraphProps const &>(*_props);
+  const auto &newParagraphProps = static_cast<ParagraphProps const &>(*props);
 
   _paragraphAttributes = newParagraphProps.paragraphAttributes;
 
@@ -147,7 +147,7 @@ using namespace facebook::react;
 
 - (NSArray *)accessibilityElements
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
 
   // If the component is not `accessible`, we return an empty array.
   // We do this because logically all nested <Text> components represent the content of the <Paragraph> component;
@@ -241,13 +241,13 @@ using namespace facebook::react;
 
 - (BOOL)canBecomeFirstResponder
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
   return paragraphProps.isSelectable;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-  auto const &paragraphProps = *std::static_pointer_cast<ParagraphProps const>(_props);
+  const auto &paragraphProps = static_cast<ParagraphProps const &>(*_props);
 
   if (paragraphProps.isSelectable && action == @selector(copy:)) {
     return YES;

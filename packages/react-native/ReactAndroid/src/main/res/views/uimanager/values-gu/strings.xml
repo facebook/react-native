@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: gu_IN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">લિંક</string>
+    <string name="image_description" gender="unknown">ફોટો</string>
+    <string name="imagebutton_description" gender="unknown">બટન, ફોટો</string>
+    <string name="header_description" gender="unknown">શીર્ષક</string>
+    <string name="alert_description" gender="unknown">એલર્ટ</string>
+    <string name="combobox_description" gender="unknown">કોમ્બો બોક્સ</string>
+    <string name="menu_description" gender="unknown">મેનૂ</string>
+    <string name="menubar_description" gender="unknown">મેનૂ બાર</string>
+    <string name="menuitem_description" gender="unknown">મેનૂ આઇટમ</string>
+    <string name="progressbar_description" gender="unknown">પ્રગતિ બાર</string>
+    <string name="radiogroup_description" gender="unknown">રેડિયો ગ્રૂપ</string>
+    <string name="scrollbar_description" gender="unknown">સ્ક્રોલ બાર</string>
+    <string name="spinbutton_description" gender="unknown">સ્પિન બટન</string>
+    <string name="rn_tab_description" gender="unknown">ટેબ</string>
+    <string name="tablist_description" gender="unknown">ટેબ લિસ્ટ</string>
+    <string name="timer_description" gender="unknown">ટાઇમર</string>
+    <string name="toolbar_description" gender="unknown">ટૂલ બાર</string>
+    <string name="summary_description" gender="unknown">સારાંશ</string>
+    <string name="state_busy_description" gender="unknown">વ્યસ્ત</string>
+    <string name="state_expanded_description" gender="unknown">વિસ્તૃત</string>
+    <string name="state_collapsed_description" gender="unknown">નાનું</string>
+    <string name="state_unselected_description" gender="unknown">પસંદગીમાંથી કાઢી નાખ્યું</string>
+    <string name="state_on_description" gender="unknown">ચાલુ</string>
+    <string name="state_off_description" gender="unknown">બંધ</string>
+    <string name="state_mixed_description" gender="unknown">મિક્સ કરેલ</string>
+</resources>

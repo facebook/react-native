@@ -16,64 +16,47 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+
 const {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
 } = require('../../error-utils');
-const {getEventArgument} = require('../../parsers-commons');
+const {
+  getEventArgument,
+  buildPropertiesForEvent,
+} = require('../../parsers-commons');
+const {
+  emitBoolProp,
+  emitDoubleProp,
+  emitFloatProp,
+  emitMixedProp,
+  emitStringProp,
+  emitInt32Prop,
+  emitObjectProp,
+} = require('../../parsers-primitives');
 
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
-  name,
+  name: string,
   optional: boolean,
   typeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'BooleanTypeAnnotation',
-        },
-      };
+      return emitBoolProp(name, optional);
     case 'StringTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringTypeAnnotation',
-        },
-      };
+      return emitStringProp(name, optional);
     case 'Int32':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'Int32TypeAnnotation',
-        },
-      };
+      return emitInt32Prop(name, optional);
     case 'Double':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'DoubleTypeAnnotation',
-        },
-      };
+      return emitDoubleProp(name, optional);
     case 'Float':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'FloatTypeAnnotation',
-        },
-      };
+      return emitFloatProp(name, optional);
     case '$ReadOnly':
       return getPropertyType(
         name,
@@ -82,16 +65,13 @@ function getPropertyType(
         parser,
       );
     case 'ObjectTypeAnnotation':
-      return {
+      return emitObjectProp(
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.properties.map(member =>
-            buildPropertiesForEvent(member, parser),
-          ),
-        },
-      };
+        parser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
     case 'UnionTypeAnnotation':
       return {
         name,
@@ -102,13 +82,7 @@ function getPropertyType(
         },
       };
     case 'UnsafeMixed':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'MixedTypeAnnotation',
-        },
-      };
+      return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
     case '$ReadOnlyArray':
       return {
@@ -126,7 +100,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -152,9 +126,11 @@ function extractArrayElementType(
     case 'ObjectTypeAnnotation':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.properties.map(member =>
-          buildPropertiesForEvent(member, parser),
-        ),
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
       };
     case 'ArrayTypeAnnotation':
       return {
@@ -189,12 +165,6 @@ function extractArrayElementType(
 
 function prettify(jsonObject: $FlowFixMe): string {
   return JSON.stringify(jsonObject, null, 2);
-}
-
-function extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-  return typeAnnotation.type === 'GenericTypeAnnotation'
-    ? typeAnnotation.id.name
-    : typeAnnotation.type;
 }
 
 function findEventArgumentsAndType(
@@ -256,22 +226,6 @@ function findEventArgumentsAndType(
   }
 }
 
-function buildPropertiesForEvent(
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  property,
-  parser: Parser,
-): NamedShape<EventTypeAnnotation> {
-  const name = property.key.name;
-  const optional = parser.isOptionalProperty(property);
-  let typeAnnotation =
-    property.value.type === 'NullableTypeAnnotation'
-      ? property.value.typeAnnotation
-      : property.value;
-
-  return getPropertyType(name, optional, typeAnnotation, parser);
-}
-
 function buildEventSchema(
   types: TypeMap,
   property: EventTypeAST,
@@ -313,8 +267,8 @@ function buildEventSchema(
         type: 'EventTypeAnnotation',
         argument: getEventArgument(
           nonNullableArgumentProps,
-          buildPropertiesForEvent,
           parser,
+          getPropertyType,
         ),
       },
     };
@@ -328,8 +282,8 @@ function buildEventSchema(
       type: 'EventTypeAnnotation',
       argument: getEventArgument(
         nonNullableArgumentProps,
-        buildPropertiesForEvent,
         parser,
+        getPropertyType,
       ),
     },
   };
@@ -357,4 +311,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };

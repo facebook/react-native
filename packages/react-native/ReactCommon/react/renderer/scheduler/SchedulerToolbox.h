@@ -75,7 +75,7 @@ struct SchedulerToolbox final {
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.
    */
-  std::vector<std::shared_ptr<UIManagerCommitHook const>> commitHooks;
+  std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks;
 };
 
 } // namespace facebook::react

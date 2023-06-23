@@ -20,6 +20,8 @@ import type {
   NativeModuleEnumMembers,
   NativeModuleAliasMap,
   NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {
@@ -94,14 +96,19 @@ export interface Parser {
   enumDeclaration: string;
 
   /**
-   * InterfaceDelcaration property of the Parser
+   * InterfaceDeclaration property of the Parser
    */
-  interfaceDelcaration: string;
+  interfaceDeclaration: string;
 
   /**
    * This is the NullLiteralTypeAnnotation value
    */
   nullLiteralTypeAnnotation: string;
+
+  /**
+   * UndefinedLiteralTypeAnnotation property of the Parser
+   */
+  undefinedLiteralTypeAnnotation: string;
 
   /**
    * Given a declaration, it returns true if it is a property
@@ -350,9 +357,17 @@ export interface Parser {
 
   getGetSchemaInfoFN(): GetSchemaInfoFN;
 
+  /**
+   * Given a property return the type annotation.
+   * @parameter property
+   * @returns: the annotation for a type in the AST.
+   */
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe;
+
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
+    parser: Parser,
   ): {
     nullable: boolean,
     typeAnnotation: $FlowFixMe,
@@ -360,4 +375,43 @@ export interface Parser {
   };
 
   getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  };
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns the next node.
+   */
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given an enum Declaration, it returns the next node.
+   */
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a unsupported typeAnnotation, returns an error message.
+   */
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a type annotation, it extracts the type.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the extracted type.
+   */
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a typeAnnotation return the properties of an object.
+   * @parameter property
+   * @returns: the properties of an object represented by a type annotation.
+   */
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }

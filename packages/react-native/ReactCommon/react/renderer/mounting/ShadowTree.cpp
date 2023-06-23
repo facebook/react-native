@@ -225,9 +225,6 @@ ShadowTree::ShadowTree(
     ShadowTreeDelegate const &delegate,
     ContextContainer const &contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
-      nullptr, -1, std::shared_ptr<const EventDispatcher>());
-
   static auto globalRootComponentDescriptor =
       std::make_unique<RootComponentDescriptor const>(
           ComponentDescriptorParameters{
@@ -239,9 +236,8 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  auto const fragment =
-      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
-  auto family = globalRootComponentDescriptor->createFamily(fragment, nullptr);
+  auto const fragment = ShadowNodeFamilyFragment{surfaceId, surfaceId, nullptr};
+  auto family = globalRootComponentDescriptor->createFamily(fragment);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(
@@ -450,7 +446,7 @@ void ShadowTree::emitLayoutEvents(
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    auto const &viewProps =
+    const auto &viewProps =
         static_cast<ViewProps const &>(*viewShadowNode.getProps());
     if (!viewProps.onLayout) {
       continue;

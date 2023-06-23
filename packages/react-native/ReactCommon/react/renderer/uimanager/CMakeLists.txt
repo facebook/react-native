@@ -33,6 +33,7 @@ target_link_libraries(react_render_uimanager
         react_render_runtimescheduler
         react_render_mounting
         react_config
+        reactnative
         rrc_root
         rrc_view
         runtimeexecutor

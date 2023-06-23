@@ -29,12 +29,12 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "PlatformRunLoopObserver.h"
@@ -276,6 +276,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::disableTransactionCommit = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
+    CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
+    CoreFeatures::enableMountHooks = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {
@@ -437,6 +445,15 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];
     }
+  }
+
+  RCTScheduler *scheduler = [self scheduler];
+  if (scheduler) {
+    // Notify mount when the effects are visible and prevent mount hooks to
+    // delay paint.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [scheduler reportMount:rootTag];
+    });
   }
 }
 

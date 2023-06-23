@@ -8,7 +8,7 @@
 #include "ViewShadowNode.h"
 #include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/primitives.h>
-#include <react/renderer/core/CoreFeatures.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

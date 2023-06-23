@@ -15,8 +15,12 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTJSThread.h>
 #import <React/RCTLog.h>
+#import <React/RCTMockDef.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+
+RCT_MOCK_DEF(RCTHost, _RCTLogNativeInternal);
+#define _RCTLogNativeInternal RCT_MOCK_USE(RCTHost, _RCTLogNativeInternal)
 
 using namespace facebook::react;
 
@@ -25,12 +29,15 @@ using namespace facebook::react;
 
 @implementation RCTHost {
   RCTInstance *_instance;
+
   __weak id<RCTHostDelegate> _hostDelegate;
   __weak id<RCTTurboModuleManagerDelegate> _turboModuleManagerDelegate;
+  __weak id<RCTContextContainerHandling> _contextContainerHandler;
+
   NSURL *_oldDelegateBundleURL;
   NSURL *_bundleURL;
   RCTBundleManager *_bundleManager;
-  facebook::react::ReactInstance::BindingsInstallFunc _bindingsInstallFunc;
+  RCTHostBundleURLProvider _bundleURLProvider;
   RCTHostJSEngineProvider _jsEngineProvider;
 
   // All the surfaces that need to be started after main bundle execution
@@ -52,17 +59,16 @@ using namespace facebook::react;
  Host initialization should not be resource intensive. A host may be created before any intention of using React Native
  has been expressed.
  */
-- (instancetype)initWithHostDelegate:(id<RCTHostDelegate>)hostDelegate
-          turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 bindingsInstallFunc:(facebook::react::ReactInstance::BindingsInstallFunc)bindingsInstallFunc
-                    jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                     hostDelegate:(id<RCTHostDelegate>)hostDelegate
+       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
     _surfaceStartBuffer = [NSMutableArray new];
     _bundleManager = [RCTBundleManager new];
-    _bindingsInstallFunc = bindingsInstallFunc;
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
 
@@ -78,24 +84,21 @@ using namespace facebook::react;
       return strongSelf->_bundleURL;
     };
 
-    auto bundleURLSetter = ^(NSURL *bundleURL) {
-      RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
-        return;
-      }
-      strongSelf->_bundleURL = bundleURL;
+    auto bundleURLSetter = ^(NSURL *bundleURL_) {
+      [weakSelf _setBundleURL:bundleURL];
     };
 
     auto defaultBundleURLGetter = ^NSURL *()
     {
       RCTHost *strongSelf = weakSelf;
-      if (!strongSelf) {
+      if (!strongSelf || !strongSelf->_bundleURLProvider) {
         return nil;
       }
 
-      return [strongSelf->_hostDelegate getBundleURL];
+      return strongSelf->_bundleURLProvider();
     };
 
+    [self _setBundleURL:bundleURL];
     [_bundleManager setBridgelessBundleURLGetter:bundleURLGetter
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
@@ -144,14 +147,11 @@ using namespace facebook::react;
         @"RCTHost should not be creating a new instance if one already exists. This implies there is a bug with how/when this method is being called.");
     [_instance invalidate];
   }
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
   _instance = [[RCTInstance alloc] initWithDelegate:self
                                    jsEngineInstance:[self _provideJSEngine]
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 }
@@ -204,8 +204,9 @@ using namespace facebook::react;
 {
   [_instance invalidate];
   _instance = nil;
-  [self _refreshBundleURL];
-  RCTReloadCommandSetBundleURL(_bundleURL);
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
 
   // Ensure all attached surfaces are restarted after reload
   {
@@ -218,7 +219,6 @@ using namespace facebook::react;
                                       bundleManager:_bundleManager
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                 onInitialBundleLoad:_onInitialBundleLoad
-                                bindingsInstallFunc:_bindingsInstallFunc
                                      moduleRegistry:_moduleRegistry];
   [_hostDelegate hostDidStart:self];
 
@@ -234,33 +234,25 @@ using namespace facebook::react;
 
 #pragma mark - RCTInstanceDelegate
 
-- (std::shared_ptr<facebook::react::ContextContainer>)createContextContainer
+- (void)instance:(RCTInstance *)instance
+    didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
+                   message:(NSString *)message
+               exceptionId:(NSUInteger)exceptionId
+                   isFatal:(BOOL)isFatal
 {
-  return [_hostDelegate createContextContainer];
+  [_hostDelegate host:self didReceiveJSErrorStack:stack message:message exceptionId:exceptionId isFatal:isFatal];
 }
 
-- (void)instance:(RCTInstance *)instance didReceiveErrorMap:(facebook::react::MapBuffer)errorMap
+- (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
-  NSString *message = [NSString stringWithCString:errorMap.getString(JSErrorHandlerKey::kErrorMessage).c_str()
-                                         encoding:[NSString defaultCStringEncoding]];
-  std::vector<facebook::react::MapBuffer> frames = errorMap.getMapBufferList(JSErrorHandlerKey::kAllStackFrames);
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (facebook::react::MapBuffer const &mapBuffer : frames) {
-    NSDictionary *frame = @{
-      @"file" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameFileName).c_str()
-                                   encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:mapBuffer.getString(JSErrorHandlerKey::kFrameMethodName).c_str()
-                                         encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameLineNumber)],
-      @"column" : [NSNumber numberWithInt:mapBuffer.getInt(JSErrorHandlerKey::kFrameColumnNumber)],
-    };
-    [stack addObject:frame];
-  }
-  [_hostDelegate host:self
-      didReceiveJSErrorStack:stack
-                     message:message
-                 exceptionId:errorMap.getInt(JSErrorHandlerKey::kExceptionId)
-                     isFatal:errorMap.getBool(JSErrorHandlerKey::kIsFatal)];
+  [self.runtimeDelegate host:self didInitializeRuntime:runtime];
+}
+
+#pragma mark - RCTContextContainerHandling
+
+- (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer
+{
+  [_contextContainerHandler didCreateContextContainer:contextContainer];
 }
 
 #pragma mark - Internal
@@ -270,20 +262,17 @@ using namespace facebook::react;
   [_instance registerSegmentWithId:segmentId path:path];
 }
 
-#pragma mark - Private
-
-- (void)_refreshBundleURL FB_OBJC_DIRECT
+- (void)setBundleURLProvider:(RCTHostBundleURLProvider)bundleURLProvider
 {
-  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
-  NSURL *newDelegateBundleURL = [_hostDelegate getBundleURL];
-  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
-    _oldDelegateBundleURL = newDelegateBundleURL;
-    _bundleURL = newDelegateBundleURL;
-  }
-
-  // Sanitize the bundle URL
-  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+  _bundleURLProvider = [bundleURLProvider copy];
 }
+
+- (void)setContextContainerHandler:(id<RCTContextContainerHandling>)contextContainerHandler
+{
+  _contextContainerHandler = contextContainerHandler;
+}
+
+#pragma mark - Private
 
 - (void)_attachSurface:(RCTFabricSurface *)surface FB_OBJC_DIRECT
 {
@@ -309,6 +298,22 @@ using namespace facebook::react;
   RCTAssert(jsEngine != nullptr, @"_jsEngineProvider must return a nonnull pointer");
 
   return jsEngine;
+}
+
+- (void)_setBundleURL:(NSURL *)bundleURL
+{
+  // Reset the _bundleURL ivar if the RCTHost delegate presents a new bundleURL
+  NSURL *newDelegateBundleURL = bundleURL;
+  if (newDelegateBundleURL && ![newDelegateBundleURL isEqual:_oldDelegateBundleURL]) {
+    _oldDelegateBundleURL = newDelegateBundleURL;
+    _bundleURL = newDelegateBundleURL;
+  }
+
+  // Sanitize the bundle URL
+  _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
+
+  // Update the global bundle URLq
+  RCTReloadCommandSetBundleURL(_bundleURL);
 }
 
 @end

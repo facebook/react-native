@@ -43,7 +43,6 @@ ValueFactory EventEmitter::defaultPayloadFactory() {
 
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
-    Tag /*tag*/,
     EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
@@ -129,10 +128,6 @@ void EventEmitter::setEnabled(bool enabled) const {
       eventTarget_.reset();
     }
   }
-}
-
-const SharedEventTarget &EventEmitter::getEventTarget() const {
-  return eventTarget_;
 }
 
 } // namespace facebook::react

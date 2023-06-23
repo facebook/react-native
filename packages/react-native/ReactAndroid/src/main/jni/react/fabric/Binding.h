@@ -42,7 +42,7 @@ class Binding : public jni::HybridClass<Binding>,
 
   static void registerNatives();
 
-  const std::shared_ptr<Scheduler> &getScheduler();
+  std::shared_ptr<Scheduler> getScheduler();
 
  private:
   void setConstraints(
@@ -119,15 +119,17 @@ class Binding : public jni::HybridClass<Binding>,
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
+  void reportMount(SurfaceId surfaceId);
 
   void uninstallFabricUIManager();
 
   // Private member variables
   std::shared_mutex installMutex_;
-  std::unique_ptr<FabricMountingManager> mountingManager_;
+  std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  FabricMountingManager *getMountingManager(const char *locationHint);
+  std::shared_ptr<FabricMountingManager> getMountingManager(
+      const char *locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;

@@ -57,7 +57,7 @@ static std::shared_ptr<void> const constructCoordinator(
     ContextContainer::Shared const &contextContainer,
     ComponentDescriptor::Flavor const &flavor)
 {
-  auto componentName = *std::static_pointer_cast<std::string const>(flavor);
+  auto &componentName = *static_cast<std::string const *>(flavor.get());
   auto moduleName = moduleNameFromComponentName(componentName);
   Class module = NSClassFromString(RCTNSStringFromString(moduleName));
   assert(module);
@@ -101,7 +101,7 @@ ComponentHandle LegacyViewManagerInteropComponentDescriptor::getComponentHandle(
 
 ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() const
 {
-  return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
+  return static_cast<std::string const *>(flavor_.get())->c_str();
 }
 
 void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared const &shadowNode) const
@@ -109,11 +109,11 @@ void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared con
   ConcreteComponentDescriptor::adopt(shadowNode);
 
   assert(std::dynamic_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode));
-  auto legacyViewManagerInteropShadowNode = std::static_pointer_cast<LegacyViewManagerInteropShadowNode>(shadowNode);
+  auto &legacyViewManagerInteropShadowNode = static_cast<LegacyViewManagerInteropShadowNode &>(*shadowNode);
 
   auto state = LegacyViewManagerInteropState{};
   state.coordinator = _coordinator;
 
-  legacyViewManagerInteropShadowNode->setStateData(std::move(state));
+  legacyViewManagerInteropShadowNode.setStateData(std::move(state));
 }
 } // namespace facebook::react

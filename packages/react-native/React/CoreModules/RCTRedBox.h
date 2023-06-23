@@ -9,6 +9,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTErrorCustomizer.h>
 
 @class RCTJSStackFrame;
@@ -53,6 +54,12 @@ typedef void (^RCTRedBoxButtonPressHandler)(void);
  * is useful for any class that needs to access the red box or error log.
  */
 @interface RCTBridge (RCTRedBox)
+
+@property (nonatomic, readonly) RCTRedBox *redBox;
+
+@end
+
+@interface RCTBridgeProxy (RCTRedBox)
 
 @property (nonatomic, readonly) RCTRedBox *redBox;
 

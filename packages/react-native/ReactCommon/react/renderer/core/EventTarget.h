@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <memory>
-
 #include <jsi/jsi.h>
+#include <react/renderer/core/InstanceHandle.h>
+#include <memory>
 
 namespace facebook::react {
 
@@ -34,7 +34,7 @@ class EventTarget {
   /*
    * Constructs an EventTarget from a weak instance handler and a tag.
    */
-  EventTarget(jsi::Runtime &runtime, jsi::Value const &instanceHandle, Tag tag);
+  explicit EventTarget(InstanceHandle::Shared instanceHandle);
 
   /*
    * Sets the `enabled` flag that allows creating a strong instance handle from
@@ -65,10 +65,9 @@ class EventTarget {
   Tag getTag() const;
 
  private:
+  const InstanceHandle::Shared instanceHandle_;
   mutable bool enabled_{false}; // Protected by `EventEmitter::DispatchMutex()`.
-  mutable jsi::WeakObject weakInstanceHandle_; // Protected by `jsi::Runtime &`.
   mutable jsi::Value strongInstanceHandle_; // Protected by `jsi::Runtime &`.
-  Tag tag_;
 };
 
 using SharedEventTarget = std::shared_ptr<const EventTarget>;

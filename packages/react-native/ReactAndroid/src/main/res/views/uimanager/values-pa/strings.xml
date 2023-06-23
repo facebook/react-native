@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: pa_IN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ਲਿੰਕ</string>
+    <string name="image_description" gender="unknown">ਚਿੱਤਰ</string>
+    <string name="imagebutton_description" gender="unknown">ਬਟਨ, ਚਿੱਤਰ</string>
+    <string name="header_description" gender="unknown">ਸਿਰਲੇਖ</string>
+    <string name="alert_description" gender="unknown">ਸੁਚੇਤਨਾ</string>
+    <string name="combobox_description" gender="unknown">ਕੋਂਬੋ ਬਾਕਸ</string>
+    <string name="menu_description" gender="unknown">ਮੀਨੂ</string>
+    <string name="menubar_description" gender="unknown">ਮੀਨੂ ਬਾਰ</string>
+    <string name="menuitem_description" gender="unknown">ਮੀਨੂ ਆਈਟਮ</string>
+    <string name="progressbar_description" gender="unknown">ਪ੍ਰੋਗਰੈੱਸ ਬਾਰ</string>
+    <string name="radiogroup_description" gender="unknown">ਰਡੀਓ ਗਰੁੱਪ</string>
+    <string name="scrollbar_description" gender="unknown">ਸਕ੍ਰੋਲ ਬਾਰ</string>
+    <string name="spinbutton_description" gender="unknown">\'ਘੁੰਮਾਓ\' ਬਟਨ</string>
+    <string name="rn_tab_description" gender="unknown">ਟੈਬ</string>
+    <string name="tablist_description" gender="unknown">ਟੈਬ ਸੂਚੀ</string>
+    <string name="timer_description" gender="unknown">ਟਾਈਮਰ</string>
+    <string name="toolbar_description" gender="unknown">ਟੂਲ ਬਾਰ</string>
+    <string name="summary_description" gender="unknown">ਸਾਰ</string>
+    <string name="state_busy_description" gender="unknown">ਵਿਅਸਤ</string>
+    <string name="state_expanded_description" gender="unknown">ਵਿਸਤਾਰ ਕੀਤਾ ਗਿਆ</string>
+    <string name="state_collapsed_description" gender="unknown">ਸਮੇਟਿਆ ਗਿਆ</string>
+    <string name="state_unselected_description" gender="unknown">ਚੋਣ ਹਟਾਈ ਗਈ</string>
+    <string name="state_on_description" gender="unknown">ਚਾਲੂ</string>
+    <string name="state_off_description" gender="unknown">ਬੰਦ</string>
+    <string name="state_mixed_description" gender="unknown">ਮਿਕਸਡ</string>
+</resources>

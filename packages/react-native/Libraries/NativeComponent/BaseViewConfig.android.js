@@ -103,6 +103,12 @@ const bubblingEventTypes = {
       bubbled: 'onPointerOver',
     },
   },
+  topClick: {
+    phasedRegistrationNames: {
+      captured: 'onClickCapture',
+      bubbled: 'onClick',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -134,9 +140,6 @@ const directEventTypes = {
   },
   topMomentumScrollEnd: {
     registrationName: 'onMomentumScrollEnd',
-  },
-  topClick: {
-    registrationName: 'onClick',
   },
   topLoadingStart: {
     registrationName: 'onLoadingStart',

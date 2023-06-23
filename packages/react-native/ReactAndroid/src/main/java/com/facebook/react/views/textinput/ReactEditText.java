@@ -117,6 +117,7 @@ public class ReactEditText extends AppCompatEditText
   private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
+  private @Nullable String mPlaceholder = null;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -495,6 +496,13 @@ public class ReactEditText extends AppCompatEditText
 
     mKeyListener.setInputType(type);
     setKeyListener(mKeyListener);
+  }
+
+  public void setPlaceholder(@Nullable String placeholder) {
+    if (!Objects.equals(placeholder, mPlaceholder)) {
+      mPlaceholder = placeholder;
+      setHint(placeholder);
+    }
   }
 
   public void setFontFamily(String fontFamily) {

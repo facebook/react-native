@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: mk_MK -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="imagebutton_description" gender="unknown">Копче, слика</string>
+    <string name="state_on_description" gender="unknown">вклучено</string>
+    <string name="state_off_description" gender="unknown">исклучено</string>
+</resources>

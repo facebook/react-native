@@ -78,6 +78,19 @@ function reportException(
   message =
     e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
+  // $FlowFixMe[unclear-type]
+  const extraData: Object = {
+    // $FlowFixMe[incompatible-use] we can't define a type with a Symbol-keyed field in flow
+    ...e[decoratedExtraDataKey],
+    jsEngine: e.jsEngine,
+    rawStack: e.stack,
+  };
+  if (e.cause != null && typeof e.cause === 'object') {
+    extraData.stackSymbols = e.cause.stackSymbols;
+    extraData.stackReturnAddresses = e.cause.stackReturnAddresses;
+    extraData.stackElements = e.cause.stackElements;
+  }
+
   const data = preprocessException({
     message,
     originalMessage: message === originalMessage ? null : originalMessage,
@@ -87,12 +100,7 @@ function reportException(
     stack,
     id: currentExceptionID,
     isFatal,
-    extraData: {
-      // $FlowFixMe[incompatible-use] we can't define a type with a Symbol-keyed field in flow
-      ...e[decoratedExtraDataKey],
-      jsEngine: e.jsEngine,
-      rawStack: e.stack,
-    },
+    extraData,
   });
 
   if (reportToConsole) {
@@ -117,7 +125,8 @@ function reportException(
   }
 }
 
-declare var console: typeof console & {
+declare var console: {
+  error: typeof console.error,
   _errorOriginal: typeof console.error,
   reportErrorsAsExceptions: boolean,
   ...

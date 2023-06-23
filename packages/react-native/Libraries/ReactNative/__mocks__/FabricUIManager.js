@@ -143,7 +143,11 @@ function hasDisplayNone(node: Node): boolean {
   return props != null && props.display === 'none';
 }
 
-const FabricUIManagerMock: FabricUIManager = {
+interface IFabricUIManagerMock extends FabricUIManager {
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle;
+}
+
+const FabricUIManagerMock: IFabricUIManagerMock = {
   createNode: jest.fn(
     (
       reactTag: number,
@@ -431,10 +435,41 @@ const FabricUIManagerMock: FabricUIManager = {
       ];
     },
   ),
+  getScrollPosition: jest.fn(
+    (node: Node): ?[/* scrollLeft: */ number, /* scrollTop: */ number] => {
+      ensureHostNode(node);
+
+      const nodeInCurrentTree = getNodeInCurrentTree(node);
+      const currentProps =
+        nodeInCurrentTree != null ? fromNode(nodeInCurrentTree).props : null;
+      if (currentProps == null) {
+        return null;
+      }
+
+      const scrollForTests: ?{
+        scrollLeft: number,
+        scrollTop: number,
+        ...
+      } =
+        // $FlowExpectedError[prop-missing]
+        currentProps.__scrollForTests;
+
+      if (scrollForTests == null) {
+        return null;
+      }
+
+      const {scrollLeft, scrollTop} = scrollForTests;
+      return [scrollLeft, scrollTop];
+    },
+  ),
+
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
+    return fromNode(node).instanceHandle;
+  },
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;
 
-export function getFabricUIManager(): ?FabricUIManager {
+export function getFabricUIManager(): ?IFabricUIManagerMock {
   return FabricUIManagerMock;
 }

@@ -22,13 +22,13 @@
 
 static UIFont *defaultPlaceholderFont(void)
 {
-  return [UIFont systemFontOfSize:17];
+  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 static UIColor *defaultPlaceholderColor(void)
 {
   // Default placeholder color from UITextField.
-  return [UIColor colorWithRed:0 green:0 blue:0.0980392 alpha:0.22];
+  return [UIColor placeholderTextColor];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -259,6 +259,19 @@ static UIColor *defaultPlaceholderColor(void)
   }
 
   return [super canPerformAction:action withSender:sender];
+}
+
+#pragma mark - Dictation
+
+- (void)dictationRecordingDidEnd
+{
+  _dictationRecognizing = YES;
+}
+
+- (void)removeDictationResultPlaceholder:(id)placeholder willInsertResult:(BOOL)willInsertResult
+{
+  [super removeDictationResultPlaceholder:placeholder willInsertResult:willInsertResult];
+  _dictationRecognizing = NO;
 }
 
 #pragma mark - Placeholder

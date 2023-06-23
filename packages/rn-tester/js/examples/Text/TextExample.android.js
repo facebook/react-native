@@ -676,6 +676,10 @@ class TextExample extends React.Component<{...}> {
             Maximum of one line no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after one line
           </Text>
+          <Text style={{fontSize: 31}} numberOfLines={1}>
+            Maximum of one line no matter now much I write here. If I keep
+            writing it{"'"}ll just truncate after one line
+          </Text>
           <Text numberOfLines={2} style={{marginTop: 20}}>
             Maximum of two lines no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after two lines

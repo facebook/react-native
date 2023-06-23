@@ -66,7 +66,9 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
       // changes), but `setNativeView` already optimizes for that.
       node.setNativeView(instance);
 
-      // NOTE: This callback is only used by the JavaScript animation driver.
+      // NOTE: When using the JS animation driver, this callback is called on
+      // every animation frame. When using the native driver, this callback is
+      // called when the animation completes.
       onUpdateRef.current = () => {
         if (
           process.env.NODE_ENV === 'test' ||
@@ -82,12 +84,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           // $FlowIgnore[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
-        } else {
-          throw new Error(
-            'Attempting to run JS driven animation on animated node ' +
-              'that has been moved to "native" earlier by starting an ' +
-              'animation with `useNativeDriver: true`',
-          );
         }
       };
 

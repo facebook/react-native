@@ -12,6 +12,6 @@
   "keywords": ["assets", "registry", "react-native", "support"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }

@@ -306,6 +306,41 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('getTypeAnnotationFromProperty', () => {
+    describe('when property value type is NullableTypeAnnotation', () => {
+      it('returns typeAnnotation of the value', () => {
+        const typeAnnotation = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: {
+            type: 'NullableTypeAnnotation',
+            typeAnnotation: typeAnnotation,
+          },
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+          typeAnnotation,
+        );
+      });
+    });
+
+    describe('when property value type is not NullableTypeAnnotation', () => {
+      it('returns the value', () => {
+        const value = {
+          type: 'StringTypeAnnotation',
+        };
+
+        const property = {
+          value: value,
+        };
+
+        expect(parser.getTypeAnnotationFromProperty(property)).toEqual(value);
+      });
+    });
+  });
+
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TypeAlias');
@@ -318,9 +353,81 @@ describe('FlowParser', () => {
     });
   });
 
-  describe('interfaceDelcaration', () => {
-    it('returns interfaceDelcaration Property', () => {
-      expect(parser.interfaceDelcaration).toEqual('InterfaceDeclaration');
+  describe('interfaceDeclaration', () => {
+    it('returns interfaceDeclaration Property', () => {
+      expect(parser.interfaceDeclaration).toEqual('InterfaceDeclaration');
+    });
+  });
+
+  describe('extractTypeFromTypeAnnotation', () => {
+    it('should return the name if typeAnnotation is GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'SomeType',
+        },
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeType',
+      );
+    });
+
+    it('should return the type if typeAnnotation is not GenericTypeAnnotation', () => {
+      const typeAnnotation = {
+        type: 'SomeOtherType',
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeOtherType',
+      );
+    });
+  });
+
+  describe('getObjectProperties', () => {
+    it('returns properties of an object represented by a type annotation', () => {
+      const properties = [
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          value: {
+            type: 'StringTypeAnnotation',
+            range: [],
+          },
+        },
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          value: {
+            type: 'BooleanTypeAnnotation',
+            range: [],
+          },
+        },
+      ];
+
+      const typeAnnotation = {
+        type: 'TypeAlias',
+        properties: properties,
+      };
+
+      const expected = properties;
+
+      expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
+    });
+
+    it('returns undefined if typeAnnotation does not have properties', () => {
+      const declaration = {
+        type: 'TypeAlias',
+      };
+
+      expect(parser.getObjectProperties(declaration)).toEqual(undefined);
     });
   });
 });
@@ -601,6 +708,30 @@ describe('TypeScriptParser', () => {
     });
   });
 
+  describe('getTypeAnnotationFromProperty', () => {
+    it('returns the type annotation', () => {
+      const typeAnnotation = {
+        type: 'TSStringKeyword',
+        key: {
+          type: 'Identifier',
+          name: 'b',
+        },
+        members: [],
+      };
+
+      const property = {
+        typeAnnotation: {
+          type: 'TSTypeAnnotation',
+          typeAnnotation: typeAnnotation,
+        },
+      };
+
+      expect(parser.getTypeAnnotationFromProperty(property)).toEqual(
+        typeAnnotation,
+      );
+    });
+  });
+
   describe('typeAlias', () => {
     it('returns typeAlias Property', () => {
       expect(parser.typeAlias).toEqual('TSTypeAliasDeclaration');
@@ -613,9 +744,81 @@ describe('TypeScriptParser', () => {
     });
   });
 
-  describe('interfaceDelcaration', () => {
-    it('returns interfaceDelcaration Property', () => {
-      expect(parser.interfaceDelcaration).toEqual('TSInterfaceDeclaration');
+  describe('interfaceDeclaration', () => {
+    it('returns interfaceDeclaration Property', () => {
+      expect(parser.interfaceDeclaration).toEqual('TSInterfaceDeclaration');
+    });
+  });
+
+  describe('extractTypeFromTypeAnnotation', () => {
+    it('should return the name if typeAnnotation is TSTypeReference', () => {
+      const typeAnnotation = {
+        type: 'TSTypeReference',
+        typeName: {
+          name: 'SomeType',
+        },
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeType',
+      );
+    });
+
+    it('should return the type if typeAnnotation is not TSTypeReference', () => {
+      const typeAnnotation = {
+        type: 'SomeOtherType',
+      };
+
+      expect(parser.extractTypeFromTypeAnnotation(typeAnnotation)).toEqual(
+        'SomeOtherType',
+      );
+    });
+  });
+
+  describe('getObjectProperties', () => {
+    it('returns members of an object represented by a type annotation', () => {
+      const members = [
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'a',
+          },
+          value: {
+            type: 'StringTypeAnnotation',
+            range: [],
+          },
+        },
+        {
+          type: 'ObjectTypeProperty',
+          key: {
+            type: 'Identifier',
+            name: 'b',
+          },
+          optional: true,
+          value: {
+            type: 'BooleanTypeAnnotation',
+            range: [],
+          },
+        },
+      ];
+
+      const typeAnnotation = {
+        type: 'TypeAlias',
+        members: members,
+      };
+
+      const expected = members;
+
+      expect(parser.getObjectProperties(typeAnnotation)).toEqual(expected);
+    });
+
+    it('returns undefined if typeAnnotation does not have members', () => {
+      const declaration = {
+        type: 'TypeAlias',
+      };
+
+      expect(parser.getObjectProperties(declaration)).toEqual(undefined);
     });
   });
 });

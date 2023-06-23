@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: km_KH -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">តំណ</string>
+    <string name="progressbar_description" gender="unknown">របារ​ដំណើរការ</string>
+    <string name="scrollbar_description" gender="unknown">របាររំកិល</string>
+    <string name="toolbar_description" gender="unknown">របារ​ឧបករណ៍</string>
+    <string name="state_expanded_description" gender="unknown">បានពង្រីក</string>
+    <string name="state_collapsed_description" gender="unknown">បានបង្រួម</string>
+    <string name="state_off_description" gender="unknown">បិទ</string>
+</resources>

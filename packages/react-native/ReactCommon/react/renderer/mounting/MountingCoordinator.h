@@ -59,6 +59,14 @@ class MountingCoordinator final {
   std::optional<MountingTransaction> pullTransaction() const;
 
   /*
+   * Indicates if there are transactions waiting to be consumed and mounted on
+   * the host platform. This can be useful to determine if side-effects of
+   * mounting can be expected after some operations (like IntersectionObserver
+   * initial paint notifications).
+   */
+  bool hasPendingTransactions() const;
+
+  /*
    * Blocks the current thread until a new mounting transaction is available or
    * after the specified `timeout` duration.
    * Returns `false` if a timeout occurred before a new transaction available.
@@ -70,6 +78,8 @@ class MountingCoordinator final {
   bool waitForTransaction(std::chrono::duration<double> timeout) const;
 
   TelemetryController const &getTelemetryController() const;
+
+  ShadowTreeRevision const &getBaseRevision() const;
 
   /*
    * Methods from this section are meant to be used by

@@ -186,6 +186,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 ]
             ),
             new PrefabPreprocessingEntry(
+                    "react_utils",
+                    new Pair("../ReactCommon/react/utils/", "react/utils/"),
+            ),
+            new PrefabPreprocessingEntry(
                 "react_render_imagemanager",
                 [
                     new Pair("../ReactCommon/react/renderer/imagemanager/", "react/renderer/imagemanager/"),
@@ -332,6 +336,23 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
+task downloadGtest(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
+    onlyIfModified(true)
+    overwrite(false)
+    retries(5)
+    dest(new File(downloadsDir, "gtest.tar.gz"))
+}
+
+task prepareGtest(dependsOn: dependenciesPath ? [] : [downloadGtest], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadGtest.dest))
+    eachFile { fname -> {
+        fname.path = (fname.path - "googletest-release-${GTEST_VERSION}/")
+     }
+    }
+    into(new File(thirdPartyNdkDir,"googletest"))
+}
+
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
@@ -356,6 +377,7 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGlog)
     dependsOn(downloadFmt)
     dependsOn(downloadLibevent)
+    dependsOn(downloadGtest)
 }
 
 /**
@@ -481,6 +503,10 @@ android {
                 targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "bridgeless",
+                    "rninstance",
+                    "hermesinstancejni",
+                    "uimanagerjni",
                     // prefab targets
                     "reactnativejni",
                     "react_render_debug",
@@ -488,6 +514,7 @@ android {
                     "runtimeexecutor",
                     "react_codegen_rncore",
                     "react_debug",
+                    "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
                     "react_render_animations",
@@ -536,7 +563,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
@@ -567,6 +594,7 @@ android {
     buildFeatures {
         prefab true
         prefabPublishing !skipPrefabPublishing
+        buildConfig true
     }
 
     prefab {
@@ -584,6 +612,9 @@ android {
         }
         react_debug {
             headers(new File(prefabHeadersDir, "react_debug").absolutePath)
+        }
+        react_utils {
+            headers(new File(prefabHeadersDir, "react_utils").absolutePath)
         }
         react_render_componentregistry {
             headers(new File(prefabHeadersDir, "react_render_componentregistry").absolutePath)
@@ -711,12 +742,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-
-    // This compileOnly dependency is needed to be able to update the offline
-    // mirror from a non-linux machine, while still executing inside a Linux CI
-    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
-    // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {
@@ -727,6 +752,8 @@ react {
 }
 
 kotlin {
+    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
+    // not running well on JDK 17.
     jvmToolchain(11)
 }
 

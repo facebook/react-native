@@ -16,6 +16,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BridgelessReactPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -44,6 +45,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.uimanager.ComponentNameResolver;
@@ -77,6 +79,7 @@ final class ReactInstance {
 
   private final ReactHostDelegate mDelegate;
   private final BridgelessReactContext mBridgelessReactContext;
+  private final List<ReactPackage> mReactPackages;
 
   private final ReactQueueConfiguration mQueueConfiguration;
   private final TurboModuleManager mTurboModuleManager;
@@ -84,6 +87,10 @@ final class ReactInstance {
   private final JavaTimerManager mJavaTimerManager;
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
+
+  static {
+    loadLibraryIfNeeded();
+  }
 
   private static volatile boolean sIsLibraryLoaded;
 
@@ -97,7 +104,6 @@ final class ReactInstance {
       boolean useDevSupport) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
-    loadLibraryIfNeeded();
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize");
 
@@ -149,7 +155,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance(mBridgelessReactContext);
+    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -185,15 +191,27 @@ final class ReactInstance {
     // Set up TurboModules
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
+
+    mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
+    mReactPackages.add(
+        new BridgelessReactPackage(
+            bridgelessReactContext.getDevSupportManager(),
+            bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
+
     TurboModuleManagerDelegate turboModuleManagerDelegate =
-        mDelegate.getTurboModuleManagerDelegate(mBridgelessReactContext);
+        mDelegate
+            .getTurboModuleManagerDelegateBuilder()
+            .setPackages(mReactPackages)
+            .setReactApplicationContext(mBridgelessReactContext)
+            .build();
+
     mTurboModuleManager =
         new TurboModuleManager(
             // Use unbuffered RuntimeExecutor to install binding
             unbufferedRuntimeExecutor,
             turboModuleManagerDelegate,
             getJSCallInvokerHolder(),
-            getNativeCallInvokerHolder());
+            getNativeMethodCallInvokerHolder());
 
     // Eagerly initialize TurboModules
     for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
@@ -382,7 +400,7 @@ final class ReactInstance {
       JavaTimerManager timerManager,
       JSTimerExecutor jsTimerExecutor,
       ReactJsExceptionHandler jReactExceptionsManager,
-      BindingsInstaller jBindingsInstaller,
+      @Nullable BindingsInstaller jBindingsInstaller,
       boolean isProfiling);
 
   @DoNotStrip
@@ -397,7 +415,7 @@ final class ReactInstance {
 
   private native CallInvokerHolderImpl getJSCallInvokerHolder();
 
-  private native CallInvokerHolderImpl getNativeCallInvokerHolder();
+  private native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private native RuntimeExecutor getUnbufferedRuntimeExecutor();
 
@@ -441,7 +459,7 @@ final class ReactInstance {
 
   private @Nullable ViewManager createViewManager(String viewManagerName) {
     if (mDelegate != null) {
-      List<ReactPackage> packages = mDelegate.getReactPackages();
+      List<ReactPackage> packages = mReactPackages;
       if (packages != null) {
         synchronized (packages) {
           for (ReactPackage reactPackage : packages) {
@@ -464,7 +482,7 @@ final class ReactInstance {
   private @NonNull Collection<String> getViewManagerNames() {
     Set<String> uniqueNames = new HashSet<>();
     if (mDelegate != null) {
-      List<ReactPackage> packages = mDelegate.getReactPackages();
+      List<ReactPackage> packages = mReactPackages;
       if (packages != null) {
         synchronized (packages) {
           for (ReactPackage reactPackage : packages) {

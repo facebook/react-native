@@ -293,7 +293,7 @@ export default class ReadOnlyNode {
 
 const INSTANCE_HANDLE_KEY = Symbol('internalInstanceHandle');
 
-function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
+export function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
   // $FlowExpectedError[prop-missing]
   return node[INSTANCE_HANDLE_KEY];
 }

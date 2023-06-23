@@ -14,6 +14,7 @@
 #include <shared_mutex>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/RawValue.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/StateData.h>
@@ -30,6 +31,7 @@ namespace facebook::react {
 
 class UIManagerBinding;
 class UIManagerCommitHook;
+class UIManagerMountHook;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -79,8 +81,14 @@ class UIManager final : public ShadowTreeDelegate {
   /*
    * Registers and unregisters a commit hook.
    */
-  void registerCommitHook(UIManagerCommitHook const &commitHook) const;
-  void unregisterCommitHook(UIManagerCommitHook const &commitHook) const;
+  void registerCommitHook(UIManagerCommitHook &commitHook);
+  void unregisterCommitHook(UIManagerCommitHook &commitHook);
+
+  /*
+   * Registers and unregisters a mount hook.
+   */
+  void registerMountHook(UIManagerMountHook &mountHook);
+  void unregisterMountHook(UIManagerMountHook &mountHook);
 
   ShadowNode::Shared getNewestCloneOfShadowNode(
       ShadowNode const &shadowNode) const;
@@ -127,7 +135,7 @@ class UIManager final : public ShadowTreeDelegate {
       std::string const &componentName,
       SurfaceId surfaceId,
       const RawProps &props,
-      SharedEventTarget eventTarget) const;
+      const InstanceHandle::Shared &instanceHandle) const;
 
   ShadowNode::Shared cloneNode(
       ShadowNode const &shadowNode,
@@ -191,6 +199,8 @@ class UIManager final : public ShadowTreeDelegate {
 
   ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
+  void reportMount(SurfaceId surfaceId) const;
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -215,7 +225,10 @@ class UIManager final : public ShadowTreeDelegate {
   ContextContainer::Shared contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;
-  mutable std::vector<UIManagerCommitHook const *> commitHooks_;
+  mutable std::vector<UIManagerCommitHook *> commitHooks_;
+
+  mutable std::shared_mutex mountHookMutex_;
+  mutable std::vector<UIManagerMountHook *> mountHooks_;
 
   std::unique_ptr<LeakChecker> leakChecker_;
 };

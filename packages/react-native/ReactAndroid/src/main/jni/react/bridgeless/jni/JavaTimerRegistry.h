@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <react/bridgeless/PlatformTimerRegistry.h>
 
 #include "JJavaTimerManager.h"

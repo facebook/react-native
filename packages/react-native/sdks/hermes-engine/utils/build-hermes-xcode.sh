@@ -9,11 +9,6 @@ set -x
 release_version="$1"; shift
 hermesc_path="$1"; shift
 
-build_cli_tools="false"
-if [[ "$PLATFORM_NAME" == macosx ]]; then
-  build_cli_tools="true"
-fi
-
 enable_debugger="false"
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   enable_debugger="true"
@@ -51,22 +46,19 @@ echo "Configure Apple framework"
   -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
   -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
-  -DHERMES_ENABLE_TOOLS:BOOLEAN="$build_cli_tools" \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
-  -DCMAKE_INSTALL_PREFIX:PATH="${PODS_ROOT}/hermes-engine/destroot" \
   -DCMAKE_BUILD_TYPE="$cmake_build_type"
 
 echo "Build Apple framework"
 
 "$CMAKE_BINARY" \
   --build "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
-  --target "install/strip" \
+  --target libhermes \
   -j "$(sysctl -n hw.ncpu)"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
 
 cp -pfR \
-  "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/ios"
-rm -rf "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${PLATFORM_NAME}"

@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
@@ -58,7 +59,15 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
+- (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
+
+/**
+ * @deprecated: use installJSBindings instead
+ */
 - (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
+
+// TODO: Should we move this into the initializer?
+- (void)setBridgeProxy:(RCTBridgeProxy *)bridgeProxy;
 
 - (void)invalidate;
 

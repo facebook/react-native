@@ -12,7 +12,8 @@ package com.facebook.yoga;
 public enum YogaExperimentalFeature {
   WEB_FLEX_BASIS(0),
   ABSOLUTE_PERCENTAGE_AGAINST_PADDING_EDGE(1),
-  FIX_ABSOLUTE_TRAILING_COLUMN_MARGIN(2);
+  FIX_ABSOLUTE_TRAILING_COLUMN_MARGIN(2),
+  FIX_JNILOCAL_REF_OVERFLOWS(3);
 
   private final int mIntValue;
 
@@ -29,6 +30,7 @@ public enum YogaExperimentalFeature {
       case 0: return WEB_FLEX_BASIS;
       case 1: return ABSOLUTE_PERCENTAGE_AGAINST_PADDING_EDGE;
       case 2: return FIX_ABSOLUTE_TRAILING_COLUMN_MARGIN;
+      case 3: return FIX_JNILOCAL_REF_OVERFLOWS;
       default: throw new IllegalArgumentException("Unknown enum value: " + value);
     }
   }

@@ -7,9 +7,12 @@
 
 package com.facebook.react.animated;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
  * Implementation of {@link AnimationDriver} which provides a support for simple time-based
@@ -70,7 +73,17 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     long timeFromStartMillis = (frameTimeNanos - mStartFrameTimeNanos) / 1000000;
     int frameIndex = (int) Math.round(timeFromStartMillis / FRAME_TIME_MILLIS);
     if (frameIndex < 0) {
-      throw new IllegalStateException("Calculated frame index should never be lower than 0");
+      String message =
+          "Calculated frame index should never be lower than 0. Called with frameTimeNanos "
+              + frameTimeNanos
+              + " and mStartFrameTimeNanos "
+              + mStartFrameTimeNanos;
+      if (ReactBuildConfig.DEBUG) {
+        throw new IllegalStateException(message);
+      } else {
+        FLog.w(ReactConstants.TAG, message);
+        return;
+      }
     } else if (mHasFinished) {
       // nothing to do here
       return;

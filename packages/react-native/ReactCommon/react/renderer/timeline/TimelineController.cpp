@@ -42,19 +42,19 @@ void TimelineController::disable(TimelineHandler &&handler) const {
 }
 
 void TimelineController::commitHookWasRegistered(
-    UIManager const &uiManager) const noexcept {
+    UIManager const &uiManager) noexcept {
   uiManager_ = &uiManager;
 }
 
 void TimelineController::commitHookWasUnregistered(
-    UIManager const & /*uiManager*/) const noexcept {
+    UIManager const & /*uiManager*/) noexcept {
   uiManager_ = nullptr;
 }
 
 RootShadowNode::Unshared TimelineController::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
-    RootShadowNode::Unshared const &newRootShadowNode) const noexcept {
+    RootShadowNode::Unshared const &newRootShadowNode) noexcept {
   std::shared_lock<std::shared_mutex> lock(timelinesMutex_);
 
   assert(uiManager_ && "`uiManager_` must not be `nullptr`.");

@@ -1,10 +1,3 @@
-/*
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 package com.helloworld
 
 import android.app.Application
@@ -25,8 +18,11 @@ class MainApplication : Application(), ReactApplication {
           // packages.add(new MyReactNativePackage());
           return PackageList(this).packages
         }
+
         override fun getJSMainModuleName(): String = "index"
+
         override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
+
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
       }

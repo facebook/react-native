@@ -10,7 +10,9 @@
 
 'use strict';
 
-import type {FrameMetricProps} from './VirtualizedListProps';
+import type ListMetricsAggregator, {
+  CellMetricProps,
+} from './ListMetricsAggregator';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the
@@ -19,15 +21,8 @@ import type {FrameMetricProps} from './VirtualizedListProps';
  */
 export function elementsThatOverlapOffsets(
   offsets: Array<number>,
-  props: FrameMetricProps,
-  getFrameMetrics: (
-    index: number,
-    props: FrameMetricProps,
-  ) => {
-    length: number,
-    offset: number,
-    ...
-  },
+  props: CellMetricProps,
+  listMetrics: ListMetricsAggregator,
   zoomScale: number = 1,
 ): Array<number> {
   const itemCount = props.getItemCount(props.data);
@@ -38,9 +33,8 @@ export function elementsThatOverlapOffsets(
     let right = itemCount - 1;
 
     while (left <= right) {
-      // eslint-disable-next-line no-bitwise
-      const mid = left + ((right - left) >>> 1);
-      const frame = getFrameMetrics(mid, props);
+      const mid = left + Math.floor((right - left) / 2);
+      const frame = listMetrics.getCellMetricsApprox(mid, props);
       const scaledOffsetStart = frame.offset * zoomScale;
       const scaledOffsetEnd = (frame.offset + frame.length) * zoomScale;
 
@@ -99,21 +93,14 @@ export function newRangeCount(
  * biased in the direction of scroll.
  */
 export function computeWindowedRenderLimits(
-  props: FrameMetricProps,
+  props: CellMetricProps,
   maxToRenderPerBatch: number,
   windowSize: number,
   prev: {
     first: number,
     last: number,
   },
-  getFrameMetricsApprox: (
-    index: number,
-    props: FrameMetricProps,
-  ) => {
-    length: number,
-    offset: number,
-    ...
-  },
+  listMetrics: ListMetricsAggregator,
   scrollMetrics: {
     dt: number,
     offset: number,
@@ -152,7 +139,7 @@ export function computeWindowedRenderLimits(
   const overscanEnd = Math.max(0, visibleEnd + leadFactor * overscanLength);
 
   const lastItemOffset =
-    getFrameMetricsApprox(itemCount - 1, props).offset * zoomScale;
+    listMetrics.getCellMetricsApprox(itemCount - 1, props).offset * zoomScale;
   if (lastItemOffset < overscanBegin) {
     // Entire list is before our overscan window
     return {
@@ -165,7 +152,7 @@ export function computeWindowedRenderLimits(
   let [overscanFirst, first, last, overscanLast] = elementsThatOverlapOffsets(
     [overscanBegin, visibleBegin, visibleEnd, overscanEnd],
     props,
-    getFrameMetricsApprox,
+    listMetrics,
     zoomScale,
   );
   overscanFirst = overscanFirst == null ? 0 : overscanFirst;

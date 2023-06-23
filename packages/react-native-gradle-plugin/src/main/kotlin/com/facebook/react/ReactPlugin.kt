@@ -66,7 +66,6 @@ class ReactPlugin : Plugin<Project> {
       configureBuildConfigFields(project)
       configureDevPorts(project)
       configureBackwardCompatibilityReactMap(project)
-      configureJavaToolChains(project)
 
       project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
@@ -80,17 +79,20 @@ class ReactPlugin : Plugin<Project> {
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
+
+    // Library and App Configurations
+    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
     val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
-    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 16) {
       project.logger.error(
           """
 
       ********************************************************************************
 
-      ERROR: requires JDK11 or higher.
+      ERROR: requires JDK17 or higher.
       Incompatible major version detected: '$jvmVersion'
 
       ********************************************************************************

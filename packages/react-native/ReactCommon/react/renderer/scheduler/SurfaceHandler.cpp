@@ -108,7 +108,9 @@ void SurfaceHandler::stop() const noexcept {
   // mounted views, so we need to commit an empty tree to trigger all
   // side-effects (including destroying and removing mounted views).
   react_native_assert(shadowTree && "`shadowTree` must not be null.");
-  shadowTree->commitEmptyTree();
+  if (shadowTree) {
+    shadowTree->commitEmptyTree();
+  }
 }
 
 void SurfaceHandler::setDisplayMode(DisplayMode displayMode) const noexcept {
@@ -325,11 +327,9 @@ void SurfaceHandler::setUIManager(UIManager const *uiManager) const noexcept {
 }
 
 SurfaceHandler::~SurfaceHandler() noexcept {
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      link_.status == Status::Unregistered &&
-  //      "`SurfaceHandler` must be unregistered (or moved-from) before
-  //      deallocation.");
+  react_native_assert(
+      link_.status == Status::Unregistered &&
+      "`SurfaceHandler` must be unregistered (or moved-from) before deallocation.");
 }
 
 } // namespace facebook::react

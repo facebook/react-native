@@ -174,6 +174,15 @@ const SharedEventEmitter &ShadowNode::getEventEmitter() const {
   return family_->eventEmitter_;
 }
 
+jsi::Value ShadowNode::getInstanceHandle(jsi::Runtime &runtime) const {
+  auto instanceHandle = family_->instanceHandle_;
+  if (instanceHandle == nullptr) {
+    return jsi::Value::null();
+  }
+
+  return instanceHandle->getInstanceHandle(runtime);
+}
+
 Tag ShadowNode::getTag() const {
   return family_->tag_;
 }
@@ -218,9 +227,8 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
-  auto nonConstChildren =
-      std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
-  nonConstChildren->push_back(child);
+  auto &children = const_cast<ShadowNode::ListOfShared &>(*children_);
+  children.push_back(child);
 
   child->family_->setParent(family_);
 }
@@ -232,11 +240,9 @@ void ShadowNode::replaceChild(
   ensureUnsealed();
 
   cloneChildrenIfShared();
-
   newChild->family_->setParent(family_);
 
-  auto &children =
-      *std::const_pointer_cast<ShadowNode::ListOfShared>(children_);
+  auto &children = const_cast<ShadowNode::ListOfShared &>(*children_);
   auto size = children.size();
 
   if (suggestedIndex != -1 && suggestedIndex < size) {

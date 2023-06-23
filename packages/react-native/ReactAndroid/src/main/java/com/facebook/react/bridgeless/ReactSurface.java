@@ -23,6 +23,7 @@ import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
+import com.facebook.react.interfaces.ReactSurfaceInterface;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +32,7 @@ import javax.annotation.Nullable;
 /** A class responsible for creating and rendering a full-screen React surface. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
-public class ReactSurface {
+public class ReactSurface implements ReactSurfaceInterface {
 
   private final AtomicReference<ReactSurfaceView> mSurfaceView = new AtomicReference<>(null);
 

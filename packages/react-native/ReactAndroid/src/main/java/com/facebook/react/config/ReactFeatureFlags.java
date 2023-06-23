@@ -51,6 +51,13 @@ public class ReactFeatureFlags {
   public static volatile boolean unstable_useFabricInterop = false;
 
   /**
+   * Should this application always use the Native RuntimeScheduler? If yes, we'll be instantiating
+   * it over all the architectures (both Old and New). This is intentionally set to true as we want
+   * to use it more as a kill-switch to turn off this feature to potentially debug issues.
+   */
+  public static volatile boolean unstable_useRuntimeSchedulerAlways = true;
+
+  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
@@ -150,9 +157,9 @@ public class ReactFeatureFlags {
    */
   public static boolean useNativeState = false;
 
-  /**
-   * Unmount React application on ReactInstance detach. Controls rollout of change to align React
-   * application lifecycle with React Native instance.
-   */
-  public static boolean unmountApplicationOnInstanceDetach = false;
+  /** Report mount operations from the host platform to notify mount hooks. */
+  public static boolean enableMountHooks = false;
+
+  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
+  public static boolean fixStoppedSurfaceTagSetLeak = true;
 }

@@ -69,7 +69,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
+  s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
@@ -130,6 +130,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "React-utils"
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "Yoga"
   s.dependency "glog"

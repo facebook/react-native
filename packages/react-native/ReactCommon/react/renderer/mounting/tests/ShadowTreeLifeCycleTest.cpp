@@ -42,8 +42,6 @@ static void testShadowNodeTreeLifeCycle(
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
-  auto noopEventEmitter =
-      std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
   PropsParserContext parserContext{-1, *contextContainer};
 
@@ -52,8 +50,8 @@ static void testShadowNodeTreeLifeCycle(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family = rootComponentDescriptor.createFamily(
-        {Tag(1), SurfaceId(1), nullptr}, nullptr);
+    auto family =
+        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
@@ -195,8 +193,6 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       ViewComponentDescriptor(componentDescriptorParameters);
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
-  auto noopEventEmitter =
-      std::make_shared<ViewEventEmitter const>(nullptr, -1, eventDispatcher);
 
   PropsParserContext parserContext{-1, *contextContainer};
 
@@ -205,8 +201,8 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
 
-    auto family = rootComponentDescriptor.createFamily(
-        {Tag(1), SurfaceId(1), nullptr}, nullptr);
+    auto family =
+        rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
 
     // Creating an initial root shadow node.
     auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(

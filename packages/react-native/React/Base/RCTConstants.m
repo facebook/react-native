@@ -56,7 +56,7 @@ void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
  */
 static int RCTMemoryPressureUnloadLevel = 15;
 
-BOOL RCTGetMemoryPressureUnloadLevel(void)
+int RCTGetMemoryPressureUnloadLevel(void)
 {
   return RCTMemoryPressureUnloadLevel;
 }
@@ -80,4 +80,19 @@ BOOL RCTGetParseUnhandledJSErrorStackNatively(void)
 void RCTSetParseUnhandledJSErrorStackNatively(BOOL value)
 {
   RCTParseUnhandledJSErrorStackNatively = value;
+}
+
+/*
+ * Use native view configs in bridgeless mode
+ */
+static BOOL RCTUseNativeViewConfigsInBridgelessMode = NO;
+
+BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void)
+{
+  return RCTUseNativeViewConfigsInBridgelessMode;
+}
+
+void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value)
+{
+  RCTUseNativeViewConfigsInBridgelessMode = value;
 }

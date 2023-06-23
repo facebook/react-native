@@ -48,6 +48,10 @@ header_search_paths = [
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-runtimescheduler/React_runtimescheduler.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/",
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -91,11 +95,15 @@ Pod::Spec.new do |s|
     s.dependency "React-Fabric"
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
+    s.dependency "React-utils"
+    s.dependency "React-debug"
+    s.dependency "React-rendererdebug"
 
     s.script_phases = {
       :name => "Generate Legacy Components Interop",
       :script => "
-. ${PODS_ROOT}/../.xcode.env
+WITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"
+source $WITH_ENVIRONMENT
 ${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
       ",
       :execution_position => :before_compile,

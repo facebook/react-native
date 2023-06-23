@@ -73,7 +73,7 @@ RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
 /*
  * Memory Pressure Unloading Level
  */
-RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
+RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
 
 /*
@@ -81,3 +81,9 @@ RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
  */
 RCT_EXTERN BOOL RCTGetParseUnhandledJSErrorStackNatively(void);
 RCT_EXTERN void RCTSetParseUnhandledJSErrorStackNatively(BOOL value);
+
+/*
+ * Use native view configs in bridgeless mode
+ */
+RCT_EXTERN BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void);
+RCT_EXTERN void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value);

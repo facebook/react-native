@@ -49,7 +49,7 @@ class ConcreteState : public State {
    * Returns stored data.
    */
   Data const &getData() const {
-    return *std::static_pointer_cast<Data const>(data_);
+    return *static_cast<Data const *>(data_.get());
   }
 
   /*
@@ -90,7 +90,7 @@ class ConcreteState : public State {
     auto stateUpdate = StateUpdate{
         family, [=](StateData::Shared const &oldData) -> StateData::Shared {
           react_native_assert(oldData);
-          return callback(*std::static_pointer_cast<Data const>(oldData));
+          return callback(*static_cast<Data const *>(oldData.get()));
         }};
 
     family->dispatchRawState(std::move(stateUpdate), priority);

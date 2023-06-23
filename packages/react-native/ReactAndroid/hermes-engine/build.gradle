@@ -181,6 +181,9 @@ android {
                     // This has the (unlucky) side effect of letting AGP call the build
                     // tasks `configureCMakeRelease` while is actually building the debug flavor.
                     arguments "-DCMAKE_BUILD_TYPE=Release"
+                    // Adding -O3 to handle the issue here: https://github.com/android/ndk/issues/1740#issuecomment-1198438260
+                    // The old NDK toolchain is not passing -O3 correctly for release CMake builds. This is fixed in NDK 25 and can be removed once we're there.
+                    cppFlags "-O3"
                 }
             }
         }
@@ -199,6 +202,8 @@ android {
     }
 
     kotlin {
+        // We intentionally don't build on JDK 17 to keep this version aligned with
+        // the JVM toolchain of :ReactAndroid
         jvmToolchain(11)
     }
 
@@ -217,7 +222,7 @@ android {
     }
 
     dependencies {
-        implementation("com.facebook.fbjni:fbjni:0.3.0")
+        implementation("com.facebook.fbjni:fbjni:0.4.0")
         implementation("com.facebook.soloader:soloader:0.10.4")
         implementation("com.facebook.yoga:proguard-annotations:1.19.0")
         implementation("androidx.annotation:annotation:1.3.0")

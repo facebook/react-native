@@ -111,7 +111,7 @@ public interface DevSupportManager extends JSExceptionHandler {
    * determined right before loading the packager. Your customizer must call |callback|, as loading
    * will be blocked waiting for it to resolve.
    */
-  public interface PackagerLocationCustomizer {
+  interface PackagerLocationCustomizer {
     void run(Runnable callback);
   }
 

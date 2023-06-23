@@ -10,6 +10,7 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
@@ -31,7 +32,7 @@ namespace TMPL = TurboModulePerfLogger;
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -42,15 +43,16 @@ JavaTurboModule::~JavaTurboModule() {
     return;
   }
 
-  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
-    /**
-     * Reset the global NativeModule ref on the NativeModules thread. Why:
-     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
-     *     global ref in ~JavaTurboModule(), we might access the JVM from a
-     *     non-JVM thread, which will crash the app.
-     */
-    instance.reset();
-  });
+  nativeMethodCallInvoker_->invokeAsync(
+      "~" + name_, [instance = std::move(instance_)]() mutable {
+        /**
+         * Reset the global NativeModule ref on the NativeModules thread. Why:
+         *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset
+         * the global ref in ~JavaTurboModule(), we might access the JVM from a
+         *     non-JVM thread, which will crash the app.
+         */
+        instance.reset();
+      });
 }
 
 namespace {
@@ -82,8 +84,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          throw std::runtime_error(
-              "Callback arg cannot be called more than once");
+          LOG(FATAL) << "callback arg cannot be called more than once";
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -429,15 +430,9 @@ jsi::JSError convertThrowableToJSError(
   }
 
   jsi::Object cause(runtime);
-  auto getName = throwable->getClass()
-                     ->getClass()
-                     ->getMethod<jni::local_ref<jni::JString>()>("getName");
-  auto getMessage =
-      throwable->getClass()->getMethod<jni::local_ref<jni::JString>()>(
-          "getMessage");
-  auto message = getMessage(throwable)->toStdString();
-  cause.setProperty(
-      runtime, "name", getName(throwable->getClass())->toStdString());
+  auto name = throwable->getClass()->getCanonicalName()->toStdString();
+  auto message = throwable->getMessage()->toStdString();
+  cause.setProperty(runtime, "name", name);
   cause.setProperty(runtime, "message", message);
   cause.setProperty(runtime, "stackElements", std::move(stackElements));
 
@@ -742,7 +737,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-      nativeInvoker_->invokeAsync(
+      nativeMethodCallInvoker_->invokeAsync(
+          methodName,
           [jargs,
            globalRefs,
            methodID,
@@ -841,7 +837,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
             TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-            nativeInvoker_->invokeAsync(
+            nativeMethodCallInvoker_->invokeAsync(
+                methodName,
                 [jargs,
                  globalRefs,
                  methodID,

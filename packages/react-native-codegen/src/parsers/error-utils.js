@@ -343,6 +343,14 @@ function throwIfArgumentPropsAreNull(
   return argumentProps;
 }
 
+function throwIfTypeAliasIsNotInterface(typeAlias: $FlowFixMe, parser: Parser) {
+  if (typeAlias.type !== parser.interfaceDeclaration) {
+    throw new Error(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -366,4 +374,5 @@ module.exports = {
   throwIfEventHasNoName,
   throwIfBubblingTypeIsNull,
   throwIfArgumentPropsAreNull,
+  throwIfTypeAliasIsNotInterface,
 };
