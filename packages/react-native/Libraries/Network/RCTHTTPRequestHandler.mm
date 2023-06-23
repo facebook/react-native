@@ -77,6 +77,11 @@ RCT_EXPORT_MODULE()
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSNumber *useWifiOnly = [infoDictionary objectForKey:@"ReactNetworkForceWifiOnly"];
 
+    // You can disable NSURLSession cache request by providing the follwing key to your RN project.( edit your Info.plist file in Xcode):
+    // <key>ReactNetworkDisableCache</key>
+    // <true/>
+    NSNumber *disableCache = [infoDictionary objectForKey:@"ReactNetworkDisableCache"];
+
     NSOperationQueue *callbackQueue = [NSOperationQueue new];
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_moduleRegistry moduleForName:"Networking"] methodQueue];
@@ -88,6 +93,11 @@ RCT_EXPORT_MODULE()
       // Set allowsCellularAccess to NO ONLY if key ReactNetworkForceWifiOnly exists AND its value is YES
       if (useWifiOnly) {
         configuration.allowsCellularAccess = ![useWifiOnly boolValue];
+      }
+      // Disable cache request if ReactNetworkDisableCache value is YES
+      if (disableCache) {
+        configuration.URLCache = nil;
+        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
       }
       [configuration setHTTPShouldSetCookies:YES];
       [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
