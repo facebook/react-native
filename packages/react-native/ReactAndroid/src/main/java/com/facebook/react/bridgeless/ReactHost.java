@@ -1038,27 +1038,28 @@ public class ReactHost implements ReactHostInterface {
    *     tap on reload button)
    * @return A task that completes when React Native reloads
    */
-  public Task<Void> reload(String reason) {
+  public Future<Void> reload(String reason) {
     final String method = "reload()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return Task.call(
-              () -> {
-                if (mDestroyTask != null) {
-                  log(
-                      method,
-                      "Destroying React Native. Waiting for destroy to finish, before reloading React Native.");
-                  return mDestroyTask
-                      .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
-                      .makeVoid();
-                }
+      return new BoltsFutureTask<>(
+          Task.call(
+                  () -> {
+                    if (mDestroyTask != null) {
+                      log(
+                          method,
+                          "Destroying React Native. Waiting for destroy to finish, before reloading React Native.");
+                      return mDestroyTask
+                          .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
+                          .makeVoid();
+                    }
 
-                return newGetOrCreateReloadTask(reason).makeVoid();
-              },
-              mBGExecutor)
-          .continueWithTask(Task::getResult);
+                    return newGetOrCreateReloadTask(reason).makeVoid();
+                  },
+                  mBGExecutor)
+              .continueWithTask(Task::getResult));
     }
 
-    return oldReload(reason);
+    return new BoltsFutureTask<>(oldReload(reason));
   }
 
   @ThreadConfined("ReactHost")
