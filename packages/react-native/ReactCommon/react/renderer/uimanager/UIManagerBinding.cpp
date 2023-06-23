@@ -1179,4 +1179,8 @@ jsi::Value UIManagerBinding::get(
   return jsi::Value::undefined();
 }
 
+UIManager &UIManagerBinding::getUIManager() {
+  return *uiManager_;
+}
+
 } // namespace facebook::react

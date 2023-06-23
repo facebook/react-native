@@ -143,7 +143,11 @@ function hasDisplayNone(node: Node): boolean {
   return props != null && props.display === 'none';
 }
 
-const FabricUIManagerMock: FabricUIManager = {
+interface IFabricUIManagerMock extends FabricUIManager {
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle;
+}
+
+const FabricUIManagerMock: IFabricUIManagerMock = {
   createNode: jest.fn(
     (
       reactTag: number,
@@ -458,10 +462,14 @@ const FabricUIManagerMock: FabricUIManager = {
       return [scrollLeft, scrollTop];
     },
   ),
+
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
+    return fromNode(node).instanceHandle;
+  },
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;
 
-export function getFabricUIManager(): ?FabricUIManager {
+export function getFabricUIManager(): ?IFabricUIManagerMock {
   return FabricUIManagerMock;
 }
