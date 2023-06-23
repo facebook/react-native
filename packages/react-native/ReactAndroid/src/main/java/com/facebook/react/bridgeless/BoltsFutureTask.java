@@ -27,7 +27,7 @@ class BoltsFutureTask<T> implements Future<T> {
   private boolean isTaskCancelled = false;
   private final CancellationTokenSource mCancellationTokenSource;
 
-  private BoltsFutureTask(Task<T> task) {
+  BoltsFutureTask(Task<T> task) {
     this(task, new CancellationTokenSource());
   }
 

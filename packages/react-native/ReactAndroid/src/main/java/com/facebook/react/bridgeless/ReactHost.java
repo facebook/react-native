@@ -64,6 +64,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -198,12 +199,12 @@ public class ReactHost implements ReactHostInterface {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> start() {
+  public Future<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
-      return newStart();
+      return new BoltsFutureTask<>(newStart());
     }
 
-    return oldStart();
+    return new BoltsFutureTask<>(oldStart());
   }
 
   @ThreadConfined("ReactHost")
