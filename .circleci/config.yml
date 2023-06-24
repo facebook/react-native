@@ -1067,9 +1067,9 @@ jobs:
           name: Enable Yarn with corepack
           command: corepack enable
 
-      - run:
-          name: Display Environment info
-          command: npx envinfo@latest
+      # - run:
+      #     name: Display Environment info
+      #     command: npx envinfo@latest
 
       - restore_cache:
           keys:
