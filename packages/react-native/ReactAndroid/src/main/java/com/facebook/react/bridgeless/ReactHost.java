@@ -15,6 +15,7 @@ import static java.lang.Boolean.TRUE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -44,11 +45,13 @@ import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.devsupport.DevSupportManagerBase;
 import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.ReactSurfaceInterface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -432,6 +435,15 @@ public class ReactHost implements ReactHostInterface {
     return assertNotNull(mDevSupportManager);
   }
 
+  @Override
+  public ReactSurfaceInterface createSurface(
+      Context context, String moduleName, @Nullable Bundle initialProps) {
+    ReactSurface surface = new ReactSurface(context, moduleName, initialProps);
+    surface.attachView(new ReactSurfaceView(context, surface));
+    surface.attach(this);
+    return surface;
+  }
+
   @Nullable
   /* package */ Activity getCurrentActivity() {
     return mActivity.get();
@@ -495,7 +507,7 @@ public class ReactHost implements ReactHostInterface {
     return null;
   }
 
-  /* package */ DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
+  public DefaultHardwareBackBtnHandler getDefaultBackButtonHandler() {
     return () -> {
       UiThreadUtil.assertOnUiThread();
       if (mDefaultHardwareBackBtnHandler != null) {
@@ -1002,16 +1014,21 @@ public class ReactHost implements ReactHostInterface {
     log(method);
 
     final TaskCompletionSource<JSBundleLoader> taskCompletionSource = new TaskCompletionSource<>();
-    final DevSupportManager asyncDevSupportManager = getDevSupportManager();
-    final String sourceUrl = asyncDevSupportManager.getSourceUrl();
+    final DevSupportManagerBase asyncDevSupportManager =
+        ((DevSupportManagerBase) getDevSupportManager());
+    String bundleURL =
+        asyncDevSupportManager
+            .getDevServerHelper()
+            .getDevServerBundleURL(
+                Assertions.assertNotNull(asyncDevSupportManager.getJSAppBundleName()));
 
     asyncDevSupportManager.reloadJSFromServer(
-        sourceUrl,
+        bundleURL,
         () -> {
           log(method, "Creating BundleLoader");
           JSBundleLoader bundleLoader =
               JSBundleLoader.createCachedBundleFromNetworkLoader(
-                  sourceUrl, asyncDevSupportManager.getDownloadedJSBundleFile());
+                  bundleURL, asyncDevSupportManager.getDownloadedJSBundleFile());
           taskCompletionSource.setResult(bundleLoader);
         });
 

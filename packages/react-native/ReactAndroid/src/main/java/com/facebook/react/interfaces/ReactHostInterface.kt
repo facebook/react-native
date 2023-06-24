@@ -8,6 +8,8 @@
 package com.facebook.react.interfaces
 
 import android.app.Activity
+import android.content.Context
+import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.LifecycleState
@@ -63,4 +65,11 @@ interface ReactHostInterface {
 
   /** To be called when the host activity is destroyed. */
   fun onHostDestroy(activity: Activity?)
+
+  /** To be called to create and setup an ReactSurface. */
+  fun createSurface(
+      context: Context,
+      moduleName: String,
+      initialProps: Bundle?
+  ): ReactSurfaceInterface?
 }
