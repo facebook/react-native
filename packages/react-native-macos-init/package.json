@@ -24,7 +24,7 @@
     "find-up": "^4.1.0",
     "npm-registry-fetch": "^14.0.0",
     "prompts": "^2.3.0",
-    "semver": "^7.1.3",
+    "semver": "^7.5.2",
     "valid-url": "^1.0.9",
     "yargs": "^15.1.0"
   },
