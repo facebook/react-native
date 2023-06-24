@@ -7,33 +7,32 @@
 
 package com.facebook.react.uiapp;
 
-import android.app.Application;
+import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.SampleTurboModule;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.TurboReactPackage;
+import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridgeless.BindingsInstaller;
+import com.facebook.react.bridgeless.JSEngineInstance;
 import com.facebook.react.bridgeless.ReactHost;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.bridgeless.ReactHostDelegate;
+import com.facebook.react.bridgeless.hermes.HermesInstance;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.defaults.DefaultComponentsRegistry;
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
-import com.facebook.react.defaults.DefaultReactNativeHost;
-import com.facebook.react.fabric.ComponentFactory;
-import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate;
+import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.turbomodule.core.TurboModuleManager;
 import com.facebook.react.uiapp.component.MyLegacyViewManager;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.text.ReactFontManager;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,30 +40,59 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RNTesterApplication extends Application implements ReactApplication {
+@UnstableReactNativeAPI
+public class RNTesterReactHostDelegate implements ReactHostDelegate {
+  private final Context mContext;
+  private @Nullable ReactHost mReactHost;
+  private @Nullable List<ReactPackage> mReactPackages;
 
-  private ReactHost mReactHost;
+  RNTesterReactHostDelegate(Context context) {
+    this.mContext = context;
+  }
 
-  private final ReactNativeHost mReactNativeHost =
-      new DefaultReactNativeHost(this) {
-        @Override
-        public String getJSMainModuleName() {
-          return "js/RNTesterApp.android";
-        }
+  public void setReactHost(ReactHost reactHost) {
+    mReactHost = reactHost;
+  }
 
-        @Override
-        public String getBundleAssetName() {
-          return "RNTesterApp.android.bundle";
-        }
+  @Override
+  public String getJSMainModulePath() {
+    return "js/RNTesterApp.android";
+  }
 
-        @Override
-        public boolean getUseDeveloperSupport() {
-          return BuildConfig.DEBUG;
-        }
+  @Override
+  public JSBundleLoader getJSBundleLoader() {
+    return JSBundleLoader.createAssetLoader(mContext, "assets://RNTesterApp.android.bundle", true);
+  }
 
-        @Override
-        public List<ReactPackage> getPackages() {
-          return Arrays.<ReactPackage>asList(
+  @Override
+  public synchronized BindingsInstaller getBindingsInstaller() {
+    return null;
+  }
+
+  @NonNull
+  @Override
+  public ReactPackageTurboModuleManagerDelegate.Builder getTurboModuleManagerDelegateBuilder() {
+    return new DefaultTurboModuleManagerDelegate.Builder();
+  }
+
+  @Override
+  public JSEngineInstance getJSEngineInstance() {
+    return new HermesInstance();
+  }
+
+  @Override
+  public void handleInstanceException(Exception e) {}
+
+  @Override
+  public ReactNativeConfig getReactNativeConfig(TurboModuleManager turboModuleManager) {
+    return ReactNativeConfig.DEFAULT_CONFIG;
+  }
+
+  @Override
+  public List<ReactPackage> getReactPackages() {
+    if (mReactPackages == null) {
+      mReactPackages =
+          Arrays.<ReactPackage>asList(
               new MainReactPackage(),
               new TurboReactPackage() {
                 public NativeModule getModule(
@@ -123,62 +151,7 @@ public class RNTesterApplication extends Application implements ReactApplication
                   return viewManagers;
                 }
               });
-        }
-
-        @Override
-        protected boolean isNewArchEnabled() {
-          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-        }
-
-        @Override
-        protected Boolean isHermesEnabled() {
-          return BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR;
-        }
-      };
-
-  @Override
-  public void onCreate() {
-    ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
-    super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      DefaultNewArchitectureEntryPoint.load();
     }
-    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    return mReactPackages;
   }
-
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
-  }
-
-  @Override
-  @UnstableReactNativeAPI
-  public ReactHostInterface getReactHostInterface() {
-    if (mReactHost == null) {
-      // Create an instance of ReactHost to manager the instance of ReactInstance,
-      // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
-      RNTesterReactHostDelegate reactHostDelegate =
-          new RNTesterReactHostDelegate(getApplicationContext());
-      RNTesterReactJsExceptionHandler reactJsExceptionHandler =
-          new RNTesterReactJsExceptionHandler();
-
-      ComponentFactory componentFactory = new ComponentFactory();
-      DefaultComponentsRegistry.register(componentFactory);
-      mReactHost =
-          new ReactHost(
-              this.getApplicationContext(),
-              reactHostDelegate,
-              componentFactory,
-              true,
-              reactJsExceptionHandler,
-              true);
-      reactHostDelegate.setReactHost(mReactHost);
-    }
-    return mReactHost;
-  }
-
-  public static class RNTesterReactJsExceptionHandler implements ReactJsExceptionHandler {
-    public void reportJsException(ReadableMapBuffer errorMap) {}
-  }
-};
+}

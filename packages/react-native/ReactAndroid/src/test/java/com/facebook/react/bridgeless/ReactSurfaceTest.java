@@ -88,7 +88,7 @@ public class ReactSurfaceTest {
   public void testStart() throws InterruptedException {
     mReactSurface.attach(mReactHost);
     assertThat(mReactHost.isSurfaceAttached(mReactSurface)).isFalse();
-    Task<Void> task = mReactSurface.start();
+    Task<Void> task = (Task<Void>) mReactSurface.start();
     task.waitForCompletion();
 
     verify(mReactHost).startSurface(mReactSurface);
@@ -99,7 +99,7 @@ public class ReactSurfaceTest {
   public void testStop() throws InterruptedException {
     mReactSurface.attach(mReactHost);
 
-    Task<Void> task = mReactSurface.start();
+    Task<Void> task = (Task<Void>) mReactSurface.start();
     task.waitForCompletion();
 
     task = mReactSurface.stop();
@@ -147,7 +147,8 @@ public class ReactSurfaceTest {
 
     assertThat(mReactSurface.isRunning()).isFalse();
 
-    mReactSurface.start().waitForCompletion();
+    Task<Void> task = (Task<Void>) mReactSurface.start();
+    task.waitForCompletion();
 
     assertThat(mReactSurface.isRunning()).isTrue();
 

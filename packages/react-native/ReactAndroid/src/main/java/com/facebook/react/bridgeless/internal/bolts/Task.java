@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import com.facebook.react.interfaces.TaskInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @param <TResult> The type of the result of the task.
  */
-public class Task<TResult> {
+public class Task<TResult> implements TaskInterface {
   /** An {@link java.util.concurrent.Executor} that executes tasks in parallel. */
   public static final ExecutorService BACKGROUND_EXECUTOR = BoltsExecutors.background();
 
