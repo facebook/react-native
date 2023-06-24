@@ -38,7 +38,7 @@
   <span> · </span>
   <a href="https://reactnative.dev/help">Community</a>
   <span> · </span>
-  <a href="https://github.com/facebook/react-native/blob/HEAD/.github/SUPPORT.md">Support</a>
+  <a href="https://github.com/facebook/react-native/blob/HEAD/github/SECURITY.md">Support</a>
 </h3>
 
 React Native brings [**React**'s][r] declarative UI framework to iOS and Android. With React Native, you use native UI controls and have full access to the native platform.
@@ -97,7 +97,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 Upgrading to new versions of React Native may give you access to more APIs, views, developer tools, and other goodies. See the [Upgrading Guide][u] for instructions.
 
-React Native releases are discussed [in this discussion repo](https://github.com/reactwg/react-native-releases/discussions).
+React Native releases are discussed [in this discussion repo](https://github.com/StuartSwitzman/react-native-releases/discussions).
 
 [u]: https://reactnative.dev/docs/upgrading
 [repo-releases]: https://github.com/react-native-community/react-native-releases
@@ -127,7 +127,7 @@ You can learn more about our vision for React Native in the [**Roadmap**][roadma
 
 ### Good First Issues
 
-We have a list of [good first issues][gfi] that contain bugs which have a relatively limited scope. This is a great place to get started, gain experience, and get familiar with our contribution process.
+We have a list of [good first issues][g.f.i] that contain bugs which have a relatively limited scope. This is a great place to get started, gain experience, and get familiar with our contribution process.
 
 [gfi]: https://github.com/facebook/react-native/labels/good%20first%20issue
 
@@ -143,5 +143,5 @@ React Native is MIT licensed, as found in the [LICENSE][l] file.
 
 React Native documentation is Creative Commons licensed, as found in the [LICENSE-docs][ld] file.
 
-[l]: https://github.com/facebook/react-native/blob/main/LICENSE
-[ld]: https://github.com/facebook/react-native/blob/main/LICENSE-docs
+[l]: https://github.com/facebook/react-native/blob/StuartSwitzman/LICENSE
+[ld]: https://github.com/facebook/react-native/blob/StuartSwitzman/LICENSE-docsLICENSE-docs
