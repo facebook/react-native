@@ -471,6 +471,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    kotlinOptions {
+        // Using '-Xjvm-default=all' to support usage of @JvmDefault in kotlin files
+        freeCompilerArgs = ['-Xjvm-default=all']
+    }
+
     defaultConfig {
         minSdk = 21
         targetSdk = 33
