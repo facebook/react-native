@@ -154,7 +154,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   @UnstableReactNativeAPI
-  public ReactHostInterface getReactHostInterface() {
+  public ReactHostInterface reactHostInterface() {
     if (mReactHost == null) {
       // Create an instance of ReactHost to manager the instance of ReactInstance,
       // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
