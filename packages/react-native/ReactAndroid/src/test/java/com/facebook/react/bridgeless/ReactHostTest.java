@@ -22,6 +22,7 @@ import android.app.Activity;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.MemoryPressureListener;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
@@ -148,6 +149,23 @@ public class ReactHostTest {
     waitForTaskUIThread(mReactHost.destroy("Destroying from testing infra", null));
     assertThat(mReactHost.isInstanceInitialized()).isFalse();
     assertThat(mReactHost.getCurrentReactContext()).isNull();
+  }
+
+  @Test
+  public void testReload() throws Exception {
+    statAndTestReactHost();
+
+    ReactContext oldReactContext = mReactHost.getCurrentReactContext();
+    BridgelessReactContext newReactContext = mock(BridgelessReactContext.class);
+    assertThat(newReactContext).isNotEqualTo(oldReactContext);
+    whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(newReactContext);
+
+    waitForTaskUIThread(mReactHost.reload("Reload from testing infra"));
+
+    assertThat(mReactHost.isInstanceInitialized()).isTrue();
+    assertThat(mReactHost.getCurrentReactContext()).isNotNull();
+    assertThat(mReactHost.getCurrentReactContext()).isEqualTo(newReactContext);
+    assertThat(mReactHost.getCurrentReactContext()).isNotEqualTo(oldReactContext);
   }
 
   private static <T> void waitForTaskUIThread(Task<T> task) throws InterruptedException {
