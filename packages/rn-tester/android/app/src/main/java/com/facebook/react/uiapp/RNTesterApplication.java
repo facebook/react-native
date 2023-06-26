@@ -10,6 +10,7 @@ package com.facebook.react.uiapp;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import com.facebook.fbreact.specs.SampleTurboModule;
+import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -144,11 +145,18 @@ public class RNTesterApplication extends Application implements ReactApplication
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       DefaultNewArchitectureEntryPoint.load();
     }
-    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO: initialize Flipper for Bridgeless
+    } else {
+      ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    }
   }
 
   @Override
   public ReactNativeHost getReactNativeHost() {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      throw new RuntimeException("Should not use ReactNativeHost when Bridgeless enabled");
+    }
     return mReactNativeHost;
   }
 
@@ -173,6 +181,11 @@ public class RNTesterApplication extends Application implements ReactApplication
               true,
               reactJsExceptionHandler,
               true);
+      if (BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR) {
+        mReactHost.setJSEngineResolutionAlgorithm(JSEngineResolutionAlgorithm.HERMES);
+      } else {
+        mReactHost.setJSEngineResolutionAlgorithm(JSEngineResolutionAlgorithm.JSC);
+      }
       reactHostDelegate.setReactHost(mReactHost);
     }
     return mReactHost;

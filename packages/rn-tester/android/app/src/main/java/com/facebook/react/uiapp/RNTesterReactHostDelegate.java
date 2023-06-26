@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.fbreact.specs.SampleTurboModule;
+import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate;
 import com.facebook.react.TurboReactPackage;
@@ -18,6 +19,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridgeless.BindingsInstaller;
+import com.facebook.react.bridgeless.JSCInstance;
 import com.facebook.react.bridgeless.JSEngineInstance;
 import com.facebook.react.bridgeless.ReactHost;
 import com.facebook.react.bridgeless.ReactHostDelegate;
@@ -77,7 +79,11 @@ public class RNTesterReactHostDelegate implements ReactHostDelegate {
 
   @Override
   public JSEngineInstance getJSEngineInstance() {
-    return new HermesInstance();
+    if (mReactHost.getJSEngineResolutionAlgorithm() == JSEngineResolutionAlgorithm.JSC) {
+      return new JSCInstance();
+    } else {
+      return new HermesInstance();
+    }
   }
 
   @Override
