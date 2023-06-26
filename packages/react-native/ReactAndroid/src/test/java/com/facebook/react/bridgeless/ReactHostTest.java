@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
+import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
@@ -166,6 +167,20 @@ public class ReactHostTest {
     assertThat(mReactHost.getCurrentReactContext()).isNotNull();
     assertThat(mReactHost.getCurrentReactContext()).isEqualTo(newReactContext);
     assertThat(mReactHost.getCurrentReactContext()).isNotEqualTo(oldReactContext);
+  }
+
+  @Test
+  public void testLifecycleStateChanges() throws Exception {
+    statAndTestReactHost();
+
+    assertThat(mReactHost.isInstanceInitialized()).isTrue();
+    assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.BEFORE_CREATE);
+    mReactHost.onHostResume(mActivityController.get());
+    assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.RESUMED);
+    mReactHost.onHostPause(mActivityController.get());
+    assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.BEFORE_RESUME);
+    mReactHost.onHostDestroy(mActivityController.get());
+    assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.BEFORE_CREATE);
   }
 
   private static <T> void waitForTaskUIThread(Task<T> task) throws InterruptedException {
