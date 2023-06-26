@@ -124,6 +124,10 @@ public class ReactHostTest {
 
   @Test
   public void testStart() throws Exception {
+    statAndTestReactHost();
+  }
+
+  private void statAndTestReactHost() throws Exception {
     TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
     taskCompletionSource.setResult(true);
     whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
@@ -135,6 +139,15 @@ public class ReactHostTest {
     assertThat(mReactHost.isInstanceInitialized()).isTrue();
     assertThat(mReactHost.getCurrentReactContext()).isNotNull();
     verify(mMemoryPressureRouter).addMemoryPressureListener((MemoryPressureListener) any());
+  }
+
+  @Test
+  public void testDestroy() throws Exception {
+    statAndTestReactHost();
+
+    waitForTaskUIThread(mReactHost.destroy("Destroying from testing infra", null));
+    assertThat(mReactHost.isInstanceInitialized()).isFalse();
+    assertThat(mReactHost.getCurrentReactContext()).isNull();
   }
 
   private static <T> void waitForTaskUIThread(Task<T> task) throws InterruptedException {
