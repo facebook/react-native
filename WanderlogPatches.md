@@ -42,3 +42,9 @@ rebase on upstream's `main`
 - Fix VirtualizedList jumping on Android keyboard open with wrong getItemLayout
   - Summary: Our list was jumping when the keyboard opened, so we made Android lists ignore keyboard openings.
   - Pull request: https://github.com/facebook/react-native/pull/32268
+- Create publishAllToGitLab task for Maven; build-ios-artifacts for hermesc
+  - Summary: To publish our own versions of React Native for Android, we need to create a package and upload it to a "package repository"
+  - Pull request: None
+- Prevent crash when runAnimationStep called with low frameTimeNanos
+  - Summary: React Native was crashing on OnePlus and Oppo devices. This is a workaround
+  - Pull request: https://github.com/facebook/react-native/pull/37487
