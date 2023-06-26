@@ -78,6 +78,7 @@ const ScrollViewViewConfig = {
     snapToOffsets: true,
     snapToStart: true,
     zoomScale: true,
+    internalAndroidApplyInvertedFix: true,
   },
 };
 
