@@ -904,8 +904,9 @@ jobs:
               export USE_FRAMEWORKS=dynamic
             fi
 
+            cd ..
             bundle install
-            bundle exec pod install
+            bundle exec pod install --project-directory=ios
       - run:
           name: Build template project
           command: |
