@@ -19,8 +19,8 @@ interface ReactApplication {
   /**
    * Get the default [ReactHostInterface] for this app. This method will be used by the new
    * architecture of react native
-   *
-   * TODO: refactor to 'val reactHostInterface'
    */
-  @JvmDefault fun reactHostInterface(): ReactHostInterface? = null
+  fun getReactHostInterface(): ReactHostInterface? {
+    return null
+  }
 }

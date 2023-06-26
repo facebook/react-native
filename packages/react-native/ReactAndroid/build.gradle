@@ -472,7 +472,7 @@ android {
     }
 
     kotlinOptions {
-        // Using '-Xjvm-default=all' to support usage of @JvmDefault in kotlin files
+        // Using '-Xjvm-default=all' to generate default java methods for interfaces
         freeCompilerArgs = ['-Xjvm-default=all']
     }
 

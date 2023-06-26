@@ -89,7 +89,7 @@ public class ReactActivityDelegate {
   }
 
   public ReactHostInterface getReactHost() {
-    return ((ReactApplication) getPlainActivity().getApplication()).reactHostInterface();
+    return ((ReactApplication) getPlainActivity().getApplication()).getReactHostInterface();
   }
 
   public ReactInstanceManager getReactInstanceManager() {
