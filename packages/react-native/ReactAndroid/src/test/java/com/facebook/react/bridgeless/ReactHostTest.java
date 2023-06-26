@@ -49,8 +49,8 @@ import org.robolectric.android.controller.ActivityController;
   "androidx.*",
   "javax.net.ssl.*"
 })
-@PrepareForTest({ReactHost.class, ComponentFactory.class})
 @Ignore("Ignore for now as these tests fail in OSS only")
+@PrepareForTest({ReactHost.class, ComponentFactory.class})
 public class ReactHostTest {
 
   private ReactHostDelegate mReactHostDelegate;
@@ -105,7 +105,7 @@ public class ReactHostTest {
     assertThat(uiManager).isNull();
   }
 
-  @Ignore("FIXME")
+  @Test
   public void testGetDevSupportManager() {
     assertThat(mReactHost.getDevSupportManager()).isEqualTo(mDevSupportManager);
   }
