@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless;
 
+import static android.os.Looper.getMainLooper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -15,17 +16,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.MemoryPressureListener;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.testutils.shadows.ShadowSoLoader;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -38,8 +43,11 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 /** Tests {@linkcom.facebook.react.bridgeless.ReactHost} */
+@Ignore("Ignore for now as these tests fail in OSS only")
 @SuppressStaticInitializationFor("com.facebook.react.fabric.ComponentFactory")
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({
@@ -49,7 +57,8 @@ import org.robolectric.android.controller.ActivityController;
   "androidx.*",
   "javax.net.ssl.*"
 })
-@Ignore("Ignore for now as these tests fail in OSS only")
+@Config(shadows = ShadowSoLoader.class)
+@LooperMode(LooperMode.Mode.PAUSED)
 @PrepareForTest({ReactHost.class, ComponentFactory.class})
 public class ReactHostTest {
 
@@ -61,6 +70,7 @@ public class ReactHostTest {
   private ReactHost mReactHost;
   private ActivityController<Activity> mActivityController;
   private ComponentFactory mComponentFactory;
+  private BridgelessReactContext mBridgelessReactContext;
 
   @Rule public PowerMockRule rule = new PowerMockRule();
 
@@ -76,8 +86,10 @@ public class ReactHostTest {
     mDevSupportManager = mock(BridgelessDevSupportManager.class);
     mJSBundleLoader = mock(JSBundleLoader.class);
     mComponentFactory = mock(ComponentFactory.class);
+    mBridgelessReactContext = mock(BridgelessReactContext.class);
 
     whenNew(ReactInstance.class).withAnyArguments().thenReturn(mReactInstance);
+    whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(mBridgelessReactContext);
     whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
     whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
 
@@ -110,19 +122,32 @@ public class ReactHostTest {
     assertThat(mReactHost.getDevSupportManager()).isEqualTo(mDevSupportManager);
   }
 
-  @Ignore("waitForCompletion is locking the test thread making the entire venice tests to timeout")
+  @Test
   public void testPreload() throws Exception {
     TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
     taskCompletionSource.setResult(true);
     whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
     doNothing().when(mDevSupportManager).isPackagerRunning(any(PackagerStatusCallback.class));
-
     assertThat(mReactHost.isInstanceInitialized()).isFalse();
 
-    mReactHost.start().waitForCompletion();
+    waitForTaskUIThread(mReactHost.start());
 
     assertThat(mReactHost.isInstanceInitialized()).isTrue();
     assertThat(mReactHost.getCurrentReactContext()).isNotNull();
     verify(mMemoryPressureRouter).addMemoryPressureListener((MemoryPressureListener) any());
+  }
+
+  private static <T> void waitForTaskUIThread(Task<T> task) throws InterruptedException {
+    boolean isTaskCompleted = false;
+    while (!isTaskCompleted) {
+      if (!task.waitForCompletion(4, TimeUnit.MILLISECONDS)) {
+        shadowOf(getMainLooper()).idle();
+      } else {
+        if (task.isCancelled() || task.isFaulted()) {
+          throw new RuntimeException("Task was cancelled or faulted. Error: " + task.getError());
+        }
+        isTaskCompleted = true;
+      }
+    }
   }
 }
