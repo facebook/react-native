@@ -123,7 +123,7 @@ public class ReactHostTest {
   }
 
   @Test
-  public void testPreload() throws Exception {
+  public void testStart() throws Exception {
     TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
     taskCompletionSource.setResult(true);
     whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
