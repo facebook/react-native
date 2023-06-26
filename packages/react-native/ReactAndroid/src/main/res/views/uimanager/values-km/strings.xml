@@ -4,10 +4,17 @@
 <!-- FB Locale: km_KH -->
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">តំណ</string>
+    <string name="image_description" gender="unknown">រូបភាព</string>
+    <string name="header_description" gender="unknown">ចំណងជើង</string>
+    <string name="combobox_description" gender="unknown">ប្រអប់បញ្ចូលគ្នា</string>
+    <string name="menu_description" gender="unknown">ម៉ឺនុយ</string>
     <string name="progressbar_description" gender="unknown">របារ​ដំណើរការ</string>
     <string name="scrollbar_description" gender="unknown">របាររំកិល</string>
+    <string name="tablist_description" gender="unknown">បញ្ជីថេប</string>
     <string name="toolbar_description" gender="unknown">របារ​ឧបករណ៍</string>
+    <string name="state_busy_description" gender="unknown">ជាប់រវល់</string>
     <string name="state_expanded_description" gender="unknown">បានពង្រីក</string>
     <string name="state_collapsed_description" gender="unknown">បានបង្រួម</string>
+    <string name="state_on_description" gender="unknown">បើក</string>
     <string name="state_off_description" gender="unknown">បិទ</string>
 </resources>
