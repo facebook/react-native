@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTDefines.h>
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/renderer/core/ReactPrimitives.h>
@@ -19,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTHost;
 @class RCTModuleRegistry;
-FB_RUNTIME_PROTOCOL
+
 @protocol RCTTurboModuleManagerDelegate;
 
 // Runtime API
@@ -49,7 +48,7 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate
        turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
-                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
+                 jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
@@ -61,16 +60,15 @@ typedef std::shared_ptr<facebook::react::JSEngineInstance> (^RCTHostJSEngineProv
 
 - (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
                                              mode:(facebook::react::DisplayMode)displayMode
-                                initialProperties:(NSDictionary *)properties FB_OBJC_DIRECT;
+                                initialProperties:(NSDictionary *)properties;
 
-- (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName
-                                initialProperties:(NSDictionary *)properties FB_OBJC_DIRECT;
+- (RCTFabricSurface *)createSurfaceWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)properties;
 
-- (RCTSurfacePresenter *)getSurfacePresenter FB_OBJC_DIRECT;
+- (RCTSurfacePresenter *)getSurfacePresenter;
 
 // Native module API
 
-- (RCTModuleRegistry *)getModuleRegistry FB_OBJC_DIRECT;
+- (RCTModuleRegistry *)getModuleRegistry;
 
 @end
 

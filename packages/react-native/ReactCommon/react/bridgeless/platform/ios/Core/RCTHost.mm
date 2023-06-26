@@ -8,7 +8,6 @@
 #import "RCTHost.h"
 #import "RCTHost+Internal.h"
 
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
@@ -274,12 +273,12 @@ using namespace facebook::react;
 
 #pragma mark - Private
 
-- (void)_attachSurface:(RCTFabricSurface *)surface FB_OBJC_DIRECT
+- (void)_attachSurface:(RCTFabricSurface *)surface
 {
   _attachedSurfaces.push_back(surface);
 }
 
-- (NSArray<RCTFabricSurface *> *)_getAttachedSurfaces FB_OBJC_DIRECT
+- (NSArray<RCTFabricSurface *> *)_getAttachedSurfaces
 {
   NSMutableArray<RCTFabricSurface *> *surfaces = [NSMutableArray new];
   for (RCTFabricSurface *surface : _attachedSurfaces) {

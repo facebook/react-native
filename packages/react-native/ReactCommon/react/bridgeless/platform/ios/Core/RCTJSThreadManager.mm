@@ -7,7 +7,7 @@
 
 #import "RCTJSThreadManager.h"
 
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
+// #import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTAssert.h>
 #import <React/RCTCxxUtils.h>
 
@@ -59,7 +59,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.bridgeless.JavaScr
 
 #pragma mark - JSThread Management
 
-- (void)startJSThread FB_OBJC_DIRECT
+- (void)startJSThread
 {
   _jsThread = [[NSThread alloc] initWithTarget:[self class] selector:@selector(runRunLoop) object:nil];
   _jsThread.name = RCTJSThreadName;
@@ -109,7 +109,7 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.bridgeless.JavaScr
 
 #pragma mark - Private
 
-- (void)_handleError:(NSError *)error FB_OBJC_DIRECT
+- (void)_handleError:(NSError *)error
 {
   RCTFatal(error);
 }
