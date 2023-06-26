@@ -42,7 +42,6 @@
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTDevLoadingViewProtocol.h>
 #endif
 
@@ -320,7 +319,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [_performanceLogger markStopForTag:RCTPLReactInstanceInit];
 }
 
-- (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module FB_OBJC_DIRECT
+- (void)_attachBridgelessAPIsToModule:(id<RCTTurboModule>)module
 {
   __weak RCTInstance *weakSelf = self;
   if ([module respondsToSelector:@selector(setDispatchToJSThread:)]) {
@@ -351,7 +350,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   [_bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
 }
 
-- (void)_loadJSBundle:(NSURL *)sourceURL FB_OBJC_DIRECT
+- (void)_loadJSBundle:(NSURL *)sourceURL
 {
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
   {
@@ -397,7 +396,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       }];
 }
 
-- (void)_loadScriptFromSource:(RCTSource *)source FB_OBJC_DIRECT
+- (void)_loadScriptFromSource:(RCTSource *)source
 {
   std::lock_guard<std::mutex> lock(_invalidationMutex);
   if (!_valid) {
