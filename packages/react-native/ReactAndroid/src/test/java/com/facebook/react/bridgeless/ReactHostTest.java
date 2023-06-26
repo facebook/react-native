@@ -105,6 +105,10 @@ public class ReactHostTest {
             false,
             null,
             false);
+
+    TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
+    taskCompletionSource.setResult(true);
+    whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
   }
 
   @Test
@@ -126,13 +130,6 @@ public class ReactHostTest {
 
   @Test
   public void testStart() throws Exception {
-    statAndTestReactHost();
-  }
-
-  private void statAndTestReactHost() throws Exception {
-    TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
-    taskCompletionSource.setResult(true);
-    whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
     doNothing().when(mDevSupportManager).isPackagerRunning(any(PackagerStatusCallback.class));
     assertThat(mReactHost.isInstanceInitialized()).isFalse();
 
@@ -143,9 +140,13 @@ public class ReactHostTest {
     verify(mMemoryPressureRouter).addMemoryPressureListener((MemoryPressureListener) any());
   }
 
+  private void startReactHost() throws Exception {
+    waitForTaskUIThread(mReactHost.start());
+  }
+
   @Test
   public void testDestroy() throws Exception {
-    statAndTestReactHost();
+    startReactHost();
 
     waitForTaskUIThread(mReactHost.destroy("Destroying from testing infra", null));
     assertThat(mReactHost.isInstanceInitialized()).isFalse();
@@ -154,7 +155,7 @@ public class ReactHostTest {
 
   @Test
   public void testReload() throws Exception {
-    statAndTestReactHost();
+    startReactHost();
 
     ReactContext oldReactContext = mReactHost.getCurrentReactContext();
     BridgelessReactContext newReactContext = mock(BridgelessReactContext.class);
@@ -171,9 +172,8 @@ public class ReactHostTest {
 
   @Test
   public void testLifecycleStateChanges() throws Exception {
-    statAndTestReactHost();
+    startReactHost();
 
-    assertThat(mReactHost.isInstanceInitialized()).isTrue();
     assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.BEFORE_CREATE);
     mReactHost.onHostResume(mActivityController.get());
     assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.RESUMED);
