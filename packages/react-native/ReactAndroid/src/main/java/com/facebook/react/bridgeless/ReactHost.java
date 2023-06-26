@@ -22,6 +22,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactInstanceEventListener;
 import com.facebook.react.bridge.Callback;
@@ -122,6 +123,7 @@ public class ReactHost implements ReactHostInterface {
 
   private static final AtomicInteger mCounter = new AtomicInteger(0);
   private final int mId = mCounter.getAndIncrement();
+  private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
 
   public ReactHost(
       Context context,
@@ -1503,5 +1505,14 @@ public class ReactHost implements ReactHostInterface {
             });
       }
     }
+  }
+
+  public void setJSEngineResolutionAlgorithm(
+      @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
+    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+  }
+
+  public @Nullable JSEngineResolutionAlgorithm getJSEngineResolutionAlgorithm() {
+    return mJSEngineResolutionAlgorithm;
   }
 }
