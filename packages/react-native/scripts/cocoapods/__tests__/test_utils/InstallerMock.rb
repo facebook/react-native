@@ -119,7 +119,7 @@ class UserProjectMock
 
 
     def initialize(path = "/test/path.xcproj", build_configurations = [], native_targets: [])
-        @path = path
+        @path = Pathname.new(path)
         @build_configurations = build_configurations
         @native_targets = native_targets
         @save_invocation_count = 0
