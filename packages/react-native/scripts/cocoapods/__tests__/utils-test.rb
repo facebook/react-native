@@ -324,7 +324,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -434,7 +434,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -492,7 +492,7 @@ class UtilsTests < Test::Unit::TestCase
             }),
         ], nil)
 
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -644,7 +644,7 @@ class UtilsTests < Test::Unit::TestCase
             DependencyMock.new("React-ImageManager"),
         ])
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -688,7 +688,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -750,7 +750,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -779,7 +779,7 @@ end
 # ===== #
 
 def prepare_empty_user_project_mock
-    return UserProjectMock.new("a/path", [
+    return UserProjectMock.new("/a/path", [
         BuildConfigurationMock.new("Debug"),
         BuildConfigurationMock.new("Release"),
     ])
