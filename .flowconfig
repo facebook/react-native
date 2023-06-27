@@ -32,6 +32,7 @@ packages/react-native/flow/
 [options]
 enums=true
 conditional_type=true
+type_guards=true
 
 emoji=true
 
@@ -76,4 +77,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.210.0
+^0.210.1
