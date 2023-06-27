@@ -39,6 +39,7 @@ Examples of contributing to the release include being a [community releaser](htt
 
 ### Incubating partners:
 * **[Expensify](https://expensify.com/):** Developing [Expensify Chat](https://github.com/Expensify/App), an open-source React Native app built by the community, while [sponsoring dependencies](https://github.com/orgs/Expensify/sponsoring), conferences, and New Architecture advancements.
+* **[Sentry](https://sentry.io/for/react-native/):** Develops Error and Performance Monitoring [SDK for React Native](https://github.com/getsentry/sentry-react-native) and [New Architecture Turbo Modules Mixed Stack Traces](https://github.com/reactwg/react-native-new-architecture/discussions/122).
 
 When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor.
 
