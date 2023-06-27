@@ -1,5 +1,9 @@
 blank_issues_enabled: false
 contact_links:
+    - name: 📦 Metro Issue
+      url: https://github.com/facebook/metro/issues/new
+      about: |
+        If you've encountered a module resolution problem, e.g. "Error: Unable to resolve module ...", or something else that might be related to Metro, please open an issue in the Metro repo instead.
     - name: 📃 Documentation Issue
       url: https://github.com/facebook/react-native-website/issues
       about: Please report documentation issues in the React Native website repository.
