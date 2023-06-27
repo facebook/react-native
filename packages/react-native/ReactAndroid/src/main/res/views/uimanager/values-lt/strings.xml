@@ -6,8 +6,11 @@
     <string name="link_description" gender="unknown">Nuoroda</string>
     <string name="image_description" gender="unknown">Vaizdas</string>
     <string name="imagebutton_description" gender="unknown">Mygtukas, vaizdas</string>
+    <string name="header_description" gender="unknown">Antraštė</string>
     <string name="alert_description" gender="unknown">Įspėjimas</string>
     <string name="combobox_description" gender="unknown">Sudėtinis laukelis</string>
+    <string name="menu_description" gender="unknown">Meniu</string>
+    <string name="menubar_description" gender="unknown">Meniu juosta</string>
     <string name="menuitem_description" gender="unknown">Meniu elementas</string>
     <string name="progressbar_description" gender="unknown">Eigos juosta</string>
     <string name="radiogroup_description" gender="unknown">Akučių grupė</string>
