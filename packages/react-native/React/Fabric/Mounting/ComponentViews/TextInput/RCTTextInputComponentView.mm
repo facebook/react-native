@@ -182,10 +182,8 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.smartInsertDelete != oldTextInputProps.traits.smartInsertDelete) {
-    if (@available(iOS 11.0, *)) {
-      _backedTextInputView.smartInsertDeleteType =
-          RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
-    }
+    _backedTextInputView.smartInsertDeleteType =
+        RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
