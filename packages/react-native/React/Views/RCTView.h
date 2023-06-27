@@ -132,5 +132,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) RCTCapturingEventBlock onPointerLeave;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOver;
 @property (nonatomic, assign) RCTBubblingEventBlock onPointerOut;
+@property (nonatomic, assign) RCTBubblingEventBlock onGotPointerCapture;
+@property (nonatomic, assign) RCTBubblingEventBlock onLostPointerCapture;
 
 @end

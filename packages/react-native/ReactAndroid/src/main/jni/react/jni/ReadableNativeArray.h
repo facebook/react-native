@@ -32,7 +32,6 @@ class ReadableNativeArray
   static constexpr const char *kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
-  static void mapException(const std::exception &ex);
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
 

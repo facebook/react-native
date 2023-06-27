@@ -13,6 +13,7 @@ const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
 
@@ -451,17 +452,6 @@ function getSchemaInfo(
     defaultValue: topLevelType.defaultValue,
     withNullDefault: false, // Just to make `getTypeAnnotation` signature match with the one from Flow
   };
-}
-
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
 }
 
 function flattenProperties(

@@ -332,7 +332,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto const &rawProps = RawProps(runtime, arguments[1]);
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -356,7 +356,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto const &rawProps = RawProps(runtime, arguments[1]);
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
@@ -1177,6 +1177,10 @@ jsi::Value UIManagerBinding::get(
   }
 
   return jsi::Value::undefined();
+}
+
+UIManager &UIManagerBinding::getUIManager() {
+  return *uiManager_;
 }
 
 } // namespace facebook::react

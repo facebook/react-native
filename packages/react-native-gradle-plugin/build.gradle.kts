@@ -37,7 +37,7 @@ dependencies {
   // The KGP/AGP version is defined by React Native Gradle plugin.
   // Therefore we specify an implementation dep rather than a compileOnly.
   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
-  implementation("com.android.tools.build:gradle:7.4.2")
+  implementation("com.android.tools.build:gradle:8.0.2")
 
   implementation("com.google.code.gson:gson:2.8.9")
   implementation("com.google.guava:guava:31.0.1-jre")
@@ -55,11 +55,14 @@ dependencies {
 }
 
 java {
+  // We intentionally don't build for Java 17 as users will see a cryptic bytecode version
+  // error first. Instead we produce a Java 11-compatible Gradle Plugin, so that AGP can print their
+  // nice message showing that JDK 11 (or 17) is required first
   sourceCompatibility = JavaVersion.VERSION_11
   targetCompatibility = JavaVersion.VERSION_11
 }
 
-kotlin { jvmToolchain(11) }
+kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {

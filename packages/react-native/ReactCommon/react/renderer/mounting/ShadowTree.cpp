@@ -446,7 +446,7 @@ void ShadowTree::emitLayoutEvents(
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    auto const &viewProps =
+    const auto &viewProps =
         static_cast<ViewProps const &>(*viewShadowNode.getProps());
     if (!viewProps.onLayout) {
       continue;

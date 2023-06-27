@@ -7,14 +7,13 @@
 
 #include "JJSTimerExecutor.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 
 namespace facebook::react {
 
 void JJSTimerExecutor::setTimerManager(
     std::weak_ptr<TimerManager> timerManager) {
-  assert(timerManager && "`timerManager` must not be `nullptr`.");
   timerManager_ = timerManager;
 }
 

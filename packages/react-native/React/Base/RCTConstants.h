@@ -73,7 +73,7 @@ RCT_EXTERN void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value);
 /*
  * Memory Pressure Unloading Level
  */
-RCT_EXTERN BOOL RCTGetMemoryPressureUnloadLevel(void);
+RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
 RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
 
 /*

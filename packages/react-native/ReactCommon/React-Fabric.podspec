@@ -54,6 +54,7 @@ Pod::Spec.new do |s|
   s.dependency "React-debug"
   s.dependency "React-utils"
   # s.dependency "React-runtimescheduler"
+  s.dependency "React-rendererdebug"
   s.dependency "React-cxxreact"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
@@ -105,8 +106,9 @@ Pod::Spec.new do |s|
         "\"$(PODS_ROOT)/DoubleConversion\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-Codegen/React_Codegen.framework/Headers\"",
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
+        "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
-        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\""
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
       ]
     end
 
@@ -230,14 +232,6 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end
-  end
-
-  s.subspec "debug_renderer" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/debug/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/debug/tests"
-    ss.header_dir           = "react/renderer/debug"
   end
 
   s.subspec "imagemanager" do |ss|

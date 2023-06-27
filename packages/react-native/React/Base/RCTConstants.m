@@ -56,7 +56,7 @@ void RCTSetValidateCanSendEventInRCTEventEmitter(BOOL value)
  */
 static int RCTMemoryPressureUnloadLevel = 15;
 
-BOOL RCTGetMemoryPressureUnloadLevel(void)
+int RCTGetMemoryPressureUnloadLevel(void)
 {
   return RCTMemoryPressureUnloadLevel;
 }

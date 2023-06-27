@@ -7,14 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTTiming.h>
 #import <react/bridgeless/PlatformTimerRegistry.h>
 #import <react/bridgeless/TimerManager.h>
 
 @interface RCTJSTimerExecutor : NSObject <RCTTimingDelegate>
 
-- (void)setTimerManager:(std::weak_ptr<facebook::react::TimerManager>)timerManager FB_OBJC_DIRECT;
+- (void)setTimerManager:(std::weak_ptr<facebook::react::TimerManager>)timerManager;
 
 @end
 

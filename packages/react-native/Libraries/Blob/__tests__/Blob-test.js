@@ -78,6 +78,18 @@ describe('Blob', function () {
     expect(sliceC.size).toBe(Math.min(blob.data.size, 34569) - 34543);
   });
 
+  it('should slice a blob and sets a contentType', () => {
+    const blob = new Blob();
+
+    blob.data.size = 34546;
+
+    const slice = blob.slice(0, 2354, 'text/plain');
+
+    expect(slice.data.offset).toBe(0);
+    expect(slice.size).toBe(2354);
+    expect(slice.type).toBe('text/plain');
+  });
+
   it('should close a blob', () => {
     const blob = new Blob();
 

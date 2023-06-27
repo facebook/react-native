@@ -12,11 +12,11 @@
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/utils/CoreFeatures.h>
 
 using namespace facebook::jni;
 
