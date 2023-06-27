@@ -18,6 +18,8 @@
 #import "RCTLog.h"
 #import "RCTViewUtils.h"
 #import "UIView+React.h"
+#import "RCTConvert+Transform.h"
+#import "RCTConvert.h"
 
 RCT_MOCK_DEF(RCTView, RCTContentInsets);
 #define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
@@ -785,6 +787,10 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   [super reactSetFrame:frame];
   if (!CGSizeEqualToSize(self.bounds.size, oldSize)) {
     [self.layer setNeedsDisplay];
+    // Update transform for transform origin due to change in view dimension
+    if (self.transformOriginProp.length > 0) {
+      self.layer.transform = [RCTConvert CATransform3D:self.transformProp viewWidth:self.bounds.size.width viewHeight:self.bounds.size.height transformOrigin: self.transformOriginProp];
+    }
   }
 }
 
