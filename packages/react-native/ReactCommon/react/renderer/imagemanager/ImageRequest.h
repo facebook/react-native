@@ -12,6 +12,7 @@
 #include <react/renderer/imagemanager/ImageResponseObserverCoordinator.h>
 #include <react/renderer/imagemanager/ImageTelemetry.h>
 #include <react/renderer/imagemanager/primitives.h>
+#include <react/utils/SharedFunction.h>
 
 namespace facebook {
 namespace react {
@@ -30,7 +31,8 @@ class ImageRequest final {
    */
   ImageRequest(
       ImageSource imageSource,
-      std::shared_ptr<const ImageTelemetry> telemetry);
+      std::shared_ptr<const ImageTelemetry> telemetry,
+      SharedFunction<> cancelationFunction);
 
   /*
    * The move constructor.
@@ -41,11 +43,6 @@ class ImageRequest final {
    * `ImageRequest` does not support copying by design.
    */
   ImageRequest(const ImageRequest &other) = delete;
-
-  /**
-   * Set cancelation function.
-   */
-  void setCancelationFunction(std::function<void(void)> cancelationFunction);
 
   /*
    * Calls cancel function if one is defined. Should be when downloading
@@ -95,9 +92,9 @@ class ImageRequest final {
   std::shared_ptr<const ImageResponseObserverCoordinator> coordinator_{};
 
   /*
-   * Function we can call to cancel image request (see destructor).
+   * Function we can call to cancel image request.
    */
-  std::function<void(void)> cancelRequest_;
+  SharedFunction<> cancelRequest_;
 };
 
 } // namespace react

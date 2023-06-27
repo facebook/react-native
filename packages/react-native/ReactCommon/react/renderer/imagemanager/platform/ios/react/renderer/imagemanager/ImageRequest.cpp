@@ -12,20 +12,16 @@ namespace react {
 
 ImageRequest::ImageRequest(
     ImageSource imageSource,
-    std::shared_ptr<const ImageTelemetry> telemetry)
-    : imageSource_(std::move(imageSource)), telemetry_(std::move(telemetry)) {
+    std::shared_ptr<const ImageTelemetry> telemetry,
+    SharedFunction<> cancelationFunction)
+    : imageSource_(std::move(imageSource)),
+      telemetry_(std::move(telemetry)),
+      cancelRequest_(std::move(cancelationFunction)) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
 }
 
-void ImageRequest::setCancelationFunction(
-    std::function<void(void)> cancelationFunction) {
-  cancelRequest_ = cancelationFunction;
-}
-
 void ImageRequest::cancel() const {
-  if (cancelRequest_) {
-    cancelRequest_();
-  }
+  cancelRequest_();
 }
 
 const ImageSource &ImageRequest::getImageSource() const {

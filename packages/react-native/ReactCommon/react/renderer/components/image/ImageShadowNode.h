@@ -46,7 +46,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
       ShadowNodeFamilyFragment const &familyFragment,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource, {imageSource, nullptr}, 0};
+    return {imageSource, {imageSource, nullptr, {}}, 0};
   }
 
 #pragma mark - LayoutableShadowNode
