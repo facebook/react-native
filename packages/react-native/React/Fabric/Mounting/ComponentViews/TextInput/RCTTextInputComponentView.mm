@@ -530,6 +530,7 @@ using namespace facebook::react;
   TextInputMetrics metrics;
   metrics.text = RCTStringFromNSString(_backedTextInputView.attributedText.string);
   metrics.selectionRange = [self _selectionRange];
+  metrics.cursorPosition = [self _cursorPosition];
   metrics.eventCount = _mostRecentEventCount;
 
   CGPoint contentOffset = _backedTextInputView.contentOffset;
@@ -562,6 +563,33 @@ using namespace facebook::react;
   _mostRecentEventCount += _comingFromJS ? 0 : 1;
   data.mostRecentEventCount = _mostRecentEventCount;
   _state->updateState(std::move(data));
+}
+
+- (CursorPosition)_cursorPosition
+{
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  
+  // Get the caret rectangle for the start of the selected text range.
+  CGRect caretRectStart = [_backedTextInputView caretRectForPosition:selectedTextRange.start];
+  CGPoint cursorPositionStart = caretRectStart.origin;
+  
+  // Get the caret rectangle for the end of the selected text range.
+  CGRect caretRectEnd = [_backedTextInputView caretRectForPosition:selectedTextRange.end];
+  CGPoint cursorPositionEnd = caretRectEnd.origin;
+  CGSize cursorPositionEndSize = caretRectEnd.size;
+  
+  // Check if y-values are negative(can be -1). If yes, set them to 0.
+  cursorPositionStart.y = cursorPositionStart.y < 0 ? 0 : cursorPositionStart.y;
+  cursorPositionEnd.y = cursorPositionEnd.y < 0 ? 0 : cursorPositionEnd.y;
+  
+  // Create a pair of integers representing the x and y coordinates of the cursor positions.
+  std::pair<int, int> cursorPositionStartInt = {static_cast<int>(cursorPositionStart.x), static_cast<int>(cursorPositionStart.y)};
+  std::pair<int, int> cursorPositionEndInt = {static_cast<int>(cursorPositionEnd.x + cursorPositionEndSize.width), static_cast<int>(cursorPositionEnd.y + cursorPositionEndSize.height)};
+  
+  // Create a CursorPosition structure and set the start and end cursor positions.
+  CursorPosition cursorPosition = {cursorPositionStartInt, cursorPositionEndInt};
+
+  return cursorPosition;
 }
 
 - (AttributedString::Range)_selectionRange
