@@ -5,5 +5,6 @@
 <resources exclude-from-buck-resource-map="true">
     <string name="link_description" gender="unknown">Linki</string>
     <string name="imagebutton_description" gender="unknown">Batoon, Sawir</string>
+    <string name="state_on_description" gender="unknown">daaran</string>
     <string name="state_off_description" gender="unknown">dansan</string>
 </resources>
