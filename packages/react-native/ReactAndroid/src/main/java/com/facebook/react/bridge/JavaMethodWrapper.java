@@ -364,22 +364,21 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
                 + " at argument index "
                 + getAffectedRange(
                     jsArgumentsConsumed, mArgumentExtractors[i].getJSArgumentsNeeded())
-                + ") with parameters "
-                + parameters.toArrayList(),
+                + ")",
             e);
       }
 
       try {
         mMethod.invoke(mModuleWrapper.getModule(), mArguments);
       } catch (IllegalArgumentException | IllegalAccessException e) {
-        throw new RuntimeException(createInvokeExceptionMessage(traceName, parameters), e);
+        throw new RuntimeException(createInvokeExceptionMessage(traceName), e);
       } catch (InvocationTargetException ite) {
         // Exceptions thrown from native module calls end up wrapped in InvocationTargetException
         // which just make traces harder to read and bump out useful information
         if (ite.getCause() instanceof RuntimeException) {
           throw (RuntimeException) ite.getCause();
         }
-        throw new RuntimeException(createInvokeExceptionMessage(traceName, parameters), ite);
+        throw new RuntimeException(createInvokeExceptionMessage(traceName), ite);
       }
     } finally {
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
@@ -388,10 +387,10 @@ public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
   /**
    * Makes it easier to determine the cause of an error invoking a native method from Javascript
-   * code by adding the function and parameters.
+   * code by adding the function name.
    */
-  private static String createInvokeExceptionMessage(String traceName, ReadableArray parameters) {
-    return "Could not invoke " + traceName + " with parameters " + parameters.toArrayList();
+  private static String createInvokeExceptionMessage(String traceName) {
+    return "Could not invoke " + traceName;
   }
 
   /**

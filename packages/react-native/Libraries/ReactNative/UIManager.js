@@ -185,13 +185,7 @@ const UIManager = {
     // case. We throw early here in Javascript so we can get a JS stacktrace
     // instead of a harder-to-debug native Java or Objective-C stacktrace.
     if (typeof reactTag !== 'number') {
-      let stringifiedArgs = '(failed to stringify commandArgs)';
-      try {
-        stringifiedArgs = JSON.stringify(commandArgs);
-      } catch (err) {
-        // Do nothing. We have a default message
-      }
-      throw new Error(`dispatchViewManagerCommand: found null reactTag with args ${stringifiedArgs}`);
+      throw new Error('dispatchViewManagerCommand: found null reactTag');
     }
 
     if (isFabricReactTag(reactTag)) {
