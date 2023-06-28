@@ -14,8 +14,14 @@ interface ReactSurfaceInterface {
   // the API of this interface will be completed as we analyze and refactor API of ReactSurface,
   // ReactRootView, etc.
 
+  // Prerender this surface
+  fun prerender(): TaskInterface
+
   // Start running this surface
   fun start(): TaskInterface
+
+  // Stop running this surface
+  fun stop(): TaskInterface
 
   // Get React root view of this surface
   fun getView(): ViewGroup?
