@@ -191,7 +191,9 @@ const UIManager = {
       } catch (err) {
         // Do nothing. We have a default message
       }
-      throw new Error(`dispatchViewManagerCommand: found null reactTag with args ${stringifiedArgs}`);
+      throw new Error(
+        `dispatchViewManagerCommand: found null reactTag with args ${stringifiedArgs}`,
+      );
     }
 
     if (isFabricReactTag(reactTag)) {
