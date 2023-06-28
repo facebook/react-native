@@ -32,6 +32,7 @@ packages/react-native/flow/
 [options]
 enums=true
 conditional_type=true
+mapped_type=true
 type_guards=true
 
 emoji=true
