@@ -14,14 +14,21 @@
  * This script walks a releaser through bumping the version for a release
  * It will commit the appropriate tags to trigger the CircleCI jobs.
  */
-const {exit} = require('shelljs');
+const {exit, echo} = require('shelljs');
+const chalk = require('chalk');
 const yargs = require('yargs');
 const inquirer = require('inquirer');
 const request = require('request');
+const path = require('path');
 const {getBranchName, exitIfNotOnGit} = require('./scm-utils');
 
 const {parseVersion, isReleaseBranch} = require('./version-utils');
 const {failIfTagExists} = require('./release-utils');
+const checkForGitChanges = require('./monorepo/check-for-git-changes');
+const forEachPackage = require('./monorepo/for-each-package');
+const detectPackageUnreleasedChanges = require('./monorepo/bump-all-updated-packages/bump-utils.js');
+
+const ROOT_LOCATION = path.join(__dirname, '..');
 
 let argv = yargs
   .option('r', {
@@ -57,6 +64,52 @@ function exitIfNotOnReleaseBranch(branch) {
   }
 }
 
+const buildExecutor =
+  (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) =>
+  async () => {
+    const {name: packageName} = packageManifest;
+    if (packageManifest.private) {
+      return;
+    }
+
+    if (
+      detectPackageUnreleasedChanges(
+        packageRelativePathFromRoot,
+        packageName,
+        ROOT_LOCATION,
+      )
+    ) {
+      // if I enter here, I want to throw an error upward
+      throw new Error(
+        `Package ${packageName} has unreleased changes. Please release it first.`,
+      );
+    }
+  };
+
+const buildAllExecutors = () => {
+  const executors = [];
+
+  forEachPackage((...params) => {
+    executors.push(buildExecutor(...params));
+  });
+
+  return executors;
+};
+
+async function exitIfUnreleasedPackages() {
+  // use the other script to verify that there's no packages in the monorepo
+  // that have changes that haven't been released
+
+  const executors = buildAllExecutors();
+  for (const executor of executors) {
+    await executor().catch(error => {
+      echo(chalk.red(error));
+      // need to throw upward
+      throw error;
+    });
+  }
+}
+
 function triggerReleaseWorkflow(options) {
   return new Promise((resolve, reject) => {
     request(options, function (error, response, body) {
@@ -74,6 +127,24 @@ async function main() {
     () => getBranchName(),
     "Not in git. You can't invoke bump-oss-versions.js from outside a git repo.",
   );
+
+  // check for uncommitted changes
+  if (checkForGitChanges()) {
+    echo(
+      chalk.red(
+        'Found uncommitted changes. Please commit or stash them before running this script',
+      ),
+    );
+    exit(1);
+  }
+
+  // now check for unreleased packages
+  try {
+    await exitIfUnreleasedPackages();
+  } catch (error) {
+    exit(1);
+  }
+
   const token = argv.token;
   const releaseVersion = argv.toVersion;
   failIfTagExists(releaseVersion, 'release');
