@@ -28,7 +28,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTSurfacePresenter.h>
-#import <ReactCommon/RCTNativeViewConfigProvider.h>
+#import <ReactCommon/RCTLegacyUIManagerConstantsProvider.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
@@ -296,7 +296,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     RCTInstallNativeComponentRegistryBinding(runtime);
 
     if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
-      installNativeViewConfigProviderBinding(runtime);
+      installLegacyUIManagerConstantsProviderBinding(runtime);
     }
 
     [strongSelf->_delegate instance:strongSelf didInitializeRuntime:runtime];
