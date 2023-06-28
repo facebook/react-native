@@ -21,6 +21,8 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
+#define IS_IPAD ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -31,6 +33,35 @@
   self.initialProps = [self prepareInitialProps];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (UIViewController *)createRootViewController {
+  if(!IS_IPAD) {
+    return [[UIViewController alloc] init];
+  }
+  
+  UISplitViewController *splitViewController = [[UISplitViewController alloc] initWithStyle:UISplitViewControllerStyleDoubleColumn];
+  
+  // Don't enable drawer by default
+  // Removes button to toggle drawer and disables gesture to open
+  // DrawerLayoutIos is responsible for enabling the drawer / screen
+  //[splitViewController setPresentsWithGesture:false];
+
+  return splitViewController;
+}
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController {
+  if (!IS_IPAD) {
+    rootViewController.view = rootView;
+  } else {
+    UIViewController *mainVC = [[UIViewController alloc] init];
+    mainVC.view = rootView;
+    
+    // Cast UIViewController to UISplitViewController
+    UISplitViewController *splitViewController = (UISplitViewController *)rootViewController;
+    
+    [splitViewController setViewController:mainVC forColumn:UISplitViewControllerColumnSecondary];
+  }
 }
 
 - (NSDictionary *)prepareInitialProps

@@ -1,11 +1,5 @@
-//
-//  RCTDrawerViewController.m
-//  HelloWorld
-//
-//  Created by Grégoire Van der Auwermeulen on 15.06.23.
-//
-
 #import <Foundation/Foundation.h>
+
 #import "RCTDrawerViewController.h"
 
 @implementation RCTDrawerViewController {
