@@ -232,6 +232,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)coder)
   CGPoint rootViewLocation = [_cachedRootView.window.contentView convertPoint:location toView:_cachedRootView];
   NSView *touchView = _touchViews[touchIndex];
   CGPoint touchViewLocation = [touchView convertPoint:location fromView:nil];
+  // JavaScript expects coordinates to have (0,0) at top left, unlike the macOS coordinate system
+  rootViewLocation.y = NSHeight([[_cachedRootView window] frame]) - rootViewLocation.y; 
 #endif // macOS]
 
   NSMutableDictionary *reactTouch = _reactTouches[touchIndex];
