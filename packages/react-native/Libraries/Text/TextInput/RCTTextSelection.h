@@ -14,8 +14,9 @@
 
 @property (nonatomic, assign, readonly) NSInteger start;
 @property (nonatomic, assign, readonly) NSInteger end;
+@property (nonatomic, strong, readonly) NSDictionary *cursorPosition;
 
-- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end;
+- (instancetype)initWithStart:(NSInteger)start end:(NSInteger)end cursorPosition:(NSDictionary *)cursorPosition; 
 
 @end
 
