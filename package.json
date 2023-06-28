@@ -56,7 +56,7 @@
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.2.1",
     "@reactions/component": "^2.0.2",
-    "@react-native/metro-config": "^0.72.6",
+    "@react-native/metro-config": "^0.72.7",
     "@types/react": "^18.0.18",
     "@typescript-eslint/parser": "^5.30.5",
     "async": "^3.2.2",
