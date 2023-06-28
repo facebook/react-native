@@ -91,6 +91,13 @@ export interface Spec {
   +getScrollPosition: (
     node: Node,
   ) => ?[/* scrollLeft: */ number, /* scrollTop: */ number];
+
+  /**
+   * Support methods for the Pointer Capture APIs.
+   */
+  +hasPointerCapture: (node: Node, pointerId: number) => boolean;
+  +setPointerCapture: (node: Node, pointerId: number) => void;
+  +releasePointerCapture: (node: Node, pointerId: number) => void;
 }
 
 let nativeFabricUIManagerProxy: ?Spec;

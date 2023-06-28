@@ -54,7 +54,9 @@ std::shared_ptr<UIManagerBinding> UIManagerBinding::getBinding(
 }
 
 UIManagerBinding::UIManagerBinding(std::shared_ptr<UIManager> uiManager)
-    : uiManager_(std::move(uiManager)) {}
+    : uiManager_(std::move(uiManager)),
+      pointerEventsProcessor_(
+          std::make_unique<PointerEventsProcessor>(uiManager_)) {}
 
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
@@ -103,37 +105,52 @@ void UIManagerBinding::dispatchEvent(
     return;
   }
 
-  auto instanceHandle = eventTarget != nullptr
-    ? [&]() {
-      auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-      if (instanceHandle.isUndefined()) {
-        return jsi::Value::null();
-      }
+  DispatchEvent dispatchEvent = [this](
+                                    jsi::Runtime &runtime,
+                                    EventTarget const *eventTarget,
+                                    std::string const &type,
+                                    ReactEventPriority priority,
+                                    jsi::Value &event) {
+    auto instanceHandle = eventTarget != nullptr
+                                      ? [&]() {
+        auto handle = eventTarget->getInstanceHandle(runtime);
+        if (handle.isUndefined()) {
+          return jsi::Value::null();
+        }
 
-      // Mixing `target` into `payload`.
-      if (!payload.isObject()) {
-        LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
-      }
-      react_native_assert(payload.isObject());
-      payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
-      return instanceHandle;
-    }()
-    : jsi::Value::null();
+        // Mixing `target` into `payload`.
+        if (!event.isObject()) {
+          LOG(WARNING) << "not an object for type: " << type;
+          LOG(ERROR) << "payload for dispatchEvent is not an object: " << eventTarget->getTag();
+        }
+        react_native_assert(event.isObject());
+        event.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
+        return handle;
+      }()
+      : jsi::Value::null();
 
-  if (instanceHandle.isNull()) {
-    LOG(WARNING) << "instanceHandle is null, event will be dropped";
+    if (instanceHandle.isNull()) {
+      LOG(WARNING) << "instanceHandle is null, event will be dropped";
+    }
+
+    auto &eventHandlerWrapper =
+        static_cast<EventHandlerWrapper const &>(*eventHandler_);
+
+    currentEventPriority_ = priority;
+    eventHandlerWrapper.callback.call(
+        runtime,
+        {std::move(instanceHandle),
+         jsi::String::createFromUtf8(runtime, type),
+         std::move(event)});
+    currentEventPriority_ = ReactEventPriority::Default;
+  };
+
+  if (PointerEventsProcessor::isPointerEvent(type)) {
+    pointerEventsProcessor_->interceptPointerEvent(
+        runtime, eventTarget, type, priority, payload, dispatchEvent);
+  } else {
+    dispatchEvent(runtime, eventTarget, type, priority, payload);
   }
-
-  auto &eventHandlerWrapper =
-      static_cast<EventHandlerWrapper const &>(*eventHandler_);
-
-  currentEventPriority_ = priority;
-  eventHandlerWrapper.callback.call(
-      runtime,
-      {std::move(instanceHandle),
-       jsi::String::createFromUtf8(runtime, type),
-       std::move(payload)});
-  currentEventPriority_ = ReactEventPriority::Default;
 }
 
 void UIManagerBinding::invalidate() const {
@@ -1173,6 +1190,66 @@ jsi::Value UIManagerBinding::get(
               jsi::Value{
                   runtime,
                   scrollPosition.y == 0 ? 0 : (double)-scrollPosition.y});
+        });
+  }
+
+  /**
+   * Pointer Capture APIs
+   */
+  if (methodName == "hasPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          bool isCapturing = pointerEventsProcessor_->hasPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value(isCapturing);
+        });
+  }
+
+  if (methodName == "setPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_->setPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]));
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "releasePointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_->releasePointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value::undefined();
         });
   }
 

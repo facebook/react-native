@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/uimanager/PointerEventsProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -73,6 +74,7 @@ class UIManagerBinding : public jsi::HostObject {
  private:
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
+  std::unique_ptr<PointerEventsProcessor> pointerEventsProcessor_;
   mutable ReactEventPriority currentEventPriority_;
 };
 
