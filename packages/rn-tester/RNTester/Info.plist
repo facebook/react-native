@@ -38,10 +38,14 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>You need to add NSLocationWhenInUseUsageDescription key in Info.plist to enable geolocation, otherwise it is going to *fail silently*!</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>You need to add NSPhotoLibraryUsageDescription key in Info.plist to enable photo library usage, otherwise it is going to *fail silently*!</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -57,7 +61,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>You need to add NSPhotoLibraryUsageDescription key in Info.plist to enable photo library usage, otherwise it is going to *fail silently*!</string>
 </dict>
 </plist>
