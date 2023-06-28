@@ -38,11 +38,9 @@ export function setRuntimeConfigProvider(
     verify: boolean,
   },
 ): void {
-  invariant(
-    getRuntimeConfig == null,
-    'NativeComponentRegistry.setRuntimeConfigProvider() called more than once.',
-  );
-  getRuntimeConfig = runtimeConfigProvider;
+  if (getRuntimeConfig === undefined) {
+    getRuntimeConfig = runtimeConfigProvider;
+  }
 }
 
 /**
