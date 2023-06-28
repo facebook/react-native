@@ -45,7 +45,7 @@ public class TransformHelper {
     return inRadians ? value : MatrixMathHelper.degreesToRadians(value);
   }
 
-  public static void processTransform(ReadableArray transforms, double[] result) {
+  public static void processTransform(ReadableArray transforms, double[] result, float viewWidth, float viewHeight, String transformOrigin) {
     double[] helperMatrix = sHelperMatrix.get();
     MatrixMathHelper.resetIdentityMatrix(result);
 
@@ -59,6 +59,10 @@ public class TransformHelper {
       }
       return;
     }
+
+    float[] offsets = getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
+    MatrixMathHelper.applyTranslate3D(helperMatrix, offsets[0], offsets[1], offsets[2]);
+    MatrixMathHelper.multiplyInto(result, result, helperMatrix);
 
     for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
       ReadableMap transform = transforms.getMap(transformIdx);
@@ -106,5 +110,43 @@ public class TransformHelper {
 
       MatrixMathHelper.multiplyInto(result, result, helperMatrix);
     }
+
+    MatrixMathHelper.resetIdentityMatrix(helperMatrix);
+    MatrixMathHelper.applyTranslate3D(helperMatrix, -offsets[0], -offsets[1], -offsets[2]);
+    MatrixMathHelper.multiplyInto(result, result, helperMatrix);
+  }
+
+  public static float[] getTranslateForTransformOrigin(float viewWidth, float viewHeight, String transformOrigin) {
+    float viewCenterX = viewWidth / 2;
+    float viewCenterY = viewHeight / 2;
+
+    float[] origin = {viewCenterX, viewCenterY, 0.0f};
+
+    String[] parts = transformOrigin.split(" ");
+    for (int i = 0; i < parts.length && i < 3; i++) {
+      String part = parts[i];
+      if (part.endsWith("%")) {
+        float val = Float.parseFloat(part.substring(0, part.length() - 1));
+        origin[i] = (i == 0 ? viewWidth : viewHeight) * val / 100.0f;
+      } else if (part.equals("top")) {
+        origin[1] = 0.0f;
+      } else if (part.equals("bottom")) {
+        origin[1] = viewHeight;
+      } else if (part.equals("left")) {
+        origin[0] = 0.0f;
+      } else if (part.equals("right")) {
+        origin[0] = viewWidth;
+      } else if (part.equals("center")) {
+        continue;
+      } else {
+        origin[i] = Float.parseFloat(part);
+      }
+    }
+
+    float newTranslateX = -viewCenterX + origin[0];
+    float newTranslateY = -viewCenterY + origin[1];
+    float newTranslateZ = origin[2];
+
+    return new float[]{newTranslateX, newTranslateY, newTranslateZ};
   }
 }

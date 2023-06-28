@@ -40,7 +40,10 @@ import java.util.Map;
  * provides support for base view properties such as backgroundColor, opacity, etc.
  */
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
-    extends ViewManager<T, C> implements BaseViewManagerInterface<T> {
+    extends ViewManager<T, C> implements BaseViewManagerInterface<T>, View.OnLayoutChangeListener {
+
+  private String transformOrigin;
+  private ReadableArray transform;
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
@@ -89,6 +92,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setRight(0);
     view.setElevation(0);
     view.setAnimationMatrix(null);
+    view.removeOnLayoutChangeListener(this);
 
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -130,6 +134,28 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  public void onLayoutChange(View v,
+                             int left,
+                             int top,
+                             int right,
+                             int bottom,
+                             int oldLeft,
+                             int oldTop,
+                             int oldRight,
+                             int oldBottom) {
+    // Old width and height
+    int oldWidth = oldRight - oldLeft;
+    int oldHeight = oldBottom - oldTop;
+
+    // Current width and height
+    int currentWidth = right - left;
+    int currentHeight = bottom - top;
+    if ((currentHeight != oldHeight || currentWidth != oldWidth) && this.transformOrigin != null && this.transform != null) {
+      setTransformProperty((T) v, this.transform, this.transformOrigin);
+    }
+  }
+
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
@@ -141,11 +167,23 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
+    this.transform = matrix;
     if (matrix == null) {
       resetTransformProperty(view);
     } else {
-      setTransformProperty(view, matrix);
+      setTransformProperty(view, matrix, this.transformOrigin);
     }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
+  public void setTransformOrigin(@NonNull T view, @Nullable String transformOrigin) {
+    // we need to recalculate rotation/scale based new dimensions. Attaches same listener, so looks fine.
+    this.transformOrigin = transformOrigin;
+    if (this.transform != null) {
+      setTransformProperty(view, this.transform, this.transformOrigin);
+    }
+    view.addOnLayoutChangeListener(this);
   }
 
   @Override
@@ -439,9 +477,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(@NonNull View view, ReadableArray transforms) {
+  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, String transformOrigin) {
     sMatrixDecompositionContext.reset();
-    TransformHelper.processTransform(transforms, sTransformDecompositionArray);
+    TransformHelper.processTransform(transforms, sTransformDecompositionArray, PixelUtil.toDIPFromPixel(view.getWidth()), PixelUtil.toDIPFromPixel(view.getHeight()), transformOrigin);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(
