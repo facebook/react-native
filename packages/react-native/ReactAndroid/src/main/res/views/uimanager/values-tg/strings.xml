@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: tg_TJ -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Пайванд</string>
 </resources>

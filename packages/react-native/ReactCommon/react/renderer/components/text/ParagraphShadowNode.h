@@ -9,7 +9,6 @@
 
 #include <react/renderer/components/text/BaseTextShadowNode.h>
 #include <react/renderer/components/text/ParagraphEventEmitter.h>
-#include <react/renderer/components/text/ParagraphLayoutManager.h>
 #include <react/renderer/components/text/ParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>

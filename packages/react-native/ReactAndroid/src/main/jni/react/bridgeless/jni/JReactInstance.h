@@ -10,7 +10,7 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <react/bridgeless/JSEngineInstance.h>

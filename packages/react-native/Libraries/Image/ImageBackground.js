@@ -84,6 +84,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
         importantForAccessibility={importantForAccessibility}
         style={style}
         ref={this._captureRef}>
+        {/* $FlowFixMe[incompatible-use] */}
         <Image
           {...props}
           importantForAccessibility={importantForAccessibility}

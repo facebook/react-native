@@ -12,7 +12,7 @@
   "keywords": ["gradle", "plugin", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "build": "./gradlew build",

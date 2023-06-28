@@ -12,7 +12,7 @@
   "keywords": ["metro", "config", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "exports": "./index.js",
   "dependencies": {

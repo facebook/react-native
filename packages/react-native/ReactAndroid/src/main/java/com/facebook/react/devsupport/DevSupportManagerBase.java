@@ -687,7 +687,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mCurrentContext;
   }
 
-  protected @Nullable String getJSAppBundleName() {
+  public @Nullable String getJSAppBundleName() {
     return mJSAppBundleName;
   }
 
@@ -695,7 +695,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mApplicationContext;
   }
 
-  protected DevServerHelper getDevServerHelper() {
+  public DevServerHelper getDevServerHelper() {
     return mDevServerHelper;
   }
 

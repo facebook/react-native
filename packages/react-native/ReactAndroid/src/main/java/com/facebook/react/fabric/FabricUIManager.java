@@ -37,6 +37,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -785,9 +786,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (shouldSchedule) {
       mMountItemDispatcher.addMountItem(mountItem);
       Runnable runnable =
-          new Runnable() {
+          new GuardedRunnable(mReactApplicationContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               mMountItemDispatcher.tryDispatchMountItems();
             }
           };

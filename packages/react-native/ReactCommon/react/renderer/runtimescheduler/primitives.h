@@ -23,8 +23,14 @@ struct TaskWrapper : public jsi::HostObject {
 inline static jsi::Value valueFromTask(
     jsi::Runtime &runtime,
     std::shared_ptr<Task> task) {
-  return jsi::Object::createFromHostObject(
-      runtime, std::make_shared<TaskWrapper>(task));
+  if (CoreFeatures::useNativeState) {
+    jsi::Object obj(runtime);
+    obj.setNativeState(runtime, std::move(task));
+    return obj;
+  } else {
+    return jsi::Object::createFromHostObject(
+        runtime, std::make_shared<TaskWrapper>(task));
+  }
 }
 
 inline static std::shared_ptr<Task> taskFromValue(
@@ -34,7 +40,11 @@ inline static std::shared_ptr<Task> taskFromValue(
     return nullptr;
   }
 
-  return value.getObject(runtime).getHostObject<TaskWrapper>(runtime)->task;
+  if (CoreFeatures::useNativeState) {
+    return value.getObject(runtime).getNativeState<Task>(runtime);
+  } else {
+    return value.getObject(runtime).getHostObject<TaskWrapper>(runtime)->task;
+  }
 }
 
 } // namespace facebook::react

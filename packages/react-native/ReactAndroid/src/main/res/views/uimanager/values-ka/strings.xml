@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: ka_GE -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="summary_description" gender="unknown">შეჯამება</string>
+    <string name="state_mixed_description" gender="unknown">შერეული</string>
 </resources>

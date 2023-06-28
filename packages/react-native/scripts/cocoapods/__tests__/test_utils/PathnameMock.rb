@@ -34,6 +34,9 @@ class Pathname
         return @@pwd_invocation_count
     end
 
+    def to_s
+        return @path
+    end
 
     def self.reset()
         @@pwd = ""

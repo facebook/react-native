@@ -113,7 +113,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:8.0
+      - image: reactnativecommunity/react-native-android:9.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -814,7 +814,7 @@ jobs:
             ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
 
       - store_artifacts:
-          path: /tmp/$PROJECT_NAME/android/app/build/outputs/apk/
+          path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/
           destination: template-apk
 
   # -------------------------
@@ -904,8 +904,9 @@ jobs:
               export USE_FRAMEWORKS=dynamic
             fi
 
+            cd ..
             bundle install
-            bundle exec pod install
+            bundle exec pod install --project-directory=ios
       - run:
           name: Build template project
           command: |
@@ -1067,9 +1068,15 @@ jobs:
           name: Enable Yarn with corepack
           command: corepack enable
 
+      # it looks like that, last week, envinfo released version 7.9.0 which does not works
+      # with Windows. I have opened an issue here: https://github.com/tabrindle/envinfo/issues/238
+      # TODO: T156811874 - Revert this to npx envinfo@latest when the issue is addressed
       - run:
           name: Display Environment info
-          command: npx envinfo@latest
+          command: |
+            npm install -g envinfo
+            envinfo -v
+            envinfo
 
       - restore_cache:
           keys:
@@ -1139,7 +1146,7 @@ jobs:
           command: |
             apt update
             apt install -y wget git curl
-            curl -sL https://deb.nodesource.com/setup_16.x | bash -
+            curl -sL https://deb.nodesource.com/setup_18.x | bash -
             apt install -y nodejs
             npm install --global yarn
       - checkout

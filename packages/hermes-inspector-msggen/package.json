@@ -13,7 +13,7 @@
     "msggen": "./bin/index.js"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "flow": "flow",
