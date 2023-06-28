@@ -26,12 +26,6 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
-// const FabricUIManager = require('../../FabricUIManager');
-// const FabricUIManager = require('../../../../Libraries/Renderer/shims/ReactNative/FabricUIManager');
-const FabricUIManager = require('../../../../react-native/Libraries/ReactNative/FabricUIManager');
-const nullthrows = require('nullthrows');
-// const FabricUIManager = require('../../');
-
 const styles = StyleSheet.create({
   default: {
     borderWidth: StyleSheet.hairlineWidth,
