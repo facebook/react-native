@@ -171,7 +171,7 @@ const APIs: Array<RNTesterModuleInfo> = ([
   {
     key: 'BorderExample',
     category: 'UI',
-    module: require('../examples/Border/BorderExample'),
+    module: require('../examples/Border/BorderExample').default,
   },
   {
     key: 'CrashExample',
