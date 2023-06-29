@@ -24,11 +24,13 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.autofill.HintConstants;
@@ -1231,19 +1233,60 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
     @Override
     public void onSelectionChanged(int start, int end) {
-      // Android will call us back for both the SELECTION_START span and SELECTION_END span in text
-      // To prevent double calling back into js we cache the result of the previous call and only
-      // forward it on if we have new values
-
-      // Apparently Android might call this with an end value that is less than the start value
-      // Lets normalize them. See https://github.com/facebook/react-native/issues/18579
+      Layout layout = mReactEditText.getLayout();
+      if (layout == null) {
+        mReactEditText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+              mReactEditText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+              onSelectionChanged(start, end);
+            }
+          });
+          return;
+      }
       int realStart = Math.min(start, end);
       int realEnd = Math.max(start, end);
+      int cursorPositionStartX = 0;
+      int cursorPositionStartY = 0;
+      int cursorPositionEndX = 0;
+      int cursorPositionEndY = 0;
 
+       if (realStart == realEnd && realStart != 0) {
+         int lineStart = layout.getLineForOffset(realStart);
+         int baselineStart = layout.getLineBaseline(lineStart);
+         int ascentStart = layout.getLineAscent(lineStart);
+         cursorPositionStartX = (int) Math.round(PixelUtil.toDIPFromPixel(layout.getPrimaryHorizontal(realStart)));
+         cursorPositionStartY = (int) Math.round(PixelUtil.toDIPFromPixel(baselineStart + ascentStart));
+       }
+      int lineEnd = layout.getLineForOffset(realEnd);
+      int baselineEnd = layout.getLineBaseline(lineEnd);
+      int ascentEnd = layout.getLineAscent(lineEnd);
+
+      float right = layout.getPrimaryHorizontal(realEnd);
+      float bottom = layout.getLineBaseline(lineEnd) + layout.getLineDescent(lineEnd);
+
+
+      Drawable cursorDrawable = null;
+      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        cursorDrawable = mReactEditText.getTextCursorDrawable();
+      }
+      int cursorWidth = cursorDrawable != null ? cursorDrawable.getIntrinsicWidth() : 0;
+
+       cursorPositionEndX = (int) Math.round(PixelUtil.toDIPFromPixel(right));
+       cursorPositionEndY = (int) Math.round(PixelUtil.toDIPFromPixel(bottom));
       if (mPreviousSelectionStart != realStart || mPreviousSelectionEnd != realEnd) {
         mEventDispatcher.dispatchEvent(
-            new ReactTextInputSelectionEvent(
-                mSurfaceId, mReactEditText.getId(), realStart, realEnd));
+          new ReactTextInputSelectionEvent(
+            mSurfaceId,
+            mReactEditText.getId(),
+            realStart,
+            realEnd,
+            cursorPositionStartX,
+            cursorPositionStartY,
+            cursorPositionEndX,
+            cursorPositionEndY
+          )
+        );
 
         mPreviousSelectionStart = realStart;
         mPreviousSelectionEnd = realEnd;
