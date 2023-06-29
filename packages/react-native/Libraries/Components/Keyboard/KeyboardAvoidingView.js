@@ -132,9 +132,9 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
   _setBottom = (value: number) => {
-    const {enabled = true} = this.props;
+    const enabled = this.props.enabled ?? true;
     this._bottom = value;
-    if (enabled === true) {
+    if (enabled) {
       this.setState({bottom: value});
     }
   };
@@ -154,8 +154,8 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     this._setBottom(height);
 
-    const {enabled = true} = this.props;
-    if (enabled === true && duration && easing) {
+    const enabled = this.props.enabled ?? true;
+    if (enabled && duration && easing) {
       LayoutAnimation.configureNext({
         // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
         duration: duration > 10 ? duration : 10,
@@ -168,8 +168,8 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   };
 
   componentDidUpdate(_: Props, prevState: State): void {
-    const {enabled = true} = this.props;
-    if (enabled === true && this._bottom !== prevState.bottom) {
+    const enabled = this.props.enabled ?? true;
+    if (enabled && this._bottom !== prevState.bottom) {
       this.setState({bottom: this._bottom});
     }
   }
