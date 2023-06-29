@@ -29,6 +29,15 @@ import {BackHandler, StyleSheet, View, useColorScheme} from 'react-native';
 
 // RNTester App currently uses in memory storage for storing navigation state
 
+if (global.RN$Bridgeless) {
+  require('react-native/Libraries/NativeComponent/NativeComponentRegistry').setRuntimeConfigProvider(
+    name => {
+      // In bridgeless mode, never load native ViewConfig.
+      return {native: false, strict: false, verify: false};
+    },
+  );
+}
+
 const RNTesterApp = (): React.Node => {
   const [state, dispatch] = React.useReducer(
     RNTesterNavigationReducer,

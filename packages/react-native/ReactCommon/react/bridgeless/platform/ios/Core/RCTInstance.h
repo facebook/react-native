@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTDefines.h>
 #import <react/bridgeless/JSEngineInstance.h>
 #import <react/bridgeless/ReactInstance.h>
@@ -33,7 +32,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 @class RCTSource;
 @class RCTSurfacePresenter;
 
-FB_RUNTIME_PROTOCOL
 @protocol RCTTurboModuleManagerDelegate;
 
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
@@ -62,7 +60,7 @@ typedef void (^_Null_unspecified RCTInstanceInitialBundleLoadCompletionBlock)();
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
              onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
-                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry NS_DESIGNATED_INITIALIZER FB_OBJC_DIRECT;
+                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 

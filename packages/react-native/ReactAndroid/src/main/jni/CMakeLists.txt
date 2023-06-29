@@ -120,6 +120,7 @@ add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
 add_react_android_subdir(src/main/jni/react/bridgeless/jni)
 add_react_android_subdir(src/main/jni/react/bridgeless/hermes/jni)
+add_react_android_subdir(src/main/jni/react/bridgeless/jsc/jni)
 
 # GTest dependencies
 add_executable(reactnative_unittest

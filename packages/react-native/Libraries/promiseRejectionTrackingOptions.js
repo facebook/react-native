@@ -10,9 +10,7 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-type ExtractOptionsType = <P>(((options?: ?P) => void)) => P;
-
-let rejectionTrackingOptions: $Call<ExtractOptionsType, enable> = {
+let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
   allRejections: true,
   onUnhandled: (id, rejection = {}) => {
     let message: string;
