@@ -7,7 +7,7 @@
 
 #import "RCTHost.h"
 
-#import <ReactCommon/RCTContextContainerHandling.h>
+#import "RCTContextContainerHandling.h"
 
 typedef NSURL * (^RCTHostBundleURLProvider)(void);
 
