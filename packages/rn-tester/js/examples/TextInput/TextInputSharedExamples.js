@@ -533,10 +533,7 @@ class SelectionExample extends React.Component<
       selection: {
         start,
         end,
-        cursorPosition: {
-          start: {x: 0, y: 0},
-          end: {x: 0, y: 0},
-        },
+        cursorPosition: {...this.state.selection.cursorPosition},
       },
     });
     if (this.props.imperative) {
