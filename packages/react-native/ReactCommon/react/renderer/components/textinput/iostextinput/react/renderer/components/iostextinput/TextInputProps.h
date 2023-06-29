@@ -65,6 +65,8 @@ class TextInputProps final : public ViewProps, public BaseTextProps {
   bool autoFocus{false};
   std::optional<Selection> selection{};
 
+  bool emoji{false};
+
   std::string const inputAccessoryViewID{};
 
   bool onKeyPressSync{false};

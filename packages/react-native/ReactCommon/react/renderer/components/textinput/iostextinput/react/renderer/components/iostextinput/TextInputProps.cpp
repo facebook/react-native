@@ -81,6 +81,12 @@ TextInputProps::TextInputProps(
           "autoFocus",
           sourceProps.autoFocus,
           {})),
+      emoji(convertRawProp(
+        context,
+        rawProps,
+        "emoji",
+        sourceProps.emoji,
+        {})),
       selection(convertRawProp(
           context,
           rawProps,

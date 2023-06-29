@@ -409,6 +409,21 @@ exports.examples = ([
     },
   },
   {
+    title: 'Native emoji keyboard',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="emoji keyboard">
+            <TextInput emoji={true} style={styles.default} />
+          </WithLabel>
+          <WithLabel label="hide right action">
+            <TextInput emoji style={styles.default} keyboardType={'email-address'} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Return key types',
     render: function (): React.Node {
       const returnKeyTypes = [

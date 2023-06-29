@@ -389,6 +389,30 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   return [_submitBehavior isEqualToString:@"blurAndSubmit"];
 }
 
+- (UITextInputMode *) textInputMode {
+    for (UITextInputMode *mode in UITextInputMode.activeInputModes) {
+        if ([mode.primaryLanguage  isEqual: @"emoji"] && _emoji) {
+           return mode;
+        }
+    }
+
+    return nil;
+}
+
+- (NSString *) textInputContextIdentifier {
+  if (_emoji) {
+    NSArray *version = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
+    // RCTLog(@"version: %@", version);
+    if ( 13 == [[version objectAtIndex:0] intValue] ) {
+      return @"";
+    } else {
+      return nil;
+    }
+  }
+
+  return nil;
+}
+
 - (void)textInputDidReturn
 {
   // Does nothing.

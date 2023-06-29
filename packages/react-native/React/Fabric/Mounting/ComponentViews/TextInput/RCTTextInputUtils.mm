@@ -43,6 +43,7 @@ void RCTCopyBackedTextInput(
   toTextInput.secureTextEntry = fromTextInput.secureTextEntry;
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
+  toTextInput.emoji = fromTextInput.emoji;
 
   if (@available(iOS 11.0, *)) {
     toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;

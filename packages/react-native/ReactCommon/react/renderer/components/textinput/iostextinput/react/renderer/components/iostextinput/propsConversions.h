@@ -135,6 +135,12 @@ static TextInputTraits convertRawProp(
       "textContentType",
       sourceTraits.textContentType,
       defaultTraits.textContentType);
+  traits.emoji = convertRawProp(
+      context,
+      rawProps,
+      "emoji",
+      sourceTraits.emoji,
+      defaultTraits.emoji);
   traits.passwordRules = convertRawProp(
       context,
       rawProps,

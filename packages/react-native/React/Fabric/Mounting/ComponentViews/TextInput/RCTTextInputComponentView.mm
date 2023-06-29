@@ -91,6 +91,36 @@ using namespace facebook::react;
   [self _restoreTextSelection];
 }
 
+- (UITextInputMode *) textInputMode
+{
+  const auto &props = static_cast<TextInputProps const &>(*_props);
+
+  for (UITextInputMode *mode in UITextInputMode.activeInputModes) {
+    if ([mode.primaryLanguage  isEqual: @"emoji"] && props.emoji) {
+     return mode;
+    }
+  }
+
+  return nil;
+}
+
+- (NSString *) textInputContextIdentifier
+{
+  const auto &props = static_cast<TextInputProps const &>(*_props);
+
+  if (props.emoji) {
+    NSArray *version = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
+    // RCTLog(@"version: %@", version);
+    if ( 13 == [[version objectAtIndex:0] intValue] ) {
+      return @"";
+    } else {
+      return nil;
+    }
+  }
+
+  return nil;
+}
+
 #pragma mark - RCTViewComponentView overrides
 
 - (NSObject *)accessibilityElement
@@ -175,6 +205,10 @@ using namespace facebook::react;
 
   if (newTextInputProps.traits.textContentType != oldTextInputProps.traits.textContentType) {
     _backedTextInputView.textContentType = RCTUITextContentTypeFromString(newTextInputProps.traits.textContentType);
+  }
+
+  if (newTextInputProps.traits.emoji != oldTextInputProps.traits.emoji) {
+    _backedTextInputView.emoji = newTextInputProps.traits.emoji;
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {

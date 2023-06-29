@@ -219,6 +219,12 @@ class TextInputTraits final {
 
   /*
    * iOS-only (inherently iOS-specific)
+   * Default value: `false`.
+   */
+  bool emoji{false};
+
+  /*
+   * iOS-only (inherently iOS-specific)
    * Default value: `<empty string>` (no rules).
    */
   std::string passwordRules{};

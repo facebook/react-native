@@ -666,6 +666,11 @@ export interface TextInputProps
   inputMode?: InputModeOptions | undefined;
 
   /**
+   * Show native emoji keyboard
+   */
+  emoji?: boolean | undefined;
+
+  /**
    * Limits the maximum number of characters that can be entered.
    * Use this instead of implementing the logic in JS to avoid flicker.
    */

@@ -643,6 +643,13 @@ export type Props = $ReadOnly<{|
   keyboardType?: ?KeyboardType,
 
   /**
+   * Show native emoji keyboard.
+   *
+   * *iOS Only*
+   */
+  emoji?: ?boolean,
+
+  /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
    * Possible values:
    * `null/undefined` (default): inherit from the parent node or the global default (0)

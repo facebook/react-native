@@ -145,6 +145,7 @@ const RCTTextInputViewConfig = {
     autoCorrect: true,
     multiline: true,
     textContentType: true,
+    emoji: true,
     maxLength: true,
     autoCapitalize: true,
     keyboardAppearance: true,
