@@ -478,6 +478,16 @@ type SelectionExampleState = {
   selection: $ReadOnly<{|
     start: number,
     end: number,
+    cursorPosition: $ReadOnly<{|
+      start: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+      end: $ReadOnly<{|
+        x: number,
+        y: number,
+      |}>,
+    |}>,
   |}>,
   value: string,
   ...
@@ -494,7 +504,14 @@ class SelectionExample extends React.Component<
   constructor(props) {
     super(props);
     this.state = {
-      selection: {start: 0, end: 0},
+      selection: {
+        start: 0,
+        end: 0,
+        cursorPosition: {
+          start: {x: 0, y: 0},
+          end: {x: 0, y: 0},
+        },
+      },
       value: props.value,
     };
   }
@@ -512,7 +529,16 @@ class SelectionExample extends React.Component<
 
   select(start: number, end: number) {
     this._textInput?.focus();
-    this.setState({selection: {start, end}});
+    this.setState({
+      selection: {
+        start,
+        end,
+        cursorPosition: {
+          start: {x: 0, y: 0},
+          end: {x: 0, y: 0},
+        },
+      },
+    });
     if (this.props.imperative) {
       this._textInput?.setSelection(start, end);
     }
@@ -555,7 +581,18 @@ class SelectionExample extends React.Component<
         <View>
           <Text testID={`${this.props.testID}-selection`}>
             selection ={' '}
-            {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
+            {`{
+              start:${this.state.selection.start}, end:${this.state.selection.end},
+              cursorPosition: {
+                start: {
+                  x: ${this.state.selection.cursorPosition.start.x},
+                  y: ${this.state.selection.cursorPosition.start.y}
+                },
+                end: {
+                  x: ${this.state.selection.cursorPosition.end.x},
+                  y: ${this.state.selection.cursorPosition.end.y}
+                },
+              }`}
           </Text>
           <Text
             testID={`${this.props.testID}-cursor-start`}
