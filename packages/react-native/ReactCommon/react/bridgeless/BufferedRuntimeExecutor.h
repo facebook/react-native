@@ -7,9 +7,9 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
-#include <react/bridgeless/TimerManager.h>
 #include <atomic>
 #include <queue>
+#include "TimerManager.h"
 
 namespace facebook::react {
 

@@ -29,7 +29,7 @@ use_hermes = ENV['USE_HERMES'] == '1'
 use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_search_paths = [
-  "$(PODS_TARGET_SRCROOT)/ReactCommon",
+  "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/DoubleConversion",
@@ -84,6 +84,13 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage"
   s.dependency "React-NativeModulesApple"
   s.dependency "React-CoreModules"
+  s.dependency "React-nativeconfig"
+
+  if is_new_arch_enabled
+    s.dependency "React-BridgelessCore"
+    s.dependency "React-BridgelessHermes"
+    s.dependency "React-BridgelessApple"
+  end
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency "React-hermes"
