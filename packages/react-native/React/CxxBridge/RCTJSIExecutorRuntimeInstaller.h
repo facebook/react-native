@@ -7,6 +7,7 @@
 
 #pragma once
 
+#ifdef __cplusplus
 #include <jsireact/JSIExecutor.h>
 
 namespace facebook::react {
@@ -19,3 +20,4 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
 } // namespace facebook::react
+#endif

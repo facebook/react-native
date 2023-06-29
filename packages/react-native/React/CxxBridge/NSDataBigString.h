@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #import <Foundation/Foundation.h>
 
 #include <cxxreact/JSBigString.h>
@@ -38,3 +39,4 @@ class NSDataBigString : public JSBigString {
 };
 
 } // namespace facebook::react
+#endif

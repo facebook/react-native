@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #include <functional>
 #include <memory>
 
@@ -25,3 +26,4 @@ NSError *tryAndReturnError(const std::function<void()> &func);
 NSString *deriveSourceURL(NSURL *url);
 
 } // namespace facebook::react
+#endif

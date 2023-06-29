@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
+#ifdef __cplusplus
 #include <glog/logging.h>
 
 #include <React/RCTLog.h>
@@ -43,3 +43,4 @@ class DispatchMessageQueueThread : public MessageQueueThread {
 };
 
 } // namespace facebook::react
+#endif

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #include <memory>
 
 #import <React/RCTBridgeDelegate.h>
@@ -29,3 +30,4 @@ class JSExecutorFactory;
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
 
 @end
+#endif

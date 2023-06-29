@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #import <Foundation/Foundation.h>
 
 #include <folly/dynamic.h>
@@ -15,3 +16,5 @@ folly::dynamic convertIdToFollyDynamic(id json);
 id convertFollyDynamicToId(const folly::dynamic &dyn);
 
 } // namespace facebook::react
+
+#endif

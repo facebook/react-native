@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #import <memory>
 #import <string>
 
@@ -37,3 +38,4 @@ class RCTMessageThread : public MessageQueueThread,
 };
 
 } // namespace facebook::react
+#endif

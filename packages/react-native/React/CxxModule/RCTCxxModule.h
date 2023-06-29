@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
 #import <memory>
 
 #import <Foundation/Foundation.h>
@@ -27,3 +28,4 @@ class CxxModule;
 - (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule;
 
 @end
+#endif
