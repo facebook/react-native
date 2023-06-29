@@ -238,9 +238,9 @@ def react_native_post_install(
 
   if ReactNativePodsUtils.has_pod(installer, "React-hermes")
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+    ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
-  ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
