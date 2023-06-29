@@ -91,7 +91,8 @@ Pod::Spec.new do |s|
       "React/Fabric/**/*",
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
-      "React/Inspector/**/*"
+      "React/Inspector/**/*",
+      "React/CxxBridge/RCTMessageThread.h"
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory

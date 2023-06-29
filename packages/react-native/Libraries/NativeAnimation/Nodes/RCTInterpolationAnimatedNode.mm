@@ -44,7 +44,7 @@ static NSArray<NSArray<NSNumber *> *> *outputFromStringPattern(NSString *input)
   return output;
 }
 
-NSString *RCTInterpolateString(
+static NSString *RCTInterpolateString(
     NSString *pattern,
     CGFloat inputValue,
     NSArray<NSNumber *> *inputRange,

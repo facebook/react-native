@@ -1040,6 +1040,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 1000.0.0)
   - React-RCTText (1000.0.0):
     - React-Core/RCTTextHeaders (= 1000.0.0)
+    - Yoga
   - React-RCTVibration (1000.0.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Codegen (= 1000.0.0)
@@ -1309,7 +1310,7 @@ SPEC CHECKSUMS:
   FBLazyVector: f4492a543c5a8fa1502d3a5867e3f7252497cfe8
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 99bd064df01718db56b8f75e6b5ea3051c7dad0a
-  hermes-engine: ab8b04c6ceac7e5cdf8b80be22107a9fffe8dfe6
+  hermes-engine: e8ae296336dd0cb97bd8eced3ab494e1c5588993
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   MyNativeView: 0476cfb28ffbae3e3a0a7abcd91874a9950dfaaa
   NativeCxxModuleExample: 90eae6c1e46e6568b9ee3fd31e82799d22c2a4ad
@@ -1318,7 +1319,7 @@ SPEC CHECKSUMS:
   RCTRequired: 82c56a03b3efd524bfdb581a906add903f78f978
   RCTTypeSafety: 034ade4e3b36be976b8378f825ccadbe104fa852
   React: cb6dc75e09f32aeddb4d8fb58a394a67219a92fe
-  React-BridgelessApple: 7b25cc196775cba0800040f75c7290637ecbf626
+  React-BridgelessApple: 543b0649eb8fed63ee35f92c500922348f9d572d
   React-BridgelessCore: 7be1f8c12131c57ead18e66aa90a7063e582b968
   React-BridgelessHermes: 879ce79d214be6b15787f7de74674045f97bde03
   React-callinvoker: bae59cbd6affd712bbfc703839dad868ff35069d
@@ -1346,19 +1347,19 @@ SPEC CHECKSUMS:
   React-RCTAnimation: 2c4bb7f0f5734cffc722d08f0db0082b56f74f19
   React-RCTAppDelegate: 8198915c0d666074fca532488b3863926ed67267
   React-RCTBlob: 8ca8256f44b9c002c126ae15764ba7fca9b7e568
-  React-RCTFabric: 60cc4beada6b3e82025313cadd22bda7b93d1706
-  React-RCTImage: bb95cc1d6ac1370dcebcc88b13938b31d93d5eff
+  React-RCTFabric: 62f81c87a9d999c5a13b4b02cdfacbf83b1ffc74
+  React-RCTImage: c00683ae9e5f9d8ce11e56472a485ec0b637a5b8
   React-RCTLinking: 1d65dcc1acf31b0824a07498b2a62fe0faa8c996
   React-RCTNetwork: 584d43bdefb0d73d90eec6146b79cafcc9242d00
   React-RCTPushNotification: 6e39862fcc7d8de4f243d1fa66836671d050d8d0
   React-RCTSettings: d98d83e8e9737f0a2c5fb2b05956ef31c102ae0b
   React-RCTTest: d4004e03f9e5ca2607eb05bee5a0618b189a127a
-  React-RCTText: 6d0a9927391dc26325c2edf60ef7d36f637e709c
+  React-RCTText: e9b0e8ecf0ab4f9fac58916433dcf8e8d5e5c2c1
   React-RCTVibration: f1c57bcb277765818f90c8579b9c4c182dc24e58
   React-rendererdebug: 964a1c7696e5a3db09f969fbea8c4799d357b87e
   React-rncore: 1eb30c961c5061f3ac07850e77f0038f0c29ac46
   React-runtimeexecutor: e1c32bc249dd3cf3919cb4664fd8dc84ef70cff7
-  React-runtimescheduler: fb782d7880ed883add4f1ad02cd6d444945a45bd
+  React-runtimescheduler: 5fb54db279f1228efa9fde036949555db7a6ad76
   React-utils: 6d6dcf42bdbf8f4972e252bd031f34ccf105f0aa
   ReactCommon: 035608c9665dd0bf7a75a6b90bba252731345312
   ReactCommon-Samples: c4f4880fd3ae74e88698c74310f7328a58a66c81
