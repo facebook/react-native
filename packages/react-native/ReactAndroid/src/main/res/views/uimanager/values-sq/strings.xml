@@ -6,8 +6,13 @@
     <string name="image_description" gender="unknown">Imazh</string>
     <string name="imagebutton_description" gender="unknown">Buton, imazh</string>
     <string name="combobox_description" gender="unknown">Kuti kombinimi</string>
+    <string name="menu_description" gender="unknown">Meny</string>
     <string name="menuitem_description" gender="unknown">Artikull i menysë</string>
+    <string name="rn_tab_description" gender="unknown">Skedë</string>
+    <string name="toolbar_description" gender="unknown">Shiriti i mjeteve</string>
     <string name="summary_description" gender="unknown">Përmbledhja</string>
     <string name="state_expanded_description" gender="unknown">zgjeruar</string>
+    <string name="state_unselected_description" gender="unknown">i pazgjedhur</string>
+    <string name="state_off_description" gender="unknown">joaktiv</string>
     <string name="state_mixed_description" gender="unknown">përzier</string>
 </resources>
