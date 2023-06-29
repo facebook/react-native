@@ -176,7 +176,7 @@ const APIs: Array<RNTesterModuleInfo> = ([
   },
   {
     key: 'BorderExample',
-    module: require('../examples/Border/BorderExample'),
+    module: require('../examples/Border/BorderExample').default,
   },
   {
     key: 'BoxShadowExample',
