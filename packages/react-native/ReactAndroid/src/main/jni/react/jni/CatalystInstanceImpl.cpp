@@ -418,8 +418,11 @@ CatalystInstanceImpl::getNativeCallInvokerHolder() {
 jni::alias_ref<JRuntimeExecutor::javaobject>
 CatalystInstanceImpl::getRuntimeExecutor() {
   if (!runtimeExecutor_) {
-    runtimeExecutor_ = jni::make_global(
-        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+    auto executor = instance_->getRuntimeExecutor();
+    if (executor) {
+      runtimeExecutor_ =
+          jni::make_global(JRuntimeExecutor::newObjectCxxArgs(executor));
+    }
   }
   return runtimeExecutor_;
 }
@@ -428,15 +431,16 @@ jni::alias_ref<JRuntimeScheduler::javaobject>
 CatalystInstanceImpl::getRuntimeScheduler() {
   if (!runtimeScheduler_) {
     auto runtimeExecutor = instance_->getRuntimeExecutor();
-    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
-
-    runtimeScheduler_ =
-        jni::make_global(JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
-
-    runtimeExecutor([runtimeScheduler](jsi::Runtime &runtime) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeScheduler);
-    });
+    if (runtimeExecutor) {
+      auto runtimeScheduler =
+          std::make_shared<RuntimeScheduler>(runtimeExecutor);
+      runtimeScheduler_ = jni::make_global(
+          JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
+      runtimeExecutor([scheduler =
+                           std::move(runtimeScheduler)](jsi::Runtime &runtime) {
+        RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, scheduler);
+      });
+    }
   }
 
   return runtimeScheduler_;
