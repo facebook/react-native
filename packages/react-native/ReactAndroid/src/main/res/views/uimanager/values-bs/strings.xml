@@ -3,6 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: bs_BA -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Slika</string>
+    <string name="imagebutton_description" gender="unknown">Dugme, slika</string>
     <string name="header_description" gender="unknown">Zaglavlje</string>
     <string name="combobox_description" gender="unknown">Kombinovana kutija</string>
     <string name="scrollbar_description" gender="unknown">Traka klizača</string>

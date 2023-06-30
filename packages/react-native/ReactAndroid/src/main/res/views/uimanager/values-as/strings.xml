@@ -3,4 +3,8 @@
 <!-- @generated -->
 <!-- FB Locale: as_IN -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">লিংক</string>
+    <string name="image_description" gender="unknown">ছবি</string>
+    <string name="imagebutton_description" gender="unknown">বুটাম, ছবি</string>
+    <string name="combobox_description" gender="unknown">যুটীয়া বাকচ</string>
 </resources>
