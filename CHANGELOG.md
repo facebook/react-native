@@ -2,6 +2,35 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.72.1
+
+### Added
+
+#### iOS specific
+
+- Add warning to help users migrate away from the interop layer. ([a702d0515f](https://github.com/facebook/react-native/commit/a702d0515f9005714da52cda7f6851e06b4103da) by [@cipolleschi](https://github.com/cipolleschi))
+- Allow to lookup for ViewManager without the RCT prefix in the Interop Layer ([a28881a3d7](https://github.com/facebook/react-native/commit/a28881a3d79e732670157638aa5207c88c79718c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Changed
+
+- `react-native/metro-config` now includes all base config values from `metro-config` ([bbcedd385b](https://github.com/facebook/react-native/commit/bbcedd385bf7fe374955378d2c2a065318f740cb) by [@huntie](https://github.com/huntie))
+- Bump CLI to 11.3.3 ([da84901f78](https://github.com/facebook/react-native/commit/da84901f78bdfc8c84ed71996c01f585d8b96367) by [@kelset](https://github.com/kelset))
+- Bumped `@react-native/metro-config` to `0.72.7`, `@react-native/gradle-plugin` to `0.72.11`, `@react-native/virtualized-lists` to `0.72.6` ([95db9f98f2](https://github.com/facebook/react-native/commit/95db9f98f2673d9015f6786db2df4e5f16dc74fc) by [@kelset](https://github.com/kelset))
+
+### Fixed
+
+- `react-native/virtualized-lists` does not need `react-test-renderer` at runtime ([7a2a3278d0](https://github.com/facebook/react-native/commit/7a2a3278d08b13dbde7a6e967474c20d6a5c76a5) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- Exclude trailing whitespace from newline character on measuring text line width ([83d7a48a46](https://github.com/facebook/react-native/commit/83d7a48a46c00b99c52a8ac5897c013924e10152) by [@bernhardoj](https://github.com/bernhardoj))
+- Set kotlin.jvm.target.validation.mode=warning on user projects ([10beefbbfa](https://github.com/facebook/react-native/commit/10beefbbfadcbe6e40314564e409bf592a16e571) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Bump SocketRocket to 6.1.0 ([8ce471e2fa](https://github.com/facebook/react-native/commit/8ce471e2fa802cc50ff2d6ab346627cb5f6d79b4) by [@cipolleschi](https://github.com/cipolleschi))
+- fix `pod install --project-directory=ios` failing ([0b96bdcf32](https://github.com/facebook/react-native/commit/0b96bdcf326944b13e447f71739dee3c25c7b59a) by [@tido64](https://github.com/tido64))
+
 ## v0.72.0
 
 ### Breaking
