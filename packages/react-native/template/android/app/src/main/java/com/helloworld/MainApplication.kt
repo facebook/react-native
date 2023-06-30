@@ -11,7 +11,7 @@ import com.facebook.soloader.SoLoader
 
 class MainApplication : Application(), ReactApplication {
 
-  private val reactNativeHost: ReactNativeHost =
+  override val reactNativeHost: ReactNativeHost =
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> {
           // Packages that cannot be autolinked yet can be added manually here, for example:
@@ -26,8 +26,6 @@ class MainApplication : Application(), ReactApplication {
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
       }
-
-  override fun getReactNativeHost(): ReactNativeHost = reactNativeHost
 
   override fun onCreate() {
     super.onCreate()

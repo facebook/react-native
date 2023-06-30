@@ -14,13 +14,12 @@ import com.facebook.react.interfaces.ReactHostInterface
 /** Interface that represents an instance of a React Native application */
 interface ReactApplication {
   /** Get the default [ReactNativeHost] for this app. */
-  fun getReactNativeHost(): ReactNativeHost
+  val reactNativeHost: ReactNativeHost
 
   /**
    * Get the default [ReactHostInterface] for this app. This method will be used by the new
    * architecture of react native
    */
-  fun getReactHostInterface(): ReactHostInterface? {
-    return null
-  }
+  val reactHostInterface: ReactHostInterface?
+    get() = null
 }
