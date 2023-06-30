@@ -11,9 +11,7 @@ import org.junit.Assert
 import org.junit.Test
 
 /**
- * Tests for
- *
- * @see JavaScriptModuleRegistry
+ * Tests for [JavaScriptModuleRegistry]
  */
 class JavaScriptModuleRegistryTest {
   private interface TestJavaScriptModule : JavaScriptModule {
