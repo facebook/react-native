@@ -7,5 +7,6 @@
     <string name="imagebutton_description" gender="unknown">ღილაკი, გამოსახულება</string>
     <string name="toolbar_description" gender="unknown">ხელსაწყოების ზოლი</string>
     <string name="summary_description" gender="unknown">შეჯამება</string>
+    <string name="state_on_description" gender="unknown">ჩართული</string>
     <string name="state_mixed_description" gender="unknown">შერეული</string>
 </resources>
