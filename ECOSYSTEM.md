@@ -38,7 +38,8 @@ Examples of contributing to the release include being a [community releaser](htt
 * **[Wix.com](https://wix.engineering/open-source):** Maintains a variety of React Native open source projects ([see all](https://github.com/orgs/wix/repositories?q=react-native)), including:  [Detox](https://wix.github.io/Detox/) end-to-end testing library for React Native apps, [RN UILib](https://wix.github.io/react-native-ui-lib/), [RN Navigation](https://wix.github.io/react-native-navigation/), [RN Calendars](https://wix.github.io/react-native-calendars/) and [RN Notifications](https://github.com/wix/react-native-notifications).
 
 ### Incubating partners:
-* There are no current incubating partners.
+* **[Expensify](https://expensify.com/):** Developing [Expensify Chat](https://github.com/Expensify/App), an open-source React Native app built by the community, while [sponsoring dependencies](https://github.com/orgs/Expensify/sponsoring), conferences, and New Architecture advancements.
+* **[Sentry](https://sentry.io/for/react-native/):** Develops Error and Performance Monitoring [SDK for React Native](https://github.com/getsentry/sentry-react-native) and [New Architecture Turbo Modules Mixed Stack Traces](https://github.com/reactwg/react-native-new-architecture/discussions/122).
 
 When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor.
 

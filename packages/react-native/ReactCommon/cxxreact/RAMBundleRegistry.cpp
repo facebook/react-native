@@ -13,7 +13,10 @@
 
 namespace facebook::react {
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
 constexpr uint32_t RAMBundleRegistry::MAIN_BUNDLE_ID;
+#pragma clang diagnostic pop
 
 std::unique_ptr<RAMBundleRegistry> RAMBundleRegistry::singleBundleRegistry(
     std::unique_ptr<JSModulesUnbundle> mainBundle) {

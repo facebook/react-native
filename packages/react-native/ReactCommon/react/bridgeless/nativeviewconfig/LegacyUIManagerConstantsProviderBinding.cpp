@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "NativeViewConfigProviderBinding.h"
+#include "LegacyUIManagerConstantsProviderBinding.h"
 
-namespace facebook::react::NativeViewConfigProviderBinding {
+namespace facebook::react::LegacyUIManagerConstantsProviderBinding {
 
 void install(jsi::Runtime &runtime, ProviderType &&provider) {
-  auto name = "RN$NativeComponentRegistry_getNativeViewConfig";
+  auto name = "RN$LegacyInterop_UIManager_getConstants";
   auto hostFunction = [provider = std::move(provider)](
                           jsi::Runtime &runtime,
                           jsi::Value const & /*thisValue*/,
-                          jsi::Value const *args,
+                          jsi::Value const * /*arguments*/,
                           size_t count) -> jsi::Value {
-    if (count != 1 || !args[0].isString()) {
-      throw new jsi::JSError(runtime, "1 argument of type String expected.");
+    if (count != 0) {
+      throw new jsi::JSError(runtime, "0 arguments expected.");
     }
-    return provider(args[0].getString(runtime).utf8(runtime));
+    return provider();
   };
 
   auto jsiFunction = jsi::Function::createFromHostFunction(
@@ -27,4 +27,4 @@ void install(jsi::Runtime &runtime, ProviderType &&provider) {
 
   runtime.global().setProperty(runtime, name, jsiFunction);
 }
-} // namespace facebook::react::NativeViewConfigProviderBinding
+} // namespace facebook::react::LegacyUIManagerConstantsProviderBinding

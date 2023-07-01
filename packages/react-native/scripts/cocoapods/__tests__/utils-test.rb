@@ -14,6 +14,7 @@ require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
+require_relative "./test_utils/XcodeprojMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -28,6 +29,7 @@ class UtilsTests < Test::Unit::TestCase
         Pod::Config.reset()
         SysctlChecker.reset()
         Environment.reset()
+        Xcodeproj::Plist.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
@@ -324,7 +326,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -434,7 +436,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -492,7 +494,7 @@ class UtilsTests < Test::Unit::TestCase
             }),
         ], nil)
 
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -644,7 +646,7 @@ class UtilsTests < Test::Unit::TestCase
             DependencyMock.new("React-ImageManager"),
         ])
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -688,7 +690,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -750,7 +752,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -772,6 +774,59 @@ class UtilsTests < Test::Unit::TestCase
             assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited)")
         end
     end
+
+    # ============================== #
+    # Test - Apply ATS configuration #
+    # ============================== #
+
+    def test_applyATSConfig_plistNil
+        # Arrange
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
+
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
+    end
+
+    def test_applyATSConfig_plistNonNil
+        # Arrange
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+        Xcodeproj::Plist.write_to_path({}, "/test/Info.plist")
+        Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
+
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
+
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
+    end
+
 end
 
 # ===== #
@@ -779,9 +834,16 @@ end
 # ===== #
 
 def prepare_empty_user_project_mock
-    return UserProjectMock.new("a/path", [
+    return UserProjectMock.new("/a/path", [
         BuildConfigurationMock.new("Debug"),
         BuildConfigurationMock.new("Release"),
+    ])
+end
+
+def prepare_user_project_mock_with_plists
+    return UserProjectMock.new(:files => [
+        PBXFileRefMock.new("Info.plist"),
+        PBXFileRefMock.new("Extension-Info.plist"),
     ])
 end
 

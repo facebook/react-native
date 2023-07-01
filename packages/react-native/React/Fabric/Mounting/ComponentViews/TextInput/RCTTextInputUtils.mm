@@ -44,11 +44,7 @@ void RCTCopyBackedTextInput(
   toTextInput.keyboardType = fromTextInput.keyboardType;
   toTextInput.textContentType = fromTextInput.textContentType;
   toTextInput.emoji = fromTextInput.emoji;
-
-  if (@available(iOS 11.0, *)) {
-    toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
-  }
-
+  toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
   toTextInput.passwordRules = fromTextInput.passwordRules;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
@@ -186,7 +182,7 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
   dispatch_once(&onceToken, ^{
-    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [@{
+    contentTypeMap = @{
       @"" : @"",
       @"none" : @"",
       @"URL" : UITextContentTypeURL,
@@ -214,14 +210,9 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
       @"username" : UITextContentTypeUsername,
       @"password" : UITextContentTypePassword,
-    } mutableCopy];
-
-    [mutableContentTypeMap addEntriesFromDictionary:@{
       @"newPassword" : UITextContentTypeNewPassword,
-      @"oneTimeCode" : UITextContentTypeOneTimeCode
-    }];
-
-    contentTypeMap = [mutableContentTypeMap copy];
+      @"oneTimeCode" : UITextContentTypeOneTimeCode,
+    };
   });
 
   return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";

@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: az_AZ -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Şəkil</string>
 </resources>

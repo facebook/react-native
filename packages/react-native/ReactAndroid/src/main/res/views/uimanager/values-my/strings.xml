@@ -8,7 +8,7 @@
     <string name="imagebutton_description" gender="unknown">ခလုတ်၊ ဓာတ်ပုံ</string>
     <string name="header_description" gender="unknown">ခေါင်းစီး</string>
     <string name="alert_description" gender="unknown">သတိပေးချက်</string>
-    <string name="combobox_description" gender="unknown">မီနူးတွဲအကွက်</string>
+    <string name="combobox_description" gender="unknown">ရွေးရန်အကွက်</string>
     <string name="menu_description" gender="unknown">မီနူး</string>
     <string name="menubar_description" gender="unknown">မီနူး ဘားတန်း</string>
     <string name="menuitem_description" gender="unknown">မီနူး အကြောင်းအရာ</string>
