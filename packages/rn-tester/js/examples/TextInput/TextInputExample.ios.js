@@ -417,7 +417,11 @@ exports.examples = ([
             <TextInput emoji={true} style={styles.default} />
           </WithLabel>
           <WithLabel label="hide right action">
-            <TextInput emoji style={styles.default} keyboardType={'email-address'} />
+            <TextInput
+              emoji
+              style={styles.default}
+              keyboardType={'email-address'}
+            />
           </WithLabel>
         </View>
       );
