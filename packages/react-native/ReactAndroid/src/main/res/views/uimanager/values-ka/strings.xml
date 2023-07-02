@@ -3,6 +3,7 @@
 <!-- @generated -->
 <!-- FB Locale: ka_GE -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ბმული</string>
     <string name="image_description" gender="unknown">გამოსახულება</string>
     <string name="imagebutton_description" gender="unknown">ღილაკი, გამოსახულება</string>
     <string name="toolbar_description" gender="unknown">ხელსაწყოების ზოლი</string>
