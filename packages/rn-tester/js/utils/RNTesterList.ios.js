@@ -222,6 +222,13 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'LinkingExample',
     module: require('../examples/Linking/LinkingExample'),
   },
+  typeof MutationObserver === 'function'
+    ? {
+        key: 'MutationObserver',
+        category: 'UI',
+        module: require('../examples/MutationObserver/MutationObserverIndex'),
+      }
+    : null,
   {
     key: 'NativeAnimationsExample',
     module: require('../examples/NativeAnimation/NativeAnimationsExample'),
