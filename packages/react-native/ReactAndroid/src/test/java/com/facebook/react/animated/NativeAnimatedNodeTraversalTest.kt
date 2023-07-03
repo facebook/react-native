@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
 package com.facebook.react.animated
 
 import android.annotation.SuppressLint
@@ -872,6 +873,7 @@ class NativeAnimatedNodeTraversalTest {
       }
 
       @Override
+      @Deprecated("Deprecated in Java")
       override fun dispatch(rctEventEmitter: RCTEventEmitter) {
         rctEventEmitter.receiveEvent(
             tag, "topScroll", JavaOnlyMap.of("contentOffset", JavaOnlyMap.of("y", value)))
@@ -881,7 +883,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNativeAnimatedEventDoUpdate() {
-    val viewTag: Int = 1000
+    val viewTag = 1000
 
     createSimpleAnimatedViewWithOpacity(viewTag)
 
@@ -903,7 +905,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNativeAnimatedEventDoNotUpdate() {
-    val viewTag: Int = 1000
+    val viewTag = 1000
 
     createSimpleAnimatedViewWithOpacity()
 
