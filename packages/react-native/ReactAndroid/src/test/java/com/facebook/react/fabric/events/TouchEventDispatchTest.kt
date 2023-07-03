@@ -9,6 +9,8 @@ package com.facebook.react.fabric.events
 
 import android.util.DisplayMetrics
 import android.view.MotionEvent
+import android.view.MotionEvent.PointerCoords
+import android.view.MotionEvent.PointerProperties
 import com.facebook.react.bridge.*
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.DisplayMetricsHolder
@@ -511,21 +513,22 @@ class TouchEventDispatchTest {
       action: Int,
       pointerId: Int,
       pointerIds: IntArray,
-      pointerCoords: Array<MotionEvent.PointerCoords>
+      pointerCoords: Array<PointerCoords>
   ): TouchEvent {
     touchEventCoalescingKeyHelper.addCoalescingKey(gestureTime.toLong())
-    val action = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
+    val shiftedAction = action or (pointerId shl MotionEvent.ACTION_POINTER_INDEX_SHIFT)
     return TouchEvent.obtain(
         SURFACE_ID,
         TARGET_VIEW_ID,
-        getType(action),
+        getType(shiftedAction),
         MotionEvent.obtain(
             gestureTime.toLong(),
             gestureTime.toLong(),
-            action,
+            shiftedAction,
             pointerIds.size,
-            pointerIds,
+            pointerIds.toPointerProperties(),
             pointerCoords,
+            0,
             0,
             0f,
             0f,
@@ -545,8 +548,7 @@ class TouchEventDispatchTest {
     private const val GESTURE_START_TIME = 1
 
     private fun getType(action: Int): TouchEventType {
-      val action = action and MotionEvent.ACTION_POINTER_INDEX_MASK.inv()
-      when (action) {
+      when (action and MotionEvent.ACTION_POINTER_INDEX_MASK.inv()) {
         MotionEvent.ACTION_DOWN,
         MotionEvent.ACTION_POINTER_DOWN -> return TouchEventType.START
         MotionEvent.ACTION_UP,
@@ -591,10 +593,13 @@ class TouchEventDispatchTest {
           putDouble("timestamp", time.toDouble())
         }
 
-    private fun pointerCoords(x: Float, y: Float): MotionEvent.PointerCoords =
-        MotionEvent.PointerCoords().apply {
+    private fun pointerCoords(x: Float, y: Float): PointerCoords =
+        PointerCoords().apply {
           this.x = x
           this.y = y
         }
   }
 }
+
+private fun IntArray.toPointerProperties(): Array<PointerProperties> =
+    this.map { PointerProperties().apply { id = it } }.toTypedArray()

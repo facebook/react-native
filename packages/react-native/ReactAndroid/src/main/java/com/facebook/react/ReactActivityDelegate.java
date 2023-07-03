@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
@@ -58,7 +57,7 @@ public class ReactActivityDelegate {
     return null;
   }
 
-  protected @NonNull Bundle composeLaunchOptions() {
+  protected @Nullable Bundle composeLaunchOptions() {
     Bundle composedLaunchOptions = getLaunchOptions();
     if (isFabricEnabled()) {
       if (composedLaunchOptions == null) {

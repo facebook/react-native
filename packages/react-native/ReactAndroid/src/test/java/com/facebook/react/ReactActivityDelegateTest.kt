@@ -7,7 +7,6 @@
 
 package com.facebook.react
 
-import android.app.Activity
 import android.os.Bundle
 import org.junit.Assert.*
 import org.junit.Test
@@ -17,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ReactActivityDelegateTest {
 
-  val nullDelegate: Activity? = null
+  val nullDelegate: ReactActivity? = null
 
   @Test
   fun delegateWithFabricEnabled_populatesInitialPropsCorrectly() {
@@ -25,7 +24,7 @@ class ReactActivityDelegateTest {
         object : ReactActivityDelegate(nullDelegate, "test-delegate") {
           override fun isFabricEnabled() = true
 
-          public val inspectLaunchOptions: Bundle?
+          val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
 
@@ -40,7 +39,7 @@ class ReactActivityDelegateTest {
         object : ReactActivityDelegate(nullDelegate, "test-delegate") {
           override fun isFabricEnabled() = false
 
-          public val inspectLaunchOptions: Bundle?
+          val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
 
@@ -56,7 +55,7 @@ class ReactActivityDelegateTest {
           override fun getLaunchOptions(): Bundle =
               Bundle().apply { putString("test-property", "test-value") }
 
-          public val inspectLaunchOptions: Bundle?
+          val inspectLaunchOptions: Bundle?
             get() = composeLaunchOptions()
         }
 

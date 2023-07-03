@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
 package com.facebook.react
 
 import android.app.Activity

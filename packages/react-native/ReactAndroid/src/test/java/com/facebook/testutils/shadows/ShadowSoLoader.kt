@@ -13,6 +13,7 @@ import kotlin.jvm.JvmStatic
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 
+@Suppress("UNUSED_PARAMETER")
 @Implements(SoLoader::class)
 class ShadowSoLoader {
   companion object {

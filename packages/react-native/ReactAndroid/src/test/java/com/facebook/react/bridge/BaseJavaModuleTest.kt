@@ -77,6 +77,7 @@ class BaseJavaModuleTest {
     generatedModuleWrapper.invoke(methodId, arguments)
   }
 
+  @Suppress("UNUSED_PARAMETER")
   private class MethodsModule : BaseJavaModule() {
     override fun getName(): String = "Methods"
 
