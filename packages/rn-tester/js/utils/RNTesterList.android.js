@@ -225,6 +225,13 @@ const APIs: Array<RNTesterModuleInfo> = ([
     category: 'UI',
     module: require('../examples/Layout/LayoutExample'),
   },
+  typeof MutationObserver === 'function'
+    ? {
+        key: 'MutationObserver',
+        category: 'UI',
+        module: require('../examples/MutationObserver/MutationObserverIndex'),
+      }
+    : null,
   {
     key: 'NativeAnimationsExample',
     category: 'UI',
