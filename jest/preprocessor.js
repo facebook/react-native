@@ -28,17 +28,6 @@ const nodeFiles = /[\\/]metro(?:-[^/]*)[\\/]/;
 // hook. This is used below to configure babelTransformSync under Jest.
 const {only: _, ...nodeBabelOptions} = metroBabelRegister.config([]);
 
-// Register Babel to allow the transformer itself to be loaded from source.
-if (process.env.FBSOURCE_ENV) {
-  // Internal: Use `@fb-scripts/babel-register` to re-use internal
-  // registration, rather than potentially clobbering it and conflicting with
-  // other Jest projects running in the same process.
-  // This package should *NOT* be a dependency of `@react-native/monorepo`.
-  // $FlowIgnore[cannot-resolve-module]
-  require('@fb-scripts/babel-register');
-} else {
-  metroBabelRegister([nodeFiles]);
-}
 const transformer = require('metro-react-native-babel-transformer');
 
 module.exports = {
