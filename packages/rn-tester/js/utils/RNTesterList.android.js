@@ -123,7 +123,7 @@ const Components: Array<RNTesterModuleInfo> = [
   {
     key: 'ViewExample',
     category: 'Basic',
-    module: require('../examples/View/ViewExample'),
+    module: require('../examples/View/ViewExample').default,
   },
   {
     key: 'NewArchitectureExample',
