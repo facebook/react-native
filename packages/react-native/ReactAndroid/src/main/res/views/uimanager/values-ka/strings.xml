@@ -6,6 +6,8 @@
     <string name="link_description" gender="unknown">ბმული</string>
     <string name="image_description" gender="unknown">გამოსახულება</string>
     <string name="imagebutton_description" gender="unknown">ღილაკი, გამოსახულება</string>
+    <string name="menu_description" gender="unknown">მენიუ</string>
+    <string name="rn_tab_description" gender="unknown">ჩანართი</string>
     <string name="toolbar_description" gender="unknown">ხელსაწყოების ზოლი</string>
     <string name="summary_description" gender="unknown">შეჯამება</string>
     <string name="state_on_description" gender="unknown">ჩართული</string>

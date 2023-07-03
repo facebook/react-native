@@ -15,6 +15,7 @@
     <string name="summary_description" gender="unknown">Sažetak</string>
     <string name="state_expanded_description" gender="unknown">prošireno</string>
     <string name="state_collapsed_description" gender="unknown">skupljeno</string>
+    <string name="state_unselected_description" gender="unknown">nije odabrano</string>
     <string name="state_on_description" gender="unknown">uključeno</string>
     <string name="state_off_description" gender="unknown">isključeno</string>
     <string name="state_mixed_description" gender="unknown">mješovito</string>
