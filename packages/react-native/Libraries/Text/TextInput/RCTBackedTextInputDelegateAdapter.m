@@ -268,7 +268,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 {
   if (_lastStringStateWasUpdatedWith && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textViewDidChange:_backedTextInputView];
-    _ignoreNextTextInputCall = YES;
+    // Since, textViewDidChange does not gets automatically called when attributedText is empty,
+    // we only need to set _ignoreNextTextInputCall if attributedText is no-empty
+    if(_backedTextInputView.attributedText.length != 0){
+      _ignoreNextTextInputCall = YES;
+    }
   }
   _lastStringStateWasUpdatedWith = _backedTextInputView.attributedText;
   [self textViewProbablyDidChangeSelection];
