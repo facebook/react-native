@@ -41,7 +41,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   endFillColor?: ?ColorValue,
   fadingEdgeLength?: ?number,
   indicatorStyle?: ?('default' | 'black' | 'white'),
-  internalAndroidApplyInvertedFix?: ?boolean,
+  isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?('none' | 'on-drag' | 'interactive'),
   maintainVisibleContentPosition?: ?$ReadOnly<{
     minIndexForVisible: number,

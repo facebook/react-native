@@ -86,7 +86,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             process: require('../../StyleSheet/processColor').default,
           },
           pointerEvents: true,
-          internalAndroidApplyInvertedFix: true,
+          isInvertedVirtualizedList: true,
         },
       }
     : {

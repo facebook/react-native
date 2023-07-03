@@ -320,14 +320,14 @@ ScrollViewProps::ScrollViewProps(
                     "scrollToOverflowEnabled",
                     sourceProps.scrollToOverflowEnabled,
                     {})),
-      internalAndroidApplyInvertedFix(
+      isInvertedVirtualizedList(
           CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.internalAndroidApplyInvertedFix
+              ? sourceProps.isInvertedVirtualizedList
               : convertRawProp(
                     context,
                     rawProps,
-                    "internalAndroidApplyInvertedFix",
-                    sourceProps.internalAndroidApplyInvertedFix,
+                    "isInvertedVirtualizedList",
+                    sourceProps.isInvertedVirtualizedList,
                     {})) {}
 
 void ScrollViewProps::setProp(
@@ -377,7 +377,7 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(snapToEnd);
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(internalAndroidApplyInvertedFix);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(isInvertedVirtualizedList);
   }
 }
 
@@ -504,9 +504,9 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
           debugStringConvertibleItem(
               "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd),
           debugStringConvertibleItem(
-              "internalAndroidApplyInvertedFix",
+              "isInvertedVirtualizedList",
               snapToEnd,
-              defaultScrollViewProps.internalAndroidApplyInvertedFix)};
+              defaultScrollViewProps.isInvertedVirtualizedList)};
 }
 #endif
 

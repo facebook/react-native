@@ -68,7 +68,7 @@ class ScrollViewProps final : public ViewProps {
   ContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior{
       ContentInsetAdjustmentBehavior::Never};
   bool scrollToOverflowEnabled{false};
-  bool internalAndroidApplyInvertedFix{false};
+  bool isInvertedVirtualizedList{false};
 
 #pragma mark - DebugStringConvertible
 

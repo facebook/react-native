@@ -46,6 +46,7 @@ const ScrollViewViewConfig = {
     fadingEdgeLength: true,
     indicatorStyle: true,
     inverted: true,
+    isInvertedVirtualizedList: true,
     keyboardDismissMode: true,
     maintainVisibleContentPosition: true,
     maximumZoomScale: true,
@@ -78,7 +79,6 @@ const ScrollViewViewConfig = {
     snapToOffsets: true,
     snapToStart: true,
     zoomScale: true,
-    internalAndroidApplyInvertedFix: true,
   },
 };
 

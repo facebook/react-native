@@ -380,8 +380,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setScrollEventThrottle(scrollEventThrottle);
   }
 
-  @ReactProp(name = "internalAndroidApplyInvertedFix")
-  public void setInternalAndroidApplyInvertedFix(ReactScrollView view, boolean applyFix) {
+  @ReactProp(name = "isInvertedVirtualizedList")
+  public void setIsInvertedVirtualizedList(ReactScrollView view, boolean applyFix) {
      // Usually when inverting the scroll view we are using scaleY: -1 on the list
      // and on the parent container. HOWEVER, starting from android API 33 there is
      // a bug that can cause an ANR due to that. Thus we are using different transform
