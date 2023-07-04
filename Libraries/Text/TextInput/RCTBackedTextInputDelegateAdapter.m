@@ -256,7 +256,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidChange:(__unused UITextView *)textView
 {
-  if (_ignoreNextTextInputCall) {
+  if (_ignoreNextTextInputCall && [_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     _ignoreNextTextInputCall = NO;
     return;
   }
