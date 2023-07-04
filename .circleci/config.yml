@@ -156,7 +156,7 @@ commands:
     steps:
       - run:
           name: Initial Setup
-          command: mkdir -p ./reports/{buck,build,junit,outputs}
+          command: mkdir -p ./reports/{buck,build,junit,outputs}; echo "TEST"
 
   setup_ruby:
     parameters:
