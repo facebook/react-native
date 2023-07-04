@@ -42,65 +42,71 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <View
-        data={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer0:inner0",
-                },
-                Object {
-                  "key": "outer0:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
-        getItem={[Function]}
-        getItemCount={[Function]}
-        horizontal={false}
-        keyExtractor={[Function]}
-        onContentSizeChange={[Function]}
-        onLayout={[Function]}
-        onMomentumScrollBegin={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-      >
+      <View>
         <View
-          onFocusCapture={[Function]}
+          data={
+            Array [
+              Object {
+                "data": Array [
+                  Object {
+                    "key": "outer0:inner0",
+                  },
+                  Object {
+                    "key": "outer0:inner1",
+                  },
+                ],
+                "title": "inner",
+              },
+            ]
+          }
+          getItem={[Function]}
+          getItemCount={[Function]}
+          horizontal={false}
+          keyExtractor={[Function]}
+          onContentSizeChange={[Function]}
           onLayout={[Function]}
-          style={null}
-        />
-        <View
-          onFocusCapture={[Function]}
-          onLayout={[Function]}
-          style={null}
+          onMomentumScrollBegin={[Function]}
+          onMomentumScrollEnd={[Function]}
+          onScroll={[Function]}
+          onScrollBeginDrag={[Function]}
+          onScrollEndDrag={[Function]}
+          renderItem={[Function]}
+          scrollEventThrottle={50}
+          stickyHeaderIndices={Array []}
         >
-          <item
-            title="outer0:inner0"
+          <View
+            onFocusCapture={[Function]}
+            onLayout={[Function]}
+            style={null}
+          />
+          <View
+            onFocusCapture={[Function]}
+            onLayout={[Function]}
+            style={null}
+          >
+            <View>
+              <item
+                title="outer0:inner0"
+              />
+            </View>
+          </View>
+          <View
+            onFocusCapture={[Function]}
+            onLayout={[Function]}
+            style={null}
+          >
+            <View>
+              <item
+                title="outer0:inner1"
+              />
+            </View>
+          </View>
+          <View
+            onFocusCapture={[Function]}
+            onLayout={[Function]}
+            style={null}
           />
         </View>
-        <View
-          onFocusCapture={[Function]}
-          onLayout={[Function]}
-          style={null}
-        >
-          <item
-            title="outer0:inner1"
-          />
-        </View>
-        <View
-          onFocusCapture={[Function]}
-          onLayout={[Function]}
-          style={null}
-        />
       </View>
     </View>
     <View
@@ -108,96 +114,102 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <RCTScrollView
-        data={
-          Array [
-            Object {
-              "data": Array [
-                Object {
-                  "key": "outer1:inner0",
-                },
-                Object {
-                  "key": "outer1:inner1",
-                },
-              ],
-              "title": "inner",
-            },
-          ]
-        }
-        getItem={[Function]}
-        getItemCount={[Function]}
-        horizontal={true}
-        keyExtractor={[Function]}
-        onContentSizeChange={[Function]}
-        onLayout={[Function]}
-        onMomentumScrollBegin={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-      >
-        <View>
-          <View
-            onFocusCapture={[Function]}
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          />
-          <View
-            onFocusCapture={[Function]}
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          >
-            <item
-              title="outer1:inner0"
+      <View>
+        <RCTScrollView
+          data={
+            Array [
+              Object {
+                "data": Array [
+                  Object {
+                    "key": "outer1:inner0",
+                  },
+                  Object {
+                    "key": "outer1:inner1",
+                  },
+                ],
+                "title": "inner",
+              },
+            ]
+          }
+          getItem={[Function]}
+          getItemCount={[Function]}
+          horizontal={true}
+          keyExtractor={[Function]}
+          onContentSizeChange={[Function]}
+          onLayout={[Function]}
+          onMomentumScrollBegin={[Function]}
+          onMomentumScrollEnd={[Function]}
+          onScroll={[Function]}
+          onScrollBeginDrag={[Function]}
+          onScrollEndDrag={[Function]}
+          renderItem={[Function]}
+          scrollEventThrottle={50}
+          stickyHeaderIndices={Array []}
+        >
+          <View>
+            <View
+              onFocusCapture={[Function]}
+              onLayout={[Function]}
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                  },
+                  null,
+                ]
+              }
+            />
+            <View
+              onFocusCapture={[Function]}
+              onLayout={[Function]}
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                  },
+                  null,
+                ]
+              }
+            >
+              <View>
+                <item
+                  title="outer1:inner0"
+                />
+              </View>
+            </View>
+            <View
+              onFocusCapture={[Function]}
+              onLayout={[Function]}
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                  },
+                  null,
+                ]
+              }
+            >
+              <View>
+                <item
+                  title="outer1:inner1"
+                />
+              </View>
+            </View>
+            <View
+              onFocusCapture={[Function]}
+              onLayout={[Function]}
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                  },
+                  null,
+                ]
+              }
             />
           </View>
-          <View
-            onFocusCapture={[Function]}
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          >
-            <item
-              title="outer1:inner1"
-            />
-          </View>
-          <View
-            onFocusCapture={[Function]}
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          />
-        </View>
-      </RCTScrollView>
+        </RCTScrollView>
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -333,9 +345,11 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        title="i2"
-      />
+      <View>
+        <item
+          title="i2"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -471,9 +485,11 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        title="i2"
-      />
+      <View>
+        <item
+          title="i2"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -610,9 +626,11 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        title="i2"
-      />
+      <View>
+        <item
+          title="i2"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -749,9 +767,11 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        title="i2"
-      />
+      <View>
+        <item
+          title="i2"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -975,9 +995,11 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
         ]
       }
     >
-      <item
-        value="4"
-      />
+      <View>
+        <item
+          value="4"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -1112,9 +1134,11 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="hello"
-      />
+      <View>
+        <item
+          value="hello"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
@@ -1170,27 +1194,33 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i1"
-      />
+      <View>
+        <item
+          value="i1"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i2"
-      />
+      <View>
+        <item
+          value="i2"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
       onLayout={[Function]}
       style={null}
     >
-      <item
-        value="i3"
-      />
+      <View>
+        <item
+          value="i3"
+        />
+      </View>
     </View>
     <View
       onFocusCapture={[Function]}
