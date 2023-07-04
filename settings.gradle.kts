@@ -15,6 +15,7 @@ pluginManagement {
 
 include(
     ":packages:react-native:ReactAndroid",
+    ":packages:react-native:ReactAndroid:flipper-integration",
     ":packages:react-native:ReactAndroid:hermes-engine",
     ":packages:react-native:ReactAndroid:external-artifacts")
 
