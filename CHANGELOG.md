@@ -378,6 +378,20 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.12
+
+### Fixed
+
+- Prevent LogBox from crashing on very long messages ([cd56347dca](https://github.com/facebook/react-native/commit/cd56347dca4e948f5038643bcd804c41f037727a) by [@motiz88](https://github.com/motiz88))
+
+#### Android specific
+
+- Added CSS logical properties by mapping layout props ([2b06a75631](https://github.com/facebook/react-native/commit/2b06a75631c6d9f1fdc13bc8a5567f264d2c9b9a) by [@NickGerleman](https://github.com/NickGerleman)) and [@AlexanderEggers](https://github.com/AlexanderEggers)) to fix view flattening on Android.
+
+#### iOS specific
+
+- fix `pod install --project-directory=ios` failing ([fc1abe1d69](https://github.com/facebook/react-native/commit/fc1abe1d69530e95bc39b439d7d883f620b86fb9) by [@tido64](https://github.com/tido64))
+
 ## v0.71.11
 
 ### Changed
