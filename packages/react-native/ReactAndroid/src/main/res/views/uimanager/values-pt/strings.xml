@@ -27,5 +27,5 @@
     <string name="state_unselected_description" gender="unknown">desmarcados</string>
     <string name="state_on_description" gender="unknown">ativado</string>
     <string name="state_off_description" gender="unknown">desativado</string>
-    <string name="state_mixed_description" gender="unknown">mesclado</string>
+    <string name="state_mixed_description" gender="unknown">misto</string>
 </resources>
