@@ -47,7 +47,7 @@ class DeviceInfoModuleTest : TestCase() {
   public override fun setUp() {
     initTestData()
     PowerMockito.mockStatic(DisplayMetricsHolder::class.java)
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.application))
+    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
     val catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
     reactContext.initializeWithInstance(catalystInstanceMock)
     deviceInfoModule = DeviceInfoModule(reactContext)
