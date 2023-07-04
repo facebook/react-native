@@ -77,6 +77,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
              .prerelease = [versions[@"prerelease"] isKindOfClass:[NSNull class]]
                  ? std::optional<double>{}
                  : [versions[@"prerelease"] doubleValue]}),
+#if TARGET_OS_MACCATALYST
+        .isMacCatalyst: true,
+#else
+        .isMacCatalyst: false,
+#endif
     });
   });
 
