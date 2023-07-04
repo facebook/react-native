@@ -2,6 +2,20 @@
 
 This file contains all changelogs for releases in the 0.60-0.69 range. Please check out the other `CHANGELOG-*.md` files for newer and older versions.
 
+## v0.69.12
+
+### Changed
+
+- [0.69] Bump CLI to ^8.0.7, Metro to 0.70.4 ([56807fadfa](https://github.com/facebook/react-native/commit/56807fadfacf3c5cc62a8d1948b3d72ca51a5e6b) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+- [0.69] Use `Content-Location` header in bundle response as JS source URL (#37501) ([367fc7ad52](https://github.com/facebook/react-native/commit/367fc7ad5254c5dd2c8ef38248766173525cc77c) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### Android specific
+- Prevent crash in runAnimationStep on OnePlus and Oppo devices (#37487) ([4db7a10e25](https://github.com/facebook/react-native/commit/4db7a10e257c664aced8cd8a1737d7ed9ced14fe) by [@hsource](https://github.com/hsource))
+
 ## v0.69.11
 
 ### Fixed
