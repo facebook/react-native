@@ -25,7 +25,7 @@ class InteropEventEmitterTest {
 
   @Before
   fun setup() {
-    reactContext = ReactApplicationContext(RuntimeEnvironment.application)
+    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
     eventDispatcher = FakeEventDispatcher()
   }
 

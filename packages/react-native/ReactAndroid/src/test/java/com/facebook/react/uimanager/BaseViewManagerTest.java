@@ -46,7 +46,7 @@ public class BaseViewManagerTest {
   @Before
   public void setUp() {
     mViewManager = new ReactViewManager();
-    mView = new ReactViewGroup(RuntimeEnvironment.application);
+    mView = new ReactViewGroup(RuntimeEnvironment.getApplication());
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createMap())
         .thenAnswer(
