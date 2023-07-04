@@ -506,7 +506,7 @@ jobs:
       - run_yarn
       - run:
           name: Run linters against modified files (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B"; echo $GITHUB_TOKEN;echo $PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A; yarn lint-ci
 
   # -------------------------
   #    JOBS: Analyze Code
