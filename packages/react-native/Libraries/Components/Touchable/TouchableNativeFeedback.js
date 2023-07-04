@@ -322,7 +322,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
           this.props.focusable !== false &&
           this.props.onPress !== undefined &&
           !this.props.disabled,
-        nativeID: this.props.nativeID,
+        nativeID: this.props.id ?? this.props.nativeID,
         nextFocusDown: this.props.nextFocusDown,
         nextFocusForward: this.props.nextFocusForward,
         nextFocusLeft: this.props.nextFocusLeft,
