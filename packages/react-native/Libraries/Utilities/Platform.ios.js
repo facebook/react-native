@@ -65,6 +65,7 @@ const Platform = {
     }
     return false;
   },
+  // $FlowFixMe[unsafe-getters-setters]
   get isMacCatalyst(): boolean {
     // $FlowFixMe[object-this-reference]
     return this.constants.isMacCatalyst;
