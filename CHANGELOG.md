@@ -1037,6 +1037,12 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.11
+
+### Changed
+
+- Bump CLI to 9.3.3 and Metro do 0.72.4 ([2a9d71dc34](https://github.com/facebook/react-native/commit/2a9d71dc341992dce40038dcccefc3abfc745fe8) by [@kelset](https://github.com/kelset)) to address https://github.com/facebook/react-native/issues/36794
+
 ## v0.70.10
 
 ### Fixed
