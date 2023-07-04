@@ -386,7 +386,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 #### Android specific
 
-- Added CSS logical properties by mapping layout props ([2b06a75631](https://github.com/facebook/react-native/commit/2b06a75631c6d9f1fdc13bc8a5567f264d2c9b9a) by [@NickGerleman](https://github.com/NickGerleman)) and [@AlexanderEggers](https://github.com/AlexanderEggers)) to fix view flattening on Android.
+- Added CSS logical properties by mapping layout props ([2b06a75631](https://github.com/facebook/react-native/commit/2b06a75631c6d9f1fdc13bc8a5567f264d2c9b9a) by [@NickGerleman](https://github.com/NickGerleman) and [@AlexanderEggers](https://github.com/AlexanderEggers)) to fix view flattening on Android.
 
 #### iOS specific
 
