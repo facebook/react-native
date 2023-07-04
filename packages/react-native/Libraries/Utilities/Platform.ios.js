@@ -65,7 +65,7 @@ const Platform = {
     }
     return false;
   },
-  get isMacCatalyst: boolean {
+  get isMacCatalyst(): boolean {
     return this.constants.isMacCatalyst;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
