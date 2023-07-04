@@ -78,7 +78,7 @@ internal object NdkConfiguratorUtils {
   ) {
     if (!project.isNewArchEnabled) {
       // For Old Arch, we set a pickFirst only on libraries that we know are
-      // clashing with our direct dependencies (FBJNI, Flipper and Hermes).
+      // clashing with our direct dependencies (mainly FBJNI and Hermes).
       variant.packaging.jniLibs.pickFirsts.addAll(
           listOf(
               "**/libfbjni.so",

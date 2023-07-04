@@ -1,4 +1,11 @@
-package com.helloworld
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.flipper
 
 import android.content.Context
 import com.facebook.flipper.android.AndroidFlipperClient
@@ -21,6 +28,7 @@ import com.facebook.react.modules.network.NetworkingModule
  * flavor of it. Here you can add your own plugins and customize the Flipper setup.
  */
 object ReactNativeFlipper {
+  @JvmStatic
   fun initializeFlipper(context: Context, reactInstanceManager: ReactInstanceManager) {
     if (FlipperUtils.shouldEnableFlipper(context)) {
       val client = AndroidFlipperClient.getInstance(context)

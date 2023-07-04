@@ -26,6 +26,7 @@ import com.facebook.react.defaults.DefaultComponentsRegistry;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.fabric.ComponentFactory;
+import com.facebook.react.flipper.ReactNativeFlipper;
 import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
