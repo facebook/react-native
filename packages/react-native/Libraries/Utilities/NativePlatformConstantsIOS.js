@@ -25,7 +25,7 @@ export interface Spec extends TurboModule {
     osVersion: string,
     systemName: string,
     interfaceIdiom: string,
-    isMacCayalyst: string,
+    isMacCatalyst: string,
   |};
 }
 
