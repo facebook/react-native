@@ -80,6 +80,20 @@ declare var Blob: {
   new (blobParts?: Array<Blob | string>, options?: BlobOptions): Blob;
 };
 
+interface File extends Blob {
+  name: string;
+  lastModified: number;
+}
+
+declare var File: {
+  prototype: File;
+  new (
+    fileParts?: Array<Blob | string>,
+    name?: string,
+    options?: BlobOptions,
+  ): File;
+};
+
 type FormDataValue =
   | string
   | {name?: string | undefined; type?: string | undefined; uri: string};
