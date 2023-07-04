@@ -66,6 +66,7 @@ const Platform = {
     return false;
   },
   get isMacCatalyst(): boolean {
+    // $FlowFixMe[object-this-reference]
     return this.constants.isMacCatalyst;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
