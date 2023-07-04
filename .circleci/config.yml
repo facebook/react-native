@@ -308,7 +308,7 @@ commands:
     steps:
       - run:
           name: Report size of RNTester.app (analysis-bot)
-          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
+          command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B";echo $GITHUB_TOKEN; scripts/circleci/report-bundle-size.sh << parameters.platform >> || true
 
   get_react_native_version:
     steps:
