@@ -28,6 +28,7 @@ type PlatformConstants = {
 };
 interface PlatformStatic {
   isTV: boolean;
+  isMacCatalyst: boolean;
   isTesting: boolean;
   Version: number | string;
   constants: PlatformConstants;
@@ -53,6 +54,7 @@ interface PlatformIOSStatic extends PlatformStatic {
   OS: 'ios';
   isPad: boolean;
   isTV: boolean;
+  isMacCatalyst: boolean;
   Version: string;
 }
 
