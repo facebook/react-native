@@ -56,17 +56,17 @@ dependencies {
 
 java {
   // We intentionally don't build for Java 17 as users will see a cryptic bytecode version
-  // error first. Instead we produce a Java 11-compatible Gradle Plugin, so that AGP can print their
+  // error first. Instead we produce a Java 8-compatible Gradle Plugin, so that AGP can print their
   // nice message showing that JDK 11 (or 17) is required first
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_11.majorVersion
+    jvmTarget = JavaVersion.VERSION_1_8.majorVersion
     apiVersion = "1.5"
     languageVersion = "1.5"
   }
