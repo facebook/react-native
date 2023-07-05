@@ -9,6 +9,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
@@ -149,7 +150,7 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  * It allows the bridge to attach properties to ObjC modules that give those modules
  * access to Bridge APIs.
  */
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module;
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.
