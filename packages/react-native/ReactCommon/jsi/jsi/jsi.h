@@ -1389,7 +1389,7 @@ class JSI_EXPORT Scope {
   explicit Scope(Runtime& rt) : rt_(rt), prv_(rt.pushScope()) {}
   ~Scope() {
     rt_.popScope(prv_);
-  };
+  }
 
   Scope(const Scope&) = delete;
   Scope(Scope&&) = delete;
@@ -1411,8 +1411,8 @@ class JSI_EXPORT Scope {
 /// Base class for jsi exceptions
 class JSI_EXPORT JSIException : public std::exception {
  protected:
-  JSIException(){};
-  JSIException(std::string what) : what_(std::move(what)){};
+  JSIException() {}
+  JSIException(std::string what) : what_(std::move(what)) {}
 
  public:
   JSIException(const JSIException&) = default;
@@ -1453,7 +1453,7 @@ class JSI_EXPORT JSError : public JSIException {
   /// Creates a JSError referring to new \c Error instance capturing current
   /// JavaScript stack. The error message property is set to given \c message.
   JSError(Runtime& rt, const char* message)
-      : JSError(rt, std::string(message)){};
+      : JSError(rt, std::string(message)) {}
 
   /// Creates a JSError referring to a JavaScript Object having message and
   /// stack properties set to provided values.
