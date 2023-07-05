@@ -224,26 +224,26 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  // Set up TurboModules
-  _turboModuleManager =
-      [[RCTTurboModuleManager alloc] initWithBridge:nil
-                                           delegate:self
-                                          jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
+  RCTBridgeProxy *bridgeProxy = RCTTurboModuleInteropEnabled() && RCTTurboModuleInteropBridgeProxyEnabled()
+      ? [[RCTBridgeProxy alloc]
+            initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
+                  moduleRegistry:_bridgeModuleDecorator.moduleRegistry
+                   bundleManager:_bridgeModuleDecorator.bundleManager
+               callableJSModules:_bridgeModuleDecorator.callableJSModules
+              dispatchToJSThread:^(dispatch_block_t block) {
+                __strong __typeof(self) strongSelf = weakSelf;
+                if (strongSelf && strongSelf->_valid) {
+                  strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
+                }
+              }]
+      : nil;
 
-  if (RCTTurboModuleInteropEnabled() && RCTTurboModuleInteropBridgeProxyEnabled()) {
-    RCTBridgeProxy *bridgeProxy = [[RCTBridgeProxy alloc]
-        initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
-              moduleRegistry:_bridgeModuleDecorator.moduleRegistry
-               bundleManager:_bridgeModuleDecorator.bundleManager
-           callableJSModules:_bridgeModuleDecorator.callableJSModules
-          dispatchToJSThread:^(dispatch_block_t block) {
-            __strong __typeof(self) strongSelf = weakSelf;
-            if (strongSelf && strongSelf->_valid) {
-              strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
-            }
-          }];
-    [_turboModuleManager setBridgeProxy:bridgeProxy];
-  }
+  // Set up TurboModules
+  _turboModuleManager = [[RCTTurboModuleManager alloc]
+        initWithBridgeProxy:bridgeProxy
+      bridgeModuleDecorator:_bridgeModuleDecorator
+                   delegate:self
+                  jsInvoker:std::make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor)];
 
   // Initialize RCTModuleRegistry so that TurboModules can require other TurboModules.
   [_bridgeModuleDecorator.moduleRegistry setTurboModuleRegistry:_turboModuleManager];
@@ -346,8 +346,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
 #endif
   }
-
-  [_bridgeModuleDecorator attachInteropAPIsToModule:(id<RCTBridgeModule>)module];
 }
 
 - (void)_loadJSBundle:(NSURL *)sourceURL

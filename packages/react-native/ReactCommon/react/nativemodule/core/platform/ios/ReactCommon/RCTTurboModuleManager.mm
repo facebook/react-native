@@ -211,9 +211,12 @@ static Class getFallbackClassFromName(const char *name)
   NSDictionary<NSString *, Class> *_legacyEagerlyRegisteredModuleClasses;
 
   RCTBridgeProxy *_bridgeProxy;
+  RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
+                   bridgeProxy:(RCTBridgeProxy *)bridgeProxy
+         bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
@@ -221,6 +224,8 @@ static Class getFallbackClassFromName(const char *name)
     _jsInvoker = std::move(jsInvoker);
     _delegate = delegate;
     _bridge = bridge;
+    _bridgeProxy = bridgeProxy;
+    _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
 
     if (RCTTurboModuleInteropEnabled()) {
@@ -256,9 +261,27 @@ static Class getFallbackClassFromName(const char *name)
   return self;
 }
 
-- (void)setBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
-  _bridgeProxy = bridgeProxy;
+  return [self initWithBridge:bridge
+                  bridgeProxy:nil
+        bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                     delegate:delegate
+                    jsInvoker:jsInvoker];
+}
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return [self initWithBridge:nil
+                  bridgeProxy:bridgeProxy
+        bridgeModuleDecorator:bridgeModuleDecorator
+                     delegate:delegate
+                    jsInvoker:jsInvoker];
 }
 
 - (void)notifyAboutTurboModuleSetup:(const char *)name
@@ -720,8 +743,8 @@ static Class getFallbackClassFromName(const char *name)
   /**
    * Decorate NativeModules with bridgeless-compatible APIs that call into the bridge.
    */
-  if (_bridge) {
-    [_bridge attachBridgeAPIsToObjCModule:module];
+  if (_bridgeModuleDecorator) {
+    [_bridgeModuleDecorator attachInteropAPIsToModule:module];
   }
 
   /**
