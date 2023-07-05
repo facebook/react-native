@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
+@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
+@property (nonatomic, assign) UIControlContentVerticalAlignment contentVerticalAlignment;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to
@@ -43,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 // If the change was a result of user actions (like typing or touches), we MUST notify the delegate.
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange NS_UNAVAILABLE;
 - (void)setSelectedTextRange:(nullable UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate;
+- (void)setTextBorderInsetsAndFrame:(CGRect)bounds textBorderInsets:(UIEdgeInsets)textBorderInsets;
 
 // This protocol disallows direct access to `text` property because
 // unwise usage of it can break the `attributeText` behavior.

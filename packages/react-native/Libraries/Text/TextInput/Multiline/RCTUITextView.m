@@ -169,6 +169,14 @@ static UIColor *defaultPlaceholderColor(void)
   [super paste:sender];
 }
 
+- (void)setTextBorderInsetsAndFrame:(CGRect)bounds textBorderInsets:(UIEdgeInsets)textBorderInsets
+{
+  _textBorderInsets = textBorderInsets;
+  // We apply `borderInsets` as `RCTUITextView` layout offset.
+  self.frame = UIEdgeInsetsInsetRect(bounds, textBorderInsets);
+  [self setNeedsLayout];
+}
+
 // Turn off scroll animation to fix flaky scrolling.
 // This is only necessary for iOS <= 14.
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED < 140000
