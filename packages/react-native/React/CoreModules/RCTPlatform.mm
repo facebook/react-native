@@ -78,9 +78,9 @@ RCT_EXPORT_MODULE(PlatformConstants)
                  ? std::optional<double>{}
                  : [versions[@"prerelease"] doubleValue]}),
 #if TARGET_OS_MACCATALYST
-        .isMacCatalyst: true,
+        .isMacCatalyst = true,
 #else
-        .isMacCatalyst: false,
+        .isMacCatalyst = false,
 #endif
     });
   });
