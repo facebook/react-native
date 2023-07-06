@@ -176,7 +176,7 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
-  "$HERMES_CLI_PATH" -emit-binary -max-diagnostic-width=80 "$EXTRA_COMPILER_ARGS" -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
+  "$HERMES_CLI_PATH" -emit-binary -max-diagnostic-width=80 $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
   if [[ $EMIT_SOURCEMAP == true ]]; then
     HBC_SOURCEMAP_FILE="$DEST/main.jsbundle.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
