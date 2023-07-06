@@ -674,16 +674,14 @@ public class JSPointerDispatcher {
     Map<Integer, float[]> newOffsets = new HashMap<>(original.getOffsetByPointerId());
     Map<Integer, float[]> newEventCoords = new HashMap<>(original.getEventCoordinatesByPointerId());
 
+    float[] rootOffset = {rootX, rootY};
     for (Map.Entry<Integer, float[]> offsetEntry : newOffsets.entrySet()) {
-      float[] offsetValue = offsetEntry.getValue();
-      offsetValue[0] = rootX;
-      offsetValue[1] = rootY;
+      offsetEntry.setValue(rootOffset);
     }
 
+    float[] zeroOffset = {0, 0};
     for (Map.Entry<Integer, float[]> eventCoordsEntry : newEventCoords.entrySet()) {
-      float[] eventCoordsValue = eventCoordsEntry.getValue();
-      eventCoordsValue[0] = 0;
-      eventCoordsValue[1] = 0;
+      eventCoordsEntry.setValue(zeroOffset);
     }
 
     return new PointerEventState(
