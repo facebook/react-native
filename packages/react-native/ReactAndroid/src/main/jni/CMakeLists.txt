@@ -101,6 +101,7 @@ add_react_common_subdir(react/nativemodule/core)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/bridgeless)
 add_react_common_subdir(react/bridgeless/hermes)
+add_react_common_subdir(react/bridgeless/nativeviewconfig)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)

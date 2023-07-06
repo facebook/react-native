@@ -229,7 +229,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  private static Map<String, Object> createConstants(
+  public static Map<String, Object> createConstants(
       List<ViewManager> viewManagers,
       @Nullable Map<String, Object> customBubblingEvents,
       @Nullable Map<String, Object> customDirectEvents) {
