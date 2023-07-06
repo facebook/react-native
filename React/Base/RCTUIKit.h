@@ -546,7 +546,7 @@ typedef UISwitch RCTUISwitch;
 #else
 @interface RCTUISwitch : NSSwitch
 NS_ASSUME_NONNULL_BEGIN
-@property (nonatomic, assign, getter=isOn) BOOL on;
+@property (nonatomic, getter=isOn) BOOL on;
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated;
 

@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(setValue : (nonnull NSNumber *)viewTag toValue : (BOOL)value)
     if ([view isKindOfClass:[RCTSwitch class]]) {
       [(RCTSwitch *)view setOn:value animated:NO];
     } else {
-      RCTLogError(@"view type must be UISwitch");
+      RCTLogError(@"view type must be RCTUISwitch"); // [macOS]
     }
   }];
 }
