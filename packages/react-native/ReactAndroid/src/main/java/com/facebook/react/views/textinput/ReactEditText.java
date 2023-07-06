@@ -271,36 +271,35 @@ public class ReactEditText extends AppCompatEditText
     return inputConnection;
   }
 
+  /*
+   * Called when a context menu option for the text view is selected.
+   * React Native replaces copy (as rich text) with copy as plain text.
+   */
   @Override
   public boolean onTextContextMenuItem(int id) {
     if (id == android.R.id.paste) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         id = android.R.id.pasteAsPlainText;
       } else {
-        onInterceptClipDataToPlainText();
-      }
-    }
-    return super.onTextContextMenuItem(id);
-  }
-
-  private void onInterceptClipDataToPlainText() {
-    ClipboardManager clipboard =
-        (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-    ClipData clip = clipboard.getPrimaryClip();
-    if (clip != null) {
-      for (int i = 0; i < clip.getItemCount(); i++) {
-        final CharSequence paste;
-        // Get an item as text and remove all spans by toString().
-        final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
-        paste = (text instanceof Spanned) ? text.toString() : text;
-        if (paste != null) {
-          ClipData clipData = ClipData.newPlainText("rebase_copy", text);
-          ClipboardManager manager =
-              (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-          manager.setPrimaryClip(clipData);
+        ClipboardManager clipboard =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = clipboard.getPrimaryClip();
+        if (clip != null) {
+          for (int i = 0; i < clip.getItemCount(); i++) {
+            final CharSequence paste;
+            final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
+            paste = (text instanceof Spanned) ? text.toString() : text;
+            if (paste != null) {
+              ClipData clipData = ClipData.newPlainText("rebase_copy", text);
+              ClipboardManager manager =
+                  (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+              manager.setPrimaryClip(clipData);
+            }
+          }
         }
       }
     }
+    return super.onTextContextMenuItem(id);
   }
 
   @Override
