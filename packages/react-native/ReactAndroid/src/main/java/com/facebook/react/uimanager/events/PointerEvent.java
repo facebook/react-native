@@ -215,6 +215,12 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("clientX", clientX);
     pointerEvent.putDouble("clientY", clientY);
 
+    float[] screenCoords = mEventState.getScreenCoordinatesByPointerId().get(pointerId);
+    double screenX = PixelUtil.toDIPFromPixel(screenCoords[0]);
+    double screenY = PixelUtil.toDIPFromPixel(screenCoords[1]);
+    pointerEvent.putDouble("screenX", screenX);
+    pointerEvent.putDouble("screenY", screenY);
+
     // x,y values are aliases of clientX, clientY
     pointerEvent.putDouble("x", clientX);
     pointerEvent.putDouble("y", clientY);
@@ -338,6 +344,7 @@ public class PointerEvent extends Event<PointerEvent> {
     private Map<Integer, float[]> mOffsetByPointerId;
     private Map<Integer, List<TouchTargetHelper.ViewTarget>> mHitPathByPointerId;
     private Map<Integer, float[]> mEventCoordinatesByPointerId;
+    private Map<Integer, float[]> mScreenCoordinatesByPointerId;
     private Set<Integer> mHoveringPointerIds;
 
     public PointerEventState(
@@ -348,6 +355,7 @@ public class PointerEvent extends Event<PointerEvent> {
         Map<Integer, float[]> offsetByPointerId,
         Map<Integer, List<TouchTargetHelper.ViewTarget>> hitPathByPointerId,
         Map<Integer, float[]> eventCoordinatesByPointerId,
+        Map<Integer, float[]> screenCoordinatesByPointerId,
         Set<Integer> hoveringPointerIds) {
       mPrimaryPointerId = primaryPointerId;
       mActivePointerId = activePointerId;
@@ -356,6 +364,7 @@ public class PointerEvent extends Event<PointerEvent> {
       mOffsetByPointerId = offsetByPointerId;
       mHitPathByPointerId = hitPathByPointerId;
       mEventCoordinatesByPointerId = eventCoordinatesByPointerId;
+      mScreenCoordinatesByPointerId = screenCoordinatesByPointerId;
       mHoveringPointerIds = new HashSet<>(hoveringPointerIds);
     }
 
@@ -393,6 +402,10 @@ public class PointerEvent extends Event<PointerEvent> {
 
     public final Map<Integer, float[]> getEventCoordinatesByPointerId() {
       return mEventCoordinatesByPointerId;
+    }
+
+    public final Map<Integer, float[]> getScreenCoordinatesByPointerId() {
+      return mScreenCoordinatesByPointerId;
     }
 
     public final List<TouchTargetHelper.ViewTarget> getHitPathForActivePointer() {
