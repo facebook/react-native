@@ -216,8 +216,8 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public void onDestroyActionMode(ActionMode mode) {}
         };
-    // Adds custom logic to the Editor TextActionModeCallback insert and selection modes.
-    // https://tinyurl.com/56x5ns5j
+    // Adds custom logic to the Editor TextActionModeCallback insert and selection modes to remove
+    // paste as plain text #38210.
     setCustomSelectionActionModeCallback(customActionModeCallback);
     if (Build.VERSION.SDK_INT >= 23) {
       setCustomInsertionActionModeCallback(customActionModeCallback);
