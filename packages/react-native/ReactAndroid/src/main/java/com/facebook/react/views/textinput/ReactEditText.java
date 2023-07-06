@@ -189,8 +189,8 @@ public class ReactEditText extends AppCompatEditText
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // The method populateMenuWithItems adds to the context menu the cut, copy, paste,
-            // share, autofill, and paste as plain text items.
-            // https://tinyurl.com/bdefmrv9
+            // share, autofill, and paste as plain text items. Paste-rich-text is not supported in
+            // react-native. https://tinyurl.com/bdefmrv9
             menu.removeItem(android.R.id.pasteAsPlainText);
             // If set to false, the context menu does not show, and the cursor position resets to
             // the position of getSelectionEnd().
@@ -199,9 +199,6 @@ public class ReactEditText extends AppCompatEditText
 
           @Override
           public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // Some menu items are displayed based on the current selection. For example, If all
-            // text is selected, the menu item select all does not show.
-            menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
 
