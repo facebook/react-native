@@ -186,14 +186,14 @@ public class ReactEditText extends AppCompatEditText
     ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
     ActionMode.Callback customActionModeCallback =
         new ActionMode.Callback() {
+          /*
+           * onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * and paste as plain text to the context menu.
+           * Returning false removes the context menu.
+           */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // The method populateMenuWithItems adds to the context menu the cut, copy, paste,
-            // share, autofill, and paste as plain text items. Paste-rich-text is not supported in
-            // react-native. https://tinyurl.com/bdefmrv9
             menu.removeItem(android.R.id.pasteAsPlainText);
-            // If set to false, the context menu does not show, and the cursor position resets to
-            // the position of getSelectionEnd().
             return true;
           }
 
@@ -202,9 +202,9 @@ public class ReactEditText extends AppCompatEditText
             return true;
           }
 
+          // Returns false to keep the original behavior.
           @Override
           public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // Returns false to keep the original behavior.
             return false;
           }
 
