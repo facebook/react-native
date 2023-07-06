@@ -188,24 +188,36 @@ public class ReactEditText extends AppCompatEditText
         new ActionMode.Callback() {
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // The method populateMenuWithItems adds to the context menu the cut, copy, paste,
+            // share, autofill, and paste as plain text items.
+            // https://tinyurl.com/z9axts8t
             menu.removeItem(android.R.id.pasteAsPlainText);
+            // If set to false, the context menu does not show, and the cursor position resets to
+            // the position of getSelectionEnd().
+            // https://tinyurl.com/4frwvreh
             return true;
           }
 
           @Override
           public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            // Some menu items are displayed based on the current selection. For example, If all
+            // text is selected, the menu item select all does not show.
+            // https://tinyurl.com/mtt7sptp
             menu.removeItem(android.R.id.pasteAsPlainText);
             return true;
           }
 
           @Override
           public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            // Returns false to keep the original behavior.
             return false;
           }
 
           @Override
           public void onDestroyActionMode(ActionMode mode) {}
         };
+    // Adds custom logic to the Editor TextActionModeCallback insert and selection modes.
+    // https://tinyurl.com/56x5ns5j
     setCustomSelectionActionModeCallback(customActionModeCallback);
     if (Build.VERSION.SDK_INT >= 23) {
       setCustomInsertionActionModeCallback(customActionModeCallback);
