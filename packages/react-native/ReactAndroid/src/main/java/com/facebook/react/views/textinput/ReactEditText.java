@@ -187,7 +187,7 @@ public class ReactEditText extends AppCompatEditText
     ActionMode.Callback customActionModeCallback =
         new ActionMode.Callback() {
           /*
-           * onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * Editor onCreateActionMode adds the cut, copy, paste, share, autofill,
            * and paste as plain text items to the context menu.
            */
           @Override
