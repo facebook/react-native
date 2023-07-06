@@ -11,7 +11,9 @@
     <string name="menu_description" gender="unknown">Izvēlne</string>
     <string name="menubar_description" gender="unknown">Izvēļņu josla</string>
     <string name="menuitem_description" gender="unknown">Izvēlnes opcija</string>
+    <string name="progressbar_description" gender="unknown">Progresa josla</string>
     <string name="rn_tab_description" gender="unknown">Cilne</string>
+    <string name="timer_description" gender="unknown">Taimeris</string>
     <string name="toolbar_description" gender="unknown">Rīkjosla</string>
     <string name="summary_description" gender="unknown">Kopsavilkums</string>
     <string name="state_collapsed_description" gender="unknown">sakļauts</string>
