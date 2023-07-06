@@ -188,8 +188,7 @@ public class ReactEditText extends AppCompatEditText
         new ActionMode.Callback() {
           /*
            * onCreateActionMode adds the cut, copy, paste, share, autofill,
-           * and paste as plain text to the context menu.
-           * Returning false removes the context menu.
+           * and paste as plain text items to the context menu.
            */
           @Override
           public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -202,7 +201,6 @@ public class ReactEditText extends AppCompatEditText
             return true;
           }
 
-          // Returns false to keep the original behavior.
           @Override
           public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             return false;
