@@ -26,6 +26,17 @@ react_native_dependency_path = ENV['REACT_NATIVE_PATH']
 # Relative path to react native from current podspec
 react_native_sources_path = '..'
 
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)\"",
+  "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
+]
+
+if ENV["USE_FRAMEWORKS"]
+  header_search_paths = header_search_paths.concat([
+    "\"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\"",
+  ])
+end
+
 Pod::Spec.new do |s|
   s.name                   = "React-rncore"
   s.version                = version
@@ -37,6 +48,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
+                            "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
 
