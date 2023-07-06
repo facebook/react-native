@@ -763,7 +763,9 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
 
 // RCTUIImageView
 
-@implementation RCTUIImageView
+@implementation RCTUIImageView {
+  CALayer *_tintingLayer;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -822,13 +824,21 @@ BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view)
   CALayer *layer = [self layer];
   
   if ([layer contents] != image || [layer backgroundColor] != nil) {
-    if (_tintColor != nil) {
-      image = [image copy];
-      [image lockFocus];
-      [_tintColor set];
-      NSRect imageRect = { NSZeroPoint, image.size };
-      NSRectFillUsingOperation(imageRect, NSCompositingOperationSourceIn);
-      [image unlockFocus];
+    if (_tintColor) {
+      if (!_tintingLayer) {
+        _tintingLayer = [CALayer new];
+        [_tintingLayer setFrame:self.bounds];
+        [_tintingLayer setAutoresizingMask:kCALayerWidthSizable | kCALayerHeightSizable];
+        [_tintingLayer setZPosition:1.0];
+        CIFilter *sourceInCompositingFilter = [CIFilter filterWithName:@"CISourceInCompositing"];
+        [sourceInCompositingFilter setDefaults];
+        [_tintingLayer setCompositingFilter:sourceInCompositingFilter];
+        [layer addSublayer:_tintingLayer];
+      }
+      [_tintingLayer setBackgroundColor:_tintColor.CGColor];
+    } else {
+      [_tintingLayer removeFromSuperlayer];
+      _tintingLayer = nil;
     }
     
     if (image != nil && [image resizingMode] == NSImageResizingModeTile) {
