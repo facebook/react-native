@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
@@ -183,6 +184,13 @@ public class PointerEvent extends Event<PointerEvent> {
     return w3cPointerEvents;
   }
 
+  private void addModifierKeyData(WritableMap pointerEvent, int modifierKeyMask) {
+    pointerEvent.putBoolean("ctrlKey", (modifierKeyMask & KeyEvent.META_CTRL_ON) != 0);
+    pointerEvent.putBoolean("shiftKey", (modifierKeyMask & KeyEvent.META_SHIFT_ON) != 0);
+    pointerEvent.putBoolean("altKey", (modifierKeyMask & KeyEvent.META_ALT_ON) != 0);
+    pointerEvent.putBoolean("metaKey", (modifierKeyMask & KeyEvent.META_META_ON) != 0);
+  }
+
   private WritableMap createW3CPointerEvent(int index) {
     WritableMap pointerEvent = Arguments.createMap();
     int pointerId = mMotionEvent.getPointerId(index);
@@ -253,6 +261,8 @@ public class PointerEvent extends Event<PointerEvent> {
 
     pointerEvent.putDouble("pressure", pressure);
     pointerEvent.putDouble("tangentialPressure", 0.0);
+
+    addModifierKeyData(pointerEvent, mMotionEvent.getMetaState());
 
     return pointerEvent;
   }
