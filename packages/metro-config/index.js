@@ -45,6 +45,9 @@ function getDefaultConfig(
       unstable_conditionNames: ['require', 'import', 'react-native'],
     },
     serializer: {
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('react-native/Libraries/Core/InitializeCore'),
+      ],
       getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {
