@@ -49,6 +49,10 @@ function getDefaultConfig(
       unstable_conditionNames: ['require', 'import', 'react-native'],
     },
     serializer: {
+      // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)
+      getModulesRunBeforeMainModule: () => [
+        require.resolve('react-native/Libraries/Core/InitializeCore'),
+      ],
       getPolyfills: () => require('@react-native/js-polyfills')(),
     },
     server: {
