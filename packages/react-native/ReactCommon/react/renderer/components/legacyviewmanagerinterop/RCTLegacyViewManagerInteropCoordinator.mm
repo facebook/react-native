@@ -131,22 +131,19 @@ using namespace facebook::react;
   NSArray *newArgs = [@[ [NSNumber numberWithInteger:tag] ] arrayByAddingObjectsFromArray:args];
 
   if (_bridge) {
-    [self _addViewToRegistry:paperView withTag:tag];
     [_bridge.batchedBridge
         dispatchBlock:^{
           [method invokeWithBridge:self->_bridge module:self->_componentData.manager arguments:newArgs];
           [self->_bridge.uiManager setNeedsLayout];
         }
                 queue:RCTGetUIManagerQueue()];
-    [self _removeViewFromRegistryWithTag:tag];
   } else {
     // TODO T86826778 - Figure out which queue this should be dispatched to.
     [method invokeWithBridge:nil module:self->_componentData.manager arguments:newArgs];
   }
 }
 
-#pragma mark - Private
-- (void)_addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
+- (void)addViewToRegistry:(UIView *)view withTag:(NSInteger)tag
 {
   [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if ([viewRegistry objectForKey:@(tag)] != NULL) {
@@ -158,7 +155,7 @@ using namespace facebook::react;
   }];
 }
 
-- (void)_removeViewFromRegistryWithTag:(NSInteger)tag
+- (void)removeViewFromRegistryWithTag:(NSInteger)tag
 {
   [self _addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if ([viewRegistry objectForKey:@(tag)] == NULL) {
@@ -170,6 +167,8 @@ using namespace facebook::react;
     [mutableViewRegistry removeObjectForKey:@(tag)];
   }];
 }
+
+#pragma mark - Private
 
 - (void)_addUIBlock:(RCTViewManagerUIBlock)block
 {
