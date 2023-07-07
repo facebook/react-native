@@ -954,7 +954,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x + deltaX, self->_scrollView.contentOffset.y);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (x - deltaX <= [autoscrollThreshold integerValue]) {
+          if (x <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(-leftInset, self->_scrollView.contentOffset.y) animated:YES];
           }
         }
@@ -970,7 +970,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
             CGPointMake(self->_scrollView.contentOffset.x, self->_scrollView.contentOffset.y + deltaY);
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
-          if (y - deltaY <= [autoscrollThreshold integerValue]) {
+          if (y <= [autoscrollThreshold integerValue]) {
             [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
           }
         }
