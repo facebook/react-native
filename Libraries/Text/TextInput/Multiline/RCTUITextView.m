@@ -555,6 +555,14 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   }
 }
 #else // [macOS
+- (BOOL)performKeyEquivalent:(NSEvent *)event {
+  if (!self.hasMarkedText && ![self.textInputDelegate textInputShouldHandleKeyEvent:event]) {
+    return YES;
+  }
+
+  return [super performKeyEquivalent:event];
+}
+
 - (void)keyDown:(NSEvent *)event {
   // If has marked text, handle by native and return
   // Do this check before textInputShouldHandleKeyEvent as that one attempts to send the event to JS

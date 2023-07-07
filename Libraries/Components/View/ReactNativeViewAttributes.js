@@ -47,6 +47,7 @@ const UIView = {
   onDrop: true,
   onKeyDown: true,
   onKeyUp: true,
+  passthroughAllKeyEvents: true,
   validKeysDown: true,
   validKeysUp: true,
   draggedTypes: true,

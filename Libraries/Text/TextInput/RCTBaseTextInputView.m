@@ -21,6 +21,7 @@
 #import <React/RCTTextSelection.h>
 #import <React/RCTUITextView.h> // [macOS]
 #import "../RCTTextUIKit.h" // [macOS]
+#import <React/RCTHandledKey.h> // [macOS]
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -668,7 +669,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 }
 
 - (BOOL)hasValidKeyDownOrValidKeyUp:(NSString *)key {
-  return [self.validKeysDown containsObject:key] || [self.validKeysUp containsObject:key];
+  return [RCTHandledKey key:key matchesFilter:self.validKeysDown]
+	||  [RCTHandledKey key:key matchesFilter:self.validKeysUp];
 }
 
 - (NSDragOperation)textInputDraggingEntered:(id<NSDraggingInfo>)draggingInfo

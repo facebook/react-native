@@ -12,6 +12,7 @@
 #import <CoreText/CoreText.h>
 
 #import "RCTDefines.h"
+#import "RCTHandledKey.h" // [macOS]
 #import "RCTImageSource.h"
 #import "RCTParserUtils.h"
 #import "RCTUtils.h"
@@ -1500,6 +1501,9 @@ RCT_ENUM_CONVERTER(
   }
   return NSAccessibilityUnknownRole;
 }
+
+RCT_JSON_ARRAY_CONVERTER(RCTHandledKey);
+
 #endif // macOS]
 
 @end

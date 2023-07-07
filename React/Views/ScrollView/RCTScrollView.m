@@ -10,6 +10,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import "RCTConvert.h"
+#import "RCTHandledKey.h" // [macOS]
 #import "RCTLog.h"
 #import "RCTScrollEvent.h"
 #import "RCTUIManager.h"
@@ -1276,11 +1277,10 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 #if TARGET_OS_OSX
 - (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event {
 	BOOL keyDown = event.type == NSEventTypeKeyDown;
-	NSArray<NSString *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
-	NSString *key = [RCTViewKeyboardEvent keyFromEvent:event];
+	NSArray<RCTHandledKey *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
 
 	// Only post events for keys we care about
-	if (![validKeys containsObject:key]) {
+	if (![RCTHandledKey event:event matchesFilter:validKeys]) {
 		return nil;
 	}
 

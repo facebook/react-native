@@ -525,10 +525,11 @@ RCT_EXPORT_VIEW_PROPERTY(onMouseLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragEnter, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDragLeave, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onDrop, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(passthroughAllKeyEvents, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onKeyDown, RCTDirectEventBlock) // macOS keyboard events
 RCT_EXPORT_VIEW_PROPERTY(onKeyUp, RCTDirectEventBlock) // macOS keyboard events
-RCT_EXPORT_VIEW_PROPERTY(validKeysDown, NSArray<NSString*>)
-RCT_EXPORT_VIEW_PROPERTY(validKeysUp, NSArray<NSString*>)
+RCT_EXPORT_VIEW_PROPERTY(validKeysDown, NSArray<RCTHandledKey *>)
+RCT_EXPORT_VIEW_PROPERTY(validKeysUp, NSArray<RCTHandledKey *>)
 
 #endif // macOS]
 

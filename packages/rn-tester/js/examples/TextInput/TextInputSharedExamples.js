@@ -19,6 +19,7 @@ const {
   TextInput,
   View,
   StyleSheet,
+  Switch, // [macOS]
 } = require('react-native');
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
@@ -80,6 +81,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
     padding: 4,
   },
+  // [macOS
+  passthroughAllKeyEvents: {
+    alignItems: 'center',
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  // macOS]
 });
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -334,6 +343,8 @@ class SubmitBehaviorExample extends React.Component<{...}> {
   }
 }
 
+let counter = 0; // [macOS]
+
 class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
   state:
     | any
@@ -341,24 +352,64 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
         curText: string,
         prev2Text: string,
         prev3Text: string,
+        // [macOS
+        prev4Text: string,
+        prev5Text: string,
+        prev6Text: string,
+        // macOS]
         prevText: string,
+        passthroughAllKeyEvents: boolean, // [macOS]
       } = {
     curText: '<No Event>',
     prevText: '<No Event>',
     prev2Text: '<No Event>',
     prev3Text: '<No Event>',
+    // [macOS
+    prev4Text: '<No Event>',
+    prev5Text: '<No Event>',
+    prev6Text: '<No Event>',
+    passthroughAllKeyEvents: false,
+    // macOS]
   };
 
   updateText = (text: string) => {
+    counter++; // [macOS]
     this.setState(state => {
       return {
-        curText: text,
+        curText: text + ' [' + counter + ']', // [macOS]
         prevText: state.curText,
         prev2Text: state.prevText,
         prev3Text: state.prev2Text,
+        // [macOS
+        prev4Text: state.prev3Text,
+        prev5Text: state.prev4Text,
+        prev6Text: state.prev5Text,
+        // macOS]
       };
     });
   };
+
+  // [macOS
+  clearLog = () => {
+    this.setState(() => {
+      return {
+        curText: '<No Event>',
+        prevText: '<No Event>',
+        prev2Text: '<No Event>',
+        prev3Text: '<No Event>',
+        prev4Text: '<No Event>',
+        prev5Text: '<No Event>',
+        prev6Text: '<No Event>',
+      };
+    });
+  };
+
+  toggleSwitch = (value: boolean) => {
+    this.setState(() => {
+      return {passthroughAllKeyEvents: value};
+    });
+  };
+  // macOS]
 
   render(): React.Node {
     return (
@@ -388,6 +439,15 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           onKeyPress={event =>
             this.updateText('onKeyPress key: ' + event.nativeEvent.key)
           }
+          // [macOS
+          onKeyDown={event =>
+            this.updateText('onKeyDown key: ' + event.nativeEvent.key)
+          }
+          onKeyUp={event =>
+            this.updateText('onKeyUp key: ' + event.nativeEvent.key)
+          }
+          passthroughAllKeyEvents={this.state.passthroughAllKeyEvents}
+          // macOS]
           style={styles.singleLine}
         />
         <Text style={styles.eventLabel}>
@@ -395,8 +455,25 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           {'\n'}
           (prev: {this.state.prevText}){'\n'}
           (prev2: {this.state.prev2Text}){'\n'}
-          (prev3: {this.state.prev3Text})
+          (prev3: {this.state.prev3Text}){'\n'}
+          (prev4: {this.state.prev4Text}){'\n'}
+          (prev5: {this.state.prev5Text}){'\n'}
+          (prev6: {this.state.prev6Text})
         </Text>
+        {/* [macOS */}
+        <Button
+          testID="event_clear_button"
+          onPress={this.clearLog}
+          title="Clear event log"
+        />
+        <View style={styles.passthroughAllKeyEvents}>
+          <Text>{'Pass through all key events'}</Text>
+          <Switch
+            value={this.state.passthroughAllKeyEvents}
+            onValueChange={this.toggleSwitch}
+          />
+        </View>
+        {/* macOS] */}
       </View>
     );
   }

@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// [macOS
+#import "objc/runtime.h"
+#import "RCTHandledKey.h"
+// macOS]
 #import "RCTView.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -1691,19 +1695,52 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
 #pragma mark - Keyboard Events
 
-- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event {
-  BOOL keyDown = event.type == NSEventTypeKeyDown;
-  NSArray<NSString *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
-  NSString *key = [RCTViewKeyboardEvent keyFromEvent:event];
+// This dictionary is attached to the NSEvent being handled so we can ensure we only dispatch it
+// once per RCTView\nativeTag. The reason we need to track this state is that certain React native
+// views such as RCTUITextView inherit from views (such as NSTextView) which may or may not
+// decide to bubble the event to the next responder, and we don't want to dispatch the same
+// event more than once (e.g. first from RCTUITextView, and then from it's parent RCTView).
+NSMutableDictionary<NSNumber *, NSNumber *> *GetEventDispatchStateDictionary(NSEvent *event) {
+	static const char *key = "RCTEventDispatchStateDictionary";
+	NSMutableDictionary<NSNumber *, NSNumber *> *dict = objc_getAssociatedObject(event, key);
+	if (dict == nil) {
+		dict = [NSMutableDictionary new];
+		objc_setAssociatedObject(event, key, dict, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	}
+	return dict;
+}
 
-  // If the view is focusable and the component didn't explicity set the validKeysDown or Up,
+- (RCTViewKeyboardEvent*)keyboardEvent:(NSEvent*)event shouldBlock:(BOOL *)shouldBlock {
+  BOOL keyDown = event.type == NSEventTypeKeyDown;
+  NSArray<RCTHandledKey *> *validKeys = keyDown ? self.validKeysDown : self.validKeysUp;
+
+  // If the view is focusable and the component didn't explicity set the validKeysDown or validKeysUp,
   // allow enter/return and spacebar key events to mimic the behavior of native controls.
   if (self.focusable && validKeys == nil) {
-    validKeys = @[@"Enter", @" "];
+    validKeys = @[
+      [[RCTHandledKey alloc] initWithKey:@"Enter"],
+      [[RCTHandledKey alloc] initWithKey:@" "]
+    ];
   }
 
-  // Only post events for keys we care about
-  if (![validKeys containsObject:key]) {
+  // If a view specifies a key, it will always be removed from the responder chain (i.e. "handled")
+  *shouldBlock = [RCTHandledKey event:event matchesFilter:validKeys];
+
+  // If an event isn't being removed from the queue, but was requested to "passthrough" by a view,
+  // we want to be sure we dispatch it only once for that view. See note for GetEventDispatchStateDictionary.
+  if ([self passthroughAllKeyEvents] && !*shouldBlock) {
+    NSNumber *tag = [self reactTag];
+    NSMutableDictionary<NSNumber *, NSNumber *> *dict = GetEventDispatchStateDictionary(event);
+
+    if ([dict[tag] boolValue]) {
+		return nil;
+	}
+
+	dict[tag] = @YES;
+  }
+
+  // Don't pass events we don't care about
+  if (![self passthroughAllKeyEvents] && !*shouldBlock) {
     return nil;
   }
 
@@ -1712,10 +1749,11 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 
 - (BOOL)handleKeyboardEvent:(NSEvent *)event {
   if (event.type == NSEventTypeKeyDown ? self.onKeyDown : self.onKeyUp) {
-    RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event];
+	BOOL shouldBlock = YES;
+    RCTViewKeyboardEvent *keyboardEvent = [self keyboardEvent:event shouldBlock:&shouldBlock];
     if (keyboardEvent) {
       [_eventDispatcher sendEvent:keyboardEvent];
-      return YES;
+      return shouldBlock;
     }
   }
   return NO;
@@ -1733,4 +1771,5 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
   }
 }
 #endif // macOS]
-                                        @end
+
+@end

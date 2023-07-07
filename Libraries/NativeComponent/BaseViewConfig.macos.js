@@ -52,6 +52,7 @@ const validAttributesForNonEventProps = {
   draggedTypes: true,
   enableFocusRing: true,
   tooltip: true,
+  passthroughAllKeyEvents: true,
   validKeysDown: true,
   validKeysUp: true,
   mouseDownCanMoveWindow: true,

@@ -20,6 +20,8 @@
 #import <WebKit/WebKit.h>
 #endif
 
+@class RCTHandledKey; // [macOS]
+
 /**
  * This class provides a collection of conversion functions for mapping
  * JSON objects to native types and classes. These are useful when writing
@@ -147,6 +149,8 @@ typedef BOOL css_backface_visibility_t;
 
 #if TARGET_OS_OSX // [macOS
 + (NSString *)accessibilityRoleFromTraits:(id)json;
+
++ (NSArray<RCTHandledKey *> *)RCTHandledKeyArray:(id)json;
 #endif // macOS]
 @end
 

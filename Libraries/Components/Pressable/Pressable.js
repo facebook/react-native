@@ -26,6 +26,7 @@ import type {
   AccessibilityState,
   AccessibilityValue,
 } from '../View/ViewAccessibility';
+import type {HandledKeyboardEvent} from '../View/ViewPropTypes'; // [macOS]
 
 import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import usePressability from '../../Pressability/usePressability';
@@ -185,16 +186,27 @@ type Props = $ReadOnly<{|
   onKeyUp?: ?(event: KeyEvent) => void,
 
   /**
-   * Array of keys to receive key down events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   * When `true`, allows `onKeyDown` and `onKeyUp` to receive events not specified in
+   * `validKeysDown` and `validKeysUp`, respectively. Events matching `validKeysDown` and `validKeysUp`
+   * still have their native default behavior prevented, but the others do not.
+   *
+   * @platform macos
    */
-  validKeysDown?: ?Array<string>,
+  passthroughAllKeyEvents?: ?boolean,
 
   /**
-   * Array of keys to receive key up events for
-   * For arrow keys, add "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown",
+   * Array of keys to receive key down events for. These events have their default native behavior prevented.
+   *
+   * @platform macos
    */
-  validKeysUp?: ?Array<string>,
+  validKeysDown?: ?Array<string | HandledKeyboardEvent>,
+
+  /**
+   * Array of keys to receive key up events for. These events have their default native behavior prevented.
+   *
+   * @platform macos
+   */
+  validKeysUp?: ?Array<string | HandledKeyboardEvent>,
 
   /**
    * Specifies whether the view should receive the mouse down event when the
