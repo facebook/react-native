@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL dictationRecognizing;
 @property (nonatomic, strong, nullable) UIColor *placeholderColor;
 @property (nonatomic, assign) UIEdgeInsets textContainerInset;
-@property (nonatomic, assign) CGRect fragmentViewContainerBounds;
-@property (nonatomic, assign) UIEdgeInsets textBorderInsets;
 @property (nonatomic, assign, getter=isEditable) BOOL editable;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
