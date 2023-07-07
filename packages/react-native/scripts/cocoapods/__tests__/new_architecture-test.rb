@@ -150,6 +150,7 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "React-graphics" },
                 { :dependency_name => "React-utils" },
                 { :dependency_name => "React-debug" },
+                { :dependency_name => "React-ImageManager" },
                 { :dependency_name => "React-rendererdebug" },
                 { :dependency_name => "hermes-engine" }
         ])
