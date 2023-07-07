@@ -632,12 +632,12 @@ public class ReactEditText extends AppCompatEditText
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
     } else {
-      boolean shouldKeepCompositeSpan = length() == spannableStringBuilder.length();
+      boolean shouldRestoreComposingSpans = length() == spannableStringBuilder.length();
 
       getText().replace(0, length(), spannableStringBuilder);
 
-      if (shouldKeepCompositeSpan) {
-        attachCompositeSpansToTextFrom(spannableStringBuilder);
+      if (shouldRestoreComposingSpans) {
+        restoreComposingSpansToTextFrom(spannableStringBuilder);
       }
     }
     mDisableTextDiffing = false;
@@ -823,7 +823,7 @@ public class ReactEditText extends AppCompatEditText
    * See {@link ReactEditText#manageSpans} for more details.
    * Also https://github.com/facebook/react-native/issues/11068
    */
-  private void attachCompositeSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
+  private void restoreComposingSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
     Editable text = getText();
     if (text == null) {
       return;
