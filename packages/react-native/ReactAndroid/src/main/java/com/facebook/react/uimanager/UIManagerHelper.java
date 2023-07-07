@@ -206,7 +206,7 @@ public class UIManagerHelper {
    * @return the default padding used by Android EditText's. This method returns the padding in an
    *     array to avoid extra classloading during hot-path of RN Android.
    */
-  public static float[] getDefaultTextInputPadding(ThemedReactContext context) {
+  public static float[] getDefaultTextInputPadding(Context context) {
     EditText editText = new EditText(context);
     float[] padding = new float[4];
     padding[PADDING_START_INDEX] = PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText));
