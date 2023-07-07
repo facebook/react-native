@@ -1415,6 +1415,13 @@ public class ReactHost implements ReactHostInterface {
     raiseSoftException(method, reason, ex);
 
     synchronized (mReactInstanceTaskRef) {
+      // Prevent re-destroy when ReactInstance has been reset already, which could happen when
+      // calling destroy multiple times on the same thread
+      ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+      if (reactInstance == null) {
+        return;
+      }
+
       // Retain a reference to current ReactContext before de-referenced by mReactContextRef
       final ReactContext reactContext = getCurrentReactContext();
 
