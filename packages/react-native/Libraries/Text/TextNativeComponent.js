@@ -76,7 +76,7 @@ export const NativeText: HostComponent<NativeTextProps> =
   ): any);
 
 const jestIsDefined = typeof jest !== 'undefined';
-export const CONTAINS_MAX_NUMBER_OF_LINES_RENAME = jestIsDefined
+export const CONTAINS_MAX_NUMBER_OF_LINES_RENAME: boolean = jestIsDefined
   ? true
   : getNativeComponentAttributes('RCTText')?.NativeProps
       ?.maximumNumberOfLines === 'number';
