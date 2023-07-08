@@ -100,7 +100,7 @@ public class UIManagerModuleTest {
             any(ChoreographerCompat.FrameCallback.class));
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
-    mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mReactContext = new ReactApplicationContext(RuntimeEnvironment.getApplication());
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
 
     UIManagerModule uiManagerModuleMock = mock(UIManagerModule.class);
@@ -145,7 +145,7 @@ public class UIManagerModuleTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView =
-        new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
+        new ReactRootView(RuntimeEnvironment.getApplication().getApplicationContext());
     int rootTag = uiManager.addRootView(rootView);
     int viewTag = rootTag + 1;
     int subViewTag = viewTag + 1;
@@ -491,7 +491,7 @@ public class UIManagerModuleTest {
   public void testRemoveSubviewsFromContainerWithID() {
     UIManagerModule uiManager = getUIManagerModule();
     ReactRootView rootView =
-        new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
+        new ReactRootView(RuntimeEnvironment.getApplication().getApplicationContext());
     int rootTag = uiManager.addRootView(rootView);
 
     final int containerTag = rootTag + 1;
@@ -541,7 +541,7 @@ public class UIManagerModuleTest {
    */
   private ViewGroup createSimpleTextHierarchy(UIManagerModule uiManager, String text) {
     ReactRootView rootView =
-        new ReactRootView(RuntimeEnvironment.application.getApplicationContext());
+        new ReactRootView(RuntimeEnvironment.getApplication().getApplicationContext());
     int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;

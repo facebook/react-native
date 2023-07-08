@@ -26,6 +26,7 @@ target_link_libraries(rrc_image
         glog_init
         jsi
         react_debug
+        react_utils
         react_render_core
         react_render_debug
         react_render_graphics

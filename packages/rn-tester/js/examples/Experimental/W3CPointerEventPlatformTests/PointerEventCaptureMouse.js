@@ -32,12 +32,12 @@ function PointerEventCaptureMouseTestCase(
   const pointermoveNoCaptureGot1Ref = useRef(false);
   const ownEventForTheCapturedTargetGotRef = useRef(false);
 
-  // const testGotPointerCapture = harness.useAsyncTest(
-  //   'gotpointercapture event received"',
-  // );
-  // const testLostPointerCapture = harness.useAsyncTest(
-  //   'lostpointercapture event received"',
-  // );
+  const testGotPointerCapture = harness.useAsyncTest(
+    'gotpointercapture event received"',
+  );
+  const testLostPointerCapture = harness.useAsyncTest(
+    'lostpointercapture event received"',
+  );
 
   const handleCaptureButtonDown = useCallback((evt: PointerEvent) => {
     const target0 = target0Ref.current;
@@ -50,20 +50,20 @@ function PointerEventCaptureMouseTestCase(
     }
   }, []);
 
-  // const handleTarget0GotPointerCapture = useCallback(
-  //   (evt: PointerEvent) => {
-  //     testGotPointerCapture.done();
-  //   },
-  //   [testGotPointerCapture],
-  // );
+  const handleTarget0GotPointerCapture = useCallback(
+    (evt: PointerEvent) => {
+      testGotPointerCapture.done();
+    },
+    [testGotPointerCapture],
+  );
 
-  // const handleTarget0LostPointerCapture = useCallback(
-  //   (evt: PointerEvent) => {
-  //     testLostPointerCapture.done();
-  //     isPointerCaptureRef.current = false;
-  //   },
-  //   [testLostPointerCapture],
-  // );
+  const handleTarget0LostPointerCapture = useCallback(
+    (evt: PointerEvent) => {
+      testLostPointerCapture.done();
+      isPointerCaptureRef.current = false;
+    },
+    [testLostPointerCapture],
+  );
 
   const testPointerMove0 = harness.useAsyncTest(
     'pointerover event for black rectangle received',
@@ -150,8 +150,8 @@ function PointerEventCaptureMouseTestCase(
     <View style={styles.container}>
       <View
         ref={target0Ref}
-        // onGotPointerCapture={handleTarget0GotPointerCapture}
-        // onLostPointerCapture={handleTarget0LostPointerCapture}
+        onGotPointerCapture={handleTarget0GotPointerCapture}
+        onLostPointerCapture={handleTarget0LostPointerCapture}
         onPointerMove={handleTarget0PointerMove}
         style={styles.target0}
       />

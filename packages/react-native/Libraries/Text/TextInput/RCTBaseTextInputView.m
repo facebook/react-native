@@ -231,7 +231,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (void)setTextContentType:(NSString *)type
 {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
   static dispatch_once_t onceToken;
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
@@ -263,21 +262,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"telephoneNumber" : UITextContentTypeTelephoneNumber,
       @"username" : UITextContentTypeUsername,
       @"password" : UITextContentTypePassword,
+      @"newPassword" : UITextContentTypeNewPassword,
+      @"oneTimeCode" : UITextContentTypeOneTimeCode,
     };
-
-    NSDictionary<NSString *, NSString *> *iOS12extras =
-        @{@"newPassword" : UITextContentTypeNewPassword, @"oneTimeCode" : UITextContentTypeOneTimeCode};
-
-    NSMutableDictionary<NSString *, NSString *> *iOS12baseMap = [contentTypeMap mutableCopy];
-    [iOS12baseMap addEntriesFromDictionary:iOS12extras];
-
-    contentTypeMap = [iOS12baseMap copy];
   });
 
   // Setting textContentType to an empty string will disable any
   // default behaviour, like the autofill bar for password inputs
   self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
-#endif
 }
 
 - (void)setPasswordRules:(NSString *)descriptor

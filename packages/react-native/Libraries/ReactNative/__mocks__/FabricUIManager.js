@@ -24,7 +24,7 @@ import type {
   Spec as FabricUIManager,
 } from '../FabricUIManager';
 
-type NodeMock = {
+export type NodeMock = {
   children: NodeSet,
   instanceHandle: InternalInstanceHandle,
   props: NodeProps,
@@ -33,12 +33,12 @@ type NodeMock = {
   viewName: string,
 };
 
-function fromNode(node: Node): NodeMock {
+export function fromNode(node: Node): NodeMock {
   // $FlowExpectedError[incompatible-return]
   return node;
 }
 
-function toNode(node: NodeMock): Node {
+export function toNode(node: NodeMock): Node {
   // $FlowExpectedError[incompatible-return]
   return node;
 }
@@ -66,14 +66,10 @@ function ensureHostNode(node: Node): void {
   }
 }
 
-function getAncestorsInCurrentTree(
+function getAncestorsInChildSet(
   node: Node,
+  childSet: NodeSet,
 ): ?$ReadOnlyArray<[Node, number]> {
-  const childSet = roots.get(fromNode(node).rootTag);
-  if (childSet == null) {
-    return null;
-  }
-
   const rootNode = toNode({
     reactTag: 0,
     rootTag: fromNode(node).rootTag,
@@ -96,6 +92,17 @@ function getAncestorsInCurrentTree(
   return null;
 }
 
+function getAncestorsInCurrentTree(
+  node: Node,
+): ?$ReadOnlyArray<[Node, number]> {
+  const childSet = roots.get(fromNode(node).rootTag);
+  if (childSet == null) {
+    return null;
+  }
+
+  return getAncestorsInChildSet(node, childSet);
+}
+
 function getAncestors(root: Node, node: Node): ?$ReadOnlyArray<[Node, number]> {
   if (fromNode(root).reactTag === fromNode(node).reactTag) {
     return [];
@@ -113,8 +120,8 @@ function getAncestors(root: Node, node: Node): ?$ReadOnlyArray<[Node, number]> {
   return null;
 }
 
-function getNodeInCurrentTree(node: Node): ?Node {
-  const ancestors = getAncestorsInCurrentTree(node);
+export function getNodeInChildSet(node: Node, childSet: NodeSet): ?Node {
+  const ancestors = getAncestorsInChildSet(node, childSet);
   if (ancestors == null) {
     return null;
   }
@@ -122,6 +129,15 @@ function getNodeInCurrentTree(node: Node): ?Node {
   const [parent, position] = ancestors[ancestors.length - 1];
   const nodeInCurrentTree = fromNode(parent).children[position];
   return nodeInCurrentTree;
+}
+
+function getNodeInCurrentTree(node: Node): ?Node {
+  const childSet = roots.get(fromNode(node).rootTag);
+  if (childSet == null) {
+    return null;
+  }
+
+  return getNodeInChildSet(node, childSet);
 }
 
 function* dfs(node: ?Node): Iterator<Node> {
@@ -143,7 +159,23 @@ function hasDisplayNone(node: Node): boolean {
   return props != null && props.display === 'none';
 }
 
-const FabricUIManagerMock: FabricUIManager = {
+interface IFabricUIManagerMock extends FabricUIManager {
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle;
+  __addCommitHook(commitHook: UIManagerCommitHook): void;
+  __removeCommitHook(commitHook: UIManagerCommitHook): void;
+}
+
+export interface UIManagerCommitHook {
+  shadowTreeWillCommit: (
+    rootTag: RootTag,
+    oldChildSet: ?NodeSet,
+    newChildSet: NodeSet,
+  ) => void;
+}
+
+const commitHooks: Set<UIManagerCommitHook> = new Set();
+
+const FabricUIManagerMock: IFabricUIManagerMock = {
   createNode: jest.fn(
     (
       reactTag: number,
@@ -206,6 +238,9 @@ const FabricUIManagerMock: FabricUIManager = {
     childSet.push(child);
   }),
   completeRoot: jest.fn((rootTag: RootTag, childSet: NodeSet): void => {
+    commitHooks.forEach(hook =>
+      hook.shadowTreeWillCommit(rootTag, roots.get(rootTag), childSet),
+    );
     roots.set(rootTag, childSet);
   }),
   measure: jest.fn((node: Node, callback: MeasureOnSuccessCallback): void => {
@@ -458,10 +493,22 @@ const FabricUIManagerMock: FabricUIManager = {
       return [scrollLeft, scrollTop];
     },
   ),
+
+  __getInstanceHandleFromNode(node: Node): InternalInstanceHandle {
+    return fromNode(node).instanceHandle;
+  },
+
+  __addCommitHook(commitHook: UIManagerCommitHook): void {
+    commitHooks.add(commitHook);
+  },
+
+  __removeCommitHook(commitHook: UIManagerCommitHook): void {
+    commitHooks.delete(commitHook);
+  },
 };
 
 global.nativeFabricUIManager = FabricUIManagerMock;
 
-export function getFabricUIManager(): ?FabricUIManager {
+export function getFabricUIManager(): ?IFabricUIManagerMock {
   return FabricUIManagerMock;
 }

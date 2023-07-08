@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: de_DE -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Bild</string>
+    <string name="imagebutton_description" gender="unknown">Button, Bild</string>
+    <string name="header_description" gender="unknown">Überschrift</string>
+    <string name="alert_description" gender="unknown">Warnhinweis</string>
+    <string name="combobox_description" gender="unknown">Kombinationsfeld</string>
+    <string name="menu_description" gender="unknown">Menü</string>
+    <string name="menubar_description" gender="unknown">Menüleiste</string>
+    <string name="menuitem_description" gender="unknown">Menüpunkt</string>
+    <string name="progressbar_description" gender="unknown">Statusanzeige</string>
+    <string name="radiogroup_description" gender="unknown">Gruppe von Buttons</string>
+    <string name="scrollbar_description" gender="unknown">Scroll-Leiste</string>
+    <string name="spinbutton_description" gender="unknown">Auswahl-Button</string>
+    <string name="tablist_description" gender="unknown">Tab-Liste</string>
+    <string name="toolbar_description" gender="unknown">Symbolleiste</string>
+    <string name="summary_description" gender="unknown">Übersicht</string>
+    <string name="state_busy_description" gender="unknown">in Gebrauch</string>
+    <string name="state_expanded_description" gender="unknown">eingeblendet</string>
+    <string name="state_collapsed_description" gender="unknown">ausgeblendet</string>
+    <string name="state_unselected_description" gender="unknown">nicht ausgewählt</string>
+    <string name="state_on_description" gender="unknown">ein</string>
+    <string name="state_off_description" gender="unknown">aus</string>
+    <string name="state_mixed_description" gender="unknown">gemischt</string>
+</resources>

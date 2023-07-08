@@ -21,7 +21,7 @@ namespace facebook::react {
 enum class PointerEventsMode : uint8_t { Auto, None, BoxNone, BoxOnly };
 
 struct ViewEvents {
-  std::bitset<32> bits{};
+  std::bitset<64> bits{};
 
   enum class Offset : std::size_t {
     // Pointer events
@@ -60,13 +60,15 @@ struct ViewEvents {
     PointerOutCapture = 29,
     Click = 30,
     ClickCapture = 31,
+    GotPointerCapture = 32,
+    LostPointerCapture = 33,
   };
 
   constexpr bool operator[](const Offset offset) const {
     return bits[static_cast<std::size_t>(offset)];
   }
 
-  std::bitset<32>::reference operator[](const Offset offset) {
+  std::bitset<64>::reference operator[](const Offset offset) {
     return bits[static_cast<std::size_t>(offset)];
   }
 };

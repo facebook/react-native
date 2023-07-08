@@ -77,7 +77,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
-  rootViewController.view = rootView;
+  [self setRootView:rootView toRootViewController:rootViewController];
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
@@ -127,6 +127,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (UIViewController *)createRootViewController
 {
   return [UIViewController new];
+}
+
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
+{
+  rootViewController.view = rootView;
 }
 
 - (BOOL)runtimeSchedulerEnabled

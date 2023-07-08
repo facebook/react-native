@@ -12,7 +12,7 @@
   "keywords": ["babel", "plugin", "codegen", "react-native", "native-modules", "view-manager"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "files": [
     "index.js"

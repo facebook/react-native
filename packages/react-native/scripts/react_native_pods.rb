@@ -57,7 +57,7 @@ end
 # - path: path to react_native installation.
 # - fabric_enabled: whether fabric should be enabled or not.
 # - new_arch_enabled: whether the new architecture should be enabled or not.
-# - production: whether the dependencies must be installed to target a Debug or a Release build.
+# - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
@@ -67,7 +67,7 @@ def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-  production: ENV['PRODUCTION'] == '1',
+  production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
@@ -118,6 +118,7 @@ def use_react_native! (
   pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
+  pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
@@ -130,6 +131,7 @@ def use_react_native! (
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
@@ -137,7 +139,7 @@ def use_react_native! (
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+  pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec", :modular_headers => true
   pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
   pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
 
@@ -164,11 +166,8 @@ def use_react_native! (
     build_codegen!(prefix, relative_installation_root)
   end
 
-  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
-  # but those dependencies are still built.
-  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
-  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
-  if flipper_configuration.flipper_enabled && !production
+  # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
+  if flipper_configuration.flipper_enabled
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
@@ -239,14 +238,15 @@ def react_native_post_install(
 
   if ReactNativePodsUtils.has_pod(installer, "React-hermes")
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+    ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
-  ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  ReactNativePodsUtils.apply_ats_config(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"

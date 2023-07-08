@@ -24,6 +24,9 @@ static __weak ShimRCTInstance *weakShim = nil;
         [ShimRCTInstance class],
         @selector(initWithDelegate:
                   jsEngineInstance:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+    RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
+    RCTSwizzleInstanceSelector(
+        [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
     weakShim = self;
   }
   return self;
@@ -36,7 +39,11 @@ static __weak ShimRCTInstance *weakShim = nil;
       [ShimRCTInstance class],
       @selector(initWithDelegate:
                 jsEngineInstance:bundleManager:turboModuleManagerDelegate:onInitialBundleLoad:moduleRegistry:));
+  RCTSwizzleInstanceSelector([RCTInstance class], [ShimRCTInstance class], @selector(invalidate));
+  RCTSwizzleInstanceSelector(
+      [RCTInstance class], [ShimRCTInstance class], @selector(callFunctionOnJSModule:method:args:));
   _initCount = 0;
+  _invalidateCount = 0;
 }
 
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
@@ -48,6 +55,18 @@ static __weak ShimRCTInstance *weakShim = nil;
 {
   weakShim.initCount++;
   return self;
+}
+
+- (void)invalidate
+{
+  weakShim.invalidateCount++;
+}
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
+{
+  weakShim.jsModuleName = moduleName;
+  weakShim.method = method;
+  weakShim.args = [args copy];
 }
 
 @end

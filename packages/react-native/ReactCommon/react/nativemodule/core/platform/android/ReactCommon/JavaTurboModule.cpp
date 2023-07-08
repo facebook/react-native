@@ -430,15 +430,9 @@ jsi::JSError convertThrowableToJSError(
   }
 
   jsi::Object cause(runtime);
-  auto getName = throwable->getClass()
-                     ->getClass()
-                     ->getMethod<jni::local_ref<jni::JString>()>("getName");
-  auto getMessage =
-      throwable->getClass()->getMethod<jni::local_ref<jni::JString>()>(
-          "getMessage");
-  auto message = getMessage(throwable)->toStdString();
-  cause.setProperty(
-      runtime, "name", getName(throwable->getClass())->toStdString());
+  auto name = throwable->getClass()->getCanonicalName()->toStdString();
+  auto message = throwable->getMessage()->toStdString();
+  cause.setProperty(runtime, "name", name);
   cause.setProperty(runtime, "message", message);
   cause.setProperty(runtime, "stackElements", std::move(stackElements));
 

@@ -159,4 +159,7 @@ public class ReactFeatureFlags {
 
   /** Report mount operations from the host platform to notify mount hooks. */
   public static boolean enableMountHooks = false;
+
+  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
+  public static boolean fixStoppedSurfaceTagSetLeak = true;
 }

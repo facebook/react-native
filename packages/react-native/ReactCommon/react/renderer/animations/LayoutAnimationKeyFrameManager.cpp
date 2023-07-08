@@ -467,8 +467,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
               if (baselineShadowView.traits.check(
                       ShadowNodeTraits::Trait::ViewKind)) {
-                auto const &viewProps =
-                    *std::static_pointer_cast<ViewProps const>(props);
+                const auto &viewProps = static_cast<ViewProps const &>(*props);
                 const_cast<ViewProps &>(viewProps).opacity = 0;
               }
 
@@ -489,8 +488,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                       .cloneProps(propsParserContext, viewStart.props, {});
               if (baselineShadowView.traits.check(
                       ShadowNodeTraits::Trait::ViewKind)) {
-                auto const &viewProps =
-                    *std::static_pointer_cast<ViewProps const>(props);
+                const auto &viewProps = static_cast<ViewProps const &>(*props);
                 const_cast<ViewProps &>(viewProps).transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
@@ -590,8 +588,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
                 if (baselineShadowView.traits.check(
                         ShadowNodeTraits::Trait::ViewKind)) {
-                  auto const &viewProps =
-                      *std::static_pointer_cast<ViewProps const>(props);
+                  const auto &viewProps =
+                      static_cast<ViewProps const &>(*props);
                   const_cast<ViewProps &>(viewProps).opacity = 0;
                 }
 
@@ -615,8 +613,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
                 if (baselineShadowView.traits.check(
                         ShadowNodeTraits::Trait::ViewKind)) {
-                  auto const &viewProps =
-                      *std::static_pointer_cast<ViewProps const>(props);
+                  const auto &viewProps =
+                      static_cast<ViewProps const &>(*props);
                   const_cast<ViewProps &>(viewProps).transform =
                       Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
                 }

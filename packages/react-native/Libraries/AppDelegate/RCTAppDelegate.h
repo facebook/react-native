@@ -36,6 +36,7 @@
  *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
  *)initProps;
  *   - (UIViewController *)createRootViewController;
+ *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
  *   - (BOOL)turboModuleEnabled;
@@ -93,6 +94,16 @@
  * @return: an instance of `UIViewController`.
  */
 - (UIViewController *)createRootViewController;
+
+/**
+ * It assigns the rootView to the rootViewController
+ * By default, it assigns the rootView to the view property of the rootViewController
+ * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
+ * For example: UISplitViewController requires `setViewController(_:for:)`
+ *
+ * @return: void
+ */
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
 /// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
 ///

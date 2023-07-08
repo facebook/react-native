@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: en_GB -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="imagebutton_description" gender="unknown">Button, image</string>
+    <string name="combobox_description" gender="unknown">Combo box</string>
+    <string name="menubar_description" gender="unknown">Menu bar</string>
+    <string name="menuitem_description" gender="unknown">Menu item</string>
+    <string name="progressbar_description" gender="unknown">Progress bar</string>
+    <string name="radiogroup_description" gender="unknown">Radio group</string>
+    <string name="scrollbar_description" gender="unknown">Scroll bar</string>
+    <string name="spinbutton_description" gender="unknown">Spin button</string>
+    <string name="tablist_description" gender="unknown">Tab list</string>
+    <string name="toolbar_description" gender="unknown">Tool bar</string>
+</resources>

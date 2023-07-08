@@ -8,6 +8,7 @@
 package com.facebook.react.views.common;
 
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.react.R;
 
 /** Class containing static methods involving manipulations of Views */
@@ -19,9 +20,15 @@ public class ViewUtils {
    * @param view View to get the testId value for
    * @return the value of testId if defined for the view, otherwise null
    */
-  public static String getTestId(View view) {
-    return view.getTag(R.id.react_test_id) instanceof String
-        ? (String) view.getTag(R.id.react_test_id)
-        : null;
+  public static @Nullable String getTestId(@Nullable View view) {
+    if (view == null) {
+      return null;
+    }
+    Object tag = view.getTag(R.id.react_test_id);
+    if (tag instanceof String) {
+      return (String) tag;
+    } else {
+      return null;
+    }
   }
 }

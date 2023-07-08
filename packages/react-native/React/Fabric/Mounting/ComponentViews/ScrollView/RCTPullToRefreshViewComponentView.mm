@@ -57,8 +57,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
-  auto const &newConcreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(props);
+  const auto &oldConcreteProps = static_cast<PullToRefreshViewProps const &>(*_props);
+  const auto &newConcreteProps = static_cast<PullToRefreshViewProps const &>(*props);
 
   if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
@@ -89,12 +89,12 @@ using namespace facebook::react;
 
 - (void)handleUIControlEventValueChanged
 {
-  std::static_pointer_cast<PullToRefreshViewEventEmitter const>(_eventEmitter)->onRefresh({});
+  static_cast<PullToRefreshViewEventEmitter const &>(*_eventEmitter).onRefresh({});
 }
 
 - (void)_updateTitle
 {
-  auto const &concreteProps = *std::static_pointer_cast<PullToRefreshViewProps const>(_props);
+  const auto &concreteProps = static_cast<PullToRefreshViewProps const &>(*_props);
 
   if (concreteProps.title.empty()) {
     _refreshControl.attributedTitle = nil;

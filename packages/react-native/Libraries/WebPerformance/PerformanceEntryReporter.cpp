@@ -15,10 +15,6 @@
 namespace facebook::react {
 EventTag PerformanceEntryReporter::sCurrentEventTag_{0};
 
-static inline double getCurrentTimeStamp() {
-  return JSExecutor::performanceNow();
-}
-
 PerformanceEntryReporter &PerformanceEntryReporter::getInstance() {
   static PerformanceEntryReporter instance;
   return instance;
@@ -29,9 +25,15 @@ PerformanceEntryReporter::PerformanceEntryReporter() {
   // sure that marks can be referenced by measures
   getBuffer(PerformanceEntryType::MARK).hasNameLookup = true;
 }
+
 void PerformanceEntryReporter::setReportingCallback(
     std::optional<AsyncCallback<>> callback) {
   callback_ = callback;
+}
+
+double PerformanceEntryReporter::getCurrentTimeStamp() const {
+  return timeStampProvider_ != nullptr ? timeStampProvider_()
+                                       : JSExecutor::performanceNow();
 }
 
 void PerformanceEntryReporter::startReporting(PerformanceEntryType entryType) {
@@ -219,7 +221,15 @@ void PerformanceEntryReporter::measure(
     const std::optional<std::string> &endMark) {
   double startTimeVal = startMark ? getMarkTime(*startMark) : startTime;
   double endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
+
+  if (!endMark && endTime < startTimeVal) {
+    // The end time is not specified, take the current time, according to the
+    // standard
+    endTimeVal = getCurrentTimeStamp();
+  }
+
   double durationVal = duration ? *duration : endTimeVal - startTimeVal;
+
   logEntry(
       {name,
        static_cast<int>(PerformanceEntryType::MEASURE),

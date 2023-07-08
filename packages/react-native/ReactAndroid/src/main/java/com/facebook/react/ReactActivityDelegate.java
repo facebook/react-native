@@ -15,10 +15,11 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.modules.core.PermissionListener;
 
 /**
@@ -56,7 +57,7 @@ public class ReactActivityDelegate {
     return null;
   }
 
-  protected @NonNull Bundle composeLaunchOptions() {
+  protected @Nullable Bundle composeLaunchOptions() {
     Bundle composedLaunchOptions = getLaunchOptions();
     if (isFabricEnabled()) {
       if (composedLaunchOptions == null) {
@@ -86,6 +87,10 @@ public class ReactActivityDelegate {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
 
+  public ReactHostInterface getReactHost() {
+    return ((ReactApplication) getPlainActivity().getApplication()).getReactHostInterface();
+  }
+
   public ReactInstanceManager getReactInstanceManager() {
     return mReactDelegate.getReactInstanceManager();
   }
@@ -97,14 +102,19 @@ public class ReactActivityDelegate {
   protected void onCreate(Bundle savedInstanceState) {
     String mainComponentName = getMainComponentName();
     final Bundle launchOptions = composeLaunchOptions();
-    mReactDelegate =
-        new ReactDelegate(
-            getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
-          @Override
-          protected ReactRootView createRootView() {
-            return ReactActivityDelegate.this.createRootView(launchOptions);
-          }
-        };
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactDelegate =
+          new ReactDelegate(getPlainActivity(), getReactHost(), mainComponentName, launchOptions);
+    } else {
+      mReactDelegate =
+          new ReactDelegate(
+              getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
+            @Override
+            protected ReactRootView createRootView() {
+              return ReactActivityDelegate.this.createRootView(launchOptions);
+            }
+          };
+    }
     if (mainComponentName != null) {
       loadApp(mainComponentName);
     }
@@ -137,11 +147,13 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()
-        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-      event.startTracking();
-      return true;
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (getReactNativeHost().hasInstance()
+          && getReactNativeHost().getUseDeveloperSupport()
+          && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+        event.startTracking();
+        return true;
+      }
     }
     return false;
   }
@@ -151,11 +163,13 @@ public class ReactActivityDelegate {
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance()
-        && getReactNativeHost().getUseDeveloperSupport()
-        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
-      getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
-      return true;
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (getReactNativeHost().hasInstance()
+          && getReactNativeHost().getUseDeveloperSupport()
+          && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+        getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+        return true;
+      }
     }
     return false;
   }
@@ -165,22 +179,28 @@ public class ReactActivityDelegate {
   }
 
   public boolean onNewIntent(Intent intent) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
-      return true;
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onNewIntent(intent);
+        return true;
+      }
     }
     return false;
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onWindowFocusChange(hasFocus);
+      }
     }
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    if (getReactNativeHost().hasInstance()) {
-      getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
+    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (getReactNativeHost().hasInstance()) {
+        getReactInstanceManager().onConfigurationChanged(getContext(), newConfig);
+      }
     }
   }
 

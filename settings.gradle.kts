@@ -15,6 +15,7 @@ pluginManagement {
 
 include(
     ":packages:react-native:ReactAndroid",
+    ":packages:react-native:ReactAndroid:flipper-integration",
     ":packages:react-native:ReactAndroid:hermes-engine",
     ":packages:react-native:ReactAndroid:external-artifacts")
 
@@ -28,7 +29,10 @@ if (File("${rootDir}/packages").exists()) {
 
 rootProject.name = "react-native-github"
 
-plugins { id("com.gradle.enterprise").version("3.7.1") }
+plugins {
+  id("com.gradle.enterprise").version("3.7.1")
+  id("org.gradle.toolchains.foojay-resolver-convention").version("0.5.0")
+}
 
 // If you specify a file inside gradle/gradle-enterprise.gradle.kts
 // you can configure your custom Gradle Enterprise instance

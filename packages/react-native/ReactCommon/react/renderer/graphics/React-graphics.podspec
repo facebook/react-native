@@ -45,11 +45,13 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_graphics"
-    s.header_mappings_dir  = "../../.."
+    s.header_mappings_dir  =  File.absolute_path("../../..")
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
 
-  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => header_search_paths.join(" ") }
+  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
+                             "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
+                             "DEFINES_MODULE" => "YES" }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version

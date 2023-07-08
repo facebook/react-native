@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
 #include <react/bridgeless/BindingsInstaller.h>

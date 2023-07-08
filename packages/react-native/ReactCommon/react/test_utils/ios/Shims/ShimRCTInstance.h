@@ -9,7 +9,12 @@
 
 @interface ShimRCTInstance : NSObject
 
-@property (assign) int initCount;
+@property int initCount;
+@property int invalidateCount;
+
+@property NSString *jsModuleName;
+@property NSString *method;
+@property NSArray *args;
 
 - (void)reset;
 

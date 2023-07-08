@@ -8,10 +8,10 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

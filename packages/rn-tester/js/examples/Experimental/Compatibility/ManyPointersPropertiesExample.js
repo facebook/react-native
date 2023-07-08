@@ -19,6 +19,28 @@ const styles = StyleSheet.create({
   property: {borderWidth: 1, margin: 10},
 });
 
+function getModifiersText(evt: PointerEvent['nativeEvent']): string {
+  const modifiers = [];
+  if (evt.ctrlKey === true) {
+    modifiers.push('Ctrl');
+  }
+  if (evt.shiftKey === true) {
+    modifiers.push('Shift');
+  }
+  if (evt.altKey === true) {
+    modifiers.push('Alt');
+  }
+  if (evt.metaKey === true) {
+    modifiers.push('Meta');
+  }
+
+  if (modifiers.length > 0) {
+    return modifiers.join(', ');
+  }
+
+  return '<none>';
+}
+
 function ManyPointersPropertiesExample(): React.Node {
   const [data, setData] = React.useState<{}>({});
   const onPointerMove = (event: PointerEvent) => {
@@ -43,8 +65,13 @@ function ManyPointersPropertiesExample(): React.Node {
                 Coordinates: [{evt.clientX.toPrecision(3)},{' '}
                 {evt.clientY.toPrecision(3)}]
               </Text>
+              <Text>
+                Screen Coordinates: [{evt.screenX?.toPrecision(3)},{' '}
+                {evt.screenY?.toPrecision(3)}]
+              </Text>
               <Text>Button: {evt.button}</Text>
               <Text>Pressure: {evt.pressure}</Text>
+              <Text>Modifiers: {getModifiersText(evt)}</Text>
             </View>
           ),
         )}

@@ -5,8 +5,6 @@
 
 require "json"
 
-# Whether Hermes is built for Release or Debug is determined by the PRODUCTION envvar.
-
 # package.json
 package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']

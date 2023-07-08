@@ -12,13 +12,13 @@
   "keywords": ["metro", "config", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "exports": "./index.js",
   "dependencies": {
     "@react-native/js-polyfills": "^0.73.0",
-    "metro-config": "0.76.2",
-    "metro-react-native-babel-transformer": "0.76.2",
-    "metro-runtime": "0.76.2"
+    "metro-config": "0.76.7",
+    "metro-react-native-babel-transformer": "0.76.7",
+    "metro-runtime": "0.76.7"
   }
 }
