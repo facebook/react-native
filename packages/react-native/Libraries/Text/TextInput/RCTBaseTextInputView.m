@@ -75,7 +75,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   UIFont *font = [textAttributes valueForKey:NSFontAttributeName];
   NSParagraphStyle *paragraphStyle = [textAttributes valueForKey:NSParagraphStyleAttributeName];
-  if (paragraphStyle.maximumLineHeight >= font.lineHeight) {
+  if (!isnan(paragraphStyle.maximumLineHeight) && !isnan(font.lineHeight) && paragraphStyle.maximumLineHeight >= font.lineHeight) {
     CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
     [textAttributes setValue:@(baseLineOffset) forKey:NSBaselineOffsetAttributeName];
   }

@@ -180,9 +180,9 @@
 
     // The CALayer _UITextLayoutFragmentView does not align correctly 
     // when adding paragraphStyle.maximumLineHeight to an iOS UITextField (issue #28012).
-    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
+    CGFloat fontLineHeight = textAttributes.effectiveFont.lineHeight;
+    if (!isnan(textAttributes.lineHeight) && !isnan(fontLineHeight) && textAttributes.lineHeight > 0) {
       CGFloat effectiveLineHeight = textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier;
-      CGFloat fontLineHeight = textAttributes.effectiveFont.lineHeight;
       if (effectiveLineHeight >= fontLineHeight * 2.0) {
         CGFloat height = self.layoutMetrics.frame.size.height;
         CGFloat width =  self.layoutMetrics.frame.size.width;
