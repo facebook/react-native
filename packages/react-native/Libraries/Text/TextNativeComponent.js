@@ -9,13 +9,13 @@
  */
 
 import {createViewConfig} from '../NativeComponent/ViewConfig';
+import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
 import createReactNativeComponentClass from '../Renderer/shims/createReactNativeComponentClass';
 import {type HostComponent} from '../Renderer/shims/ReactNativeTypes';
 import {type ProcessedColorValue} from '../StyleSheet/processColor';
 import {type PressEvent} from '../Types/CoreEventTypes';
 import {type TextProps} from './TextProps';
-import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 
 type NativeTextProps = $ReadOnly<{
   ...TextProps,

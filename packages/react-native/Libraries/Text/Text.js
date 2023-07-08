@@ -17,7 +17,11 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
-import {NativeText, NativeVirtualText, CONTAINS_MAX_NUMBER_OF_LINES_RENAME} from './TextNativeComponent';
+import {
+  CONTAINS_MAX_NUMBER_OF_LINES_RENAME,
+  NativeText,
+  NativeVirtualText,
+} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
