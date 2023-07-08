@@ -202,7 +202,10 @@ const Text: React.AbstractComponent<
     numberOfLinesValue = 0;
   }
 
-  const numberOfLinesProps = useMemo((): {maximumNumberOfLines?: ?number, numberOfLines?: ?number } => {
+  const numberOfLinesProps = useMemo((): {
+    maximumNumberOfLines?: ?number,
+    numberOfLines?: ?number,
+  } => {
     if (CONTAINS_MAX_NUMBER_OF_LINES_RENAME) {
       return {
         maximumNumberOfLines: numberOfLinesValue,
