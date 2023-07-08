@@ -75,9 +75,11 @@ export const NativeText: HostComponent<NativeTextProps> =
     createViewConfig(textViewConfig),
   ): any);
 
-export const CONTAINS_MAX_NUMBER_OF_LINES_RENAME =
-  getNativeComponentAttributes('RCTText')?.NativeProps?.maximumNumberOfLines ===
-  'number';
+const jestIsDefined = typeof jest !== 'undefined';
+export const CONTAINS_MAX_NUMBER_OF_LINES_RENAME = jestIsDefined
+  ? true
+  : getNativeComponentAttributes('RCTText')?.NativeProps
+      ?.maximumNumberOfLines === 'number';
 
 export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
