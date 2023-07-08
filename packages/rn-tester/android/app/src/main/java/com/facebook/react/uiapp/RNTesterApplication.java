@@ -192,6 +192,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     return mReactHost;
   }
 
+  @UnstableReactNativeAPI
   public static class RNTesterReactJsExceptionHandler implements ReactJsExceptionHandler {
     public void reportJsException(ReadableMapBuffer errorMap) {}
   }
