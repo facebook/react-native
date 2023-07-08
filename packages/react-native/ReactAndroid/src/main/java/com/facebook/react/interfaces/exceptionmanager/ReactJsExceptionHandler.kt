@@ -8,9 +8,11 @@
 package com.facebook.react.interfaces.exceptionmanager
 
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 
 @DoNotStripAny
+@UnstableReactNativeAPI
 fun interface ReactJsExceptionHandler {
   fun reportJsException(errorMap: ReadableMapBuffer?)
 }
