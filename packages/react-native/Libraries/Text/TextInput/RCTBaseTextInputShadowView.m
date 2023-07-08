@@ -177,6 +177,27 @@
 
     baseTextInputView.textAttributes = textAttributes;
     baseTextInputView.reactBorderInsets = borderInsets;
+
+    // The CALayer _UITextLayoutFragmentView does not align correctly 
+    // when adding paragraphStyle.maximumLineHeight to an iOS UITextField (issue #28012).
+    if (!isnan(textAttributes.lineHeight) && !isnan(textAttributes.effectiveFont.lineHeight)) {
+      CGFloat effectiveLineHeight = textAttributes.lineHeight * textAttributes.effectiveFontSizeMultiplier;
+      CGFloat fontLineHeight = textAttributes.effectiveFont.lineHeight;
+      if (effectiveLineHeight >= fontLineHeight * 2.0) {
+        CGFloat height = self.layoutMetrics.frame.size.height;
+        CGFloat width =  self.layoutMetrics.frame.size.width;
+
+        // Setting contentVerticalAlignment to UIControlContentVerticalAlignmentTop aligns 
+        // _UITextLayoutFragmentView and UITextField on the same ordinate (y coordinate).
+        baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
+
+        // Align vertically _UITextLayoutFragmentView in the center of the UITextField (TextInput).
+        CGFloat padding = (height - effectiveLineHeight) / 2.0;
+        baseTextInputView.fragmentViewContainerBounds = CGRectMake(0, padding, width, effectiveLineHeight);
+      }
+    } else {
+      baseTextInputView.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    }
     baseTextInputView.reactPaddingInsets = paddingInsets;
 
     if (newAttributedText) {

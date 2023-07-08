@@ -130,9 +130,13 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
   if (!isnan(_lineHeight)) {
     CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
-    isParagraphStyleUsed = YES;
+
+    // Text with lineHeight lower than font.lineHeight does not correctly vertically align.
+    if (lineHeight > self.effectiveFont.lineHeight) {
+      paragraphStyle.minimumLineHeight = lineHeight;
+      paragraphStyle.maximumLineHeight = lineHeight;
+      isParagraphStyleUsed = YES;
+    }
   }
 
   if (isParagraphStyleUsed) {
