@@ -202,12 +202,16 @@ const Text: React.AbstractComponent<
     numberOfLinesValue = 0;
   }
 
-  const numberOfLinesProps = useMemo(() => {
-    return {
-      [CONTAINS_MAX_NUMBER_OF_LINES_RENAME
-        ? 'maximumNumberOfLines'
-        : 'numberOfLines']: numberOfLinesValue,
-    };
+  const numberOfLinesProps = useMemo((): {maximumNumberOfLines?: ?number, numberOfLines?: ?number } => {
+    if (CONTAINS_MAX_NUMBER_OF_LINES_RENAME) {
+      return {
+        maximumNumberOfLines: numberOfLinesValue,
+      };
+    } else {
+      return {
+        numberOfLines: numberOfLinesValue,
+      };
+    }
   }, [numberOfLinesValue]);
 
   const hasTextAncestor = useContext(TextAncestor);
