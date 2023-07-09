@@ -78,6 +78,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   if (!isnan(paragraphStyle.maximumLineHeight) && !isnan(font.lineHeight) && paragraphStyle.maximumLineHeight >= font.lineHeight) {
     CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
     [textAttributes setValue:@(baseLineOffset) forKey:NSBaselineOffsetAttributeName];
+  } else if (font.lineHeight > paragraphStyle.maximumLineHeight) {
+    NSMutableParagraphStyle *newParagraphStyle = [paragraphStyle mutableCopy];
+    newParagraphStyle.maximumLineHeight = font.lineHeight;
+    newParagraphStyle.minimumLineHeight = font.lineHeight;
+    [textAttributes setValue:newParagraphStyle forKey:NSParagraphStyleAttributeName];
   }
   backedTextInputView.defaultTextAttributes = textAttributes;
 }
