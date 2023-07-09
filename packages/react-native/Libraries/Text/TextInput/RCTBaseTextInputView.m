@@ -75,14 +75,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
   UIFont *font = [textAttributes valueForKey:NSFontAttributeName];
   NSParagraphStyle *paragraphStyle = [textAttributes valueForKey:NSParagraphStyleAttributeName];
-  if (!isnan(paragraphStyle.maximumLineHeight) && !isnan(font.lineHeight) && paragraphStyle.maximumLineHeight >= font.lineHeight) {
-    CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
-    [textAttributes setValue:@(baseLineOffset) forKey:NSBaselineOffsetAttributeName];
-  } else if (font.lineHeight > paragraphStyle.maximumLineHeight) {
-    NSMutableParagraphStyle *newParagraphStyle = [paragraphStyle mutableCopy];
-    newParagraphStyle.maximumLineHeight = font.lineHeight;
-    newParagraphStyle.minimumLineHeight = font.lineHeight;
-    [textAttributes setValue:newParagraphStyle forKey:NSParagraphStyleAttributeName];
+  if (!isnan(paragraphStyle.maximumLineHeight) && !isnan(font.lineHeight)) {
+    if (paragraphStyle.maximumLineHeight >= font.lineHeight) {
+      // The baseline aligns the text vertically in the line height (_UITextLayoutFragmentView).
+      CGFloat baseLineOffset = (paragraphStyle.maximumLineHeight - font.lineHeight) / 2.0;
+      [textAttributes setValue:@(baseLineOffset) forKey:NSBaselineOffsetAttributeName];
+    } else if (font.lineHeight > paragraphStyle.maximumLineHeight) {
+      // Text with lineHeight lower than font.lineHeight does not correctly vertically align.
+      NSMutableParagraphStyle *newParagraphStyle = [paragraphStyle mutableCopy];
+      newParagraphStyle.maximumLineHeight = font.lineHeight;
+      newParagraphStyle.minimumLineHeight = font.lineHeight;
+      [textAttributes setValue:newParagraphStyle forKey:NSParagraphStyleAttributeName];
+    }
   }
   backedTextInputView.defaultTextAttributes = textAttributes;
 }
