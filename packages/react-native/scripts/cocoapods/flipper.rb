@@ -6,7 +6,7 @@
 # Default versions of Flipper and related dependencies.
 # Update this map to bump the dependencies.
 $flipper_default_versions = {
-    'Flipper' => '0.182.0',
+    'Flipper' => '0.201.0',
     'Flipper-Boost-iOSX' => '1.76.0.1.11',
     'Flipper-DoubleConversion' => '3.2.0.1',
     'Flipper-Fmt' => '7.1.7',
@@ -64,18 +64,11 @@ def use_flipper_pods(versions = {}, configurations: ['Debug'])
 end
 
 # Applies some changes to some pods of the project:
-# * it sets the Swift version for Yoga kit to 4.1
 # * it sets the sonar-kit flag to React-Core pod
 #
 # @parameter installer: the installer object used to install the pods.
 def flipper_post_install(installer)
     installer.pods_project.targets.each do |target|
-        if target.name == 'YogaKit'
-            target.build_configurations.each do |config|
-                config.build_settings['SWIFT_VERSION'] = '4.1'
-            end
-        end
-
         # Enable flipper for React-RCTAppDelegate Debug configuration
         if target.name == 'React-RCTAppDelegate'
             target.build_configurations.each do |config|
