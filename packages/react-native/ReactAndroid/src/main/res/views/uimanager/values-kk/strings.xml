@@ -3,4 +3,6 @@
 <!-- @generated -->
 <!-- FB Locale: kk_KZ -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Сілтеме</string>
+    <string name="imagebutton_description" gender="unknown">Түйме, кескін</string>
 </resources>
