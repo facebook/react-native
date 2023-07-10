@@ -21,6 +21,7 @@
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
+#include <react/debug/react_native_assert.h>
 
 #include <glog/logging.h>
 
@@ -212,26 +213,31 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
 }
 
 RuntimeExecutor Instance::getRuntimeExecutor() {
-  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+  // HACK: RuntimeExecutor is not compatible with non-JSIExecutor, we return
+  // a null callback, which the caller should handle.
+  if (!getJavaScriptContext()) {
+    return nullptr;
+  }
 
-  auto runtimeExecutor =
-      [weakNativeToJsBridge](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
-        if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
-          strongNativeToJsBridge->runOnExecutorQueue(
-              [callback = std::move(callback)](JSExecutor *executor) {
-                jsi::Runtime *runtime =
-                    (jsi::Runtime *)executor->getJavaScriptContext();
-                try {
-                  callback(*runtime);
-                  executor->flush();
-                } catch (jsi::JSError &originalError) {
-                  handleJSError(*runtime, originalError, true);
-                }
-              });
-        }
-      };
-  return runtimeExecutor;
+  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+  return [weakNativeToJsBridge](
+             std::function<void(jsi::Runtime & runtime)> &&callback) {
+    if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
+      strongNativeToJsBridge->runOnExecutorQueue(
+          [callback = std::move(callback)](JSExecutor *executor) {
+            // Assumes the underlying executor is a JSIExecutor
+            jsi::Runtime *runtime =
+                (jsi::Runtime *)executor->getJavaScriptContext();
+            try {
+              react_native_assert(runtime != nullptr);
+              callback(*runtime);
+              executor->flush();
+            } catch (jsi::JSError &originalError) {
+              handleJSError(*runtime, originalError, true);
+            }
+          });
+    }
+  };
 }
 
 std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
