@@ -1,11 +1,11 @@
 {
-  "name": "metro-react-native-babel-preset",
-  "version": "0.77.0",
+  "name": "@react-native/babel-preset",
+  "version": "0.73.3",
   "description": "Babel preset for React Native applications",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/metro.git"
+    "url": "git@github.com:facebook/react-native.git"
   },
   "scripts": {
     "prepare-release": "test -d lib && mv src src.real && mv lib src",

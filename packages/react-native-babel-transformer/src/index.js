@@ -27,7 +27,7 @@ const {parseSync, transformFromAstSync} = require('@babel/core');
 const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
 const crypto = require('crypto');
 const fs = require('fs');
-const makeHMRConfig = require('metro-react-native-babel-preset/src/configs/hmr');
+const makeHMRConfig = require('@react-native/babel-preset/src/configs/hmr');
 const nullthrows = require('nullthrows');
 const path = require('path');
 
@@ -36,7 +36,7 @@ const cacheKeyParts = [
   require('babel-preset-fbjs/package.json').version,
 ];
 
-// TS detection conditions copied from metro-react-native-babel-preset
+// TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName /*: string */) {
   return !!fileName && fileName.endsWith('.ts');
 }
@@ -110,7 +110,7 @@ const getBabelRC = (function () {
       // $FlowFixMe[incompatible-use] `presets` is missing in null or undefined.
       babelRC.presets = [
         [
-          require('metro-react-native-babel-preset'),
+          require('@react-native/babel-preset'),
           {
             projectRoot,
             ...presetOptions,
