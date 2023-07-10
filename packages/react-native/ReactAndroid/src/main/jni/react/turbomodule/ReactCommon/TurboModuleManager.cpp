@@ -91,17 +91,6 @@ class JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
 };
 } // namespace
 
-constexpr static auto ReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static int getFeatureFlagValue(const char *name) {
-  static const auto reactFeatureFlagsJavaDescriptor =
-      jni::findClassStatic(ReactFeatureFlagsJavaDescriptor);
-  const auto field =
-      reactFeatureFlagsJavaDescriptor->getStaticField<jint>(name);
-  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
-}
-
 TurboModuleManager::TurboModuleManager(
     jni::alias_ref<TurboModuleManager::javaobject> jThis,
     RuntimeExecutor runtimeExecutor,
@@ -319,20 +308,13 @@ void TurboModuleManager::installJSIBindings(bool shouldCreateLegacyModules) {
   bool isInteropLayerDisabled = !shouldCreateLegacyModules;
 
   runtimeExecutor_([this, isInteropLayerDisabled](jsi::Runtime &runtime) {
-    TurboModuleBindingMode bindingMode = static_cast<TurboModuleBindingMode>(
-        getFeatureFlagValue("turboModuleBindingMode"));
-
     if (isInteropLayerDisabled) {
-      TurboModuleBinding::install(
-          runtime, bindingMode, createTurboModuleProvider());
+      TurboModuleBinding::install(runtime, createTurboModuleProvider());
       return;
     }
 
     TurboModuleBinding::install(
-        runtime,
-        bindingMode,
-        createTurboModuleProvider(),
-        createLegacyModuleProvider());
+        runtime, createTurboModuleProvider(), createLegacyModuleProvider());
   });
 }
 

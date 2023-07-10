@@ -17,8 +17,6 @@
 #import <ReactCommon/TurboModuleBinding.h>
 #import "RCTTurboModule.h"
 
-RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBindingMode bindingMode);
-
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
 /**
