@@ -1,11 +1,12 @@
 {
-  "name": "metro-react-native-babel-transformer",
-  "version": "0.77.0",
+  "name": "@react-native/babel-transformer",
+  "version": "0.73.3",
   "description": "Babel transformer for React Native applications.",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/metro.git"
+    "url": "git@github.com:facebook/react-native.git",
+    "directory": "packages/react-native-babel-transformer"
   },
   "scripts": {
     "prepare-release": "test -d lib && mv src src.real && mv lib src",
