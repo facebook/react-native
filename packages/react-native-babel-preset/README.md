@@ -1,4 +1,4 @@
-# metro-react-native-babel-preset
+# @react-native/babel-preset
 
 Babel presets for [React Native](https://reactnative.dev) applications. React Native itself uses this Babel preset by default when transforming your app's source code.
 
@@ -10,18 +10,18 @@ As mentioned above, you only need to use this preset if you are writing a custom
 
 ### Installation
 
-Install `metro-react-native-babel-preset` in your app:
+Install `@react-native/babel-preset` in your app:
 
 with `npm`:
 
 ```sh
-npm i metro-react-native-babel-preset --save-dev
+npm i @react-native/babel-preset --save-dev
 ```
 
 or with `yarn`:
 
 ```sh
-yarn add -D metro-react-native-babel-preset
+yarn add -D @react-native/babel-preset
 ```
 
 ### Configuring Babel
@@ -30,7 +30,7 @@ Then, create a file called `babel.config.js` in your project's root directory. T
 
 ```
 {
-  "presets": ["module:metro-react-native-babel-preset"]
+  "presets": ["module:@react-native/babel-preset"]
 }
 ```
 
