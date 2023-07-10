@@ -180,6 +180,22 @@ const UIManager = {
     commandName: number | string,
     commandArgs: any[],
   ) {
+    // Sometimes, libraries directly pass in the output of `findNodeHandle` to
+    // this function without checking if it's null. This guards against that
+    // case. We throw early here in Javascript so we can get a JS stacktrace
+    // instead of a harder-to-debug native Java or Objective-C stacktrace.
+    if (typeof reactTag !== 'number') {
+      let stringifiedArgs = '(failed to stringify commandArgs)';
+      try {
+        stringifiedArgs = JSON.stringify(commandArgs);
+      } catch (err) {
+        // Do nothing. We have a default message
+      }
+      throw new Error(
+        `dispatchViewManagerCommand: found null reactTag with args ${stringifiedArgs}`,
+      );
+    }
+
     if (isFabricReactTag(reactTag)) {
       const FabricUIManager = nullthrows(getFabricUIManager());
       const shadowNode =
