@@ -6,6 +6,7 @@
  */
 
 #include <cxxreact/JSExecutor.h>
+#include <logger/react_native_log.h>
 #include "EventEmitter.h"
 #include "EventLogger.h"
 #include "EventQueue.h"
@@ -53,12 +54,18 @@ void EventQueueProcessor::flushEvents(
       eventLogger->onEventDispatch(event.loggingTag);
     }
 
+    if (event.eventPayload == nullptr) {
+      react_native_log_error(
+          "EventQueueProcessor: Unexpected null event payload");
+      continue;
+    }
+
     eventPipe_(
         runtime,
         event.eventTarget.get(),
         event.type,
         reactPriority,
-        event.payloadFactory);
+        *event.eventPayload);
 
     if (eventLogger != nullptr) {
       eventLogger->onEventEnd(event.loggingTag);

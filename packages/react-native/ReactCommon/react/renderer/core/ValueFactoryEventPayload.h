@@ -7,22 +7,18 @@
 
 #pragma once
 
-#include <functional>
-#include <string>
-
-#include <jsi/jsi.h>
 #include <react/renderer/core/EventPayload.h>
-#include <react/renderer/core/EventTarget.h>
-#include <react/renderer/core/ReactEventPriority.h>
 #include <react/renderer/core/ValueFactory.h>
 
 namespace facebook::react {
 
-using EventPipe = std::function<void(
-    jsi::Runtime &runtime,
-    const EventTarget *eventTarget,
-    const std::string &type,
-    ReactEventPriority priority,
-    const EventPayload &payload)>;
+class ValueFactoryEventPayload : public EventPayload {
+ public:
+  explicit ValueFactoryEventPayload(ValueFactory factory);
+  jsi::Value asJSIValue(jsi::Runtime &runtime) const override;
+
+ private:
+  ValueFactory valueFactory_;
+};
 
 } // namespace facebook::react

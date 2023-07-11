@@ -84,7 +84,7 @@ void EventEmitter::dispatchEvent(
   eventDispatcher->dispatchEvent(
       RawEvent(
           normalizeEventType(std::move(type)),
-          payloadFactory,
+          std::make_shared<ValueFactoryEventPayload>(payloadFactory),
           eventTarget_,
           category),
       priority);
@@ -102,7 +102,7 @@ void EventEmitter::dispatchUniqueEvent(
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      payloadFactory,
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
       eventTarget_,
       RawEvent::Category::Continuous));
 }
