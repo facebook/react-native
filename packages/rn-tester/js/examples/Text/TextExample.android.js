@@ -235,6 +235,32 @@ class TextExample extends React.Component<{...}> {
             This text is indented by 10px padding on all sides.
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Border">
+          <Text
+            style={{
+              borderRadius: 6,
+              borderColor: 'red',
+              borderWidth: 2,
+              borderStyle: 'solid',
+              backgroundColor: '#eee',
+              marginBottom: 8,
+              overflow: 'hidden',
+            }}>
+            Text can have simple borders.
+          </Text>
+          <Text
+            style={{
+              borderRadius: 6,
+              borderLeftColor: 'red',
+              borderRightColor: 'green',
+              borderTopColor: 'blue',
+              borderBottomColor: 'orange',
+              borderWidth: 2,
+              backgroundColor: '#eee',
+            }}>
+            And even complex ones.
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Text metrics legend">
           <TextLegend />
         </RNTesterBlock>

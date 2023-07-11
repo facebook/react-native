@@ -587,6 +587,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
           borderMetrics.borderWidths.left == 0 ||
           colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
+  layer.backgroundColor = _backgroundColor.CGColor;
+
   if (useCoreAnimationBorderRendering) {
     layer.mask = nil;
     if (_borderLayer) {
@@ -602,7 +604,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 
     layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
 
-    layer.backgroundColor = _backgroundColor.CGColor;
   } else {
     if (!_borderLayer) {
       _borderLayer = [CALayer new];
@@ -612,7 +613,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       [layer addSublayer:_borderLayer];
     }
 
-    layer.backgroundColor = nil;
     layer.borderWidth = 0;
     layer.borderColor = nil;
     layer.cornerRadius = 0;
@@ -625,7 +625,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
         borderColors,
-        _backgroundColor.CGColor,
+        UIColor.clearColor.CGColor,
         self.clipsToBounds);
 
     RCTReleaseRCTBorderColors(borderColors);
@@ -653,7 +653,8 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     // Stage 2.5. Custom Clipping Mask
     CAShapeLayer *maskLayer = nil;
     CGFloat cornerRadius = 0;
-    if (self.clipsToBounds) {
+    // When not using core animation border rendering we need to clip the background color.
+    if (self.clipsToBounds || (!useCoreAnimationBorderRendering && CGColorGetAlpha(_backgroundColor.CGColor) > 0)) {
       if (borderMetrics.borderRadii.isUniform()) {
         // In this case we can simply use `cornerRadius` exclusively.
         cornerRadius = borderMetrics.borderRadii.topLeft;

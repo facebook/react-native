@@ -611,6 +611,39 @@ exports.examples = [
     },
   },
   {
+    title: 'Border',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            style={{
+              borderRadius: 6,
+              borderColor: 'red',
+              borderWidth: 2,
+              borderStyle: 'solid',
+              backgroundColor: '#eee',
+              marginBottom: 8,
+              overflow: 'hidden',
+            }}>
+            Text can have simple borders.
+          </Text>
+          <Text
+            style={{
+              borderRadius: 6,
+              borderLeftColor: 'red',
+              borderRightColor: 'green',
+              borderTopColor: 'blue',
+              borderBottomColor: 'orange',
+              borderWidth: 2,
+              backgroundColor: '#eee',
+            }}>
+            And even complex ones with the new renderer.
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Font Family',
     render: function (): React.Node {
       return (
