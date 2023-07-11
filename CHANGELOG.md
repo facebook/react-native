@@ -28,6 +28,7 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 #### Android specific
 
 - Do not create RuntimeExecutor on non-JSI executors (#38125) ([d73b61c7c7](https://github.com/facebook/react-native/commit/d73b61c7c7dae23630b51b00048eafe5fcb47bd3) by [@lunaleaps](https://github.com/lunaleaps))
+- Prevent crash on OnePlus/Oppo devices in runAnimationStep ([a46a7cd1](https://github.com/facebook/react-native/commit/a46a7cd1f613d6eaea1d1cd07751f17cdc07c21b) by [@hsource](https://github.com/hsource))
 
 #### iOS specific
 
