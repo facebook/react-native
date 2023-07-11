@@ -53,6 +53,16 @@ export interface TextPropsIOS {
    * default, a gray oval highlights the text on press down.
    */
   suppressHighlighting?: boolean | undefined;
+
+  /**
+   * Set line break strategy on iOS 14+.
+   */
+  lineBreakStrategyIOS?:
+    | 'none'
+    | 'standard'
+    | 'hangul-word'
+    | 'push-out'
+    | undefined;
 }
 
 export interface TextPropsAndroid {
