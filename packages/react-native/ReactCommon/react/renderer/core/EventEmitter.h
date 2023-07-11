@@ -12,9 +12,11 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventDispatcher.h>
+#include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/EventPriority.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/core/ValueFactoryEventPayload.h>
 
 namespace facebook::react {
 
