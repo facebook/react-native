@@ -13,8 +13,6 @@
 #include <glog/logging.h>
 #include <jsi/instrumentation.h>
 #include <jsi/jsi/JSIDynamic.h>
-#include <jsireact/JSIExecutor.h>
-#include <jsireact/JSITracing.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #include <cxxreact/ReactMarker.h>
@@ -320,8 +318,6 @@ void defineReactInstanceFlags(
     jsi::Runtime &runtime,
     ReactInstance::JSRuntimeFlags options) noexcept {
   defineReadOnlyGlobal(runtime, "RN$Bridgeless", jsi::Value(true));
-
-  jsi::addNativeTracingHooks(runtime);
 
   if (options.isProfiling) {
     defineReadOnlyGlobal(runtime, "__RCTProfileIsProfiling", jsi::Value(true));

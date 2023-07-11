@@ -45,7 +45,8 @@ internal object DependencyUtils {
   /**
    * This method takes care of configuring the resolution strategy for both the app and all the 3rd
    * party libraries which are auto-linked. Specifically it takes care of:
-   * - Forcing the react-android/hermes-android version to the one specified in the package.json
+   * - Forcing the react-android/hermes-android/flipper-integration version to the one specified in
+   *   the package.json
    * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
    */
   fun configureDependencies(
@@ -68,6 +69,7 @@ internal object DependencyUtils {
         configuration.resolutionStrategy.force(
             "${groupString}:react-android:${versionString}",
             "${groupString}:hermes-android:${versionString}",
+            "${groupString}:flipper-integration:${versionString}",
         )
       }
     }

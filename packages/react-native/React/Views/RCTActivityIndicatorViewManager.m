@@ -18,10 +18,10 @@
 RCT_ENUM_CONVERTER(
     UIActivityIndicatorViewStyle,
     (@{
-      @"large" : @(UIActivityIndicatorViewStyleWhiteLarge),
-      @"small" : @(UIActivityIndicatorViewStyleWhite),
+      @"large" : @(UIActivityIndicatorViewStyleLarge),
+      @"small" : @(UIActivityIndicatorViewStyleMedium),
     }),
-    UIActivityIndicatorViewStyleWhiteLarge,
+    UIActivityIndicatorViewStyleLarge,
     integerValue)
 
 @end

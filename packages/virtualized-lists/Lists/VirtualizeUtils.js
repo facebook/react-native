@@ -10,8 +10,9 @@
 
 'use strict';
 
-import type {CellMetricProps} from './ListMetricsAggregator';
-import ListMetricsAggregator from './ListMetricsAggregator';
+import type ListMetricsAggregator, {
+  CellMetricProps,
+} from './ListMetricsAggregator';
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the

@@ -35,6 +35,7 @@ const {
   emitMixedProp,
   emitStringProp,
   emitInt32Prop,
+  emitObjectProp,
 } = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -49,10 +50,7 @@ function getPropertyType(
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
-  const type =
-    typeAnnotation.type === 'TSTypeReference'
-      ? typeAnnotation.typeName.name
-      : typeAnnotation.type;
+  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
 
   switch (type) {
     case 'TSBooleanKeyword':
@@ -66,16 +64,13 @@ function getPropertyType(
     case 'Float':
       return emitFloatProp(name, optional);
     case 'TSTypeLiteral':
-      return {
+      return emitObjectProp(
         name,
         optional,
-        typeAnnotation: {
-          type: 'ObjectTypeAnnotation',
-          properties: typeAnnotation.members.map(member =>
-            buildPropertiesForEvent(member, parser, getPropertyType),
-          ),
-        },
-      };
+        parser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
     case 'TSUnionType':
       return {
         name,
@@ -94,7 +89,6 @@ function getPropertyType(
         typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
       };
     default:
-      (type: empty);
       throw new Error(`Unable to determine event type for "${name}": ${type}`);
   }
 }
@@ -138,9 +132,11 @@ function extractArrayElementType(
     case 'TSTypeLiteral':
       return {
         type: 'ObjectTypeAnnotation',
-        properties: typeAnnotation.members.map(member =>
-          buildPropertiesForEvent(member, parser, getPropertyType),
-        ),
+        properties: parser
+          .getObjectProperties(typeAnnotation)
+          .map(member =>
+            buildPropertiesForEvent(member, parser, getPropertyType),
+          ),
       };
     case 'TSArrayType':
       return {
@@ -183,7 +179,7 @@ function findEventArgumentsAndType(
 
   if (typeAnnotation.type === 'TSTypeLiteral') {
     return {
-      argumentProps: typeAnnotation.members,
+      argumentProps: parser.getObjectProperties(typeAnnotation),
       paperTopLevelNameDeprecated: paperName,
       bubblingType,
     };
@@ -314,4 +310,5 @@ function getEvents(
 
 module.exports = {
   getEvents,
+  extractArrayElementType,
 };

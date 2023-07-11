@@ -87,7 +87,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               // TODO: We could probably use a smarter algorithm here. This will require 0(n)
               // measurements
               // based on the number of points the font size needs to be reduced by.
-              currentFontSize = currentFontSize - (int) PixelUtil.toPixelFromDIP(1);
+              currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
 
               float ratio = (float) currentFontSize / (float) initialFontSize;
               ReactAbsoluteSizeSpan[] sizeSpans =
@@ -135,7 +135,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             layoutWidth = width;
           } else {
             for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-              float lineWidth = layout.getLineWidth(lineIndex);
+              boolean endsWithNewLine =
+                  text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+              float lineWidth =
+                  endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
               if (lineWidth > layoutWidth) {
                 layoutWidth = lineWidth;
               }

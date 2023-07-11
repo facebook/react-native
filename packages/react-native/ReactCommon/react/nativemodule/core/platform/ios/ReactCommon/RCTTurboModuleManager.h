@@ -9,13 +9,13 @@
 
 #import <memory>
 
+#import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <ReactCommon/TurboModuleBinding.h>
 #import "RCTTurboModule.h"
-
-RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBindingMode bindingMode);
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
@@ -57,6 +57,11 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 

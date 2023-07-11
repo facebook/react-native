@@ -76,10 +76,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)stopAnimation
 {
-  _valueNode = nil;
   if (_callback) {
-    _callback(@[ @{@"finished" : @(_animationHasFinished)} ]);
+    _callback(@[ @{@"finished" : @(_animationHasFinished), @"value" : @(_valueNode.value)} ]);
   }
+  _valueNode = nil;
 }
 
 - (void)stepAnimationWithTime:(NSTimeInterval)currentTime

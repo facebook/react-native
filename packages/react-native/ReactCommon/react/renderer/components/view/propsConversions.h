@@ -616,6 +616,18 @@ static inline ViewEvents convertRawProp(
       "onClickCapture",
       sourceValue[Offset::ClickCapture],
       defaultValue[Offset::ClickCapture]);
+  result[Offset::GotPointerCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onGotPointerCapture",
+      sourceValue[Offset::GotPointerCapture],
+      defaultValue[Offset::GotPointerCapture]);
+  result[Offset::LostPointerCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onLostPointerCapture",
+      sourceValue[Offset::LostPointerCapture],
+      defaultValue[Offset::LostPointerCapture]);
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(

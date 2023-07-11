@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: be_BY -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Відарыс</string>
+    <string name="imagebutton_description" gender="unknown">Кнопка, відарыс</string>
+</resources>

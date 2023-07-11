@@ -17,7 +17,6 @@ public abstract class GuardedResultAsyncTask<Result> extends AsyncTask<Void, Voi
 
   private final JSExceptionHandler mExceptionHandler;
 
-  @Deprecated
   protected GuardedResultAsyncTask(ReactContext reactContext) {
     this(reactContext.getExceptionHandler());
   }

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 
@@ -17,7 +17,7 @@ class JReactExceptionManager
     : public facebook::jni::JavaClass<JReactExceptionManager> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/bridgeless/exceptionmanager/ReactJsExceptionHandler;";
+      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler;";
 
   void reportJsException(const JReadableMapBuffer::javaobject errorMapBuffer);
 };

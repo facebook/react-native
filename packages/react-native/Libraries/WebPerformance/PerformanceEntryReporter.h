@@ -147,6 +147,10 @@ class PerformanceEntryReporter : public EventLogger {
     return eventCounts_;
   }
 
+  void setTimeStampProvider(std::function<double()> provider) {
+    timeStampProvider_ = provider;
+  }
+
  private:
   std::optional<AsyncCallback<>> callback_;
 
@@ -171,6 +175,8 @@ class PerformanceEntryReporter : public EventLogger {
   std::unordered_map<EventTag, EventEntry> eventsInFlight_;
   std::mutex eventsInFlightMutex_;
 
+  std::function<double()> timeStampProvider_ = nullptr;
+
   static EventTag sCurrentEventTag_;
 
   PerformanceEntryReporter();
@@ -182,6 +188,8 @@ class PerformanceEntryReporter : public EventLogger {
       PerformanceEntryType entryType,
       const char *entryName,
       std::vector<RawPerformanceEntry> &res) const;
+
+  double getCurrentTimeStamp() const;
 };
 
 } // namespace facebook::react

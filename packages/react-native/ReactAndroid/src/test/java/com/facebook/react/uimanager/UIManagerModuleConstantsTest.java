@@ -47,7 +47,7 @@ public class UIManagerModuleConstantsTest {
 
   @Before
   public void setUp() {
-    mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mReactContext = new ReactApplicationContext(RuntimeEnvironment.getApplication());
   }
 
   @Test

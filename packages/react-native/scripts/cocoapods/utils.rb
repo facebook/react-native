@@ -39,6 +39,11 @@ class ReactNativePodsUtils
         installer.pods_project.pod_group(name) != nil
     end
 
+    def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
+    end
+
     def self.turn_off_resource_bundle_react_core(installer)
         # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
         # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
@@ -143,6 +148,19 @@ class ReactNativePodsUtils
     end
 
     private
+
+    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            if pod_name.to_s == target_pod_name
+                target_installation_result.native_target.build_configurations.each do |config|
+                        if configuration == nil || (configuration != nil && configuration == config.name)
+                            config.build_settings[settings_name] ||= '$(inherited) '
+                            config.build_settings[settings_name] << settings_value
+                        end
+                    end
+                end
+            end
+    end
 
     def self.fix_library_search_path(config)
         lib_search_paths = config.build_settings["LIBRARY_SEARCH_PATHS"]
@@ -376,6 +394,42 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
         ])
+    end
+
+    def self.get_plist_paths_from(user_project)
+        info_plists = user_project
+          .files
+          .select { |p|
+            p.name&.end_with?('Info.plist')
+          }
+        return info_plists
+      end
+
+    def self.update_ats_in_plist(plistPaths, parent)
+        plistPaths.each do |plistPath|
+            fullPlistPath = File.join(parent, plistPath.path)
+            plist = Xcodeproj::Plist.read_from_path(fullPlistPath)
+            ats_configs = {
+                "NSAllowsArbitraryLoads" => false,
+                "NSAllowsLocalNetworking" => true,
+            }
+            if plist.nil?
+                plist = {
+                    "NSAppTransportSecurity" => ats_configs
+                }
+            else
+                plist["NSAppTransportSecurity"] = ats_configs
+            end
+            Xcodeproj::Plist.write_to_path(plist, fullPlistPath)
+        end
+    end
+
+    def self.apply_ats_config(installer)
+        user_project = installer.aggregate_targets
+                    .map{ |t| t.user_project }
+                    .first
+        plistPaths = self.get_plist_paths_from(user_project)
+        self.update_ats_in_plist(plistPaths, user_project.path.parent)
     end
 
     def self.react_native_pods

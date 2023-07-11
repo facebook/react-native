@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: km_KH -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">តំណ</string>
+    <string name="image_description" gender="unknown">រូបភាព</string>
+    <string name="imagebutton_description" gender="unknown">ប៊ូតុង, រូបភាព</string>
+    <string name="header_description" gender="unknown">ចំណងជើង</string>
+    <string name="alert_description" gender="unknown">ជូន​ដំណឹង</string>
+    <string name="combobox_description" gender="unknown">ប្រអប់បញ្ចូលគ្នា</string>
+    <string name="menu_description" gender="unknown">ម៉ឺនុយ</string>
+    <string name="menubar_description" gender="unknown">របារម៉ឺនុយ</string>
+    <string name="menuitem_description" gender="unknown">ធាតុម៉ឺនុយ</string>
+    <string name="progressbar_description" gender="unknown">របារ​ដំណើរការ</string>
+    <string name="radiogroup_description" gender="unknown">ក្រុមវិទ្យុ</string>
+    <string name="scrollbar_description" gender="unknown">របាររំកិល</string>
+    <string name="spinbutton_description" gender="unknown">ប៊ូតុង​បង្វិល</string>
+    <string name="rn_tab_description" gender="unknown">ផ្ទាំង</string>
+    <string name="tablist_description" gender="unknown">បញ្ជីថេប</string>
+    <string name="timer_description" gender="unknown">មុខងារកំណត់ម៉ោង</string>
+    <string name="toolbar_description" gender="unknown">របារ​ឧបករណ៍</string>
+    <string name="summary_description" gender="unknown">សេចក្ដីសង្ខេប</string>
+    <string name="state_busy_description" gender="unknown">ជាប់រវល់</string>
+    <string name="state_expanded_description" gender="unknown">បានពង្រីក</string>
+    <string name="state_collapsed_description" gender="unknown">បានបង្រួម</string>
+    <string name="state_unselected_description" gender="unknown">បាបនដោះការជ្រើសរើស</string>
+    <string name="state_on_description" gender="unknown">បើក</string>
+    <string name="state_off_description" gender="unknown">បិទ</string>
+    <string name="state_mixed_description" gender="unknown">បានលាយ</string>
+</resources>

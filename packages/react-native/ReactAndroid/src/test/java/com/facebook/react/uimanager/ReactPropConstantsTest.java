@@ -123,7 +123,7 @@ public class ReactPropConstantsTest {
   public void testNativePropsIncludeCorrectTypes() {
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(new ViewManagerUnderTest());
     ReactApplicationContext reactContext =
-        new ReactApplicationContext(RuntimeEnvironment.application);
+        new ReactApplicationContext(RuntimeEnvironment.getApplication());
     UIManagerModule uiManagerModule = new UIManagerModule(reactContext, viewManagers, 0);
     Map<String, String> constants =
         (Map) valueAtPath(uiManagerModule.getConstants(), "SomeView", "NativeProps");

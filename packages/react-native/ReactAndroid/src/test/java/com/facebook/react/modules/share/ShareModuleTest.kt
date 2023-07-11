@@ -55,16 +55,16 @@ class ShareModuleTest {
 
     shareModule.share(content, dialogTitle, promise)
 
-    val chooserIntent = shadowOf(RuntimeEnvironment.application).nextStartedActivity
+    val chooserIntent = shadowOf(RuntimeEnvironment.getApplication()).nextStartedActivity
     assertNotNull("Dialog was not displayed", chooserIntent)
     assertEquals(Intent.ACTION_CHOOSER, chooserIntent.action)
-    assertEquals(dialogTitle, chooserIntent.extras?.get(Intent.EXTRA_TITLE))
+    assertEquals(dialogTitle, chooserIntent.extras?.getString(Intent.EXTRA_TITLE))
 
-    val contentIntent = chooserIntent.extras?.get(Intent.EXTRA_INTENT) as Intent?
+    val contentIntent = chooserIntent.extras?.getParcelable(Intent.EXTRA_INTENT, Intent::class.java)
     assertNotNull("Intent was not built correctly", contentIntent)
     assertEquals(Intent.ACTION_SEND, contentIntent?.action)
-    assertEquals(title, contentIntent?.extras?.get(Intent.EXTRA_SUBJECT))
-    assertEquals(message, contentIntent?.extras?.get(Intent.EXTRA_TEXT))
+    assertEquals(title, contentIntent?.extras?.getString(Intent.EXTRA_SUBJECT))
+    assertEquals(message, contentIntent?.extras?.getString(Intent.EXTRA_TEXT))
 
     assertEquals(1, promise.resolved)
   }

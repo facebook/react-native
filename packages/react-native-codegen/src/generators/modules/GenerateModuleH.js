@@ -343,7 +343,7 @@ struct Bridging<${enumName}> {
     ${fromCases}
   }
 
-  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value) {
     ${toCases}
   }
 };`;

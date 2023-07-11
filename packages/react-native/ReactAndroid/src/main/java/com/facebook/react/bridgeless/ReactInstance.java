@@ -16,6 +16,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BridgelessReactPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -32,7 +33,6 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
@@ -40,6 +40,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -78,6 +79,7 @@ final class ReactInstance {
 
   private final ReactHostDelegate mDelegate;
   private final BridgelessReactContext mBridgelessReactContext;
+  private final List<ReactPackage> mReactPackages;
 
   private final ReactQueueConfiguration mQueueConfiguration;
   private final TurboModuleManager mTurboModuleManager;
@@ -85,6 +87,10 @@ final class ReactInstance {
   private final JavaTimerManager mJavaTimerManager;
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
+
+  static {
+    loadLibraryIfNeeded();
+  }
 
   private static volatile boolean sIsLibraryLoaded;
 
@@ -98,7 +104,6 @@ final class ReactInstance {
       boolean useDevSupport) {
     mBridgelessReactContext = bridgelessReactContext;
     mDelegate = delegate;
-    loadLibraryIfNeeded();
 
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize");
 
@@ -186,8 +191,20 @@ final class ReactInstance {
     // Set up TurboModules
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.initialize#initTurboModules");
+
+    mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
+    mReactPackages.add(
+        new BridgelessReactPackage(
+            bridgelessReactContext.getDevSupportManager(),
+            bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
+
     TurboModuleManagerDelegate turboModuleManagerDelegate =
-        mDelegate.getTurboModuleManagerDelegate(mBridgelessReactContext);
+        mDelegate
+            .getTurboModuleManagerDelegateBuilder()
+            .setPackages(mReactPackages)
+            .setReactApplicationContext(mBridgelessReactContext)
+            .build();
+
     mTurboModuleManager =
         new TurboModuleManager(
             // Use unbuffered RuntimeExecutor to install binding
@@ -442,7 +459,7 @@ final class ReactInstance {
 
   private @Nullable ViewManager createViewManager(String viewManagerName) {
     if (mDelegate != null) {
-      List<ReactPackage> packages = mDelegate.getReactPackages();
+      List<ReactPackage> packages = mReactPackages;
       if (packages != null) {
         synchronized (packages) {
           for (ReactPackage reactPackage : packages) {
@@ -465,7 +482,7 @@ final class ReactInstance {
   private @NonNull Collection<String> getViewManagerNames() {
     Set<String> uniqueNames = new HashSet<>();
     if (mDelegate != null) {
-      List<ReactPackage> packages = mDelegate.getReactPackages();
+      List<ReactPackage> packages = mReactPackages;
       if (packages != null) {
         synchronized (packages) {
           for (ReactPackage reactPackage : packages) {

@@ -60,7 +60,20 @@ function tryLaunchEmulator() {
   };
 }
 
-function launchAndroidEmulator() {
+function hasConnectedDevice() {
+  const physicalDevices = exec('adb devices | grep -v emulator', {silent: true})
+    .stdout.trim()
+    .split('\n')
+    .slice(1);
+  return physicalDevices.length > 0;
+}
+
+function maybeLaunchAndroidEmulator() {
+  if (hasConnectedDevice) {
+    console.info('Already have a device connected. Skip launching emulator.');
+    return;
+  }
+
   const result = tryLaunchEmulator();
   if (result.success) {
     console.info('Successfully launched emulator.');
@@ -103,7 +116,7 @@ function launchPackagerInSeparateWindow(folderPath) {
 }
 
 module.exports = {
-  launchAndroidEmulator,
+  maybeLaunchAndroidEmulator,
   isPackagerRunning,
   launchPackagerInSeparateWindow,
 };

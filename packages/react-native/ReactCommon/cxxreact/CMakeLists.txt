@@ -27,4 +27,5 @@ target_link_libraries(reactnative
         jsinspector
         logger
         reactperflogger
-        runtimeexecutor)
+        runtimeexecutor
+        react_debug)
