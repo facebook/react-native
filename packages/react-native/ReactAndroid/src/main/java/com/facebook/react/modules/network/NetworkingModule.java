@@ -167,6 +167,13 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     customClientBuilder = ccb;
   }
 
+  /**
+   * @deprecated To be removed in a future release. See https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914
+   */
+  public static interface CustomClientBuilder extends com.facebook.react.modules.network.CustomClientBuilder {
+    public void apply(OkHttpClient.Builder builder);
+  }
+
   private static void applyCustomBuilder(OkHttpClient.Builder builder) {
     if (customClientBuilder != null) {
       customClientBuilder.apply(builder);
