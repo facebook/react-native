@@ -324,7 +324,7 @@ declare module '@babel/traverse' {
 
     parentKey: string;
     scope: Scope;
-    type: null | $PropertyType<BabelNode, 'type'>;
+    type: null | BabelNode['type'];
     inList: boolean;
     typeAnnotation?: BabelNodeTypeAnnotation;
 
@@ -429,7 +429,7 @@ declare module '@babel/traverse' {
      */
     isDescendant(maybeAncestor: NodePath<>): boolean;
 
-    inType(...candidateTypes: Array<$PropertyType<BabelNode, 'type'>>): boolean;
+    inType(...candidateTypes: Array<BabelNode['type']>): boolean;
 
     // _inference
 
@@ -585,7 +585,7 @@ declare module '@babel/traverse' {
      * Check the type against our stored internal type of the node. This is handy when a node has
      * been removed yet we still internally know the type and need it to calculate node replacement.
      */
-    isNodeType(type: $PropertyType<BabelNode, 'type'>): boolean;
+    isNodeType(type: BabelNode['type']): boolean;
 
     /**
      * This checks whether or not we're in one of the following positions:
