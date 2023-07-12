@@ -11,8 +11,8 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/SystraceSection.h>
 #include <glog/logging.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
-#include <jsi/jsi/JSIDynamic.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #include <cxxreact/ReactMarker.h>
