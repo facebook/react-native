@@ -404,6 +404,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         0);
 
     if (text.length > allowedLength) {
+      // Gets the marked text when using a non-English input method. Such as Chinese, Simplified - Pinyin
+      UITextRange *selectedRange = [backedTextInputView markedTextRange];
+      UITextPosition *position = [backedTextInputView positionFromPosition:selectedRange.start offset:0];
+      // Max length should not work if there are marked literals.
+      if (position) {
+        return text;
+      }
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         if (allowedLength > 0) {
@@ -423,14 +430,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
               initWithString:[self.textAttributes applyTextAttributesToText:limitedString]
                   attributes:self.textAttributes.effectiveTextAttributes];
         } else {
-          [newAttributedText replaceCharactersInRange:range withString:limitedString];
+          if(newAttributedText.length > _maxLength.intValue){
+            [newAttributedText replaceCharactersInRange:NSMakeRange(_maxLength.intValue, newAttributedText.length - _maxLength.intValue) withString:@""];
+          }else{
+            [newAttributedText replaceCharactersInRange:range withString:limitedString];
+          }
         }
         backedTextInputView.attributedText = newAttributedText;
         _predictedText = newAttributedText.string;
 
         // Collapse selection at end of insert to match normal paste behavior.
         UITextPosition *insertEnd = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                       offset:(range.location + allowedLength)];
+                                                                       offset:newAttributedText.length >= _maxLength.intValue?_maxLength.intValue : (range.location + allowedLength)];
         [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd
                                                                                   toPosition:insertEnd]
                                    notifyDelegate:YES];
