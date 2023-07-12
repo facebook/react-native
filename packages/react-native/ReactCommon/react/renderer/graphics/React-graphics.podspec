@@ -49,9 +49,7 @@ Pod::Spec.new do |s|
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
 
-  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
-                             "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-                             "DEFINES_MODULE" => "YES" }
+  s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO", "HEADER_SEARCH_PATHS" => header_search_paths.join(" ") }
 
   s.dependency "glog"
   s.dependency "RCT-Folly/Fabric", folly_version
