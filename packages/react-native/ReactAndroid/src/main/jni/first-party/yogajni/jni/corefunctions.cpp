@@ -9,9 +9,7 @@
 #include "macros.h"
 #include "YogaJniException.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 namespace {
 JavaVM* globalVm = NULL;
@@ -90,6 +88,4 @@ void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition) {
   throw YogaJniException();
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

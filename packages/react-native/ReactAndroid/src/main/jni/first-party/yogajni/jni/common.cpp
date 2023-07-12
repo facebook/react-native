@@ -7,9 +7,7 @@
 
 #include "common.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 void registerNatives(
     JNIEnv* env,
@@ -109,6 +107,5 @@ ScopedGlobalRef<jthrowable> newGlobalRef(JNIEnv* env, jthrowable obj) {
 
   return make_global_ref(result);
 }
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::vanillajni
