@@ -49,6 +49,10 @@ export type FeatureFlags = {|
    * Enables use of AnimatedObject for animating transform values.
    */
   shouldUseAnimatedObjectForTransform: () => boolean,
+  /**
+   * Enables use of setNativeProps in JS driven animations.
+   */
+  useSetNativePropsInFabric: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -60,6 +64,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   isGlobalWebPerformanceLoggerEnabled: () => false,
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
+  useSetNativePropsInFabric: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;
