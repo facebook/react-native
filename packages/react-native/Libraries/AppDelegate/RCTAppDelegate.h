@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@class RCTBridge;
+@protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
 

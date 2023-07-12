@@ -8,8 +8,8 @@
 #pragma once
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
 #include <vector>
+#include "MapBuffer.h"
 
 namespace facebook::react {
 
