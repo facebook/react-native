@@ -10,6 +10,7 @@
     <string name="alert_description" gender="unknown">Sinjalizim</string>
     <string name="combobox_description" gender="unknown">Kuti kombinimi</string>
     <string name="menu_description" gender="unknown">Meny</string>
+    <string name="menubar_description" gender="unknown">Shiriti i menysë</string>
     <string name="menuitem_description" gender="unknown">Artikull i menysë</string>
     <string name="progressbar_description" gender="unknown">Shiriti i Progresit</string>
     <string name="radiogroup_description" gender="unknown">Grupi i Radios</string>
