@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.modules.network.CustomClientBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -163,7 +164,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
   }
 
-  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+  public static void setCustomClientBuilder(com.facebook.react.modules.network.CustomClientBuilder ccb) {
     customClientBuilder = ccb;
   }
 
