@@ -88,11 +88,6 @@ Pod::Spec.new do |s|
     ss.header_dir           = "butter"
   end
 
-  s.subspec "config" do |ss|
-    ss.source_files         = "react/config/*.{m,mm,cpp,h}"
-    ss.header_dir           = "react/config"
-  end
-
   s.subspec "core" do |ss|
     header_search_path = [
       "\"$(PODS_ROOT)/boost\"",
@@ -240,14 +235,6 @@ Pod::Spec.new do |s|
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "react/renderer/imagemanager/*.{m,mm,cpp,h}"
     ss.header_dir           = "react/renderer/imagemanager"
-  end
-
-  s.subspec "mapbuffer" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/mapbuffer/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "react/renderer/mapbuffer/tests"
-    ss.header_dir           = "react/renderer/mapbuffer"
   end
 
   s.subspec "mounting" do |ss|
