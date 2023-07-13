@@ -43,6 +43,10 @@ export interface ModalBaseProps {
    * The `onShow` prop allows passing a function that will be called once the modal has been shown.
    */
   onShow?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
+  /**
+   * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
+   */
+  onDismiss?: (() => void) | undefined;
 }
 
 export interface ModalPropsIOS {
@@ -69,11 +73,6 @@ export interface ModalPropsIOS {
         | 'landscape-right'
       >
     | undefined;
-
-  /**
-   * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
-   */
-  onDismiss?: (() => void) | undefined;
 
   /**
    * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
