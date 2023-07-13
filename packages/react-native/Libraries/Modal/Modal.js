@@ -32,12 +32,11 @@ type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
 };
 
-const ModalEventEmitter =
-  new NativeEventEmitter<ModalEventDefinitions>(
-    // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-    // If you want to use the native module on other platforms, please remove this condition and test its behavior
-    Platform.OS !== 'ios' ? null : NativeModalManager,
-  );
+const ModalEventEmitter = new NativeEventEmitter<ModalEventDefinitions>(
+  // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
+  // If you want to use the native module on other platforms, please remove this condition and test its behavior
+  Platform.OS !== 'ios' ? null : NativeModalManager,
+);
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
