@@ -10,7 +10,9 @@ package com.facebook.react.views.modal;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -33,6 +35,9 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
     implements ModalHostViewManagerInterface<ReactModalHostView> {
 
   public static final String REACT_CLASS = "RCTModalHostView";
+  private static final int UNSET = -1;
+
+  private int mIdentifier = UNSET;
 
   private final ViewManagerDelegate<ReactModalHostView> mDelegate;
 
@@ -112,7 +117,9 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
 
   @Override
   @ReactProp(name = "identifier")
-  public void setIdentifier(ReactModalHostView view, int value) {}
+  public void setIdentifier(ReactModalHostView view, int value) {
+    mIdentifier = value;
+  }
 
   @Override
   protected void addEventEmitters(
@@ -134,6 +141,17 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
             public void onShow(DialogInterface dialog) {
               dispatcher.dispatchEvent(
                   new ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
+            }
+          });
+      view.setOnDismissListener(
+          new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+              if (mIdentifier != UNSET) {
+                WritableMap args = Arguments.createMap();
+                args.putInt("modalID", mIdentifier);
+                reactContext.emitDeviceEvent("modalDismissed", args);
+              }
             }
           });
       view.setEventDispatcher(dispatcher);
