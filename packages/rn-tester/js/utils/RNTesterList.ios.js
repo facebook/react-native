@@ -26,6 +26,12 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
   },
   {
+    key: 'DrawerLayoutIos',
+    module: require('../examples/DrawerLayoutIos/DrawerLayoutIosExample')
+      .default,
+    category: 'UI',
+  },
+  {
     key: 'FlatListExampleIndex',
     module: require('../examples/FlatList/FlatListExampleIndex').default,
     category: 'ListView',
