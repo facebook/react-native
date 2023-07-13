@@ -7,7 +7,7 @@ buildscript {
         compileSdkVersion = 33
         targetSdkVersion = 33
 
-        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+        // We use NDK 23 which has both Apple Silicon support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
         kotlinVersion = "1.8.0"
     }
