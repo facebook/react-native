@@ -47,7 +47,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     [props],
   );
   const useNativePropsInFabric =
-    ReactNativeFeatureFlags.useSetNativePropsInFabric();
+    ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
   useAnimatedPropsLifecycle(node);
 
   // TODO: This "effect" does three things:
