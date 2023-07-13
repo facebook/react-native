@@ -61,8 +61,9 @@ Pod::Spec.new do |s|
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
     s.dependency "React-BridgelessHermes"
+    s.exclude_files = "platform/ios/JSC/*.{mm,h}"
   else
-    s.exclude_files = "platform/ios/Hermes/*.{mm,h}"
     s.dependency "React-jsc"
+    s.exclude_files = "platform/ios/hermes/*.{mm,h}"
   end
 end

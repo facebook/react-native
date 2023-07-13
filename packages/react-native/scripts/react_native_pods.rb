@@ -171,7 +171,7 @@ def use_react_native! (
   end
 
   if new_arch_enabled
-    setup_bridgeless!(:react_native_path => prefix)
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
   # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
