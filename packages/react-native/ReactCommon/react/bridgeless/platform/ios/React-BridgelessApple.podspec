@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "../../..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "../../../../..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -21,6 +21,12 @@ folly_version = '2021.07.22.00'
 folly_dep_name = 'RCT-Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
+header_search_paths = [
+  "$(PODS_ROOT)/boost",
+  "$(PODS_TARGET_SRCROOT)/../../../..",
+  "$(PODS_TARGET_SRCROOT)/../../../../..",
+]
+
 Pod::Spec.new do |s|
   s.name                   = "React-BridgelessApple"
   s.version                = version
@@ -30,9 +36,9 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.source_files           = "platform/ios/**/*.{mm,h}"
+  s.source_files           = "ReactCommon/*.{mm,h}"
   s.header_dir             = "ReactCommon"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_TARGET_SRCROOT)/../..\" \"$(PODS_TARGET_SRCROOT)/../../..\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -61,9 +67,9 @@ Pod::Spec.new do |s|
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
     s.dependency "React-BridgelessHermes"
-    s.exclude_files = "platform/ios/JSC/*.{mm,h}"
+    s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
   else
     s.dependency "React-jsc"
-    s.exclude_files = "platform/ios/hermes/*.{mm,h}"
+    s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"
   end
 end
