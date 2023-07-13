@@ -59,11 +59,8 @@ const Platform = {
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
-    if (__DEV__) {
-      // $FlowFixMe[object-this-reference]
-      return this.constants.isTesting;
-    }
-    return false;
+    // $FlowFixMe[object-this-reference]
+    return this.constants.isTesting;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
     // $FlowFixMe[incompatible-return]
