@@ -51,6 +51,6 @@ Pod::Spec.new do |s|
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   else
-    s.dependency "React-jsi"
+    s.dependency "React-jsc"
   end
 end

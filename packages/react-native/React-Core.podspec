@@ -91,7 +91,7 @@ Pod::Spec.new do |s|
       "React/Fabric/**/*",
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
-      "React/Inspector/**/*"
+      "React/Inspector/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
@@ -99,7 +99,7 @@ Pod::Spec.new do |s|
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
-    ss.private_header_files   = "React/Cxx*/*.h"
+    ss.private_header_files   = "React/CxxLogUtils/*.h"
   end
 
   s.subspec "DevSupport" do |ss|
