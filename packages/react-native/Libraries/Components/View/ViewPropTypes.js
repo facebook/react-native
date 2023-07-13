@@ -569,7 +569,7 @@ export type ViewProps = $ReadOnly<{|
   collapsable?: ?boolean,
 
   /**
-   * Used to locate this view from native classes.
+   * Used to locate this view from native classes. Has precedence over `nativeID` prop.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
    *
