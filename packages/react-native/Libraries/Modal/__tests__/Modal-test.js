@@ -11,6 +11,8 @@
 
 'use strict';
 
+jest.mock('../../EventEmitter/NativeEventEmitter');
+
 const render = require('../../../jest/renderer');
 const View = require('../../Components/View/View');
 const Modal = require('../Modal');
