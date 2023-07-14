@@ -168,7 +168,7 @@ class AndroidTextInputComponentDescriptor final
  private:
   // TODO T68526882: Unify with Binding::UIManagerJavaDescriptor
   constexpr static auto UIManagerJavaDescriptor =
-      "com/facebook/react/fabric/FabricUIManager";
+      "com/facebook/react/renderer/FabricUIManager";
 
   SharedTextLayoutManager textLayoutManager_;
   mutable butter::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;

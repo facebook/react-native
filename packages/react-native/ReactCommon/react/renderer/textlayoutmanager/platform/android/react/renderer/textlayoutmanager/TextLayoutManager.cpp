@@ -38,7 +38,7 @@ Size measureAndroidComponent(
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("com/facebook/react/renderer/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,
@@ -107,7 +107,7 @@ Size measureAndroidComponentMapBuffer(
   auto componentNameRef = make_jstring(componentName);
 
   static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("com/facebook/react/renderer/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,
@@ -233,7 +233,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto measureLines =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("com/facebook/react/renderer/FabricUIManager")
           ->getMethod<NativeArray::javaobject(
               JReadableMapBuffer::javaobject,
               JReadableMapBuffer::javaobject,

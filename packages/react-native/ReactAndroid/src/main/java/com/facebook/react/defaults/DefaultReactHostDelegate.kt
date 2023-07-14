@@ -16,7 +16,7 @@ import com.facebook.react.bridgeless.JSEngineInstance
 import com.facebook.react.bridgeless.ReactHostDelegate
 import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.renderer.ReactNativeConfig
 import com.facebook.react.turbomodule.core.TurboModuleManager
 
 /**

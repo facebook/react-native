@@ -28,7 +28,7 @@ import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
-import com.facebook.react.fabric.ComponentFactory;
+import com.facebook.react.renderer.ComponentFactory;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.testutils.shadows.ShadowSoLoader;
@@ -50,7 +50,7 @@ import org.robolectric.annotation.LooperMode;
 
 /** Tests {@linkcom.facebook.react.bridgeless.ReactHost} */
 @Ignore("Ignore for now as these tests fail in OSS only")
-@SuppressStaticInitializationFor("com.facebook.react.fabric.ComponentFactory")
+@SuppressStaticInitializationFor("com.facebook.react.renderer.ComponentFactory")
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({
   "org.mockito.*",

@@ -12,7 +12,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.renderer.ReactNativeConfig
 import com.facebook.react.turbomodule.core.TurboModuleManager
 
 /**

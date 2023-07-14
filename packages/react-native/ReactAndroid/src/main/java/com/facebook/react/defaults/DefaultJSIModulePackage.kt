@@ -15,9 +15,9 @@ import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManager
-import com.facebook.react.fabric.ComponentFactory
-import com.facebook.react.fabric.FabricJSIModuleProvider
-import com.facebook.react.fabric.ReactNativeConfig
+import com.facebook.react.renderer.ComponentFactory
+import com.facebook.react.renderer.FabricJSIModuleProvider
+import com.facebook.react.renderer.ReactNativeConfig
 import com.facebook.react.uimanager.ViewManagerRegistry
 
 /**

@@ -9,7 +9,7 @@ package com.facebook.react.defaults
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
-import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.renderer.ComponentFactory
 
 /**
  * A utility class that provides users a ComponentRegistry they can customize with a C++
