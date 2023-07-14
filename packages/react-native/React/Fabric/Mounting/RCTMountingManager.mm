@@ -50,10 +50,6 @@ static void RCTPerformMountInstructions(
 {
   SystraceSection s("RCTPerformMountInstructions");
 
-  if (!CoreFeatures::disableTransactionCommit) {
-    [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-  }
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -151,9 +147,6 @@ static void RCTPerformMountInstructions(
         break;
       }
     }
-  }
-  if (!CoreFeatures::disableTransactionCommit) {
-    [CATransaction commit];
   }
 }
 

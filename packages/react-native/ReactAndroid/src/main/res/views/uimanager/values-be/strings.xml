@@ -3,4 +3,5 @@
 <!-- @generated -->
 <!-- FB Locale: be_BY -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="imagebutton_description" gender="unknown">Кнопка, відарыс</string>
 </resources>

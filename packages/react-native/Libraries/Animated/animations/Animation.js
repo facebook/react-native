@@ -14,6 +14,7 @@ import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
+import Platform from '../../Utilities/Platform';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
 import AnimatedProps from '../nodes/AnimatedProps';
@@ -84,7 +85,10 @@ export default class Animation {
     // may not have completed yet. For example, only the animation for the red channel of
     // an animating color may have been completed, resulting in a temporary red color
     // being rendered. So, for now, ignore AnimatedProps that use a vectorized animation.
-    if (node instanceof AnimatedValueXY || node instanceof AnimatedColor) {
+    if (
+      Platform.OS === 'ios' &&
+      (node instanceof AnimatedValueXY || node instanceof AnimatedColor)
+    ) {
       return result;
     }
 

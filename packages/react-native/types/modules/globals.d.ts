@@ -67,7 +67,7 @@ declare interface WindowOrWorkerGlobalScope {
 interface Blob {
   readonly size: number;
   readonly type: string;
-  slice(start?: number, end?: number): Blob;
+  slice(start?: number, end?: number, contentType?: string): Blob;
 }
 
 interface BlobOptions {

@@ -164,8 +164,8 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic
    * touch event as described above.
    *
-   * PanResponder includes a note `// TODO: t7467124 investigate if this can be removed` that
-   * should help fixing this return type.
+   * Return true from this callback to prevent any other native components from
+   * becoming responder until this responder terminates (Android-only).
    *
    * See https://reactnative.dev/docs/view#onrespondergrant
    */

@@ -1037,6 +1037,14 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.12
+
+### Fixed
+
+#### iOS specific
+
+- Prefer `Content-Location` header in bundle response as JS source URL ([671ea383fe](https://github.com/facebook/react-native/commit/671ea383fe45dd9834a0c0481360de050df7f0c9) by [@robhogan](https://github.com/robhogan))
+
 ## v0.70.11
 
 ### Changed

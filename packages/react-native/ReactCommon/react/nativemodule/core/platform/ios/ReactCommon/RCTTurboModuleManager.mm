@@ -159,6 +159,16 @@ class LegacyModuleNativeMethodCallInvoker : public ModuleNativeMethodCallInvoker
     ModuleNativeMethodCallInvoker::invokeSync(methodName, std::move(work));
   }
 };
+
+bool isTurboModuleClass(Class cls)
+{
+  return [cls conformsToProtocol:@protocol(RCTTurboModule)];
+}
+
+bool isTurboModuleInstance(id module)
+{
+  return isTurboModuleClass([module class]);
+}
 }
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
@@ -201,9 +211,12 @@ static Class getFallbackClassFromName(const char *name)
   NSDictionary<NSString *, Class> *_legacyEagerlyRegisteredModuleClasses;
 
   RCTBridgeProxy *_bridgeProxy;
+  RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
+                   bridgeProxy:(RCTBridgeProxy *)bridgeProxy
+         bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
@@ -211,6 +224,8 @@ static Class getFallbackClassFromName(const char *name)
     _jsInvoker = std::move(jsInvoker);
     _delegate = delegate;
     _bridge = bridge;
+    _bridgeProxy = bridgeProxy;
+    _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
 
     if (RCTTurboModuleInteropEnabled()) {
@@ -218,7 +233,7 @@ static Class getFallbackClassFromName(const char *name)
 
       if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
         for (id<RCTBridgeModule> module in [_delegate extraModulesForBridge:nil]) {
-          if (!RCT_IS_TURBO_MODULE_INSTANCE(module)) {
+          if (!isTurboModuleInstance(module)) {
             [legacyInitializedModules setObject:module forKey:RCTBridgeModuleNameForClass([module class])];
           }
         }
@@ -227,7 +242,7 @@ static Class getFallbackClassFromName(const char *name)
 
       NSMutableDictionary<NSString *, Class> *legacyEagerlyRegisteredModuleClasses = [NSMutableDictionary new];
       for (Class moduleClass in RCTGetModuleClasses()) {
-        if (!RCT_IS_TURBO_MODULE_CLASS(moduleClass)) {
+        if (!isTurboModuleClass(moduleClass)) {
           [legacyEagerlyRegisteredModuleClasses setObject:moduleClass forKey:RCTBridgeModuleNameForClass(moduleClass)];
         }
       }
@@ -246,9 +261,27 @@ static Class getFallbackClassFromName(const char *name)
   return self;
 }
 
-- (void)setBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
-  _bridgeProxy = bridgeProxy;
+  return [self initWithBridge:bridge
+                  bridgeProxy:nil
+        bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                     delegate:delegate
+                    jsInvoker:jsInvoker];
+}
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return [self initWithBridge:nil
+                  bridgeProxy:bridgeProxy
+        bridgeModuleDecorator:bridgeModuleDecorator
+                     delegate:delegate
+                    jsInvoker:jsInvoker];
 }
 
 - (void)notifyAboutTurboModuleSetup:(const char *)name
@@ -438,8 +471,7 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   Class moduleClass = [self _getModuleClassFromName:moduleName];
-  return moduleClass != nil &&
-      (RCT_IS_TURBO_MODULE_CLASS(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
@@ -458,8 +490,7 @@ static Class getFallbackClassFromName(const char *name)
     return YES;
   }
 
-  return moduleClass != nil &&
-      (!RCT_IS_TURBO_MODULE_CLASS(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
 - (ModuleHolder *)_getOrCreateModuleHolder:(const char *)moduleName
@@ -712,8 +743,8 @@ static Class getFallbackClassFromName(const char *name)
   /**
    * Decorate NativeModules with bridgeless-compatible APIs that call into the bridge.
    */
-  if (_bridge) {
-    [_bridge attachBridgeAPIsToObjCModule:module];
+  if (_bridgeModuleDecorator) {
+    [_bridgeModuleDecorator attachInteropAPIsToModule:module];
   }
 
   /**

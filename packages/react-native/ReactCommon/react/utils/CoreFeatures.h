@@ -44,11 +44,6 @@ class CoreFeatures {
   // from view hierarchy. This feature flag enables this feature.
   static bool cancelImageDownloadsOnRecycle;
 
-  // On iOS, every transaction is wrapperd in [CATransaction begin] and
-  // [CATransaction end] This feature flag disables it to measure its impact in
-  // production.
-  static bool disableTransactionCommit;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
