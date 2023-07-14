@@ -138,7 +138,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface prerender() {
+  public TaskInterface<Void> prerender() {
     ReactHost host = mReactHost.get();
     if (host == null) {
       return Task.forError(
@@ -149,7 +149,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface start() {
+  public TaskInterface<Void> start() {
     if (mSurfaceView.get() == null) {
       return Task.forError(
           new IllegalStateException(
@@ -166,7 +166,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface stop() {
+  public TaskInterface<Void> stop() {
     ReactHost host = mReactHost.get();
     if (host == null) {
       return Task.forError(

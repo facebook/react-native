@@ -12,9 +12,11 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventDispatcher.h>
+#include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/EventPriority.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/core/ValueFactoryEventPayload.h>
 
 namespace facebook::react {
 
@@ -78,6 +80,12 @@ class EventEmitter {
       EventPriority priority = EventPriority::AsynchronousBatched,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
+  void dispatchEvent(
+      std::string type,
+      SharedEventPayload payload,
+      EventPriority priority = EventPriority::AsynchronousBatched,
+      RawEvent::Category category = RawEvent::Category::Unspecified) const;
+
   void dispatchUniqueEvent(std::string type, const folly::dynamic &payload)
       const;
 
@@ -85,6 +93,8 @@ class EventEmitter {
       std::string type,
       const ValueFactory &payloadFactory =
           EventEmitter::defaultPayloadFactory()) const;
+
+  void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 
  private:
   void toggleEventTargetOwnership_() const;

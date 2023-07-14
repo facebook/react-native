@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.soloader.SoLoader;
 
 @DoNotStrip
-/* package */ public class JSCExecutor extends JavaScriptExecutor {
+public class JSCExecutor extends JavaScriptExecutor {
 
   static {
     loadLibrary();

@@ -39,7 +39,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.bridgeless.internal.bolts.Continuation;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
@@ -53,6 +52,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.interfaces.ReactSurfaceInterface;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -1415,6 +1415,13 @@ public class ReactHost implements ReactHostInterface {
     raiseSoftException(method, reason, ex);
 
     synchronized (mReactInstanceTaskRef) {
+      // Prevent re-destroy when ReactInstance has been reset already, which could happen when
+      // calling destroy multiple times on the same thread
+      ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+      if (reactInstance == null) {
+        return;
+      }
+
       // Retain a reference to current ReactContext before de-referenced by mReactContextRef
       final ReactContext reactContext = getCurrentReactContext();
 

@@ -133,5 +133,16 @@ module.exports = async (github, context, labelWithContext) => {
       );
       await requestAuthorFeedback();
       return;
+    case 'Type: Too Old Version':
+      await addComment(
+        `| :warning: | Too Old Version of React Native |\n` +
+          `| --- | --- |\n` +
+          `| :information_source: | It looks like your issue or the example you provided uses a [**Too Old Version of React Native**](https://github.com/reactwg/react-native-releases/blob/main/README.md#releases-support-policy).\nDue to the number of issues we receive, we're currently only accepting new issues against one of the supported versions. Please [upgrade](https://reactnative.dev/docs/upgrading) to latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If you cannot upgrade, please open your issue on [StackOverflow](https://stackoverflow.com/questions/tagged/react-native) to get further community support. |`,
+      );
+      await closeIssue();
+      return;
+    default:
+      // No action needed
+      return;
   }
 };

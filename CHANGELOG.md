@@ -2,6 +2,49 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.72.3
+
+### Fixed
+
+#### iOS specific
+
+- Revert "Fix pod install for swift libs using new arch (#38121)" to fix [build error with Xcode lower than Xcode 14.3](https://github.com/facebook/react-native/issues/38294) ([8f41f25](https://github.com/facebook/react-native/commit/8f41f25c214f995073e90b786c805eb45ff7dee5) by [@kelset](https://github.com/kelset))
+
+## v0.72.2
+
+### Changed
+
+- Remove deprecated stub types `@types/metro-config` from template ([63f78ea8de](https://github.com/facebook/react-native/commit/63f78ea8de68688005e7f48c6849bdf9f95e26ff) by [@kelset](https://github.com/kelset))
+- Bump CLI to 11.3.5 and Metro do 0.76.7 ([ba5fa9c394](https://github.com/facebook/react-native/commit/ba5fa9c394e7cd127e3ee543e0716c37912b0b40) by [@kelset](https://github.com/kelset))
+- Bump `@react-native/metro-config` to `0.72.9` ([21daa6e790](https://github.com/facebook/react-native/commit/21daa6e79030574ce41665ea13c39316eac8c305), [f37386176](https://github.com/facebook/react-native/commit/f37386176cb081e7b38fad8b5442099598bf1968)  by [@kelset](https://github.com/kelset))
+
+#### Android specific
+
+- Remove okhttp3 internal util usage ([3e3032636d](https://github.com/facebook/react-native/commit/3e3032636dc90a21a499492dcb88f819bcf4f003) by [@adrianha](https://github.com/adrianha))
+
+#### iOS specific
+
+- Update logic to add and remove views in the view registry for the interop layer. ([8d2eec367d](https://github.com/facebook/react-native/commit/8d2eec367dd6fbd60792ca1bde12b875a8261fa6) by [@cipolleschi](https://github.com/cipolleschi))
+- Disable NSTextStorage caching in OSS ([5bda54c1f1](https://github.com/facebook/react-native/commit/5bda54c1f183fbc51dc7264b0ab94d5bbcc3f172) by [@sammy-SC](https://github.com/sammy-SC))
+
+### Fixed
+
+- `global.performance` in undefined when starting metro from Expo CLI ([0ccbd65581](https://github.com/facebook/react-native/commit/0ccbd65581304faa286b452f75058b6292a6240f) by [@Kudo](https://github.com/Kudo))
+- Re-enabled debugging for debug builds ([41477c898c](https://github.com/facebook/react-native/commit/41477c898cf5726eae9edbb1596366a6eea2b01e) by Matt Blagden)
+- Add global hook to assert that base Metro config is called ([29f2602ff9](https://github.com/facebook/react-native/commit/29f2602ff9c3c9a9999c54a6004c99d6fd15ebc3) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+- Do not create RuntimeExecutor on non-JSI executors (#38125) ([d73b61c7c7](https://github.com/facebook/react-native/commit/d73b61c7c7dae23630b51b00048eafe5fcb47bd3) by [@lunaleaps](https://github.com/lunaleaps))
+- Prevent crash on OnePlus/Oppo devices in runAnimationStep ([a46a7cd1](https://github.com/facebook/react-native/commit/a46a7cd1f613d6eaea1d1cd07751f17cdc07c21b) by [@hsource](https://github.com/hsource))
+
+#### iOS specific
+
+- Fix build error when there are multiple EXTRA_COMPILER_ARGS ([28f4ebab8a](https://github.com/facebook/react-native/commit/28f4ebab8ab4b0f337699e6a135e2aa983866f42) by [@fergusean](https://github.com/fergusean))
+- Build failure with pnpm and use_frameworks! due to incorrect header paths ([58adc5e4b9](https://github.com/facebook/react-native/commit/58adc5e4b9ab74b67b4af04d1e72c387af848ea7) by evelant)
+- Fix onChangeText not firing when clearing the value of TextInput with multiline=true on iOS ([0c9c57a9f7](https://github.com/facebook/react-native/commit/0c9c57a9f73294414d92428c5d2472dc1e1e5e96) by [@kkoudev](https://github.com/kkoudev))
+- Fix pod install for libraries using Swift code when the new architecture is enabled ([a4a0655496](https://github.com/facebook/react-native/commit/a4a065549677c61eb91bf587032976ed48c75821) by [@louiszawadzki](https://github.com/louiszawadzki))
+
 ## v0.72.1
 
 ### Added

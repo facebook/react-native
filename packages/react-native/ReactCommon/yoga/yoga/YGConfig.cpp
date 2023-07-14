@@ -9,16 +9,14 @@
 
 using namespace facebook::yoga;
 
-namespace facebook {
-namespace yoga {
+namespace facebook::yoga {
 bool configUpdateInvalidatesLayout(YGConfigRef a, YGConfigRef b) {
   return a->getErrata() != b->getErrata() ||
       a->getEnabledExperiments() != b->getEnabledExperiments() ||
       a->getPointScaleFactor() != b->getPointScaleFactor() ||
       a->useWebDefaults() != b->useWebDefaults();
 }
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga
 
 YGConfig::YGConfig(YGLogger logger) : cloneNodeCallback_{nullptr} {
   setLogger(logger);

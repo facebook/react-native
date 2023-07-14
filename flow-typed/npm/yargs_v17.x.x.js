@@ -191,7 +191,7 @@ declare module "yargs" {
 
     exitProcess(enable: boolean): this;
 
-    fail(fn: (failureMessage: string, err: Error, yargs: Yargs) => mixed): this;
+    fail(fn: false | (failureMessage: string, err: Error, yargs: Yargs) => mixed): this;
 
     getCompletion(
       args: Array<string>,

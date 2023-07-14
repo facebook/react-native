@@ -12,8 +12,7 @@
 #include "BitUtils.h"
 #include "Yoga-internal.h"
 
-namespace facebook {
-namespace yoga {
+namespace facebook::yoga {
 
 // Whether moving a node from config "a" to config "b" should dirty previously
 // calculated layout results.
@@ -48,8 +47,7 @@ struct YGConfigFlags {
 };
 #pragma pack(pop)
 
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga
 
 struct YOGA_EXPORT YGConfig {
   YGConfig(YGLogger logger);

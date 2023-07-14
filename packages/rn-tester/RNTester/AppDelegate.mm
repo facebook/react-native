@@ -71,7 +71,7 @@
     return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
   }
 #ifdef RCT_NEW_ARCH_ENABLED
-  if (name == std::string([@"NativeCxxModuleExampleCxx" UTF8String])) {
+  if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
 #endif
