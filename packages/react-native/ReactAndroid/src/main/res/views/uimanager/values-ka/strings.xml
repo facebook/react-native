@@ -19,5 +19,6 @@
     <string name="state_expanded_description" gender="unknown">გაშლილი</string>
     <string name="state_unselected_description" gender="unknown">აურჩეველი</string>
     <string name="state_on_description" gender="unknown">ჩართული</string>
+    <string name="state_off_description" gender="unknown">გამორთულია</string>
     <string name="state_mixed_description" gender="unknown">შერეული</string>
 </resources>

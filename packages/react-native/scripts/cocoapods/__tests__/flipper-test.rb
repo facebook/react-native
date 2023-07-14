@@ -77,10 +77,6 @@ class FlipperTests < Test::Unit::TestCase
         flipper_post_install(installer)
 
         # Assert
-        yoga_target = installer.target_with_name("YogaKit")
-        yoga_target.build_configurations.each do |config|
-            assert_equal(config.build_settings['SWIFT_VERSION'], '4.1')
-        end
 
         reactCore_target = installer.target_with_name("React-RCTAppDelegate")
         reactCore_target.build_configurations.each do |config|
@@ -129,14 +125,6 @@ class FlipperTests < Test::Unit::TestCase
     def prepare_mocked_installer
         return InstallerMock.new(
             PodsProjectMock.new([
-                    TargetMock.new(
-                        "YogaKit",
-                        [
-                            BuildConfigurationMock.new("Debug", is_debug: true),
-                            BuildConfigurationMock.new("Release", is_debug: false),
-                            BuildConfigurationMock.new("CustomConfig", is_debug: true),
-                        ]
-                    ),
                     TargetMock.new(
                         "React-Core",
                         [

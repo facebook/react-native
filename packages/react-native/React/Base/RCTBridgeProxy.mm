@@ -371,12 +371,17 @@ using namespace facebook;
  */
 - (void)logWarning:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogWarn(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning) {
+    RCTLogWarn(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 - (void)logError:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogError(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning ||
+      RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelError) {
+    RCTLogError(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 @end
@@ -437,14 +442,19 @@ using namespace facebook;
  */
 - (void)logWarning:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogWarn(
-      @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning) {
+    RCTLogWarn(
+        @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 - (void)logError:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogError(
-      @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning ||
+      RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelError) {
+    RCTLogError(
+        @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 @end
