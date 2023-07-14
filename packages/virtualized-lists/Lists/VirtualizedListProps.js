@@ -292,3 +292,53 @@ export type Props = {|
   ...RequiredProps,
   ...OptionalProps,
 |};
+
+/**
+ * Default Props Helper Functions
+ * Use the following helper functions for default values
+ */
+
+// horizontalOrDefault(this.props.horizontal)
+export function horizontalOrDefault(horizontal: ?boolean): boolean {
+  return horizontal ?? false;
+}
+
+// initialNumToRenderOrDefault(this.props.initialNumToRender)
+export function initialNumToRenderOrDefault(
+  initialNumToRender: ?number,
+): number {
+  return initialNumToRender ?? 10;
+}
+
+// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
+export function maxToRenderPerBatchOrDefault(
+  maxToRenderPerBatch: ?number,
+): number {
+  return maxToRenderPerBatch ?? 10;
+}
+
+// onStartReachedThresholdOrDefault(this.props.onStartReachedThreshold)
+export function onStartReachedThresholdOrDefault(
+  onStartReachedThreshold: ?number,
+): number {
+  return onStartReachedThreshold ?? 2;
+}
+
+// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
+export function onEndReachedThresholdOrDefault(
+  onEndReachedThreshold: ?number,
+): number {
+  return onEndReachedThreshold ?? 2;
+}
+
+// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
+export function scrollEventThrottleOrDefault(
+  scrollEventThrottle: ?number,
+): number {
+  return scrollEventThrottle ?? 50;
+}
+
+// windowSizeOrDefault(this.props.windowSize)
+export function windowSizeOrDefault(windowSize: ?number): number {
+  return windowSize ?? 21;
+}

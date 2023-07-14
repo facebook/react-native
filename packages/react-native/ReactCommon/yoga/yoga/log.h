@@ -12,10 +12,7 @@
 struct YGNode;
 struct YGConfig;
 
-namespace facebook {
-namespace yoga {
-
-namespace detail {
+namespace facebook::yoga::detail {
 
 struct Log {
   static void log(
@@ -33,6 +30,4 @@ struct Log {
       ...) noexcept;
 };
 
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::detail

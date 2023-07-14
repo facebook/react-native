@@ -95,13 +95,11 @@ static void defineReadOnlyGlobal(
  */
 
 TurboModuleBinding::TurboModuleBinding(
-    TurboModuleBindingMode bindingMode,
     TurboModuleProviderFunctionType &&moduleProvider)
-    : bindingMode_(bindingMode), moduleProvider_(std::move(moduleProvider)) {}
+    : moduleProvider_(std::move(moduleProvider)) {}
 
 void TurboModuleBinding::install(
     jsi::Runtime &runtime,
-    TurboModuleBindingMode bindingMode,
     TurboModuleProviderFunctionType &&moduleProvider,
     TurboModuleProviderFunctionType &&legacyModuleProvider) {
   runtime.global().setProperty(
@@ -111,8 +109,7 @@ void TurboModuleBinding::install(
           runtime,
           jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
           1,
-          [binding =
-               TurboModuleBinding(bindingMode, std::move(moduleProvider))](
+          [binding = TurboModuleBinding(std::move(moduleProvider))](
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
               const jsi::Value *args,
@@ -135,7 +132,7 @@ void TurboModuleBinding::install(
               runtime,
               std::make_shared<BridgelessNativeModuleProxy>(
                   std::make_unique<TurboModuleBinding>(
-                      bindingMode, std::move(legacyModuleProvider)))));
+                      std::move(legacyModuleProvider)))));
     } else {
       defineReadOnlyGlobal(
           runtime,
@@ -160,11 +157,6 @@ jsi::Value TurboModuleBinding::getModule(
     module = moduleProvider_(moduleName);
   }
   if (module) {
-    // Default behaviour
-    if (bindingMode_ == TurboModuleBindingMode::HostObject) {
-      return jsi::Object::createFromHostObject(runtime, std::move(module));
-    }
-
     // What is jsRepresentation? A cache for the TurboModule's properties
     // Henceforth, always return the cache (i.e: jsRepresentation) to JavaScript
     //
@@ -186,26 +178,19 @@ jsi::Value TurboModuleBinding::getModule(
     weakJsRepresentation =
         std::make_unique<jsi::WeakObject>(runtime, jsRepresentation);
 
-    if (bindingMode_ == TurboModuleBindingMode::Prototype) {
-      // Option 1: Lazily populate the jsRepresentation, on property access.
-      //
-      // How does this work?
-      //   1. Initially jsRepresentation is empty: {}
-      //   2. If property lookup on jsRepresentation fails, the JS runtime will
-      //   search jsRepresentation's prototype: jsi::Object(TurboModule).
-      //   3. TurboModule::get(runtime, propKey) executes. This creates the
-      //   property, caches it on jsRepresentation, then returns it to
-      //   JavaScript.
-      auto hostObject =
-          jsi::Object::createFromHostObject(runtime, std::move(module));
-      jsRepresentation.setProperty(runtime, "__proto__", std::move(hostObject));
-    } else {
-      // Option 2: Eagerly populate the jsRepresentation, on create.
-      // Object.assign(jsRepresentation, jsi::Object(TurboModule))
-      for (auto &propName : module->getPropertyNames(runtime)) {
-        module->get(runtime, propName);
-      }
-    }
+    // Lazily populate the jsRepresentation, on property access.
+    //
+    // How does this work?
+    //   1. Initially jsRepresentation is empty: {}
+    //   2. If property lookup on jsRepresentation fails, the JS runtime will
+    //   search jsRepresentation's prototype: jsi::Object(TurboModule).
+    //   3. TurboModule::get(runtime, propKey) executes. This creates the
+    //   property, caches it on jsRepresentation, then returns it to
+    //   JavaScript.
+    auto hostObject =
+        jsi::Object::createFromHostObject(runtime, std::move(module));
+    jsRepresentation.setProperty(runtime, "__proto__", std::move(hostObject));
+
     return jsRepresentation;
   } else {
     return jsi::Value::null();

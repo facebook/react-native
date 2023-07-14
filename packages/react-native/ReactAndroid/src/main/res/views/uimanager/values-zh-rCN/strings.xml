@@ -25,7 +25,7 @@
     <string name="state_expanded_description" gender="unknown">已展开</string>
     <string name="state_collapsed_description" gender="unknown">已收起</string>
     <string name="state_unselected_description" gender="unknown">未选中</string>
-    <string name="state_on_description" gender="unknown">开</string>
-    <string name="state_off_description" gender="unknown">关</string>
+    <string name="state_on_description" gender="unknown">开启</string>
+    <string name="state_off_description" gender="unknown">关闭</string>
     <string name="state_mixed_description" gender="unknown">混合</string>
 </resources>

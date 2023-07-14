@@ -11,9 +11,7 @@
 #include "YGConfig.h"
 #include "YGNode.h"
 
-namespace facebook {
-namespace yoga {
-namespace detail {
+namespace facebook::yoga::detail {
 
 namespace {
 
@@ -59,6 +57,4 @@ void Log::log(
   va_end(args);
 }
 
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::detail

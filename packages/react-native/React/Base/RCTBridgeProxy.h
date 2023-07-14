@@ -19,7 +19,8 @@
                       moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                        bundleManager:(RCTBundleManager *)bundleManager
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
-                  dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread NS_DESIGNATED_INITIALIZER;
+                  dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
+               registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId NS_DESIGNATED_INITIALIZER;
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 - (void)forwardInvocation:(NSInvocation *)invocation;

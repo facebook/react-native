@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE(PlatformConstants)
         .osVersion = [device systemVersion],
         .systemName = [device systemName],
         .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
-        .isTesting = RCTRunningInTestEnvironment() ? true : false,
+        .isTesting = (RCT_DEV && RCTRunningInTestEnvironment()) ? true : false,
         .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsReactNativeVersion::Builder(
             {.minor = [versions[@"minor"] doubleValue],
              .major = [versions[@"major"] doubleValue],

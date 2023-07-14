@@ -141,6 +141,17 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
   turboModuleInteropBridgeProxyEnabled = enabled;
 }
 
+static RCTBridgeProxyLoggingLevel bridgeProxyLoggingLevel = kRCTBridgeProxyLoggingLevelNone;
+RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void)
+{
+  return bridgeProxyLoggingLevel;
+}
+
+void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel)
+{
+  bridgeProxyLoggingLevel = logLevel;
+}
+
 static BOOL useTurboModuleInteropForAllTurboModules = NO;
 BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
 {
@@ -226,9 +237,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   [self.batchedBridge setRCTTurboModuleRegistry:turboModuleRegistry];
 }
 
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator
 {
-  [self.batchedBridge attachBridgeAPIsToObjCModule:module];
+  return [self.batchedBridge bridgeModuleDecorator];
 }
 
 - (void)didReceiveReloadCommand

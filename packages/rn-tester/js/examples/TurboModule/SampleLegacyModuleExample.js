@@ -129,7 +129,9 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
-        <Text style={[styles.value]}>{JSON.stringify(result.value)}</Text>
+        <Text testID={name + '-result'} style={[styles.value]}>
+          {(JSON.stringify(result.value) || '').replaceAll('"', "'")}
+        </Text>
         <Text style={[styles.type]}>{result.type}</Text>
       </View>
     );
@@ -145,6 +147,7 @@ class SampleLegacyModuleExample extends React.Component<{||}, State> {
         <View style={styles.item}>
           <TouchableOpacity
             style={[styles.column, styles.button]}
+            testID="run-all-tests"
             onPress={() =>
               Object.keys(this._tests).forEach(item => {
                 try {

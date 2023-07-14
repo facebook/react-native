@@ -245,14 +245,12 @@ struct RCTInstanceCallback : public InstanceCallback {
   [_objCModuleRegistry setTurboModuleRegistry:_turboModuleRegistry];
 }
 
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator
 {
-  RCTBridgeModuleDecorator *bridgeModuleDecorator =
-      [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
-                                              moduleRegistry:_objCModuleRegistry
-                                               bundleManager:_bundleManager
-                                           callableJSModules:_callableJSModules];
-  [bridgeModuleDecorator attachInteropAPIsToModule:module];
+  return [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
+                                                 moduleRegistry:_objCModuleRegistry
+                                                  bundleManager:_bundleManager
+                                              callableJSModules:_callableJSModules];
 }
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
