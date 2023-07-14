@@ -95,7 +95,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
-  private static @Nullable CustomClientBuilder customClientBuilder = null;
+  private static @Nullable com.facebook.react.modules.network.CustomClientBuilder customClientBuilder = null;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
