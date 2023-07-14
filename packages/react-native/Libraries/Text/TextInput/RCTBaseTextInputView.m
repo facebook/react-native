@@ -40,20 +40,19 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
   UITextRange *selectedTextRange = self.backedTextInputView.selectedTextRange;
   UITextSelectionRect *selection = [self.backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  CGRect focusRect;
   if (selection == nil) {
     // No active selection or caret - fallback to entire input frame
-    scrollView.firstResponderFocus = [self convertRect:self.bounds toView:nil];
+    focusRect = self.bounds;
   } else {
     // Focus on text selection frame
+    focusRect = selection.rect;
     BOOL isMultiline = [self.backedTextInputView isKindOfClass:[UITextView class]];
-    CGRect focusRect = CGRectMake(
-      selection.rect.origin.x,
-      selection.rect.origin.y,
-      selection.rect.size.width,
-      selection.rect.size.height + (isMultiline ? 0 : kSingleLineKeyboardBottomOffset)
-    );
-    scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
+    if (!isMultiline) {
+      focusRect.size.height += kSingleLineKeyboardBottomOffset;
+    }
   }
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
