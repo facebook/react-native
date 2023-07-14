@@ -48,6 +48,7 @@
 @property (nonatomic, assign) BOOL snapToEnd;
 @property (nonatomic, copy) NSString *snapToAlignment;
 @property (nonatomic, assign) BOOL inverted;
+/** Focus area of newly-activated text input relative to the window to compare against UIKeyboardFrameBegin/End */
 @property (nonatomic, assign) CGRect firstResponderFocus;
 
 // NOTE: currently these event props are only declared so we can export the
