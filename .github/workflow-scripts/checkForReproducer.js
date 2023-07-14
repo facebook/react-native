@@ -7,8 +7,8 @@
  * @format
  */
 
-const NEEDS_REPRO_LABEL = "Needs: Repro";
-const NEEDS_REPRO_MESSAGE = "| Missing Reproducible Example |";
+const NEEDS_REPRO_LABEL = 'Needs: Repro';
+const NEEDS_REPRO_MESSAGE = '| Missing Reproducible Example |';
 
 module.exports = async (github, context) => {
   const issueData = {
@@ -20,11 +20,13 @@ module.exports = async (github, context) => {
   const issue = await github.rest.issues.get(issueData);
   const comments = await github.rest.issues.listComments(issueData);
 
-  const botComment = comments.data.find((comment) => comment.body.includes(NEEDS_REPRO_MESSAGE));
+  const botComment = comments.data.find(comment =>
+    comment.body.includes(NEEDS_REPRO_MESSAGE),
+  );
 
-  let commentBodies = comments.data.map((comment) => comment.body);
+  let commentBodies = comments.data.map(comment => comment.body);
   if (botComment) {
-    commentBodies = commentBodies.filter((body) => body !== botComment.body);
+    commentBodies = commentBodies.filter(body => body !== botComment.body);
   }
 
   const issueAndComments = [issue.data.body, ...commentBodies];
@@ -32,8 +34,11 @@ module.exports = async (github, context) => {
 
   const user = issue.data.user.login;
 
-  const hasValidReproducer = issueAndCommentsUniq.some((body) => {
-    const hasExpoSnackLink = containsPattern(body, `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`);
+  const hasValidReproducer = issueAndCommentsUniq.some(body => {
+    const hasExpoSnackLink = containsPattern(
+      body,
+      `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`,
+    );
     const hasGithubRepoLink = containsPattern(
       body,
       `https?:\\/\\/github\\.com\\/(${user})\\/[^/]+\\/?\\s?`,
@@ -69,6 +74,6 @@ module.exports = async (github, context) => {
 };
 
 function containsPattern(body, pattern) {
-  const regexp = new RegExp(pattern, "gm");
+  const regexp = new RegExp(pattern, 'gm');
   return body.search(regexp) !== -1;
 }
