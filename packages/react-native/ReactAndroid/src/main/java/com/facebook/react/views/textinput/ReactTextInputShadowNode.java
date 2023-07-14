@@ -53,10 +53,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
   public ReactTextInputShadowNode(
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     super(reactTextViewManagerCallback);
-    mTextBreakStrategy =
-        (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            ? Layout.BREAK_STRATEGY_SIMPLE
-            : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+    mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
 
     initMeasureFunction();
   }

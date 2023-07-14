@@ -328,19 +328,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
         if (!args.isNull(1)) {
           String text = args.getString(1);
-          reactEditText.maybeSetTextFromJS(getReactTextUpdate(text, mostRecentEventCount));
+          reactEditText.maybeSetTextFromJS(getReactTextUpdate(reactEditText, text, mostRecentEventCount));
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
     }
   }
 
-  private ReactTextUpdate getReactTextUpdate(String text, int mostRecentEventCount) {
+  private ReactTextUpdate getReactTextUpdate(ReactEditText reactEditText, String text, int mostRecentEventCount) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
     sb.append(TextTransform.apply(text, TextTransform.UNSET));
 
+    int textBreakStrategy = reactEditText.getBreakStrategy() == UNSET
+        ? Layout.BREAK_STRATEGY_SIMPLE
+        : reactEditText.getBreakStrategy();
+
     return new ReactTextUpdate(
-        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, 0, 0);
+        sb, mostRecentEventCount, false, 0, 0, 0, 0, Gravity.NO_GRAVITY, textBreakStrategy, 0);
   }
 
   @Override
