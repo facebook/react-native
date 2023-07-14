@@ -136,7 +136,7 @@ def use_react_native! (
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
-  pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
+  pod 'React-yoga', :path => "#{prefix}/ReactCommon/yoga"
 
   pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
   pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec", :modular_headers => true

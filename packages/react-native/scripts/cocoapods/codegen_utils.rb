@@ -84,7 +84,6 @@ class CodegenUtils
           "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
-          "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
         ]
         framework_search_paths = []
 

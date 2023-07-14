@@ -26,7 +26,6 @@ header_search_path = [
   "\"$(PODS_ROOT)/boost\"",
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -80,7 +79,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Fabric"
   s.dependency "React-utils"
   s.dependency "React-rendererdebug"
-  s.dependency "Yoga"
+  s.dependency "React-yoga"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

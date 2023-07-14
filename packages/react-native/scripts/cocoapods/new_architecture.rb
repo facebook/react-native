@@ -99,7 +99,7 @@ class NewArchitectureHelper
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
-        header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
+        header_search_paths = ["\"$(PODS_ROOT)/boost\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
             header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
@@ -135,12 +135,12 @@ class NewArchitectureHelper
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
             spec.dependency "React-NativeModulesApple"
-            spec.dependency "Yoga"
             spec.dependency "React-Fabric"
             spec.dependency "React-graphics"
             spec.dependency "React-utils"
             spec.dependency "React-debug"
             spec.dependency "React-rendererdebug"
+            spec.dependency "React-yoga"
 
             if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
                 spec.dependency "hermes-engine"

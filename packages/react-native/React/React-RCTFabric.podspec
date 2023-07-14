@@ -27,7 +27,6 @@ header_search_paths = [
   "\"$(PODS_ROOT)/DoubleConversion\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
-  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
   "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
 
@@ -79,12 +78,12 @@ Pod::Spec.new do |s|
   s.dependency "React-graphics"
   s.dependency "RCT-Folly/Fabric", folly_version
   s.dependency "glog"
-  s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-FabricImage"
   s.dependency "React-debug"
   s.dependency "React-utils"
   s.dependency "React-rendererdebug"
+  s.dependency "React-yoga"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

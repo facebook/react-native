@@ -37,7 +37,6 @@ header_search_paths = [
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
   "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
-  "$(PODS_ROOT)/Headers/Private/Yoga",
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
