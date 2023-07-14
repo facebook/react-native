@@ -181,7 +181,7 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
   dispatch_once(&onceToken, ^{
-    contentTypeMap = @{
+    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [@{
       @"" : @"",
       @"none" : @"",
       @"URL" : UITextContentTypeURL,
@@ -211,7 +211,27 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
       @"password" : UITextContentTypePassword,
       @"newPassword" : UITextContentTypeNewPassword,
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
-    };
+    } mutableCopy];
+
+    if (@available(iOS 17.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"creditCardExpiration" : UITextContentTypeCreditCardExpiration,
+        @"creditCardExpirationMonth" : UITextContentTypeCreditCardExpirationMonth,
+        @"creditCardExpirationYear" : UITextContentTypeCreditCardExpirationYear,
+        @"creditCardSecurityCode" : UITextContentTypeCreditCardSecurityCode,
+        @"creditCardType" : UITextContentTypeCreditCardType,
+        @"creditCardName" : UITextContentTypeCreditCardName,
+        @"creditCardGivenName" : UITextContentTypeCreditCardGivenName,
+        @"creditCardMiddleName" : UITextContentTypeCreditCardMiddleName,
+        @"creditCardFamilyName" : UITextContentTypeCreditCardFamilyName,
+        @"birthdate" : UITextContentTypeBirthdate,
+        @"birthdateDay" : UITextContentTypeBirthdateDay,
+        @"birthdateMonth" : UITextContentTypeBirthdateMonth,
+        @"birthdateYear" : UITextContentTypeBirthdateYear,
+      }];
+    }
+
+    contentTypeMap = [mutableContentTypeMap copy];
   });
 
   return contentTypeMap[RCTNSStringFromString(contentType)] ?: @"";

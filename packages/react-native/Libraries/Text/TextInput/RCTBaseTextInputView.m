@@ -235,7 +235,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
   dispatch_once(&onceToken, ^{
-    contentTypeMap = @{
+    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [@{
       @"none" : @"",
       @"URL" : UITextContentTypeURL,
       @"addressCity" : UITextContentTypeAddressCity,
@@ -264,7 +264,27 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"password" : UITextContentTypePassword,
       @"newPassword" : UITextContentTypeNewPassword,
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
-    };
+    } mutableCopy];
+
+    if (@available(iOS 17.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"creditCardExpiration" : UITextContentTypeCreditCardExpiration,
+        @"creditCardExpirationMonth" : UITextContentTypeCreditCardExpirationMonth,
+        @"creditCardExpirationYear" : UITextContentTypeCreditCardExpirationYear,
+        @"creditCardSecurityCode" : UITextContentTypeCreditCardSecurityCode,
+        @"creditCardType" : UITextContentTypeCreditCardType,
+        @"creditCardName" : UITextContentTypeCreditCardName,
+        @"creditCardGivenName" : UITextContentTypeCreditCardGivenName,
+        @"creditCardMiddleName" : UITextContentTypeCreditCardMiddleName,
+        @"creditCardFamilyName" : UITextContentTypeCreditCardFamilyName,
+        @"birthdate" : UITextContentTypeBirthdate,
+        @"birthdateDay" : UITextContentTypeBirthdateDay,
+        @"birthdateMonth" : UITextContentTypeBirthdateMonth,
+        @"birthdateYear" : UITextContentTypeBirthdateYear,
+      }];
+    }
+
+    contentTypeMap = [mutableContentTypeMap copy];
   });
 
   // Setting textContentType to an empty string will disable any
