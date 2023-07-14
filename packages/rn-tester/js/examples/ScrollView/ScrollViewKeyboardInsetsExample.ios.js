@@ -23,8 +23,10 @@ export function ScrollViewKeyboardInsetsExample() {
   const [automaticallyAdjustKeyboardInsets, setAutomaticallyAdjustKeyboardInsets] = React.useState(true);
   const [flatList, setFlatList] = React.useState(false);
   const [inverted, setInverted] = React.useState(false);
+  const [heightRestricted, setHeightRestricted] = React.useState(false);
 
   const scrollViewProps = {
+    style: heightRestricted && styles.scrollViewHeightRestricted,
     contentContainerStyle: styles.scrollViewContent,
     automaticallyAdjustKeyboardInsets: automaticallyAdjustKeyboardInsets,
     keyboardDismissMode: 'interactive',
@@ -68,6 +70,13 @@ export function ScrollViewKeyboardInsetsExample() {
         </View>
       )}
       <View style={styles.controlRow}>
+        <Text><Text style={styles.code}>HeightRestricted</Text> is {heightRestricted + ''}</Text>
+        <Switch
+          onValueChange={v => setHeightRestricted(v)}
+          value={heightRestricted}
+          style={styles.controlSwitch}/>
+      </View>
+      <View style={styles.controlRow}>
         <TextInput placeholder={'Text input outside scroll view'} style={styles.controlTextInput} />
       </View>
       {flatList
@@ -93,6 +102,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'stretch',
     justifyContent: 'flex-start',
+  },
+  scrollViewHeightRestricted: {
+    marginVertical: 50,
+    borderColor: '#f00',
+    borderWidth: 1,
   },
   scrollViewContent: {
     paddingVertical: 5,
