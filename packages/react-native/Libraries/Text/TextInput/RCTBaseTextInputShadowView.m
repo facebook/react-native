@@ -208,8 +208,7 @@
     maximumLineHeight = MAX(paragraphStyle.maximumLineHeight, maximumLineHeight);
   }];
 
-  CGFloat height = self.layoutMetrics.frame.size.height;
-  if (maximumLineHeight == 0 || maximumLineHeight > height) {
+  if (maximumLineHeight == 0) {
     // `lineHeight` was not specified, nothing to do.
     //  or is higher then actual height
     return;
