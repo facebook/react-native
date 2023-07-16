@@ -246,11 +246,11 @@ static Class getFallbackClassFromName(const char *name)
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeWillInvalidateModules:)
                                                  name:RCTBridgeWillInvalidateModulesNotification
-                                               object:_bridge.parentBridge];
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
-                                               object:_bridge.parentBridge];
+                                               object:nil];
   }
   return self;
 }
