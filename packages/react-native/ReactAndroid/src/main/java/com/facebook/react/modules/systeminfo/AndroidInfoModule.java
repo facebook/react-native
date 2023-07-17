@@ -28,7 +28,6 @@ import java.util.Map;
 @SuppressLint("HardwareIds")
 public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implements TurboModule {
   private static final String IS_TESTING = "IS_TESTING";
-  private static final boolean DEV = ReactBuildConfig.DEBUG;
 
   public AndroidInfoModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -75,8 +74,7 @@ public class AndroidInfoModule extends NativePlatformConstantsAndroidSpec implem
           AndroidInfoHelpers.getServerHost(getReactApplicationContext().getApplicationContext()));
     }
     constants.put(
-        "isTesting",
-        DEV && ("true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest()));
+        "isTesting", "true".equals(System.getProperty(IS_TESTING)) || isRunningScreenshotTest());
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
     return constants;
