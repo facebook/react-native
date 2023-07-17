@@ -60,12 +60,12 @@ ReactNativeStartupTiming NativePerformance::getReactNativeStartupTiming(
 
   ReactMarker::StartupLogger &startupLogger =
       ReactMarker::StartupLogger::getInstance();
-  result.startTime = startupLogger.getAppStartTime();
+  result.startTime = startupLogger.getAppStartupStartTime();
   result.executeJavaScriptBundleEntryPointStart =
       startupLogger.getRunJSBundleStartTime();
   result.executeJavaScriptBundleEntryPointEnd =
       startupLogger.getRunJSBundleEndTime();
-  result.endTime = startupLogger.getRunJSBundleEndTime();
+  result.endTime = startupLogger.getAppStartupEndTime();
 
   return result;
 }

@@ -9,6 +9,8 @@ package com.facebook.react.bridge;
 
 /** Constants used by ReactMarker. */
 public enum ReactMarkerConstants {
+  APP_STARTUP_START(true),
+  APP_STARTUP_END(true),
   CREATE_REACT_CONTEXT_START,
   CREATE_REACT_CONTEXT_END(true),
   PROCESS_PACKAGES_START,
