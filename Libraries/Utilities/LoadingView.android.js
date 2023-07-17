@@ -8,13 +8,9 @@
  * @flow strict-local
  */
 
-import ToastAndroid from '../Components/ToastAndroid/ToastAndroid';
 import processColor from '../StyleSheet/processColor';
 import Appearance from './Appearance';
 import NativeDevLoadingView from './NativeDevLoadingView';
-
-const TOAST_SHORT_DELAY = 2000;
-let isVisible = false;
 
 module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
@@ -40,12 +36,6 @@ module.exports = {
         typeof textColor === 'number' ? textColor : null,
         typeof backgroundColor === 'number' ? backgroundColor : null,
       );
-    } else if (!isVisible) {
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-      isVisible = true;
-      setTimeout(() => {
-        isVisible = false;
-      }, TOAST_SHORT_DELAY);
     }
   },
   hide() {

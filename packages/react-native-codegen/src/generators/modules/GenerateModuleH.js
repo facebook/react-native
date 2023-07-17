@@ -341,12 +341,12 @@ module.exports = {
 
     const modules = Object.keys(nativeModules).flatMap(hasteModuleName => {
       const {
-        aliases,
+        aliasMap,
         spec: {properties},
         moduleName,
       } = nativeModules[hasteModuleName];
-      const resolveAlias = createAliasResolver(aliases);
-      const structs = createStructs(moduleName, aliases, resolveAlias);
+      const resolveAlias = createAliasResolver(aliasMap);
+      const structs = createStructs(moduleName, aliasMap, resolveAlias);
 
       return [
         ModuleClassDeclarationTemplate({

@@ -245,6 +245,32 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('handles nested list in ListEmptyComponent', () => {
+    const ListEmptyComponent = (
+      <VirtualizedList {...baseItemProps(generateItems(1))} />
+    );
+
+    let component;
+
+    ReactTestRenderer.act(() => {
+      component = ReactTestRenderer.create(
+        <VirtualizedList
+          {...baseItemProps([])}
+          ListEmptyComponent={ListEmptyComponent}
+        />,
+      );
+    });
+
+    ReactTestRenderer.act(() => {
+      component.update(
+        <VirtualizedList
+          {...baseItemProps(generateItems(5))}
+          ListEmptyComponent={ListEmptyComponent}
+        />,
+      );
+    });
+  });
+
   it('returns the viewableItems correctly in the onViewableItemsChanged callback after changing the data', () => {
     const ITEM_HEIGHT = 800;
     let data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];

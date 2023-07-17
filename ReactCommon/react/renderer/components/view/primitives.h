@@ -99,6 +99,9 @@ struct CascadedRectangleEdges {
   OptionalT horizontal{};
   OptionalT vertical{};
   OptionalT all{};
+  OptionalT block{};
+  OptionalT blockStart{};
+  OptionalT blockEnd{};
 
   Counterpart resolve(bool isRTL, T defaults) const {
     const auto leadingEdge = isRTL ? end : start;
@@ -111,10 +114,14 @@ struct CascadedRectangleEdges {
     return {
         /* .left = */
         left.value_or(leadingEdge.value_or(horizontalOrAllOrDefault)),
-        /* .top = */ top.value_or(verticalOrAllOrDefault),
+        /* .top = */
+        blockStart.value_or(
+            block.value_or(top.value_or(verticalOrAllOrDefault))),
         /* .right = */
         right.value_or(trailingEdge.value_or(horizontalOrAllOrDefault)),
-        /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
+        /* .bottom = */
+        blockEnd.value_or(
+            block.value_or(bottom.value_or(verticalOrAllOrDefault))),
     };
   }
 
@@ -128,7 +135,10 @@ struct CascadedRectangleEdges {
                this->end,
                this->horizontal,
                this->vertical,
-               this->all) ==
+               this->all,
+               this->block,
+               this->blockStart,
+               this->blockEnd) ==
         std::tie(
                rhs.left,
                rhs.top,
@@ -138,7 +148,10 @@ struct CascadedRectangleEdges {
                rhs.end,
                rhs.horizontal,
                rhs.vertical,
-               rhs.all);
+               rhs.all,
+               rhs.block,
+               rhs.blockStart,
+               rhs.blockEnd);
   }
 
   bool operator!=(const CascadedRectangleEdges<T> &rhs) const {

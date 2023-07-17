@@ -211,7 +211,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, ColorArrayValue, PointValue, EdgeInsetsValue, DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -311,6 +311,12 @@ type ModuleProps = $ReadOnly<{|
   insets_optional_key?: EdgeInsetsValue,
   insets_optional_value: ?EdgeInsetsValue,
   insets_optional_both?: ?EdgeInsetsValue,
+
+  // DimensionValue props
+  dimension_required: DimensionValue,
+  dimension_optional_key?: DimensionValue,
+  dimension_optional_value: ?DimensionValue,
+  dimension_optional_both?: ?DimensionValue,
 |}>;
 
 export default (codegenNativeComponent<ModuleProps, Options>(
@@ -335,7 +341,7 @@ const codegenNativeComponent = require('codegenNativeComponent');
 
 import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue} from 'StyleSheetTypes';
+import type {ColorValue, PointValue, ProcessColorValue, EdgeInsetsValue, DimensionValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
@@ -409,6 +415,12 @@ type ModuleProps = $ReadOnly<{|
   array_insets_optional_key?: $ReadOnlyArray<EdgeInsetsValue>,
   array_insets_optional_value: ?$ReadOnlyArray<EdgeInsetsValue>,
   array_insets_optional_both?: ?$ReadOnlyArray<EdgeInsetsValue>,
+
+  // DimensionValue props
+  array_dimension_required: $ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_key?: $ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_value: ?$ReadOnlyArray<DimensionValue>,
+  array_dimension_optional_both?: ?$ReadOnlyArray<DimensionValue>,
 
   // Object props
   array_object_required: $ReadOnlyArray<$ReadOnly<{| prop: string |}>>,
@@ -550,6 +562,12 @@ type ModuleProps = $ReadOnly<{|
   insets_optional_key: $ReadOnly<{|prop?: EdgeInsetsValue|}>,
   insets_optional_value: $ReadOnly<{|prop: ?EdgeInsetsValue|}>,
   insets_optional_both: $ReadOnly<{|prop?: ?EdgeInsetsValue|}>,
+
+  // DimensionValue props
+  dimension_required: $ReadOnly<{|prop: DimensionValue|}>,
+  dimension_optional_key: $ReadOnly<{|prop?: DimensionValue|}>,
+  dimension_optional_value: $ReadOnly<{|prop: ?DimensionValue|}>,
+  dimension_optional_both: $ReadOnly<{|prop?: ?DimensionValue|}>,
 
   // Nested object props
   object_required: $ReadOnly<{|prop: $ReadOnly<{nestedProp: string}>|}>,

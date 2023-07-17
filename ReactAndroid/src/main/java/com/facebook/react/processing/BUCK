@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_java_annotation_processor", "rn_java_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_java_annotation_processor", "rn_java_library")
 
 rn_java_annotation_processor(
     name = "processing",
@@ -21,6 +21,7 @@ rn_java_library(
     source = "7",
     target = "7",
     deps = [
+        YOGA_TARGET,
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/javapoet:javapoet"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),

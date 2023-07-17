@@ -313,6 +313,7 @@ function checkInfiniteRange<OutputT: number | string>(
      * doesn't cleanly convert to a string, like undefined, null, and object,
      * etc. If you really mean this implicit string conversion, you can do
      * something like String(myThing) */
+    // $FlowFixMe[unsafe-addition]
     name + 'cannot be ]-infinity;+infinity[ ' + arr,
   );
 }

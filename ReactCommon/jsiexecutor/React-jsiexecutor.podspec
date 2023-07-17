@@ -41,4 +41,8 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
   s.dependency "glog"
+
+  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency 'hermes-engine'
+  end
 end

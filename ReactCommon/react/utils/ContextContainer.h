@@ -38,7 +38,7 @@ class ContextContainer final {
    * example if the type `T` is `std::shared_ptr<const ReactNativeConfig>`,
    * then one would use `"ReactNativeConfig"` for the `key`, even if the
    * instance is actually a `shared_ptr` of derived class
-   *`EmptyReactNativeConfig`.
+   *`ReactNativeConfig`.
    */
   template <typename T>
   void insert(std::string const &key, T const &instance) const {

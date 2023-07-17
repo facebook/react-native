@@ -78,6 +78,11 @@ def enableProguardInReleaseBuilds = true
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 /**
+ * This allows to customized the CMake version used for compiling RN Tester.
+ */
+def cmakeVersion = project(":ReactAndroid").cmake_version
+
+/**
  * Architectures to build native code for.
  */
 def reactNativeArchitectures() {
@@ -126,6 +131,11 @@ android {
             storePassword MYAPP_RELEASE_STORE_PASSWORD
             keyAlias MYAPP_RELEASE_KEY_ALIAS
             keyPassword MYAPP_RELEASE_KEY_PASSWORD
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version cmakeVersion
         }
     }
     splits {

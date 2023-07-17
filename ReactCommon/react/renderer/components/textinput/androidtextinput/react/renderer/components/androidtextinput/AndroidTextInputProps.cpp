@@ -269,6 +269,8 @@ void AndroidTextInputProps::setProp(
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 
+  static auto defaults = AndroidTextInputProps{};
+
   // ParagraphAttributes has its own switch statement - to keep all
   // of these fields together, and because there are some collisions between
   // propnames parsed here and outside of ParagraphAttributes. For example,
@@ -323,55 +325,59 @@ void AndroidTextInputProps::setProp(
   }
 
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoComplete, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyLabel, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(numberOfLines, 0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(disableFullscreenUI, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textBreakStrategy, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(underlineColorAndroid, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImageLeft, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImagePadding, 0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAutofill, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(showSoftInputOnFocus, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCorrect, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(autoFocus, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(allowFontScaling, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier, (Float)0.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(editable, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(maxLength, 0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(multiline, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholder, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholderTextColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(selection, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(this->value, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(defaultValue, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(caretHidden, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(contextMenuHidden, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowRadius, (Float)0.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textDecorationLine, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(fontStyle, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowOffset, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(lineHeight, (Float)0.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textTransform, {});
-    // RAW_SET_PROP_SWITCH_CASE_BASIC(color, {0}); // currently not being parsed
-    RAW_SET_PROP_SWITCH_CASE_BASIC(letterSpacing, (Float)0.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(fontSize, (Float)0.0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlign, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(includeFontPadding, false);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(fontWeight, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(fontFamily, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount, 0);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(text, {});
+    RAW_SET_PROP_SWITCH_CASE_BASIC(autoComplete);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyLabel);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(numberOfLines);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(disableFullscreenUI);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textBreakStrategy);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(underlineColorAndroid);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImageLeft);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(inlineImagePadding);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(importantForAutofill);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(showSoftInputOnFocus);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCapitalize);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(autoCorrect);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(autoFocus);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(allowFontScaling);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(maxFontSizeMultiplier);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(editable);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardType);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(returnKeyType);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(maxLength);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholder);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(placeholderTextColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(secureTextEntry);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selection);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(defaultValue);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selectTextOnFocus);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(caretHidden);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(contextMenuHidden);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowRadius);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textDecorationLine);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fontStyle);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textShadowOffset);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(lineHeight);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textTransform);
+    // RAW_SET_PROP_SWITCH_CASE_BASIC(color);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(letterSpacing);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fontSize);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlign);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(includeFontPadding);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fontWeight);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fontFamily);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(textAlignVertical);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(cursorColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(mostRecentEventCount);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(text);
+
+    case CONSTEXPR_RAW_PROPS_KEY_HASH("value"): {
+      fromRawValue(context, value, this->value, {});
+      return;
+    }
 
     // Paddings are not parsed at this level of the component (they're parsed in
     // ViewProps) but we do need to know if they're present or not. See

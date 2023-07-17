@@ -25,3 +25,4 @@ target_include_directories(react_render_graphics
         )
 
 target_link_libraries(react_render_graphics glog fb fbjni folly_runtime react_debug)
+

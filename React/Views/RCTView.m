@@ -1152,6 +1152,17 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   RCTUIColor *borderTopColor = _borderTopColor;
   RCTUIColor *borderBottomColor = _borderBottomColor;
 
+  if (_borderBlockColor) {
+    borderTopColor = _borderBlockColor;
+    borderBottomColor = _borderBlockColor;
+  }
+  if (_borderBlockEndColor) {
+    borderBottomColor = _borderBlockEndColor;
+  }
+  if (_borderBlockStartColor) {
+    borderTopColor = _borderBlockStartColor;
+  }
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   if (@available(iOS 13.0, *)) {
     borderColor = [borderColor resolvedColorWithTraitCollection:self.traitCollection];
@@ -1371,7 +1382,7 @@ static void RCTUpdateShadowPathForView(RCTView *view)
   }
 
 setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom) setBorderColor(Left)
-    setBorderColor(Start) setBorderColor(End)
+    setBorderColor(Start) setBorderColor(End) setBorderColor(Block) setBorderColor(BlockEnd) setBorderColor(BlockStart)
 
 #pragma mark - Border Width
 

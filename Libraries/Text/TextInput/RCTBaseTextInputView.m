@@ -591,7 +591,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
-  } else if (text != nil) { // [macOS] -[NSString stringByReplacingCharactersInRange:withString:] doesn't like when the replacement string is nil
+  } else if (text != nil) {
     _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range
                                                                                         withString:text];
   }

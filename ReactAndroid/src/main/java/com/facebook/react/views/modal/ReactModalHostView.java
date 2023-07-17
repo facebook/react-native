@@ -534,7 +534,7 @@ public class ReactModalHostView extends ViewGroup
     public boolean onInterceptTouchEvent(MotionEvent event) {
       mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, true);
       }
       return super.onInterceptTouchEvent(event);
     }
@@ -543,7 +543,7 @@ public class ReactModalHostView extends ViewGroup
     public boolean onTouchEvent(MotionEvent event) {
       mJSTouchDispatcher.handleTouchEvent(event, mEventDispatcher);
       if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, false);
       }
       super.onTouchEvent(event);
       // In case when there is no children interested in handling touch event, we return true from
@@ -554,7 +554,7 @@ public class ReactModalHostView extends ViewGroup
     @Override
     public boolean onInterceptHoverEvent(MotionEvent event) {
       if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, true);
       }
       return super.onHoverEvent(event);
     }
@@ -562,7 +562,7 @@ public class ReactModalHostView extends ViewGroup
     @Override
     public boolean onHoverEvent(MotionEvent event) {
       if (mJSPointerDispatcher != null) {
-        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher);
+        mJSPointerDispatcher.handleMotionEvent(event, mEventDispatcher, false);
       }
       return super.onHoverEvent(event);
     }

@@ -38,11 +38,6 @@ export type FeatureFlags = {|
    * traffic.
    */
   animatedShouldUseSingleOp: () => boolean,
-  /**
-   * This feature flag enables an experimental rendering of react native
-   * components that are implemented in C++.
-   */
-  enableCppComponents: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -51,7 +46,6 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
   animatedShouldDebounceQueueFlush: () => false,
   animatedShouldUseSingleOp: () => false,
-  enableCppComponents: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

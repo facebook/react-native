@@ -667,8 +667,6 @@ function generateStruct(
         return;
       case 'Int32EnumTypeAnnotation':
         return;
-      case 'DoubleTypeAnnotation':
-        return;
       case 'ObjectTypeAnnotation':
         const props = property.typeAnnotation.properties;
         if (props == null) {

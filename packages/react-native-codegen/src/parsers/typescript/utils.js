@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {TypeAliasResolutionStatus, TypeDeclarationMap} from '../utils';
+import type {TypeResolutionStatus, TypeDeclarationMap} from '../utils';
 
 const {parseTopLevelType} = require('./parseTopLevelType');
 
@@ -56,7 +56,7 @@ function resolveTypeAnnotation(
 ): {
   nullable: boolean,
   typeAnnotation: $FlowFixMe,
-  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+  typeResolutionStatus: TypeResolutionStatus,
 } {
   invariant(
     typeAnnotation != null,
@@ -68,7 +68,7 @@ function resolveTypeAnnotation(
       ? typeAnnotation.typeAnnotation
       : typeAnnotation;
   let nullable = false;
-  let typeAliasResolutionStatus: TypeAliasResolutionStatus = {
+  let typeResolutionStatus: TypeResolutionStatus = {
     successful: false,
   };
 
@@ -77,40 +77,55 @@ function resolveTypeAnnotation(
     nullable = nullable || topLevelType.optional;
     node = topLevelType.type;
 
-    if (node.type === 'TSTypeReference') {
-      typeAliasResolutionStatus = {
-        successful: true,
-        aliasName: node.typeName.name,
-      };
-      const resolvedTypeAnnotation = types[node.typeName.name];
-      if (
-        resolvedTypeAnnotation == null ||
-        resolvedTypeAnnotation.type === 'TSEnumDeclaration'
-      ) {
+    if (node.type !== 'TSTypeReference') {
+      break;
+    }
+
+    const resolvedTypeAnnotation = types[node.typeName.name];
+    if (resolvedTypeAnnotation == null) {
+      break;
+    }
+
+    switch (resolvedTypeAnnotation.type) {
+      case 'TSTypeAliasDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation.typeAnnotation;
         break;
       }
-
-      switch (resolvedTypeAnnotation.type) {
-        case 'TSTypeAliasDeclaration':
-          node = resolvedTypeAnnotation.typeAnnotation;
-          break;
-        case 'TSInterfaceDeclaration':
-          node = resolvedTypeAnnotation;
-          break;
-        default:
-          throw new Error(
-            `GenericTypeAnnotation '${node.typeName.name}' must resolve to a TSTypeAliasDeclaration or a TSInterfaceDeclaration. Instead, it resolved to a '${resolvedTypeAnnotation.type}'`,
-          );
+      case 'TSInterfaceDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'alias',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation;
+        break;
       }
-    } else {
-      break;
+      case 'TSEnumDeclaration': {
+        typeResolutionStatus = {
+          successful: true,
+          type: 'enum',
+          name: node.typeName.name,
+        };
+        node = resolvedTypeAnnotation;
+        break;
+      }
+      default: {
+        throw new TypeError(
+          `A non GenericTypeAnnotation must be a type declaration ('TSTypeAliasDeclaration'), an interface ('TSInterfaceDeclaration'), or enum ('TSEnumDeclaration'). Instead, got the unsupported ${resolvedTypeAnnotation.type}.`,
+        );
+      }
     }
   }
 
   return {
     nullable: nullable,
     typeAnnotation: node,
-    typeAliasResolutionStatus,
+    typeResolutionStatus,
   };
 }
 

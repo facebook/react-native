@@ -66,10 +66,12 @@ function getImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive'
+      | 'DimensionPrimitive'
       | $TEMPORARY$string<'ColorPrimitive'>
       | $TEMPORARY$string<'EdgeInsetsPrimitive'>
       | $TEMPORARY$string<'ImageSourcePrimitive'>
-      | $TEMPORARY$string<'PointPrimitive'>,
+      | $TEMPORARY$string<'PointPrimitive'>
+      | $TEMPORARY$string<'DimensionPrimitive'>,
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -85,6 +87,15 @@ function getImports(
         return;
       case 'EdgeInsetsPrimitive':
         imports.add('import com.facebook.react.bridge.ReadableMap;');
+        return;
+      case 'DimensionPrimitive':
+        if (type === 'delegate') {
+          imports.add(
+            'import com.facebook.react.bridge.DimensionPropConverter;',
+          );
+        } else {
+          imports.add('import com.facebook.yoga.YogaValue;');
+        }
         return;
       default:
         (name: empty);

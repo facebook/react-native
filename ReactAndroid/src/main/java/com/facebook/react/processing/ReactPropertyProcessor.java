@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.yoga.YogaValue;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -69,14 +70,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final Map<TypeName, String> DEFAULT_TYPES;
   private static final Set<TypeName> BOXED_PRIMITIVES;
 
-  private static final TypeName PROPS_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "ReactStylesDiffMap");
   private static final TypeName OBJECT_TYPE = TypeName.get(Object.class);
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
   private static final TypeName DYNAMIC_TYPE = TypeName.get(Dynamic.class);
   private static final TypeName DYNAMIC_FROM_OBJECT_TYPE = TypeName.get(DynamicFromObject.class);
+  private static final TypeName YOGA_VALUE_TYPE = TypeName.get(YogaValue.class);
 
   private static final TypeName VIEW_MANAGER_TYPE =
       ClassName.get("com.facebook.react.uimanager", "ViewManager");
@@ -120,6 +120,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     DEFAULT_TYPES.put(READABLE_ARRAY_TYPE, "Array");
     DEFAULT_TYPES.put(READABLE_MAP_TYPE, "Map");
     DEFAULT_TYPES.put(DYNAMIC_TYPE, "Dynamic");
+    DEFAULT_TYPES.put(YOGA_VALUE_TYPE, "YogaValue");
 
     BOXED_PRIMITIVES = new HashSet<>();
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
@@ -369,6 +370,9 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       return builder.add("($L)value", READABLE_MAP_TYPE);
     } else if (propertyType.equals(DYNAMIC_TYPE)) {
       return builder.add("new $L(value)", DYNAMIC_FROM_OBJECT_TYPE);
+    } else if (propertyType.equals(YOGA_VALUE_TYPE)) {
+      return builder.add(
+          "$T.getDimension(value)", com.facebook.react.bridge.DimensionPropConverter.class);
     }
 
     if (BOXED_PRIMITIVES.contains(propertyType)) {
@@ -420,7 +424,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     CodeBlock.Builder builder = CodeBlock.builder();
     for (PropertyInfo propertyInfo : properties) {
       try {
-        String typeName = getPropertypTypeName(propertyInfo.mProperty, propertyInfo.propertyType);
+        String typeName = getPropertyTypeName(propertyInfo.mProperty, propertyInfo.propertyType);
         builder.addStatement("props.put($S, $S)", propertyInfo.mProperty.name(), typeName);
       } catch (IllegalArgumentException e) {
         throw new ReactPropertyException(e.getMessage(), propertyInfo);
@@ -430,7 +434,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return builder.build();
   }
 
-  private static String getPropertypTypeName(Property property, TypeName propertyType) {
+  private static String getPropertyTypeName(Property property, TypeName propertyType) {
     String defaultType = DEFAULT_TYPES.get(propertyType);
     String useDefaultType =
         property instanceof RegularProperty

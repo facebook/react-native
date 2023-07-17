@@ -423,18 +423,17 @@ static PointerEvent CreatePointerEventFromActiveTouch(ActiveTouch activeTouch, R
 }
 
 static PointerEvent CreatePointerEventFromIncompleteHoverData(
+    int pointerId,
+    std::string pointerType,
     CGPoint clientLocation,
     CGPoint screenLocation,
     CGPoint offsetLocation,
     UIKeyModifierFlags modifierFlags)
 {
   PointerEvent event = {};
-  // "touch" events produced from a mouse cursor on iOS always have the ID 0 so
-  // we can just assume that here since these sort of hover events only ever come
-  // from the mouse
-  event.pointerId = kMousePointerId;
+  event.pointerId = pointerId;
   event.pressure = 0.0;
-  event.pointerType = "mouse";
+  event.pointerType = pointerType;
   event.clientPoint = RCTPointFromCGPoint(clientLocation);
   event.screenPoint = RCTPointFromCGPoint(screenLocation);
   event.offsetPoint = RCTPointFromCGPoint(offsetLocation);
@@ -528,7 +527,8 @@ struct PointerHasher {
   IdentifierPool<11> _identifierPool;
 
 #if !TARGET_OS_OSX // [macOS]
-    UIHoverGestureRecognizer *_hoverRecognizer API_AVAILABLE(ios(13.0));
+  UIHoverGestureRecognizer *_mouseHoverRecognizer API_AVAILABLE(ios(13.0));
+  UIHoverGestureRecognizer *_penHoverRecognizer API_AVAILABLE(ios(13.0));
 #endif // [macOS]
   NSMutableDictionary<NSNumber *, NSOrderedSet<RCTReactTaggedView *> *> *_currentlyHoveredViewsPerPointer;
 
@@ -551,7 +551,8 @@ struct PointerHasher {
     self.delegate = self;
 
 #if !TARGET_OS_OSX // [macOS]
-    _hoverRecognizer = nil;
+    _mouseHoverRecognizer = nil;
+    _penHoverRecognizer = nil;
 #endif // [macOS]
     _currentlyHoveredViewsPerPointer = [[NSMutableDictionary alloc] init];
     _primaryTouchPointerId = -1;
@@ -571,9 +572,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 
   if (RCTGetDispatchW3CPointerEvents()) {
 #if !TARGET_OS_OSX // [macOS]
-      if (@available(iOS 13.0, *)) {
-      _hoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(hovering:)];
-      [view addGestureRecognizer:_hoverRecognizer];
+    if (@available(iOS 13.4, *)) {
+      _mouseHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(mouseHovering:)];
+      _mouseHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypeIndirectPointer) ];
+      [view addGestureRecognizer:_mouseHoverRecognizer];
+
+      _penHoverRecognizer = [[UIHoverGestureRecognizer alloc] initWithTarget:self action:@selector(penHovering:)];
+      _penHoverRecognizer.allowedTouchTypes = @[ @(UITouchTypePencil) ];
+      [view addGestureRecognizer:_penHoverRecognizer];
     }
 #endif // [macOS]
   }
@@ -588,9 +594,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
   _rootComponentView = nil;
 
 #if !TARGET_OS_OSX // [macOS]
-  if (_hoverRecognizer != nil) {
-    [view removeGestureRecognizer:_hoverRecognizer];
-    _hoverRecognizer = nil;
+  if (_mouseHoverRecognizer != nil) {
+    [view removeGestureRecognizer:_mouseHoverRecognizer];
+    _mouseHoverRecognizer = nil;
+  }
+
+  if (_penHoverRecognizer != nil) {
+    [view removeGestureRecognizer:_penHoverRecognizer];
+    _penHoverRecognizer = nil;
   }
 #endif // [macOS]
 }
@@ -995,7 +1006,19 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
 }
 
 #if !TARGET_OS_OSX
-- (void)hovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
+- (void)penHovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
+{
+  [self hovering:recognizer pointerId:kPencilPointerId pointerType:"pen"];
+}
+
+- (void)mouseHovering:(UIHoverGestureRecognizer *)recognizer API_AVAILABLE(ios(13.0))
+{
+  [self hovering:recognizer pointerId:kMousePointerId pointerType:"mouse"];
+}
+
+- (void)hovering:(UIHoverGestureRecognizer *)recognizer
+       pointerId:(int)pointerId
+     pointerType:(std::string)pointerType API_AVAILABLE(ios(13.0))
 {
   RCTUIView *listenerView = recognizer.view; // [macOS]
   CGPoint clientLocation = [recognizer locationInView:listenerView];
@@ -1014,8 +1037,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithTarget : (id)target action : (SEL)act
     modifierFlags = 0;
   }
 
-  PointerEvent event =
-      CreatePointerEventFromIncompleteHoverData(clientLocation, screenLocation, offsetLocation, modifierFlags);
+  PointerEvent event = CreatePointerEventFromIncompleteHoverData(
+      pointerId, pointerType, clientLocation, screenLocation, offsetLocation, modifierFlags);
 
   NSOrderedSet<RCTReactTaggedView *> *eventPathViews = [self handleIncomingPointerEvent:event onView:targetView];
   SharedTouchEventEmitter eventEmitter = GetTouchEmitterFromView(targetView, offsetLocation);

@@ -19,6 +19,9 @@ endif(CCACHE_FOUND)
 add_link_options(-Wl,--build-id)
 add_compile_options(-Wall -Werror -std=c++17)
 
+# This exposes the check_for_circular_dependencies macro to all the submodules
+include(CircularDepsValidator.cmake)
+
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()
