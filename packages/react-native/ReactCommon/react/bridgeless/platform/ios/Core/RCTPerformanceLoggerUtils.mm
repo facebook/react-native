@@ -17,6 +17,12 @@ static void mapReactMarkerToPerformanceLogger(
     RCTPerformanceLogger *performanceLogger)
 {
   switch (markerId) {
+    case ReactMarker::APP_STARTUP_START:
+      [performanceLogger markStartForTag:RCTPLAppStartup];
+      break;
+    case ReactMarker::APP_STARTUP_STOP:
+      [performanceLogger markStopForTag:RCTPLAppStartup];
+      break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       [performanceLogger markStartForTag:RCTPLScriptExecution];
       break;
