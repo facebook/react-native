@@ -140,7 +140,14 @@ public class ReactMarker {
     for (MarkerListener listener : sListeners) {
       listener.logMarker(name, tag, instanceKey);
     }
+
+    if (ReactBridge.isInitialized()) {
+      nativeLogMarker(name.name(), SystemClock.uptimeMillis());
+    }
   }
+
+  @DoNotStrip
+  private static native void nativeLogMarker(String markerName, long markerTime);
 
   @DoNotStrip
   public static void setAppStartTime(long appStartTime) {
