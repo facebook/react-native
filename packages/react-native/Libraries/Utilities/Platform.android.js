@@ -54,8 +54,11 @@ const Platform = {
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTesting(): boolean {
-    // $FlowFixMe[object-this-reference]
-    return this.constants.isTesting;
+    if (__DEV__) {
+      // $FlowFixMe[object-this-reference]
+      return this.constants.isTesting;
+    }
+    return false;
   },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean {
