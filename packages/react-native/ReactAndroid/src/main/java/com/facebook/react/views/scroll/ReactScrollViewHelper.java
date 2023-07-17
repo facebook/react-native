@@ -101,6 +101,15 @@ public class ReactScrollViewHelper {
   private static <T extends ViewGroup & HasScrollEventThrottle> void emitScrollEvent(
       T scrollView, ScrollEventType scrollEventType, float xVelocity, float yVelocity) {
     long now = System.currentTimeMillis();
+    // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
+    // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
+    // inadvertently filter out any scroll events.
+    if (scrollView.getScrollEventThrottle()
+        >= Math.max(17, now - scrollView.getLastScrollDispatchTime())) {
+      // Scroll events are throttled.
+      return;
+    }
+
     View contentView = scrollView.getChildAt(0);
 
     if (contentView == null) {
