@@ -1502,7 +1502,7 @@ RCT_ENUM_CONVERTER(
   return NSAccessibilityUnknownRole;
 }
 
-RCT_JSON_ARRAY_CONVERTER(RCTHandledKey);
+RCT_ARRAY_CONVERTER(RCTHandledKey);
 
 #endif // macOS]
 
