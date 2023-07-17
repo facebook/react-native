@@ -18,6 +18,7 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReactMarker;";
+  static void registerNatives();
   static void setLogPerfMarkerIfNeeded();
 
  private:
@@ -38,6 +39,10 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
       const char *tag,
       const int instanceKey);
   static double getAppStartTime();
+  static void nativeLogMarker(
+      jni::alias_ref<jclass> /* unused */,
+      std::string markerNameStr,
+      jlong markerTime);
 };
 
 } // namespace facebook::react
