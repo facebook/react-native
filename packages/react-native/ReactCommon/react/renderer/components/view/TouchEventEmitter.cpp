@@ -139,7 +139,7 @@ void TouchEventEmitter::onPointerDown(const PointerEvent &event) const {
 }
 
 void TouchEventEmitter::onPointerMove(const PointerEvent &event) const {
-  dispatchUniqueEvent("pointermove", std::make_shared<PointerEvent>(event));
+  dispatchUniqueEvent("pointerMove", std::make_shared<PointerEvent>(event));
 }
 
 void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
