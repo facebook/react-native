@@ -10,8 +10,6 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -286,9 +284,8 @@ public class ReactEditText extends AppCompatEditText
         ClipData clip = clipboard.getPrimaryClip();
         if (clip != null) {
           for (int i = 0; i < clip.getItemCount(); i++) {
-            final CharSequence paste;
             final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
-            paste = (text instanceof Spanned) ? text.toString() : text;
+            final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
             if (paste != null) {
               ClipData clipData = ClipData.newPlainText("rebase_copy", text);
               ClipboardManager manager =
