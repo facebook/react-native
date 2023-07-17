@@ -53,37 +53,37 @@ void StartupLogger::logStartupEvent(
     double markerTime) {
   switch (markerId) {
     case ReactMarkerId::APP_STARTUP_START:
-      if (appStartupStartTime == 0) {
+      if (std::isnan(appStartupStartTime)) {
         appStartupStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::APP_STARTUP_STOP:
-      if (appStartupEndTime == 0) {
+      if (std::isnan(appStartupEndTime)) {
         appStartupEndTime = markerTime;
       }
       return;
 
     case ReactMarkerId::INIT_REACT_RUNTIME_START:
-      if (initReactRuntimeStartTime == 0) {
+      if (std::isnan(initReactRuntimeStartTime)) {
         initReactRuntimeStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::INIT_REACT_RUNTIME_STOP:
-      if (initReactRuntimeEndTime == 0) {
+      if (std::isnan(initReactRuntimeEndTime)) {
         initReactRuntimeEndTime = markerTime;
       }
       return;
 
     case ReactMarkerId::RUN_JS_BUNDLE_START:
-      if (runJSBundleStartTime == 0) {
+      if (std::isnan(runJSBundleStartTime)) {
         runJSBundleStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::RUN_JS_BUNDLE_STOP:
-      if (runJSBundleEndTime == 0) {
+      if (std::isnan(runJSBundleEndTime)) {
         runJSBundleEndTime = markerTime;
       }
       return;
