@@ -10,6 +10,8 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
