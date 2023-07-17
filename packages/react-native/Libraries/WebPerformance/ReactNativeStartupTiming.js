@@ -21,6 +21,8 @@ export default class ReactNativeStartupTiming {
   // See https://www.w3.org/TR/performance-timeline/#performancetiming-interface
   _startTime = 0;
   _endTime = 0;
+  _initializeRuntimeStart = 0;
+  _initializeRuntimeEnd = 0;
   _executeJavaScriptBundleEntryPointStart = 0;
   _executeJavaScriptBundleEntryPointEnd = 0;
 
@@ -28,6 +30,8 @@ export default class ReactNativeStartupTiming {
     if (startUpTiming != null) {
       this._startTime = startUpTiming.startTime;
       this._endTime = startUpTiming.endTime;
+      this._initializeRuntimeStart = startUpTiming.initializeRuntimeStart;
+      this._initializeRuntimeEnd = startUpTiming.initializeRuntimeEnd;
       this._executeJavaScriptBundleEntryPointStart =
         startUpTiming.executeJavaScriptBundleEntryPointStart;
       this._executeJavaScriptBundleEntryPointEnd =
@@ -36,7 +40,7 @@ export default class ReactNativeStartupTiming {
   }
 
   /**
-   *  Start time of the RN app startup process. This is provided by the platform by implementing the `ReactMarker.setAppStartTime` API in the native platform code.
+   * Start time of the RN app startup process. This is provided by the platform by implementing the `ReactMarker.setAppStartTime` API in the native platform code.
    */
   get startTime(): number {
     return this._startTime;
@@ -47,6 +51,20 @@ export default class ReactNativeStartupTiming {
    */
   get endTime(): number {
     return this._endTime;
+  }
+
+  /**
+   * Start time when RN runtime get initialized. This is when RN infra first kicks in app startup process.
+   */
+  get initializeRuntimeStart(): number {
+    return this._initializeRuntimeStart;
+  }
+
+  /**
+   * End time when RN runtime get initialized. This is the last marker before ends of the app startup process.
+   */
+  get initializeRuntimeEnd(): number {
+    return this._initializeRuntimeEnd;
   }
 
   /**

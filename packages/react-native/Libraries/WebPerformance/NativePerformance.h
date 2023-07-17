@@ -20,15 +20,18 @@ class PerformanceEntryReporter;
 
 using ReactNativeStartupTiming =
     NativePerformanceCxxBaseReactNativeStartupTiming<
-        int32_t, // Start time of the RN app startup process
-        int32_t, // End time of the RN app startup process
-        int32_t, // Start time that RN app execute the JS bundle
-        int32_t // End time that RN app execute the JS bundle
-        >;
+        int32_t,
+        int32_t,
+        int32_t,
+        int32_t,
+        int32_t,
+        int32_t>;
 
 template <>
 struct Bridging<ReactNativeStartupTiming>
     : NativePerformanceCxxBaseReactNativeStartupTimingBridging<
+          int32_t,
+          int32_t,
           int32_t,
           int32_t,
           int32_t,
