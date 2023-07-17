@@ -117,7 +117,6 @@ import java.util.Set;
 
     Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
     if (viewManagerBubblingEvents != null) {
-
       if (ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop) {
         // For Fabric, events needs to be fired with a "top" prefix.
         // For the sake of Fabric Interop, here we normalize events adding "top" in their
@@ -133,6 +132,12 @@ import java.util.Set;
 
     Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
     if (viewManagerDirectEvents != null) {
+      if (ReactFeatureFlags.enableFabricRenderer && ReactFeatureFlags.unstable_useFabricInterop) {
+        // For Fabric, events needs to be fired with a "top" prefix.
+        // For the sake of Fabric Interop, here we normalize events adding "top" in their
+        // name if the user hasn't provided it.
+        normalizeEventTypes(viewManagerDirectEvents);
+      }
       recursiveMerge(cumulativeDirectEventTypes, viewManagerDirectEvents);
       recursiveMerge(viewManagerDirectEvents, defaultDirectEvents);
       viewManagerConstants.put(DIRECT_EVENTS_KEY, viewManagerDirectEvents);
