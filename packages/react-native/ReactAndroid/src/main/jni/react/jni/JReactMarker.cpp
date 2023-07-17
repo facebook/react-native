@@ -105,6 +105,14 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
     case ReactMarker::REGISTER_JS_SEGMENT_STOP:
       JReactMarker::logMarker("REGISTER_JS_SEGMENT_STOP", tag, instanceKey);
       break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_START:
+      JReactMarker::logMarker(
+          "INIT_EAGER_NATIVE_MODULES_START", tag, instanceKey);
+      break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_STOP:
+      JReactMarker::logMarker(
+          "INIT_EAGER_NATIVE_MODULES_END", tag, instanceKey);
+      break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:
     case ReactMarker::REACT_INSTANCE_INIT_START:
@@ -159,6 +167,12 @@ void JReactMarker::nativeLogMarker(
   } else if (markerNameStr == "REGISTER_JS_SEGMENT_STOP") {
     ReactMarker::logMarkerDone(
         ReactMarker::REGISTER_JS_SEGMENT_STOP, (double)markerTime);
+  } else if (markerNameStr == "INIT_EAGER_NATIVE_MODULES_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::INIT_EAGER_NATIVE_MODULES_START, (double)markerTime);
+  } else if (markerNameStr == "INIT_EAGER_NATIVE_MODULES_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::INIT_EAGER_NATIVE_MODULES_STOP, (double)markerTime);
   }
 }
 

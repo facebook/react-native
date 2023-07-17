@@ -24,6 +24,8 @@ import com.facebook.react.bridge.JSBundleLoaderDelegate;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactMarker;
+import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
@@ -214,9 +216,11 @@ final class ReactInstance {
             getNativeMethodCallInvokerHolder());
 
     // Eagerly initialize TurboModules
+    ReactMarker.logMarker(ReactMarkerConstants.INIT_EAGER_NATIVE_MODULES_START);
     for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
       mTurboModuleManager.getModule(moduleName);
     }
+    ReactMarker.logMarker(ReactMarkerConstants.INIT_EAGER_NATIVE_MODULES_END);
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 

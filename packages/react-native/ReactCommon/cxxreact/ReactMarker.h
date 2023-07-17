@@ -33,7 +33,9 @@ enum ReactMarkerId {
   REGISTER_JS_SEGMENT_START,
   REGISTER_JS_SEGMENT_STOP,
   REACT_INSTANCE_INIT_START,
-  REACT_INSTANCE_INIT_STOP
+  REACT_INSTANCE_INIT_STOP,
+  INIT_EAGER_NATIVE_MODULES_START,
+  INIT_EAGER_NATIVE_MODULES_STOP,
 };
 
 #ifdef __APPLE__
@@ -78,6 +80,8 @@ class StartupLogger {
   double getInitReactRuntimeStartTime();
   double getInitReactRuntimeEndTime();
   double getRunJSBundleStartTime();
+  double getInitEagerNativeModulesStartTime();
+  double getInitEagerNativeModulesEndTime();
   double getRunJSBundleEndTime();
   double getAppStartupEndTime();
 
@@ -90,6 +94,8 @@ class StartupLogger {
   double appStartupEndTime = std::nan("");
   double initReactRuntimeStartTime = std::nan("");
   double initReactRuntimeEndTime = std::nan("");
+  double initEagerNativeModulesStartTime = std::nan("");
+  double initEagerNativeModulesEndTime = std::nan("");
   double runJSBundleStartTime = std::nan("");
   double runJSBundleEndTime = std::nan("");
 };

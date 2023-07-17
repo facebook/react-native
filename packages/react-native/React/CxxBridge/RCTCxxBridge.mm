@@ -166,6 +166,12 @@ static void mapReactMarkerToPerformanceLogger(
       [performanceLogger markStopForTag:RCTPLNativeModuleSetup];
       notifyAboutModuleSetup(performanceLogger, tag);
       break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_START:
+      [performanceLogger markStartForTag:RCTPLInitEagerNativeModules];
+      break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_STOP:
+      [performanceLogger markStopForTag:RCTPLInitEagerNativeModules];
+      break;
       // Not needed in bridge mode.
     case ReactMarker::REACT_INSTANCE_INIT_START:
     case ReactMarker::REACT_INSTANCE_INIT_STOP:
@@ -457,6 +463,7 @@ struct RCTInstanceCallback : public InstanceCallback {
    * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleRegistry> object to
    * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
    */
+  [_performanceLogger markStartForTag:RCTPLInitEagerNativeModules];
   if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
     for (NSString *moduleName in [_parentBridge eagerInitModuleNames_DO_NOT_USE]) {
       [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
@@ -473,6 +480,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
     }
   }
+  [_performanceLogger markStopForTag:RCTPLInitEagerNativeModules];
 
   // Dispatch the instance initialization as soon as the initial module metadata has
   // been collected (see initModules)

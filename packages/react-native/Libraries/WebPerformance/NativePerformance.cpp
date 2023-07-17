@@ -71,6 +71,16 @@ NativePerformance::getReactNativeStartupTiming(jsi::Runtime &rt) {
         startupLogger.getInitReactRuntimeStartTime();
   }
 
+  if (!std::isnan(startupLogger.getInitEagerNativeModulesStartTime())) {
+    result["initializeEagerNativeModulesStart"] =
+        startupLogger.getInitEagerNativeModulesStartTime();
+  }
+
+  if (!std::isnan(startupLogger.getInitEagerNativeModulesEndTime())) {
+    result["initializeEagerNativeModulesEnd"] =
+        startupLogger.getInitEagerNativeModulesEndTime();
+  }
+
   if (!std::isnan(startupLogger.getRunJSBundleStartTime())) {
     result["executeJavaScriptBundleEntryPointStart"] =
         startupLogger.getRunJSBundleStartTime();

@@ -18,6 +18,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_CATALYST_INS
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_VIEW_MANAGERS_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.INIT_EAGER_NATIVE_MODULES_END;
+import static com.facebook.react.bridge.ReactMarkerConstants.INIT_EAGER_NATIVE_MODULES_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.PRE_SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.PROCESS_PACKAGES_END;
@@ -1382,9 +1384,11 @@ public class ReactInstanceManager {
       TurboModuleRegistry registry = (TurboModuleRegistry) turboModuleManager;
 
       // Eagerly initialize TurboModules
+      ReactMarker.logMarker(INIT_EAGER_NATIVE_MODULES_START);
       for (String moduleName : registry.getEagerInitModuleNames()) {
         registry.getModule(moduleName);
       }
+      ReactMarker.logMarker(INIT_EAGER_NATIVE_MODULES_END);
     }
 
     if (mJSIModulePackage != null) {

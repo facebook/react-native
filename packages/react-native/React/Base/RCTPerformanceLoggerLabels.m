@@ -53,6 +53,8 @@ NSString *RCTPLLabelForTag(RCTPLTag tag)
       return @"AppStartup";
     case RCTPLInitReactRuntime:
       return @"InitReactRuntime";
+    case RCTPLInitEagerNativeModules:
+      return @"InitEagerNativeModules";
     case RCTPLSize: // Only used to count enum size
       RCTAssert(NO, @"RCTPLSize should not be used to track performance timestamps.");
       return nil;

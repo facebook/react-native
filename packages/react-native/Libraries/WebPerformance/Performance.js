@@ -150,6 +150,8 @@ export default class Performance {
         initializeRuntimeEnd,
         executeJavaScriptBundleEntryPointStart,
         executeJavaScriptBundleEntryPointEnd,
+        initializeEagerNativeModulesStart,
+        initializeEagerNativeModulesEnd,
       } = NativePerformance.getReactNativeStartupTiming();
       return new ReactNativeStartupTiming({
         startTime,
@@ -158,6 +160,8 @@ export default class Performance {
         initializeRuntimeEnd,
         executeJavaScriptBundleEntryPointStart,
         executeJavaScriptBundleEntryPointEnd,
+        initializeEagerNativeModulesStart,
+        initializeEagerNativeModulesEnd,
       });
     }
     return new ReactNativeStartupTiming();

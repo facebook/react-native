@@ -18,6 +18,8 @@ type ReactNativeStartupTimingLike = {
   initializeRuntimeEnd: ?number,
   executeJavaScriptBundleEntryPointStart: ?number,
   executeJavaScriptBundleEntryPointEnd: ?number,
+  initializeEagerNativeModulesStart: ?number,
+  initializeEagerNativeModulesEnd: ?number,
 };
 
 // Read-only object with RN startup timing information.
@@ -33,6 +35,8 @@ export default class ReactNativeStartupTiming {
   _initializeRuntimeEnd: ?number;
   _executeJavaScriptBundleEntryPointStart: ?number;
   _executeJavaScriptBundleEntryPointEnd: ?number;
+  _initializeEagerNativeModulesStart: ?number;
+  _initializeEagerNativeModulesEnd: ?number;
 
   constructor(startUpTiming: ?ReactNativeStartupTimingLike) {
     if (startUpTiming != null) {
@@ -44,6 +48,10 @@ export default class ReactNativeStartupTiming {
         startUpTiming.executeJavaScriptBundleEntryPointStart;
       this._executeJavaScriptBundleEntryPointEnd =
         startUpTiming.executeJavaScriptBundleEntryPointEnd;
+      this._initializeEagerNativeModulesStart =
+        startUpTiming.initializeEagerNativeModulesStart;
+      this._initializeEagerNativeModulesEnd =
+        startUpTiming.initializeEagerNativeModulesEnd;
     }
   }
 
@@ -87,5 +95,19 @@ export default class ReactNativeStartupTiming {
    */
   get executeJavaScriptBundleEntryPointEnd(): ?number {
     return this._executeJavaScriptBundleEntryPointEnd;
+  }
+
+  /**
+   * Start time of eagerly native modules initialization.
+   */
+  get initializeEagerNativeModulesStart(): ?number {
+    return this._initializeEagerNativeModulesStart;
+  }
+
+  /**
+   * End time of eagerly native modules initialization.
+   */
+  get initializeEagerNativeModulesEnd(): ?number {
+    return this._initializeEagerNativeModulesEnd;
   }
 }

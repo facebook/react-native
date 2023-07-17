@@ -76,6 +76,18 @@ void StartupLogger::logStartupEvent(
       }
       return;
 
+    case ReactMarkerId::INIT_EAGER_NATIVE_MODULES_START:
+      if (std::isnan(initEagerNativeModulesStartTime)) {
+        initEagerNativeModulesStartTime = markerTime;
+      }
+      return;
+
+    case ReactMarkerId::INIT_EAGER_NATIVE_MODULES_STOP:
+      if (std::isnan(initEagerNativeModulesEndTime)) {
+        initEagerNativeModulesEndTime = markerTime;
+      }
+      return;
+
     case ReactMarkerId::RUN_JS_BUNDLE_START:
       if (std::isnan(runJSBundleStartTime)) {
         runJSBundleStartTime = markerTime;
@@ -107,6 +119,14 @@ double StartupLogger::getInitReactRuntimeEndTime() {
 
 double StartupLogger::getRunJSBundleStartTime() {
   return runJSBundleStartTime;
+}
+
+double StartupLogger::getInitEagerNativeModulesStartTime() {
+  return initEagerNativeModulesStartTime;
+}
+
+double StartupLogger::getInitEagerNativeModulesEndTime() {
+  return initEagerNativeModulesEndTime;
 }
 
 double StartupLogger::getRunJSBundleEndTime() {

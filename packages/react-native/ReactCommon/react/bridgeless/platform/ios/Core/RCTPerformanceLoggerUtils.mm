@@ -54,6 +54,12 @@ static void mapReactMarkerToPerformanceLogger(
     case ReactMarker::REACT_INSTANCE_INIT_STOP:
       [performanceLogger markStopForTag:RCTPLReactInstanceInit];
       break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_START:
+      [performanceLogger markStartForTag:RCTPLInitEagerNativeModules];
+      break;
+    case ReactMarker::INIT_EAGER_NATIVE_MODULES_STOP:
+      [performanceLogger markStopForTag:RCTPLInitEagerNativeModules];
+      break;
     case ReactMarker::CREATE_REACT_CONTEXT_STOP:
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
     case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:

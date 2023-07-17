@@ -31,6 +31,7 @@ static const std::unordered_map<RCTPLTag, ReactMarker::ReactMarkerId> &getStartT
   static std::unordered_map<RCTPLTag, ReactMarker::ReactMarkerId> StartTagToReactMarkerIdMap = {
       {RCTPLAppStartup, ReactMarker::APP_STARTUP_START},
       {RCTPLInitReactRuntime, ReactMarker::INIT_REACT_RUNTIME_START},
+      {RCTPLInitEagerNativeModules, ReactMarker::INIT_EAGER_NATIVE_MODULES_START},
       {RCTPLScriptExecution, ReactMarker::RUN_JS_BUNDLE_START}};
   return StartTagToReactMarkerIdMap;
 }
@@ -40,6 +41,7 @@ static const std::unordered_map<RCTPLTag, ReactMarker::ReactMarkerId> &getStopTa
   static std::unordered_map<RCTPLTag, ReactMarker::ReactMarkerId> StopTagToReactMarkerIdMap = {
       {RCTPLAppStartup, ReactMarker::APP_STARTUP_STOP},
       {RCTPLInitReactRuntime, ReactMarker::INIT_REACT_RUNTIME_STOP},
+      {RCTPLInitEagerNativeModules, ReactMarker::INIT_EAGER_NATIVE_MODULES_STOP},
       {RCTPLScriptExecution, ReactMarker::RUN_JS_BUNDLE_STOP}};
   return StopTagToReactMarkerIdMap;
 }

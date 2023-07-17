@@ -75,6 +75,14 @@ function StartupTimingExample(): React.Node {
             startUpTiming?.initializeRuntimeStart,
           )} ms`}</Text>
           <Text>
+            {`initializeEagerNativeModulesStart: ${String(
+              startUpTiming?.initializeEagerNativeModulesStart,
+            )} ms`}
+          </Text>
+          <Text>{`initializeEagerNativeModulesEnd: ${String(
+            startUpTiming?.initializeEagerNativeModulesEnd,
+          )} ms`}</Text>
+          <Text>
             {`executeJavaScriptBundleEntryPointStart: ${String(
               startUpTiming?.executeJavaScriptBundleEntryPointStart,
             )} ms`}
