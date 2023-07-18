@@ -237,6 +237,9 @@ commands:
           paths:
             - ~/.cache/yarn
           key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Build packages
+          command: yarn build
 
   brew_install:
     parameters:
