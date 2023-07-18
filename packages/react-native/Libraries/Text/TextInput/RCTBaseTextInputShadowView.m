@@ -210,7 +210,6 @@
 
   if (maximumLineHeight == 0) {
     // `lineHeight` was not specified, nothing to do.
-    //  or is higher then actual height
     return;
   }
 
