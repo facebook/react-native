@@ -21,10 +21,10 @@ set -e
 # the running shell process will choose a node binary and a global package directory breaks version managers
 unset PREFIX
 
-# Support Homebrew on M1
-HOMEBREW_M1_BIN=/opt/homebrew/bin
-if [[ -d $HOMEBREW_M1_BIN && ! $PATH =~ $HOMEBREW_M1_BIN ]]; then
-  export PATH="$HOMEBREW_M1_BIN:$PATH"
+# Support Homebrew on Apple Silicon
+HOMEBREW_APPLE_SILICON_BIN=/opt/homebrew/bin
+if [[ -d $HOMEBREW_APPLE_SILICON_BIN && ! $PATH =~ $HOMEBREW_APPLE_SILICON_BIN ]]; then
+  export PATH="$HOMEBREW_APPLE_SILICON_BIN:$PATH"
 fi
 
 # Define NVM_DIR and source the nvm.sh setup script
