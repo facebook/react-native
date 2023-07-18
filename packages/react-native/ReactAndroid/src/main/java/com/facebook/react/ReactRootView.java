@@ -194,20 +194,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent ev) {
-    onChildStartedNativeGesture(null, ev);
-  }
-
-  @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
@@ -220,11 +214,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
       if (mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildEndedNativeGesture();
@@ -347,11 +340,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
@@ -365,11 +357,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
     }
   }
