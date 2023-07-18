@@ -10,12 +10,13 @@ package com.facebook.react.views.image;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -210,8 +211,8 @@ public class ReactImageManager extends SimpleViewManager<ReactImageView> {
     } else if ("scale".equals(resizeMethod)) {
       view.setResizeMethod(ImageResizeMethod.SCALE);
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid resize method: '" + resizeMethod + "'");
+      view.setResizeMethod(ImageResizeMethod.AUTO);
+      FLog.w(ReactConstants.TAG, "Invalid resize method: '" + resizeMethod + "'");
     }
   }
 

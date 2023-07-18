@@ -12,6 +12,8 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
+export type NativeMemoryInfo = {[key: string]: number};
+
 export interface Spec extends TurboModule {
   +mark: (name: string, startTime: number, duration: number) => void;
   +clearMarks: (markName?: string) => void;
@@ -25,6 +27,7 @@ export interface Spec extends TurboModule {
     endMark?: string,
   ) => void;
   +clearMeasures: (measureName?: string) => void;
+  +getSimpleMemoryInfo: () => NativeMemoryInfo;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);

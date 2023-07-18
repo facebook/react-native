@@ -363,11 +363,15 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       ClassInfo classInfo, PropertyInfo info, CodeBlock.Builder builder) {
     TypeName propertyType = info.propertyType;
     if (propertyType.equals(STRING_TYPE)) {
-      return builder.add("($L)value", STRING_TYPE);
+      return builder.add("value instanceof $L ? ($L)value : null", STRING_TYPE, STRING_TYPE);
     } else if (propertyType.equals(READABLE_ARRAY_TYPE)) {
-      return builder.add("($L)value", READABLE_ARRAY_TYPE); // TODO: use real type but needs import
+      return builder.add(
+          "value instanceof $L ? ($L)value : null",
+          READABLE_ARRAY_TYPE,
+          READABLE_ARRAY_TYPE); // TODO: use real type but needs import
     } else if (propertyType.equals(READABLE_MAP_TYPE)) {
-      return builder.add("($L)value", READABLE_MAP_TYPE);
+      return builder.add(
+          "value instanceof $L ? ($L)value : null", READABLE_MAP_TYPE, READABLE_MAP_TYPE);
     } else if (propertyType.equals(DYNAMIC_TYPE)) {
       return builder.add("new $L(value)", DYNAMIC_FROM_OBJECT_TYPE);
     } else if (propertyType.equals(YOGA_VALUE_TYPE)) {
@@ -380,40 +384,46 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     }
 
     if (propertyType.equals(TypeName.BOOLEAN)) {
-      return builder.add("value == null ? $L : (boolean) value", info.mProperty.defaultBoolean());
+      return builder.add(
+          "!(value instanceof Boolean) ? $L : (boolean)value", info.mProperty.defaultBoolean());
     }
     if (propertyType.equals(TypeName.DOUBLE)) {
       double defaultDouble = info.mProperty.defaultDouble();
       if (Double.isNaN(defaultDouble)) {
-        return builder.add("value == null ? $T.NaN : (double) value", Double.class);
+        return builder.add("!(value instanceof Double) ? $T.NaN : (double)value", Double.class);
       } else {
-        return builder.add("value == null ? $Lf : (double) value", defaultDouble);
+        return builder.add("!(value instanceof Double) ? $Lf : (double)value", defaultDouble);
       }
     }
     if (propertyType.equals(TypeName.FLOAT)) {
       float defaultFloat = info.mProperty.defaultFloat();
       if (Float.isNaN(defaultFloat)) {
-        return builder.add("value == null ? $T.NaN : ((Double)value).floatValue()", Float.class);
+        return builder.add(
+            "!(value instanceof Double) ? $T.NaN : ((Double)value).floatValue()", Float.class);
       } else {
-        return builder.add("value == null ? $Lf : ((Double)value).floatValue()", defaultFloat);
+        return builder.add(
+            "!(value instanceof Double) ? $Lf : ((Double)value).floatValue()", defaultFloat);
       }
     }
     if ("Color".equals(info.mProperty.customType())) {
       switch (classInfo.getType()) {
         case VIEW_MANAGER:
           return builder.add(
-              "value == null ? $L : $T.getColor(value, view.getContext())",
+              "value == null ? $L : $T.getColor(value, view.getContext(), $L)",
               info.mProperty.defaultInt(),
-              com.facebook.react.bridge.ColorPropConverter.class);
+              com.facebook.react.bridge.ColorPropConverter.class,
+              info.mProperty.defaultInt());
         case SHADOW_NODE:
           return builder.add(
-              "value == null ? $L : $T.getColor(value, node.getThemedContext())",
+              "value == null ? $L : $T.getColor(value, node.getThemedContext(), $L)",
               info.mProperty.defaultInt(),
-              com.facebook.react.bridge.ColorPropConverter.class);
+              com.facebook.react.bridge.ColorPropConverter.class,
+              info.mProperty.defaultInt());
       }
     } else if (propertyType.equals(TypeName.INT)) {
       return builder.add(
-          "value == null ? $L : ((Double)value).intValue()", info.mProperty.defaultInt());
+          "!(value instanceof Double) ? $L : ((Double)value).intValue()",
+          info.mProperty.defaultInt());
     }
 
     throw new IllegalArgumentException();

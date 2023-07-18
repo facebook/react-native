@@ -7,7 +7,9 @@
 
 package com.facebook.react.utils
 
-object Os {
+import java.io.File
+
+internal object Os {
 
   fun isWindows(): Boolean =
       System.getProperty("os.name")?.lowercase()?.contains("windows") ?: false
@@ -27,5 +29,16 @@ object Os {
         } else {
           it
         }
+      }
+
+  /**
+   * As Gradle doesn't support well path with spaces on Windows, we need to return relative path on
+   * Win. On Linux & Mac we'll default to return absolute path.
+   */
+  fun File.cliPath(base: File): String =
+      if (isWindows()) {
+        this.relativeTo(base).path
+      } else {
+        this.absolutePath
       }
 }

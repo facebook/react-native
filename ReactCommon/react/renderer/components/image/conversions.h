@@ -10,7 +10,7 @@
 #include <butter/map.h>
 #include <folly/dynamic.h>
 #include <glog/logging.h>
-#include <react/debug/react_native_assert.h>
+#include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/conversions.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -97,7 +97,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     ImageResizeMode &result) {
-  react_native_assert(value.hasType<std::string>());
+  react_native_expect(value.hasType<std::string>());
   if (!value.hasType<std::string>()) {
     LOG(ERROR) << "Unsupported ImageResizeMode type";
     // "cover" is default in non-Fabric web and iOS
@@ -118,7 +118,7 @@ inline void fromRawValue(
     result = ImageResizeMode::Repeat;
   } else {
     LOG(ERROR) << "Unsupported ImageResizeMode value: " << stringValue;
-    react_native_assert(false);
+    react_native_expect(false);
     // "cover" is default in non-Fabric web and iOS
     result = ImageResizeMode::Cover;
   }

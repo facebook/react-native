@@ -7,7 +7,8 @@
 
 package com.facebook.react.views.text;
 
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
 
@@ -98,8 +99,9 @@ public class TextAttributes {
 
   public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
     if (maxFontSizeMultiplier != 0 && maxFontSizeMultiplier < 1) {
-      throw new JSApplicationIllegalArgumentException(
-          "maxFontSizeMultiplier must be NaN, 0, or >= 1");
+      FLog.w(ReactConstants.TAG, "maxFontSizeMultiplier must be NaN, 0, or >= 1");
+      mMaxFontSizeMultiplier = Float.NaN;
+      return;
     }
     mMaxFontSizeMultiplier = maxFontSizeMultiplier;
   }

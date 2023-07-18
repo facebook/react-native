@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/debug/react_native_expect.h>
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -116,7 +117,7 @@ inline void fromRawValue(
 
   result = {};
 
-  react_native_assert(value.hasType<std::vector<std::string>>());
+  react_native_expect(value.hasType<std::vector<std::string>>());
   if (value.hasType<std::vector<std::string>>()) {
     auto items = (std::vector<std::string>)value;
     for (auto &item : items) {
@@ -188,7 +189,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     ImportantForAccessibility &result) {
-  react_native_assert(value.hasType<std::string>());
+  result = ImportantForAccessibility::Auto;
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "auto") {
@@ -201,7 +203,7 @@ inline void fromRawValue(
       result = ImportantForAccessibility::NoHideDescendants;
     } else {
       LOG(ERROR) << "Unsupported ImportantForAccessiblity value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
     }
   } else {
     LOG(ERROR) << "Unsupported ImportantForAccessiblity type";
@@ -278,7 +280,8 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     AccessibilityLiveRegion &result) {
-  react_native_assert(value.hasType<std::string>());
+  result = AccessibilityLiveRegion::None;
+  react_native_expect(value.hasType<std::string>());
   if (value.hasType<std::string>()) {
     auto string = (std::string)value;
     if (string == "none") {
@@ -289,7 +292,7 @@ inline void fromRawValue(
       result = AccessibilityLiveRegion::Assertive;
     } else {
       LOG(ERROR) << "Unsupported AccessibilityLiveRegion value: " << string;
-      react_native_assert(false);
+      react_native_expect(false);
     }
   } else {
     LOG(ERROR) << "Unsupported AccessibilityLiveRegion type";

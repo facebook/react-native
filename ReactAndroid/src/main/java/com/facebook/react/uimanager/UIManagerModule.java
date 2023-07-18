@@ -113,7 +113,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
-  private int mNumRootViews = 0;
 
   public UIManagerModule(
       ReactApplicationContext reactContext,
@@ -403,7 +402,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
-    mNumRootViews++;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
@@ -427,7 +425,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
-    mNumRootViews--;
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
@@ -768,12 +765,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      // If there are no RootViews registered, there will be no View updates to dispatch.
-      // This is a hack to prevent this from being called when Fabric is used everywhere.
-      // This should no longer be necessary in Bridgeless Mode.
-      if (mNumRootViews > 0) {
-        mUIImplementation.dispatchViewUpdates(batchId);
-      }
+      mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

@@ -353,7 +353,7 @@ RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)
       view.userInteractionEnabled = NO;
       break;
     default:
-      RCTLogError(@"UIView base class does not support pointerEvent value: %@", json);
+      RCTLogInfo(@"UIView base class does not support pointerEvent value: %@", json);
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(removeClippedSubviews, BOOL, RCTView)

@@ -667,6 +667,15 @@ public class NativeViewHierarchyManager {
   }
 
   /**
+   * Return root view num
+   *
+   * @return The num of root view
+   */
+  public synchronized int getRootViewNum() {
+    return mRootTags.size();
+  }
+
+  /**
    * Returns true on success, false on failure. If successful, after calling, output buffer will be
    * {x, y, width, height}.
    */

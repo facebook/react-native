@@ -7,6 +7,7 @@
 
 #include "NativePerformance.h"
 #include <glog/logging.h>
+#include <jsi/instrumentation.h>
 #include "PerformanceEntryReporter.h"
 
 namespace facebook::react {
@@ -44,6 +45,16 @@ void NativePerformance::clearMeasures(
     jsi::Runtime &rt,
     std::optional<std::string> measureName) {
   PerformanceEntryReporter::getInstance().clearMeasures(measureName);
+}
+
+std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
+    jsi::Runtime &rt) {
+  auto heapInfo = rt.instrumentation().getHeapInfo(false);
+  std::unordered_map<std::string, double> heapInfoToJs;
+  for (auto &entry : heapInfo) {
+    heapInfoToJs[entry.first] = static_cast<double>(entry.second);
+  }
+  return heapInfoToJs;
 }
 
 } // namespace facebook::react

@@ -25,10 +25,11 @@ import type {
 const {
   getCppTypeForAnnotation,
   getEnumMaskName,
-  getEnumName,
   generateStructName,
   getImports,
 } = require('./CppHelpers.js');
+
+const {getEnumName} = require('../Utils');
 
 function getNativeTypeFromAnnotation(
   componentName: string,

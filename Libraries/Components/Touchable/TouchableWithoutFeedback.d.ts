@@ -69,7 +69,7 @@ export interface TouchableWithoutFeedbackProps
    * the Z-index of sibling views always takes precedence if a touch hits
    * two overlapping views.
    */
-  hitSlop?: Insets | undefined;
+  hitSlop?: null | Insets | number | undefined;
 
   /**
    * Used to reference react managed views from native code.
@@ -121,7 +121,7 @@ export interface TouchableWithoutFeedbackProps
    * while the scroll view is disabled. Ensure you pass in a constant
    * to reduce memory allocations.
    */
-  pressRetentionOffset?: Insets | undefined;
+  pressRetentionOffset?: null | Insets | number | undefined;
 
   /**
    * Used to locate this view in end-to-end tests.

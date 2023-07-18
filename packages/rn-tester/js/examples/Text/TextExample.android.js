@@ -251,6 +251,9 @@ class TextExample extends React.Component<{...}> {
           <Text style={{fontFamily: 'monospace', fontWeight: 'bold'}}>
             Monospace Bold (After 5.0)
           </Text>
+          <Text style={{fontFamily: 'Unknown Font Family'}}>
+            Unknown Font Family
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Android Material Design fonts">
           <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>

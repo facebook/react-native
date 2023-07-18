@@ -34,7 +34,7 @@ void RuntimeScheduler::scheduleWork(RawCallback callback) const {
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
     jsi::Function callback) {
-  auto expirationTime = now() + timeoutForSchedulerPriority(priority);
+  auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);
@@ -47,7 +47,7 @@ std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler::scheduleTask(
     SchedulerPriority priority,
     RawCallback callback) {
-  auto expirationTime = now() + timeoutForSchedulerPriority(priority);
+  auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
   taskQueue_.push(task);

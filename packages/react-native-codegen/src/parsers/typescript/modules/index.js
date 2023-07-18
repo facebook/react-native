@@ -22,7 +22,12 @@ import type {
 } from '../../../CodegenSchema';
 
 import type {Parser} from '../../parser';
-import type {ParserErrorCapturer, TypeDeclarationMap} from '../../utils';
+import type {
+  ParserErrorCapturer,
+  TypeResolutionStatus,
+  TypeDeclarationMap,
+} from '../../utils';
+const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
 const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
@@ -73,6 +78,64 @@ const {
 } = require('../../error-utils');
 
 const language = 'TypeScript';
+
+function translateObjectTypeAnnotation(
+  hasteModuleName: string,
+  /**
+   * TODO(T108222691): Use flow-types for @babel/parser
+   */
+  nullable: boolean,
+  objectMembers: $ReadOnlyArray<$FlowFixMe>,
+  typeResolutionStatus: TypeResolutionStatus,
+  baseTypes: $ReadOnlyArray<string>,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  parser: Parser,
+): Nullable<NativeModuleTypeAnnotation> {
+  // $FlowFixMe[missing-type-arg]
+  const properties = objectMembers
+    .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(property => {
+      return tryParse(() => {
+        return parseObjectProperty(
+          property,
+          hasteModuleName,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          nullable,
+          translateTypeAnnotation,
+          parser,
+        );
+      });
+    })
+    .filter(Boolean);
+
+  let objectTypeAnnotation;
+  if (baseTypes.length === 0) {
+    objectTypeAnnotation = {
+      type: 'ObjectTypeAnnotation',
+      properties,
+    };
+  } else {
+    objectTypeAnnotation = {
+      type: 'ObjectTypeAnnotation',
+      properties,
+      baseTypes,
+    };
+  }
+
+  return typeAliasResolution(
+    typeResolutionStatus,
+    objectTypeAnnotation,
+    aliasMap,
+    nullable,
+  );
+}
 
 function translateTypeAnnotation(
   hasteModuleName: string,
@@ -246,46 +309,36 @@ function translateTypeAnnotation(
         );
       }
 
-      let objectTypeAnnotation = {
-        type: 'ObjectTypeAnnotation',
-        // $FlowFixMe[missing-type-arg]
-        properties: (flattenProperties(
-          [typeAnnotation],
-          types,
-        ): $ReadOnlyArray<$FlowFixMe>)
-          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
-            property => {
-              return tryParse(() => {
-                return parseObjectProperty(
-                  property,
-                  hasteModuleName,
-                  types,
-                  aliasMap,
-                  enumMap,
-                  tryParse,
-                  cxxOnly,
-                  nullable,
-                  translateTypeAnnotation,
-                  parser,
-                );
-              });
-            },
-          )
-          .filter(Boolean),
-        baseTypes,
-      };
-
-      if (objectTypeAnnotation.baseTypes.length === 0) {
-        // The flow checker does not allow adding a member after an object literal is created
-        // so here I do it in a reverse way
-        delete objectTypeAnnotation.baseTypes;
-      }
-
-      return typeAliasResolution(
-        typeResolutionStatus,
-        objectTypeAnnotation,
-        aliasMap,
+      return translateObjectTypeAnnotation(
+        hasteModuleName,
         nullable,
+        flattenProperties([typeAnnotation], types),
+        typeResolutionStatus,
+        baseTypes,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
+      );
+    }
+    case 'TSIntersectionType': {
+      return translateObjectTypeAnnotation(
+        hasteModuleName,
+        nullable,
+        flattenProperties(
+          flattenIntersectionType(typeAnnotation, types),
+          types,
+        ),
+        typeResolutionStatus,
+        [],
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
       );
     }
     case 'TSTypeLiteral': {
@@ -313,36 +366,18 @@ function translateTypeAnnotation(
         }
       }
 
-      const objectTypeAnnotation = {
-        type: 'ObjectTypeAnnotation',
-        // $FlowFixMe[missing-type-arg]
-        properties: (typeAnnotation.members: Array<$FlowFixMe>)
-          .map<?NamedShape<Nullable<NativeModuleBaseTypeAnnotation>>>(
-            property => {
-              return tryParse(() => {
-                return parseObjectProperty(
-                  property,
-                  hasteModuleName,
-                  types,
-                  aliasMap,
-                  enumMap,
-                  tryParse,
-                  cxxOnly,
-                  nullable,
-                  translateTypeAnnotation,
-                  parser,
-                );
-              });
-            },
-          )
-          .filter(Boolean),
-      };
-
-      return typeAliasResolution(
-        typeResolutionStatus,
-        objectTypeAnnotation,
-        aliasMap,
+      return translateObjectTypeAnnotation(
+        hasteModuleName,
         nullable,
+        typeAnnotation.members,
+        typeResolutionStatus,
+        [],
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        parser,
       );
     }
     case 'TSEnumDeclaration': {

@@ -87,7 +87,7 @@ function horizontalOrDefault(horizontal: ?boolean) {
   return horizontal ?? false;
 }
 
-// initialNumToRenderOrDefault(this.props.initialNumToRenderOrDefault)
+// initialNumToRenderOrDefault(this.props.initialNumToRender)
 function initialNumToRenderOrDefault(initialNumToRender: ?number) {
   return initialNumToRender ?? 10;
 }
@@ -1315,18 +1315,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   _onCellFocusCapture(cellKey: string) {
     this._lastFocusedCellKey = cellKey;
-    const renderMask = VirtualizedList._createRenderMask(
-      this.props,
-      this.state.cellsAroundViewport,
-      this._getNonViewportRenderRegions(this.props),
-    );
-
-    this.setState(state => {
-      if (!renderMask.equals(state.renderMask)) {
-        return {renderMask};
-      }
-      return null;
-    });
+    this._updateCellsToRender();
   }
 
   _onCellUnmount = (cellKey: string) => {

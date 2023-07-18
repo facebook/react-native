@@ -21,7 +21,7 @@ void SurfaceManager::startSurface(
     LayoutConstraints const &layoutConstraints,
     LayoutContext const &layoutContext) const noexcept {
   {
-    std::unique_lock<butter::shared_mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
     auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
     surfaceHandler.setContextContainer(scheduler_.getContextContainer());
     registry_.emplace(surfaceId, std::move(surfaceHandler));
@@ -44,7 +44,7 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   });
 
   {
-    std::unique_lock<butter::shared_mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     auto iterator = registry_.find(surfaceId);
     registry_.erase(iterator);
@@ -88,7 +88,7 @@ void SurfaceManager::visit(
     SurfaceId surfaceId,
     std::function<void(SurfaceHandler const &surfaceHandler)> const &callback)
     const noexcept {
-  std::shared_lock<butter::shared_mutex> lock(mutex_);
+  std::shared_lock lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
 

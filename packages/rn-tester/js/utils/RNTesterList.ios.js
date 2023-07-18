@@ -239,6 +239,10 @@ const APIs: Array<RNTesterModuleInfo> = [
   },
   // macOS]
   {
+    key: 'InvalidPropsExample',
+    module: require('../examples/InvalidProps/InvalidPropsExample'),
+  },
+  {
     key: 'Keyboard',
     module: require('../examples/Keyboard/KeyboardExample').default,
   },

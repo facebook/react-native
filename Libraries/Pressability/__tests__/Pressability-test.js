@@ -18,6 +18,11 @@ const Pressability = require('../Pressability').default;
 const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 
+const isWindows = process.platform === 'win32';
+const itif = (condition: boolean) => {
+  return condition ? it : it.skip;
+};
+
 // TODO: Move this util to a shared location.
 function getMock<TArguments: $ReadOnlyArray<mixed>, TReturn>(
   fn: (...args: TArguments) => TReturn,
@@ -644,21 +649,25 @@ describe('Pressability', () => {
       expect(config.onPressOut).toBeCalled();
     });
 
-    it('is called after the minimum press duration by default', () => {
-      const {config, handlers} = createMockPressability();
+    // Timers tests are flaky on windows CI, therefore we skip them there.
+    itif(!isWindows)(
+      'is called after the minimum press duration by default',
+      () => {
+        const {config, handlers} = createMockPressability();
 
-      handlers.onStartShouldSetResponder();
-      handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
-      handlers.onResponderMove(createMockPressEvent('onResponderMove'));
-      jest.runOnlyPendingTimers();
-      expect(config.onPressIn).toBeCalled();
-      handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
+        handlers.onStartShouldSetResponder();
+        handlers.onResponderGrant(createMockPressEvent('onResponderGrant'));
+        handlers.onResponderMove(createMockPressEvent('onResponderMove'));
+        jest.runOnlyPendingTimers();
+        expect(config.onPressIn).toBeCalled();
+        handlers.onResponderRelease(createMockPressEvent('onResponderRelease'));
 
-      jest.advanceTimersByTime(120);
-      expect(config.onPressOut).not.toBeCalled();
-      jest.advanceTimersByTime(10);
-      expect(config.onPressOut).toBeCalled();
-    });
+        jest.advanceTimersByTime(120);
+        expect(config.onPressOut).not.toBeCalled();
+        jest.advanceTimersByTime(10);
+        expect(config.onPressOut).toBeCalled();
+      },
+    );
 
     it('is called after only after the remaining minimum press duration', () => {
       const {config, handlers} = createMockPressability();

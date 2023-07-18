@@ -196,21 +196,20 @@ static void RCTPerformMountInstructions(
                                           componentViewDescriptor:rootViewDescriptor];
 }
 
-- (void)scheduleTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)scheduleTransaction:(MountingCoordinator::Shared)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self initiateTransaction:mountingCoordinator];
+    [self initiateTransaction:*mountingCoordinator];
     return;
   }
 
-  auto mountingCoordinatorCopy = mountingCoordinator;
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self initiateTransaction:mountingCoordinatorCopy];
+    [self initiateTransaction:*mountingCoordinator];
   });
 }
 
@@ -244,7 +243,7 @@ static void RCTPerformMountInstructions(
   });
 }
 
-- (void)initiateTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)initiateTransaction:(MountingCoordinator const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager initiateTransaction:]");
   RCTAssertMainQueue();
@@ -262,14 +261,14 @@ static void RCTPerformMountInstructions(
   } while (_followUpTransactionRequired);
 }
 
-- (void)performTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
+- (void)performTransaction:(MountingCoordinator const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager performTransaction:]");
   RCTAssertMainQueue();
 
-  auto surfaceId = mountingCoordinator->getSurfaceId();
+  auto surfaceId = mountingCoordinator.getSurfaceId();
 
-  mountingCoordinator->getTelemetryController().pullTransaction(
+  mountingCoordinator.getTelemetryController().pullTransaction(
       [&](MountingTransaction const &transaction, SurfaceTelemetry const &surfaceTelemetry) {
         [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
         _observerCoordinator.notifyObserversMountingTransactionWillMount(transaction, surfaceTelemetry);

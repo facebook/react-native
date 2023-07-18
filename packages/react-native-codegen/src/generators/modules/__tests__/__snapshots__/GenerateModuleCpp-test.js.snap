@@ -121,6 +121,9 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums(jsi:
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getUnion(rt, args[0].asNumber(), args[1].asNumber(), args[2].asObject(rt), args[3].asString(rt));
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnumReturn(rt);
+}
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule(\\"SampleTurboModuleCxx\\", jsInvoker) {
@@ -128,6 +131,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getNullableNumberFromNullableAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableNumberFromNullableAlias};
   methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums};
   methodMap_[\\"getUnion\\"] = MethodMetadata {4, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
+  methodMap_[\\"getEnumReturn\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn};
 }
 
 
@@ -321,6 +325,9 @@ static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag(js
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValue(rt, args[0].asNumber(), args[1].asString(rt), args[2].asObject(rt));
 }
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnumReturn(rt);
+}
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithCallback(rt, args[0].asObject(rt).asFunction(rt));
   return jsi::Value::undefined();
@@ -346,6 +353,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getObject\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject};
   methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag};
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
+  methodMap_[\\"getEnumReturn\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
   methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg};

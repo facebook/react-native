@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.71.3
+
+### Changed
+
+- Bump package versions ([4b84888a90](https://github.com/facebook/react-native/commit/4b84888a90c9436a8a62cc8507176f1b946b9b93) by [@cipolleschi](https://github.com/cipolleschi)), ([60f0a71060](https://github.com/facebook/react-native/commit/60f0a71060078759b526f65926763274811977f9) by [@cipolleschi](https://github.com/cipolleschi)), ([a3f205a27b](https://github.com/facebook/react-native/commit/a3f205a27b75d4e76354dbcb3203653e1f93f3ee) by [@cipolleschi](https://github.com/cipolleschi)):
+  - `react-native-codegen` to `0.71.5`
+  - `react-native-gradle-plugin` to `0.71.15`
+
+### Fixed
+
+- (codegen) Add missing C++ include for prop conversion of complex array type ([92fc32aa](https://github.com/facebook/react-native/commit/92fc32aa053ac8401ad8c9f55dcfa1e48ae8fc1d) by [@rshest](https://github.com/rshest))
+
+#### Android specific
+
+- Fixed jscexecutor crash on Android which is caused from NDK incompatibility ([a232decbb1](https://github.com/facebook/react-native/commit/a232decbb1252ade0247a352f887ca4d97ee273c) by [@Kudo](https://github.com/Kudo))
+- Used relative paths for gradle commands ([bb02ccf13f](https://github.com/facebook/react-native/commit/bb02ccf13f76f46b8572e2a85d578fd8d4fd9467) by [@shivenmian](https://github.com/shivenmian))
+
+#### iOS specific
+
+- fix `pod install --project-directory=...` ([ad1ddc241a](https://github.com/facebook/react-native/commit/ad1ddc241af723a3f5da2058709f9684e51fb5ce) by [@tido64](https://github.com/tido64))
+
 ## v0.71.2
 
 ### Added

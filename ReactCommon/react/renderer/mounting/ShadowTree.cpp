@@ -269,7 +269,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   auto revision = ShadowTreeRevision{};
 
   {
-    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
+    std::unique_lock lock(commitMutex_);
     if (commitMode_ == commitMode) {
       return;
     }
@@ -281,12 +281,12 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   // initial revision never contains any commits so mounting it here is
   // incorrect
   if (commitMode == CommitMode::Normal && revision.number != INITIAL_REVISION) {
-    mount(revision);
+    mount(revision, true);
   }
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
+  std::shared_lock lock(commitMutex_);
   return commitMode_;
 }
 
@@ -329,7 +329,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock<butter::shared_mutex> lock(commitMutex_);
+    std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -366,7 +366,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock<butter::shared_mutex> lock(commitMutex_);
+    std::unique_lock lock(commitMutex_);
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
@@ -393,8 +393,8 @@ CommitStatus ShadowTree::tryCommit(
     telemetry.didCommit();
     telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
 
-    newRevision =
-        ShadowTreeRevision{newRootShadowNode, newRevisionNumber, telemetry};
+    newRevision = ShadowTreeRevision{
+        std::move(newRootShadowNode), newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
   }
@@ -402,20 +402,22 @@ CommitStatus ShadowTree::tryCommit(
   emitLayoutEvents(affectedLayoutableNodes);
 
   if (commitMode == CommitMode::Normal) {
-    mount(newRevision);
+    mount(std::move(newRevision), commitOptions.mountSynchronously);
   }
 
   return CommitStatus::Succeeded;
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock<butter::shared_mutex> lock(commitMutex_);
+  std::shared_lock lock(commitMutex_);
   return currentRevision_;
 }
 
-void ShadowTree::mount(ShadowTreeRevision const &revision) const {
-  mountingCoordinator_->push(revision);
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+void ShadowTree::mount(ShadowTreeRevision revision, bool mountSynchronously)
+    const {
+  mountingCoordinator_->push(std::move(revision));
+  delegate_.shadowTreeDidFinishTransaction(
+      mountingCoordinator_, mountSynchronously);
 }
 
 void ShadowTree::commitEmptyTree() const {
@@ -427,7 +429,8 @@ void ShadowTree::commitEmptyTree() const {
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      });
+      },
+      {/* default commit options */});
 }
 
 void ShadowTree::emitLayoutEvents(
@@ -457,7 +460,7 @@ void ShadowTree::emitLayoutEvents(
 }
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
-  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
+  delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_, true);
 }
 
 } // namespace facebook::react

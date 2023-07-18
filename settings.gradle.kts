@@ -13,14 +13,15 @@ pluginManagement {
   }
 }
 
-include(
-    ":ReactAndroid",
-    ":ReactAndroid:hermes-engine",
-    ":ReactAndroid:external-artifacts",
-    ":packages:rn-tester:android:app")
+include(":ReactAndroid", ":ReactAndroid:hermes-engine", ":ReactAndroid:external-artifacts")
 
-// Include this to enable codegen Gradle plugin.
-includeBuild("packages/react-native-gradle-plugin/")
+// If the ./packages folder exists, then we're inside the React Native repository.
+// If not, a users is consuming this project for a build from source.
+if (File("./packages").exists()) {
+  include(":packages:rn-tester:android:app")
+  // Include this to enable codegen Gradle plugin.
+  includeBuild("packages/react-native-gradle-plugin/")
+}
 
 rootProject.name = "react-native-github"
 

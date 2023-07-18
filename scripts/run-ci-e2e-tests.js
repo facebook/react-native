@@ -239,10 +239,10 @@ try {
             ].join(' ') +
               ' | ' +
               [
-                'xcpretty',
+                'xcbeautify',
                 '--report',
                 'junit',
-                '--output',
+                '--reportPath',
                 '"~/react-native/reports/junit/iOS-e2e/results.xml"',
               ].join(' ') +
               ' && exit ${PIPESTATUS[0]}',

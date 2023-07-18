@@ -113,7 +113,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:6.2
+      - image: reactnativecommunity/react-native-android:7.0
     # [macOS] Change resource_class to large as we're on the free CircleCI plan
     resource_class: "large"
     environment:
@@ -206,7 +206,7 @@ commands:
     steps:
       - run:
           name: "Brew: Install << parameters.package >>"
-          command: brew install << parameters.package >> >/dev/null
+          command: brew install << parameters.package >>
 
   with_rntester_pods_cache_span:
     parameters:
@@ -451,24 +451,9 @@ jobs:
     steps:
       - checkout
       - run_yarn
-
-
-      # Note: The yarn gpg key needs to be refreshed to work around https://github.com/yarnpkg/yarn/issues/7866
-      - run:
-          name: Install additional GitHub bot dependencies
-          # TEMP: Added workaround from https://github.com/nodesource/distributions/issues/1266#issuecomment-932583579
-          command: |
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-            apt-get -y install openssl ca-certificates
-            update-ca-certificates
-            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            apt update && apt install -y shellcheck jq
-
       - run:
           name: Run linters against modified files (analysis-bot)
           command: GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" yarn lint-ci
-          when: always
 
   # -------------------------
   #    JOBS: Analyze Code
@@ -587,6 +572,8 @@ jobs:
       - checkout_code_with_cache
       - setup_artifacts
       - setup_ruby
+      - brew_install:
+          package: xcbeautify
       - run:
           name: Run Ruby Tests
           command: |
@@ -609,7 +596,7 @@ jobs:
 
       - run:
           name: "Brew: Tap wix/brew"
-          command: brew tap wix/brew >/dev/null
+          command: brew tap wix/brew
       - brew_install:
           package: applesimutils watchman
 
@@ -700,7 +687,7 @@ jobs:
 
       - run:
           name: Download Dependencies Using Buck
-          command: ./scripts/circleci/buck_fetch.sh
+          command: ./scripts/buck/buck_fetch.sh
 
       - run:
           name: Build & Test React Native using Buck
@@ -772,6 +759,18 @@ jobs:
             - run: echo "Failing tests may be moved here temporarily."
             - run_e2e:
                 platform: android
+
+  # -------------------------
+  #    JOBS: Test Android Docker Image
+  # -------------------------
+  test_android_docker_image:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run:
+          name: Try to build React Native inside the Docker Container
+          command: npm run docker-build-android
 
   # -------------------------
   #    JOBS: Test Android Template
@@ -1542,9 +1541,10 @@ jobs:
             echo "Nightly build run"
 
   find_and_publish_bumped_packages:
-    executor: reactnativeandroid
+    executor: nodelts
     steps:
       - checkout
+      - run_yarn
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
@@ -1625,6 +1625,7 @@ workflows:
       # [macOS Comment out failing test
       # - test_android:
       #     run_disabled_tests: false
+      # - test_android_docker_image
       # - test_android_template:
       #     requires:
       #       - build_npm_package

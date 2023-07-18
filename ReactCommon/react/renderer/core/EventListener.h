@@ -7,11 +7,10 @@
 
 #pragma once
 
+#include <shared_mutex>
 #include <string>
 
 #include <react/renderer/core/RawEvent.h>
-
-#include <butter/mutex.h>
 
 namespace facebook {
 namespace react {
@@ -36,7 +35,7 @@ class EventListenerContainer {
   void removeListener(const std::shared_ptr<EventListener const> &listener);
 
  private:
-  butter::shared_mutex mutex_;
+  std::shared_mutex mutex_;
   std::vector<std::shared_ptr<EventListener const>> eventListeners_;
 };
 

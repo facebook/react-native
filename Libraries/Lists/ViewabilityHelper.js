@@ -12,6 +12,7 @@
 
 export type {
   ViewToken,
+  ViewabilityConfig,
   ViewabilityConfigCallbackPair,
 } from '@react-native/virtualized-lists';
 

@@ -7,9 +7,7 @@
 
 #include <functional>
 #include <memory>
-#include <mutex>
-
-#include <butter/mutex.h>
+#include <shared_mutex>
 
 namespace facebook {
 namespace react {
@@ -31,7 +29,7 @@ class SharedFunction {
   struct Pair {
     Pair(std::function<T> &&function) : function(std::move(function)) {}
     std::function<T> function;
-    butter::shared_mutex mutex{};
+    std::shared_mutex mutex{};
   };
 
  public:
@@ -45,12 +43,12 @@ class SharedFunction {
   SharedFunction &operator=(SharedFunction &&other) noexcept = default;
 
   void assign(std::function<T> function) const {
-    std::unique_lock<butter::shared_mutex> lock(pair_->mutex);
+    std::unique_lock lock(pair_->mutex);
     pair_->function = function;
   }
 
   ReturnT operator()(ArgumentT... args) const {
-    std::shared_lock<butter::shared_mutex> lock(pair_->mutex);
+    std::shared_lock lock(pair_->mutex);
     return pair_->function(args...);
   }
 

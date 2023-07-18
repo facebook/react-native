@@ -17,9 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
@@ -192,7 +192,6 @@ public class TouchTargetHelper {
           // If the touch point is outside of the overflowinset for the view, we can safely ignore
           // it.
           if (ViewUtil.getUIManagerType(view.getId()) == FABRIC
-              && ReactFeatureFlags.useOverflowInset
               && !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null;
           }
@@ -368,7 +367,10 @@ public class TouchTargetHelper {
 
       return null;
 
-    } else if (pointerEvents == PointerEvents.AUTO) {
+    } else {
+      if (pointerEvents != PointerEvents.AUTO) {
+        FLog.w(ReactConstants.TAG, "Unknown pointer event type: " + pointerEvents.toString());
+      }
       // Either this view or one of its children is the target
       if (view instanceof ReactCompoundViewGroup
           && isTouchPointInView(eventCoords[0], eventCoords[1], view)
@@ -389,10 +391,6 @@ public class TouchTargetHelper {
         pathAccumulator.add(new ViewTarget(view.getId(), view));
       }
       return result;
-
-    } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Unknown pointer event type: " + pointerEvents.toString());
     }
   }
 

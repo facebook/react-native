@@ -14,6 +14,8 @@ load(
     "subdir_glob",
 )
 
+oncall("react_native")
+
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
@@ -67,7 +69,7 @@ rn_xplat_cxx_library(
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_exported_headers = subdir_glob(
         [
-            ("platform/ios", "*.h"),
+            ("platform/ios/react/renderer/graphics", "*.h"),
         ],
         prefix = "react/renderer/graphics",
     ),

@@ -1076,6 +1076,7 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void scrollTo(int x, int y) {
+    mScroller.abortAnimation();
     super.scrollTo(x, y);
     ReactScrollViewHelper.updateFabricScrollState(this);
     setPendingContentOffsets(x, y);
