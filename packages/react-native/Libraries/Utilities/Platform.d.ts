@@ -19,6 +19,7 @@ export type PlatformOSType =
   | 'native';
 type PlatformConstants = {
   isTesting: boolean;
+  isDisableAnimations?: boolean | undefined;
   reactNativeVersion: {
     major: number;
     minor: number;

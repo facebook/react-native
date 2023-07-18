@@ -3,4 +3,7 @@
 <!-- @generated -->
 <!-- FB Locale: mn_MN -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Холбоос</string>
+    <string name="image_description" gender="unknown">Зураг</string>
+    <string name="imagebutton_description" gender="unknown">Товч, зураг</string>
 </resources>

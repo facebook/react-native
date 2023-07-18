@@ -15,6 +15,7 @@ import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     isTesting: boolean,
+    isDisableAnimations?: boolean,
     reactNativeVersion: {|
       major: number,
       minor: number,
