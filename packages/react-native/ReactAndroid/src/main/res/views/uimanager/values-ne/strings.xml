@@ -3,4 +3,7 @@
 <!-- @generated -->
 <!-- FB Locale: ne_NP -->
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">लिङ्क</string>
+    <string name="state_on_description" gender="unknown">अन</string>
+    <string name="state_off_description" gender="unknown">अफ</string>
 </resources>
