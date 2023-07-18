@@ -41,12 +41,9 @@ RCT_EXPORT_MODULE()
 {
   __block NSDictionary *constants;
   RCTUnsafeExecuteOnMainQueueSync(^{
-    UIScreen *mainScreen = UIScreen.mainScreen;
-    CGSize screenSize = mainScreen.bounds.size;
-
     constants = @{
       @"const1" : @YES,
-      @"const2" : @(screenSize.width),
+      @"const2" : @(390),
       @"const3" : @"something",
     };
   });
