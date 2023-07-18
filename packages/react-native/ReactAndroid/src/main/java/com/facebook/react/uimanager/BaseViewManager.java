@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
+import com.facebook.react.uimanager.util.HiddenApiUtil;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -440,6 +442,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private static void setTransformProperty(@NonNull View view, ReadableArray transforms) {
+    Matrix matrix = TransformHelper.tryProcessTransformBySkiaMatrix(transforms,
+      view.getWidth(), view.getHeight());
+    if (matrix != null && HiddenApiUtil.setAnimationMatrix(view, matrix)) {
+      return;
+    }
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(transforms, sTransformDecompositionArray);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);

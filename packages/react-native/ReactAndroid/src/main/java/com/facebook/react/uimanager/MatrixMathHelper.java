@@ -468,6 +468,10 @@ public class MatrixMathHelper {
     return degrees * Math.PI / 180;
   }
 
+  public static double radiansToDegrees(double radians) {
+    return radians * 180 / Math.PI;
+  }
+
   public static void resetIdentityMatrix(double[] matrix) {
     matrix[1] =
         matrix[2] =

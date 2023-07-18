@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import android.graphics.Matrix;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -107,4 +109,86 @@ public class TransformHelper {
       MatrixMathHelper.multiplyInto(result, result, helperMatrix);
     }
   }
+
+
+  private static double convertToDegrees(ReadableMap transformMap, String key) {
+    double value;
+    boolean inRadians = true;
+    if (transformMap.getType(key) == ReadableType.String) {
+      String stringValue = transformMap.getString(key);
+      if (stringValue.endsWith("deg")) {
+        inRadians = false;
+      }
+      if (stringValue.endsWith("rad") || stringValue.endsWith("deg")) {
+        stringValue = stringValue.substring(0, stringValue.length() - 3);
+      }
+      value = Float.parseFloat(stringValue);
+    } else {
+      value = transformMap.getDouble(key);
+    }
+    return inRadians ? MatrixMathHelper.radiansToDegrees(value) : value;
+  }
+
+
+  public static Matrix tryProcessTransformBySkiaMatrix(ReadableArray transforms, int viewWidth,
+                                                       int viewHeight) {
+    Matrix matrix = new Matrix();
+    // center of view.
+    int originX = viewWidth / 2, originY = viewHeight / 2;
+
+    for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
+      ReadableMap transform = transforms.getMap(transformIdx);
+      String transformType = transform.keySetIterator().nextKey();
+
+      if ("translate".equals(transformType)) {
+        ReadableArray value = transform.getArray(transformType);
+        double x = value.getDouble(0);
+        double y = value.getDouble(1);
+        double z = value.size() > 2 ? value.getDouble(2) : 0d;
+        // Not support translate in z axis.
+        if (z != 0) {
+          return null;
+        }
+        originX += x;
+        originY += y;
+        matrix.postTranslate(PixelUtil.toPixelFromDIP((float) x), PixelUtil.toPixelFromDIP((float) y));
+      } else if ("translateX".equals(transformType)) {
+        double x = transform.getDouble(transformType);
+        originX += x;
+        matrix.postTranslate(PixelUtil.toPixelFromDIP(x), 0);
+      } else if ("translateY".equals(transformType)) {
+        double y = transform.getDouble(transformType);
+        originY += y;
+        matrix.postTranslate(0, PixelUtil.toPixelFromDIP(y));
+      }
+    }
+
+    for (int transformIdx = 0, size = transforms.size(); transformIdx < size; transformIdx++) {
+      ReadableMap transform = transforms.getMap(transformIdx);
+      String transformType = transform.keySetIterator().nextKey();
+
+      if ("rotate".equals(transformType) || "rotateZ".equals(transformType)) {
+        matrix.postRotate((float) convertToDegrees(transform, transformType), originX, originY);
+      } else if ("scale".equals(transformType)) {
+        float scale = (float) transform.getDouble(transformType);
+        matrix.postScale(scale, scale, originX, originY);
+      } else if ("scaleX".equals(transformType)) {
+        matrix.postScale((float) transform.getDouble(transformType), 1, originX, originY);
+      } else if ("scaleY".equals(transformType)) {
+        matrix.postScale(1, (float) transform.getDouble(transformType), originX, originY);
+      } else if ("translate".equals(transformType) || "translateX".equals(transformType)
+        || "translateY".equals(transformType)) {
+        // translate has been processed.
+      } else if ("skewX".equals(transformType)) {
+        matrix.postSkew((float) convertToRadians(transform, transformType), 0);
+      } else if ("skewY".equals(transformType)) {
+        matrix.postSkew(0, (float) convertToRadians(transform, transformType));
+      } else {
+        // matrix, perspective rotateX rotateY
+        return null;
+      }
+    }
+    return matrix;
+  }
+
 }
