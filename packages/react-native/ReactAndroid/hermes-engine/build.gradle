@@ -42,6 +42,16 @@ def downloadsDir = customDownloadDir ? new File(customDownloadDir) : new File(re
 def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != null
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
 def hermesBuildDir = new File("$buildDir/hermes")
+def hermesCOutputBinary = new File("$buildDir/hermes/bin/hermesc")
+// This filetree represents the file of the Hermes build that we want as input/output
+// of the buildHermesC task. Gradle will compute the hash of files in the file tree
+// and won't rebuilt hermesc unless those files are changing.
+def hermesBuildOutputFileTree = fileTree(hermesBuildDir.toString())
+                    .exclude('**/*.make')
+                    .exclude('**/*.internal')
+                    .exclude('**/external/**')
+                    .exclude('**/hermes.framework/**')
+                    .exclude('**/bin/hermesc')
 
 def hermesVersion = "main"
 def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
@@ -86,12 +96,36 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
 
 task configureBuildForHermes(type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "", "-S", ".", "-B", hermesBuildDir.toString(), "-DJSI_DIR=" + jsiDir.absolutePath))
+    inputs.dir(hermesDir)
+    outputs.files(hermesBuildOutputFileTree)
+    commandLine(
+        windowsAwareCommandLine(
+            findCmakePath(cmakeVersion),
+            Os.isFamily(Os.FAMILY_WINDOWS) ? "-GNMake Makefiles" : "",
+            "-S",
+            ".",
+            "-B",
+            hermesBuildDir.toString(),
+            "-DJSI_DIR=" + jsiDir.absolutePath
+        )
+    )
 }
 
-task buildHermes(dependsOn: configureBuildForHermes, type: Exec) {
+task buildHermesC(dependsOn: configureBuildForHermes, type: Exec) {
     workingDir(hermesDir)
-    commandLine(windowsAwareCommandLine(findCmakePath(cmakeVersion), "--build", hermesBuildDir.toString(), "--target", "hermesc", "-j", ndkBuildJobs))
+    inputs.files(hermesBuildOutputFileTree)
+    outputs.file(hermesCOutputBinary)
+    commandLine(
+        windowsAwareCommandLine(
+            findCmakePath(cmakeVersion),
+            "--build",
+            hermesBuildDir.toString(),
+            "--target",
+            "hermesc",
+            "-j",
+            ndkBuildJobs,
+        )
+    )
 }
 
 task prepareHeadersForPrefab(type: Copy) {
@@ -258,9 +292,9 @@ afterEvaluate {
         configureBuildForHermes.dependsOn(unzipHermes)
         prepareHeadersForPrefab.dependsOn(unzipHermes)
     }
-    preBuild.dependsOn(buildHermes)
+    preBuild.dependsOn(buildHermesC)
     preBuild.dependsOn(prepareHeadersForPrefab)
-    prepareHeadersForPrefab.dependsOn(buildHermes)
+    prepareHeadersForPrefab.dependsOn(buildHermesC)
 }
 
 /* Publishing Configuration */
