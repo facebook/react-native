@@ -168,7 +168,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (void)ensurePresentedOnlyIfNeeded
 {
-  BOOL shouldBePresented = !_isPresented && _visible && self.window;
+  BOOL shouldBePresented = !_isPresented && _visible && self.window && !_modalViewController.view.window;
   if (shouldBePresented) {
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
