@@ -10,10 +10,6 @@
 
 'use strict';
 
-jest
-  .mock('../../vendor/core/ErrorUtils')
-  .mock('../../BatchedBridge/BatchedBridge');
-
 function expectToBeCalledOnce(fn) {
   expect(fn.mock.calls.length).toBe(1);
 }

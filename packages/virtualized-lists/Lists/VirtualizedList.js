@@ -8,10 +8,13 @@
  * @format
  */
 
-import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {LayoutEvent, ScrollEvent} from '../Types/CoreEventTypes';
-import type {KeyEvent} from '../Types/CoreEventTypes'; // [macOS]
+import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  KeyEvent, // [macOS]
+  LayoutEvent,
+  ScrollEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   FrameMetricProps,
@@ -22,13 +25,15 @@ import type {
   Separators,
 } from './VirtualizedListProps';
 
-import RefreshControl from '../Components/RefreshControl/RefreshControl';
-import ScrollView from '../Components/ScrollView/ScrollView';
-import View from '../Components/View/View';
+import {
+  RefreshControl,
+  ScrollView,
+  View,
+  StyleSheet,
+  findNodeHandle,
+  Platform, // [macOS]
+} from 'react-native';
 import Batchinator from '../Interaction/Batchinator';
-import {findNodeHandle} from '../ReactNative/RendererProxy';
-import flattenStyle from '../StyleSheet/flattenStyle';
-import StyleSheet from '../StyleSheet/StyleSheet';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
@@ -48,8 +53,6 @@ import {
 } from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-
-const Platform = require('../Utilities/Platform'); // [macOS]
 
 export type {RenderItemProps, RenderItemType, Separators};
 
@@ -161,10 +164,7 @@ function findLastWhere<T>(
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-export default class VirtualizedList extends StateSafePureComponent<
-  Props,
-  State,
-> {
+class VirtualizedList extends StateSafePureComponent<Props, State> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -850,7 +850,7 @@ export default class VirtualizedList extends StateSafePureComponent<
   render(): React.Node {
     if (__DEV__) {
       // $FlowFixMe[underconstrained-implicit-instantiation]
-      const flatStyles = flattenStyle(this.props.contentContainerStyle);
+      const flatStyles = StyleSheet.flatten(this.props.contentContainerStyle);
       if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
         console.warn(
           '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
@@ -2112,3 +2112,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 });
+
+module.exports = VirtualizedList;

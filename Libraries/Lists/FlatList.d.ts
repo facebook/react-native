@@ -12,7 +12,7 @@ import type {
   ListRenderItem,
   ViewToken,
   VirtualizedListProps,
-} from './VirtualizedList';
+} from '@react-native/virtualized-lists';
 import type {ScrollViewComponent} from '../Components/ScrollView/ScrollView';
 import {StyleProp} from '../StyleSheet/StyleSheet';
 import {ViewStyle} from '../StyleSheet/StyleSheetTypes';
