@@ -71,7 +71,7 @@ class StartupLogger {
  public:
   static StartupLogger &getInstance();
 
-  void logStartupEvent(const ReactMarker::ReactMarkerId markerId);
+  void logStartupEvent(const ReactMarkerId markerName, double markerTime);
   double getAppStartTime();
   double getRunJSBundleStartTime();
   double getRunJSBundleEndTime();
@@ -84,6 +84,13 @@ class StartupLogger {
   double runJSBundleStartTime;
   double runJSBundleEndTime;
 };
+
+// When the marker got logged from the platform, it will notify here. This is
+// used to collect react markers that are logged in the platform instead of in
+// C++.
+extern RN_EXPORT void logMarkerDone(
+    const ReactMarkerId markerId,
+    double markerTime);
 
 } // namespace ReactMarker
 } // namespace facebook::react

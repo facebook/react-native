@@ -16,6 +16,7 @@
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapper.h"
 #include "JCallback.h"
+#include "JReactMarker.h"
 #include "JavaScriptExecutorHolder.h"
 #include "ProxyExecutor.h"
 #include "WritableNativeArray.h"
@@ -85,6 +86,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     NativeMap::registerNatives();
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
+    JReactMarker::registerNatives();
 
 #ifdef WITH_INSPECTOR
     JInspector::registerNatives();

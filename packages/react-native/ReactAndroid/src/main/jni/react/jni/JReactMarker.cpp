@@ -63,7 +63,7 @@ void JReactMarker::logPerfMarkerBridgeless(
 }
 
 void JReactMarker::logPerfMarkerWithInstanceKey(
-    const facebook::react::ReactMarker::ReactMarkerId markerId,
+    const ReactMarker::ReactMarkerId markerId,
     const char *tag,
     const int instanceKey) {
   switch (markerId) {
@@ -107,6 +107,48 @@ double JReactMarker::getAppStartTime() {
   static auto cls = javaClassStatic();
   static auto meth = cls->getStaticMethod<double()>("getAppStartTime");
   return meth(cls);
+}
+
+void JReactMarker::nativeLogMarker(
+    jni::alias_ref<jclass> /* unused */,
+    std::string markerNameStr,
+    jlong markerTime) {
+  // TODO: refactor this to a bidirectional map along with
+  // logPerfMarkerWithInstanceKey
+  if (markerNameStr == "RUN_JS_BUNDLE_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::RUN_JS_BUNDLE_START, (double)markerTime);
+  } else if (markerNameStr == "RUN_JS_BUNDLE_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::RUN_JS_BUNDLE_STOP, (double)markerTime);
+  } else if (markerNameStr == "CREATE_REACT_CONTEXT_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::CREATE_REACT_CONTEXT_STOP, (double)markerTime);
+  } else if (markerNameStr == "loadApplicationScript_startStringConvert") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::JS_BUNDLE_STRING_CONVERT_START, (double)markerTime);
+  } else if (markerNameStr == "loadApplicationScript_endStringConvert") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP, (double)markerTime);
+  } else if (markerNameStr == "NATIVE_MODULE_SETUP_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::NATIVE_MODULE_SETUP_START, (double)markerTime);
+  } else if (markerNameStr == "NATIVE_MODULE_SETUP_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::NATIVE_MODULE_SETUP_STOP, (double)markerTime);
+  } else if (markerNameStr == "REGISTER_JS_SEGMENT_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::REGISTER_JS_SEGMENT_START, (double)markerTime);
+  } else if (markerNameStr == "REGISTER_JS_SEGMENT_STOP") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::REGISTER_JS_SEGMENT_STOP, (double)markerTime);
+  }
+}
+
+void JReactMarker::registerNatives() {
+  javaClassLocal()->registerNatives({
+      makeNativeMethod("nativeLogMarker", JReactMarker::nativeLogMarker),
+  });
 }
 
 } // namespace facebook::react
