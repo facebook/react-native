@@ -33,6 +33,8 @@ interface.js
 flow/
 
 [options]
+enums=true
+
 emoji=true
 
 exact_by_default=true
@@ -79,4 +81,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.196.3
+^0.199.1
