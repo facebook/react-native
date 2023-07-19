@@ -26,6 +26,7 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
@@ -467,7 +468,7 @@ final class ReactInstance {
     } catch (NullPointerException e) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
-          new IllegalViewOperationException(
+          new ReactNoCrashSoftException(
               "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."));
     }
   }
