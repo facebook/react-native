@@ -65,9 +65,6 @@ public class ReactMarker {
   private static final List<FabricMarkerListener> sFabricMarkerListeners =
       new CopyOnWriteArrayList<>();
 
-  // The android app start time that to be set by the corresponding app
-  private static long sAppStartTime;
-
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
     if (!sListeners.contains(listener)) {
@@ -158,23 +155,38 @@ public class ReactMarker {
   }
 
   @DoNotStrip
+  public static void logMarker(ReactMarkerConstants name, long time) {
+    logMarker(name, null, 0, time);
+  }
+
+  @DoNotStrip
   @AnyThread
   public static void logMarker(ReactMarkerConstants name, @Nullable String tag, int instanceKey) {
+    logMarker(name, tag, instanceKey, null);
+  }
+
+  @DoNotStrip
+  @AnyThread
+  public static void logMarker(
+      ReactMarkerConstants name, @Nullable String tag, int instanceKey, @Nullable Long time) {
     logFabricMarker(name, tag, instanceKey);
     for (MarkerListener listener : sListeners) {
       listener.logMarker(name, tag, instanceKey);
     }
 
-    notifyNativeMarker(name);
+    notifyNativeMarker(name, time);
   }
 
   @DoNotStrip
-  private static void notifyNativeMarker(ReactMarkerConstants name) {
+  private static void notifyNativeMarker(ReactMarkerConstants name, @Nullable Long time) {
     if (!name.hasMatchingNameMarker()) {
       return;
     }
 
-    long now = SystemClock.uptimeMillis();
+    @Nullable Long now = time;
+    if (now == null) {
+      now = SystemClock.uptimeMillis();
+    }
 
     if (ReactBridge.isInitialized()) {
       // First send the current marker
@@ -193,14 +205,4 @@ public class ReactMarker {
 
   @DoNotStrip
   private static native void nativeLogMarker(String markerName, long markerTime);
-
-  @DoNotStrip
-  public static void setAppStartTime(long appStartTime) {
-    sAppStartTime = appStartTime;
-  }
-
-  @DoNotStrip
-  public static double getAppStartTime() {
-    return (double) sAppStartTime;
-  }
 }

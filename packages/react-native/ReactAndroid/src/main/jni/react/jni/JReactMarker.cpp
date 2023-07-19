@@ -19,7 +19,6 @@ void JReactMarker::setLogPerfMarkerIfNeeded() {
     ReactMarker::logTaggedMarkerImpl = JReactMarker::logPerfMarker;
     ReactMarker::logTaggedMarkerBridgelessImpl =
         JReactMarker::logPerfMarkerBridgeless;
-    ReactMarker::getAppStartTimeImpl = JReactMarker::getAppStartTime;
   });
 }
 
@@ -67,6 +66,12 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
     const char *tag,
     const int instanceKey) {
   switch (markerId) {
+    case ReactMarker::APP_STARTUP_START:
+      JReactMarker::logMarker("APP_STARTUP_START");
+      break;
+    case ReactMarker::APP_STARTUP_STOP:
+      JReactMarker::logMarker("APP_STARTUP_END");
+      break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag, instanceKey);
       break;
@@ -103,19 +108,19 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
   }
 }
 
-double JReactMarker::getAppStartTime() {
-  static auto cls = javaClassStatic();
-  static auto meth = cls->getStaticMethod<double()>("getAppStartTime");
-  return meth(cls);
-}
-
 void JReactMarker::nativeLogMarker(
     jni::alias_ref<jclass> /* unused */,
     std::string markerNameStr,
     jlong markerTime) {
   // TODO: refactor this to a bidirectional map along with
   // logPerfMarkerWithInstanceKey
-  if (markerNameStr == "RUN_JS_BUNDLE_START") {
+  if (markerNameStr == "APP_STARTUP_START") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::APP_STARTUP_START, (double)markerTime);
+  } else if (markerNameStr == "APP_STARTUP_END") {
+    ReactMarker::logMarkerDone(
+        ReactMarker::APP_STARTUP_STOP, (double)markerTime);
+  } else if (markerNameStr == "RUN_JS_BUNDLE_START") {
     ReactMarker::logMarkerDone(
         ReactMarker::RUN_JS_BUNDLE_START, (double)markerTime);
   } else if (markerNameStr == "RUN_JS_BUNDLE_END") {
