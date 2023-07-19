@@ -70,18 +70,14 @@ function TransformOriginExample() {
   });
 
   return (
-    <View
-      style={{
-        alignItems: 'center',
-      }}>
+    <View style={styles.transformOriginWrapper}>
       <Animated.View
-        style={{
-          transform: [{rotate: spin}],
-          backgroundColor: 'pink',
-          width: 100,
-          height: 100,
-          transformOrigin: 'top',
-        }}
+        style={[
+          styles.transformOriginView,
+          {
+            transform: [{rotate: spin}],
+          },
+        ]}
       />
     </View>
   );
@@ -270,6 +266,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'white',
     fontWeight: 'bold',
+  },
+  transformOriginWrapper: {
+    alignItems: 'center',
+  },
+  transformOriginView: {
+    backgroundColor: 'pink',
+    width: 100,
+    height: 100,
+    transformOrigin: 'top',
   },
 });
 
