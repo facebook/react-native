@@ -29,7 +29,7 @@ export type ShareOptions = {
 
 export type ShareAction = {
   action: 'sharedAction' | 'dismissedAction';
-  activityType?: string | undefined;
+  activityType?: string | null | undefined;
 };
 
 export interface ShareStatic {
