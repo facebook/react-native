@@ -19,8 +19,8 @@
 Class RCTBlobClassProvider(const char *name) {
   // Intentionally leak to avoid crashing after static destructors are run.
   static const auto sCoreModuleClassMap = new const std::unordered_map<std::string, Class (*)(void)>{
-    {"FileReaderModule", RCTFileReaderModuleCls},
     {"BlobModule", RCTBlobManagerCls},
+    {"FileReaderModule", RCTFileReaderModuleCls},
   };
 
   auto p = sCoreModuleClassMap->find(name);
