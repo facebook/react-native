@@ -135,4 +135,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, assign) RCTBubblingEventBlock onGotPointerCapture;
 @property (nonatomic, assign) RCTBubblingEventBlock onLostPointerCapture;
 
+@property (nonatomic, strong) id rawTransform;
+@property (nonatomic, copy) NSString* transformOrigin;
+
 @end
