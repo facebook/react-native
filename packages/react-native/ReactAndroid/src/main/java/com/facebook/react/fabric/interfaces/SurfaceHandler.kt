@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.fabric
+package com.facebook.react.fabric.interfaces
 
 import com.facebook.react.bridge.NativeMap
 import javax.annotation.concurrent.ThreadSafe
