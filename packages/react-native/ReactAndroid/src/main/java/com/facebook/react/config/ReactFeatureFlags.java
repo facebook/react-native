@@ -151,4 +151,7 @@ public class ReactFeatureFlags {
 
   /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
   public static boolean fixStoppedSurfaceTagSetLeak = true;
+
+  /** Disable the background executor for layout in Fabric */
+  public static boolean enableBackgroundExecutor = false;
 }
