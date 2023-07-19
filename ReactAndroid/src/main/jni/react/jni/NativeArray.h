@@ -17,7 +17,7 @@ namespace react {
 
 class NativeArray : public jni::HybridClass<NativeArray> {
  public:
-  static constexpr const char *kJavaDescriptor =
+  static auto constexpr *kJavaDescriptor =
       "Lcom/facebook/react/bridge/NativeArray;";
 
   jni::local_ref<jstring> toString();
@@ -27,7 +27,6 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   // Whether this array has been added to another array or map and no longer
   // has a valid array value.
   bool isConsumed;
-  void throwIfConsumed();
 
   static void registerNatives();
 
@@ -35,7 +34,18 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   folly::dynamic array_;
 
   friend HybridBase;
-  explicit NativeArray(folly::dynamic array);
+
+  template <class Dyn>
+  explicit NativeArray(Dyn &&array)
+      : isConsumed(false), array_(std::forward<Dyn>(array)) {
+    assertInternalType();
+  }
+
+  void assertInternalType();
+  void throwIfConsumed();
+
+  NativeArray(const NativeArray &) = delete;
+  NativeArray &operator=(const NativeArray &) = delete;
 };
 
 } // namespace react

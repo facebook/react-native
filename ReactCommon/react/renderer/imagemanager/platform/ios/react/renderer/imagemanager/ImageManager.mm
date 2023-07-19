@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ImageManager.h"
+#import <react/renderer/imagemanager/ImageManager.h>
 
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
 #import <React/RCTUtils.h>

@@ -36,6 +36,9 @@ Pod::Spec.new do |s|
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "GCC_WARN_PEDANTIC" => "YES" }
+  if ENV['USE_FRAMEWORKS']
+    s.header_mappings_dir     = './'
+  end
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.

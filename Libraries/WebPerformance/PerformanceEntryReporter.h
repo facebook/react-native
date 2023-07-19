@@ -84,7 +84,6 @@ class PerformanceEntryReporter : public EventLogger {
   }
 
   void mark(const std::string &name, double startTime, double duration);
-  void clearMarks(const std::optional<std::string> &markName);
 
   void measure(
       const std::string &name,
@@ -93,7 +92,10 @@ class PerformanceEntryReporter : public EventLogger {
       const std::optional<double> &duration,
       const std::optional<std::string> &startMark,
       const std::optional<std::string> &endMark);
-  void clearMeasures(const std::optional<std::string> &measureName);
+
+  void clearEntries(
+      PerformanceEntryType entryType,
+      const char *entryName = nullptr);
 
   void event(
       std::string name,
@@ -115,7 +117,6 @@ class PerformanceEntryReporter : public EventLogger {
   PerformanceEntryReporter() {}
 
   double getMarkTime(const std::string &markName) const;
-  void clearEntries(std::function<bool(const RawPerformanceEntry &)> predicate);
   void scheduleFlushBuffer();
 
   bool isReportingEvents() const {

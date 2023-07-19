@@ -14,9 +14,9 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-std::string NativeMap::toString() {
+local_ref<jstring> NativeMap::toString() {
   throwIfConsumed();
-  return ("{ NativeMap: " + folly::toJson(map_) + " }").c_str();
+  return make_jstring(folly::toJson(map_).c_str());
 }
 
 void NativeMap::registerNatives() {

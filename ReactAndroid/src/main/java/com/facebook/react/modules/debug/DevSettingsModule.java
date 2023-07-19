@@ -15,7 +15,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.devsupport.interfaces.DevOptionHandler;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
 /**
  * Module that exposes the URL to the source code map (used for exception stack trace parsing) to JS
@@ -89,9 +88,7 @@ public class DevSettingsModule extends NativeDevSettingsSpec {
                 getReactApplicationContextIfActiveOrWarn();
 
             if (reactApplicationContext != null) {
-              reactApplicationContext
-                  .getJSModule(RCTDeviceEventEmitter.class)
-                  .emit("didPressMenuItem", data);
+              reactApplicationContext.emitDeviceEvent("didPressMenuItem", data);
             }
           }
         });

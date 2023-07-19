@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "git@github.com:microsoft/react-native-macos.git",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "types": "types",
   "jest-junit": {
@@ -116,15 +116,14 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.2.1",
-    "@react-native-community/cli": "10.1.1",
-    "@react-native-community/cli-platform-android": "10.1.1",
-    "@react-native-community/cli-platform-ios": "10.1.1",
-    "@react-native-community/cli-tools": "10.1.1",
+    "@react-native-community/cli": "11.0.0-alpha.2",
+    "@react-native-community/cli-platform-android": "11.0.0-alpha.2",
+    "@react-native-community/cli-platform-ios": "11.0.0-alpha.2",
     "@react-native/assets-registry": "^0.72.0",
-    "@react-native/gradle-plugin": "^0.72.2",
-    "@react-native/js-polyfills": "^0.72.0",
+    "@react-native/gradle-plugin": "^0.72.4",
+    "@react-native/js-polyfills": "^0.72.1",
     "@react-native/normalize-colors": "^0.72.0",
-    "@react-native/virtualized-lists": "^0.72.0",
+    "@react-native/virtualized-lists": "^0.72.1",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "base64-js": "^1.1.2",
@@ -135,9 +134,9 @@
     "jest-environment-node": "^29.2.1",
     "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
-    "metro-react-native-babel-transformer": "0.73.5",
-    "metro-runtime": "0.73.5",
-    "metro-source-map": "0.73.5",
+    "metro-react-native-babel-transformer": "0.75.1",
+    "metro-runtime": "0.75.1",
+    "metro-source-map": "0.75.1",
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^26.5.2",
@@ -153,7 +152,7 @@
     "ws": "^6.2.2"
   },
   "devDependencies": {
-    "flow-bin": "^0.199.1",
+    "flow-bin": "^0.200.0",
     "hermes-eslint": "0.8.0",
     "mock-fs": "^5.1.4",
     "react": "18.2.0",

@@ -11,6 +11,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/graphics/conversions.h>
 
@@ -221,8 +222,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
 ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
   auto traits = ShadowNodeTraits{};
-  traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+  traits.set(IdentifierTrait());
   return traits;
+}
+
+ShadowNodeTraits::Trait LayoutableShadowNode::IdentifierTrait() {
+  return ShadowNodeTraits::Trait::LayoutableKind;
 }
 
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {

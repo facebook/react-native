@@ -705,6 +705,21 @@ export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   }
 }
 
+<FlatList
+  data={[1, 2, 3]}
+  renderItem={null}
+  getItemLayout={(
+    data: ArrayLike<number> | null | undefined,
+    index: number,
+  ) => {
+    return {
+      length: data![index] % 2 === 0 ? 10 : 5,
+      offset: 1234,
+      index,
+    };
+  }}
+/>;
+
 export class SectionListTest extends React.Component<
   SectionListProps<string>,
   {}

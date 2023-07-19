@@ -63,10 +63,12 @@ RCT_EXPORT_METHOD(loadBundle
             return;
           }
           __typeof(self) strongSelf = weakSelf;
-          strongSelf->_loadScript(source);
-          RCTDevSettings *devSettings = [strongSelf->_moduleRegistry moduleForName:"RCTDevSettings"];
-          [devSettings setupHMRClientWithAdditionalBundleURL:source.url];
-          resolve(@YES);
+          if (strongSelf) {
+            strongSelf->_loadScript(source);
+            RCTDevSettings *devSettings = [strongSelf->_moduleRegistry moduleForName:"RCTDevSettings"];
+            [devSettings setupHMRClientWithAdditionalBundleURL:source.url];
+            resolve(@YES);
+          }
         }];
   }
 }

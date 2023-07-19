@@ -121,6 +121,8 @@ class NativeCxxModuleExample
   AsyncPromise<std::string> getValueWithPromise(jsi::Runtime &rt, bool error);
 
   void voidFunc(jsi::Runtime &rt);
+
+  void emitCustomDeviceEvent(jsi::Runtime &rt, jsi::String eventName);
 };
 
 } // namespace facebook::react

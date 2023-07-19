@@ -9,6 +9,7 @@
 
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 
 namespace facebook::react {
 

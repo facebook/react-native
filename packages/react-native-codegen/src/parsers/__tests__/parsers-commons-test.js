@@ -23,7 +23,7 @@ import {
 import type {ParserType} from '../errors';
 
 const {Visitor} = require('../flow/Visitor');
-const {wrapComponentSchema} = require('../flow/components/schema');
+const {wrapComponentSchema} = require('../schema.js');
 const {buildComponentSchema} = require('../flow/components');
 const {buildModuleSchema} = require('../flow/modules');
 const {isModuleRegistryCall} = require('../utils.js');

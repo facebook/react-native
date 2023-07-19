@@ -69,17 +69,17 @@ void addDynamicToJArray(
 }
 
 local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
+  throwIfConsumed();
+
   keys_ = folly::dynamic::array();
   if (map_ == nullptr) {
     return JArrayClass<jstring>::newArray(0);
   }
-  auto pairs = map_.items();
-  jint size = map_.size();
-  auto jarray = JArrayClass<jstring>::newArray(size);
+  auto jarray = JArrayClass<jstring>::newArray(map_.size());
   jint i = 0;
-  for (auto &pair : pairs) {
+  for (auto &pair : map_.items()) {
     auto value = pair.first.asString();
-    keys_.value().push_back(value);
+    (*keys_).push_back(value);
     (*jarray)[i++] = make_jstring(value);
   }
 
@@ -87,20 +87,24 @@ local_ref<JArrayClass<jstring>> ReadableNativeMap::importKeys() {
 }
 
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
+  throwIfConsumed();
+
   jint size = keys_.value().size();
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
-    const std::string &key = keys_.value()[ii].getString();
+    const std::string &key = (*keys_)[ii].getString();
     addDynamicToJArray(jarray, ii, map_.at(key));
   }
   return jarray;
 }
 
 local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
+  throwIfConsumed();
+
   jint size = keys_.value().size();
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
-    const std::string &key = keys_.value()[ii].getString();
+    const std::string &key = (*keys_)[ii].getString();
     (*jarray)[ii] = ReadableType::getType(map_.at(key).type());
   }
   return jarray;

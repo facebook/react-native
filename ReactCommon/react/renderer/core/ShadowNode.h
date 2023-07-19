@@ -224,21 +224,5 @@ class ShadowNode : public Sealable, public DebugStringConvertible {
   ShadowNodeTraits traits_;
 };
 
-/*
- * Template declarations for future specializations in concrete classes.
- * `traitCast` checks for a trait that corresponds to the provided type and
- * performs `static_cast`. Practically, the behavior is identical to
- * `dynamic_cast` with very little runtime overhead.
- */
-template <typename ShadowNodeReferenceT>
-ShadowNodeReferenceT traitCast(ShadowNode const &shadowNode);
-
-template <typename ShadowNodePointerT>
-ShadowNodePointerT traitCast(ShadowNode const *shadowNode);
-
-template <typename ShadowNodePointerT>
-std::shared_ptr<ShadowNodePointerT const> traitCast(
-    std::shared_ptr<ShadowNode const> shadowNode);
-
 } // namespace react
 } // namespace facebook

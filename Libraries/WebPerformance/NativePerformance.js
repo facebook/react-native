@@ -16,8 +16,6 @@ export type NativeMemoryInfo = {[key: string]: number};
 
 export interface Spec extends TurboModule {
   +mark: (name: string, startTime: number, duration: number) => void;
-  +clearMarks: (markName?: string) => void;
-
   +measure: (
     name: string,
     startTime: number,
@@ -26,7 +24,6 @@ export interface Spec extends TurboModule {
     startMark?: string,
     endMark?: string,
   ) => void;
-  +clearMeasures: (measureName?: string) => void;
   +getSimpleMemoryInfo: () => NativeMemoryInfo;
 }
 

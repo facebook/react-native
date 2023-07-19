@@ -41,6 +41,10 @@ export interface Spec extends TurboModule {
     entryType: RawPerformanceEntryType,
     durationThreshold: number,
   ) => void;
+  +clearEntries: (
+    entryType: RawPerformanceEntryType,
+    entryName?: string,
+  ) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(

@@ -12,7 +12,6 @@ load(
     "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
-    "CXX",
     "HERMES_BYTECODE_VERSION",
     "IOS",
     "RCT_IMAGE_DATA_DECODER_SOCKET",
@@ -20,6 +19,7 @@ load(
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
     "get_react_native_ios_target_sdk_version",
+    "react_cxx_module_plugin_provider",
     "react_fabric_component_plugin_provider",
     "react_module_plugin_providers",
     "react_native_root_target",
@@ -28,6 +28,7 @@ load(
     "rn_apple_library",
     "rn_apple_xplat_cxx_library",
     "rn_extra_build_flags",
+    "rn_xplat_cxx_library",
     "subdir_glob",
 )
 load("//tools/build_defs/third_party:yarn_defs.bzl", "yarn_workspace")
@@ -1455,7 +1456,7 @@ rn_apple_xplat_cxx_library(
     ],
 )
 
-rn_apple_xplat_cxx_library(
+rn_xplat_cxx_library(
     name = "RCTWebPerformance",
     srcs = glob([
         "Libraries/WebPerformance/**/*.cpp",
@@ -1465,15 +1466,23 @@ rn_apple_xplat_cxx_library(
         [("Libraries/WebPerformance", "*.h")],
         prefix = "RCTWebPerformance",
     ),
-    fbandroid_compiler_flags = [
-        "-fexceptions",
-        "-frtti",
-    ],
+    compiler_flags_enable_exceptions = True,
+    compiler_flags_enable_rtti = True,
     labels = [
         "depslint_never_remove",
         "pfh:ReactNative_CommonInfrastructurePlaceholder",
     ],
-    platforms = (ANDROID, APPLE, CXX),
+    platforms = (ANDROID, APPLE),
+    plugins = [
+        react_cxx_module_plugin_provider(
+            name = "NativePerformanceCxx",
+            function = "NativePerformanceModuleProvider",
+        ),
+        react_cxx_module_plugin_provider(
+            name = "NativePerformanceObserverCxx",
+            function = "NativePerformanceObserverModuleProvider",
+        ),
+    ],
     visibility = ["PUBLIC"],
     deps = [
         ":FBReactNativeSpecJSI",

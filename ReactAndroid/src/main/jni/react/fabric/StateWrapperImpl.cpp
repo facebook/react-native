@@ -27,24 +27,20 @@ jni::local_ref<StateWrapperImpl::jhybriddata> StateWrapperImpl::initHybrid(
 jni::local_ref<ReadableNativeMap::jhybridobject>
 StateWrapperImpl::getStateDataImpl() {
   folly::dynamic map = state_->getDynamic();
-  local_ref<ReadableNativeMap::jhybridobject> readableNativeMap =
-      ReadableNativeMap::newObjectCxxArgs(map);
-  return readableNativeMap;
+  return ReadableNativeMap::newObjectCxxArgs(std::move(map));
 }
 
 jni::local_ref<JReadableMapBuffer::jhybridobject>
 StateWrapperImpl::getStateMapBufferDataImpl() {
   MapBuffer map = state_->getMapBuffer();
-  auto readableMapBuffer =
-      JReadableMapBuffer::createWithContents(std::move(map));
-  return readableMapBuffer;
+  return JReadableMapBuffer::createWithContents(std::move(map));
 }
 
 void StateWrapperImpl::updateStateImpl(NativeMap *map) {
   // Get folly::dynamic from map
   auto dynamicMap = map->consume();
   // Set state
-  state_->updateState(dynamicMap);
+  state_->updateState(std::move(dynamicMap));
 }
 
 void StateWrapperImpl::registerNatives() {

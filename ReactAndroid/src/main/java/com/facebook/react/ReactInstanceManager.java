@@ -554,9 +554,7 @@ public class ReactInstanceManager {
   private void toggleElementInspector() {
     ReactContext currentContext = getCurrentReactContext();
     if (currentContext != null && currentContext.hasActiveReactInstance()) {
-      currentContext
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit("toggleElementInspector", null);
+      currentContext.emitDeviceEvent("toggleElementInspector");
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,

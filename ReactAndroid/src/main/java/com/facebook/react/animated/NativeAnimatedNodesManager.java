@@ -23,7 +23,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.Event;
@@ -308,9 +307,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          mReactApplicationContext
-              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-              .emit("onNativeAnimatedModuleAnimationFinished", params);
+          mReactApplicationContext.emitDeviceEvent(
+              "onNativeAnimatedModuleAnimationFinished", params);
         }
         mActiveAnimations.removeAt(i);
         i--;
@@ -339,9 +337,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.mId);
           params.putBoolean("finished", false);
-          mReactApplicationContext
-              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-              .emit("onNativeAnimatedModuleAnimationFinished", params);
+          mReactApplicationContext.emitDeviceEvent(
+              "onNativeAnimatedModuleAnimationFinished", params);
         }
         mActiveAnimations.removeAt(i);
         return;
@@ -474,9 +471,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     WritableMap params = Arguments.createMap();
     params.putInt("tag", tag);
     params.putDouble("value", value);
-    mReactApplicationContext
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit("onNativeAnimatedModuleGetValue", params);
+    mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleGetValue", params);
   }
 
   @UiThread
@@ -653,12 +648,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.mId);
             params.putBoolean("finished", true);
-            DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter =
-                mReactApplicationContext.getJSModule(
-                    DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-            if (eventEmitter != null) {
-              eventEmitter.emit("onNativeAnimatedModuleAnimationFinished", params);
-            }
+            mReactApplicationContext.emitDeviceEvent(
+                "onNativeAnimatedModuleAnimationFinished", params);
           }
           mActiveAnimations.removeAt(i);
         }

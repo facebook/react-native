@@ -25,7 +25,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +69,7 @@ import org.robolectric.RobolectricTestRunner;
 public class NetworkingModuleTest {
   private NetworkingModule mNetworkingModule;
   private OkHttpClient mHttpClient;
-  private RCTDeviceEventEmitter mEmitter;
+  private ReactApplicationContext mContext;
 
   @Rule public PowerMockRule rule = new PowerMockRule();
 
@@ -91,14 +90,12 @@ public class NetworkingModuleTest {
     PowerMockito.when(clientBuilder.build()).thenReturn(mHttpClient);
     when(mHttpClient.newBuilder()).thenReturn(clientBuilder);
 
-    mEmitter = mock(RCTDeviceEventEmitter.class);
-
     CatalystInstance reactInstance = mock(CatalystInstance.class);
-    ReactApplicationContext reactContext = mock(ReactApplicationContext.class);
-    when(reactContext.getCatalystInstance()).thenReturn(reactInstance);
-    when(reactContext.hasActiveReactInstance()).thenReturn(true);
-    when(reactContext.getJSModule(any(Class.class))).thenReturn(mEmitter);
-    mNetworkingModule = new NetworkingModule(reactContext, "", mHttpClient);
+
+    mContext = mock(ReactApplicationContext.class);
+    when(mContext.getCatalystInstance()).thenReturn(reactInstance);
+    when(mContext.hasActiveReactInstance()).thenReturn(true);
+    mNetworkingModule = new NetworkingModule(mContext, "", mHttpClient);
   }
 
   @Test
@@ -139,7 +136,7 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
-    verifyErrorEmit(mEmitter, 0);
+    verifyErrorEmit(mContext, 0);
   }
 
   @Test
@@ -160,7 +157,7 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
-    verifyErrorEmit(mEmitter, 0);
+    verifyErrorEmit(mContext, 0);
   }
 
   @Test
@@ -178,12 +175,12 @@ public class NetworkingModuleTest {
         /* timeout */ 0,
         /* withCredentials */ false);
 
-    verifyErrorEmit(mEmitter, 0);
+    verifyErrorEmit(mContext, 0);
   }
 
-  private static void verifyErrorEmit(RCTDeviceEventEmitter emitter, int requestId) {
+  private static void verifyErrorEmit(ReactApplicationContext context, int requestId) {
     ArgumentCaptor<WritableArray> captor = ArgumentCaptor.forClass(WritableArray.class);
-    verify(emitter).emit(eq("didCompleteNetworkResponse"), captor.capture());
+    verify(context).emitDeviceEvent(eq("didCompleteNetworkResponse"), captor.capture());
 
     WritableArray array = captor.getValue();
     assertThat(array.getInt(0)).isEqualTo(requestId);

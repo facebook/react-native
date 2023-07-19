@@ -5,8 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <memory>
+
 #include "NativePerformanceObserver.h"
 #include "PerformanceEntryReporter.h"
+
+#include "Plugins.h"
+
+std::shared_ptr<facebook::react::TurboModule>
+NativePerformanceObserverModuleProvider(
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
+  return std::make_shared<facebook::react::NativePerformanceObserver>(
+      std::move(jsInvoker));
+}
 
 namespace facebook::react {
 
@@ -65,6 +76,15 @@ void NativePerformanceObserver::setDurationThreshold(
     double durationThreshold) {
   PerformanceEntryReporter::getInstance().setDurationThreshold(
       static_cast<PerformanceEntryType>(entryType), durationThreshold);
+}
+
+void NativePerformanceObserver::clearEntries(
+    jsi::Runtime &rt,
+    int32_t entryType,
+    std::optional<std::string> entryName) {
+  PerformanceEntryReporter::getInstance().clearEntries(
+      static_cast<PerformanceEntryType>(entryType),
+      entryName ? entryName->c_str() : nullptr);
 }
 
 } // namespace facebook::react

@@ -29,34 +29,13 @@ class RawTextShadowNode : public ConcreteShadowNode<
   using ConcreteShadowNode::ConcreteShadowNode;
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteShadowNode::BaseTraits();
-    traits.set(ShadowNodeTraits::Trait::RawText);
+    traits.set(IdentifierTrait());
     return traits;
   }
+  static ShadowNodeTraits::Trait IdentifierTrait() {
+    return ShadowNodeTraits::Trait::RawText;
+  }
 };
-
-template <>
-inline RawTextShadowNode const &traitCast<RawTextShadowNode const &>(
-    ShadowNode const &shadowNode) {
-  bool castable =
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::RawText);
-  react_native_assert(castable);
-  (void)castable;
-  return static_cast<RawTextShadowNode const &>(shadowNode);
-}
-
-template <>
-inline RawTextShadowNode const *traitCast<RawTextShadowNode const *>(
-    ShadowNode const *shadowNode) {
-  if (!shadowNode) {
-    return nullptr;
-  }
-  bool castable =
-      shadowNode->getTraits().check(ShadowNodeTraits::Trait::RawText);
-  if (!castable) {
-    return nullptr;
-  }
-  return static_cast<RawTextShadowNode const *>(shadowNode);
-}
 
 } // namespace react
 } // namespace facebook

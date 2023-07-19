@@ -5,10 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "NativePerformance.h"
-#include <glog/logging.h>
+#include <memory>
+
 #include <jsi/instrumentation.h>
+#include "NativePerformance.h"
 #include "PerformanceEntryReporter.h"
+
+#include "Plugins.h"
+
+std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
+    std::shared_ptr<facebook::react::CallInvoker> jsInvoker) {
+  return std::make_shared<facebook::react::NativePerformance>(
+      std::move(jsInvoker));
+}
 
 namespace facebook::react {
 
@@ -23,12 +32,6 @@ void NativePerformance::mark(
   PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
 }
 
-void NativePerformance::clearMarks(
-    jsi::Runtime &rt,
-    std::optional<std::string> markName) {
-  PerformanceEntryReporter::getInstance().clearMarks(markName);
-}
-
 void NativePerformance::measure(
     jsi::Runtime &rt,
     std::string name,
@@ -39,12 +42,6 @@ void NativePerformance::measure(
     std::optional<std::string> endMark) {
   PerformanceEntryReporter::getInstance().measure(
       name, startTime, endTime, duration, startMark, endMark);
-}
-
-void NativePerformance::clearMeasures(
-    jsi::Runtime &rt,
-    std::optional<std::string> measureName) {
-  PerformanceEntryReporter::getInstance().clearMeasures(measureName);
 }
 
 std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(

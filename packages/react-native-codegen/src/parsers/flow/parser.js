@@ -21,6 +21,7 @@ import type {
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+import type {TypeDeclarationMap} from '../utils';
 
 // $FlowFixMe[untyped-import] there's no flowtype flow-parser
 const flowParser = require('flow-parser');
@@ -28,7 +29,7 @@ const flowParser = require('flow-parser');
 const {buildSchema} = require('../parsers-commons');
 const {Visitor} = require('./Visitor');
 const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
+const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('./modules');
 
 const fs = require('fs');
@@ -195,6 +196,22 @@ class FlowParser implements Parser {
       name: member.id.name,
       value: member.init?.value ?? member.id.name,
     }));
+  }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'InterfaceDeclaration' &&
+      node.extends.length === 1 &&
+      node.extends[0].type === 'InterfaceExtends' &&
+      node.extends[0].id.name === 'TurboModule'
+    );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].id.name];
   }
 }
 

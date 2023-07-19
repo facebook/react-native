@@ -12,6 +12,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,6 @@ import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.SystemClock;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -91,7 +91,7 @@ public class RootViewTest {
             });
 
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
-    mReactContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mReactContext = spy(new ReactApplicationContext(RuntimeEnvironment.application));
     mReactContext.initializeWithInstance(mCatalystInstanceMock);
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(mReactContext);
 
@@ -217,11 +217,8 @@ public class RootViewTest {
   @Test
   public void testCheckForKeyboardEvents() {
     ReactInstanceManager instanceManager = mock(ReactInstanceManager.class);
-    RCTDeviceEventEmitter eventEmitterModuleMock = mock(RCTDeviceEventEmitter.class);
 
     when(instanceManager.getCurrentReactContext()).thenReturn(mReactContext);
-    when(mReactContext.getJSModule(RCTDeviceEventEmitter.class)).thenReturn(eventEmitterModuleMock);
-
     ReactRootView rootView =
         new ReactRootView(mReactContext) {
           @Override
@@ -250,6 +247,6 @@ public class RootViewTest {
     params.putMap("endCoordinates", endCoordinates);
     params.putString("easing", "keyboard");
 
-    verify(eventEmitterModuleMock, Mockito.times(1)).emit("keyboardDidShow", params);
+    verify(mReactContext, Mockito.times(1)).emitDeviceEvent("keyboardDidShow", params);
   }
 }

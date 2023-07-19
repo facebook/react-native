@@ -11,7 +11,7 @@
 'use strict';
 import type {TypeDeclarationMap} from '../../utils';
 import type {CommandOptions} from './options';
-import type {ComponentSchemaBuilderConfig} from './schema.js';
+import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getTypes} = require('../utils');
 const {getCommands} = require('./commands');

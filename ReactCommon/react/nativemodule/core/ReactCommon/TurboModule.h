@@ -83,6 +83,26 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   };
   std::unordered_map<std::string, MethodMetadata> methodMap_;
 
+  using ArgFactory =
+      std::function<void(jsi::Runtime &runtime, std::vector<jsi::Value> &args)>;
+
+  /**
+   * Calls RCTDeviceEventEmitter.emit to JavaScript, with given event name and
+   * an optional list of arguments.
+   * If present, argFactory is a callback used to construct extra arguments,
+   * e.g.
+   *
+   *  emitDeviceEvent(rt, "myCustomEvent",
+   *    [](jsi::Runtime& rt, std::vector<jsi::Value>& args) {
+   *      args.emplace_back(jsi::Value(true));
+   *      args.emplace_back(jsi::Value(42));
+   *  });
+   */
+  void emitDeviceEvent(
+      jsi::Runtime &runtime,
+      const std::string &eventName,
+      ArgFactory argFactory = nullptr);
+
  private:
   friend class TurboCxxModule;
   friend class TurboModuleBinding;

@@ -12,6 +12,7 @@
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/core/TraitCast.h>
 
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
@@ -51,8 +52,13 @@ TEST(traitCastTest, testOne) {
   std::shared_ptr<ShadowNode> shadowNodeForTextShadowNode{textShadowNode};
 
   // Casting `nullptr` returns `nullptrs`.
-  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullptr));
-  EXPECT_FALSE(traitCast<YogaLayoutableShadowNode const *>(nullptr));
+  ShadowNode *nullShadowNode = nullptr;
+  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullShadowNode));
+  EXPECT_FALSE(traitCast<YogaLayoutableShadowNode const *>(nullShadowNode));
+  EXPECT_FALSE(traitCast<LayoutableShadowNode const *>(nullShadowNode));
+  EXPECT_FALSE(traitCast<LayoutableShadowNode *>(nullShadowNode));
+  EXPECT_FALSE(traitCast<LayoutableShadowNode>(
+      std::shared_ptr<ShadowNode>(nullShadowNode)));
 
   // `ViewShadowNode` is `LayoutableShadowNode` and `YogaLayoutableShadowNode`.
   EXPECT_TRUE(traitCast<LayoutableShadowNode const *>(viewShadowNode.get()));
@@ -62,6 +68,10 @@ TEST(traitCastTest, testOne) {
       traitCast<LayoutableShadowNode const &>(*viewShadowNode));
   EXPECT_NO_FATAL_FAILURE(
       traitCast<YogaLayoutableShadowNode const &>(*viewShadowNode));
+  EXPECT_NO_FATAL_FAILURE(
+      traitCast<YogaLayoutableShadowNode &>(*viewShadowNode));
+  EXPECT_TRUE(traitCast<LayoutableShadowNode *>(viewShadowNode.get()));
+  EXPECT_TRUE(traitCast<LayoutableShadowNode>(viewShadowNode));
 
   // `ScrollViewShadowNode` is `LayoutableShadowNode` and
   // `YogaLayoutableShadowNode`.

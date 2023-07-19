@@ -42,11 +42,17 @@ class NewArchitectureHelper
         unless is_new_arch_enabled
             return
         end
-
+        ndebug_flag = " -DNDEBUG"
         # Add RCT_NEW_ARCH_ENABLED to Target pods xcconfig
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
                 config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+
+                if config_name == "Release"
+                    config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + ndebug_flag
+                    config_file.attributes['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                end
+
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
                 config_file.save_as(xcconfig_path)
             end
@@ -57,6 +63,14 @@ class NewArchitectureHelper
             if pod_name == 'React-Core'
                 target_installation_result.native_target.build_configurations.each do |config|
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = @@new_arch_cpp_flags
+                end
+            end
+
+            target_installation_result.native_target.build_configurations.each do |config|
+                if config.name == "Release"
+                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : ""
+                    config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
+                    config.build_settings['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
                 end
             end
         end
@@ -71,10 +85,21 @@ class NewArchitectureHelper
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
-        boost_search_path = "\"$(PODS_ROOT)/boost\""
-
+        header_search_paths = ["\"$(PODS_ROOT)/boost\""]
+        if ENV['USE_FRAMEWORKS']
+            header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\""
+            header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
+        end
+        header_search_paths_string = header_search_paths.join(" ")
         spec.compiler_flags = compiler_flags.empty? ? @@folly_compiler_flags : "#{compiler_flags} #{@@folly_compiler_flags}"
-        current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ? boost_search_path : "#{current_headers} #{boost_search_path}"
+        current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
+            header_search_paths_string :
+            "#{current_headers} #{header_search_paths_string}"
         current_config["CLANG_CXX_LANGUAGE_STANDARD"] = @@cplusplus_version
 
 

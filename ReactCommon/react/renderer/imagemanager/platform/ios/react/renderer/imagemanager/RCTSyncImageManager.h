@@ -7,7 +7,7 @@
 
 #import <React/RCTUIKit.h> // [macOS]
 
-#import <RCTImageManagerProtocol.h>
+#import "RCTImageManagerProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

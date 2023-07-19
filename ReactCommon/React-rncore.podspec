@@ -37,5 +37,6 @@ Pod::Spec.new do |s|
     :js_srcs_dir => "#{react_native_path}/Libraries",
     :library_name => "rncore",
     :library_type => "components",
+    :output_dir => "#{react_native_path}/../ReactCommon"
   })
 end

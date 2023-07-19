@@ -24,7 +24,10 @@ class ReadableNativeArray
     : public jni::HybridClass<ReadableNativeArray, NativeArray> {
  protected:
   friend HybridBase;
-  explicit ReadableNativeArray(folly::dynamic array);
+
+  template <class Dyn>
+  explicit ReadableNativeArray(Dyn &&array)
+      : HybridBase(std::forward<Dyn>(array)) {}
 
  public:
   static constexpr const char *kJavaDescriptor =

@@ -31,11 +31,17 @@
 #endif
 
 #if RCT_NEW_ARCH_ENABLED
+// Forward declaration to decrease compilation coupling
+namespace facebook::react {
+class RuntimeScheduler;
+}
+
 RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,
-    RCTTurboModuleManager *turboModuleManager);
+    RCTTurboModuleManager *turboModuleManager,
+    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler);
 #endif
 
 #endif // __cplusplus

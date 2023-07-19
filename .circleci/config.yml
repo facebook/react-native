@@ -119,7 +119,7 @@ executors:
     environment:
       - TERM: "dumb"
       - ADB_INSTALL_TIMEOUT: 10
-      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       - BUILD_THREADS: 2
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
@@ -597,6 +597,11 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
+      - run:
+          # Python 3.10 already exists in the environment, this is a workaround for:
+          # https://github.com/actions/setup-python/issues/577
+          name: "Unlink environment's Python 3.10"
+          command: brew unlink python@3.10
       - brew_install:
           package: applesimutils watchman
 
@@ -1666,11 +1671,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1687,11 +1687,6 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1734,18 +1729,8 @@ workflows:
                 use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithoutFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithoutFlipper"
                 use_frameworks: "StaticFrameworks"
               - architecture: "OldArch"
                 flavor: "Debug"

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ImageRequest.h"
+#include <react/renderer/imagemanager/ImageRequest.h>
 
 namespace facebook {
 namespace react {

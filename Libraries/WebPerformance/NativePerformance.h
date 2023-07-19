@@ -27,7 +27,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
 
   void
   mark(jsi::Runtime &rt, std::string name, double startTime, double duration);
-  void clearMarks(jsi::Runtime &rt, std::optional<std::string> markName);
 
   void measure(
       jsi::Runtime &rt,
@@ -37,7 +36,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
       std::optional<double> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
-  void clearMeasures(jsi::Runtime &rt, std::optional<std::string> measureName);
 
   // To align with web API, we will make sure to return three properties
   // (jsHeapSizeLimit, totalJSHeapSize, usedJSHeapSize) + anything needed from

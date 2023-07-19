@@ -17,7 +17,7 @@ include(":ReactAndroid", ":ReactAndroid:hermes-engine", ":ReactAndroid:external-
 
 // If the ./packages folder exists, then we're inside the React Native repository.
 // If not, a users is consuming this project for a build from source.
-if (File("./packages").exists()) {
+if (File("${rootDir}/packages").exists()) {
   include(":packages:rn-tester:android:app")
   // Include this to enable codegen Gradle plugin.
   includeBuild("packages/react-native-gradle-plugin/")

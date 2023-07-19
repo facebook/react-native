@@ -13,6 +13,7 @@
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
@@ -61,8 +62,12 @@ thread_local LayoutContext threadLocalLayoutContext;
 
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
   auto traits = LayoutableShadowNode::BaseTraits();
-  traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
+  traits.set(IdentifierTrait());
   return traits;
+}
+
+ShadowNodeTraits::Trait YogaLayoutableShadowNode::IdentifierTrait() {
+  return ShadowNodeTraits::Trait::YogaLayoutableKind;
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -205,7 +210,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
     auto &layoutableClonedChildNode =
-        traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
+        traitCast<YogaLayoutableShadowNode &>(*clonedChildNode);
 
     // The owner must be nullptr for a newly cloned node.
     react_native_assert(
@@ -298,7 +303,7 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
     adoptYogaChild(i);
 
     if (isClean) {
-      auto &oldYogaChildNode = *oldYogaChildren[i];
+      auto &oldYogaChildNode = *oldYogaChildren.at(i);
       auto &newYogaChildNode =
           traitCast<YogaLayoutableShadowNode const &>(*getChildren().at(i))
               .yogaNode_;
@@ -550,8 +555,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
   auto contentFrame = Rect{};
   for (auto childYogaNode : yogaNode_.getChildren()) {
-    auto &childNode =
-        *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+    auto &childNode = shadowNodeFromContext(childYogaNode);
 
     // Verifying that the Yoga node belongs to the ShadowNode.
     react_native_assert(&childNode.yogaNode_ == childYogaNode);
@@ -635,17 +639,15 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
 
   // At this point it is guaranteed that all shadow nodes associated with yoga
   // nodes are `YogaLayoutableShadowNode` subclasses.
-  auto parentNode =
-      static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
-  auto oldNode =
-      static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
+  auto &parentNode = shadowNodeFromContext(parentYogaNode);
+  auto &oldNode = shadowNodeFromContext(oldYogaNode);
 
-  auto clonedNode = oldNode->clone(
+  auto clonedNode = oldNode.clone(
       {ShadowNodeFragment::propsPlaceholder(),
        ShadowNodeFragment::childrenPlaceholder(),
-       oldNode->getState()});
-  parentNode->replaceChild(*oldNode, clonedNode, childIndex);
-  return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
+       oldNode.getState()});
+  parentNode.replaceChild(oldNode, clonedNode, childIndex);
+  return &traitCast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
@@ -657,8 +659,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   SystraceSection s(
       "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 
-  auto shadowNodeRawPtr =
-      static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
+  auto &shadowNode = shadowNodeFromContext(yogaNode);
 
   auto minimumSize = Size{0, 0};
   auto maximumSize = Size{
@@ -689,11 +690,17 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto size = shadowNodeRawPtr->measureContent(
+  auto size = shadowNode.measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
+}
+
+YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
+    YGNode *yogaNode) {
+  return traitCast<YogaLayoutableShadowNode &>(
+      *static_cast<ShadowNode *>(yogaNode->getContext()));
 }
 
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {

@@ -52,7 +52,6 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -866,9 +865,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
     if (hasActiveReactInstance()) {
-      getCurrentReactContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(eventName, params);
+      getCurrentReactContext().emitDeviceEvent(eventName, params);
     }
   }
 

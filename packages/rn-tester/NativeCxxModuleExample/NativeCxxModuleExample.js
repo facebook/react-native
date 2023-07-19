@@ -71,6 +71,7 @@ export interface Spec extends TurboModule {
   +getValueWithCallback: (callback: (value: string) => void) => void;
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +voidFunc: () => void;
+  +emitCustomDeviceEvent: (eventName: string) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>(
