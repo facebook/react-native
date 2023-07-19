@@ -154,4 +154,7 @@ public class ReactFeatureFlags {
 
   /** Disable the background executor for layout in Fabric */
   public static boolean enableBackgroundExecutor = false;
+
+  /** Use native view configs in bridgeless mode. */
+  public static boolean useNativeViewConfigsInBridgelessMode = false;
 }
