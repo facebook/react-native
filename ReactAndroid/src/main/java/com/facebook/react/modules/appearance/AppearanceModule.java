@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import com.facebook.fbreact.specs.NativeAppearanceSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -63,6 +64,17 @@ public class AppearanceModule extends NativeAppearanceSpec {
     }
 
     return "light";
+  }
+
+  @Override
+  public void setColorScheme(String style) {
+    if (style.equals("dark")) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    } else if (style.equals("light")) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+    } else if (style.equals("unspecified")) {
+      AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+    }
   }
 
   @Override

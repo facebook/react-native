@@ -10,6 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
+#import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -93,6 +94,22 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 }
 #endif // macOS]
 
+@implementation RCTConvert (UIUserInterfaceStyle)
+
+#if !TARGET_OS_OSX // [macOS]
+RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+      @"light" : @(UIUserInterfaceStyleLight),
+      @"dark" : @(UIUserInterfaceStyleDark),
+      @"unspecified" : @(UIUserInterfaceStyleUnspecified)
+    }),
+    UIUserInterfaceStyleUnspecified,
+    integerValue);
+#endif // [macOS]
+
+@end
+
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
 
@@ -126,6 +143,33 @@ RCT_EXPORT_MODULE(Appearance)
   return self;
 }
 #endif // macOS]
+
+RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
+{
+#if !TARGET_OS_OSX // [macOS]
+  UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
+  NSArray<__kindof UIWindow *> *windows = RCTSharedApplication().windows;
+  if (@available(iOS 13.0, *)) {
+    for (UIWindow *window in windows) {
+      window.overrideUserInterfaceStyle = userInterfaceStyle;
+    }
+  }
+#else // [macOS
+  NSAppearance *appearance = nil;
+  if ([style isEqualToString:@"unspecified"]) {
+    if (@available(macOS 11.0, *)) {
+      appearance = [NSAppearance currentDrawingAppearance];
+    } else {
+      appearance = [NSAppearance currentAppearance];
+    }
+  } else if ([style isEqualToString:@"light"]) {
+    appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+  } else if ([style isEqualToString:@"dark"]) {
+    appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+  }
+  RCTSharedApplication().appearance = appearance;
+#endif // macOS]
+}
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
