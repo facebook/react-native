@@ -8,7 +8,11 @@
  */
 
 const NEEDS_REPRO_LABEL = 'Needs: Repro';
-const NEEDS_REPRO_MESSAGE = '| Missing Reproducible Example |';
+const NEEDS_REPRO_HEADER = 'Missing Reproducible Example';
+const NEEDS_REPRO_MESSAGE =
+  `| :warning: | Missing Reproducible Example |\n` +
+  `| --- | --- |\n` +
+  `| :information_source: | We could not detect a reproducible example in your issue report. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate). A reproducer needs to be in a GitHub repository under your username.</li></ul> |`;
 
 module.exports = async (github, context) => {
   const issueData = {
@@ -21,7 +25,7 @@ module.exports = async (github, context) => {
   const comments = await github.rest.issues.listComments(issueData);
 
   const botComment = comments.data.find(comment =>
-    comment.body.includes(NEEDS_REPRO_MESSAGE),
+    comment.body.includes(NEEDS_REPRO_HEADER),
   );
 
   let commentBodies = comments.data.map(comment => comment.body);
@@ -69,6 +73,13 @@ module.exports = async (github, context) => {
     await github.rest.issues.addLabels({
       ...issueData,
       labels: [NEEDS_REPRO_LABEL],
+    });
+
+    if (botComment) return;
+
+    await github.rest.issues.createComment({
+      ...issueData,
+      body: NEEDS_REPRO_MESSAGE,
     });
   }
 };
