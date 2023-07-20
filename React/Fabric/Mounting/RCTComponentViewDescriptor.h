@@ -29,6 +29,7 @@ class RCTComponentViewDescriptor final {
    */
   bool observesMountingTransactionWillMount{false};
   bool observesMountingTransactionDidMount{false};
+  bool shouldBeRecycled{true};
 };
 
 inline bool operator==(RCTComponentViewDescriptor const &lhs, RCTComponentViewDescriptor const &rhs)

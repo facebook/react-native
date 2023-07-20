@@ -11,9 +11,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTConstants.h>
 
-#import "RCTImageComponentView.h"
-#import "RCTParagraphComponentView.h"
-#import "RCTViewComponentView.h"
+#import <React/RCTImageComponentView.h>
+#import <React/RCTParagraphComponentView.h>
+#import <React/RCTViewComponentView.h>
 
 #import <butter/map.h>
 
@@ -108,7 +108,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   RCTAssertMainQueue();
   auto &recycledViews = _recyclePool[componentHandle];
 
-  if (recycledViews.size() > RCTComponentViewRegistryRecyclePoolMaxSize || ![componentViewDescriptor.view shouldBeRecycled]) {
+  if (recycledViews.size() > RCTComponentViewRegistryRecyclePoolMaxSize || !componentViewDescriptor.shouldBeRecycled) {
     return;
   }
 
