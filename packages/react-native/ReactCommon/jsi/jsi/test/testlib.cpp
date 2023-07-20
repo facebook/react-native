@@ -478,6 +478,20 @@ TEST_P(JSITest, ArrayTest) {
   Array alpha2 = Array(rt, 1);
   alpha2 = std::move(alpha);
   EXPECT_EQ(alpha2.size(rt), 4);
+
+  // Test getting/setting an element that is an accessor.
+  auto arrWithAccessor =
+      eval(
+          "Object.defineProperty([], '0', {set(){ throw 72 }, get(){ return 45 }});")
+          .getObject(rt)
+          .getArray(rt);
+  try {
+    arrWithAccessor.setValueAtIndex(rt, 0, 1);
+    FAIL() << "Expected exception";
+  } catch (const JSError& err) {
+    EXPECT_EQ(err.value().getNumber(), 72);
+  }
+  EXPECT_EQ(arrWithAccessor.getValueAtIndex(rt, 0).getNumber(), 45);
 }
 
 TEST_P(JSITest, FunctionTest) {
