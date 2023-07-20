@@ -61,6 +61,12 @@ public class ReactScrollViewHelper {
   private static final Set<ScrollListener> sScrollListeners =
       Collections.newSetFromMap(new WeakHashMap<ScrollListener, Boolean>());
 
+  public interface ScrollAnimateCustomizer {
+    void onUpdateScrollAnimator(ViewGroup scrollView, ValueAnimator valueAnimator);
+  }
+
+  private static ScrollAnimateCustomizer mScrollAnimateCustomizer;
+
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
   // https://android.googlesource.com/platform/frameworks/base/+/ae5bcf23b5f0875e455790d6af387184dbd009c1/core/java/android/widget/OverScroller.java#44
@@ -179,6 +185,16 @@ public class ReactScrollViewHelper {
     } else {
       FLog.w(ReactConstants.TAG, "wrong snap alignment value: " + alignment);
       return SNAP_ALIGNMENT_DISABLED;
+    }
+  }
+
+  public static void setScrollEffectCustomizer(ScrollAnimateCustomizer scrollAnimateCustomizer) {
+    mScrollAnimateCustomizer = scrollAnimateCustomizer;
+  }
+
+  public static void applyScrollEffect(ViewGroup scrollView, ValueAnimator valueAnimator) {
+    if(mScrollAnimateCustomizer != null) {
+      mScrollAnimateCustomizer.onUpdateScrollAnimator(scrollView, valueAnimator);
     }
   }
 
