@@ -1137,8 +1137,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
-      isInvertedVirtualizedList:
-        Platform.OS === 'android' && this.props.inverted,
+      isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
           ? {
