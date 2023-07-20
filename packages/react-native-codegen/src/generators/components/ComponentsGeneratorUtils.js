@@ -25,10 +25,11 @@ import type {
 const {
   getCppTypeForAnnotation,
   getEnumMaskName,
-  getEnumName,
   generateStructName,
   getImports,
 } = require('./CppHelpers.js');
+
+const {getEnumName} = require('../Utils');
 
 function getNativeTypeFromAnnotation(
   componentName: string,
@@ -121,6 +122,8 @@ function getNativeTypeFromAnnotation(
       return getEnumName(componentName, prop.name);
     case 'Int32EnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+    case 'MixedTypeAnnotation':
+      return 'folly::dynamic';
     default:
       (typeAnnotation: empty);
       throw new Error(

@@ -11,15 +11,23 @@
 
 'use-strict';
 
-import type {UnionTypeAnnotationMemberType} from '../../CodegenSchema';
+import type {
+  DoubleTypeAnnotation,
+  NamedShape,
+  UnionTypeAnnotationMemberType,
+} from '../../CodegenSchema';
 
 const {
   emitArrayType,
   emitBoolean,
+  emitBoolProp,
   emitDouble,
+  emitDoubleProp,
   emitFloat,
+  emitFloatProp,
   emitNumber,
   emitInt32,
+  emitInt32Prop,
   emitGenericObject,
   emitObject,
   emitPromise,
@@ -28,14 +36,20 @@ const {
   emitString,
   emitStringish,
   emitMixed,
+  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
+  Visitor,
+  emitStringProp,
+  emitObjectProp,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
 const {UnsupportedUnionTypeAnnotationParserError} = require('../errors');
 const {FlowParser} = require('../flow/parser');
 const {TypeScriptParser} = require('../typescript/parser');
+const {extractArrayElementType} = require('../flow/components/events');
 
 const parser = new MockedParser();
 const flowParser = new FlowParser();
@@ -93,6 +107,38 @@ describe('emitInt32', () => {
   });
 });
 
+describe('emitInt32Prop', () => {
+  describe('when optional is true', () => {
+    it('returns optional Int32TypeAnnotation', () => {
+      const result = emitInt32Prop('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns required Int32TypeAnnotation', () => {
+      const result = emitInt32Prop('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'Int32TypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
 describe('emitNumber', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
@@ -141,6 +187,38 @@ describe('emitRootTag', () => {
       const result = emitRootTag(false);
 
       expect(result).toEqual(reservedTypeAnnotation);
+    });
+  });
+});
+
+describe('emitStringProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional StringTypeAnnotation', () => {
+      const result = emitStringProp('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when nullable is false', () => {
+    it('returns required StringTypeAnnotatio', () => {
+      const result = emitStringProp('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });
@@ -220,6 +298,35 @@ describe('emitDouble', () => {
         type: 'DoubleTypeAnnotation',
       };
 
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitDoubleProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional type annotation', () => {
+      const result = emitDoubleProp('Foo', true);
+      const expected: NamedShape<DoubleTypeAnnotation> = {
+        name: 'Foo',
+        optional: true,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when optional is false', () => {
+    it('returns required type annotation', () => {
+      const result = emitDoubleProp('Foo', false);
+      const expected: NamedShape<DoubleTypeAnnotation> = {
+        name: 'Foo',
+        optional: false,
+        typeAnnotation: {
+          type: 'DoubleTypeAnnotation',
+        },
+      };
       expect(result).toEqual(expected);
     });
   });
@@ -358,7 +465,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );
@@ -402,7 +508,6 @@ describe('typeEnumResolution', () => {
           {successful: true, type: 'enum', name: 'Foo'},
           true /* nullable */,
           'SomeModule' /* name */,
-          'Flow',
           enumMap,
           parser,
         );
@@ -642,6 +747,38 @@ describe('emitFloat', () => {
   });
 });
 
+describe('emitFloatProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional FloatTypeAnnotation', () => {
+      const result = emitFloatProp('myProp', true);
+      const expected = {
+        name: 'myProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when optional is false', () => {
+    it('returns required FloatTypeAnnotation', () => {
+      const result = emitFloatProp('myProp', false);
+      const expected = {
+        name: 'myProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
 describe('emitMixed', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
@@ -828,7 +965,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -842,7 +979,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1041,7 +1178,7 @@ describe('emitUnion', () => {
         'ObjectTypeAnnotation',
       ];
       describe('when nullable is true', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1055,7 +1192,7 @@ describe('emitUnion', () => {
       });
 
       describe('when nullable is false', () => {
-        it('throws an excpetion', () => {
+        it('throws an exception', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
@@ -1152,6 +1289,490 @@ describe('emitArrayType', () => {
 
         expect(result).toEqual(expected);
       });
+    });
+  });
+});
+
+describe('Visitor', () => {
+  describe('CallExpression', () => {
+    it('sets isComponent to true if callee type is Identifier and callee name is codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: 'Identifier', name: 'codegenNativeComponent'},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(true);
+    });
+
+    it('should not set isComponent to true if callee type is not Identifier or callee name is not codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: '', name: ''},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(false);
+    });
+
+    it('sets isModule to true if isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          object: {type: 'Identifier', name: 'TurboModuleRegistry'},
+          property: {type: 'Identifier', name: 'getEnforcing'},
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if not isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {
+          type: 'Expression',
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('InterfaceExtends', () => {
+    it('sets isModule to true if module interface extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: 'TurboModule'}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if module interface does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: ''}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('TSInterfaceDeclaration', () => {
+    it('sets isModule to true if TypeScript Interface Declaration extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: 'TurboModule'}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if TypeScript Interface Declaration does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: ''}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+});
+
+describe('emitPartial', () => {
+  const hasteModuleName = 'SampleTurboModule';
+  function emitPartialForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
+    return emitPartial(
+      nullable,
+      hasteModuleName,
+      typeAnnotation,
+      /* types: TypeDeclarationMap */
+      {},
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
+      {},
+      /* tryParse: ParserErrorCapturer */
+      // $FlowFixMe[missing-local-annot]
+      function <T>(_: () => T) {
+        return null;
+      },
+      /* cxxOnly: boolean */
+      false,
+      parser,
+    );
+  }
+
+  describe("when 'typeAnnotation' doesn't have exactly 'one' typeParameter", () => {
+    const nullable = false;
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    it('throws an error', () => {
+      expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
+        'Partials only support annotating exactly one parameter.',
+      );
+    });
+  });
+
+  describe('when Partial Not annotating type parameter', () => {
+    const nullable = false;
+    const typeAnnotation = {
+      typeParameters: {
+        params: [
+          {
+            id: {
+              name: 'TypeDeclaration',
+            },
+          },
+        ],
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    it('throws an error', () => {
+      expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
+        'Partials only support annotating a type parameter.',
+      );
+    });
+  });
+});
+
+describe('emitCommonTypes', () => {
+  const hasteModuleName = 'SampleTurboModule';
+
+  function emitCommonTypesForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
+    return emitCommonTypes(
+      hasteModuleName,
+      /* types: TypeDeclarationMap */
+      {},
+      typeAnnotation,
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
+      {},
+      /* tryParse: ParserErrorCapturer */
+      // $FlowFixMe[missing-local-annot]
+      function <T>(_: () => T) {
+        return null;
+      },
+      /* cxxOnly: boolean */
+      false,
+      nullable,
+      parser,
+    );
+  }
+
+  describe("when 'typeAnnotation.id.name' is 'Stringish'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'StringTypeAnnotation',
+      },
+      id: {
+        name: 'Stringish',
+      },
+    };
+    const expected = {
+      type: 'StringTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'StringTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Int32'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'Int32TypeAnnotation',
+      },
+      id: {
+        name: 'Int32',
+      },
+    };
+    const expected = {
+      type: 'Int32TypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'Int32TypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Double'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'DoubleTypeAnnotation',
+      },
+      id: {
+        name: 'Double',
+      },
+    };
+    const expected = {
+      type: 'DoubleTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'DoubleTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Float'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'FloatTypeAnnotation',
+      },
+      id: {
+        name: 'Float',
+      },
+    };
+    const expected = {
+      type: 'FloatTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'FloatTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'UnsafeObject'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'UnsafeObject',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Object'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'Object',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is '$Partial' i.e. Object", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'Object',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when typeAnnotation is invalid', () => {
+    const typeAnnotation = {
+      id: {
+        name: 'InvalidName',
+      },
+    };
+    it('returns null', () => {
+      expect(emitCommonTypesForUnitTest(typeAnnotation, false)).toBeNull();
+    });
+  });
+});
+
+describe('emitBoolProp', () => {
+  describe('when optional is true', () => {
+    it('returns optional type annotation', () => {
+      const result = emitBoolProp('someProp', true);
+      const expected = {
+        name: 'someProp',
+        optional: true,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when optional is false', () => {
+    it('returns required type annotation', () => {
+      const result = emitBoolProp('someProp', false);
+      const expected = {
+        name: 'someProp',
+        optional: false,
+        typeAnnotation: {
+          type: 'BooleanTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitObjectProp', () => {
+  const name = 'someProp';
+  describe('when property is optional', () => {
+    it('returns optional Object Prop', () => {
+      const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'ObjectTypeAnnotation',
+        },
+        properties: [
+          {
+            key: {
+              name: 'someKey',
+            },
+            optional: true,
+            value: {
+              type: 'StringTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+        ],
+      };
+      const result = emitObjectProp(
+        name,
+        true,
+        flowParser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
+      const expected = {
+        name: 'someProp',
+        optional: true,
+        typeAnnotation: {
+          properties: [
+            {
+              name: 'someKey',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe('when property is required', () => {
+    it('returns required Object Prop', () => {
+      const typeAnnotation = {
+        type: 'GenericTypeAnnotation',
+        id: {
+          name: 'ObjectTypeAnnotation',
+        },
+        properties: [
+          {
+            key: {
+              name: 'someKey',
+            },
+            optional: false,
+            value: {
+              type: 'StringTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          },
+        ],
+      };
+      const result = emitObjectProp(
+        name,
+        false,
+        flowParser,
+        typeAnnotation,
+        extractArrayElementType,
+      );
+      const expected = {
+        name: 'someProp',
+        optional: false,
+        typeAnnotation: {
+          properties: [
+            {
+              name: 'someKey',
+              optional: false,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+              },
+            },
+          ],
+          type: 'ObjectTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });

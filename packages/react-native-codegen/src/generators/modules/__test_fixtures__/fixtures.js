@@ -31,7 +31,57 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {},
-      enumMap: {},
+      enumMap: {
+        NumEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'NumEnum',
+          memberType: 'NumberTypeAnnotation',
+          members: [
+            {
+              name: 'ONE',
+              value: '1',
+            },
+            {
+              name: 'TWO',
+              value: '2',
+            },
+          ],
+        },
+        FloatEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'FloatEnum',
+          memberType: 'NumberTypeAnnotation',
+          members: [
+            {
+              name: 'POINT_ZERO',
+              value: '0.0',
+            },
+            {
+              name: 'POINT_ONE',
+              value: '0.1',
+            },
+            {
+              name: 'POINT_TWO',
+              value: '0.2',
+            },
+          ],
+        },
+        StringEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'StringEnum',
+          memberType: 'StringTypeAnnotation',
+          members: [
+            {
+              name: 'HELLO',
+              value: 'hello',
+            },
+            {
+              name: 'GoodBye',
+              value: 'goodbye',
+            },
+          ],
+        },
+      },
       spec: {
         properties: [
           {
@@ -236,6 +286,19 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             },
           },
           {
+            name: 'getEnumReturn',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'EnumDeclaration',
+                name: 'NumEnum',
+                memberType: 'NumberTypeAnnotation',
+              },
+              params: [],
+            },
+          },
+          {
             name: 'getValueWithCallback',
             optional: false,
             typeAnnotation: {
@@ -309,6 +372,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   name: 'enumInt',
                   optional: false,
                   typeAnnotation: {
+                    name: 'NumEnum',
                     type: 'EnumDeclaration',
                     memberType: 'NumberTypeAnnotation',
                   },
@@ -317,6 +381,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   name: 'enumFloat',
                   optional: false,
                   typeAnnotation: {
+                    name: 'FloatEnum',
                     type: 'EnumDeclaration',
                     memberType: 'NumberTypeAnnotation',
                   },
@@ -325,6 +390,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
                   name: 'enumString',
                   optional: false,
                   typeAnnotation: {
+                    name: 'StringEnum',
                     type: 'EnumDeclaration',
                     memberType: 'StringTypeAnnotation',
                   },
@@ -1516,7 +1582,57 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           ],
         },
       },
-      enumMap: {},
+      enumMap: {
+        NumEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'NumEnum',
+          memberType: 'NumberTypeAnnotation',
+          members: [
+            {
+              name: 'ONE',
+              value: '1',
+            },
+            {
+              name: 'TWO',
+              value: '2',
+            },
+          ],
+        },
+        FloatEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'FloatEnum',
+          memberType: 'NumberTypeAnnotation',
+          members: [
+            {
+              name: 'POINT_ZERO',
+              value: '0.0',
+            },
+            {
+              name: 'POINT_ONE',
+              value: '0.1',
+            },
+            {
+              name: 'POINT_TWO',
+              value: '0.2',
+            },
+          ],
+        },
+        StringEnum: {
+          type: 'EnumDeclarationWithMembers',
+          name: 'StringEnum',
+          memberType: 'StringTypeAnnotation',
+          members: [
+            {
+              name: 'HELLO',
+              value: 'hello',
+            },
+            {
+              name: 'GoodBye',
+              value: 'goodbye',
+            },
+          ],
+        },
+      },
       spec: {
         properties: [
           {
@@ -1577,6 +1693,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   name: 'enumInt',
                   optional: false,
                   typeAnnotation: {
+                    name: 'NumEnum',
                     type: 'EnumDeclaration',
                     memberType: 'NumberTypeAnnotation',
                   },
@@ -1585,6 +1702,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   name: 'enumFloat',
                   optional: false,
                   typeAnnotation: {
+                    name: 'FloatEnum',
                     type: 'EnumDeclaration',
                     memberType: 'NumberTypeAnnotation',
                   },
@@ -1593,6 +1711,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   name: 'enumString',
                   optional: false,
                   typeAnnotation: {
+                    name: 'StringEnum',
                     type: 'EnumDeclaration',
                     memberType: 'StringTypeAnnotation',
                   },
@@ -1643,6 +1762,19 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   },
                 },
               ],
+            },
+          },
+          {
+            name: 'getEnumReturn',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'EnumDeclaration',
+                name: 'NumEnum',
+                memberType: 'NumberTypeAnnotation',
+              },
+              params: [],
             },
           },
         ],

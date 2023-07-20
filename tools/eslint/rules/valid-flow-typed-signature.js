@@ -34,7 +34,7 @@ module.exports = {
         const sourceText = context.getSourceCode().getText();
 
         const firstLineEndIndex = sourceText.indexOf('\n');
-        const firstLine = sourceText.substr(0, firstLineEndIndex);
+        const firstLine = sourceText.slice(0, firstLineEndIndex);
 
         const match = firstLine.match(HASH_COMMENT_RE);
         if (match == null) {
@@ -43,7 +43,7 @@ module.exports = {
         }
 
         const hash = match[1];
-        const versionedCode = sourceText.substr(firstLineEndIndex + 1);
+        const versionedCode = sourceText.slice(firstLineEndIndex + 1);
         if (md5(versionedCode) === hash) {
           return;
         }

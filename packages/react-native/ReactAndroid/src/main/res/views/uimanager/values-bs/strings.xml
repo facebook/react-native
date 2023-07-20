@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: bs_BA -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Veza</string>
+    <string name="image_description" gender="unknown">Slika</string>
+    <string name="imagebutton_description" gender="unknown">Dugme, slika</string>
+    <string name="header_description" gender="unknown">Zaglavlje</string>
+    <string name="alert_description" gender="unknown">Upozorenje</string>
+    <string name="combobox_description" gender="unknown">Kombinovana kutija</string>
+    <string name="menu_description" gender="unknown">Meni</string>
+    <string name="menubar_description" gender="unknown">Traka menija</string>
+    <string name="menuitem_description" gender="unknown">Stavka menija</string>
+    <string name="progressbar_description" gender="unknown">Traka napretka</string>
+    <string name="radiogroup_description" gender="unknown">Grupa za radio</string>
+    <string name="scrollbar_description" gender="unknown">Traka klizača</string>
+    <string name="spinbutton_description" gender="unknown">Dugme za okretanje</string>
+    <string name="rn_tab_description" gender="unknown">Kartica</string>
+    <string name="tablist_description" gender="unknown">Lista kartica</string>
+    <string name="timer_description" gender="unknown">Tajmer</string>
+    <string name="toolbar_description" gender="unknown">Traka alata</string>
+    <string name="summary_description" gender="unknown">Sažetak</string>
+    <string name="state_busy_description" gender="unknown">zauzeto</string>
+    <string name="state_expanded_description" gender="unknown">prošireno</string>
+    <string name="state_collapsed_description" gender="unknown">skupljeno</string>
+    <string name="state_unselected_description" gender="unknown">nije odabrano</string>
+    <string name="state_on_description" gender="unknown">uključeno</string>
+    <string name="state_off_description" gender="unknown">isključeno</string>
+    <string name="state_mixed_description" gender="unknown">mješovito</string>
+</resources>

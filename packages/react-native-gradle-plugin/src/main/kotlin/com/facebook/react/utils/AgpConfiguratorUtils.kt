@@ -21,6 +21,7 @@ internal object AgpConfiguratorUtils {
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+            ext.buildFeatures.buildConfig = true
             ext.defaultConfig.buildConfigField(
                 "boolean", "IS_NEW_ARCHITECTURE_ENABLED", project.isNewArchEnabled.toString())
             ext.defaultConfig.buildConfigField(

@@ -65,6 +65,20 @@ class AccessibilityAndroidExample extends React.Component<
   render(): React.Node {
     return (
       <RNTesterPage title={'Accessibility Android APIs'}>
+        <RNTesterBlock title="Ellipsized Accessible Links">
+          <Text numberOfLines={3}>
+            <Text>
+              Bacon {this.state.count} Ipsum{'\n'}
+            </Text>
+            <Text>Dolor sit amet{'\n'}</Text>
+            <Text>Eggsecetur{'\n'}</Text>
+            <Text>{'\n'}</Text>
+            <Text accessibilityRole="link" onPress={this._addOne}>
+              http://github.com
+            </Text>
+          </Text>
+        </RNTesterBlock>
+
         <RNTesterBlock title="LiveRegion">
           <TouchableWithoutFeedback onPress={this._addOne}>
             <View style={styles.embedded}>

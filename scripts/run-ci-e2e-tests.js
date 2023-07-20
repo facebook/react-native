@@ -20,7 +20,7 @@
  */
 
 const {cd, cp, echo, exec, exit, mv} = require('shelljs');
-const spawn = require('child_process').spawn;
+const {execFileSync, spawn} = require('child_process');
 const argv = require('yargs').argv;
 const path = require('path');
 
@@ -29,6 +29,7 @@ const setupVerdaccio = require('./setup-verdaccio');
 
 const SCRIPTS = __dirname;
 const ROOT = path.normalize(path.join(__dirname, '..'));
+const REACT_NATIVE_PACKAGE_DIR = path.join(ROOT, 'packages/react-native');
 const tryExecNTimes = require('./try-n-times');
 
 const REACT_NATIVE_TEMP_DIR = exec(
@@ -63,19 +64,26 @@ try {
   }
 
   describe('Create react-native package');
-  if (exec('node ./scripts/set-rn-version.js --version 1000.0.0').code) {
+  if (
+    exec(
+      'node ./scripts/set-rn-version.js --to-version 1000.0.0 --build-type dry-run',
+    ).code
+  ) {
     echo('Failed to set version and update package.json ready for release');
     exitCode = 1;
     throw Error(exitCode);
   }
 
-  if (exec('npm pack').code) {
+  if (exec('npm pack', {cwd: REACT_NATIVE_PACKAGE_DIR}).code) {
     echo('Failed to pack react-native');
     exitCode = 1;
     throw Error(exitCode);
   }
 
-  const REACT_NATIVE_PACKAGE = path.join(ROOT, 'react-native-*.tgz');
+  const REACT_NATIVE_PACKAGE = path.join(
+    REACT_NATIVE_PACKAGE_DIR,
+    'react-native-*.tgz',
+  );
 
   describe('Set up Verdaccio');
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
@@ -95,7 +103,11 @@ try {
   );
 
   describe('Scaffold a basic React Native app from template');
-  exec(`rsync -a ${ROOT}/template ${REACT_NATIVE_TEMP_DIR}`);
+  execFileSync('rsync', [
+    '-a',
+    `${ROOT}/packages/react-native/template`,
+    REACT_NATIVE_TEMP_DIR,
+  ]);
   cd(REACT_NATIVE_APP_DIR);
 
   mv('_bundle', '.bundle');
@@ -234,10 +246,10 @@ try {
             ].join(' ') +
               ' | ' +
               [
-                'xcpretty',
+                'xcbeautify',
                 '--report',
                 'junit',
-                '--output',
+                '--reportPath',
                 '"~/react-native/reports/junit/iOS-e2e/results.xml"',
               ].join(' ') +
               ' && exit ${PIPESTATUS[0]}',

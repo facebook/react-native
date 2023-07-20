@@ -8,12 +8,20 @@
  */
 
 const chalk = require('chalk');
+const {execSync} = require('child_process');
 const inquirer = require('inquirer');
 const path = require('path');
 const {echo, exec, exit} = require('shelljs');
 const yargs = require('yargs');
 
-const {BUMP_COMMIT_MESSAGE} = require('../constants');
+const alignPackageVersions = require('../align-package-versions');
+const {
+  PUBLISH_PACKAGES_TAG,
+  GENERIC_COMMIT_MESSAGE,
+  NO_COMMIT_CHOICE,
+  COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
+  COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
+} = require('../constants');
 const forEachPackage = require('../for-each-package');
 const checkForGitChanges = require('../check-for-git-changes');
 const bumpPackageVersion = require('./bump-package-version');
@@ -150,27 +158,79 @@ const main = async () => {
       .then(() => echo());
   }
 
-  if (checkForGitChanges()) {
-    await inquirer
-      .prompt([
-        {
-          type: 'list',
-          name: 'shouldSubmitCommit',
-          message: 'Do you want to submit a commit with these changes?',
-          choices: ['Yes', 'No'],
-          filter: val => val === 'Yes',
-        },
-      ])
-      .then(({shouldSubmitCommit}) => {
-        if (!shouldSubmitCommit) {
+  if (!checkForGitChanges()) {
+    echo('No changes have been made. Finishing the process...');
+    exit(0);
+  }
+
+  echo('Aligning new versions across monorepo...');
+  alignPackageVersions();
+  echo(chalk.green('Done!\n'));
+
+  await inquirer
+    .prompt([
+      {
+        type: 'list',
+        name: 'commitChoice',
+        message: 'Do you want to submit a commit with these changes?',
+        choices: [
+          {
+            name: 'Yes, with generic message',
+            value: COMMIT_WITH_GENERIC_MESSAGE_CHOICE,
+          },
+          {
+            name: 'Yes, with custom message',
+            value: COMMIT_WITH_CUSTOM_MESSAGE_CHOICE,
+          },
+          {
+            name: 'No',
+            value: NO_COMMIT_CHOICE,
+          },
+        ],
+      },
+    ])
+    .then(({commitChoice}) => {
+      switch (commitChoice) {
+        case NO_COMMIT_CHOICE: {
           echo('Not submitting a commit, but keeping all changes');
-          return;
+
+          break;
         }
 
-        exec(`git commit -a -m "${BUMP_COMMIT_MESSAGE}"`, {cwd: ROOT_LOCATION});
-      })
-      .then(() => echo());
-  }
+        case COMMIT_WITH_GENERIC_MESSAGE_CHOICE: {
+          exec(`git commit -am "${GENERIC_COMMIT_MESSAGE}"`, {
+            cwd: ROOT_LOCATION,
+            silent: true,
+          });
+
+          break;
+        }
+
+        case COMMIT_WITH_CUSTOM_MESSAGE_CHOICE: {
+          // exec from shelljs currently does not support interactive input
+          // https://github.com/shelljs/shelljs/wiki/FAQ#running-interactive-programs-with-exec
+          execSync('git commit -a', {cwd: ROOT_LOCATION, stdio: 'inherit'});
+
+          const enteredCommitMessage = exec('git log -n 1 --format=format:%B', {
+            cwd: ROOT_LOCATION,
+            silent: true,
+          }).stdout.trim();
+          const commitMessageWithTag =
+            enteredCommitMessage + `\n\n${PUBLISH_PACKAGES_TAG}`;
+
+          exec(`git commit --amend -m "${commitMessageWithTag}"`, {
+            cwd: ROOT_LOCATION,
+            silent: true,
+          });
+
+          break;
+        }
+
+        default:
+          throw new Error('');
+      }
+    })
+    .then(() => echo());
 
   echo(chalk.green('Successfully finished the process of bumping packages'));
   exit(0);

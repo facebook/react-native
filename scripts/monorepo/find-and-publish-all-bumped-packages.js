@@ -10,7 +10,7 @@
 const path = require('path');
 const {spawnSync} = require('child_process');
 
-const {BUMP_COMMIT_MESSAGE} = require('./constants');
+const {PUBLISH_PACKAGES_TAG} = require('./constants');
 const forEachPackage = require('./for-each-package');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
@@ -79,10 +79,10 @@ const findAndPublishAllBumpedPackages = () => {
         process.exit(1);
       }
 
-      const hasSpecificCommitMessage =
-        commitMessage.startsWith(BUMP_COMMIT_MESSAGE);
+      const hasSpecificPublishTag =
+        commitMessage.includes(PUBLISH_PACKAGES_TAG);
 
-      if (!hasSpecificCommitMessage) {
+      if (!hasSpecificPublishTag) {
         throw new Error(
           `Package ${packageManifest.name} was updated, but not through CI script`,
         );
@@ -101,19 +101,12 @@ const findAndPublishAllBumpedPackages = () => {
         );
       }
 
-      const npmOTPFlag = NPM_CONFIG_OTP ? `--otp ${NPM_CONFIG_OTP}` : '';
-
-      const {status, stderr} = spawnSync('npm', ['publish', `${npmOTPFlag}`], {
-        cwd: packageAbsolutePath,
-        shell: true,
-        stdio: 'pipe',
-        encoding: 'utf-8',
-      });
-      if (status !== 0) {
+      const result = publishPackage(packageAbsolutePath, {otp: NPM_CONFIG_OTP});
+      if (result.code !== 0) {
         console.log(
-          `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. npm publish exited with code ${status}:`,
+          `\u274c Failed to publish version ${nextVersion} of ${packageManifest.name}. npm publish exited with code ${result.code}:`,
         );
-        console.log(stderr);
+        console.log(result.stderr);
 
         process.exit(1);
       } else {

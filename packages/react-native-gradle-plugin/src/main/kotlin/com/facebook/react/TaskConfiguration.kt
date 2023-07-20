@@ -9,6 +9,7 @@ package com.facebook.react
 
 import com.android.build.api.variant.Variant
 import com.facebook.react.tasks.BundleHermesCTask
+import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
@@ -19,7 +20,7 @@ import org.gradle.api.Project
 
 @Suppress("SpreadOperator", "UnstableApiUsage")
 internal fun Project.configureReactTasks(variant: Variant, config: ReactExtension) {
-  val targetName = variant.name.replaceFirstChar { it.uppercase() }
+  val targetName = variant.name.capitalizeCompat()
   val targetPath = variant.name
 
   // Resources: generated/assets/react/<variant>/index.android.bundle
@@ -51,13 +52,14 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
   configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant)
 
   if (!isDebuggableVariant) {
+    val entryFileEnvVariable = System.getenv("ENTRY_FILE")
     val bundleTask =
         tasks.register("createBundle${targetName}JsAndAssets", BundleHermesCTask::class.java) {
           it.root.set(config.root)
           it.nodeExecutableAndArgs.set(config.nodeExecutableAndArgs)
           it.cliFile.set(cliFile)
           it.bundleCommand.set(config.bundleCommand)
-          it.entryFile.set(detectedEntryFile(config))
+          it.entryFile.set(detectedEntryFile(config, entryFileEnvVariable))
           it.extraPackagerArgs.set(config.extraPackagerArgs)
           it.bundleConfig.set(config.bundleConfig)
           it.bundleAssetName.set(config.bundleAssetName)

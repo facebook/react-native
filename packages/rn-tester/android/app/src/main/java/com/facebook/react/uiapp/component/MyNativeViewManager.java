@@ -11,6 +11,7 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -19,6 +20,10 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.viewmanagers.RNTMyNativeViewManagerDelegate;
 import com.facebook.react.viewmanagers.RNTMyNativeViewManagerInterface;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** View manager for {@link MyNativeView} components. */
 @ReactModule(name = MyNativeViewManager.REACT_CLASS)
@@ -66,5 +71,30 @@ public class MyNativeViewManager extends SimpleViewManager<MyNativeView>
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
   public void setOpacity(@NonNull MyNativeView view, float opacity) {
     super.setOpacity(view, opacity);
+  }
+
+  @Override
+  @ReactProp(name = "values")
+  public void setValues(@NonNull MyNativeView view, @Nullable ReadableArray value) {
+    List<Integer> mValues = new ArrayList<Integer>();
+    for (int i = 0; i < value.size(); i++) {
+      mValues.add(value.getInt(i));
+    }
+    view.emitOnArrayChangedEvent(mValues);
+  }
+
+  @Override
+  public final Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    Map<String, Object> eventTypeConstants = new HashMap<String, Object>();
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "onIntArrayChanged",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onIntArrayChanged", "captured", "onIntArrayChangedCapture")))
+            .build());
+    return eventTypeConstants;
   }
 }

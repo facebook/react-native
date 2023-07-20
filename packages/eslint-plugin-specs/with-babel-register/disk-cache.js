@@ -61,9 +61,6 @@ function save() {
     fs.writeFileSync(FILENAME, serialised);
   } catch (e) {
     switch (e.code) {
-      // workaround https://github.com/nodejs/node/issues/31481
-      // todo: remove the ENOENT error check when we drop node.js 13 support
-      case 'ENOENT':
       case 'EACCES':
       case 'EPERM':
         console.warn(

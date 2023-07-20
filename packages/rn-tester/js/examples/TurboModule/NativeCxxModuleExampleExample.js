@@ -11,16 +11,20 @@
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import {
-  StyleSheet,
+  DeviceEventEmitter,
   Text,
   View,
   FlatList,
-  Platform,
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
 import * as React from 'react';
-import NativeCxxModuleExample /*EnumInt,*/ from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+import NativeCxxModuleExample, {
+  EnumInt,
+  EnumNone,
+} from '../../../NativeCxxModuleExample/NativeCxxModuleExample';
+
+import styles from './TurboModuleExampleCommon';
 
 type State = {|
   testResults: {
@@ -38,7 +42,9 @@ type Examples =
   | 'getArray'
   | 'getBool'
   | 'getConstants'
-  | 'getEnum'
+  | 'getCustomEnum'
+  | 'getNumEnum'
+  | 'getStrEnum'
   | 'getMap'
   | 'getNumber'
   | 'getObject'
@@ -48,7 +54,15 @@ type Examples =
   | 'getValue'
   | 'promise'
   | 'rejectPromise'
-  | 'voidFunc';
+  | 'voidFunc'
+  | 'optionalArgs'
+  | 'emitDeviceEvent'
+  | 'voidFuncThrows'
+  | 'getObjectThrows'
+  | 'promiseThrows'
+  | 'voidFuncAssert'
+  | 'getObjectAssert'
+  | 'promiseAssert';
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
@@ -72,8 +86,13 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
       ]),
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
-    getEnum: () => NativeCxxModuleExample?.getEnum(/*EnumInt.A*/ 2),
-    getMap: () => NativeCxxModuleExample?.getMap({a: 1, b: null, c: 3}),
+    getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),
+    getCustomHostObject: () =>
+      NativeCxxModuleExample?.consumeCustomHostObject(
+        NativeCxxModuleExample?.getCustomHostObject(),
+      ),
+    getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
+    getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
     getObject: () =>
       NativeCxxModuleExample?.getObject({a: 1, b: 'foo', c: null}),
@@ -91,6 +110,62 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    optionalArgs: () => NativeCxxModuleExample?.getWithWithOptionalArgs(),
+    emitDeviceEvent: () => {
+      const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
+      DeviceEventEmitter.removeAllListeners(CUSTOM_EVENT_TYPE);
+      DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
+        this._setResult(
+          'emitDeviceEvent',
+          `${CUSTOM_EVENT_TYPE}(${args.map(s => `${s}`).join(', ')})`,
+        );
+      });
+      NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
+    },
+    voidFuncThrows: () => {
+      try {
+        NativeCxxModuleExample?.voidFuncThrows();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectThrows: () => {
+      try {
+        NativeCxxModuleExample?.getObjectThrows({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseThrows: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeCxxModuleExample?.promiseThrows();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    voidFuncAssert: () => {
+      try {
+        NativeCxxModuleExample?.voidFuncAssert();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectAssert: () => {
+      try {
+        NativeCxxModuleExample?.getObjectAssert({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseAssert: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeCxxModuleExample?.promiseAssert();
+      } catch (e) {
+        return e.message;
+      }
+    },
   };
 
   _setResult(
@@ -134,9 +209,6 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         'Cannot load this example because TurboModule is not configured.',
       );
     }
-    Object.keys(this._tests).forEach(item =>
-      this._setResult(item, this._tests[item]()),
-    );
   }
 
   render(): React.Node {
@@ -159,6 +231,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
+          // $FlowFixMe[incompatible-type-arg]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (
@@ -176,47 +249,5 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    flexDirection: 'row',
-    margin: 6,
-  },
-  column: {
-    flex: 2,
-    justifyContent: 'center',
-    padding: 3,
-  },
-  result: {
-    alignItems: 'stretch',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 12,
-  },
-  type: {
-    color: '#333',
-    fontSize: 10,
-  },
-  button: {
-    borderColor: '#444',
-    padding: 3,
-    flex: 1,
-  },
-  buttonTextLarge: {
-    textAlign: 'center',
-    color: 'rgb(0,122,255)',
-    fontSize: 16,
-    padding: 6,
-  },
-  buttonText: {
-    color: 'rgb(0,122,255)',
-    textAlign: 'center',
-  },
-});
 
 module.exports = NativeCxxModuleExampleExample;

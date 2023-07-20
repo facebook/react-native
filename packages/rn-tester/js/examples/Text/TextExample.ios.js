@@ -639,6 +639,9 @@ exports.examples = [
             }}>
             Verdana bold
           </Text>
+          <Text style={{fontFamily: 'Unknown Font Family'}}>
+            Unknown Font Family
+          </Text>
         </View>
       );
     },

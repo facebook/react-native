@@ -60,7 +60,20 @@ function tryLaunchEmulator() {
   };
 }
 
-function launchAndroidEmulator() {
+function hasConnectedDevice() {
+  const physicalDevices = exec('adb devices | grep -v emulator', {silent: true})
+    .stdout.trim()
+    .split('\n')
+    .slice(1);
+  return physicalDevices.length > 0;
+}
+
+function maybeLaunchAndroidEmulator() {
+  if (hasConnectedDevice) {
+    console.info('Already have a device connected. Skip launching emulator.');
+    return;
+  }
+
   const result = tryLaunchEmulator();
   if (result.success) {
     console.info('Successfully launched emulator.');
@@ -97,15 +110,13 @@ function isPackagerRunning(
 }
 
 // this is a very limited implementation of how this should work
-// literally, this is macos only
-// a more robust implementation can be found here:
-// https://github.com/react-native-community/cli/blob/7c003f2b1d9d80ec5c167614ba533a004272c685/packages/cli-platform-android/src/commands/runAndroid/index.ts#L195
-function launchPackagerInSeparateWindow() {
-  exec("open -a 'Terminal' ./scripts/packager.sh");
+function launchPackagerInSeparateWindow(folderPath) {
+  const command = `tell application "Terminal" to do script "cd ${folderPath} && yarn start"`;
+  exec(`osascript -e '${command}'`);
 }
 
 module.exports = {
-  launchAndroidEmulator,
+  maybeLaunchAndroidEmulator,
   isPackagerRunning,
   launchPackagerInSeparateWindow,
 };

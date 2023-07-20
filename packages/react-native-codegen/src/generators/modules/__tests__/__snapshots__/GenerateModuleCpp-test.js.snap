@@ -47,30 +47,50 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_difficult(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(rt, args[0].asObject(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->difficult(
+    rt,
+    args[0].asObject(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionals(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionals(rt, args[0].asObject(rt));
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionals(
+    rt,
+    args[0].asObject(rt)
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_optionalMethod(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionalMethod(rt, args[0].asObject(rt), args[1].asObject(rt).asFunction(rt), count < 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt).asArray(rt)));
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->optionalMethod(
+    rt,
+    args[0].asObject(rt),
+    args[1].asObject(rt).asFunction(rt),
+    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asObject(rt).asArray(rt))
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArrays(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArrays(rt, args[0].asObject(rt));
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArrays(
+    rt,
+    args[0].asObject(rt)
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableObject(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableObject(
+    rt
+  );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableGenericObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableGenericObject(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableGenericObject(
+    rt
+  );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableArray(rt);
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableArray(
+    rt
+  );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 
@@ -109,17 +129,39 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getMixed(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getMixed(rt, jsi::Value(rt, args[0]));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getMixed(
+    rt,
+    jsi::Value(rt, args[0])
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableNumberFromNullableAlias(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableNumberFromNullableAlias(rt, args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt)));
+  auto result = static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNullableNumberFromNullableAlias(
+    rt,
+    args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+  );
   return result ? jsi::Value(std::move(*result)) : jsi::Value::null();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnums(rt, args[0].asNumber(), args[1].asNumber(), args[2].asString(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnums(
+    rt,
+    args[0].asNumber(),
+    args[1].asNumber(),
+    args[2].asString(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getUnion(rt, args[0].asNumber(), args[1].asNumber(), args[2].asObject(rt), args[3].asString(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getUnion(
+    rt,
+    args[0].asNumber(),
+    args[1].asNumber(),
+    args[2].asObject(rt),
+    args[3].asString(rt)
+  );
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnumReturn(
+    rt
+  );
 }
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
@@ -128,6 +170,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getNullableNumberFromNullableAlias\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNullableNumberFromNullableAlias};
   methodMap_[\\"getEnums\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums};
   methodMap_[\\"getUnion\\"] = MethodMetadata {4, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getUnion};
+  methodMap_[\\"getEnumReturn\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn};
 }
 
 
@@ -184,10 +227,15 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_AliasTurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<AliasTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(rt);
+  return static_cast<AliasTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(
+    rt
+  );
 }
 static jsi::Value __hostFunction_AliasTurboModuleCxxSpecJSI_cropImage(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<AliasTurboModuleCxxSpecJSI *>(&turboModule)->cropImage(rt, args[0].asObject(rt));
+  static_cast<AliasTurboModuleCxxSpecJSI *>(&turboModule)->cropImage(
+    rt,
+    args[0].asObject(rt)
+  );
   return jsi::Value::undefined();
 }
 
@@ -221,16 +269,28 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_NativeCameraRollManagerCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->getConstants(rt);
+  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->getConstants(
+    rt
+  );
 }
 static jsi::Value __hostFunction_NativeCameraRollManagerCxxSpecJSI_getPhotos(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->getPhotos(rt, args[0].asObject(rt));
+  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->getPhotos(
+    rt,
+    args[0].asObject(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeCameraRollManagerCxxSpecJSI_saveToCameraRoll(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->saveToCameraRoll(rt, args[0].asString(rt), args[1].asString(rt));
+  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->saveToCameraRoll(
+    rt,
+    args[0].asString(rt),
+    args[1].asString(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeCameraRollManagerCxxSpecJSI_deletePhotos(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->deletePhotos(rt, args[0].asObject(rt).asArray(rt));
+  return static_cast<NativeCameraRollManagerCxxSpecJSI *>(&turboModule)->deletePhotos(
+    rt,
+    args[0].asObject(rt).asArray(rt)
+  );
 }
 
 NativeCameraRollManagerCxxSpecJSI::NativeCameraRollManagerCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
@@ -241,23 +301,43 @@ NativeCameraRollManagerCxxSpecJSI::NativeCameraRollManagerCxxSpecJSI(std::shared
   methodMap_[\\"deletePhotos\\"] = MethodMetadata {1, __hostFunction_NativeCameraRollManagerCxxSpecJSI_deletePhotos};
 }
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_reportFatalException(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportFatalException(rt, args[0].asString(rt), args[1].asObject(rt).asArray(rt), args[2].asNumber());
+  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportFatalException(
+    rt,
+    args[0].asString(rt),
+    args[1].asObject(rt).asArray(rt),
+    args[2].asNumber()
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_reportSoftException(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportSoftException(rt, args[0].asString(rt), args[1].asObject(rt).asArray(rt), args[2].asNumber());
+  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportSoftException(
+    rt,
+    args[0].asString(rt),
+    args[1].asObject(rt).asArray(rt),
+    args[2].asNumber()
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_reportException(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportException(rt, args[0].asObject(rt));
+  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->reportException(
+    rt,
+    args[0].asObject(rt)
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_updateExceptionMessage(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->updateExceptionMessage(rt, args[0].asString(rt), args[1].asObject(rt).asArray(rt), args[2].asNumber());
+  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->updateExceptionMessage(
+    rt,
+    args[0].asString(rt),
+    args[1].asObject(rt).asArray(rt),
+    args[2].asNumber()
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeExceptionsManagerCxxSpecJSI_dismissRedbox(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->dismissRedbox(rt);
+  static_cast<NativeExceptionsManagerCxxSpecJSI *>(&turboModule)->dismissRedbox(
+    rt
+  );
   return jsi::Value::undefined();
 }
 
@@ -294,45 +374,91 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(rt);
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getConstants(
+    rt
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(
+    rt
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getBool(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getBool(rt, args[0].asBool());
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getBool(
+    rt,
+    args[0].asBool()
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getNumber(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNumber(rt, args[0].asNumber());
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getNumber(
+    rt,
+    args[0].asNumber()
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getString(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getString(rt, args[0].asString(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getString(
+    rt,
+    args[0].asString(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getArray(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArray(rt, args[0].asObject(rt).asArray(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getArray(
+    rt,
+    args[0].asObject(rt).asArray(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getObject(rt, args[0].asObject(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getObject(
+    rt,
+    args[0].asObject(rt)
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getRootTag(rt, args[0].getNumber());
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getRootTag(
+    rt,
+    args[0].getNumber()
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValue(rt, args[0].asNumber(), args[1].asString(rt), args[2].asObject(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValue(
+    rt,
+    args[0].asNumber(),
+    args[1].asString(rt),
+    args[2].asObject(rt)
+  );
+}
+static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnumReturn(
+    rt
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithCallback(rt, args[0].asObject(rt).asFunction(rt));
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithCallback(
+    rt,
+    args[0].asObject(rt).asFunction(rt)
+  );
   return jsi::Value::undefined();
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithPromise(rt, args[0].asBool());
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithPromise(
+    rt,
+    args[0].asBool()
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithOptionalArg(rt, count < 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt)));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getValueWithOptionalArg(
+    rt,
+    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asObject(rt))
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnums(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnums(rt, args[0].asNumber(), args[1].asNumber(), args[2].asString(rt));
+  return static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->getEnums(
+    rt,
+    args[0].asNumber(),
+    args[1].asNumber(),
+    args[2].asString(rt)
+  );
 }
 
 NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
@@ -346,6 +472,7 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"getObject\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getObject};
   methodMap_[\\"getRootTag\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getRootTag};
   methodMap_[\\"getValue\\"] = MethodMetadata {3, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValue};
+  methodMap_[\\"getEnumReturn\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getEnumReturn};
   methodMap_[\\"getValueWithCallback\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithCallback};
   methodMap_[\\"getValueWithPromise\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithPromise};
   methodMap_[\\"getValueWithOptionalArg\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_getValueWithOptionalArg};
@@ -376,7 +503,9 @@ namespace facebook {
 namespace react {
 
 static jsi::Value __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  static_cast<NativeSampleTurboModuleCxxSpecJSI *>(&turboModule)->voidFunc(
+    rt
+  );
   return jsi::Value::undefined();
 }
 
@@ -385,10 +514,14 @@ NativeSampleTurboModuleCxxSpecJSI::NativeSampleTurboModuleCxxSpecJSI(std::shared
   methodMap_[\\"voidFunc\\"] = MethodMetadata {0, __hostFunction_NativeSampleTurboModuleCxxSpecJSI_voidFunc};
 }
 static jsi::Value __hostFunction_NativeSampleTurboModule2CxxSpecJSI_getConstants(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  return static_cast<NativeSampleTurboModule2CxxSpecJSI *>(&turboModule)->getConstants(rt);
+  return static_cast<NativeSampleTurboModule2CxxSpecJSI *>(&turboModule)->getConstants(
+    rt
+  );
 }
 static jsi::Value __hostFunction_NativeSampleTurboModule2CxxSpecJSI_voidFunc(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
-  static_cast<NativeSampleTurboModule2CxxSpecJSI *>(&turboModule)->voidFunc(rt);
+  static_cast<NativeSampleTurboModule2CxxSpecJSI *>(&turboModule)->voidFunc(
+    rt
+  );
   return jsi::Value::undefined();
 }
 

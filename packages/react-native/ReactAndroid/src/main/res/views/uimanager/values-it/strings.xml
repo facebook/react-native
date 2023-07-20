@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: it_IT -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Immagine</string>
+    <string name="imagebutton_description" gender="unknown">Pulsante, Immagine</string>
+    <string name="header_description" gender="unknown">Titolo</string>
+    <string name="alert_description" gender="unknown">Avviso</string>
+    <string name="combobox_description" gender="unknown">Casella combinata</string>
+    <string name="menubar_description" gender="unknown">Barra dei menu</string>
+    <string name="menuitem_description" gender="unknown">Elemento del menu</string>
+    <string name="progressbar_description" gender="unknown">Barra di avanzamento</string>
+    <string name="radiogroup_description" gender="unknown">Gruppo radio</string>
+    <string name="scrollbar_description" gender="unknown">Barra di scorrimento</string>
+    <string name="spinbutton_description" gender="unknown">Pulsante girevole</string>
+    <string name="tablist_description" gender="unknown">Lista delle tab</string>
+    <string name="toolbar_description" gender="unknown">Barra degli strumenti</string>
+    <string name="summary_description" gender="unknown">Riepilogo</string>
+    <string name="state_busy_description" gender="unknown">occupato</string>
+    <string name="state_expanded_description" gender="unknown">aperto</string>
+    <string name="state_collapsed_description" gender="unknown">chiuso</string>
+    <string name="state_unselected_description" gender="unknown">non selezionato</string>
+    <string name="state_on_description" gender="unknown">sì</string>
+    <string name="state_off_description" gender="unknown">no</string>
+    <string name="state_mixed_description" gender="unknown">misto</string>
+</resources>

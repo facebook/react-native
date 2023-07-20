@@ -23,7 +23,7 @@ const {
   ItemComponent,
   PlainInput,
   SeparatorComponent,
-  genItemData,
+  genNewerItems,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,
@@ -46,7 +46,7 @@ class MultiColumnExample extends React.PureComponent<
         numColumns: number,
         virtualized: boolean,
       |} = {
-    data: genItemData(1000),
+    data: genNewerItems(1000),
     filterText: '',
     fixedHeight: true,
     logViewable: false,
@@ -73,7 +73,6 @@ class MultiColumnExample extends React.PureComponent<
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<FlatList> - MultiColumn'}
-        noSpacer={true}
         noScroll={true}>
         <View style={styles.searchRow}>
           <View style={styles.row}>

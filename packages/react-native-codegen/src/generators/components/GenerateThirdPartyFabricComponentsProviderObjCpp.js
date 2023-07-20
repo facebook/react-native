@@ -34,7 +34,9 @@ const FileTemplate = ({lookupMap}: {lookupMap: string}) => `
 
 Class<RCTComponentViewProtocol> RCTThirdPartyFabricComponentsProvider(const char *name) {
   static std::unordered_map<std::string, Class (*)(void)> sFabricComponentsClassMap = {
+    #ifndef RCT_DYNAMIC_FRAMEWORKS
 ${lookupMap}
+    #endif
   };
 
   auto p = sFabricComponentsClassMap.find(name);

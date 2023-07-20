@@ -251,6 +251,9 @@ class TextExample extends React.Component<{...}> {
           <Text style={{fontFamily: 'monospace', fontWeight: 'bold'}}>
             Monospace Bold (After 5.0)
           </Text>
+          <Text style={{fontFamily: 'Unknown Font Family'}}>
+            Unknown Font Family
+          </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Android Material Design fonts">
           <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
@@ -670,6 +673,10 @@ class TextExample extends React.Component<{...}> {
         </RNTesterBlock>
         <RNTesterBlock title="numberOfLines attribute">
           <Text numberOfLines={1}>
+            Maximum of one line no matter now much I write here. If I keep
+            writing it{"'"}ll just truncate after one line
+          </Text>
+          <Text style={{fontSize: 31}} numberOfLines={1}>
             Maximum of one line no matter now much I write here. If I keep
             writing it{"'"}ll just truncate after one line
           </Text>

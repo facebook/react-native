@@ -75,9 +75,9 @@ waitForWebSocketServer() {
 
 runTests() {
   # shellcheck disable=SC1091
-  source "./scripts/.tests.env"
+  source "$ROOT/scripts/.tests.env"
   xcodebuild build test \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
@@ -86,12 +86,12 @@ runTests() {
 
 buildProject() {
   xcodebuild build \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator
 }
 
-xcprettyFormat() {
+xcbeautifyFormat() {
   if [ "$CI" ]; then
     # Circle CI expects JUnit reports to be available here
     REPORTS_DIR="$HOME/react-native/reports/junit"
@@ -102,19 +102,23 @@ xcprettyFormat() {
     REPORTS_DIR="$THIS_DIR/../build/reports"
   fi
 
-  xcpretty --report junit --output "$REPORTS_DIR/ios/results.xml"
+  xcbeautify --report junit --report-path "$REPORTS_DIR/ios/results.xml"
 }
 
-preloadBundles() {
-  # Preload the RNTesterApp bundle for better performance in integration tests
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+preloadBundlesRNIntegrationTests() {
+  # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
+preloadBundlesRNTester() {
+  # Preload RNTesterApp bundles (packages/rn-tester/)
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+}
+
 main() {
-  cd "$ROOT" || exit
+  cd "$ROOT/packages/rn-tester" || exit
 
   # If first argument is "test", actually start the packager and run tests.
   # Otherwise, just build RNTester and exit
@@ -128,19 +132,20 @@ main() {
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
     waitForPackager
-    preloadBundles
+    preloadBundlesRNTester
+    preloadBundlesRNIntegrationTests
 
     # Build and run tests.
-    if [ -x "$(command -v xcpretty)" ]; then
-      runTests | xcprettyFormat && exit "${PIPESTATUS[0]}"
+    if [ -x "$(command -v xcbeautify)" ]; then
+      runTests | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
     else
-      echo 'Warning: xcpretty is not installed. Install xcpretty to generate JUnit reports.'
+      echo 'Warning: xcbeautify is not installed. Install xcbeautify to generate JUnit reports.'
       runTests
     fi
   else
     # Build without running tests.
-    if [ -x "$(command -v xcpretty)" ]; then
-      buildProject | xcprettyFormat && exit "${PIPESTATUS[0]}"
+    if [ -x "$(command -v xcbeautify)" ]; then
+      buildProject | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
     else
       buildProject
     fi

@@ -13,21 +13,27 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/AppSpecs/ComponentDescriptors.h>
+#include <react/renderer/components/legacyviewmanagerinterop/UnstableLegacyViewManagerInteropComponentDescriptor.h>
 #include <rncore.h>
 
 namespace facebook {
 namespace react {
 
+extern const char RNTMyNativeViewName[] = "RNTMyLegacyNativeView";
+
 void registerComponents(
     std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
   registry->add(concreteComponentDescriptorProvider<
                 RNTMyNativeViewComponentDescriptor>());
+  registry->add(concreteComponentDescriptorProvider<
+                UnstableLegacyViewManagerInteropComponentDescriptor<
+                    RNTMyNativeViewName>>());
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
     const std::string &name,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
-  if (name == "NativeCxxModuleExampleCxx") {
+  if (name == NativeCxxModuleExample::kModuleName) {
     return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   }
   return nullptr;

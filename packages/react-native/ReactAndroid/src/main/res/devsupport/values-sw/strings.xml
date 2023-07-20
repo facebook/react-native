@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: sw_KE -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">Linaendeshwa %1$s</string>
+</resources>

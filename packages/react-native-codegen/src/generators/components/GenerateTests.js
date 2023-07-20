@@ -12,7 +12,9 @@
 import type {ComponentShape, PropTypeAnnotation} from '../../CodegenSchema';
 import type {SchemaType} from '../../CodegenSchema';
 
-const {getImports, toSafeCppString} = require('./CppHelpers');
+const {getImports} = require('./CppHelpers');
+
+const {toSafeCppString} = require('../Utils');
 
 type FilesOutput = Map<string, string>;
 type PropValueType = string | number | boolean;

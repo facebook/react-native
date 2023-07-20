@@ -18,8 +18,62 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMemberType,
   NativeModuleEnumMembers,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
+  PropTypeAnnotation,
+  ExtendsPropsShape,
 } from '../CodegenSchema';
 import type {ParserType} from './errors';
+import type {
+  ParserErrorCapturer,
+  TypeDeclarationMap,
+  PropAST,
+  ASTNode,
+  TypeResolutionStatus,
+} from './utils';
+
+export type GetTypeAnnotationFN = (
+  name: string,
+  annotation: $FlowFixMe | ASTNode,
+  defaultValue: $FlowFixMe | void,
+  withNullDefault: boolean,
+  types: TypeDeclarationMap,
+  parser: Parser,
+  buildSchema: (
+    property: PropAST,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ) => $FlowFixMe,
+) => $FlowFixMe;
+
+export type SchemaInfo = {
+  name: string,
+  optional: boolean,
+  typeAnnotation: $FlowFixMe,
+  defaultValue: $FlowFixMe,
+  withNullDefault: boolean,
+};
+
+export type GetSchemaInfoFN = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+) => ?SchemaInfo;
+
+export type BuildSchemaFN<T> = (
+  property: PropAST,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => ?NamedShape<T>;
+
+export type ResolveTypeAnnotationFN = (
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) => {
+  nullable: boolean,
+  typeAnnotation: $FlowFixMe,
+  typeResolutionStatus: TypeResolutionStatus,
+};
 
 /**
  * This is the main interface for Parsers of various languages.
@@ -30,6 +84,31 @@ export interface Parser {
    * This is the TypeParameterInstantiation value
    */
   typeParameterInstantiation: string;
+
+  /**
+   * TypeAlias property of the Parser
+   */
+  typeAlias: string;
+
+  /**
+   * enumDeclaration Property of the Parser
+   */
+  enumDeclaration: string;
+
+  /**
+   * InterfaceDeclaration property of the Parser
+   */
+  interfaceDeclaration: string;
+
+  /**
+   * This is the NullLiteralTypeAnnotation value
+   */
+  nullLiteralTypeAnnotation: string;
+
+  /**
+   * UndefinedLiteralTypeAnnotation property of the Parser
+   */
+  undefinedLiteralTypeAnnotation: string;
 
   /**
    * Given a declaration, it returns true if it is a property
@@ -152,4 +231,187 @@ export interface Parser {
    * Calculates enum's members
    */
   parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers;
+
+  /**
+   * Given a node, it returns true if it is a module interface
+   */
+  isModuleInterface(node: $FlowFixMe): boolean;
+
+  /**
+   * Given a type name, it returns true if it is a generic type annotation
+   */
+  isGenericTypeAnnotation(type: $FlowFixMe): boolean;
+
+  /**
+   * Given a typeAnnotation, it returns the annotated element.
+   * @parameter typeAnnotation: the annotation for a type.
+   * @parameter types: a map of type declarations.
+   * @returns: the annotated element.
+   */
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe;
+
+  /**
+   * Given the AST, returns the TypeDeclarationMap
+   */
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap;
+
+  /**
+   * Given a callExpression, it returns the typeParameters of the callExpression.
+   * @parameter callExpression: the callExpression.
+   * @returns: the typeParameters of the callExpression or null if it does not exist.
+   */
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null;
+
+  /**
+   * Given an array of properties from a Partial type, it returns an array of remaped properties.
+   * @parameter properties: properties from a Partial types.
+   * @parameter hasteModuleName: a string with the native module name.
+   * @parameter types: a map of type declarations.
+   * @parameter aliasMap: a map of type aliases.
+   * @parameter enumMap: a map of type enums.
+   * @parameter tryParse: a parser error capturer.
+   * @parameter cxxOnly: a boolean specifying if the module is Cxx only.
+   * @returns: an array of remaped properties
+   */
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe>;
+
+  /**
+   * Given a propertyValueType, it returns a boolean specifying if the property is a function type annotation.
+   * @parameter propertyValueType: the propertyValueType.
+   * @returns: a boolean specifying if the property is a function type annotation.
+   */
+  functionTypeAnnotation(propertyValueType: string): boolean;
+
+  /**
+   * Given a declaration, it returns the typeArgumentParams of the declaration.
+   * @parameter declaration: the declaration.
+   * @returns: the typeArgumentParams of the declaration.
+   */
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeArgumentParams and funcArgumentParams it returns a native component type.
+   * @parameter typeArgumentParams: the typeArgumentParams.
+   * @parameter funcArgumentParams: the funcArgumentParams.
+   * @returns: a native component type.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string};
+
+  /**
+   * Given a annotatedElement, it returns the properties of annotated element.
+   * @parameter annotatedElement: the annotated element.
+   * @returns: the properties of annotated element.
+   */
+  getAnnotatedElementProperties(annotatedElement: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns an array of properties.
+   * @parameter typeAlias: the type alias.
+   * @returns: an array of properties.
+   */
+  bodyProperties(typeAlias: $FlowFixMe): $ReadOnlyArray<$FlowFixMe>;
+
+  /**
+   * Given a keyword convert it to TypeAnnotation.
+   * @parameter keyword
+   * @returns: converted TypeAnnotation to Keywords
+   */
+  convertKeywordToTypeAnnotation(keyword: string): string;
+
+  /**
+   * Given a prop return its arguments.
+   * @parameter prop
+   * @returns: Arguments of the prop
+   */
+  argumentForProp(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a prop return its name.
+   * @parameter prop
+   * @returns: name property
+   */
+  nameForArgument(prop: PropAST): $FlowFixMe;
+
+  /**
+   * Given a property return if it is optional.
+   * @parameter property
+   * @returns: a boolean specifying if the Property is optional
+   */
+  isOptionalProperty(property: $FlowFixMe): boolean;
+
+  getGetTypeAnnotationFN(): GetTypeAnnotationFN;
+
+  getGetSchemaInfoFN(): GetSchemaInfoFN;
+
+  /**
+   * Given a property return the type annotation.
+   * @parameter property
+   * @returns: the annotation for a type in the AST.
+   */
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe;
+
+  getResolvedTypeAnnotation(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+    parser: Parser,
+  ): {
+    nullable: boolean,
+    typeAnnotation: $FlowFixMe,
+    typeResolutionStatus: TypeResolutionStatus,
+  };
+
+  getResolveTypeAnnotationFN(): ResolveTypeAnnotationFN;
+
+  getProps(
+    typeDefinition: $ReadOnlyArray<PropAST>,
+    types: TypeDeclarationMap,
+  ): {
+    props: $ReadOnlyArray<NamedShape<PropTypeAnnotation>>,
+    extendsProps: $ReadOnlyArray<ExtendsPropsShape>,
+  };
+
+  getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns the next node.
+   */
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given an enum Declaration, it returns the next node.
+   */
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a unsupported typeAnnotation, returns an error message.
+   */
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a type annotation, it extracts the type.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the extracted type.
+   */
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a typeAnnotation return the properties of an object.
+   * @parameter property
+   * @returns: the properties of an object represented by a type annotation.
+   */
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }

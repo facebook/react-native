@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: my_MM -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">Native Dev မီနူး (%1$s) ကို တုံ့ပြန်ရန်</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">%1$s ကို ပြသနေပါတယ်</string>
+</resources>
