@@ -173,23 +173,27 @@ interface MatrixTransform {
   matrix: AnimatableNumericValue[];
 }
 
+type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
+  ? {[P in K]: T[K]} & {[P in Exclude<keyof T, K>]?: never}
+  : never;
+
 export interface TransformsStyle {
   transform?:
-    | (
-        | PerpectiveTransform
-        | RotateTransform
-        | RotateXTransform
-        | RotateYTransform
-        | RotateZTransform
-        | ScaleTransform
-        | ScaleXTransform
-        | ScaleYTransform
-        | TranslateXTransform
-        | TranslateYTransform
-        | SkewXTransform
-        | SkewYTransform
-        | MatrixTransform
-      )[]
+    | MaximumOneOf<
+        PerpectiveTransform &
+          RotateTransform &
+          RotateXTransform &
+          RotateYTransform &
+          RotateZTransform &
+          ScaleTransform &
+          ScaleXTransform &
+          ScaleYTransform &
+          TranslateXTransform &
+          TranslateYTransform &
+          SkewXTransform &
+          SkewYTransform &
+          MatrixTransform
+      >[]
     | string
     | undefined;
   /**

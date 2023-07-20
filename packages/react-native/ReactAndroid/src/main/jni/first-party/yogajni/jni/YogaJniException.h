@@ -9,9 +9,7 @@
 #include <string>
 #include "common.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 /**
  * This class wraps a Java exception (jthrowable) into a C++ exception; A global
  * reference to Java exception (jthrowable) is made so that the exception object
@@ -33,6 +31,5 @@ public:
 private:
   ScopedGlobalRef<jthrowable> throwable_;
 };
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::vanillajni

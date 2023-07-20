@@ -65,6 +65,15 @@ RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
 RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
 
+typedef enum {
+  kRCTBridgeProxyLoggingLevelNone,
+  kRCTBridgeProxyLoggingLevelWarning,
+  kRCTBridgeProxyLoggingLevelError,
+} RCTBridgeProxyLoggingLevel;
+
+RCT_EXTERN RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+RCT_EXTERN void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
+
 // Route all TurboModules through TurboModule interop
 RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);

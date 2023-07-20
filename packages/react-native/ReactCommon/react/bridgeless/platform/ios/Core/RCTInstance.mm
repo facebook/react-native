@@ -225,17 +225,22 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
   RCTBridgeProxy *bridgeProxy = RCTTurboModuleInteropEnabled() && RCTTurboModuleInteropBridgeProxyEnabled()
-      ? [[RCTBridgeProxy alloc]
-            initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
-                  moduleRegistry:_bridgeModuleDecorator.moduleRegistry
-                   bundleManager:_bridgeModuleDecorator.bundleManager
-               callableJSModules:_bridgeModuleDecorator.callableJSModules
-              dispatchToJSThread:^(dispatch_block_t block) {
-                __strong __typeof(self) strongSelf = weakSelf;
-                if (strongSelf && strongSelf->_valid) {
-                  strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
-                }
-              }]
+      ? [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
+            moduleRegistry:_bridgeModuleDecorator.moduleRegistry
+            bundleManager:_bridgeModuleDecorator.bundleManager
+            callableJSModules:_bridgeModuleDecorator.callableJSModules
+            dispatchToJSThread:^(dispatch_block_t block) {
+              __strong __typeof(self) strongSelf = weakSelf;
+              if (strongSelf && strongSelf->_valid) {
+                strongSelf->_reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) { block(); });
+              }
+            }
+            registerSegmentWithId:^(NSNumber *segmentId, NSString *path) {
+              __strong __typeof(self) strongSelf = weakSelf;
+              if (strongSelf && strongSelf->_valid) {
+                [strongSelf registerSegmentWithId:segmentId path:path];
+              }
+            }]
       : nil;
 
   // Set up TurboModules

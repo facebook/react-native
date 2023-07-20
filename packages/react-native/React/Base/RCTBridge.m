@@ -141,6 +141,17 @@ void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled)
   turboModuleInteropBridgeProxyEnabled = enabled;
 }
 
+static RCTBridgeProxyLoggingLevel bridgeProxyLoggingLevel = kRCTBridgeProxyLoggingLevelNone;
+RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void)
+{
+  return bridgeProxyLoggingLevel;
+}
+
+void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel)
+{
+  bridgeProxyLoggingLevel = logLevel;
+}
+
 static BOOL useTurboModuleInteropForAllTurboModules = NO;
 BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
 {

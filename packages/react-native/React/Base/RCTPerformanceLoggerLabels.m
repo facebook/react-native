@@ -49,6 +49,8 @@ NSString *RCTPLLabelForTag(RCTPLTag tag)
       return @"BundleSize";
     case RCTPLReactInstanceInit:
       return @"ReactInstanceInit";
+    case RCTPLAppStartup:
+      return @"AppStartup";
     case RCTPLSize: // Only used to count enum size
       RCTAssert(NO, @"RCTPLSize should not be used to track performance timestamps.");
       return nil;

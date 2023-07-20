@@ -54,6 +54,16 @@ import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
+import {
+  horizontalOrDefault,
+  initialNumToRenderOrDefault,
+  maxToRenderPerBatchOrDefault,
+  onStartReachedThresholdOrDefault,
+  onEndReachedThresholdOrDefault,
+  scrollEventThrottleOrDefault,
+  windowSizeOrDefault,
+} from './VirtualizedListProps';
+
 export type {RenderItemProps, RenderItemType, Separators};
 
 const ON_EDGE_REACHED_EPSILON = 0.001;
@@ -80,51 +90,6 @@ type State = {
   pendingScrollUpdateCount: number,
 };
 
-/**
- * Default Props Helper Functions
- * Use the following helper functions for default values
- */
-
-// horizontalOrDefault(this.props.horizontal)
-function horizontalOrDefault(horizontal: ?boolean) {
-  return horizontal ?? false;
-}
-
-// initialNumToRenderOrDefault(this.props.initialNumToRender)
-function initialNumToRenderOrDefault(initialNumToRender: ?number) {
-  return initialNumToRender ?? 10;
-}
-
-// maxToRenderPerBatchOrDefault(this.props.maxToRenderPerBatch)
-function maxToRenderPerBatchOrDefault(maxToRenderPerBatch: ?number) {
-  return maxToRenderPerBatch ?? 10;
-}
-
-// onStartReachedThresholdOrDefault(this.props.onStartReachedThreshold)
-function onStartReachedThresholdOrDefault(onStartReachedThreshold: ?number) {
-  return onStartReachedThreshold ?? 2;
-}
-
-// onEndReachedThresholdOrDefault(this.props.onEndReachedThreshold)
-function onEndReachedThresholdOrDefault(onEndReachedThreshold: ?number) {
-  return onEndReachedThreshold ?? 2;
-}
-
-// getScrollingThreshold(visibleLength, onEndReachedThreshold)
-function getScrollingThreshold(threshold: number, visibleLength: number) {
-  return (threshold * visibleLength) / 2;
-}
-
-// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
-function scrollEventThrottleOrDefault(scrollEventThrottle: ?number) {
-  return scrollEventThrottle ?? 50;
-}
-
-// windowSizeOrDefault(this.props.windowSize)
-function windowSizeOrDefault(windowSize: ?number) {
-  return windowSize ?? 21;
-}
-
 function findLastWhere<T>(
   arr: $ReadOnlyArray<T>,
   predicate: (element: T) => boolean,
@@ -136,6 +101,10 @@ function findLastWhere<T>(
   }
 
   return null;
+}
+
+function getScrollingThreshold(threshold: number, visibleLength: number) {
+  return (threshold * visibleLength) / 2;
 }
 
 /**

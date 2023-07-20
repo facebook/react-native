@@ -2,6 +2,14 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.72.3
+
+### Fixed
+
+#### iOS specific
+
+- Revert "Fix pod install for swift libs using new arch (#38121)" to fix [build error with Xcode lower than Xcode 14.3](https://github.com/facebook/react-native/issues/38294) ([8f41f25](https://github.com/facebook/react-native/commit/8f41f25c214f995073e90b786c805eb45ff7dee5) by [@kelset](https://github.com/kelset))
+
 ## v0.72.2
 
 ### Changed

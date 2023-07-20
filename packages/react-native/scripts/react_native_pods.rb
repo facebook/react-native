@@ -356,7 +356,7 @@ def use_react_native_codegen!(spec, options={})
   }
 end
 
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
+# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon machines.
 # Call this in the app's main Podfile's post_install hook.
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.

@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -33,6 +33,7 @@ add_compile_options(
     -fexceptions
     # Enable warnings and warnings as errors
     -Wall
+    -Wextra
     -Werror
     # Disable RTTI
     $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>

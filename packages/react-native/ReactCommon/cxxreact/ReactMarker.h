@@ -15,6 +15,8 @@ namespace facebook::react {
 namespace ReactMarker {
 
 enum ReactMarkerId {
+  APP_STARTUP_START,
+  APP_STARTUP_STOP,
   NATIVE_REQUIRE_START,
   NATIVE_REQUIRE_STOP,
   RUN_JS_BUNDLE_START,
@@ -35,12 +37,10 @@ using LogTaggedMarker =
     std::function<void(const ReactMarkerId, const char *tag)>; // Bridge only
 using LogTaggedMarkerBridgeless =
     std::function<void(const ReactMarkerId, const char *tag)>;
-using GetAppStartTime = std::function<double()>;
 #else
 typedef void (
     *LogTaggedMarker)(const ReactMarkerId, const char *tag); // Bridge only
 typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char *tag);
-typedef double (*GetAppStartTime)();
 #endif
 
 #ifndef RN_EXPORT
@@ -49,7 +49,6 @@ typedef double (*GetAppStartTime)();
 
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl; // Bridge only
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
-extern RN_EXPORT GetAppStartTime getAppStartTimeImpl;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only
 extern RN_EXPORT void logTaggedMarker(
@@ -59,7 +58,6 @@ extern RN_EXPORT void logMarkerBridgeless(const ReactMarkerId markerId);
 extern RN_EXPORT void logTaggedMarkerBridgeless(
     const ReactMarkerId markerId,
     const char *tag);
-extern RN_EXPORT double getAppStartTime();
 
 struct ReactMarkerEvent {
   const ReactMarkerId markerId;
@@ -71,19 +69,29 @@ class StartupLogger {
  public:
   static StartupLogger &getInstance();
 
-  void logStartupEvent(const ReactMarker::ReactMarkerId markerId);
-  double getAppStartTime();
+  void logStartupEvent(const ReactMarkerId markerName, double markerTime);
+  double getAppStartupStartTime();
   double getRunJSBundleStartTime();
   double getRunJSBundleEndTime();
+  double getAppStartupEndTime();
 
  private:
   StartupLogger() = default;
   StartupLogger(const StartupLogger &) = delete;
   StartupLogger &operator=(const StartupLogger &) = delete;
 
+  double appStartupStartTime;
+  double appStartupEndTime;
   double runJSBundleStartTime;
   double runJSBundleEndTime;
 };
+
+// When the marker got logged from the platform, it will notify here. This is
+// used to collect react markers that are logged in the platform instead of in
+// C++.
+extern RN_EXPORT void logMarkerDone(
+    const ReactMarkerId markerId,
+    double markerTime);
 
 } // namespace ReactMarker
 } // namespace facebook::react
