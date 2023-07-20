@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_graphics"
-    s.header_mappings_dir  = "../../.."
+    s.header_mappings_dir  =  File.absolute_path("../../..")
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
 

@@ -22,8 +22,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.fabric.SurfaceHandler;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
+import com.facebook.react.fabric.interfaces.SurfaceHandler;
 import com.facebook.react.interfaces.ReactSurfaceInterface;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -138,7 +138,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface prerender() {
+  public TaskInterface<Void> prerender() {
     ReactHost host = mReactHost.get();
     if (host == null) {
       return Task.forError(
@@ -149,7 +149,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface start() {
+  public TaskInterface<Void> start() {
     if (mSurfaceView.get() == null) {
       return Task.forError(
           new IllegalStateException(
@@ -166,7 +166,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @Override
-  public TaskInterface stop() {
+  public TaskInterface<Void> stop() {
     ReactHost host = mReactHost.get();
     if (host == null) {
       return Task.forError(

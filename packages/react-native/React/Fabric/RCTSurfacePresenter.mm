@@ -272,10 +272,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
-    CoreFeatures::disableTransactionCommit = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }

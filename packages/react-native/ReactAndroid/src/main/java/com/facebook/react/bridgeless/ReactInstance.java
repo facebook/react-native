@@ -19,11 +19,14 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.BridgelessReactPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSBundleLoaderDelegate;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
+import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.bridge.RuntimeScheduler;
@@ -33,7 +36,7 @@ import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.Binding;
 import com.facebook.react.fabric.BindingImpl;
@@ -41,6 +44,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -52,6 +56,9 @@ import com.facebook.react.uimanager.ComponentNameResolver;
 import com.facebook.react.uimanager.ComponentNameResolverManager;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
+import com.facebook.react.uimanager.UIConstantsProvider;
+import com.facebook.react.uimanager.UIConstantsProviderManager;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.ViewManagerResolver;
@@ -60,8 +67,10 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -87,6 +96,7 @@ final class ReactInstance {
   private final JavaTimerManager mJavaTimerManager;
 
   @DoNotStrip @Nullable private ComponentNameResolverManager mComponentNameResolverManager;
+  @DoNotStrip @Nullable private UIConstantsProviderManager mUIConstantsProviderManager;
 
   static {
     loadLibraryIfNeeded();
@@ -219,6 +229,27 @@ final class ReactInstance {
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
+    // Initialize function for JS's UIManager.getViewManagerConfig()
+    // It should come after getTurboModuleManagerDelegate as it relies on react packages being
+    // initialized.
+    // This happens inside getTurboModuleManagerDelegate getter.
+    if (ReactFeatureFlags.useNativeViewConfigsInBridgelessMode) {
+      mUIConstantsProviderManager =
+          new UIConstantsProviderManager(
+              // Use unbuffered RuntimeExecutor to install binding
+              unbufferedRuntimeExecutor,
+              // Here we are construncting the return value for UIManager.getConstants call.
+              // The old architectre relied on the constatnts struct to contain:
+              // 1. Eagerly loaded view configs for all native components.
+              // 2. genericBubblingEventTypes.
+              // 3. genericDirectEventTypes.
+              // We want to match this beahavior.
+              (UIConstantsProvider)
+                  () -> {
+                    return getUIManagerConstants();
+                  });
+    }
 
     // Set up Fabric
     Systrace.beginSection(
@@ -388,6 +419,7 @@ final class ReactInstance {
     mFabricUIManager.onCatalystInstanceDestroy();
     mHybridData.resetNative();
     mComponentNameResolverManager = null;
+    mUIConstantsProviderManager = null;
   }
 
   /* --- Native methods --- */
@@ -436,7 +468,7 @@ final class ReactInstance {
     } catch (NullPointerException e) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
-          new IllegalViewOperationException(
+          new ReactNoCrashSoftException(
               "Native method handleMemoryPressureJs is called earlier than librninstance.so got ready."));
     }
   }
@@ -499,5 +531,15 @@ final class ReactInstance {
       }
     }
     return uniqueNames;
+  }
+
+  private @NonNull NativeMap getUIManagerConstants() {
+    List<ViewManager> viewManagers = new ArrayList<ViewManager>();
+    for (String viewManagerName : getViewManagerNames()) {
+      viewManagers.add(createViewManager(viewManagerName));
+    }
+    Map<String, Object> constants =
+        UIManagerModule.createConstants(viewManagers, new HashMap<>(), new HashMap<>());
+    return Arguments.makeNativeMap(constants);
   }
 }

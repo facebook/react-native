@@ -14,6 +14,7 @@ import androidx.annotation.IntDef;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.fabric.interfaces.SurfaceHandler;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

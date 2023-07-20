@@ -15,13 +15,13 @@ interface ReactSurfaceInterface {
   // ReactRootView, etc.
 
   // Prerender this surface
-  fun prerender(): TaskInterface
+  fun prerender(): TaskInterface<Void>
 
   // Start running this surface
-  fun start(): TaskInterface
+  fun start(): TaskInterface<Void>
 
   // Stop running this surface
-  fun stop(): TaskInterface
+  fun stop(): TaskInterface<Void>
 
   // Get React root view of this surface
   fun getView(): ViewGroup?

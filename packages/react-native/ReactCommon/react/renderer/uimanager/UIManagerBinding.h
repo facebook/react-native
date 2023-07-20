@@ -52,7 +52,7 @@ class UIManagerBinding : public jsi::HostObject {
       EventTarget const *eventTarget,
       std::string const &type,
       ReactEventPriority priority,
-      ValueFactory const &payloadFactory) const;
+      const EventPayload &payload) const;
 
   /*
    * Invalidates the binding and underlying UIManager.

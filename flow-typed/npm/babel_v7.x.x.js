@@ -10,8 +10,6 @@
 
 'use strict';
 
-declare type BabelNode_DEPRECATED = any;
-
 type _BabelSourceMap = $ReadOnly<{
   file?: string,
   mappings: string,
@@ -833,7 +831,7 @@ declare module '@babel/core' {
      */
     wrapPluginVisitorMethod?: (
       key: string,
-      nodeType: $PropertyType<BabelNode, 'type'>,
+      nodeType: BabelNode['type'],
       fn: Function,
     ) => Function,
 

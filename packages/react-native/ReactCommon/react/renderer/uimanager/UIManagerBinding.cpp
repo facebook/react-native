@@ -93,10 +93,10 @@ void UIManagerBinding::dispatchEvent(
     EventTarget const *eventTarget,
     std::string const &type,
     ReactEventPriority priority,
-    ValueFactory const &payloadFactory) const {
+    const EventPayload &eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
-  auto payload = payloadFactory(runtime);
+  auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
   if (payload.isNull()) {

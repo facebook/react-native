@@ -12,9 +12,7 @@
 #include <type_traits>
 #include "corefunctions.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 /**
  * ScopedGlobalRef is a sort of smart reference that allows us to control the
@@ -132,6 +130,4 @@ ScopedGlobalRef<T> make_global_ref(T globalRef) {
   return ScopedGlobalRef<T>(globalRef);
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

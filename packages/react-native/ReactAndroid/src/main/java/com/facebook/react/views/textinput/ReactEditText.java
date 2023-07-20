@@ -632,10 +632,13 @@ public class ReactEditText extends AppCompatEditText
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
     } else {
-      // When we update text, we trigger onChangeText code that will
-      // try to update state if the wrapper is available. Temporarily disable
-      // to prevent an infinite loop.
+      boolean shouldRestoreComposingSpans = length() == spannableStringBuilder.length();
+
       getText().replace(0, length(), spannableStringBuilder);
+
+      if (shouldRestoreComposingSpans) {
+        restoreComposingSpansToTextFrom(spannableStringBuilder);
+      }
     }
     mDisableTextDiffing = false;
 
@@ -650,10 +653,13 @@ public class ReactEditText extends AppCompatEditText
   }
 
   /**
-   * Remove and/or add {@link Spanned.SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
-   * as long as the text they cover is the same. All other spans will remain the same, since they
-   * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
-   * them.
+   * Remove and/or add {@link Spanned#SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
+   * as long as the text they cover is the same unless they are {@link Spanned#SPAN_COMPOSING}. All
+   * other spans will remain the same, since they will adapt to the new text, hence why {@link
+   * SpannableStringBuilder#replace} never removes them. Keep copy of {@link Spanned#SPAN_COMPOSING}
+   * Spans in {@param spannableStringBuilder}, because they are important for keyboard suggestions.
+   * Without keeping these Spans, suggestions default to be put after the current selection
+   * position, possibly resulting in letter duplication.
    */
   private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
@@ -662,6 +668,7 @@ public class ReactEditText extends AppCompatEditText
       int spanFlags = getText().getSpanFlags(span);
       boolean isExclusiveExclusive =
           (spanFlags & Spanned.SPAN_EXCLUSIVE_EXCLUSIVE) == Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+      boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
 
       // Remove all styling spans we might have previously set
       if (span instanceof ReactSpan) {
@@ -675,6 +682,12 @@ public class ReactEditText extends AppCompatEditText
 
       final int spanStart = getText().getSpanStart(span);
       final int spanEnd = getText().getSpanEnd(span);
+
+      // We keep a copy of Composing spans
+      if (isComposing) {
+        spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
+        continue;
+      }
 
       // Make sure the span is removed from existing text, otherwise the spans we set will be
       // ignored or it will cover text that has changed.
@@ -800,6 +813,34 @@ public class ReactEditText extends AppCompatEditText
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
       workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+    }
+  }
+
+  /**
+   * Attaches the {@link Spanned#SPAN_COMPOSING} from {@param spannableStringBuilder} to {@link
+   * ReactEditText#getText}
+   *
+   * <p>See {@link ReactEditText#manageSpans} for more details. Also
+   * https://github.com/facebook/react-native/issues/11068
+   */
+  private void restoreComposingSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
+    Editable text = getText();
+    if (text == null) {
+      return;
+    }
+    Object[] spans = spannableStringBuilder.getSpans(0, length(), Object.class);
+    for (Object span : spans) {
+      int spanFlags = spannableStringBuilder.getSpanFlags(span);
+      boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
+
+      if (!isComposing) {
+        continue;
+      }
+
+      final int spanStart = spannableStringBuilder.getSpanStart(span);
+      final int spanEnd = spannableStringBuilder.getSpanEnd(span);
+
+      text.setSpan(span, spanStart, spanEnd, spanFlags);
     }
   }
 

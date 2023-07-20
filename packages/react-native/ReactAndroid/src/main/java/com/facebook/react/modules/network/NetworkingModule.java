@@ -94,7 +94,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
-  private static @Nullable CustomClientBuilder customClientBuilder = null;
+  private static @Nullable com.facebook.react.modules.network.CustomClientBuilder
+      customClientBuilder = null;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
@@ -163,13 +164,18 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
   }
 
-  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+  public static void setCustomClientBuilder(
+      com.facebook.react.modules.network.CustomClientBuilder ccb) {
     customClientBuilder = ccb;
   }
 
-  public static interface CustomClientBuilder {
-    public void apply(OkHttpClient.Builder builder);
-  }
+  /**
+   * @deprecated To be removed in a future release. See
+   *     https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914
+   */
+  @Deprecated
+  public static interface CustomClientBuilder
+      extends com.facebook.react.modules.network.CustomClientBuilder {}
 
   private static void applyCustomBuilder(OkHttpClient.Builder builder) {
     if (customClientBuilder != null) {

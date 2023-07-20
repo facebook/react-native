@@ -5,13 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridgeless.exceptionmanager;
+package com.facebook.react.uimanager;
 
 import com.facebook.proguard.annotations.DoNotStripAny;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
+import com.facebook.react.bridge.NativeMap;
 
 @DoNotStripAny
-public interface ReactJsExceptionHandler {
+public interface UIConstantsProvider {
 
-  void reportJsException(ReadableMapBuffer errorMap);
+  /* Returns UIManager's constants. */
+  NativeMap getConstants();
 }

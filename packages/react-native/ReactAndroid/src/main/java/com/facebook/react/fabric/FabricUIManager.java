@@ -58,6 +58,7 @@ import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
+import com.facebook.react.fabric.interfaces.SurfaceHandler;
 import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -505,6 +506,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
+    // Surface may have been stopped
+    if (context == null) {
+      return 0;
+    }
+
     for (String resourcePath : resourcePaths) {
       Integer color = ColorPropConverter.resolveResourcePath(context, resourcePath);
       if (color != null) {
@@ -598,16 +604,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @return if theme data is available in the output parameters.
    */
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
-    SurfaceMountingManager surfaceMountingManager =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
-    ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
-
-    if (themedReactContext == null) {
+    Context context =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData").getContext();
+    if (context == null) {
       FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
       return false;
     }
-    float[] defaultTextInputPaddingForTheme =
-        UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
+
+    float[] defaultTextInputPaddingForTheme = UIManagerHelper.getDefaultTextInputPadding(context);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
     defaultTextInputPadding[1] = defaultTextInputPaddingForTheme[PADDING_END_INDEX];
     defaultTextInputPadding[2] = defaultTextInputPaddingForTheme[PADDING_TOP_INDEX];
@@ -869,12 +873,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       return;
     }
 
-    ThemedReactContext reactContext = surfaceMountingManager.getContext();
+    Context context = surfaceMountingManager.getContext();
     boolean isRTL = false;
     boolean doLeftAndRightSwapInRTL = false;
-    if (reactContext != null) {
-      isRTL = I18nUtil.getInstance().isRTL(reactContext);
-      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
+    if (context != null) {
+      isRTL = I18nUtil.getInstance().isRTL(context);
+      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
     }
 
     mBinding.setConstraints(

@@ -105,17 +105,6 @@ public class ReactFeatureFlags {
   public static boolean enableFabricPendingEventQueue = false;
 
   /**
-   * Feature flag that controls how turbo modules are exposed to JS
-   *
-   * <ul>
-   *   <li>0 = as a HostObject
-   *   <li>1 = as a plain object, backed with a HostObject as prototype
-   *   <li>2 = as a plain object, with all methods eagerly configured
-   * </ul>
-   */
-  public static int turboModuleBindingMode = 0;
-
-  /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   public static boolean enableViewRecycling = false;
@@ -162,4 +151,10 @@ public class ReactFeatureFlags {
 
   /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
   public static boolean fixStoppedSurfaceTagSetLeak = true;
+
+  /** Disable the background executor for layout in Fabric */
+  public static boolean enableBackgroundExecutor = false;
+
+  /** Use native view configs in bridgeless mode. */
+  public static boolean useNativeViewConfigsInBridgelessMode = false;
 }

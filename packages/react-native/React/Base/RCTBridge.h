@@ -9,6 +9,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBridgeModuleDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTFrameUpdate.h>
 #import <React/RCTInvalidating.h>
@@ -63,6 +64,15 @@ RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
 // Turn on TurboModule interop's Bridge proxy
 RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
+typedef enum {
+  kRCTBridgeProxyLoggingLevelNone,
+  kRCTBridgeProxyLoggingLevelWarning,
+  kRCTBridgeProxyLoggingLevelError,
+} RCTBridgeProxyLoggingLevel;
+
+RCT_EXTERN RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+RCT_EXTERN void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
 
 // Route all TurboModules through TurboModule interop
 RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
@@ -149,7 +159,7 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  * It allows the bridge to attach properties to ObjC modules that give those modules
  * access to Bridge APIs.
  */
-- (void)attachBridgeAPIsToObjCModule:(id<RCTBridgeModule>)module;
+- (RCTBridgeModuleDecorator *)bridgeModuleDecorator;
 
 /**
  * Convenience method for retrieving all modules conforming to a given protocol.

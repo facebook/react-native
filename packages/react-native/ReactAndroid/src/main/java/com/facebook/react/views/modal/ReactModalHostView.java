@@ -568,11 +568,6 @@ public class ReactModalHostView extends ViewGroup
     }
 
     @Override
-    public void onChildStartedNativeGesture(MotionEvent ev) {
-      this.onChildStartedNativeGesture(null, ev);
-    }
-
-    @Override
     public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, mEventDispatcher);
       if (mJSPointerDispatcher != null) {

@@ -15,9 +15,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 /**
  * ScopedLocalRef is a sort of smart reference that allows us to control the
@@ -132,6 +130,4 @@ ScopedLocalRef<T> make_local_ref(JNIEnv* env, T localRef) {
   return ScopedLocalRef<T>(env, localRef);
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni
