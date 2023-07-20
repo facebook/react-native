@@ -14,7 +14,6 @@ import type {
   LayoutEvent,
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
-import Platform from 'react-native/Libraries/Utilities/Platform';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
@@ -32,6 +31,7 @@ import {
   StyleSheet,
   findNodeHandle,
 } from 'react-native';
+import Platform from 'react-native/Libraries/Utilities/Platform';
 import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
