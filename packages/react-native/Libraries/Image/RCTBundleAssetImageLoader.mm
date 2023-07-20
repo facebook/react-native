@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTLocalAssetImageLoader.h>
+#import <React/RCTBundleAssetImageLoader.h>
 
 #import <atomic>
 #import <memory>
@@ -15,10 +15,10 @@
 
 #import "RCTImagePlugins.h"
 
-@interface RCTLocalAssetImageLoader () <RCTTurboModule>
+@interface RCTBundleAssetImageLoader () <RCTTurboModule>
 @end
 
-@implementation RCTLocalAssetImageLoader
+@implementation RCTBundleAssetImageLoader
 
 RCT_EXPORT_MODULE()
 
@@ -72,12 +72,12 @@ RCT_EXPORT_MODULE()
 
 - (float)loaderPriority
 {
-  return 0;
+  return 1;
 }
 
 @end
 
-Class RCTLocalAssetImageLoaderCls(void)
+Class RCTBundleAssetImageLoaderCls(void)
 {
-  return RCTLocalAssetImageLoader.class;
+  return RCTBundleAssetImageLoader.class;
 }
