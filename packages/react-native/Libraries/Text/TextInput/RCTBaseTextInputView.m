@@ -268,7 +268,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
-      mutableContentTypeMap = [[mutableContentTypeMap mutableCopy] addEntriesFromDictionary:@{
+      NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMapCopy = [mutableContentTypeMap mutableCopy];
+      [mutableContentTypeMapCopy addEntriesFromDictionary:@{
         @"creditCardExpiration" : UITextContentTypeCreditCardExpiration,
         @"creditCardExpirationMonth" : UITextContentTypeCreditCardExpirationMonth,
         @"creditCardExpirationYear" : UITextContentTypeCreditCardExpirationYear,
@@ -283,6 +284,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         @"birthdateMonth" : UITextContentTypeBirthdateMonth,
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
+      mutableContentTypeMap = mutableContentTypeMapCopy;
     }
 #endif
 
