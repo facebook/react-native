@@ -36,9 +36,9 @@
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
-#import "../NativeViewConfig/RCTLegacyUIManagerConstantsProvider.h"
 #import "ObjCTimerRegistry.h"
 #import "RCTJSThreadManager.h"
+#import "RCTLegacyUIManagerConstantsProvider.h"
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
