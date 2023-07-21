@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen-typescript-test",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TypeScript related unit test for @react-native/codegen",
   "license": "MIT",
   "repository": {
