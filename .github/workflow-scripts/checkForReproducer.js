@@ -24,30 +24,35 @@ module.exports = async (github, context) => {
   const issue = await github.rest.issues.get(issueData);
   const comments = await github.rest.issues.listComments(issueData);
 
+  const author = issue.data.user.login;
+
+  const maintainerChangedLabel = await hasMaintainerChangedLabel(
+    github,
+    issueData,
+    author,
+  );
+
+  if (maintainerChangedLabel) {
+    return;
+  }
+
   const botComment = comments.data.find(comment =>
     comment.body.includes(NEEDS_REPRO_HEADER),
   );
 
-  let commentBodies = comments.data.map(comment => comment.body);
-  if (botComment) {
-    commentBodies = commentBodies.filter(body => body !== botComment.body);
-  }
+  const entities = [issue.data, ...comments.data];
 
-  const issueAndComments = [issue.data.body, ...commentBodies];
-  const issueAndCommentsUniq = [...new Set(issueAndComments)];
-
-  const user = issue.data.user.login;
-
-  const hasValidReproducer = issueAndCommentsUniq.some(body => {
+  // Look for Snack or a GH repo associated with the user that added an issue or comment
+  const hasValidReproducer = entities.some(entity => {
     const hasExpoSnackLink = containsPattern(
-      body,
+      entity.body,
       `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`,
     );
-    const hasGithubRepoLink = containsPattern(
-      body,
-      `https?:\\/\\/github\\.com\\/(${user})\\/[^/]+\\/?\\s?`,
-    );
 
+    const hasGithubRepoLink = containsPattern(
+      entity.body,
+      `https?:\\/\\/github\\.com\\/(${entity.user.login})\\/[^/]+\\/?\\s?`,
+    );
     return hasExpoSnackLink || hasGithubRepoLink;
   });
 
@@ -87,4 +92,19 @@ module.exports = async (github, context) => {
 function containsPattern(body, pattern) {
   const regexp = new RegExp(pattern, 'gm');
   return body.search(regexp) !== -1;
+}
+
+// Prevents the bot from responding when maintainer has changed Needs: Repro the label
+async function hasMaintainerChangedLabel(github, issueData, author) {
+  const timeline = await github.rest.issues.listEventsForTimeline(issueData);
+
+  const labeledEvents = timeline.data.filter(
+    event => event.event === 'labeled' || event.event === 'unlabeled',
+  );
+  const userEvents = labeledEvents.filter(event => event.actor.actor !== 'Bot');
+
+  return userEvents.some(
+    event =>
+      event.actor.login !== author && event.label.name === NEEDS_REPRO_LABEL,
+  );
 }
