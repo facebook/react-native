@@ -7,7 +7,6 @@
 
 #import <React/RCTImageURLLoader.h>
 
-__deprecated_msg("Use RCTBundleAssetImageLoader instead") @interface RCTLocalAssetImageLoader
-    : NSObject<RCTImageURLLoader>
+@interface RCTBundleAssetImageLoader : NSObject <RCTImageURLLoader>
 
 @end

@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTImageURLLoader.h>
+#pragma once
 
-__deprecated_msg("Use RCTBundleAssetImageLoader instead") @interface RCTLocalAssetImageLoader
-    : NSObject<RCTImageURLLoader>
+namespace facebook::react {
 
-@end
+enum class EventPayloadType { ValueFactory, PointerEvent };
+
+}

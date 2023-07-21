@@ -10,13 +10,13 @@
 #if RCT_NEW_ARCH_ENABLED
 // Turbo Module
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTNetworking.h>
 
 // Fabric
@@ -83,7 +83,7 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTLocalAssetImageLoader new] ];
+          return @[ [RCTBundleAssetImageLoader new] ];
         }
         decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
           return @[ [RCTGIFImageDecoder new] ];

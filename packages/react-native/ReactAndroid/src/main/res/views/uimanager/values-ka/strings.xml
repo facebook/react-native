@@ -7,6 +7,7 @@
     <string name="image_description" gender="unknown">გამოსახულება</string>
     <string name="imagebutton_description" gender="unknown">ღილაკი, გამოსახულება</string>
     <string name="header_description" gender="unknown">სათაური</string>
+    <string name="alert_description" gender="unknown">გაფრთხილება</string>
     <string name="menu_description" gender="unknown">მენიუ</string>
     <string name="menuitem_description" gender="unknown">მენიუს ერთეული</string>
     <string name="progressbar_description" gender="unknown">პროგრესის ზოლი</string>

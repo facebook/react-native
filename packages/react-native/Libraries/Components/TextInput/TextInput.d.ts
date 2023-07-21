@@ -205,13 +205,6 @@ export interface TextInputIOSProps {
    * Give the keyboard and the system information about the expected
    * semantic meaning for the content that users enter.
    *
-   * For iOS 11+ you can set `textContentType` to `username` or `password` to
-   * enable autofill of login details from the device keychain.
-   *
-   * For iOS 12+ `newPassword` can be used to indicate a new password input the
-   * user may want to save in the keychain, and `oneTimeCode` can be used to indicate
-   * that a field can be autofilled by a code arriving in an SMS.
-   *
    * To disable autofill, set textContentType to `none`.
    *
    * Possible values for `textContentType` are:
@@ -223,6 +216,15 @@ export interface TextInputIOSProps {
    *  - `'addressState'`
    *  - `'countryName'`
    *  - `'creditCardNumber'`
+   *  - `'creditCardExpiration'` (iOS 17+)
+   *  - `'creditCardExpirationMonth'` (iOS 17+)
+   *  - `'creditCardExpirationYear'` (iOS 17+)
+   *  - `'creditCardSecurityCode'` (iOS 17+)
+   *  - `'creditCardType'` (iOS 17+)
+   *  - `'creditCardName'` (iOS 17+)
+   *  - `'creditCardGivenName'` (iOS 17+)
+   *  - `'creditCardMiddleName'` (iOS 17+)
+   *  - `'creditCardFamilyName'` (iOS 17+)
    *  - `'emailAddress'`
    *  - `'familyName'`
    *  - `'fullStreetAddress'`
@@ -244,6 +246,10 @@ export interface TextInputIOSProps {
    *  - `'password'`
    *  - `'newPassword'`
    *  - `'oneTimeCode'`
+   *  - `'birthdate'` (iOS 17+)
+   *  - `'birthdateDay'` (iOS 17+)
+   *  - `'birthdateMonth'` (iOS 17+)
+   *  - `'birthdateYear'` (iOS 17+)
    *
    */
   textContentType?:
@@ -254,6 +260,15 @@ export interface TextInputIOSProps {
     | 'addressState'
     | 'countryName'
     | 'creditCardNumber'
+    | 'creditCardExpiration'
+    | 'creditCardExpirationMonth'
+    | 'creditCardExpirationYear'
+    | 'creditCardSecurityCode'
+    | 'creditCardType'
+    | 'creditCardName'
+    | 'creditCardGivenName'
+    | 'creditCardMiddleName'
+    | 'creditCardFamilyName'
     | 'emailAddress'
     | 'familyName'
     | 'fullStreetAddress'
@@ -275,6 +290,10 @@ export interface TextInputIOSProps {
     | 'password'
     | 'newPassword'
     | 'oneTimeCode'
+    | 'birthdate'
+    | 'birthdateDay'
+    | 'birthdateMonth'
+    | 'birthdateYear'
     | undefined;
 
   /**
@@ -569,6 +588,11 @@ export interface TextInputProps
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-middle-name'
+    | 'cc-family-name'
+    | 'cc-type'
     | 'country'
     | 'current-password'
     | 'email'
