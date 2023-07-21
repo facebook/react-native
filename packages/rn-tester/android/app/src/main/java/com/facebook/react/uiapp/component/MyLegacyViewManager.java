@@ -27,7 +27,7 @@ import java.util.Map;
 public class MyLegacyViewManager extends SimpleViewManager<MyNativeView> {
 
   public static final String REACT_CLASS = "RNTMyLegacyNativeView";
-  private static final Integer COMMAND_CHANGE_BACKGROUND_COLOR = 42;
+  private static final int COMMAND_CHANGE_BACKGROUND_COLOR = 42;
   private final ReactApplicationContext mCallerContext;
 
   public MyLegacyViewManager(ReactApplicationContext reactContext) {
@@ -71,8 +71,7 @@ public class MyLegacyViewManager extends SimpleViewManager<MyNativeView> {
 
   @Override
   public final Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
-    Map<String, Object> eventTypeConstants = new HashMap<String, Object>();
-    eventTypeConstants.putAll(
+    return new HashMap<>(
         MapBuilder.<String, Object>builder()
             .put(
                 "onColorChanged",
@@ -81,15 +80,26 @@ public class MyLegacyViewManager extends SimpleViewManager<MyNativeView> {
                     MapBuilder.of(
                         "bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
             .build());
-    return eventTypeConstants;
   }
 
   @Override
   public void receiveCommand(
       @NonNull MyNativeView view, String commandId, @Nullable ReadableArray args) {
-    if (commandId.contentEquals(COMMAND_CHANGE_BACKGROUND_COLOR.toString())) {
+    if (commandId.contentEquals("changeBackgroundColor")) {
       int sentColor = Color.parseColor(args.getString(0));
       view.setBackgroundColor(sentColor);
+    }
+  }
+
+  @SuppressWarnings("deprecation") // We intentionally want to test against the legacy API here.
+  @Override
+  public void receiveCommand(
+      @NonNull MyNativeView view, int commandId, @Nullable ReadableArray args) {
+    switch (commandId) {
+      case COMMAND_CHANGE_BACKGROUND_COLOR:
+        int sentColor = Color.parseColor(args.getString(0));
+        view.setBackgroundColor(sentColor);
+        break;
     }
   }
 
