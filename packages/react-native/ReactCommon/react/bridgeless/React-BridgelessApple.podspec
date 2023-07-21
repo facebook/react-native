@@ -55,13 +55,14 @@ Pod::Spec.new do |s|
   s.dependency "React-NativeModulesApple"
   s.dependency "React-RCTFabric"
   s.dependency "React-BridgelessCore"
-  s.dependency "React-BridgelessHermes"
   s.dependency "React-Mapbuffer"
   s.dependency "React-jserrorhandler"
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
+    s.dependency "React-BridgelessHermes"
   else
-    s.dependency "React-jsi"
+    s.exclude_files = "platform/ios/Hermes/*.{mm,h}"
+    s.dependency "React-jsc"
   end
 end
