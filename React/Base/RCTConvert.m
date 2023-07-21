@@ -1116,7 +1116,7 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
           } else if (bestMatchingAppearance == NSAppearanceNameAccessibilityHighContrastDarkAqua) {
             return highContrastDarkColor;
           } else {
-            RCTLogConvertError(json, @"an NSColorColor. Could not resolve current appearance. Defaulting to light.");
+            RCTLogWarn(@"DynamicColorMacOS: Could not resolve current appearance. Defaulting to light.");
             return lightColor;
           }
         }];
