@@ -10,7 +10,7 @@ on:
 jobs:
   check-for-reproducer:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native' && github.event.issue.pull_request == null
+    if: github.repository == 'facebook/react-native' && github.event.issue.pull_request == null && github.event.issue.state == 'open'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/github-script@v6
