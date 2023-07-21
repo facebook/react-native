@@ -101,7 +101,7 @@ async function hasMaintainerChangedLabel(github, issueData, author) {
   const labeledEvents = timeline.data.filter(
     event => event.event === 'labeled' || event.event === 'unlabeled',
   );
-  const userEvents = labeledEvents.filter(event => event.actor.actor !== 'Bot');
+  const userEvents = labeledEvents.filter(event => event.actor.type !== 'Bot');
 
   return userEvents.some(
     event =>
