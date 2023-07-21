@@ -121,6 +121,15 @@ RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
 
++ (CGFloat)cssLength:(id)json axisSize:(CGFloat)axisSize
+{
+  if ([json isKindOfClass:NSString.class] && [(NSString *)json hasSuffix:@"%"]) {
+    return [json doubleValue] * axisSize / 100;
+  } else {
+    return [RCTConvert CGFloat:json];
+  }
+}
+
 @end
 
 @implementation RCTViewManager
@@ -224,19 +233,16 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
       view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
 }
 
-- (CGFloat)unitPoint:(id)value axisSize:(CGFloat)axisSize
-{
-  CGFloat factor = [value isKindOfClass:NSNumber.class] ? axisSize : 0.01;
-  return [value floatValue] * factor;
-}
-
 RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
 {
-  // TODO - we want to be able to use the view's width/height for axis-size, and update it when the view resizes
-  // however, doing so would mean this logic wouldn't work for other native components
-  view.layer.anchorPoint = CGPointMake([self unitPoint:json[0] axisSize:0],
-                                       [self unitPoint:json[1] axisSize:0]);
-  view.layer.anchorPointZ = [self unitPoint:json[2] axisSize:0];
+  // TODO - we want to be able to use the view's width/height so we can support pixel lengths for transform-origin,
+  // however, this would need re-calculating every time the view's size changes, and there's no nice way to do that
+  // in a way that works for all native components, including those that don't inherit from RCTView
+  CGFloat width = 1;
+  CGFloat height = 1;
+  view.layer.anchorPoint = CGPointMake([RCTConvert cssLength:json[0] axisSize:width] / width,
+                                       [RCTConvert cssLength:json[1] axisSize:height] / height);
+  view.layer.anchorPointZ = [RCTConvert CGFloat:json[2]];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)

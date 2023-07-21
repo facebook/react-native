@@ -17,14 +17,14 @@ export default function processTransformOrigin(input) {
     switch (value) {
       case 'top':
       case 'bottom': {
-        invariant(!ySet, 'Vertical transform-origin has already been set');
+        invariant(!ySet, 'Cannot set %s in transform-origin as the vertical direction has already been set', value);
         output[1] = value === 'top' ? 0 : '100%';
         ySet = true;
         break;
       }
       case 'left':
       case 'right': {
-        invariant(!xSet, 'Horizontal transform-origin has already been set');
+        invariant(!xSet, 'Cannot set %s in transform-origin as the horizontal direction has already been set', value);
         output[0] = value === 'left' ? 0 : '100%';
         xSet = true;
         break;
@@ -39,7 +39,7 @@ export default function processTransformOrigin(input) {
         } else {
           invariant(
             false,
-            'Cannot use center when horizontal and vertical transform-origins have been set',
+            'Cannot set center in transform-origin as boththe  horizontal and vertical directions have been set',
           );
         }
         break;
@@ -55,7 +55,7 @@ export default function processTransformOrigin(input) {
           output[2] = value;
           zSet = true;
         } else {
-          invariant(false, 'All transform-origins have been set');
+          invariant(false, 'Cannot set %s in transform-origin as all values have already been set', value);
         }
         break;
       }
