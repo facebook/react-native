@@ -75,6 +75,8 @@ Pod::Spec.new do |s|
   }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
 
+  use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+
   s.dependency "React-Core"
   s.dependency "RCT-Folly"
   s.dependency "RCTRequired"
@@ -88,13 +90,13 @@ Pod::Spec.new do |s|
 
   if is_new_arch_enabled
     s.dependency "React-BridgelessCore"
-    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+    s.dependency "React-BridgelessApple"
+    if use_hermes
       s.dependency "React-BridgelessHermes"
     end
-    s.dependency "React-BridgelessApple"
   end
 
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+  if use_hermes
     s.dependency "React-hermes"
   else
     s.dependency "React-jsc"

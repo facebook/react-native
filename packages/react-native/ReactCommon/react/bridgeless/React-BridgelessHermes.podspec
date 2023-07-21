@@ -52,5 +52,6 @@ Pod::Spec.new do |s|
     s.dependency "hermes-engine"
   else
     s.dependency "React-jsc"
+    s.exclude_files = "hermes/*.{cpp,h}"
   end
 end
