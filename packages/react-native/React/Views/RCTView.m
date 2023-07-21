@@ -786,10 +786,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   [super reactSetFrame:frame];
   if (!CGSizeEqualToSize(self.bounds.size, oldSize)) {
     [self.layer setNeedsDisplay];
-    // Update transform for transform origin due to change in view dimension
-    if (self.transformOrigin.length > 0) {
-      self.layer.transform = [RCTConvert CATransform3D:self.rawTransform viewWidth:self.bounds.size.width viewHeight:self.bounds.size.height transformOrigin: self.transformOrigin];
-    }
   }
 }
 

@@ -218,16 +218,25 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
-  view.rawTransform = json;
-  view.layer.transform = json ? [RCTConvert CATransform3D:view.rawTransform viewWidth:view.bounds.size.width viewHeight:view.bounds.size.height transformOrigin: view.transformOrigin] : defaultView.layer.transform;
+  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
   // Enable edge antialiasing in rotation, skew, or perspective transforms
   view.layer.allowsEdgeAntialiasing =
       view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSString, RCTView){
-  view.transformOrigin = json;
-  view.layer.transform = [RCTConvert CATransform3D:view.rawTransform viewWidth:view.bounds.size.width viewHeight:view.bounds.size.height transformOrigin: view.transformOrigin];
+- (CGFloat)unitPoint:(id)value axisSize:(CGFloat)axisSize
+{
+  CGFloat factor = [value isKindOfClass:NSNumber.class] ? axisSize : 0.01;
+  return [value floatValue] * factor;
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
+{
+  // TODO - we want to be able to use the view's width/height for axis-size, and update it when the view resizes
+  // however, doing so would mean this logic wouldn't work for other native components
+  view.layer.anchorPoint = CGPointMake([self unitPoint:json[0] axisSize:0],
+                                       [self unitPoint:json[1] axisSize:0]);
+  view.layer.anchorPointZ = [self unitPoint:json[2] axisSize:0];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
