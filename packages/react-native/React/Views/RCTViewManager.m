@@ -235,14 +235,19 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
 {
-  // TODO - we want to be able to use the view's width/height so we can support pixel lengths for transform-origin,
-  // however, this would need re-calculating every time the view's size changes, and there's no nice way to do that
-  // in a way that works for all native components, including those that don't inherit from RCTView
-  CGFloat width = 1;
-  CGFloat height = 1;
-  view.layer.anchorPoint = CGPointMake([RCTConvert cssLength:json[0] axisSize:width] / width,
-                                       [RCTConvert cssLength:json[1] axisSize:height] / height);
-  view.layer.anchorPointZ = [RCTConvert CGFloat:json[2]];
+  if (json) {
+    // TODO - we want to be able to use the view's width/height so we can support pixel lengths for transform-origin,
+    // however, this would need re-calculating every time the view's size changes, and there's no nice way to do that
+    // in a way that works for all native components, including those that don't inherit from RCTView
+    CGFloat width = 1;
+    CGFloat height = 1;
+    view.layer.anchorPoint = CGPointMake([RCTConvert cssLength:json[0] axisSize:width] / width,
+                                         [RCTConvert cssLength:json[1] axisSize:height] / height);
+    view.layer.anchorPointZ = [RCTConvert CGFloat:json[2]];
+  } else {
+    view.layer.anchorPoint = defaultView.layer.anchorPoint;
+    view.layer.anchorPointZ = defaultView.layer.anchorPointZ;
+  }
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
