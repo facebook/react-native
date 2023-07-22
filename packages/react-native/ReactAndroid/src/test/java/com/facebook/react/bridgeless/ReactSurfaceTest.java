@@ -20,7 +20,7 @@ import android.content.Context;
 import android.view.View;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridgeless.internal.bolts.Task;
-import com.facebook.react.fabric.SurfaceHandler;
+import com.facebook.react.fabric.interfaces.SurfaceHandler;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.concurrent.Callable;
 import org.junit.Before;

@@ -19,6 +19,7 @@ target_link_libraries(uimanagerjni
         folly_runtime
         glog
         glog_init
+        bridgelessnativeviewconfig
         rrc_native
         yoga
         callinvokerholder

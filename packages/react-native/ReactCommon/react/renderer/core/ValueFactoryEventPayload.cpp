@@ -16,4 +16,8 @@ jsi::Value ValueFactoryEventPayload::asJSIValue(jsi::Runtime &runtime) const {
   return valueFactory_(runtime);
 }
 
+EventPayloadType ValueFactoryEventPayload::getType() const {
+  return EventPayloadType::ValueFactory;
+}
+
 } // namespace facebook::react

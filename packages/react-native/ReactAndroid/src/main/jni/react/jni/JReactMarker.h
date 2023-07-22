@@ -38,7 +38,6 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
       const ReactMarker::ReactMarkerId markerId,
       const char *tag,
       const int instanceKey);
-  static double getAppStartTime();
   static void nativeLogMarker(
       jni::alias_ref<jclass> /* unused */,
       std::string markerNameStr,

@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <ComponentKit/CKComponentController.h>
+#pragma once
 
-@interface RCTSurfaceHostingComponentController : CKComponentController
+namespace facebook::react {
 
-@end
+enum class EventPayloadType { ValueFactory, PointerEvent };
+
+}

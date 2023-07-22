@@ -200,6 +200,15 @@ export type TextContentType =
   | 'addressState'
   | 'countryName'
   | 'creditCardNumber'
+  | 'creditCardExpiration'
+  | 'creditCardExpirationMonth'
+  | 'creditCardExpirationYear'
+  | 'creditCardSecurityCode'
+  | 'creditCardType'
+  | 'creditCardName'
+  | 'creditCardGivenName'
+  | 'creditCardMiddleName'
+  | 'creditCardFamilyName'
   | 'emailAddress'
   | 'familyName'
   | 'fullStreetAddress'
@@ -220,7 +229,11 @@ export type TextContentType =
   | 'username'
   | 'password'
   | 'newPassword'
-  | 'oneTimeCode';
+  | 'oneTimeCode'
+  | 'birthdate'
+  | 'birthdateDay'
+  | 'birthdateMonth'
+  | 'birthdateYear';
 
 export type enterKeyHintType =
   // Cross Platform
@@ -462,7 +475,16 @@ export type Props = $ReadOnly<{|
    * - `additional-name`
    * - `address-line1`
    * - `address-line2`
+   * - `birthdate-day` (iOS 17+)
+   * - `birthdate-full` (iOS 17+)
+   * - `birthdate-month` (iOS 17+)
+   * - `birthdate-year` (iOS 17+)
    * - `cc-number`
+   * - `cc-csc` (iOS 17+)
+   * - `cc-exp` (iOS 17+)
+   * - `cc-exp-day` (iOS 17+)
+   * - `cc-exp-month` (iOS 17+)
+   * - `cc-exp-year` (iOS 17+)
    * - `country`
    * - `current-password`
    * - `email`
@@ -481,6 +503,11 @@ export type Props = $ReadOnly<{|
    *
    * The following values work on iOS only:
    *
+   * - `cc-name` (iOS 17+)
+   * - `cc-given-name` (iOS 17+)
+   * - `cc-middle-name` (iOS 17+)
+   * - `cc-family-name` (iOS 17+)
+   * - `cc-type` (iOS 17+)
    * - `nickname`
    * - `organization`
    * - `organization-title`
@@ -488,15 +515,6 @@ export type Props = $ReadOnly<{|
    *
    * The following values work on Android only:
    *
-   * - `birthdate-day`
-   * - `birthdate-full`
-   * - `birthdate-month`
-   * - `birthdate-year`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-day`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
    * - `gender`
    * - `name-family`
    * - `name-given`
@@ -532,6 +550,11 @@ export type Props = $ReadOnly<{|
     | 'cc-exp-month'
     | 'cc-exp-year'
     | 'cc-number'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-middle-name'
+    | 'cc-family-name'
+    | 'cc-type'
     | 'country'
     | 'current-password'
     | 'email'
@@ -1572,7 +1595,20 @@ const autoCompleteWebToAutoCompleteAndroidMap = {
 const autoCompleteWebToTextContentTypeMap = {
   'address-line1': 'streetAddressLine1',
   'address-line2': 'streetAddressLine2',
+  bday: 'birthdate',
+  'bday-day': 'birthdateDay',
+  'bday-month': 'birthdateMonth',
+  'bday-year': 'birthdateYear',
+  'cc-csc': 'creditCardSecurityCode',
+  'cc-exp-month': 'creditCardExpirationMonth',
+  'cc-exp-year': 'creditCardExpirationYear',
+  'cc-exp': 'creditCardExpiration',
+  'cc-given-name': 'creditCardGivenName',
+  'cc-additional-name': 'creditCardMiddleName',
+  'cc-family-name': 'creditCardFamilyName',
+  'cc-name': 'creditCardName',
   'cc-number': 'creditCardNumber',
+  'cc-type': 'creditCardType',
   'current-password': 'password',
   country: 'countryName',
   email: 'emailAddress',

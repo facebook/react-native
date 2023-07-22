@@ -18,7 +18,6 @@ namespace ReactMarker {
 
 LogTaggedMarker logTaggedMarkerImpl = nullptr;
 LogTaggedMarker logTaggedMarkerBridgelessImpl = nullptr;
-GetAppStartTime getAppStartTimeImpl = nullptr;
 
 #if __clang__
 #pragma clang diagnostic pop
@@ -53,6 +52,18 @@ void StartupLogger::logStartupEvent(
     const ReactMarkerId markerId,
     double markerTime) {
   switch (markerId) {
+    case ReactMarkerId::APP_STARTUP_START:
+      if (appStartupStartTime == 0) {
+        appStartupStartTime = markerTime;
+      }
+      return;
+
+    case ReactMarkerId::APP_STARTUP_STOP:
+      if (appStartupEndTime == 0) {
+        appStartupEndTime = markerTime;
+      }
+      return;
+
     case ReactMarkerId::RUN_JS_BUNDLE_START:
       if (runJSBundleStartTime == 0) {
         runJSBundleStartTime = markerTime;
@@ -70,12 +81,8 @@ void StartupLogger::logStartupEvent(
   }
 }
 
-double StartupLogger::getAppStartTime() {
-  if (getAppStartTimeImpl == nullptr) {
-    return 0;
-  }
-
-  return getAppStartTimeImpl();
+double StartupLogger::getAppStartupStartTime() {
+  return appStartupStartTime;
 }
 
 double StartupLogger::getRunJSBundleStartTime() {
@@ -84,6 +91,10 @@ double StartupLogger::getRunJSBundleStartTime() {
 
 double StartupLogger::getRunJSBundleEndTime() {
   return runJSBundleEndTime;
+}
+
+double StartupLogger::getAppStartupEndTime() {
+  return appStartupEndTime;
 }
 
 } // namespace ReactMarker

@@ -4133,10 +4133,10 @@ depd@~1.1.2:
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
 
-deprecated-react-native-prop-types@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-4.1.0.tgz#8ed03a64c21b7fbdd2d000957b6838d4f38d2c66"
-  integrity sha512-WfepZHmRbbdTvhcolb8aOKEvQdcmTMn5tKLbqbXmkBvjFjRVWAYqsXk/DBsV8TZxws8SdGHLuHaJrHSQUPRdfw==
+deprecated-react-native-prop-types@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/deprecated-react-native-prop-types/-/deprecated-react-native-prop-types-4.2.0.tgz#2d7f2a2bb3cf39fb873286a85eb04bc3e1f2e4d5"
+  integrity sha512-DjFQDPM2osEm9CEjxMSjAIGFf6D9kXiPZ8+EhHf4oU0PK2KNktp0Rv1kobdbOS0B9kQQ9QpqmmZQuZN7lI3P5g==
   dependencies:
     "@react-native/normalize-colors" "*"
     invariant "*"
@@ -4936,10 +4936,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
 
-flow-bin@^0.212.0:
-  version "0.212.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.212.0.tgz#6ec26d4a26cbfe1e4e02a85cce87a1b08903b804"
-  integrity sha512-RbKhEsMoorfWbKca/Zdd8j5mQFTbnP5I3Q5vzR2ReVfMQUb5RaV8R9ejKeZzoq/nDf6UreXRTNjnffYJVmn4Fw==
+flow-bin@^0.213.0:
+  version "0.213.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.213.0.tgz#02a85537cce3ea1f61bff77e7995a49a1db2e963"
+  integrity sha512-adGcPA3jiz3l0MM4zHVxVUgatvYsDowjT7cje7AvY38z/M0HO2YKcGLRp2xeqbigCgaqXEV6V3/1TaRDVjR++A==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
