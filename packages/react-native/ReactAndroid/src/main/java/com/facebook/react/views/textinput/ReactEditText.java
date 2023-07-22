@@ -30,8 +30,11 @@ import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -183,6 +186,35 @@ public class ReactEditText extends AppCompatEditText
           }
         };
     ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
+    ActionMode.Callback customActionModeCallback =
+        new ActionMode.Callback() {
+          /*
+           * Editor onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * and paste as plain text items to the context menu.
+           */
+          @Override
+          public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.removeItem(android.R.id.pasteAsPlainText);
+            return true;
+          }
+
+          @Override
+          public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+          }
+
+          @Override
+          public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+          }
+
+          @Override
+          public void onDestroyActionMode(ActionMode mode) {}
+        };
+    setCustomSelectionActionModeCallback(customActionModeCallback);
+    if (Build.VERSION.SDK_INT >= 23) {
+      setCustomInsertionActionModeCallback(customActionModeCallback);
+    }
   }
 
   @Override
