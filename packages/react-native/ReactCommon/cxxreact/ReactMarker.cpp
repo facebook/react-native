@@ -29,7 +29,6 @@ void logMarker(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarker(const ReactMarkerId markerId, const char *tag) {
-  StartupLogger::getInstance().logStartupEvent(markerId);
   logTaggedMarkerImpl(markerId, tag);
 }
 
@@ -38,8 +37,11 @@ void logMarkerBridgeless(const ReactMarkerId markerId) {
 }
 
 void logTaggedMarkerBridgeless(const ReactMarkerId markerId, const char *tag) {
-  StartupLogger::getInstance().logStartupEvent(markerId);
   logTaggedMarkerBridgelessImpl(markerId, tag);
+}
+
+void logMarkerDone(const ReactMarkerId markerId, double markerTime) {
+  StartupLogger::getInstance().logStartupEvent(markerId, markerTime);
 }
 
 StartupLogger &StartupLogger::getInstance() {
@@ -47,18 +49,19 @@ StartupLogger &StartupLogger::getInstance() {
   return instance;
 }
 
-void StartupLogger::logStartupEvent(const ReactMarkerId markerId) {
-  auto now = JSExecutor::performanceNow();
+void StartupLogger::logStartupEvent(
+    const ReactMarkerId markerId,
+    double markerTime) {
   switch (markerId) {
     case ReactMarkerId::RUN_JS_BUNDLE_START:
       if (runJSBundleStartTime == 0) {
-        runJSBundleStartTime = now;
+        runJSBundleStartTime = markerTime;
       }
       return;
 
     case ReactMarkerId::RUN_JS_BUNDLE_STOP:
       if (runJSBundleEndTime == 0) {
-        runJSBundleEndTime = now;
+        runJSBundleEndTime = markerTime;
       }
       return;
 
