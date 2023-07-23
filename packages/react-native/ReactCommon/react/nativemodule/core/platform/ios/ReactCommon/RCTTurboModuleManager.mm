@@ -962,17 +962,6 @@ static Class getFallbackClassFromName(const char *name)
   }
 }
 
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
-{
-  // jsi::Runtime doesn't exist when attached to Chrome debugger.
-  if (runtimeExecutor) {
-    runtimeExecutor([self](facebook::jsi::Runtime &runtime) { [self installJSBindings:runtime]; });
-  }
-}
-
 #pragma mark RCTTurboModuleRegistry
 
 - (id)moduleForName:(const char *)moduleName
