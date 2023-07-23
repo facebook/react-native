@@ -15,6 +15,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Transform.h>
+#include <react/renderer/core/LayoutMetrics.h>
 
 #include <optional>
 
@@ -64,6 +65,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Transform
   Transform transform{};
+  std::string transformOrigin;
+
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};
@@ -96,6 +99,8 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
+  Transform resolveTransform(LayoutMetrics const &layoutMetrics) const;
+  std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewHeight) const;
   bool getClipsContentToBounds() const;
 
 #ifdef ANDROID
