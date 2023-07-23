@@ -278,20 +278,6 @@ static Class getFallbackClassFromName(const char *name)
                     jsInvoker:jsInvoker];
 }
 
-- (void)notifyAboutTurboModuleSetup:(const char *)name
-{
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
-  if (moduleName) {
-    int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
-                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
-                                                      }];
-  }
-}
-
 /**
  * Given a name for a TurboModule, return a C++ object which is the instance
  * of that TurboModule C++ class. This class wraps the TurboModule's ObjC instance.
@@ -919,7 +905,6 @@ static Class getFallbackClassFromName(const char *name)
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-      [self notifyAboutTurboModuleSetup:moduleName];
     }
 
     if (turboModule) {
@@ -935,7 +920,6 @@ static Class getFallbackClassFromName(const char *name)
       auto moduleName = name.c_str();
 
       TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-      auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
 
       /**
        * By default, all TurboModules are long-lived.
@@ -943,10 +927,6 @@ static Class getFallbackClassFromName(const char *name)
        * trigger an assertion failure.
        */
       auto turboModule = [self provideLegacyModule:moduleName];
-
-      if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
-        [self notifyAboutTurboModuleSetup:moduleName];
-      }
 
       if (turboModule) {
         TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
