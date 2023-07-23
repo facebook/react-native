@@ -235,7 +235,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   static NSDictionary<NSString *, NSString *> *contentTypeMap;
 
   dispatch_once(&onceToken, ^{
-    NSDictionary<NSString *, NSString *> *mutableContentTypeMap = @{
+    NSMutableDictionary<NSString *, NSString *> *mutableContentTypeMap = [NSMutableDictionary new];
+    [mutableContentTypeMap addEntriesFromDictionary:@{
       @"none" : @"",
       @"URL" : UITextContentTypeURL,
       @"addressCity" : UITextContentTypeAddressCity,
@@ -264,11 +265,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"password" : UITextContentTypePassword,
       @"newPassword" : UITextContentTypeNewPassword,
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
-    };
+    }];
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
-      mutableContentTypeMap = [[mutableContentTypeMap mutableCopy] addEntriesFromDictionary:@{
+      [mutableContentTypeMap addEntriesFromDictionary:@{
         @"creditCardExpiration" : UITextContentTypeCreditCardExpiration,
         @"creditCardExpirationMonth" : UITextContentTypeCreditCardExpirationMonth,
         @"creditCardExpirationYear" : UITextContentTypeCreditCardExpirationYear,
