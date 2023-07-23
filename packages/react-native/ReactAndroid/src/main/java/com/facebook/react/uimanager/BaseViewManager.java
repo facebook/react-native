@@ -40,7 +40,7 @@ import java.util.Map;
  * provides support for base view properties such as backgroundColor, opacity, etc.
  */
 public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode>
-    extends ViewManager<T, C> implements BaseViewManagerInterface<T> {
+    extends ViewManager<T, C> implements BaseViewManagerInterface<T>, View.OnLayoutChangeListener {
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
@@ -90,6 +90,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setElevation(0);
     view.setAnimationMatrix(null);
 
+    view.setTag(R.id.transform, null);
+    view.setTag(R.id.transform_origin, null);
+    view.removeOnLayoutChangeListener(this);
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
       view.setOutlineAmbientShadowColor(Color.BLACK);
@@ -130,6 +133,33 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  public void onLayoutChange(View v,
+                             int left,
+                             int top,
+                             int right,
+                             int bottom,
+                             int oldLeft,
+                             int oldTop,
+                             int oldRight,
+                             int oldBottom) {
+    // Old width and height
+    int oldWidth = oldRight - oldLeft;
+    int oldHeight = oldBottom - oldTop;
+
+    // Current width and height
+    int currentWidth = right - left;
+    int currentHeight = bottom - top;
+
+    if ((currentHeight != oldHeight || currentWidth != oldWidth)) {
+      String transformOrigin = (String) v.getTag(R.id.transform_origin);
+      ReadableArray transformMatrix = (ReadableArray) v.getTag(R.id.transform);
+      if (transformMatrix != null && transformOrigin != null) {
+        setTransformProperty((T) v, transformMatrix, transformOrigin);
+      }
+    }
+  }
+
+  @Override
   @ReactProp(
       name = ViewProps.BACKGROUND_COLOR,
       defaultInt = Color.TRANSPARENT,
@@ -141,11 +171,24 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @Override
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
+    view.setTag(R.id.transform, matrix);
     if (matrix == null) {
       resetTransformProperty(view);
     } else {
-      setTransformProperty(view, matrix);
+      String transformOrigin = (String) view.getTag(R.id.transform_origin);
+      setTransformProperty(view, matrix, transformOrigin);
     }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
+  public void setTransformOrigin(@NonNull T view, @Nullable String transformOrigin) {
+    view.setTag(R.id.transform_origin, transformOrigin);
+    ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
+    if (transformMatrix != null) {
+      setTransformProperty(view, transformMatrix, transformOrigin);
+    }
+    view.addOnLayoutChangeListener(this);
   }
 
   @Override
@@ -439,9 +482,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(@NonNull View view, ReadableArray transforms) {
+  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, String transformOrigin) {
     sMatrixDecompositionContext.reset();
-    TransformHelper.processTransform(transforms, sTransformDecompositionArray);
+    TransformHelper.processTransform(transforms, sTransformDecompositionArray,
+      PixelUtil.toDIPFromPixel(view.getWidth()), PixelUtil.toDIPFromPixel(view.getHeight()), transformOrigin);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
         PixelUtil.toPixelFromDIP(
