@@ -1,79 +1,124 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @oncall react_native
+ */
+
 import invariant from 'invariant';
 
 const INDEX_X = 0;
 const INDEX_Y = 1;
 const INDEX_Z = 2;
 
-export default function processTransformOrigin(input) {
-  const regExp = /(top|bottom|left|right|center|\d+(?:%|px))/gi;
-  const output = ['50%', '50%', 0];
+export default function processTransformOrigin(
+  transformOrigin: Array<string | number> | string,
+): Array<string | number> {
+  if (typeof transformOrigin === 'string') {
+    const regExp = /(top|bottom|left|right|center|\d+(?:%|px)|0)/gi;
+    const transformOriginArray: Array<string | number> = ['50%', '50%', 0];
 
-  let index = 0;
-  let match;
-  while ((match = regExp.exec(input))) {
-    const value = match[0];
-    const valueLower = value.toLowerCase();
+    let index = 0;
+    let match;
+    while ((match = regExp.exec(input))) {
+      const value = match[0];
+      const valueLower = value.toLowerCase();
 
-    switch (valueLower) {
-      case 'left':
-      case 'right': {
-        invariant(
-          index === INDEX_X,
-          'Transform-origin %s can only be used for x-position',
-          value,
-        );
-        output[INDEX_X] = valueLower === 'left' ? 0 : '100%';
-        break;
-      }
-      case 'top':
-      case 'bottom': {
-        const yValue = valueLower === 'top' ? 0 : '100%';
-
-        // Handle one-value case
-        if (index === INDEX_X) {
+      switch (valueLower) {
+        case 'left':
+        case 'right': {
           invariant(
-            regExp.exec(input) === null,
-            'Could not parse transform-origin: %s',
-            input,
+            index === INDEX_X,
+            'Transform-origin %s can only be used for x-position',
+            value,
           );
-          output[INDEX_Y] = yValue;
-          return output;
+          transformOriginArray[INDEX_X] = valueLower === 'left' ? 0 : '100%';
+          break;
         }
+        case 'top':
+        case 'bottom': {
+          const yValue = valueLower === 'top' ? 0 : '100%';
 
-        invariant(
-          index === INDEX_Y,
-          'Transform-origin %s can only be used for y-position',
-          value,
-        );
-        output[INDEX_Y] = yValue;
-        break;
-      }
-      case 'center': {
-        invariant(
-          index !== INDEX_Z,
-          'Transform-origin value %s cannot be used for z-position',
-          value,
-        );
-        output[index] = '50%';
-        break;
-      }
-      default: {
-        if (value.endsWith('%')) {
+          if (index === INDEX_X) {
+            // Handle one-value case
+            const noMoreValuesRemaining = regExp.exec(input) === null;
+            invariant(
+              noMoreValuesRemaining,
+              'Could not parse transform-origin: %s',
+              input,
+            );
+            transformOriginArray[INDEX_Y] = yValue;
+          } else {
+            invariant(
+              index === INDEX_Y,
+              'Transform-origin %s can only be used for y-position',
+              value,
+            );
+            transformOriginArray[INDEX_Y] = yValue;
+          }
+
+          break;
+        }
+        case 'center': {
           invariant(
             index !== INDEX_Z,
             'Transform-origin value %s cannot be used for z-position',
             value,
           );
-          output[index] = value;
-        } else {
-          output[index] = parseFloat(value); // Remove `px`
+          transformOriginArray[index] = '50%';
+          break;
         }
-        break;
+        default: {
+          if (value.endsWith('%')) {
+            invariant(
+              index !== INDEX_Z,
+              'Transform-origin value %s cannot be used for z-position',
+              value,
+            );
+            transformOriginArray[index] = value;
+          } else {
+            transformOriginArray[index] = parseFloat(value); // Remove `px`
+          }
+          break;
+        }
       }
+
+      index += 1;
     }
 
-    index += 1;
+    transformOrigin = transformOriginArray;
   }
 
-  return output;
+  if (__DEV__) {
+    _validateTransformOrigin(transformOrigin);
+  }
+
+  return transformOrigin;
+}
+
+function _validateTransformOrigin(transformOrigin) {
+  invariant(
+    transformOrigin.length === 3,
+    'Transform origin must have exactly 3 values. Passed transform origin: %s.',
+    transformOrigin,
+  );
+  const [x, y, z] = transformOrigin;
+  invariant(
+    typeof x === 'number' || (typeof x === 'string' && x.endsWith('%')),
+    'Transform origin x-position must be a number. Passed value: %s.',
+    x,
+  );
+  invariant(
+    typeof y === 'number' || (typeof y === 'string' && y.endsWith('%')),
+    'Transform origin y-position must be a number. Passed value: %s.',
+    y,
+  );
+  invariant(
+    typeof z === 'number',
+    'Transform origin z-position must be a number. Passed value: %s.',
+    z,
+  );
 }
