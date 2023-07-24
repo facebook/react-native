@@ -38,6 +38,7 @@
 
 #import "ObjCTimerRegistry.h"
 #import "RCTJSThreadManager.h"
+#import "RCTLegacyUIManagerConstantsProvider.h"
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)
