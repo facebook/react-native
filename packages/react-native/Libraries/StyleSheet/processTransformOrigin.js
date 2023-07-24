@@ -1,65 +1,78 @@
 import invariant from 'invariant';
 
+const INDEX_X = 0;
+const INDEX_Y = 1;
+const INDEX_Z = 2;
+
 export default function processTransformOrigin(input) {
+  const regExp = /(top|bottom|left|right|center|\d+(?:%|px))/gi;
   const output = ['50%', '50%', 0];
-  let xSet = false;
-  let ySet = false;
-  let zSet = false;
 
-  for (const match of input.matchAll(
-    /(top|bottom|left|right|center|\d+%?)/gi,
-  )) {
-    let value = match[0].toLowerCase();
-    if (!isNaN(value)) {
-      value = Number(value);
-    }
+  let index = 0;
+  let match;
+  while ((match = regExp.exec(input))) {
+    const value = match[0];
+    const valueLower = value.toLowerCase();
 
-    switch (value) {
-      case 'top':
-      case 'bottom': {
-        invariant(!ySet, 'Cannot set %s in transform-origin as the vertical direction has already been set', value);
-        output[1] = value === 'top' ? 0 : '100%';
-        ySet = true;
-        break;
-      }
+    switch (valueLower) {
       case 'left':
       case 'right': {
-        invariant(!xSet, 'Cannot set %s in transform-origin as the horizontal direction has already been set', value);
-        output[0] = value === 'left' ? 0 : '100%';
-        xSet = true;
+        invariant(
+          index === INDEX_X,
+          'Transform-origin %s can only be used for x-position',
+          value,
+        );
+        output[INDEX_X] = valueLower === 'left' ? 0 : '100%';
+        break;
+      }
+      case 'top':
+      case 'bottom': {
+        const yValue = valueLower === 'top' ? 0 : '100%';
+
+        // Handle one-value case
+        if (index === INDEX_X) {
+          invariant(
+            regExp.exec(input) === null,
+            'Could not parse transform-origin: %s',
+            input,
+          );
+          output[INDEX_Y] = yValue;
+          return output;
+        }
+
+        invariant(
+          index === INDEX_Y,
+          'Transform-origin %s can only be used for y-position',
+          value,
+        );
+        output[INDEX_Y] = yValue;
         break;
       }
       case 'center': {
-        if (!xSet) {
-          output[0] = '50%';
-          xSet = true;
-        } else if (!ySet) {
-          output[1] = '50%';
-          ySet = true;
-        } else {
-          invariant(
-            false,
-            'Cannot set center in transform-origin as boththe  horizontal and vertical directions have been set',
-          );
-        }
+        invariant(
+          index !== INDEX_Z,
+          'Transform-origin value %s cannot be used for z-position',
+          value,
+        );
+        output[index] = '50%';
         break;
       }
       default: {
-        if (!xSet) {
-          output[0] = value;
-          xSet = true;
-        } else if (!ySet) {
-          output[1] = value;
-          ySet = true;
-        } else if (!zSet) {
-          output[2] = value;
-          zSet = true;
+        if (value.endsWith('%')) {
+          invariant(
+            index !== INDEX_Z,
+            'Transform-origin value %s cannot be used for z-position',
+            value,
+          );
+          output[index] = value;
         } else {
-          invariant(false, 'Cannot set %s in transform-origin as all values have already been set', value);
+          output[index] = parseFloat(value); // Remove `px`
         }
         break;
       }
     }
+
+    index += 1;
   }
 
   return output;
