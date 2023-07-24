@@ -35,9 +35,10 @@ interface Registration<TArgs> {
   +remove: () => void;
 }
 
-type Registry<TEventToArgsMap: {...}> = {
-  [key in keyof TEventToArgsMap]?: Set<Registration<TEventToArgsMap[key]>>,
-};
+type Registry<TEventToArgsMap: {...}> = $ObjMap<
+  TEventToArgsMap,
+  <TArgs>(TArgs) => Set<Registration<TArgs>>,
+>;
 
 /**
  * EventEmitter manages listeners and publishes events to them.
@@ -62,7 +63,7 @@ type Registry<TEventToArgsMap: {...}> = {
 export default class EventEmitter<TEventToArgsMap: {...}>
   implements IEventEmitter<TEventToArgsMap>
 {
-  _registry: Registry<TEventToArgsMap> = emptyRegistry<TEventToArgsMap>();
+  _registry: Registry<TEventToArgsMap> = {};
 
   /**
    * Registers a listener that is called when the supplied event is emitted.
@@ -121,7 +122,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     eventType?: ?TEvent,
   ): void {
     if (eventType == null) {
-      this._registry = emptyRegistry<TEventToArgsMap>();
+      this._registry = {};
     } else {
       delete this._registry[eventType];
     }
@@ -134,13 +135,6 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     const registrations: ?Set<Registration<mixed>> = this._registry[eventType];
     return registrations == null ? 0 : registrations.size;
   }
-}
-
-function emptyRegistry<TEventToArgsMap: {...}>(): Registry<TEventToArgsMap> {
-  // Flow cannot enforce that `TEventToArgsMap` is an object because, for
-  // example, Flow permits `empty. We have to ignore this error for now.
-  // $FlowIgnore[incompatible-return]
-  return {};
 }
 
 function allocate<
