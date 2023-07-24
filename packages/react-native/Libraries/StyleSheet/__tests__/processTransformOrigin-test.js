@@ -1,13 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @oncall react_native
- */
-
 import processTransformOrigin from '../processTransformOrigin';
 
 describe('processTransformOrigin', () => {
@@ -39,25 +29,60 @@ describe('processTransformOrigin', () => {
       expect(processTransformOrigin('left 30%')).toEqual([0, '30%', 0]);
     });
 
+    it('should handle two keywords in either order', () => {
+      expect(processTransformOrigin('right bottom')).toEqual([
+        '100%',
+        '100%',
+        0,
+      ]);
+      expect(processTransformOrigin('bottom right')).toEqual([
+        '100%',
+        '100%',
+        0,
+      ]);
+      expect(processTransformOrigin('right bottom 5px')).toEqual([
+        '100%',
+        '100%',
+        5,
+      ]);
+      expect(processTransformOrigin('bottom right 5px')).toEqual([
+        '100%',
+        '100%',
+        5,
+      ]);
+    });
+
     it('should not allow specifying same position twice', () => {
       expect(() => {
         processTransformOrigin('top top');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: top top"`,
+      );
       expect(() => {
         processTransformOrigin('right right');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Transform-origin right can only be used for x-position"`,
+      );
       expect(() => {
         processTransformOrigin('bottom bottom');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: bottom bottom"`,
+      );
       expect(() => {
         processTransformOrigin('left left');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Transform-origin left can only be used for x-position"`,
+      );
       expect(() => {
         processTransformOrigin('top bottom');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: top bottom"`,
+      );
       expect(() => {
         processTransformOrigin('left right');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Transform-origin right can only be used for x-position"`,
+      );
     });
 
     it('should handle three values', () => {
@@ -78,16 +103,22 @@ describe('processTransformOrigin', () => {
     it('should enforce two value ordering', () => {
       expect(() => {
         processTransformOrigin('top 30%');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: top 30%"`,
+      );
     });
 
     it('should not allow percents for z-position', () => {
       expect(() => {
         processTransformOrigin('top 30% 30%');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: top 30% 30%"`,
+      );
       expect(() => {
         processTransformOrigin('top 30% center');
-      }).toThrowErrorMatchingInlineSnapshot();
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"Could not parse transform-origin: top 30% center"`,
+      );
     });
   });
 });

@@ -40,26 +40,22 @@ export default function processTransformOrigin(
         }
         case 'top':
         case 'bottom': {
-          const yValue = valueLower === 'top' ? 0 : '100%';
-
           if (index === INDEX_X) {
-            // Handle one-value case
-            const noMoreValuesRemaining = regExp.exec(transformOrigin) === null;
-            invariant(
-              noMoreValuesRemaining,
-              'Could not parse transform-origin: %s',
+            // Handle [[ center | left | right ] && [ center | top | bottom ]] <length>?
+            index = _parseHorizontalPosition(
               transformOrigin,
+              regExp,
+              transformOriginArray,
+              index,
             );
-            transformOriginArray[INDEX_Y] = yValue;
           } else {
             invariant(
               index === INDEX_Y,
               'Transform-origin %s can only be used for y-position',
               value,
             );
-            transformOriginArray[INDEX_Y] = yValue;
           }
-
+          transformOriginArray[INDEX_Y] = valueLower === 'top' ? 0 : '100%';
           break;
         }
         case 'center': {
@@ -73,11 +69,6 @@ export default function processTransformOrigin(
         }
         default: {
           if (value.endsWith('%')) {
-            invariant(
-              index !== INDEX_Z,
-              'Transform-origin value %s cannot be used for z-position',
-              value,
-            );
             transformOriginArray[index] = value;
           } else {
             transformOriginArray[index] = parseFloat(value); // Remove `px`
@@ -99,7 +90,38 @@ export default function processTransformOrigin(
   return transformOrigin;
 }
 
-function _validateTransformOrigin(transformOrigin) {
+function _parseHorizontalPosition(
+  transformOrigin: string,
+  regExp: RegExp,
+  transformOriginArray: Array<string | number>,
+  index: number,
+): number {
+  const match = regExp.exec(transformOrigin);
+  if (match == null) {
+    return index;
+  }
+
+  const value = match[0];
+  const valueLower = value.toLowerCase();
+
+  switch (valueLower) {
+    case 'left':
+      transformOriginArray[INDEX_X] = 0;
+      break;
+    case 'right':
+      transformOriginArray[INDEX_X] = '100%';
+      break;
+    case 'center':
+      transformOriginArray[INDEX_X] = '50%';
+      break;
+    default:
+      invariant(false, 'Could not parse transform-origin: %s', transformOrigin);
+  }
+
+  return index + 1;
+}
+
+function _validateTransformOrigin(transformOrigin: Array<string | number>) {
   invariant(
     transformOrigin.length === 3,
     'Transform origin must have exactly 3 values. Passed transform origin: %s.',
