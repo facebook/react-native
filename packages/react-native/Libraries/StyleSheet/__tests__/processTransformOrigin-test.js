@@ -8,9 +8,7 @@
  * @oncall react_native
  */
 
-'use strict';
-
-const processTransformOrigin = require('../processTransformOrigin');
+import processTransformOrigin from '../processTransformOrigin';
 
 describe('processTransformOrigin', () => {
   describe('validation', () => {
