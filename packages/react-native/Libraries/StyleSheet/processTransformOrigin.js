@@ -114,8 +114,7 @@ export default function processTransformOrigin(
 function _validateTransformOrigin(transformOrigin: Array<string | number>) {
   invariant(
     transformOrigin.length === 3,
-    'Transform origin must have exactly 3 values. Passed transform origin: %s.',
-    transformOrigin,
+    'Transform origin must have exactly 3 values.',
   );
   const [x, y, z] = transformOrigin;
   invariant(
