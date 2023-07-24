@@ -7,7 +7,6 @@
 
 #import "RCTJSThreadManager.h"
 
-// #import <PikaOptimizationsMacros/PikaOptimizationsMacros.h>
 #import <React/RCTAssert.h>
 #import <React/RCTCxxUtils.h>
 
