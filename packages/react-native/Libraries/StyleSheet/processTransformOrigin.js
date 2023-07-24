@@ -14,6 +14,7 @@ const INDEX_X = 0;
 const INDEX_Y = 1;
 const INDEX_Z = 2;
 
+/* eslint-disable no-labels */
 export default function processTransformOrigin(
   transformOrigin: Array<string | number> | string,
 ): Array<string | number> {
@@ -21,9 +22,11 @@ export default function processTransformOrigin(
     const regExp = /(top|bottom|left|right|center|\d+(?:%|px)|0)/gi;
     const transformOriginArray: Array<string | number> = ['50%', '50%', 0];
 
-    let index = 0;
+    let index = INDEX_X;
     let match;
-    while ((match = regExp.exec(transformOrigin))) {
+    outer: while ((match = regExp.exec(transformOrigin))) {
+      let nextIndex = index + 1;
+
       const value = match[0];
       const valueLower = value.toLowerCase();
 
@@ -40,22 +43,40 @@ export default function processTransformOrigin(
         }
         case 'top':
         case 'bottom': {
-          if (index === INDEX_X) {
-            // Handle [[ center | left | right ] && [ center | top | bottom ]] <length>?
-            index = _parseHorizontalPosition(
-              transformOrigin,
-              regExp,
-              transformOriginArray,
-              index,
-            );
-          } else {
-            invariant(
-              index === INDEX_Y,
-              'Transform-origin %s can only be used for y-position',
-              value,
-            );
-          }
+          invariant(
+            index !== INDEX_Z,
+            'Transform-origin %s can only be used for y-position',
+            value,
+          );
           transformOriginArray[INDEX_Y] = valueLower === 'top' ? 0 : '100%';
+
+          // Handle [[ center | left | right ] && [ center | top | bottom ]] <length>?
+          if (index === INDEX_X) {
+            const horizontal = regExp.exec(transformOrigin);
+            if (horizontal == null) {
+              break outer;
+            }
+
+            switch (horizontal[0].toLowerCase()) {
+              case 'left':
+                transformOriginArray[INDEX_X] = 0;
+                break;
+              case 'right':
+                transformOriginArray[INDEX_X] = '100%';
+                break;
+              case 'center':
+                transformOriginArray[INDEX_X] = '50%';
+                break;
+              default:
+                invariant(
+                  false,
+                  'Could not parse transform-origin: %s',
+                  transformOrigin,
+                );
+            }
+            nextIndex = INDEX_Z;
+          }
+
           break;
         }
         case 'center': {
@@ -77,7 +98,7 @@ export default function processTransformOrigin(
         }
       }
 
-      index += 1;
+      index = nextIndex;
     }
 
     transformOrigin = transformOriginArray;
@@ -88,37 +109,6 @@ export default function processTransformOrigin(
   }
 
   return transformOrigin;
-}
-
-function _parseHorizontalPosition(
-  transformOrigin: string,
-  regExp: RegExp,
-  transformOriginArray: Array<string | number>,
-  index: number,
-): number {
-  const match = regExp.exec(transformOrigin);
-  if (match == null) {
-    return index;
-  }
-
-  const value = match[0];
-  const valueLower = value.toLowerCase();
-
-  switch (valueLower) {
-    case 'left':
-      transformOriginArray[INDEX_X] = 0;
-      break;
-    case 'right':
-      transformOriginArray[INDEX_X] = '100%';
-      break;
-    case 'center':
-      transformOriginArray[INDEX_X] = '50%';
-      break;
-    default:
-      invariant(false, 'Could not parse transform-origin: %s', transformOrigin);
-  }
-
-  return index + 1;
 }
 
 function _validateTransformOrigin(transformOrigin: Array<string | number>) {
