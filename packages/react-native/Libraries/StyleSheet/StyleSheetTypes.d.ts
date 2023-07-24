@@ -196,7 +196,6 @@ export interface TransformsStyle {
       >[]
     | string
     | undefined;
-  transformOrigin?: Array<string | number> | string | undefined;
   /**
    * @deprecated Use matrix in transform prop instead.
    */
@@ -272,6 +271,7 @@ export interface ViewStyle extends FlexStyle, ShadowStyleIOS, TransformsStyle {
    * Controls whether the View can be the target of touch events.
    */
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto' | undefined;
+  transformOrigin?: Array<string | number> | string | undefined;
 }
 
 export type FontVariant =
