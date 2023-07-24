@@ -23,7 +23,7 @@ export default function processTransformOrigin(
 
     let index = 0;
     let match;
-    while ((match = regExp.exec(input))) {
+    while ((match = regExp.exec(transformOrigin))) {
       const value = match[0];
       const valueLower = value.toLowerCase();
 
@@ -44,11 +44,11 @@ export default function processTransformOrigin(
 
           if (index === INDEX_X) {
             // Handle one-value case
-            const noMoreValuesRemaining = regExp.exec(input) === null;
+            const noMoreValuesRemaining = regExp.exec(transformOrigin) === null;
             invariant(
               noMoreValuesRemaining,
               'Could not parse transform-origin: %s',
-              input,
+              transformOrigin,
             );
             transformOriginArray[INDEX_Y] = yValue;
           } else {
