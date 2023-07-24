@@ -212,7 +212,7 @@ BOOL RCTUpscalingRequired(
 
   // Calculate aspect ratios if needed (don't bother if resizeMode == stretch)
   CGFloat aspect = 0.0, targetAspect = 0.0;
-  if (resizeMode != UIViewContentModeScaleToFill) {
+  if (resizeMode != RCTResizeModeStretch) {
     aspect = sourceSize.width / sourceSize.height;
     targetAspect = destSize.width / destSize.height;
     if (aspect == targetAspect) {
@@ -267,8 +267,8 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
     CFRelease(sourceRef);
     return nil;
   }
-  NSNumber *width = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
-  NSNumber *height = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
+  NSNumber *width = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
+  NSNumber *height = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
   CGSize sourceSize = {width.doubleValue, height.doubleValue};
   CFRelease(imageProperties);
 
@@ -281,7 +281,7 @@ UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloa
     destScale = RCTScreenScale();
   }
 
-  if (resizeMode == UIViewContentModeScaleToFill) {
+  if (resizeMode == RCTResizeModeStretch) {
     // Decoder cannot change aspect ratio, so RCTResizeModeStretch is equivalent
     // to RCTResizeModeCover for our purposes
     resizeMode = RCTResizeModeCover;

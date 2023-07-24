@@ -28,7 +28,6 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTSurfacePresenter.h>
-#import <ReactCommon/RCTLegacyUIManagerConstantsProvider.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
