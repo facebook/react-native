@@ -52,6 +52,7 @@ buck-out
 /.lsp-buck-out
 /packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/
 /packages/react-native/ReactAndroid/src/main/gen
+/.cpplsp.buckd
 
 # Android Studio
 .project
