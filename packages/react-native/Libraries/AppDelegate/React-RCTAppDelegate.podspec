@@ -88,7 +88,9 @@ Pod::Spec.new do |s|
 
   if is_new_arch_enabled
     s.dependency "React-BridgelessCore"
-    s.dependency "React-BridgelessHermes"
+    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+      s.dependency "React-BridgelessHermes"
+    end
     s.dependency "React-BridgelessApple"
   end
 

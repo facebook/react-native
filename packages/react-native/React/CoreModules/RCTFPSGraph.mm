@@ -45,7 +45,7 @@
     _length = (NSUInteger)floor(frame.size.width);
     _height = (NSUInteger)floor(frame.size.height);
     _scale = 60.0 / (CGFloat)_height;
-    _frames = calloc(sizeof(CGFloat), _length);
+    _frames = (CGFloat *)calloc(sizeof(CGFloat), _length);
     _color = color;
 
     [self.layer addSublayer:self.graph];
