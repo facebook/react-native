@@ -144,15 +144,71 @@
   return _frames[index].duration;
 }
 
-- (UIImage *)animatedImageFrameAtIndex:(NSUInteger)index
-{
-  CGImageRef imageRef = CGImageSourceCreateImageAtIndex(_imageSource, index, NULL);
-  if (!imageRef) {
-    return nil;
-  }
-  UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
-  CGImageRelease(imageRef);
-  return image;
++ (BOOL)CGImageContainsAlpha:(CGImageRef)cgImage {
+    if (!cgImage) {
+        return NO;
+    }
+    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
+    BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
+                      alphaInfo == kCGImageAlphaNoneSkipFirst ||
+                      alphaInfo == kCGImageAlphaNoneSkipLast);
+    return hasAlpha;
+}
+
++ (CGColorSpaceRef)colorSpaceGetDeviceRGB {
+    static CGColorSpaceRef colorSpace;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+    });
+    return colorSpace;
+}
+
+- (UIImage *)animatedImageFrameAtIndex:(NSUInteger)index {
+    CGImageRef imageRef = CGImageSourceCreateImageAtIndex(_imageSource, index, NULL);
+    if (!imageRef) {
+        return nil;
+    }
+    
+    // Get the width and height of the image
+    size_t width = CGImageGetWidth(imageRef);
+    size_t height = CGImageGetHeight(imageRef);
+    
+    BOOL hasAlpha = [self.class CGImageContainsAlpha:imageRef];
+    // kCGImageAlphaNone is not supported in CGBitmapContextCreate.
+    // Check #3330 for more detail about why this bitmap is choosen.
+    CGBitmapInfo bitmapInfo;
+    if (hasAlpha) {
+        // iPhone GPU prefer to use BGRA8888, see: https://forums.raywenderlich.com/t/why-mtlpixelformat-bgra8unorm/53489
+        // BGRA8888
+        bitmapInfo = kCGBitmapByteOrder32Host | kCGImageAlphaPremultipliedFirst;
+    } else {
+        // BGR888 previously works on iOS 8~iOS 14, however, iOS 15+ will result a black image. FB9958017
+        // RGB888
+        bitmapInfo = kCGBitmapByteOrderDefault | kCGImageAlphaNoneSkipLast;
+    }
+    
+    // Create a new bitmap context with the same dimensions as the image
+    CGContextRef context = 
+    CGBitmapContextCreate(NULL, width, height, 8, 0, [self.class colorSpaceGetDeviceRGB], bitmapInfo);
+    
+    // Draw the image into the context
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
+    
+    // Get the new image from the context
+    CGImageRef newImageRef = CGBitmapContextCreateImage(context);
+    UIImage *newImage = [[UIImage alloc] initWithCGImage:newImageRef scale:_scale orientation:UIImageOrientationUp];
+    
+    if (newImageRef == nil) {
+        BOOL contextIsNil = context == nil;
+        [self.class reportConverErrWithContextErr:contextIsNil];
+    }
+    // Clean up
+    CGImageRelease(imageRef);
+    CGImageRelease(newImageRef);
+    CGContextRelease(context);
+    
+    return newImage;
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification
