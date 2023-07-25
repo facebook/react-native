@@ -259,7 +259,7 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
+            # The committed lockfile is generated using static libraries and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
             - *pods_cache_key
       - steps: << parameters.steps >>
@@ -847,7 +847,7 @@ jobs:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+        enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -898,9 +898,7 @@ jobs:
               export NO_FLIPPER=1
             fi
 
-            if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
-              export USE_FRAMEWORKS=static
-            elif [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+            if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
               export USE_FRAMEWORKS=dynamic
             fi
 
@@ -960,9 +958,9 @@ jobs:
         enum: ["NewArch", "OldArch"]
       use_frameworks:
         default: "StaticLibraries"
-        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "StaticFrameworks", "DynamicFrameworks"
+        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+        enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -995,11 +993,6 @@ jobs:
 
                   if [[ << parameters.jsengine >> == "JSC" ]]; then
                     export USE_HERMES=0
-                  fi
-
-                  if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
-                    export NO_FLIPPER=1
-                    export USE_FRAMEWORKS=static
                   fi
 
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
@@ -1684,7 +1677,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
-              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1695,22 +1688,12 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1725,11 +1708,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
@@ -1740,32 +1718,7 @@ workflows:
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
                 jsengine: "Hermes"
@@ -1805,7 +1758,7 @@ workflows:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
-              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
       - test_ios:
           name: "Test iOS with Ruby 2.7.7"
           run_unit_tests: true
