@@ -263,7 +263,9 @@ using namespace facebook::react;
   // `transform`
   if ((oldViewProps.transform != newViewProps.transform || oldViewProps.transformOrigin != newViewProps.transformOrigin)
       && ![_propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN containsObject:@"transform"]) {
-    needsInvalidateLayer = YES;
+    auto newTransform = newViewProps.resolveTransform(_layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
+    self.layer.allowsEdgeAntialiasing = newViewProps.transform != Transform::Identity();
   }
 
   // `hitSlop`
@@ -396,7 +398,11 @@ using namespace facebook::react;
   if (_contentView) {
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
-
+  
+  if (_props->transformOrigin.length() > 0) {
+    auto newTransform = _props->resolveTransform(layoutMetrics);
+    self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
+  }
 }
 
 - (BOOL)isJSResponder
@@ -673,10 +679,6 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     layer.cornerRadius = cornerRadius;
     layer.mask = maskLayer;
   }
-  
-  auto newTransform = _props->resolveTransform(_layoutMetrics);
-  self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
-  self.layer.allowsEdgeAntialiasing = _props->transform != Transform::Identity();
 }
 
 #pragma mark - Accessibility
