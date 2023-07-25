@@ -95,6 +95,14 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   isHighlighted = textAttributes.isHighlighted.has_value()
       ? textAttributes.isHighlighted
       : isHighlighted;
+
+  // If an ancestor text component has set `isPressable`, this text component
+  // should not reset `isPressable` to false.
+  isPressable =
+      textAttributes.isPressable.has_value() && *textAttributes.isPressable
+      ? textAttributes.isPressable
+      : isPressable;
+
   layoutDirection = textAttributes.layoutDirection.has_value()
       ? textAttributes.layoutDirection
       : layoutDirection;
@@ -125,6 +133,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              textShadowOffset,
              textShadowColor,
              isHighlighted,
+             isPressable,
              layoutDirection,
              accessibilityRole,
              role,
@@ -147,6 +156,7 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.textShadowOffset,
              rhs.textShadowColor,
              rhs.isHighlighted,
+             rhs.isPressable,
              rhs.layoutDirection,
              rhs.accessibilityRole,
              rhs.role,
@@ -216,6 +226,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
 
       // Special
       debugStringConvertibleItem("isHighlighted", isHighlighted),
+      debugStringConvertibleItem("isPressable", isPressable),
       debugStringConvertibleItem("layoutDirection", layoutDirection),
       debugStringConvertibleItem("accessibilityRole", accessibilityRole),
       debugStringConvertibleItem("role", role),
