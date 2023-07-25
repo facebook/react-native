@@ -90,14 +90,15 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __makeNative(platformConfig: ?PlatformConfig): void {
+    for (const key in this._props) {
+      const value = this._props[key];
+      if (value instanceof AnimatedNode) {
+        value.__makeNative(platformConfig);
+      }
+    }
+
     if (!this.__isNative) {
       this.__isNative = true;
-      for (const key in this._props) {
-        const value = this._props[key];
-        if (value instanceof AnimatedNode) {
-          value.__makeNative(platformConfig);
-        }
-      }
 
       // Since this does not call the super.__makeNative, we need to store the
       // supplied platformConfig here, before calling __connectAnimatedView

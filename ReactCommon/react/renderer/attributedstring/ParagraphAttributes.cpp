@@ -8,8 +8,8 @@
 #include "ParagraphAttributes.h"
 
 #include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/renderer/graphics/conversions.h>
 #include <react/utils/FloatComparison.h>
 
 namespace facebook::react {

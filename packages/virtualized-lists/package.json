@@ -1,6 +1,6 @@
 {
   "name": "@react-native/virtualized-lists",
-  "version": "0.72.1",
+  "version": "0.72.2",
   "description": "Virtualized lists for React Native.",
   "repository": {
     "type": "git",
@@ -9,7 +9,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "invariant": "^2.2.4"
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1"
   },
   "devDependencies": {
     "react-test-renderer": "18.2.0"

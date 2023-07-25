@@ -83,6 +83,16 @@ inline Rect insetBy(Rect const &rect, EdgeInsets const &insets) noexcept {
        rect.size.height - insets.top - insets.bottom}};
 }
 
+/*
+ * Adjusts a rectangle by the given edge outsets.
+ */
+inline Rect outsetBy(Rect const &rect, EdgeInsets const &outsets) noexcept {
+  return Rect{
+      {rect.origin.x - outsets.left, rect.origin.y - outsets.top},
+      {rect.size.width + outsets.left + outsets.right,
+       rect.size.height + outsets.top + outsets.bottom}};
+}
+
 } // namespace react
 } // namespace facebook
 

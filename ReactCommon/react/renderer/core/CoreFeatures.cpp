@@ -13,6 +13,8 @@ namespace react {
 bool CoreFeatures::enablePropIteratorSetter = false;
 bool CoreFeatures::enableMapBuffer = false;
 bool CoreFeatures::blockPaintForUseLayoutEffect = false;
+bool CoreFeatures::useNativeState = false;
+bool CoreFeatures::cacheNSTextStorage = false;
 
 } // namespace react
 } // namespace facebook

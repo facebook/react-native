@@ -106,7 +106,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  private:
   friend class TurboCxxModule;
   friend class TurboModuleBinding;
-  std::unique_ptr<jsi::Object> jsRepresentation_;
+  std::unique_ptr<jsi::WeakObject> jsRepresentation_;
 
   facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,

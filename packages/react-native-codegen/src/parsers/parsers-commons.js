@@ -32,13 +32,20 @@ const {
   getConfigType,
   extractNativeModuleName,
   createParserErrorCapturer,
+  visit,
+  isModuleRegistryCall,
 } = require('./utils');
-
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleTypeIsUnsupported,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
+  throwIfWrongNumberOfCallExpressionArgs,
+  throwIfUntypedModule,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
 } = require('./error-utils');
 
 const {
@@ -345,7 +352,10 @@ function buildSchemaFromConfigType(
   filename: ?string,
   ast: $FlowFixMe,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,
@@ -356,7 +366,7 @@ function buildSchemaFromConfigType(
 ): SchemaType {
   switch (configType) {
     case 'component': {
-      return wrapComponentSchema(buildComponentSchema(ast));
+      return wrapComponentSchema(buildComponentSchema(ast, parser));
     }
     case 'module': {
       if (filename === undefined || filename === null) {
@@ -398,7 +408,10 @@ function buildSchema(
   contents: string,
   filename: ?string,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,
@@ -432,6 +445,71 @@ function buildSchema(
   );
 }
 
+const parseModuleName = (
+  hasteModuleName: string,
+  moduleSpec: $FlowFixMe,
+  ast: $FlowFixMe,
+  parser: Parser,
+): string => {
+  const callExpressions = [];
+  visit(ast, {
+    CallExpression(node) {
+      if (isModuleRegistryCall(node)) {
+        callExpressions.push(node);
+      }
+    },
+  });
+
+  throwIfUnusedModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpec,
+    callExpressions,
+  );
+
+  throwIfMoreThanOneModuleRegistryCalls(
+    hasteModuleName,
+    callExpressions,
+    callExpressions.length,
+  );
+
+  const [callExpression] = callExpressions;
+  const typeParameters = parser.callExpressionTypeParameters(callExpression);
+  const methodName = callExpression.callee.property.name;
+
+  throwIfWrongNumberOfCallExpressionArgs(
+    hasteModuleName,
+    callExpression,
+    methodName,
+    callExpression.arguments.length,
+  );
+
+  throwIfIncorrectModuleRegistryCallArgument(
+    hasteModuleName,
+    callExpression.arguments[0],
+    methodName,
+  );
+
+  const $moduleName = callExpression.arguments[0].value;
+
+  throwIfUntypedModule(
+    typeParameters,
+    hasteModuleName,
+    callExpression,
+    methodName,
+    $moduleName,
+  );
+
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+    hasteModuleName,
+    typeParameters,
+    methodName,
+    $moduleName,
+    parser,
+  );
+
+  return $moduleName;
+};
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -443,4 +521,5 @@ module.exports = {
   buildPropertySchema,
   buildSchemaFromConfigType,
   buildSchema,
+  parseModuleName,
 };

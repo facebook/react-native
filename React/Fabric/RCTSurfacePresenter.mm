@@ -283,6 +283,14 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     RCTSetDispatchW3CPointerEvents(YES);
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:use_native_state")) {
+    CoreFeatures::useNativeState = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_nstextstorage_caching")) {
+    CoreFeatures::cacheNSTextStorage = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

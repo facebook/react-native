@@ -12,7 +12,7 @@
 
 #include "viewPropConversions.h"
 
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
 namespace facebook {

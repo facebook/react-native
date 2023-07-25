@@ -23,10 +23,10 @@ declare module 'react-native/Libraries/Utilities/codegenNativeComponent' {
   import type {HostComponent} from 'react-native';
 
   export interface Options {
-    readonly interfaceOnly?: boolean;
-    readonly paperComponentName?: string;
-    readonly paperComponentNameDeprecated?: string;
-    readonly excludedPlatforms?: ReadonlyArray<'iOS' | 'android'>;
+    readonly interfaceOnly?: boolean | undefined;
+    readonly paperComponentName?: string | undefined;
+    readonly paperComponentNameDeprecated?: string | undefined;
+    readonly excludedPlatforms?: ReadonlyArray<'iOS' | 'android'> | undefined;
   }
 
   export type NativeComponentType<T> = HostComponent<T>;

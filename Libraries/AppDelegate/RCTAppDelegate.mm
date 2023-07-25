@@ -13,12 +13,14 @@
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import "RCTLegacyInteropComponents.h"
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
@@ -67,6 +69,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   self.bridgeAdapter = [[RCTSurfacePresenterBridgeAdapter alloc] initWithBridge:self.bridge
                                                                contextContainer:_contextContainer];
   self.bridge.surfacePresenter = self.bridgeAdapter.surfacePresenter;
+
+  [self unstable_registerLegacyComponents];
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
@@ -78,6 +82,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+
   return YES;
 #else // [macOS
   NSRect frame = NSMakeRect(0,0,1024,768);
@@ -204,6 +209,15 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (BOOL)fabricEnabled
 {
   return YES;
+}
+
+#pragma mark - New Arch Utilities
+
+- (void)unstable_registerLegacyComponents
+{
+  for (NSString *legacyComponent in [RCTLegacyInteropComponents legacyInteropComponents]) {
+    [RCTLegacyViewManagerInteropComponentView supportLegacyViewManagerWithName:legacyComponent];
+  }
 }
 
 #endif

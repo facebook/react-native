@@ -13,14 +13,14 @@
 export interface AlertButton {
   text?: string | undefined;
   onPress?: ((value?: string) => void) | undefined;
-  isPreferred?: boolean;
+  isPreferred?: boolean | undefined;
   style?: 'default' | 'cancel' | 'destructive' | undefined;
 }
 
 interface AlertOptions {
   /** @platform android */
   cancelable?: boolean | undefined;
-  userInterfaceStyle?: 'unspecified' | 'light' | 'dark';
+  userInterfaceStyle?: 'unspecified' | 'light' | 'dark' | undefined;
   /** @platform android */
   onDismiss?: (() => void) | undefined;
 }

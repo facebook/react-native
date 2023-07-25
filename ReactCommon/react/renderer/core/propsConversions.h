@@ -13,8 +13,8 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/RawPropsKey.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Color.h>
-#include <react/renderer/graphics/conversions.h>
 
 namespace facebook {
 namespace react {

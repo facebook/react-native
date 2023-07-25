@@ -10,15 +10,14 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
-#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
+#include <react/renderer/components/text/ParagraphLayoutManager.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 // constants for Text State serialization
@@ -33,8 +32,7 @@ constexpr static MapBuffer::Key TX_STATE_KEY_MOST_RECENT_EVENT_COUNT = 3;
  * State for <Paragraph> component.
  * Represents what to render and how to render.
  */
-class ParagraphState final {
- public:
+struct ParagraphState {
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
@@ -47,22 +45,22 @@ class ParagraphState final {
   ParagraphAttributes paragraphAttributes;
 
   /*
-   * `TextLayoutManager` provides a connection to platform-specific
+   * `ParagraphLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    * This is not on every platform. This is not used on Android, but is
    * used on the iOS mounting layer.
    */
-  std::weak_ptr<TextLayoutManager const> layoutManager;
+  ParagraphLayoutManager paragraphLayoutManager;
 
 #ifdef ANDROID
   ParagraphState(
       AttributedString const &attributedString,
       ParagraphAttributes const &paragraphAttributes,
-      std::weak_ptr<const TextLayoutManager> const &layoutManager)
+      ParagraphLayoutManager const &paragraphLayoutManager)
       : attributedString(attributedString),
         paragraphAttributes(paragraphAttributes),
-        layoutManager(layoutManager) {}
+        paragraphLayoutManager(paragraphLayoutManager) {}
   ParagraphState() = default;
   ParagraphState(
       ParagraphState const &previousState,
@@ -74,5 +72,4 @@ class ParagraphState final {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

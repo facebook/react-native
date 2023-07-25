@@ -312,6 +312,7 @@ const AppRegistry = {
           NativeHeadlessJsTaskSupport &&
           reason instanceof HeadlessJsTaskError
         ) {
+          // $FlowFixMe[unused-promise]
           NativeHeadlessJsTaskSupport.notifyTaskRetry(taskId).then(
             retryPosted => {
               if (!retryPosted) {

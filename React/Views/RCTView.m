@@ -718,8 +718,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 #if DEBUG // [macOS description is a debug-only feature
 - (NSString *)description
 {
-  // [macOS] we shouldn't make assumptions on what super's description is. Just append additional content.
-  return [[super description] stringByAppendingFormat:@" reactTag: %@; frame = %@; layer = %@", self.reactTag, NSStringFromCGRect(self.frame), self.layer];
+  return [[super description] stringByAppendingFormat:@" reactTag: %@; frame = %@; layer = %@",
+                                                      self.reactTag,
+                                                      NSStringFromCGRect(self.frame),
+                                                      self.layer];
 }
 #endif // macOS]
 

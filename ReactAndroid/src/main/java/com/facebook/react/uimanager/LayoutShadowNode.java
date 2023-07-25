@@ -62,6 +62,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
           value = Float.parseFloat(s.substring(0, s.length() - 1));
         } else {
           FLog.w(ReactConstants.TAG, "Unknown value: " + s);
+          unit = YogaUnit.UNDEFINED;
+          value = YogaConstants.UNDEFINED;
         }
       } else if (dynamic.getType() == ReadableType.Number) {
         unit = YogaUnit.POINT;

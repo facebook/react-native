@@ -402,9 +402,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
         CodegenUtils.set_cleanup_done(true)
         codegen_dir = "build/generated/ios"
         ios_folder = '.'
+        rn_path = '../node_modules/react-native'
 
         # Act
-        CodegenUtils.clean_up_build_folder(@base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
+        CodegenUtils.clean_up_build_folder(rn_path, @base_path, ios_folder, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 0)

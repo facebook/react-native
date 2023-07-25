@@ -295,7 +295,7 @@ export interface ImagePropsBase
    *
    * See https://reactnative.dev/docs/image#crossorigin
    */
-  crossOrigin?: 'anonymous' | 'use-credentials';
+  crossOrigin?: 'anonymous' | 'use-credentials' | undefined;
 
   /**
    * Changes the color of all the non-transparent pixels to the tintColor.
@@ -364,7 +364,7 @@ export class Image extends ImageBase {
 }
 
 export interface ImageBackgroundProps extends ImagePropsBase {
-  children?: React.ReactNode;
+  children?: React.ReactNode | undefined;
   imageStyle?: StyleProp<ImageStyle> | undefined;
   style?: StyleProp<ViewStyle> | undefined;
   imageRef?(image: Image): void;

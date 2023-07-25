@@ -110,7 +110,8 @@ Size TextInputShadowNode::measureContent(
       ->measure(
           attributedStringBoxToMeasure(layoutContext),
           getConcreteProps().getEffectiveParagraphAttributes(),
-          layoutConstraints)
+          layoutConstraints,
+          nullptr)
       .size;
 }
 

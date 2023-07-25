@@ -31,14 +31,23 @@ export default class MemoryInfo {
     }
   }
 
+  /**
+   * The maximum size of the heap, in bytes, that is available to the context
+   */
   get jsHeapSizeLimit(): ?number {
     return this._jsHeapSizeLimit;
   }
 
+  /**
+   * The total allocated heap size, in bytes
+   */
   get totalJSHeapSize(): ?number {
     return this._totalJSHeapSize;
   }
 
+  /**
+   * The currently active segment of JS heap, in bytes.
+   */
   get usedJSHeapSize(): ?number {
     return this._usedJSHeapSize;
   }

@@ -3036,7 +3036,7 @@ exports[`expands render area by maxToRenderPerBatch on tick 1`] = `
 </RCTScrollView>
 `;
 
-exports[`gracefully handles negaitve initialScrollIndex 1`] = `
+exports[`gracefully handles negative initialScrollIndex 1`] = `
 <RCTScrollView
   data={
     Array [

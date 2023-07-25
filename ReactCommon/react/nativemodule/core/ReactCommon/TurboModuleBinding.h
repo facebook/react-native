@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
@@ -50,7 +49,7 @@ class TurboModuleBinding {
       jsi::Runtime &runtime,
       const jsi::Value &thisVal,
       const jsi::Value *args,
-      size_t count);
+      size_t count) const;
 
   TurboModuleProviderFunctionType moduleProvider_;
   TurboModuleBindingMode bindingMode_;

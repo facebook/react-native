@@ -9,10 +9,10 @@
 
 export type Timespan = {
   startTime: number;
-  endTime?: number;
-  totalTime?: number;
-  startExtras?: Extras;
-  endExtras?: Extras;
+  endTime?: number | undefined;
+  totalTime?: number | undefined;
+  startExtras?: Extras | undefined;
+  endExtras?: Extras | undefined;
 };
 
 // Extra values should be serializable primitives

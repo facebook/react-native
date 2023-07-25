@@ -14,7 +14,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.ThreadConfined;
-import java.util.List;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
 
@@ -153,15 +152,4 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   @Deprecated
   @Nullable
   String resolveCustomDirectEventName(@Nullable String eventName);
-
-  /**
-   * Helper method to pre-initialize view managers. When using Native ViewConfigs this method will
-   * also pre-compute the constants for a view manager. The purpose is to ensure that we don't block
-   * for getting the constants for view managers during initial rendering of a surface.
-   *
-   * @deprecated this method will be removed in the future
-   * @param viewManagerNames {@link List <String>} names of ViewManagers
-   */
-  @Deprecated
-  void preInitializeViewManagers(List<String> viewManagerNames);
 }

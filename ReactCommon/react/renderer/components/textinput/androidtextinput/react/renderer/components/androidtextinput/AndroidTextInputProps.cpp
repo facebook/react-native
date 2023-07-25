@@ -8,8 +8,8 @@
 #include "AndroidTextInputProps.h"
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/renderer/graphics/conversions.h>
 
 namespace facebook::react {
 
@@ -67,6 +67,10 @@ AndroidTextInputProps::AndroidTextInputProps(
       underlineColorAndroid(CoreFeatures::enablePropIteratorSetter? sourceProps.underlineColorAndroid : convertRawProp(context, rawProps,
           "underlineColorAndroid",
           sourceProps.underlineColorAndroid,
+          {})),
+      accessibilityErrorMessage(convertRawProp(context, rawProps,
+          "accessibilityErrorMessage",
+          sourceProps.accessibilityErrorMessage,
           {})),
       inlineImageLeft(CoreFeatures::enablePropIteratorSetter? sourceProps.inlineImageLeft : convertRawProp(context, rawProps,
           "inlineImageLeft",
@@ -431,6 +435,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["disableFullscreenUI"] = disableFullscreenUI;
   props["textBreakStrategy"] = textBreakStrategy;
   props["underlineColorAndroid"] = toAndroidRepr(underlineColorAndroid);
+  props["accessibilityErrorMessage"] = accessibilityErrorMessage;
   props["inlineImageLeft"] = inlineImageLeft;
   props["inlineImagePadding"] = inlineImagePadding;
   props["importantForAutofill"] = importantForAutofill;

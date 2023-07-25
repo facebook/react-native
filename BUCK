@@ -18,6 +18,7 @@ load(
     "RCT_IMAGE_URL_LOADER_SOCKET",
     "RCT_URL_REQUEST_HANDLER_SOCKET",
     "YOGA_CXX_TARGET",
+    "fb_xplat_cxx_test",
     "get_react_native_ios_target_sdk_version",
     "react_cxx_module_plugin_provider",
     "react_fabric_component_plugin_provider",
@@ -1458,9 +1459,12 @@ rn_apple_xplat_cxx_library(
 
 rn_xplat_cxx_library(
     name = "RCTWebPerformance",
-    srcs = glob([
-        "Libraries/WebPerformance/**/*.cpp",
-    ]),
+    srcs = glob(
+        [
+            "Libraries/WebPerformance/**/*.cpp",
+        ],
+        exclude = ["Libraries/WebPerformance/__tests__/*"],
+    ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [("Libraries/WebPerformance", "*.h")],
@@ -1488,5 +1492,26 @@ rn_xplat_cxx_library(
         ":FBReactNativeSpecJSI",
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("cxxreact:bridge"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "RCTWebPerformance_tests",
+    srcs = glob([
+        "Libraries/WebPerformance/__tests__/*.cpp",
+    ]),
+    headers = glob(["Libraries/WebPerformance/__tests__/*.h"]),
+    header_namespace = "",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++17",
+        "-Wall",
+    ],
+    platforms = (ANDROID, APPLE),
+    deps = [
+        ":RCTWebPerformance",
+        "//xplat/third-party/gmock:gmock",
+        "//xplat/third-party/gmock:gtest",
     ],
 )

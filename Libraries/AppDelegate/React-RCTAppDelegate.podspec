@@ -77,5 +77,16 @@ Pod::Spec.new do |s|
   if is_new_arch_enabled
     s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
+
+    s.script_phases = {
+      :name => "Generate Legacy Components Interop",
+      :script => "
+. ${PODS_ROOT}/../.xcode.env
+${NODE_BINARY} ${REACT_NATIVE_PATH}/scripts/codegen/generate-legacy-interop-components.js -p #{ENV['APP_PATH']} -o ${REACT_NATIVE_PATH}/Libraries/AppDelegate
+      ",
+      :execution_position => :before_compile,
+      :input_files => ["#{ENV['APP_PATH']}/react-native.config.js"],
+      :output_files => ["${REACT_NATIVE_PATH}/Libraries/AppDelegate/RCTLegacyInteropComponents.mm"],
+    }
   end
 end

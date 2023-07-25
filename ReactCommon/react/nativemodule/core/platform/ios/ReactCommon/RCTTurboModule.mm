@@ -59,7 +59,7 @@ static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDicti
 {
   jsi::Object result = jsi::Object(runtime);
   for (NSString *k in value) {
-    result.setProperty(runtime, [k UTF8String], convertObjCObjectToJSIValue(runtime, value[k]));
+    result.setProperty(runtime, convertNSStringToJSIString(runtime, k), convertObjCObjectToJSIValue(runtime, value[k]));
   }
   return result;
 }

@@ -30,12 +30,13 @@ import type {
 const {flattenIntersectionType} = require('../parseTopLevelType');
 const {flattenProperties} = require('../components/componentsUtils');
 
-const {visit, isModuleRegistryCall, verifyPlatforms} = require('../../utils');
-const {resolveTypeAnnotation, getTypes} = require('../utils');
+const {verifyPlatforms} = require('../../utils');
+const {resolveTypeAnnotation} = require('../utils');
 
 const {
   parseObjectProperty,
   buildPropertySchema,
+  parseModuleName,
 } = require('../../parsers-commons');
 const {typeEnumResolution} = require('../../parsers-primitives');
 
@@ -66,15 +67,9 @@ const {
 } = require('../../errors');
 
 const {
-  throwIfUntypedModule,
-  throwIfUnusedModuleInterfaceParserError,
   throwIfModuleInterfaceNotFound,
   throwIfModuleInterfaceIsMisnamed,
-  throwIfWrongNumberOfCallExpressionArgs,
-  throwIfMoreThanOneModuleRegistryCalls,
   throwIfMoreThanOneModuleInterfaceParserError,
-  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
-  throwIfIncorrectModuleRegistryCallArgument,
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
 } = require('../../error-utils');
@@ -258,23 +253,14 @@ function translateTypeAnnotation(
             parser,
           );
 
-          const properties = annotatedElement.typeAnnotation.members.map(
-            member => {
-              return {
-                name: member.key.name,
-                optional: true,
-                typeAnnotation: translateTypeAnnotation(
-                  hasteModuleName,
-                  member.typeAnnotation.typeAnnotation,
-                  types,
-                  aliasMap,
-                  enumMap,
-                  tryParse,
-                  cxxOnly,
-                  parser,
-                ),
-              };
-            },
+          const properties = parser.computePartialProperties(
+            annotatedElement.typeAnnotation.members,
+            hasteModuleName,
+            types,
+            aliasMap,
+            enumMap,
+            tryParse,
+            cxxOnly,
           );
 
           return emitObject(nullable, properties);
@@ -445,7 +431,7 @@ function buildModuleSchema(
   tryParse: ParserErrorCapturer,
   parser: Parser,
 ): NativeModuleSchema {
-  const types = getTypes(ast);
+  const types = parser.getTypes(ast);
   const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
     t => parser.isModuleInterface(t),
   );
@@ -468,65 +454,14 @@ function buildModuleSchema(
   throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
 
   // Parse Module Name
-  const moduleName = ((): string => {
-    const callExpressions = [];
-    visit(ast, {
-      CallExpression(node) {
-        if (isModuleRegistryCall(node)) {
-          callExpressions.push(node);
-        }
-      },
-    });
-
-    throwIfUnusedModuleInterfaceParserError(
-      hasteModuleName,
-      moduleSpec,
-      callExpressions,
-    );
-
-    throwIfMoreThanOneModuleRegistryCalls(
-      hasteModuleName,
-      callExpressions,
-      callExpressions.length,
-    );
-
-    const [callExpression] = callExpressions;
-    const {typeParameters} = callExpression;
-    const methodName = callExpression.callee.property.name;
-
-    throwIfWrongNumberOfCallExpressionArgs(
-      hasteModuleName,
-      callExpression,
-      methodName,
-      callExpression.arguments.length,
-    );
-
-    throwIfIncorrectModuleRegistryCallArgument(
-      hasteModuleName,
-      callExpression.arguments[0],
-      methodName,
-    );
-
-    const $moduleName = callExpression.arguments[0].value;
-
-    throwIfUntypedModule(
-      typeParameters,
-      hasteModuleName,
-      callExpression,
-      methodName,
-      $moduleName,
-    );
-
-    throwIfIncorrectModuleRegistryCallTypeParameterParserError(
-      hasteModuleName,
-      typeParameters,
-      methodName,
-      $moduleName,
-      parser,
-    );
-
-    return $moduleName;
-  })();
+  // Also checks and throws error if:
+  // - Module Interface is Unused
+  // - More than 1 Module Registry Calls
+  // - Wrong number of Call Expression Args
+  // - Module Registry Call Args are Incorrect
+  // - Module is Untyped
+  // - Module Registry Call Type Parameter is Icorrect
+  const moduleName = parseModuleName(hasteModuleName, moduleSpec, ast, parser);
 
   // Some module names use platform suffix to indicate platform-exclusive modules.
   // Eventually this should be made explicit in the Flow type itself.

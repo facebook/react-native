@@ -80,7 +80,9 @@ declare var Blob: {
   new (blobParts?: Array<Blob | string>, options?: BlobOptions): Blob;
 };
 
-type FormDataValue = string | {name?: string; type?: string; uri: string};
+type FormDataValue =
+  | string
+  | {name?: string | undefined; type?: string | undefined; uri: string};
 
 type FormDataPart =
   | {
@@ -90,8 +92,8 @@ type FormDataPart =
   | {
       uri: string;
       headers: {[name: string]: string};
-      name?: string;
-      type?: string;
+      name?: string | undefined;
+      type?: string | undefined;
     };
 
 declare class FormData {
@@ -160,7 +162,7 @@ declare interface RequestInit {
   method?: string | undefined;
   mode?: RequestMode_ | undefined;
   referrer?: string | undefined;
-  window?: any;
+  window?: any | undefined;
   signal?: AbortSignal | undefined;
 }
 
@@ -409,7 +411,7 @@ declare class URLSearchParams {
 }
 
 interface WebSocketMessageEvent extends Event {
-  data?: any;
+  data?: any | undefined;
 }
 interface WebSocketErrorEvent extends Event {
   message: string;
@@ -493,9 +495,9 @@ declare class AbortSignal implements EventTarget {
     options?:
       | boolean
       | {
-          capture?: boolean;
-          once?: boolean;
-          passive?: boolean;
+          capture?: boolean | undefined;
+          once?: boolean | undefined;
+          passive?: boolean | undefined;
         },
   ) => void;
 
@@ -505,7 +507,7 @@ declare class AbortSignal implements EventTarget {
     options?:
       | boolean
       | {
-          capture?: boolean;
+          capture?: boolean | undefined;
         },
   ) => void;
 }

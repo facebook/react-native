@@ -23,7 +23,7 @@ export interface ViewToken {
   key: string;
   index: number | null;
   isViewable: boolean;
-  section?: any;
+  section?: any | undefined;
 }
 
 export interface ViewabilityConfig {
@@ -188,7 +188,7 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    * The default accessor functions assume this is an Array<{key: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
-  data?: any;
+  data?: any | undefined;
 
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
@@ -208,7 +208,7 @@ export interface VirtualizedListWithoutRenderItemProps<ItemT>
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
    * `data` prop, stick it here and treat it immutably.
    */
-  extraData?: any;
+  extraData?: any | undefined;
 
   /**
    * A generic accessor for extracting an item from any sort of data blob.

@@ -56,7 +56,7 @@ public class ReactActivityDelegate {
     return null;
   }
 
-  private @NonNull Bundle composeLaunchOptions() {
+  protected @NonNull Bundle composeLaunchOptions() {
     Bundle composedLaunchOptions = getLaunchOptions();
     if (isFabricEnabled()) {
       if (composedLaunchOptions == null) {
@@ -68,6 +68,10 @@ public class ReactActivityDelegate {
   }
 
   protected ReactRootView createRootView() {
+    return new ReactRootView(getContext());
+  }
+
+  protected ReactRootView createRootView(Bundle initialProps) {
     return new ReactRootView(getContext());
   }
 
@@ -98,7 +102,7 @@ public class ReactActivityDelegate {
             getPlainActivity(), getReactNativeHost(), mainComponentName, launchOptions) {
           @Override
           protected ReactRootView createRootView() {
-            return ReactActivityDelegate.this.createRootView();
+            return ReactActivityDelegate.this.createRootView(launchOptions);
           }
         };
     if (mainComponentName != null) {

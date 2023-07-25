@@ -425,10 +425,12 @@ inline void fromRawValue(
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = YGValue{
-            folly::to<float>(stringValue.substr(0, stringValue.length() - 1)),
-            YGUnitPercent};
-        return;
+        auto tryValue = folly::tryTo<float>(
+            std::string_view(stringValue).substr(0, stringValue.length() - 1));
+        if (tryValue.hasValue()) {
+          result = YGValue{tryValue.value(), YGUnitPercent};
+          return;
+        }
       } else {
         auto tryValue = folly::tryTo<float>(stringValue);
         if (tryValue.hasValue()) {

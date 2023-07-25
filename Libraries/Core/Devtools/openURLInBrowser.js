@@ -13,6 +13,7 @@
 const getDevServer = require('./getDevServer');
 
 function openURLInBrowser(url: string) {
+  // $FlowFixMe[unused-promise]
   fetch(getDevServer().url + 'open-url', {
     method: 'POST',
     body: JSON.stringify({url}),

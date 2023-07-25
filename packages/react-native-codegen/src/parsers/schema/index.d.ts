@@ -5,6 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { SchemaType } from "../../CodegenSchema";
+import type { SchemaType } from '../../CodegenSchema';
 
 export declare function parse(filename: string): SchemaType | undefined;

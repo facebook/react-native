@@ -32,11 +32,7 @@ public class CanvasUtil {
    */
   @SuppressLint({"SoonBlockedPrivateApi", "PrivateApi"})
   public static void enableZ(Canvas canvas, boolean enable) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT >= 29) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       if (enable) {
         canvas.enableZ();
       } else {
@@ -79,11 +75,7 @@ public class CanvasUtil {
 
         mReorderBarrierMethod.setAccessible(true);
         mInorderBarrierMethod.setAccessible(true);
-      } catch (IllegalAccessException ignore) {
-        // Do nothing
-      } catch (InvocationTargetException ignore) {
-        // Do nothing
-      } catch (NoSuchMethodException ignore) {
+      } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ignore) {
         // Do nothing
       }
       mOrderMethodsFetched = true;

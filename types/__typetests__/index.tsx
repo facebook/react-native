@@ -26,6 +26,7 @@ import {
   AccessibilityInfo,
   ActionSheetIOS,
   Alert,
+  Animated,
   AppState,
   AppStateStatus,
   Appearance,
@@ -246,6 +247,37 @@ const s = StyleSheet.create({
   },
 });
 const f1: TextStyle = s.shouldWork;
+
+const styleDimensionValueValidPoint: ViewStyle = {
+  width: 1,
+};
+
+const styleDimensionValueValidAuto: ViewStyle = {
+  width: 'auto',
+};
+
+const styleDimensionValueValidPct: ViewStyle = {
+  width: '5%',
+};
+
+const styleDimensionValueValidAnimated: ViewStyle = {
+  width: new Animated.Value(5),
+};
+
+const styleDimensionValueInvalid1: ViewStyle = {
+  // @ts-expect-error
+  width: '5',
+};
+
+const styleDimensionValueInvalid2: ViewStyle = {
+  // @ts-expect-error
+  width: '5px',
+};
+
+const styleDimensionValueInvalid3: ViewStyle = {
+  // @ts-expect-error
+  width: 'A%',
+};
 
 // StyleSheet.compose
 // It creates a new style object by composing two existing styles

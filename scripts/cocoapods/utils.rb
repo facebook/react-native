@@ -54,7 +54,7 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        projects = self.exrtract_projects(installer)
+        projects = self.extract_projects(installer)
 
         # Hermes does not support `i386` architecture
         excluded_archs_default = self.has_pod(installer, 'hermes-engine') ? "i386" : ""
@@ -70,7 +70,7 @@ class ReactNativePodsUtils
 
     def self.set_node_modules_user_settings(installer, react_native_path)
         Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = self.exrtract_projects(installer)
+        projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -82,7 +82,7 @@ class ReactNativePodsUtils
     end
 
     def self.fix_library_search_paths(installer)
-        projects = self.exrtract_projects(installer)
+        projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -125,19 +125,7 @@ class ReactNativePodsUtils
         return if !fabric_enabled
 
         fabric_flag = "-DRN_FABRIC_ENABLED"
-        projects = self.exrtract_projects(installer)
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                cflags = config.build_settings["OTHER_CFLAGS"] ? config.build_settings["OTHER_CFLAGS"] : "$(inherited)"
-
-                if !cflags.include?(fabric_flag)
-                    cflags = "#{cflags} #{fabric_flag}"
-                end
-                config.build_settings["OTHER_CFLAGS"] = cflags
-            end
-            project.save()
-        end
+        self.add_compiler_flag_to_project(installer, fabric_flag)
     end
 
     private
@@ -198,7 +186,7 @@ class ReactNativePodsUtils
     def self.update_search_paths(installer)
         return if ENV['USE_FRAMEWORKS'] == nil
 
-        projects = self.exrtract_projects(installer)
+        projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
@@ -230,11 +218,67 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.exrtract_projects(installer)
+    def self.enable_hermes_profiler(installer, enable_hermes_profiler: false)
+        return if !enable_hermes_profiler
+
+        Pod::UI.puts "[Hermes Profiler] Enable Hermes Sample profiler"
+        # self.add_compiler_flag_to_project(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
+        self.add_compiler_flag_to_pods(installer, "-DRCT_REMOTE_PROFILE=1", configuration: "Release")
+    end
+
+    # ========= #
+    # Utilities #
+    # ========= #
+
+    def self.extract_projects(installer)
         return installer.aggregate_targets
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
             .push(installer.pods_project)
+    end
+
+    def self.add_compiler_flag_to_project(installer, flag, configuration: nil)
+        projects = self.extract_projects(installer)
+
+        projects.each do |project|
+            project.build_configurations.each do |config|
+                self.set_flag_in_config(config, flag, configuration: configuration)
+            end
+            project.save()
+        end
+    end
+
+    def self.add_compiler_flag_to_pods(installer, flag, configuration: nil)
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                self.set_flag_in_config(config, flag, configuration: configuration)
+            end
+        end
+    end
+
+    def self.set_flag_in_config(config, flag, configuration: nil)
+        if configuration == nil || config.name == configuration
+            self.add_flag_for_key(config, flag, "OTHER_CFLAGS")
+            self.add_flag_for_key(config, flag, "OTHER_CPLUSPLUSFLAGS")
+        end
+    end
+
+
+    def self.add_flag_for_key(config, flag, key)
+        current_setting = config.build_settings[key] ? config.build_settings[key] : "$(inherited)"
+
+        if current_setting.kind_of?(Array)
+            current_setting = current_setting
+            .map { |s| s.gsub('"', '') }
+            .map { |s| s.gsub('\"', '') }
+            .join(" ")
+        end
+
+        if !current_setting.include?(flag)
+            current_setting = "#{current_setting} #{flag}"
+        end
+
+        config.build_settings[key] = current_setting
     end
 
     def self.add_search_path_if_not_included(current_search_paths, new_search_path)

@@ -18,10 +18,14 @@ import type {
   NativeModuleParamTypeAnnotation,
   NativeModuleEnumMembers,
   NativeModuleEnumMemberType,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
-import type {TypeDeclarationMap} from '../utils';
+import type {ParserErrorCapturer, TypeDeclarationMap} from '../utils';
+
+const {typeScriptTranslateTypeAnnotation} = require('./modules');
 
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
@@ -209,7 +213,69 @@ class TypeScriptParser implements Parser {
   ): $FlowFixMe {
     return types[typeAnnotation.typeParameters.params[0].typeName.name];
   }
+
+  /**
+   * TODO(T108222691): Use flow-types for @babel/parser
+   */
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+    return ast.body.reduce((types, node) => {
+      switch (node.type) {
+        case 'ExportNamedDeclaration': {
+          if (node.declaration) {
+            switch (node.declaration.type) {
+              case 'TSTypeAliasDeclaration':
+              case 'TSInterfaceDeclaration':
+              case 'TSEnumDeclaration': {
+                types[node.declaration.id.name] = node.declaration;
+                break;
+              }
+            }
+          }
+          break;
+        }
+        case 'TSTypeAliasDeclaration':
+        case 'TSInterfaceDeclaration':
+        case 'TSEnumDeclaration': {
+          types[node.id.name] = node;
+          break;
+        }
+      }
+      return types;
+    }, {});
+  }
+
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
+    return callExpression.typeParameters || null;
+  }
+
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe> {
+    return properties.map(prop => {
+      return {
+        name: prop.key.name,
+        optional: true,
+        typeAnnotation: typeScriptTranslateTypeAnnotation(
+          hasteModuleName,
+          prop.typeAnnotation.typeAnnotation,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          this,
+        ),
+      };
+    });
+  }
 }
+
 module.exports = {
   TypeScriptParser,
 };

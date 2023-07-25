@@ -64,6 +64,9 @@ def use_react_native! (
   ios_folder: 'ios'
 )
 
+  # Set the app_path as env variable so the podspecs can access it.
+  ENV['APP_PATH'] = app_path
+
   # Current target definition is provided by Cocoapods and it refers to the target
   # that has invoked the `use_react_native!` function.
   ReactNativePodsUtils.detect_use_frameworks(current_target_definition)
@@ -203,7 +206,13 @@ end
 # - installer: the Cocoapod object that allows to customize the project.
 # - react_native_path: path to React Native.
 # - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
-def react_native_post_install(installer, react_native_path = "../node_modules/react-native", mac_catalyst_enabled: false)
+# - enable_hermes_profiler: whether the hermes profiler should be turned on in Release mode
+def react_native_post_install(
+  installer, react_native_path = "../node_modules/react-native",
+  mac_catalyst_enabled: false,
+  enable_hermes_profiler: false
+)
+  enable_hermes_profiler = enable_hermes_profiler || ENV["ENABLE_HERMES_PROFILER"] == "1"
   ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
@@ -219,10 +228,12 @@ def react_native_post_install(installer, react_native_path = "../node_modules/re
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
+  ReactNativePodsUtils.enable_hermes_profiler(installer, enable_hermes_profiler: enable_hermes_profiler)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
+
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end

@@ -43,7 +43,7 @@ void TurboModuleBinding::install(
               jsi::Runtime &rt,
               const jsi::Value &thisVal,
               const jsi::Value *args,
-              size_t count) mutable {
+              size_t count) {
             return binding.getModule(rt, thisVal, args, count);
           }));
 }
@@ -56,7 +56,7 @@ jsi::Value TurboModuleBinding::getModule(
     jsi::Runtime &runtime,
     const jsi::Value &thisVal,
     const jsi::Value *args,
-    size_t count) {
+    size_t count) const {
   if (count < 1) {
     throw std::invalid_argument(
         "__turboModuleProxy must be called with at least 1 argument");
@@ -75,25 +75,33 @@ jsi::Value TurboModuleBinding::getModule(
       return jsi::Object::createFromHostObject(runtime, std::move(module));
     }
 
-    auto &jsRepresentation = module->jsRepresentation_;
-    if (!jsRepresentation) {
-      jsRepresentation = std::make_unique<jsi::Object>(runtime);
-      if (bindingMode_ == TurboModuleBindingMode::Prototype) {
-        // Option 1: create plain object, with it's prototype mapped back to the
-        // hostobject. Any properties accessed are stored on the plain object
-        auto hostObject =
-            jsi::Object::createFromHostObject(runtime, std::move(module));
-        jsRepresentation->setProperty(
-            runtime, "__proto__", std::move(hostObject));
-      } else {
-        // Option 2: eagerly install all hostfunctions at this point, avoids
-        // prototype
-        for (auto &propName : module->getPropertyNames(runtime)) {
-          module->get(runtime, propName);
-        }
+    auto &weakJsRepresentation = module->jsRepresentation_;
+    if (weakJsRepresentation) {
+      auto jsRepresentation = weakJsRepresentation->lock(runtime);
+      if (!jsRepresentation.isUndefined()) {
+        return jsRepresentation;
       }
     }
-    return jsi::Value(runtime, *jsRepresentation);
+
+    // No JS representation found, or object has been collected
+    jsi::Object jsRepresentation(runtime);
+    weakJsRepresentation =
+        std::make_unique<jsi::WeakObject>(runtime, jsRepresentation);
+
+    if (bindingMode_ == TurboModuleBindingMode::Prototype) {
+      // Option 1: create plain object, with it's prototype mapped back to the
+      // hostobject. Any properties accessed are stored on the plain object
+      auto hostObject =
+          jsi::Object::createFromHostObject(runtime, std::move(module));
+      jsRepresentation.setProperty(runtime, "__proto__", std::move(hostObject));
+    } else {
+      // Option 2: eagerly install all hostfunctions at this point, avoids
+      // prototype
+      for (auto &propName : module->getPropertyNames(runtime)) {
+        module->get(runtime, propName);
+      }
+    }
+    return jsRepresentation;
   } else {
     return jsi::Value::null();
   }

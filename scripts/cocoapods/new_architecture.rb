@@ -50,7 +50,8 @@ class NewArchitectureHelper
 
                 if config_name == "Release"
                     config_file.attributes['OTHER_CPLUSPLUSFLAGS'] = config_file.attributes['OTHER_CPLUSPLUSFLAGS'] + ndebug_flag
-                    config_file.attributes['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                    other_cflags = config_file.attributes['OTHER_CFLAGS'] != nil ? config_file.attributes['OTHER_CFLAGS'] : "$(inherited)"
+                    config_file.attributes['OTHER_CFLAGS'] = other_cflags + ndebug_flag
                 end
 
                 xcconfig_path = aggregate_target.xcconfig_path(config_name)
@@ -68,9 +69,10 @@ class NewArchitectureHelper
 
             target_installation_result.native_target.build_configurations.each do |config|
                 if config.name == "Release"
-                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : ""
+                    current_flags = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = current_flags + ndebug_flag
-                    config.build_settings['OTHER_CFLAGS'] = "$(inherited)" + ndebug_flag
+                    current_cflags = config.build_settings['OTHER_CFLAGS'] != nil ? config.build_settings['OTHER_CFLAGS'] : "$(inherited)"
+                    config.build_settings['OTHER_CFLAGS'] = current_cflags + ndebug_flag
                 end
             end
         end

@@ -12,9 +12,9 @@
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/renderer/graphics/conversions.h>
 
 namespace facebook::react {
 

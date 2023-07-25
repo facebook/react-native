@@ -704,6 +704,14 @@ export type Props = $ReadOnly<{|
   ...AndroidProps,
 
   /**
+   * String to be read by screenreaders to indicate an error state. The acceptable parameters
+   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
+   * the error message. Setting accessibilityInvalid to false removes the error message.
+   */
+  accessibilityErrorMessage?: ?Stringish,
+  accessibilityInvalid?: ?boolean,
+
+  /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
    * - `characters`: all characters.
@@ -1520,6 +1528,12 @@ function InternalTextInput(props: Props): React.Node {
   }
 
   const accessible = props.accessible !== false;
+
+  const accessibilityErrorMessage =
+    props.accessibilityInvalid === true
+      ? props.accessibilityErrorMessage
+      : null;
+
   const focusable = props.focusable !== false;
 
   const config = React.useMemo(
@@ -1597,6 +1611,7 @@ function InternalTextInput(props: Props): React.Node {
         ref={ref}
         {...otherProps}
         {...eventHandlers}
+        accessibilityErrorMessage={accessibilityErrorMessage}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -1650,6 +1665,7 @@ function InternalTextInput(props: Props): React.Node {
         ref={ref}
         {...otherProps}
         {...eventHandlers}
+        accessibilityErrorMessage={accessibilityErrorMessage}
         accessibilityState={_accessibilityState}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}

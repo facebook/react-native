@@ -49,6 +49,7 @@ rn_xplat_cxx_library(
     deps = [
         "//xplat/folly:dynamic",
         react_native_xplat_target("runtimeexecutor:runtimeexecutor"),
+        react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("butter:butter"),
         react_native_xplat_target("callinvoker:callinvoker"),

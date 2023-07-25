@@ -10,11 +10,11 @@
 
 'use strict';
 import type {ExtendsPropsShape} from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 import type {CommandOptions} from './options';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
-const {getTypes} = require('../utils');
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {categorizeProps} = require('./extends');
@@ -185,9 +185,10 @@ function getCommandProperties(
 type PropsAST = Object;
 
 // $FlowFixMe[signature-verification-failure] TODO(T108222691): Use flow-types for @babel/parser
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
+function buildComponentSchema(
+  ast: $FlowFixMe,
+  parser: Parser,
+): ComponentSchemaBuilderConfig {
   const {
     componentName,
     propsTypeName,
@@ -196,7 +197,7 @@ function buildComponentSchema(ast): ComponentSchemaBuilderConfig {
     optionsExpression,
   } = findComponentConfig(ast);
 
-  const types = getTypes(ast);
+  const types = parser.getTypes(ast);
 
   const propProperties = getProperties(propsTypeName, types);
   const commandOptions = getCommandOptions(commandOptionsExpression);

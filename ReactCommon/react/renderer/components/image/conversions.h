@@ -12,7 +12,7 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook {

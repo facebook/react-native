@@ -28,15 +28,22 @@ using RCTTextLayoutFragmentEnumerationBlock =
 
 - (facebook::react::TextMeasurement)measureAttributedString:(facebook::react::AttributedString)attributedString
                                         paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                          layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+                                          layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                                textStorage:(NSTextStorage *_Nullable)textStorage;
 
 - (facebook::react::TextMeasurement)measureNSAttributedString:(NSAttributedString *)attributedString
                                           paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                                            layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints;
+                                            layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                                                  textStorage:(NSTextStorage *_Nullable)textStorage;
+
+- (NSTextStorage *)textStorageForAttributesString:(facebook::react::AttributedString)attributedString
+                              paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
+                                             size:(CGSize)size;
 
 - (void)drawAttributedString:(facebook::react::AttributedString)attributedString
          paragraphAttributes:(facebook::react::ParagraphAttributes)paragraphAttributes
-                       frame:(CGRect)frame;
+                       frame:(CGRect)frame
+                 textStorage:(NSTextStorage *_Nullable)textStorage;
 
 - (facebook::react::LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedString)attributedString
                                               paragraphAttributes:

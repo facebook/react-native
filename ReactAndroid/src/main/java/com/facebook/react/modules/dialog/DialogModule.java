@@ -234,11 +234,7 @@ public class DialogModule extends NativeDialogManagerAndroidSpec implements Life
 
   @Override
   public void invalidate() {
+    getReactApplicationContext().removeLifecycleEventListener(this);
     super.invalidate();
-
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
-    }
   }
 }

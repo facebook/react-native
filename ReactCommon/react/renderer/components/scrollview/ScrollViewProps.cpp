@@ -9,8 +9,8 @@
 
 #include <react/renderer/components/scrollview/conversions.h>
 #include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/renderer/graphics/conversions.h>
 
 #include <react/renderer/core/propsConversions.h>
 
@@ -126,6 +126,15 @@ ScrollViewProps::ScrollViewProps(
                     rawProps,
                     "keyboardDismissMode",
                     sourceProps.keyboardDismissMode,
+                    {})),
+      maintainVisibleContentPosition(
+          CoreFeatures::enablePropIteratorSetter
+              ? sourceProps.maintainVisibleContentPosition
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "maintainVisibleContentPosition",
+                    sourceProps.maintainVisibleContentPosition,
                     {})),
       maximumZoomScale(
           CoreFeatures::enablePropIteratorSetter
@@ -337,6 +346,7 @@ void ScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(directionalLockEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(indicatorStyle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(keyboardDismissMode);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(maintainVisibleContentPosition);
     RAW_SET_PROP_SWITCH_CASE_BASIC(maximumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(minimumZoomScale);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollEnabled);
@@ -413,6 +423,10 @@ SharedDebugStringConvertibleList ScrollViewProps::getDebugProps() const {
               "keyboardDismissMode",
               keyboardDismissMode,
               defaultScrollViewProps.keyboardDismissMode),
+          debugStringConvertibleItem(
+              "maintainVisibleContentPosition",
+              maintainVisibleContentPosition,
+              defaultScrollViewProps.maintainVisibleContentPosition),
           debugStringConvertibleItem(
               "maximumZoomScale",
               maximumZoomScale,

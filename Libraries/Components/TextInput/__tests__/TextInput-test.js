@@ -186,6 +186,7 @@ describe('TextInput', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}
@@ -231,6 +232,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}
@@ -286,7 +288,7 @@ describe('TextInput compat with web', () => {
       'aria-label': 'label',
       'aria-labelledby': 'labelledby',
       'aria-level': 3,
-      'aria-live': 'polite',
+      // aria-live': 'polite', [TODO: https://github.com/facebook/react-native-deprecated-modules/pull/20]
       'aria-modal': true,
       'aria-multiline': true,
       'aria-multiselectable': true,
@@ -315,6 +317,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessibilityState={
           Object {
             "busy": true,
@@ -345,7 +348,6 @@ describe('TextInput compat with web', () => {
         aria-label="label"
         aria-labelledby="labelledby"
         aria-level={3}
-        aria-live="polite"
         aria-modal={true}
         aria-multiline={true}
         aria-multiselectable={true}
@@ -407,6 +409,7 @@ describe('TextInput compat with web', () => {
 
     expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityErrorMessage={null}
         accessible={true}
         allowFontScaling={true}
         focusable={true}

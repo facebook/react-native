@@ -46,7 +46,7 @@ references:
   #        Dependency Anchors
   # -------------------------
   dependency_versions:
-    xcode_version: &xcode_version "14.0.1"
+    xcode_version: &xcode_version "14.2.0"
     nodelts_image: &nodelts_image "cimg/node:18.12.1"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:16.18.1"
 
@@ -69,6 +69,7 @@ references:
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -160,14 +161,55 @@ commands:
           command: mkdir -p ./reports/{buck,build,junit,outputs}
 
   setup_ruby:
+    parameters:
+      ruby_version:
+        default: "2.6.10"
+        type: string
     steps:
       - restore_cache:
           key: *gems_cache_key
       - run:
+          name: Set Required Ruby
+          command: echo << parameters.ruby_version >> > /tmp/required_ruby
+      - restore_cache:
+          key: *rbenv_cache_key
+      - run:
           name: Bundle Install
           command: |
-            source /usr/local/share/chruby/auto.sh
+            # Check if rbenv is installed. CircleCI is migrating to rbenv so we may not need to always install it.
+
+            if [[ -z "$(command -v rbenv)" ]]; then
+              brew install rbenv ruby-build
+              # Load and init rbenv
+              (rbenv init 2> /dev/null) || true
+              echo '' >>  ~/.bash_profile
+              echo 'eval "$(rbenv init - bash)"' >> ~/.bash_profile
+              source ~/.bash_profile
+            else
+              echo "rbenv found; Skipping installation"
+            fi
+
+            brew reinstall libyaml
+            gem install psych -- --with-libyaml-dir=$(brew --prefix libyaml)
+            export RUBY_CONFIGURE_OPTS=--with-libyaml-dir=$(brew --prefix libyaml)
+
+            # Install the right version of ruby
+            if [[ -z "$(rbenv versions | grep << parameters.ruby_version >>)" ]]; then
+              # ensure that `ruby-build` can see all the available versions of Ruby
+              # some PRs received machines in a weird state, this should make the pipelines
+              # more robust.
+              brew update && brew upgrade ruby-build
+              rbenv install << parameters.ruby_version >>
+            fi
+
+            # Set ruby dependencies
+            rbenv global << parameters.ruby_version >>
+            gem install bundler
             bundle check || bundle install --path vendor/bundle --clean
+      - save_cache:
+          key: *rbenv_cache_key
+          paths:
+            - ~/.rbenv
       - save_cache:
           key: *gems_cache_key
           paths:
@@ -566,12 +608,17 @@ jobs:
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
         type: enum
         enum: ["Hermes", "JSC"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     environment:
       - REPORTS_DIR: "./reports/junit"
     steps:
       - checkout_code_with_cache
       - setup_artifacts
-      - setup_ruby
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - brew_install:
           package: xcbeautify
       - run:
@@ -597,11 +644,6 @@ jobs:
       - run:
           name: "Brew: Tap wix/brew"
           command: brew tap wix/brew
-      - run:
-          # Python 3.10 already exists in the environment, this is a workaround for:
-          # https://github.com/actions/setup-python/issues/577
-          name: "Unlink environment's Python 3.10"
-          command: brew unlink python@3.10
       - brew_install:
           package: applesimutils watchman
 
@@ -618,7 +660,8 @@ jobs:
 
       - run:
           name: Setup the CocoaPods environment
-          command: bundle exec pod setup
+          command: |
+            bundle exec pod setup
 
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
@@ -632,7 +675,9 @@ jobs:
                           export USE_HERMES=0
                         fi
 
-                        cd packages/rn-tester && bundle exec pod install --verbose
+                        cd packages/rn-tester
+                        bundle install
+                        bundle exec pod install --verbose
 
       # -------------------------
       # Runs iOS unit tests
@@ -862,6 +907,10 @@ jobs:
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
         enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -871,6 +920,8 @@ jobs:
       - attach_workspace:
           at: .
       - *attach_hermes_workspace
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - when:
           condition:
             equal: ["Hermes", << parameters.jsengine >>]
@@ -894,8 +945,6 @@ jobs:
           command: |
             cd /tmp/$PROJECT_NAME/ios
 
-            bundle install
-
             if [[ << parameters.flavor >> == "Release" ]]; then
               export PRODUCTION=1
             fi
@@ -918,6 +967,7 @@ jobs:
               export USE_FRAMEWORKS=dynamic
             fi
 
+            bundle install
             bundle exec pod install
       - run:
           name: Build template project
@@ -944,6 +994,10 @@ jobs:
         description: Which React Native architecture to use. Must be one of "OldArch", "NewArch".
         type: enum
         enum: ["NewArch", "OldArch"]
+      ruby_version:
+        default: "2.6.10"
+        description: The version of ruby that must be used
+        type: string
     steps:
       - checkout_code_with_cache
       - run_yarn
@@ -956,7 +1010,8 @@ jobs:
           name: Delete iOS Simulators
           background: true
           command: sudo rm -rf /Library/Developer/CoreSimulator/Profiles/Runtimes/
-
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
@@ -973,7 +1028,10 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  cd packages/rn-tester && bundle exec pod install
+                  cd packages/rn-tester
+
+                  bundle install
+                  bundle exec pod install
 
       - run:
           name: Build RNTester
@@ -1644,6 +1702,20 @@ workflows:
       - test_ios_template:
           requires:
             - build_npm_package
+          name: "Test Template with Ruby 2.7.7"
+          ruby_version: "2.7.7"
+          architecture: "NewArch"
+          flavor: "Debug"
+      - test_ios_template:
+          requires:
+            - build_npm_package
+          name: "Test Template with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+          flavor: "Debug"
+      - test_ios_template:
+          requires:
+            - build_npm_package
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
@@ -1775,10 +1847,34 @@ workflows:
       - test_ios_rntester:
           requires:
             - build_hermes_macos
+          name: "Test RNTester with Ruby 2.7.7"
+          ruby_version: "2.7.7"
+          architecture: "NewArch"
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
+          name: "Test RNTester with Ruby 3.2.0"
+          ruby_version: "3.2.0"
+          architecture: "NewArch"
+      - test_ios_rntester:
+          requires:
+            - build_hermes_macos
           matrix:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
+      - test_ios:
+          name: "Test iOS with Ruby 2.7.7"
+          run_unit_tests: true
+          requires:
+            - build_hermes_macos
+          ruby_version: "2.7.7"
+      - test_ios:
+          name: "Test iOS with Ruby 3.2.0"
+          run_unit_tests: true
+          requires:
+            - build_hermes_macos
+          ruby_version: "3.2.0"
       - test_ios:
           run_unit_tests: true
           requires:

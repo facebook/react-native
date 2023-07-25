@@ -21,7 +21,7 @@ class TaskPriorityComparer;
 
 using RawCallback = std::function<void(jsi::Runtime &)>;
 
-struct Task final {
+struct Task final : public jsi::NativeState {
   Task(
       SchedulerPriority priority,
       jsi::Function callback,

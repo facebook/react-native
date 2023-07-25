@@ -15,7 +15,8 @@
 const React = require('react');
 const View = require('../Libraries/Components/View/View');
 
-import requireNativeComponent from '../Libraries/ReactNative/requireNativeComponent';
+const requireNativeComponent =
+  require('../Libraries/ReactNative/requireNativeComponent').default;
 const RCTScrollView: $FlowFixMe = requireNativeComponent('RCTScrollView');
 
 function mockScrollView(BaseComponent: $FlowFixMe) {

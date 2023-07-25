@@ -9,7 +9,7 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/conversions.h>
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/utils/FloatComparison.h>
 #include <cmath>
 

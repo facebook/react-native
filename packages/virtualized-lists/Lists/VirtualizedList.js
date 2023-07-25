@@ -52,6 +52,7 @@ import {
   keyExtractor as defaultKeyExtractor,
 } from './VirtualizeUtils';
 import invariant from 'invariant';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 export type {RenderItemProps, RenderItemType, Separators};
@@ -446,21 +447,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    invariant(
-      // $FlowFixMe[prop-missing]
-      !props.onScroll || !props.onScroll.__isNative,
-      'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
-        'to support native onScroll events with useNativeDriver',
-    );
-    invariant(
-      windowSizeOrDefault(props.windowSize) > 0,
-      'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
-    );
-
-    invariant(
-      props.getItemCount,
-      'VirtualizedList: The "getItemCount" prop must be provided',
-    );
+    this.checkProps(props);
 
     this._fillRateHelper = new FillRateHelper(this._getFrameMetrics);
     this._updateCellsToRenderBatcher = new Batchinator(
@@ -485,11 +472,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       }
     }
 
-    invariant(
-      !this.context,
-      'Unexpectedly saw VirtualizedListContext available in ctor',
-    );
-
     const initialRenderRegion = VirtualizedList._initialRenderRegion(props);
 
     this.state = {
@@ -497,6 +479,53 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       renderMask: VirtualizedList._createRenderMask(props, initialRenderRegion),
       selectedRowIndex: this.props.initialSelectedIndex ?? -1, // [macOS]
     };
+  }
+
+  checkProps(props: Props) {
+    const {onScroll, windowSize, getItemCount, data, initialScrollIndex} =
+      props;
+
+    invariant(
+      // $FlowFixMe[prop-missing]
+      !onScroll || !onScroll.__isNative,
+      'Components based on VirtualizedList must be wrapped with Animated.createAnimatedComponent ' +
+        'to support native onScroll events with useNativeDriver',
+    );
+    invariant(
+      windowSizeOrDefault(windowSize) > 0,
+      'VirtualizedList: The windowSize prop must be present and set to a value greater than 0.',
+    );
+
+    invariant(
+      getItemCount,
+      'VirtualizedList: The "getItemCount" prop must be provided',
+    );
+
+    const itemCount = getItemCount(data);
+
+    if (
+      initialScrollIndex != null &&
+      (initialScrollIndex < 0 ||
+        (itemCount > 0 && initialScrollIndex >= itemCount)) &&
+      !this._hasWarned.initialScrollIndex
+    ) {
+      console.warn(
+        `initialScrollIndex "${initialScrollIndex}" is not valid (list has ${itemCount} items)`,
+      );
+      this._hasWarned.initialScrollIndex = true;
+    }
+
+    if (__DEV__ && !this._hasWarned.flexWrap) {
+      // $FlowFixMe[underconstrained-implicit-instantiation]
+      const flatStyles = StyleSheet.flatten(this.props.contentContainerStyle);
+      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
+        console.warn(
+          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
+            'Consider using `numColumns` with `FlatList` instead.',
+        );
+        this._hasWarned.flexWrap = true;
+      }
+    }
   }
 
   static _createRenderMask(
@@ -545,15 +574,21 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   static _initialRenderRegion(props: Props): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const scrollIndex = Math.floor(Math.max(0, props.initialScrollIndex ?? 0));
+
+    const firstCellIndex = Math.max(
+      0,
+      Math.min(itemCount - 1, Math.floor(props.initialScrollIndex ?? 0)),
+    );
+
+    const lastCellIndex =
+      Math.min(
+        itemCount,
+        firstCellIndex + initialNumToRenderOrDefault(props.initialNumToRender),
+      ) - 1;
 
     return {
-      first: scrollIndex,
-      last:
-        Math.min(
-          itemCount,
-          scrollIndex + initialNumToRenderOrDefault(props.initialNumToRender),
-        ) - 1,
+      first: firstCellIndex,
+      last: lastCellIndex,
     };
   }
 
@@ -581,8 +616,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const onEndReachedThreshold = onEndReachedThresholdOrDefault(
       props.onEndReachedThreshold,
     );
-    this._updateViewableItems(props, cellsAroundViewport);
-
     const {contentLength, offset, visibleLength} = this._scrollMetrics;
     const distanceFromEnd = contentLength - visibleLength - offset;
 
@@ -848,16 +881,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   render(): React.Node {
-    if (__DEV__) {
-      // $FlowFixMe[underconstrained-implicit-instantiation]
-      const flatStyles = StyleSheet.flatten(this.props.contentContainerStyle);
-      if (flatStyles != null && flatStyles.flexWrap === 'wrap') {
-        console.warn(
-          '`flexWrap: `wrap`` is not supported with the `VirtualizedList` components.' +
-            'Consider using `numColumns` with `FlatList` instead.',
-        );
-      }
-    }
+    this.checkProps(this.props);
     const {ListEmptyComponent, ListFooterComponent, ListHeaderComponent} =
       this.props;
     const {data, horizontal} = this.props;
@@ -1319,6 +1343,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _onCellUnmount = (cellKey: string) => {
+    delete this._cellRefs[cellKey];
     const curr = this._frames[cellKey];
     if (curr) {
       this._frames[cellKey] = {...curr, inLayout: false};
@@ -1670,10 +1695,17 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       !this._hasTriggeredInitialScrollToIndex
     ) {
       if (this.props.contentOffset == null) {
-        this.scrollToIndex({
-          animated: false,
-          index: this.props.initialScrollIndex,
-        });
+        if (
+          this.props.initialScrollIndex <
+          this.props.getItemCount(this.props.data)
+        ) {
+          this.scrollToIndex({
+            animated: false,
+            index: nullthrows(this.props.initialScrollIndex),
+          });
+        } else {
+          this.scrollToEnd({animated: false});
+        }
       }
       this._hasTriggeredInitialScrollToIndex = true;
     }
@@ -1875,6 +1907,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
+    this._updateViewableItems(this.props, this.state.cellsAroundViewport);
+
     this.setState((state, props) => {
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
@@ -2006,14 +2040,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const lastFocusedCellRenderer = this._cellRefs[this._lastFocusedCellKey];
     const focusedCellIndex = lastFocusedCellRenderer.props.index;
     const itemCount = props.getItemCount(props.data);
-
-    // The cell may have been unmounted and have a stale index
-    if (
-      focusedCellIndex >= itemCount ||
-      this._indicesToKeys.get(focusedCellIndex) !== this._lastFocusedCellKey
-    ) {
-      return [];
-    }
 
     let first = focusedCellIndex;
     let heightOfCellsBeforeFocused = 0;

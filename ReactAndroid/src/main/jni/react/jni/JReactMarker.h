@@ -38,6 +38,7 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
       const ReactMarker::ReactMarkerId markerId,
       const char *tag,
       const int instanceKey);
+  static double getAppStartTime();
 };
 
 } // namespace react

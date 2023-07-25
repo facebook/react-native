@@ -31,7 +31,8 @@ jsi::Value TurboModule::get(
   // If we have a JS wrapper, cache the result of this lookup
   // We don't cache misses, to allow for methodMap_ to dynamically be extended
   if (jsRepresentation_) {
-    jsRepresentation_->setProperty(runtime, propName, result);
+    jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
+        runtime, propName, result);
   }
   return result;
 }

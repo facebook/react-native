@@ -12,7 +12,7 @@
 
 const React = require('react');
 
-const {StyleSheet, Text, TouchableHighlight} = require('react-native');
+const {Pressable, StyleSheet, Text} = require('react-native');
 
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
@@ -26,13 +26,12 @@ type Props = $ReadOnly<{|
 class RNTesterButton extends React.Component<Props> {
   render(): React.Node {
     return (
-      <TouchableHighlight
+      <Pressable
         testID={this.props.testID}
         onPress={this.props.onPress}
-        style={styles.button}
-        underlayColor="grey">
+        style={({pressed}) => [styles.button, pressed && styles.pressed]}>
         <Text testID={this.props.textTestID}>{this.props.children}</Text>
-      </TouchableHighlight>
+      </Pressable>
     );
   }
 }
@@ -47,6 +46,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#d3d3d3',
+  },
+  pressed: {
+    backgroundColor: '#a9a9a9',
   },
 });
 
