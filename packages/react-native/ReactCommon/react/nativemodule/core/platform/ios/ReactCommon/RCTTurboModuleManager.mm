@@ -6,7 +6,6 @@
  */
 
 #import "RCTTurboModuleManager.h"
-#import "RCTInteropTurboModule.h"
 
 #import <atomic>
 #import <cassert>
@@ -29,6 +28,8 @@
 #import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <ReactCommon/TurboModuleUtils.h>
+
+#import "RCTInteropTurboModule.h"
 
 using namespace facebook;
 using namespace facebook::react;
@@ -851,19 +852,23 @@ static Class getFallbackClassFromName(const char *name)
    * If a module overrides `constantsToExport` and doesn't implement `requiresMainQueueSetup`, then we must assume
    * that it must be called on the main thread, because it may need to access UIKit.
    */
-  BOOL hasConstantsToExport = [moduleClass instancesRespondToSelector:@selector(constantsToExport)];
+  BOOL hasConstantsToExport = RCTEnableMainQueueSetupIfConstantsToExport() &&
+      [moduleClass instancesRespondToSelector:@selector(constantsToExport)];
 
-  static IMP objectInitMethod;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
-  });
+  BOOL hasCustomInit = NO;
+  if (RCTEnableMainQueueSetupIfCustomInit()) {
+    static IMP objectInitMethod;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      objectInitMethod = [NSObject instanceMethodForSelector:@selector(init)];
+    });
 
-  /**
-   * If a module overrides `init` then we must assume that it expects to be initialized on the main thread, because it
-   * may need to access UIKit.
-   */
-  const BOOL hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+    /**
+     * If a module overrides `init` then we must assume that it expects to be initialized on the main thread, because it
+     * may need to access UIKit.
+     */
+    hasCustomInit = [moduleClass instanceMethodForSelector:@selector(init)] != objectInitMethod;
+  }
 
   BOOL requiresMainQueueSetup = hasConstantsToExport || hasCustomInit;
   if (requiresMainQueueSetup) {

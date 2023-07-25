@@ -139,6 +139,30 @@ void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
   useTurboModuleInteropForAllTurboModules = enabled;
 }
 
+static BOOL enableMainQueueSetupIfConstantsToExport = YES;
+
+void RCTSetEnableMainQueueSetupIfConstantsToExport(BOOL val)
+{
+  enableMainQueueSetupIfConstantsToExport = val;
+}
+
+BOOL RCTEnableMainQueueSetupIfConstantsToExport(void)
+{
+  return enableMainQueueSetupIfConstantsToExport;
+}
+
+static BOOL enableMainQueueSetupIfCustomInit = YES;
+
+void RCTSetEnableMainQueueSetupIfCustomInit(BOOL val)
+{
+  enableMainQueueSetupIfCustomInit = val;
+}
+
+BOOL RCTEnableMainQueueSetupIfCustomInit(void)
+{
+  return enableMainQueueSetupIfCustomInit;
+}
+
 @interface RCTBridge () <RCTReloadListener>
 @end
 
