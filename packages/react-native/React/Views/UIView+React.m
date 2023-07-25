@@ -203,6 +203,56 @@
 
   self.center = position;
   self.bounds = bounds;
+
+  [self updateTransform];
+}
+
+#pragma mark - Transforms
+
+- (CATransform3D)reactTransform
+{
+  id obj = objc_getAssociatedObject(self, _cmd);
+  return obj != nil ? [obj CATransform3DValue] : CATransform3DIdentity;
+}
+
+- (void)setReactTransform:(CATransform3D)reactTransform
+{
+  objc_setAssociatedObject(
+      self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  [self updateTransform];
+}
+
+- (CATransform3D)reactTransformOrigin
+{
+  id obj = objc_getAssociatedObject(self, _cmd);
+  return obj != nil ? [obj CATransform3DValue] : CATransform3DMakeScale(0.5, 0.5, 0);
+}
+
+- (void)setReactTransformOrigin:(CATransform3D)reactTransformOrigin
+{
+  objc_setAssociatedObject(
+      self, @selector(reactTransformOrigin), @(reactTransformOrigin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  [self updateTransform];
+}
+
+- (void)updateTransform
+{
+  CGSize size = self.bounds.size;
+  CATransform3D transformOrigin = self.reactTransformOrigin;
+
+  // There's no 3D vector type in CoreAnimation, so we'll have to do the matrix multiplication manually
+  // Note we only compute the elements we know might be set
+  CGFloat anchorPointX = transformOrigin.m11 * size.width + transformOrigin.m14 - size.width / 2;
+  CGFloat anchorPointY = transformOrigin.m22 * size.height + transformOrigin.m24 - size.height / 2;
+  CGFloat anchorPointZ = transformOrigin.m34;
+
+  CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
+  transform = CATransform3DConcat(self.reactTransform, transform);
+  transform = CATransform3DTranslate(transform, -anchorPointX, -anchorPointY, -anchorPointZ);
+
+  self.layer.transform = transform;
+  self.layer.allowsEdgeAntialiasing =
+    transform.m12 != 0.0f || transform.m21 != 0.0f || transform.m34 != 0.0f;
 }
 
 - (UIViewController *)reactViewController

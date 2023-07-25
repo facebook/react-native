@@ -121,6 +121,30 @@ RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
 
++ (CATransform3D)transformOrigin:(id)json
+ {
+   CATransform3D transformOrigin = CATransform3DMakeScale(0, 0, 0);
+   id anchorPointX = json[0];
+   id anchorPointY = json[1];
+   id anchorPointZ = json[2];
+
+   if ([anchorPointX isKindOfClass:NSString.class] && [(NSString *)anchorPointX hasSuffix:@"%"]) {
+     transformOrigin.m11 = [anchorPointX doubleValue] / 100;
+   } else {
+     transformOrigin.m14 = [RCTConvert CGFloat:anchorPointX];
+   }
+
+   if ([anchorPointY isKindOfClass:NSString.class] && [(NSString *)anchorPointY hasSuffix:@"%"]) {
+     transformOrigin.m22 = [anchorPointY doubleValue] / 100;
+   } else {
+     transformOrigin.m24 = [RCTConvert CGFloat:anchorPointY];
+   }
+
+   transformOrigin.m34 = [RCTConvert CGFloat:anchorPointZ];
+
+   return transformOrigin;
+ }
+
 @end
 
 @implementation RCTViewManager
@@ -218,10 +242,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in rotation, skew, or perspective transforms
-  view.layer.allowsEdgeAntialiasing =
-      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
+  CATransform3D transform = json ? [RCTConvert CATransform3D:json] : defaultView.reactTransformOrigin;
+  [view setReactTransform:transform];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
+{
+  CATransform3D transformOrigin = json ? [RCTConvert transformOrigin:json] : defaultView.reactTransformOrigin;
+  [view setReactTransformOrigin:transformOrigin];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
