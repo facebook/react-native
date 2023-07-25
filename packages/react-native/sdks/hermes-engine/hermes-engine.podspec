@@ -31,7 +31,7 @@ Pod::Spec.new do |spec|
   spec.license     = package['license']
   spec.author      = "Facebook"
   spec.source      = source
-  spec.platforms   = { :osx => "10.13", :ios => min_ios_version_supported }
+  spec.platforms   = { :osx => "10.13", :ios => "13.4" }
 
   spec.preserve_paths      = '**/*.*'
   spec.source_files        = ''
@@ -105,25 +105,30 @@ Pod::Spec.new do |spec|
 
     spec.prepare_command = ". #{react_native_path}/sdks/hermes-engine/utils/create-dummy-hermes-xcframework.sh"
 
-    CMAKE_BINARY = Pod::Executable::which!('cmake')
-    # NOTE: Script phases are sorted alphabetically inside Xcode project
-    spec.script_phases = [
-      {
-        :name => '[RN] [1] Build Hermesc',
-        :script => <<-EOS
-        . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
-        EOS
-      },
-      {
-        :name => '[RN] [2] Build Hermes',
-        :script => <<-EOS
-        . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
-        export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-        . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
-        EOS
-      }
-    ]
+    # This podspec is also run in CI to build Hermes without using Pod install
+    # and sometimes CI fails because `Pod::Executable` does not exist if it is not run with Pod Install.
+    if defined?(Pod::Executable.to_s)
+      puts "Const Defined!"
+      CMAKE_BINARY = Pod::Executable::which!('cmake')
+      # NOTE: Script phases are sorted alphabetically inside Xcode project
+      spec.script_phases = [
+        {
+          :name => '[RN] [1] Build Hermesc',
+          :script => <<-EOS
+          . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
+          export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
+          EOS
+        },
+        {
+          :name => '[RN] [2] Build Hermes',
+          :script => <<-EOS
+          . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
+          export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+          EOS
+        }
+      ]
+    end
   end
 end
