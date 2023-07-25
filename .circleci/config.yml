@@ -807,6 +807,10 @@ jobs:
       - report_bundle_size:
           platform: android
 
+      - store_artifacts:
+          path: ~/react-native/packages/rn-tester/android/app/build/outputs/apk/
+          destination: rntester-apk
+
       # Optionally, run disabled tests
       - when:
           condition: << parameters.run_disabled_tests >>
@@ -1053,7 +1057,10 @@ jobs:
 
       - run:
           name: Display Environment info
-          command: npx envinfo@latest
+          command: |
+            npm install -g envinfo
+            envinfo -v
+            envinfo
 
       - restore_cache:
           keys:
