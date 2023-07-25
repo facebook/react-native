@@ -103,6 +103,9 @@
 @property (nonatomic, readonly) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
 @property (nonatomic, readonly) CGRect reactContentFrame;
+@property (nonatomic, assign) CATransform3D reactTransform;
+// Origin is computed by multiplying the matrix by vector [width, height, 0]
+@property (nonatomic, assign) CATransform3D reactTransformOrigin;
 
 /**
  * The (sub)view which represents this view in terms of accessibility.

@@ -121,13 +121,28 @@ RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
 
-+ (CGFloat)cssLength:(id)json axisSize:(CGFloat)axisSize
++ (CATransform3D)transformOrigin:(id)json
 {
-  if ([json isKindOfClass:NSString.class] && [(NSString *)json hasSuffix:@"%"]) {
-    return [json doubleValue] * axisSize / 100;
+  CATransform3D transformOrigin = CATransform3DMakeScale(0, 0, 0);
+  id anchorPointX = json[0];
+  id anchorPointY = json[1];
+  id anchorPointZ = json[2];
+
+  if ([anchorPointX isKindOfClass:NSString.class] && [(NSString *)anchorPointX hasSuffix:@"%"]) {
+    transformOrigin.m11 = [anchorPointX doubleValue] / 100;
   } else {
-    return [RCTConvert CGFloat:json];
+    transformOrigin.m14 = [RCTConvert CGFloat:anchorPointX];
   }
+
+  if ([anchorPointY isKindOfClass:NSString.class] && [(NSString *)anchorPointY hasSuffix:@"%"]) {
+    transformOrigin.m22 = [anchorPointY doubleValue] / 100;
+  } else {
+    transformOrigin.m24 = [RCTConvert CGFloat:anchorPointY];
+  }
+
+  transformOrigin.m34 = [RCTConvert CGFloat:anchorPointZ];
+
+  return transformOrigin;
 }
 
 @end
@@ -227,27 +242,14 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 {
-  view.layer.transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
-  // Enable edge antialiasing in rotation, skew, or perspective transforms
-  view.layer.allowsEdgeAntialiasing =
-      view.layer.transform.m12 != 0.0f || view.layer.transform.m21 != 0.0f || view.layer.transform.m34 != 0.0f;
+  CATransform3D transform = json ? [RCTConvert CATransform3D:json] : defaultView.layer.transform;
+  [view setReactTransform:transform];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
 {
-  if (json) {
-    // TODO - we want to be able to use the view's width/height so we can support pixel lengths for transform-origin,
-    // however, this would need re-calculating every time the view's size changes, and there's no nice way to do that
-    // in a way that works for all native components, including those that don't inherit from RCTView
-    CGFloat width = 1;
-    CGFloat height = 1;
-    view.layer.anchorPoint = CGPointMake([RCTConvert cssLength:json[0] axisSize:width] / width,
-                                         [RCTConvert cssLength:json[1] axisSize:height] / height);
-    view.layer.anchorPointZ = [RCTConvert CGFloat:json[2]];
-  } else {
-    view.layer.anchorPoint = defaultView.layer.anchorPoint;
-    view.layer.anchorPointZ = defaultView.layer.anchorPointZ;
-  }
+  CATransform3D transformOrigin = json ? [RCTConvert transformOrigin:json] : defaultView.reactTransformOrigin;
+  [view setReactTransformOrigin:transformOrigin];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
