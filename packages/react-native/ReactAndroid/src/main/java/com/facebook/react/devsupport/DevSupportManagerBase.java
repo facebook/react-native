@@ -510,16 +510,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     title.setGravity(Gravity.CENTER);
     title.setTextSize(16);
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
-
-    final TextView jsExecutorLabel = new TextView(context);
-    jsExecutorLabel.setText(
-        context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
-    jsExecutorLabel.setPadding(0, 20, 0, 0);
-    jsExecutorLabel.setGravity(Gravity.CENTER);
-    jsExecutorLabel.setTextSize(14);
-
     header.addView(title);
-    header.addView(jsExecutorLabel);
+
+    String jsExecutorDescription = getJSExecutorDescription();
+
+    if (jsExecutorDescription != null) {
+      final TextView jsExecutorLabel = new TextView(context);
+      jsExecutorLabel.setText(
+          context.getString(R.string.catalyst_dev_menu_sub_header, jsExecutorDescription));
+      jsExecutorLabel.setPadding(0, 20, 0, 0);
+      jsExecutorLabel.setGravity(Gravity.CENTER);
+      jsExecutorLabel.setTextSize(14);
+      header.addView(jsExecutorLabel);
+    }
 
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
@@ -539,7 +542,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private String getJSExecutorDescription() {
-    return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    try {
+      return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    } catch (IllegalStateException e) {
+      return null;
+    }
   }
 
   /**
