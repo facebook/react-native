@@ -1,6 +1,6 @@
 {
   "name": "@react-native/eslint-plugin-specs",
-  "version": "0.73.0",
+  "version": "0.73.1",
   "description": "ESLint rules to validate NativeModule and Component Specs",
   "license": "MIT",
   "repository": {
@@ -9,7 +9,14 @@
     "directory": "packages/eslint-plugin-specs"
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-specs#readme",
-  "keywords": ["eslint", "rules", "react-native", "native-modules", "components", "specs"],
+  "keywords": [
+    "eslint",
+    "rules",
+    "react-native",
+    "native-modules",
+    "components",
+    "specs"
+  ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
     "node": ">=18"
