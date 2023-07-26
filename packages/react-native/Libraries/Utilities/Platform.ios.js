@@ -75,7 +75,7 @@ const Platform = {
   // $FlowFixMe[unsafe-getters-setters]
   get isMacCatalyst(): boolean {
     // $FlowFixMe[object-this-reference]
-    return this.constants.isMacCatalyst;
+    return this.constants.isMacCatalyst ?: false;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
     // $FlowFixMe[incompatible-return]
