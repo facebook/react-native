@@ -6,11 +6,11 @@
  */
 
 #import <React/RCTComponent.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // [macOS]
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RNTLegacyView : UIView
+@interface RNTLegacyView : RCTUIView // [macOS]
 
 @property (nonatomic, copy) RCTBubblingEventBlock onColorChanged;
 

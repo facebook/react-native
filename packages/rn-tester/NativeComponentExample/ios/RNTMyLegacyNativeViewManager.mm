@@ -30,7 +30,7 @@ RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 
 RCT_EXPORT_VIEW_PROPERTY(onColorChanged, RCTBubblingEventBlock)
 
-- (UIView *)view
+- (RCTUIView *)view // [macOS]
 {
   RNTLegacyView *view = [[RNTLegacyView alloc] init];
   return view;

@@ -105,10 +105,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
 
   CGPoint _contentOffsetWhenClipped;
 
-  __weak UIView *_contentView;
+  __weak RCTUIView *_contentView; // [macOS]
 
   CGRect _prevFirstVisibleFrame;
-  __weak UIView *_firstVisibleView;
+  __weak RCTUIView *_firstVisibleView; // [macOS]
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(RCTUIView *)view // [macOS]
@@ -763,7 +763,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *sc
   int minIdx = props.maintainVisibleContentPosition.value().minIndexForVisible;
   for (NSUInteger ii = minIdx; ii < _contentView.subviews.count; ++ii) {
     // Find the first entirely visible view.
-    UIView *subview = _contentView.subviews[ii];
+    RCTUIView *subview = _contentView.subviews[ii]; // [macOS]
     BOOL hasNewView = NO;
     if (horizontal) {
       hasNewView = subview.frame.origin.x > _scrollView.contentOffset.x;

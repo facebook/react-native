@@ -9,7 +9,7 @@
 
 @implementation RNTLegacyView
 
-- (void)setBackgroundColor:(UIColor *)backgroundColor
+- (void)setBackgroundColor:(RCTUIColor *)backgroundColor // [macOS]
 {
   super.backgroundColor = backgroundColor;
   [self emitEvent];
