@@ -24,6 +24,7 @@ export type {
   ViewabilityConfigCallbackPair,
 } from './Lists/ViewabilityHelper';
 export type {
+  CellRendererProps,
   RenderItemProps,
   RenderItemType,
   Separators,

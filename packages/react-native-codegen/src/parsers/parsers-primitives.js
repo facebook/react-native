@@ -34,7 +34,6 @@ import type {
   NativeModuleObjectTypeAnnotation,
   NativeModuleEnumDeclaration,
 } from '../CodegenSchema';
-import type {ParserType} from './errors';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
@@ -58,6 +57,8 @@ const {
   unwrapNullable,
   translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
+
+const {isModuleRegistryCall} = require('./utils');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -204,7 +205,6 @@ function typeEnumResolution(
   typeResolution: TypeResolutionStatus,
   nullable: boolean,
   hasteModuleName: string,
-  language: ParserType,
   enumMap: {...NativeModuleEnumMap},
   parser: Parser,
 ): Nullable<NativeModuleEnumDeclaration> {
@@ -212,7 +212,7 @@ function typeEnumResolution(
     throw new UnsupportedTypeAnnotationParserError(
       hasteModuleName,
       typeAnnotation,
-      language,
+      parser.language(),
     );
   }
 
@@ -439,6 +439,40 @@ function emitArrayType(
   );
 }
 
+function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
+  [type: string]: (node: $FlowFixMe) => void,
+} {
+  return {
+    CallExpression(node: $FlowFixMe) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'codegenNativeComponent'
+      ) {
+        infoMap.isComponent = true;
+      }
+
+      if (isModuleRegistryCall(node)) {
+        infoMap.isModule = true;
+      }
+    },
+    InterfaceExtends(node: $FlowFixMe) {
+      if (node.id.name === 'TurboModule') {
+        infoMap.isModule = true;
+      }
+    },
+    TSInterfaceDeclaration(node: $FlowFixMe) {
+      if (
+        Array.isArray(node.extends) &&
+        node.extends.some(
+          extension => extension.expression.name === 'TurboModule',
+        )
+      ) {
+        infoMap.isModule = true;
+      }
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -459,4 +493,5 @@ module.exports = {
   typeAliasResolution,
   typeEnumResolution,
   translateArrayTypeAnnotation,
+  Visitor,
 };

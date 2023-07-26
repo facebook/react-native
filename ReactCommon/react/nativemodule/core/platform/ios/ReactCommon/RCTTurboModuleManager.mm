@@ -741,7 +741,7 @@ static Class getFallbackClassFromName(const char *name)
   };
 
   runtimeExecutor([turboModuleProvider = std::move(turboModuleProvider)](jsi::Runtime &runtime) {
-    TurboModuleBinding::install(runtime, std::move(turboModuleProvider), sTurboModuleBindingMode);
+    TurboModuleBinding::install(runtime, sTurboModuleBindingMode, std::move(turboModuleProvider));
   });
 }
 

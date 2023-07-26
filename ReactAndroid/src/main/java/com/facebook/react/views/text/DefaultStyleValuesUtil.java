@@ -54,8 +54,7 @@ public final class DefaultStyleValuesUtil {
     TypedArray textAppearances = null;
     try {
       textAppearances = theme.obtainStyledAttributes(new int[] {attribute});
-      ColorStateList textColor = textAppearances.getColorStateList(0);
-      return textColor;
+      return textAppearances.getColorStateList(0);
     } finally {
       if (textAppearances != null) {
         textAppearances.recycle();

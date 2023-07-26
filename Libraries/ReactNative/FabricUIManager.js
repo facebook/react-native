@@ -59,6 +59,9 @@ export type Spec = {|
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
 |};
 
-const FabricUIManager: ?Spec = global.nativeFabricUIManager;
-
-module.exports = FabricUIManager;
+// This is exposed as a getter because apps using the legacy renderer AND
+// Fabric can define the binding lazily. If we evaluated the global and cached
+// it in the module we might be caching an `undefined` value before it is set.
+export function getFabricUIManager(): ?Spec {
+  return global.nativeFabricUIManager;
+}

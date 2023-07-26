@@ -104,7 +104,7 @@ interface EmitterSubscription extends EventSubscription {
   remove(): void;
 }
 
-export declare class EventEmitter {
+export default class EventEmitter {
   /**
    *
    * @param subscriber - Optional subscriber instance

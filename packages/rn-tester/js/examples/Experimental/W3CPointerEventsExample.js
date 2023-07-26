@@ -23,6 +23,7 @@ import PointerEventPointerMoveEventOrder from './W3CPointerEventPlatformTests/Po
 import PointerEventPointerMoveBetween from './W3CPointerEventPlatformTests/PointerEventPointerMoveBetween';
 import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEventPointerOverOut';
 import PointerEventLayoutChangeShouldFirePointerOver from './W3CPointerEventPlatformTests/PointerEventLayoutChangeShouldFirePointerOver';
+import PointerEventPointerCancelTouch from './W3CPointerEventPlatformTests/PointerEventPointerCancelTouch';
 import EventfulView from './W3CPointerEventsEventfulView';
 import ManyPointersPropertiesExample from './Compatibility/ManyPointersPropertiesExample';
 
@@ -230,6 +231,14 @@ export default {
       title: 'WPT 10: Layout change should fire pointerover',
       render(): React.Node {
         return <PointerEventLayoutChangeShouldFirePointerOver />;
+      },
+    },
+    {
+      name: 'pointerevent_pointercancel_touch',
+      description: '',
+      title: 'WPT 11: Pointer Events pointercancel Tests',
+      render(): React.Node {
+        return <PointerEventPointerCancelTouch />;
       },
     },
     {

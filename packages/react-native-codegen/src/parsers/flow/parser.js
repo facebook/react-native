@@ -31,7 +31,7 @@ const {flowTranslateTypeAnnotation} = require('./modules');
 const flowParser = require('flow-parser');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./Visitor');
+const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
 const {wrapComponentSchema} = require('../schema.js');
 const {buildModuleSchema} = require('../parsers-commons.js');
@@ -290,6 +290,28 @@ class FlowParser implements Parser {
         ),
       };
     });
+  }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return propertyValueType === 'FunctionTypeAnnotation';
+  }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeArguments.params;
+  }
+
+  /**
+   * This FlowFixMe is supposed to refer to typeArgumentParams and
+   * funcArgumentParams of generated AST.
+   */
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].id.name,
+      componentName: funcArgumentParams[0].value,
+    };
   }
 }
 

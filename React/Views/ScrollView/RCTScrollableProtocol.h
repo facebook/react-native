@@ -35,7 +35,7 @@
 /**
  * Denotes a view which implements custom pull to refresh functionality.
  */
-@protocol RCTCustomRefreshContolProtocol
+@protocol RCTCustomRefreshControlProtocol
 
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;
 @property (nonatomic, readonly, getter=isRefreshing) BOOL refreshing;
@@ -45,4 +45,8 @@
 @property (nonatomic, weak) RCTUIScrollView *scrollView;
 #endif // [macOS]
 
+@end
+
+__attribute__((deprecated("Use RCTCustomRefreshControlProtocol instead")))
+@protocol RCTCustomRefreshContolProtocol<RCTCustomRefreshControlProtocol>
 @end

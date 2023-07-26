@@ -43,7 +43,7 @@
 
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_OSX // [macOS]
-@property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
+@property (nonatomic, strong) UIView<RCTCustomRefreshControlProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #else // [macOS
 + (BOOL)isCompatibleWithResponsiveScrolling;
@@ -311,14 +311,14 @@
 }
 
 #if !TARGET_OS_OSX // [macOS]
-- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
+- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshControlProtocol> *)refreshControl
 {
   if (_customRefreshControl) {
     [_customRefreshControl removeFromSuperview];
   }
   _customRefreshControl = refreshControl;
   // We have to set this because we can't always guarantee the
-  // `RCTCustomRefreshContolProtocol`'s superview will always be of class
+  // `RCTCustomRefreshControlProtocol`'s superview will always be of class
   // `UIScrollView` like we were previously
   if ([_customRefreshControl respondsToSelector:@selector(setScrollView:)]) {
     _customRefreshControl.scrollView = self;
@@ -600,8 +600,8 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 {
   [super insertReactSubview:view atIndex:atIndex];
 #if !TARGET_OS_OSX // [macOS]
-  if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
-    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
+  if ([view conformsToProtocol:@protocol(RCTCustomRefreshControlProtocol)]) {
+    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshControlProtocol> *)view];
     if (![view isKindOfClass:[UIRefreshControl class]] && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
       [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
     }
@@ -627,7 +627,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 #if TARGET_OS_OSX // [macOS
   _scrollView.documentView = nil;
 #else // [macOS
-  if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
+  if ([subview conformsToProtocol:@protocol(RCTCustomRefreshControlProtocol)]) {
     [_scrollView setCustomRefreshControl:nil];
     if (![subview isKindOfClass:[UIRefreshControl class]] &&
         [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
@@ -689,7 +689,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
 
 #if !TARGET_OS_TV && !TARGET_OS_OSX // [macOS]
   // Adjust the refresh control frame if the scrollview layout changes.
-  UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
+  UIView<RCTCustomRefreshControlProtocol> *refreshControl = _scrollView.customRefreshControl;
   if (refreshControl && refreshControl.isRefreshing && ![refreshControl isKindOfClass:UIRefreshControl.class]) {
     refreshControl.frame =
         (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};

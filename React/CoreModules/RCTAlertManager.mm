@@ -32,21 +32,6 @@ RCT_ENUM_CONVERTER(
 
 @end
 
-@implementation RCTConvert (UIUserInterfaceStyle)
-
-#if !TARGET_OS_OSX // [macOS]
-RCT_ENUM_CONVERTER(
-    UIUserInterfaceStyle,
-    (@{
-      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
-      @"light" : @(UIUserInterfaceStyleLight),
-      @"dark" : @(UIUserInterfaceStyleDark),
-    }),
-    UIUserInterfaceStyleUnspecified,
-    integerValue)
-#endif // macOS]
-@end
-
 @interface RCTAlertManager () <NativeAlertManagerSpec>
 
 @end

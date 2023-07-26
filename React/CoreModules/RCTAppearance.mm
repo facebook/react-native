@@ -94,22 +94,6 @@ NSString *RCTColorSchemePreference(NSAppearance *appearance)
 }
 #endif // macOS]
 
-@implementation RCTConvert (UIUserInterfaceStyle)
-
-#if !TARGET_OS_OSX // [macOS]
-RCT_ENUM_CONVERTER(
-    UIUserInterfaceStyle,
-    (@{
-      @"light" : @(UIUserInterfaceStyleLight),
-      @"dark" : @(UIUserInterfaceStyleDark),
-      @"unspecified" : @(UIUserInterfaceStyleUnspecified)
-    }),
-    UIUserInterfaceStyleUnspecified,
-    integerValue);
-#endif // [macOS]
-
-@end
-
 @interface RCTAppearance () <NativeAppearanceSpec>
 @end
 

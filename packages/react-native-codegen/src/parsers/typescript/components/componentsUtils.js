@@ -416,6 +416,10 @@ function getTypeAnnotation<T>(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
+    case 'TSFunctionType':
+      throw new Error(
+        `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
+      );
     default:
       (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);

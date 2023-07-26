@@ -167,14 +167,6 @@ export type NativeProps = $ReadOnly<{|
   >,
 
   /**
-   * String to be read by screenreaders to indicate an error state. The acceptable parameters
-   * of accessibilityErrorMessage is a string. Setting accessibilityInvalid to true activates
-   * the error message. Setting accessibilityInvalid to false removes the error message.
-   */
-  accessibilityErrorMessage?: ?Stringish,
-  accessibilityInvalid?: ?boolean,
-
-  /**
    * Sets the return key to the label. Use it instead of `returnKeyType`.
    * @platform android
    */
@@ -738,8 +730,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     inlineImageLeft: true,
     editable: true,
     fontVariant: true,
-    accessibilityErrorMessage: true,
-    accessibilityInvalid: true,
     borderBottomRightRadius: true,
     borderBottomColor: {
       process: require('../../StyleSheet/processColor').default,

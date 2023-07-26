@@ -503,6 +503,18 @@ RCT_ENUM_CONVERTER(
     UIReturnKeyDefault,
     integerValue)
 
+#if !TARGET_OS_OSX // [macOS]
+RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
+      @"light" : @(UIUserInterfaceStyleLight),
+      @"dark" : @(UIUserInterfaceStyleDark),
+    }),
+    UIUserInterfaceStyleUnspecified,
+    integerValue)
+#endif // [macOS]
+
 RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{

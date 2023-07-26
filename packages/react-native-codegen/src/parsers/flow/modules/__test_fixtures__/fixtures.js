@@ -311,8 +311,8 @@ export type SomeObj = {|
 
 export interface Spec extends TurboModule {
   +getSomeObj: () => SomeObj;
-  +getPartialSomeObj: () => $Partial<SomeObj>;
-  +getSomeObjFromPartialSomeObj: (value: $Partial<SomeObj>) => SomeObj;
+  +getPartialSomeObj: () => Partial<SomeObj>;
+  +getSomeObjFromPartialSomeObj: (value: Partial<SomeObj>) => SomeObj;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -340,10 +340,10 @@ export type SomeObj = {|
   b?: boolean,
 |};
 
-export type PartialSomeObj = $Partial<SomeObj>;
+export type PartialSomeObj = Partial<SomeObj>;
 
 export interface Spec extends TurboModule {
-  +getPartialPartial: (value1: $Partial<SomeObj>, value2: PartialSomeObj) => SomeObj
+  +getPartialPartial: (value1: Partial<SomeObj>, value2: PartialSomeObj) => SomeObj
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');

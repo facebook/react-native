@@ -263,6 +263,13 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
             new StaticLayout(
                 text, textPaint, (int) width, alignment, 1.f, 0.f, mIncludeFontPadding);
       } else {
+        // Android 11+ introduces changes in text width calculation which leads to cases
+        // where the container is measured smaller than text. Math.ceil prevents it
+        // See T136756103 for investigation
+        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.Q) {
+          width = (float) Math.ceil(width);
+        }
+
         StaticLayout.Builder builder =
             StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, (int) width)
                 .setAlignment(alignment)

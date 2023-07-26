@@ -564,7 +564,9 @@ export namespace Animated {
   type NonAnimatedProps = 'key' | 'ref';
 
   type TAugmentRef<T> = T extends React.Ref<infer R>
-    ? React.Ref<R | LegacyRef<R>>
+    ? unknown extends R
+      ? never
+      : React.Ref<R | LegacyRef<R>>
     : never;
 
   export type AnimatedProps<T> = {
