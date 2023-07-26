@@ -51,6 +51,7 @@ PODS:
     - React-jsc
     - React-jsi
     - React-jsiexecutor
+    - React-NativeModulesApple
     - React-rncore
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
@@ -261,6 +262,14 @@ PODS:
   - React-jsinspector (1000.0.0)
   - React-logger (1000.0.0):
     - glog
+  - React-NativeModulesApple (1000.0.0):
+    - React-callinvoker
+    - React-Core
+    - React-cxxreact
+    - React-jsi
+    - React-runtimeexecutor
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
   - React-perflogger (1000.0.0)
   - React-RCTActionSheet (1000.0.0):
     - React-Core/RCTActionSheetHeaders (= 1000.0.0)
@@ -335,12 +344,19 @@ PODS:
   - React-rncore (1000.0.0)
   - React-runtimeexecutor (1000.0.0):
     - React-jsi (= 1000.0.0)
+  - ReactCommon-Samples (1000.0.0):
+    - DoubleConversion
+    - RCT-Folly
+    - React-Codegen
+    - React-Core
+    - React-cxxreact
+    - React-NativeModulesApple
+    - ReactCommon/turbomodule/core
   - ReactCommon/turbomodule/bridging (1000.0.0):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-logger (= 1000.0.0)
@@ -350,22 +366,10 @@ PODS:
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
     - React-cxxreact (= 1000.0.0)
     - React-jsi (= 1000.0.0)
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
-  - ReactCommon/turbomodule/samples (1000.0.0):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-    - React-callinvoker (= 1000.0.0)
-    - React-Core (= 1000.0.0)
-    - React-cxxreact (= 1000.0.0)
-    - React-jsi (= 1000.0.0)
-    - React-logger (= 1000.0.0)
-    - React-perflogger (= 1000.0.0)
-    - ReactCommon/turbomodule/core (= 1000.0.0)
   - ScreenshotManager (0.0.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -394,6 +398,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../ReactCommon/jsinspector`)
   - React-logger (from `../../ReactCommon/logger`)
+  - React-NativeModulesApple (from `../../ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
@@ -409,8 +414,8 @@ DEPENDENCIES:
   - React-RCTVibration (from `../../Libraries/Vibration`)
   - React-rncore (from `../../ReactCommon`)
   - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
+  - ReactCommon-Samples (from `../../ReactCommon/react/nativemodule/samples`)
   - ReactCommon/turbomodule/core (from `../../ReactCommon`)
-  - ReactCommon/turbomodule/samples (from `../../ReactCommon`)
   - ScreenshotManager (from `NativeModuleExample`)
   - Yoga (from `../../ReactCommon/yoga`)
 
@@ -459,6 +464,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/jsinspector"
   React-logger:
     :path: "../../ReactCommon/logger"
+  React-NativeModulesApple:
+    :path: "../../ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
     :path: "../../ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -491,6 +498,8 @@ EXTERNAL SOURCES:
     :path: "../../ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../../ReactCommon"
+  ReactCommon-Samples:
+    :path: "../../ReactCommon/react/nativemodule/samples"
   ScreenshotManager:
     :path: NativeModuleExample
   Yoga:
@@ -499,45 +508,47 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 8fa3cd00fa17ef6c3221e5fd283fa93e81d23017
   DoubleConversion: acaf5db79676d2e9119015819153f0f99191de12
-  FBLazyVector: f6b1f55cf30d18e0393e926669f947cc36aea722
-  FBReactNativeSpec: 5c8999848e3edd951912734b99536ba7df67f825
+  FBLazyVector: 89792d8e862c6c078ea1df508957387df7e1c20e
+  FBReactNativeSpec: 65c01dc03669e0d4cf58e6c4079d0fc3f4219a35
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 6df0a3d6e2750a50609471fd1a01fd2948d405b5
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: bf7b4921a91932051ebf1c5c2d297154b1fa3c8c
-  RCTRequired: 1291765380d3f752c98442f188bca9a597db8654
-  RCTTypeSafety: 52850433197b6cb328bb7639e43b053427fb9f0e
-  React: 93e77946ae3dfc1ec17de0746ae510f7f6e84c87
-  React-callinvoker: 77866b1ba2b511a0aed90e0bf13958a145a53513
-  React-Codegen: e8752bfd8fb81eb8814033fe35deea31a792fee7
-  React-Core: a3b05f50dfebd84c51bc867aca718dd50f41d478
-  React-CoreModules: f24005a60bc23f506ed7f0a2889c42f507da2c4a
-  React-cxxreact: 48b5958f079ecfbfea3a1b3ba4f7b5a0436202ad
-  React-jsc: f68c112158f2cb2b7d671fd87988c076e61df205
-  React-jsi: a95c072e9bca6e258a04a7509184d0d1f5c47988
-  React-jsiexecutor: a491a620899099e554c7512823b4ca7f623921a8
-  React-jsinspector: 315b6c4f47028de5336bb3697044096db396b48c
-  React-logger: ad103f897da0e093bc2015bb99bbbb07871263e1
-  React-perflogger: 633732da6785c62b55ce676bac024edd08348e52
-  React-RCTActionSheet: e99c934d9d675a89dccd74846deed2432f26cb0e
-  React-RCTAnimation: e449df1be571986a72084fde3f551f8a905846aa
-  React-RCTAppDelegate: d5da294c3c58b60b3b2c6a6a7d66f69fa41914f6
-  React-RCTBlob: 5ab40253a687b90922e41d1886e71e23f13f253a
-  React-RCTImage: 4937804857d156980eb928514c325351aae02695
-  React-RCTLinking: 873f9ce8dfe8945e5d56d2f39d2945b41a8eed8c
-  React-RCTNetwork: e2ec94aaab9ef940e56a4caf3cc12ccfd3aae4cd
-  React-RCTPushNotification: 0a93cf2dcfe440b1403c71f899548210bf7ad38b
-  React-RCTSettings: 9d2099bc229757b477b65cf1b5ef30b647af3f59
-  React-RCTTest: 17a9a72bd60155598e363006075d69a60113de87
-  React-RCTText: 2c683236ebf07c3d828e1fd46eaee8868ea9532d
-  React-RCTVibration: 7b0d0755e2da1c1aa737c1305c34dee272440305
-  React-rncore: c2a089cb7764dfbbe09a310e562419664d3b1bb0
-  React-runtimeexecutor: 273b3706dd0a20b16230bd4e9e78f29587b3a647
-  ReactCommon: cc09cf1b96a6ac5f9eada1ba20c1e2ba9ae69c2d
+  RCTRequired: 453cd53d085ad45a58bedb21f1dd8c28ebba7250
+  RCTTypeSafety: 876465fd7a3c722efb2b362cc42e808d6bcad9a7
+  React: 65de3c7d66c7129d5ccff442ff15ec65e50ac30b
+  React-callinvoker: b14e29db00a28b229921748831b9f45c9591765c
+  React-Codegen: 9e4433cdb48a2cda2a1407715abcc6ef43ab097e
+  React-Core: 9d88f8275c18ff898622dd0ac479296f3d24a8c0
+  React-CoreModules: 7a0e6ad4c4d101abe57be9e968f49d3f390e918d
+  React-cxxreact: bf264967e415a633d432588955062d13d49d6e56
+  React-jsc: cedf1c2969c24ff2d9ee14bf00bdd451275f8959
+  React-jsi: 92869f492ff367f3834eeb76c256926ab8284972
+  React-jsiexecutor: a889ea02aba58c3dca59d21cb32449999c6e1bfc
+  React-jsinspector: 0af1aaee8ce675a14f98464927f64731320351d1
+  React-logger: 1f61a66096825a6a9442a0595ee1c18c866ddd88
+  React-NativeModulesApple: 79ecd806aba81d1a19023093737aa09a7a9714ae
+  React-perflogger: 54b645ee14dfd8f3fa2936e94ad7f4a273d9d9ad
+  React-RCTActionSheet: 0e9941f256a1e9cfbd982239819847650289290e
+  React-RCTAnimation: 04e6023feaff27657973debfd4badbb8593b8862
+  React-RCTAppDelegate: c22daba91431faf700a5aa2aa533d9983c99633a
+  React-RCTBlob: 034a38df6f6d690dddc3eadaed099e1754a99f8e
+  React-RCTImage: 34929b19e4003e1bb788490503bdcf22a4b514de
+  React-RCTLinking: 37995c8b396115dbbd79dff46929197cf9d3f13d
+  React-RCTNetwork: 40c6b7e7527956cd257e520049ec78fe8cbed55c
+  React-RCTPushNotification: a5b5fd919196563c3838f4941c25d142946e898a
+  React-RCTSettings: da84cfc9dfdc11f9b30c6a82b75561422162c0f0
+  React-RCTTest: 8860c84ff5cb4c4def0344d1082788e9539e7ecf
+  React-RCTText: b375d705e4e3168e3e1aa6f582c32ea37bc1e9f8
+  React-RCTVibration: b3435d6332814ece048d74f9b4bcc4d5a7e7e9a8
+  React-rncore: 35084dd41c22b1dbf6f5a6dc17b7e79a1a396577
+  React-runtimeexecutor: a3ec1318c1b0933298fe214ebaf20c7f35d8c815
+  ReactCommon: 503cb92c6910974c07b1079c3ed31c8be282b35c
+  ReactCommon-Samples: 06bf253e17b46032ac4e2f079eedbf2530c5b717
   ScreenshotManager: d4780d90752624adad377bfc017fc033bae61878
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  Yoga: 1ccd35d2935ae02e47618c9fce52ab88bb239fbe
+  Yoga: b1f987ed8865e22ae3555dacf2cba2e8a2572477
 
-PODFILE CHECKSUM: 9323a66f92f1707c80a6245b3362774032c06047
+PODFILE CHECKSUM: 7472ee5fbfe18097fa01c40334178907d15a203e
 
 COCOAPODS: 1.12.1

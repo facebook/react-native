@@ -117,6 +117,7 @@ class NewArchitectureHelper
             spec.dependency "RCTTypeSafety"
             spec.dependency "ReactCommon/turbomodule/bridging"
             spec.dependency "ReactCommon/turbomodule/core"
+            spec.dependency "React-NativeModulesApple"
         end
 
         spec.pod_target_xcconfig = current_config

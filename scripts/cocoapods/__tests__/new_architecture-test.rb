@@ -142,7 +142,8 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "RCTRequired" },
                 { :dependency_name => "RCTTypeSafety" },
                 { :dependency_name => "ReactCommon/turbomodule/bridging" },
-                { :dependency_name => "ReactCommon/turbomodule/core" }
+                { :dependency_name => "ReactCommon/turbomodule/core" },
+                { :dependency_name => "React-NativeModulesApple" }
         ])
     end
 
