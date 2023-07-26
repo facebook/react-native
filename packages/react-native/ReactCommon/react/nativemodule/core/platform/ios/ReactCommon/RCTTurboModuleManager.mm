@@ -278,20 +278,6 @@ static Class getFallbackClassFromName(const char *name)
                     jsInvoker:jsInvoker];
 }
 
-- (void)notifyAboutTurboModuleSetup:(const char *)name
-{
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
-  if (moduleName) {
-    int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
-                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
-                                                      }];
-  }
-}
-
 /**
  * Given a name for a TurboModule, return a C++ object which is the instance
  * of that TurboModule C++ class. This class wraps the TurboModule's ObjC instance.
@@ -808,9 +794,25 @@ static Class getFallbackClassFromName(const char *name)
     moduleClass = [_delegate getModuleClassFromName:moduleName];
   }
 
-  if (!moduleClass) {
-    moduleClass = getFallbackClassFromName(moduleName);
+  if (moduleClass != nil) {
+    return moduleClass;
   }
+
+  moduleClass = getFallbackClassFromName(moduleName);
+  if (moduleClass != nil) {
+    return moduleClass;
+  }
+
+  // fallback on modules registered throught RCT_EXPORT_MODULE with custom names
+  NSString *objcModuleName = [NSString stringWithUTF8String:moduleName];
+  NSArray<Class> *modules = RCTGetModuleClasses();
+  for (Class current in modules) {
+    NSString *currentModuleName = [current moduleName];
+    if ([objcModuleName isEqualToString:currentModuleName]) {
+      return current;
+    }
+  }
+
   return moduleClass;
 }
 
@@ -919,7 +921,6 @@ static Class getFallbackClassFromName(const char *name)
 
     if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
       [self->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
-      [self notifyAboutTurboModuleSetup:moduleName];
     }
 
     if (turboModule) {
@@ -935,7 +936,6 @@ static Class getFallbackClassFromName(const char *name)
       auto moduleName = name.c_str();
 
       TurboModulePerfLogger::moduleJSRequireBeginningStart(moduleName);
-      auto moduleWasNotInitialized = ![self moduleIsInitialized:moduleName];
 
       /**
        * By default, all TurboModules are long-lived.
@@ -943,10 +943,6 @@ static Class getFallbackClassFromName(const char *name)
        * trigger an assertion failure.
        */
       auto turboModule = [self provideLegacyModule:moduleName];
-
-      if (moduleWasNotInitialized && [self moduleIsInitialized:moduleName]) {
-        [self notifyAboutTurboModuleSetup:moduleName];
-      }
 
       if (turboModule) {
         TurboModulePerfLogger::moduleJSRequireEndingEnd(moduleName);
@@ -959,17 +955,6 @@ static Class getFallbackClassFromName(const char *name)
     TurboModuleBinding::install(runtime, std::move(turboModuleProvider), std::move(legacyModuleProvider));
   } else {
     TurboModuleBinding::install(runtime, std::move(turboModuleProvider));
-  }
-}
-
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor
-{
-  // jsi::Runtime doesn't exist when attached to Chrome debugger.
-  if (runtimeExecutor) {
-    runtimeExecutor([self](facebook::jsi::Runtime &runtime) { [self installJSBindings:runtime]; });
   }
 }
 

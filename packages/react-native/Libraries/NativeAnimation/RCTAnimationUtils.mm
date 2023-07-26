@@ -110,7 +110,7 @@ uint32_t RCTColorFromComponents(CGFloat red, CGFloat green, CGFloat blue, CGFloa
 
 #if TARGET_IPHONE_SIMULATOR
 // Based on https://stackoverflow.com/a/13307674
-float UIAnimationDragCoefficient(void);
+UIKIT_EXTERN float UIAnimationDragCoefficient(void);
 #endif
 
 CGFloat RCTAnimationDragCoefficient(void)

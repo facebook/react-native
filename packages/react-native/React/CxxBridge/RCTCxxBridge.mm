@@ -114,20 +114,6 @@ class GetDescAdapter : public JSExecutorFactory {
 
 }
 
-static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag)
-{
-  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
-  if (moduleName) {
-    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                        object:nil
-                                                      userInfo:@{
-                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
-                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
-                                                      }];
-  }
-}
-
 static void mapReactMarkerToPerformanceLogger(
     const ReactMarker::ReactMarkerId markerId,
     RCTPerformanceLogger *performanceLogger,
@@ -158,7 +144,6 @@ static void mapReactMarkerToPerformanceLogger(
       break;
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       [performanceLogger markStopForTag:RCTPLNativeModuleSetup];
-      notifyAboutModuleSetup(performanceLogger, tag);
       break;
       // Not needed in bridge mode.
     case ReactMarker::REACT_INSTANCE_INIT_START:
@@ -1030,9 +1015,7 @@ struct RCTInstanceCallback : public InstanceCallback {
         if (self.valid && ![moduleData.moduleClass isSubclassOfClass:[RCTCxxModule class]]) {
           [self->_performanceLogger appendStartForTag:RCTPLNativeModuleMainThread];
           (void)[moduleData instance];
-          if (!RCTIsMainQueueExecutionOfConstantsToExportDisabled()) {
-            [moduleData gatherConstants];
-          }
+          [moduleData gatherConstants];
           [self->_performanceLogger appendStopForTag:RCTPLNativeModuleMainThread];
         }
       };

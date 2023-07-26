@@ -12,21 +12,21 @@
 
 const Settings = {
   get(key: string): mixed {
-    console.warn('Settings is not yet supported on Android');
+    console.warn('Settings is not yet supported on this platform.');
     return null;
   },
 
   set(settings: Object) {
-    console.warn('Settings is not yet supported on Android');
+    console.warn('Settings is not yet supported on this platform.');
   },
 
   watchKeys(keys: string | Array<string>, callback: Function): number {
-    console.warn('Settings is not yet supported on Android');
+    console.warn('Settings is not yet supported on this platform.');
     return -1;
   },
 
   clearWatch(watchId: number) {
-    console.warn('Settings is not yet supported on Android');
+    console.warn('Settings is not yet supported on this platform.');
   },
 };
 

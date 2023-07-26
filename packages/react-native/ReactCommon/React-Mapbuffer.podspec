@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -17,20 +17,27 @@ else
 end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-RCTText"
+  s.name                   = "React-Mapbuffer"
   s.version                = version
-  s.summary                = "A React component for displaying text."
+  s.summary                = "-"
   s.homepage               = "https://reactnative.dev/"
-  s.documentation_url      = "https://reactnative.dev/docs/text"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.source_files           = "**/*.{h,m,mm}"
-  s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
-  s.header_dir             = "RCTText"
-  s.framework              = ["MobileCoreServices"]
+  s.source_files           = "react/renderer/mapbuffer/*.{cpp,h}"
+  s.exclude_files          = "react/renderer/mapbuffer/tests"
+  s.public_header_files    = 'react/renderer/mapbuffer/*.h'
+  s.header_dir             = "react/renderer/mapbuffer"
+  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\"", "USE_HEADERMAP" => "YES",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
 
-  s.dependency "Yoga"
-  s.dependency "React-Core/RCTTextHeaders", version
+  if ENV['USE_FRAMEWORKS']
+    s.header_mappings_dir     = './'
+    s.module_name             = 'React_Mapbuffer'
+  end
+
+  s.dependency "glog"
+  s.dependency "React-debug"
+
 end

@@ -28,7 +28,6 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTSurfacePresenter.h>
-#import <ReactCommon/RCTLegacyUIManagerConstantsProvider.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
@@ -39,6 +38,7 @@
 
 #import "ObjCTimerRegistry.h"
 #import "RCTJSThreadManager.h"
+#import "RCTLegacyUIManagerConstantsProvider.h"
 #import "RCTPerformanceLoggerUtils.h"
 
 #if RCT_DEV_MENU && __has_include(<React/RCTDevLoadingViewProtocol.h>)

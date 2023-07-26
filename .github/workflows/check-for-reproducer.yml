@@ -3,14 +3,12 @@ name: Check for reproducer
 # Also, when a comment is added, edited or deleted.
 on:
   issues:
-    types: [opened, edited]
-  issue_comment:
-    types: [created, edited, deleted]
+    types: [opened]
 
 jobs:
   check-for-reproducer:
     runs-on: ubuntu-latest
-    if: github.repository == 'facebook/react-native'
+    if: github.repository == 'facebook/react-native' && github.event.issue.pull_request == null && github.event.issue.state == 'open'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/github-script@v6

@@ -50,6 +50,7 @@ module.exports = {
         enableBabelRuntime: false,
         experimentalImportSupport: false,
         globalPrefix: '',
+        hermesParser: true,
         hot: false,
         inlineRequires: true,
         minify: false,

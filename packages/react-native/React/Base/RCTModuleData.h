@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTInvalidating.h>
-#import "RCTDefines.h"
 
 @protocol RCTBridgeMethod;
 @protocol RCTBridgeModule;
@@ -112,6 +111,3 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
 
 @end
-
-RCT_EXTERN void RCTSetIsMainQueueExecutionOfConstantsToExportDisabled(BOOL val);
-RCT_EXTERN BOOL RCTIsMainQueueExecutionOfConstantsToExportDisabled(void);

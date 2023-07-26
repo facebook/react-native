@@ -30,10 +30,8 @@ packages/react-native/interface.js
 packages/react-native/flow/
 
 [options]
+experimental.global_find_ref=true
 enums=true
-conditional_type=true
-mapped_type=true
-type_guards=true
 
 emoji=true
 
@@ -78,4 +76,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.212.0
+^0.213.1

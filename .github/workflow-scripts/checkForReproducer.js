@@ -8,7 +8,11 @@
  */
 
 const NEEDS_REPRO_LABEL = 'Needs: Repro';
-const NEEDS_REPRO_MESSAGE = '| Missing Reproducible Example |';
+const NEEDS_REPRO_HEADER = 'Missing Reproducible Example';
+const NEEDS_REPRO_MESSAGE =
+  `| :warning: | Missing Reproducible Example |\n` +
+  `| --- | --- |\n` +
+  `| :information_source: | We could not detect a reproducible example in your issue report. Please provide either: <br /><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/update related: use our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate). A reproducer needs to be in a GitHub repository under your username.</li></ul> |`;
 
 module.exports = async (github, context) => {
   const issueData = {
@@ -20,30 +24,35 @@ module.exports = async (github, context) => {
   const issue = await github.rest.issues.get(issueData);
   const comments = await github.rest.issues.listComments(issueData);
 
-  const botComment = comments.data.find(comment =>
-    comment.body.includes(NEEDS_REPRO_MESSAGE),
+  const author = issue.data.user.login;
+
+  const maintainerChangedLabel = await hasMaintainerChangedLabel(
+    github,
+    issueData,
+    author,
   );
 
-  let commentBodies = comments.data.map(comment => comment.body);
-  if (botComment) {
-    commentBodies = commentBodies.filter(body => body !== botComment.body);
+  if (maintainerChangedLabel) {
+    return;
   }
 
-  const issueAndComments = [issue.data.body, ...commentBodies];
-  const issueAndCommentsUniq = [...new Set(issueAndComments)];
+  const botComment = comments.data.find(comment =>
+    comment.body.includes(NEEDS_REPRO_HEADER),
+  );
 
-  const user = issue.data.user.login;
+  const entities = [issue.data, ...comments.data];
 
-  const hasValidReproducer = issueAndCommentsUniq.some(body => {
+  // Look for Snack or a GH repo associated with the user that added an issue or comment
+  const hasValidReproducer = entities.some(entity => {
     const hasExpoSnackLink = containsPattern(
-      body,
+      entity.body,
       `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`,
     );
-    const hasGithubRepoLink = containsPattern(
-      body,
-      `https?:\\/\\/github\\.com\\/(${user})\\/[^/]+\\/?\\s?`,
-    );
 
+    const hasGithubRepoLink = containsPattern(
+      entity.body,
+      `https?:\\/\\/github\\.com\\/(${entity.user.login})\\/[^/]+\\/?\\s?`,
+    );
     return hasExpoSnackLink || hasGithubRepoLink;
   });
 
@@ -70,10 +79,32 @@ module.exports = async (github, context) => {
       ...issueData,
       labels: [NEEDS_REPRO_LABEL],
     });
+
+    if (botComment) return;
+
+    await github.rest.issues.createComment({
+      ...issueData,
+      body: NEEDS_REPRO_MESSAGE,
+    });
   }
 };
 
 function containsPattern(body, pattern) {
   const regexp = new RegExp(pattern, 'gm');
   return body.search(regexp) !== -1;
+}
+
+// Prevents the bot from responding when maintainer has changed Needs: Repro the label
+async function hasMaintainerChangedLabel(github, issueData, author) {
+  const timeline = await github.rest.issues.listEventsForTimeline(issueData);
+
+  const labeledEvents = timeline.data.filter(
+    event => event.event === 'labeled' || event.event === 'unlabeled',
+  );
+  const userEvents = labeledEvents.filter(event => event.actor.type !== 'Bot');
+
+  return userEvents.some(
+    event =>
+      event.actor.login !== author && event.label.name === NEEDS_REPRO_LABEL,
+  );
 }

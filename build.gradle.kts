@@ -30,7 +30,7 @@ version =
 group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "23.1.7779620")
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "25.1.8937393")
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
