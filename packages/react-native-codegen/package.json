@@ -50,7 +50,7 @@
     "invariant": "^2.2.4",
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
-    "prettier": "2.8.8",
+    "prettier": "3.0.0",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
