@@ -106,6 +106,21 @@ export type Props = $ReadOnly<{|
   hardwareAccelerated?: ?boolean,
 
   /**
+   * A drag-to-dismiss gesture is always present with `presentationStyle` set to
+   * either `formSheet` or `pageSheet`. If `preventNativeDismiss` is set to
+   * `true` (the default), the modal will drag down a very short distance, and
+   * then stop. When the user releases, `onRequestClose` is called.
+   *
+   * When this prop is set to `false`, the user will be able to drag the modal
+   * all the way off the bottom of the screen. Now when the user releases,
+   * `onDismiss` is called. You **must** set `visible` to `false` in response
+   * to this.
+   *
+   * This prop only works on iOS.
+   */
+  preventNativeDismiss?: ?boolean,
+
+  /**
    * The `visible` prop determines whether your modal is visible.
    *
    * See https://reactnative.dev/docs/modal#visible
@@ -250,6 +265,7 @@ class Modal extends React.Component<Props> {
         presentationStyle={presentationStyle}
         transparent={this.props.transparent}
         hardwareAccelerated={this.props.hardwareAccelerated}
+        preventNativeDismiss={this.props.preventNativeDismiss}
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         onDismiss={() => {

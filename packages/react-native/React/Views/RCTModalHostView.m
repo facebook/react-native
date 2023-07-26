@@ -24,7 +24,6 @@
   RCTTouchHandler *_touchHandler;
   UIView *_reactSubview;
   UIInterfaceOrientation _lastKnownOrientation;
-  RCTDirectEventBlock _onRequestClose;
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
@@ -33,6 +32,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
   if ((self = [super initWithFrame:CGRectZero])) {
+    _preventNativeDismiss = YES;
+
     _bridge = bridge;
     _modalViewController = [RCTModalHostViewController new];
     UIView *containerView = [UIView new];
@@ -58,15 +59,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
   }
 }
 
-- (void)setOnRequestClose:(RCTDirectEventBlock)onRequestClose
+- (BOOL)presentationControllerShouldDismiss:(UIPresentationController *)presentationController
 {
-  _onRequestClose = onRequestClose;
+  return !_preventNativeDismiss;
 }
 
 - (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
 {
   if (_onRequestClose != nil) {
     _onRequestClose(nil);
+  }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  if (_onDismiss) {
+    _onDismiss(nil);
   }
 }
 
@@ -173,6 +181,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     RCTAssert(self.reactViewController, @"Can't present modal view controller without a presenting view controller");
 
     _modalViewController.supportedInterfaceOrientations = [self supportedOrientationsMask];
+    _modalViewController.modalInPresentation = self.preventNativeDismiss;
 
     if ([self.animationType isEqualToString:@"fade"]) {
       _modalViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

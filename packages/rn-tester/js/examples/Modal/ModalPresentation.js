@@ -32,7 +32,7 @@ const presentationStyles = [
   'formSheet',
   'overFullScreen',
 ];
-const iOSActions = ['None', 'On Dismiss', 'On Show'];
+const iOSActions = ['None', 'On Dismiss', 'On Request Close', 'On Show'];
 const noniOSActions = ['None', 'On Show'];
 
 function ModalPresentation() {
@@ -40,6 +40,7 @@ function ModalPresentation() {
   const [transparent, setTransparent] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const [hardwareAccelerated, setHardwareAccelerated] = React.useState(false);
+  const [preventNativeDismiss, setPreventNativeDismiss] = React.useState(true);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
   const [presentationStyle, setPresentationStyle] =
     React.useState('fullScreen');
@@ -48,15 +49,23 @@ function ModalPresentation() {
   const [currentOrientation, setCurrentOrientation] = React.useState('unknown');
   const [action, setAction] = React.useState('None');
   const actions = Platform.OS === 'ios' ? iOSActions : noniOSActions;
+
+  const onRequestClose = () => {
+    setVisible(false);
+    if (action === 'On Request Close') {
+      alert('onRequestClose');
+    }
+  };
+
   const onDismiss = () => {
     setVisible(false);
-    if (action === 'onDismiss') {
+    if (action === 'On Dismiss') {
       alert('onDismiss');
     }
   };
 
   const onShow = () => {
-    if (action === 'onShow') {
+    if (action === 'On Show') {
       alert('onShow');
     }
   };
@@ -80,9 +89,10 @@ function ModalPresentation() {
         presentationStyle={presentationStyle}
         transparent={transparent}
         hardwareAccelerated={hardwareAccelerated}
+        preventNativeDismiss={preventNativeDismiss}
         statusBarTranslucent={statusBarTranslucent}
         visible={visible}
-        onRequestClose={onDismiss}
+        onRequestClose={onRequestClose}
         supportedOrientations={supportedOrientations[supportedOrientationKey]}
         onOrientationChange={onOrientationChange}
         onDismiss={onDismiss}
@@ -101,7 +111,9 @@ function ModalPresentation() {
                 It is currently displayed in {currentOrientation} mode.
               </Text>
             ) : null}
-            <RNTesterButton onPress={onDismiss}>Close</RNTesterButton>
+            <RNTesterButton onPress={() => setVisible(false)}>
+              Close
+            </RNTesterButton>
           </View>
         </View>
       </Modal>
@@ -177,6 +189,17 @@ function ModalPresentation() {
                 Presentation Style
               </Text>
             ) : null}
+          </View>
+          <View style={styles.block}>
+            <View style={styles.rowWithSpaceBetween}>
+              <Text style={styles.title}>Prevent Native Dismiss</Text>
+              <Switch
+                value={preventNativeDismiss}
+                onValueChange={() =>
+                  setPreventNativeDismiss(!preventNativeDismiss)
+                }
+              />
+            </View>
           </View>
           <View style={styles.block}>
             <Text style={styles.title}>Supported Orientation</Text>

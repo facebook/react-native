@@ -93,6 +93,12 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   }
 
   @Override
+  @ReactProp(name = "preventNativeDismiss")
+  public void setPreventNativeDismiss(ReactModalHostView view, boolean preventNativeDismiss) {
+    // iOS only
+  }
+
+  @Override
   @ReactProp(name = "visible")
   public void setVisible(ReactModalHostView view, boolean visible) {
     // iOS only

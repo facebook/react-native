@@ -70,6 +70,8 @@ export interface ModalPropsIOS {
       >
     | undefined;
 
+  preventNativeDismiss?: boolean | undefined;
+
   /**
    * The `onDismiss` prop allows passing a function that will be called once the modal has been dismissed.
    */

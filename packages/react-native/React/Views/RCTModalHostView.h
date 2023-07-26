@@ -24,6 +24,7 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL preventNativeDismiss;
 
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;
@@ -37,7 +38,7 @@
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
 
-// Fabric only
+@property (nonatomic, copy) RCTDirectEventBlock onRequestClose;
 @property (nonatomic, copy) RCTDirectEventBlock onDismiss;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
