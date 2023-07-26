@@ -3,9 +3,7 @@ name: Check for reproducer
 # Also, when a comment is added, edited or deleted.
 on:
   issues:
-    types: [opened, edited]
-  issue_comment:
-    types: [created, edited, deleted]
+    types: [opened]
 
 jobs:
   check-for-reproducer:
