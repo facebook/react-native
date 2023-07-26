@@ -464,7 +464,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
         // Collapse selection at end of insert to match normal paste behavior.
         UITextPosition *insertEnd = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                       offset:(range.location + allowedLength)];
                                                                        offset:newAttributedText.length >= _maxLength.intValue?_maxLength.intValue : (range.location + allowedLength)];
         [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd
                                                                                   toPosition:insertEnd]
