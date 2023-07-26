@@ -34,6 +34,8 @@ interface Agent {
 }
 
 type TraceNode = {
+  publicInstance?: TraceNode,
+  // TODO: remove this field when syncing the new version of the renderer from React to React Native.
   canonical?: TraceNode,
   measure?: (
     (
@@ -100,7 +102,11 @@ export default function TraceUpdateOverlay(): React.Node {
 
       const newFramesToDraw: Array<Promise<Overlay>> = [];
       nodesToDraw.forEach(({node, color}) => {
-        const component = node.canonical ?? node;
+        // `publicInstance` => Fabric
+        // TODO: remove this check when syncing the new version of the renderer from React to React Native.
+        // `canonical` => Legacy Fabric
+        // `node` => Legacy renderer
+        const component = node.publicInstance ?? node.canonical ?? node;
         if (!component || !component.measure) {
           return;
         }

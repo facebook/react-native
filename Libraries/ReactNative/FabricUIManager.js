@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -19,7 +19,7 @@ import type {
 import type {RootTag} from '../Types/RootTagTypes';
 
 // TODO: type these properly.
-type Node = {...};
+export opaque type Node = {...};
 type NodeSet = Array<Node>;
 type NodeProps = {...};
 type InstanceHandle = {...};
@@ -53,9 +53,7 @@ export type Spec = {|
   +configureNextLayoutAnimation: (
     config: LayoutAnimationConfig,
     callback: () => void, // check what is returned here
-    // This error isn't currently called anywhere, so the `error` object is really not defined
-    // $FlowFixMe[unclear-type]
-    errorCallback: (error: Object) => void,
+    errorCallback: () => void,
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,

@@ -8,6 +8,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
+#import "RNTLegacyView.h"
 #import "RNTMyNativeViewComponentView.h"
 
 @interface RNTMyLegacyNativeViewManager : RCTViewManager
@@ -16,17 +17,27 @@
 
 @implementation RNTMyLegacyNativeViewManager
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 RCT_EXPORT_MODULE()
 
 RCT_REMAP_VIEW_PROPERTY(color, backgroundColor, UIColor)
 
 RCT_REMAP_VIEW_PROPERTY(opacity, alpha, CGFloat)
 
+RCT_EXPORT_VIEW_PROPERTY(onColorChanged, RCTBubblingEventBlock)
+
 - (UIView *)view
 {
-  UIView *view = [[UIView alloc] init];
-  view.backgroundColor = UIColor.greenColor;
+  RNTLegacyView *view = [[RNTLegacyView alloc] init];
   return view;
 }
 
+- (NSDictionary *)constantsToExport
+{
+  return @{@"PI" : @3.14};
+}
 @end

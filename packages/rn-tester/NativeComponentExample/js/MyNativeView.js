@@ -16,6 +16,7 @@ import RNTMyNativeView, {
 } from './MyNativeViewNativeComponent';
 import RNTMyLegacyNativeView from './MyLegacyViewNativeComponent';
 import type {MyNativeViewType} from './MyNativeViewNativeComponent';
+import {UIManager} from 'react-native';
 
 const colors = [
   '#0000FF',
@@ -26,11 +27,35 @@ const colors = [
   '#000033',
 ];
 
+class HSBA {
+  hue: number;
+  saturation: number;
+  brightness: number;
+  alpha: number;
+
+  constructor(
+    hue: number = 0.0,
+    saturation: number = 0.0,
+    brightness: number = 0.0,
+    alpha: number = 0.0,
+  ) {
+    this.hue = hue;
+    this.saturation = saturation;
+    this.brightness = brightness;
+    this.alpha = alpha;
+  }
+
+  toString(): string {
+    return `h: ${this.hue}, s: ${this.saturation}, b: ${this.brightness}, a: ${this.alpha}`;
+  }
+}
+
 // This is an example component that migrates to use the new architecture.
 export default function MyNativeView(props: {}): React.Node {
   const ref = useRef<React.ElementRef<MyNativeViewType> | null>(null);
   const [opacity, setOpacity] = useState(1.0);
   const [color, setColor] = useState('#FF0000');
+  const [hsba, setHsba] = useState<HSBA>(new HSBA());
   return (
     <View style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
@@ -40,7 +65,22 @@ export default function MyNativeView(props: {}): React.Node {
         style={{flex: 1}}
         opacity={opacity}
         color={color}
+        onColorChanged={event =>
+          setHsba(
+            new HSBA(
+              event.nativeEvent.backgroundColor.hue,
+              event.nativeEvent.backgroundColor.saturation,
+              event.nativeEvent.backgroundColor.brightness,
+              event.nativeEvent.backgroundColor.alpha,
+            ),
+          )
+        }
       />
+      <Text>HSBA: {hsba.toString()}</Text>
+      <Text>
+        Constants From Interop Layer:{' '}
+        {UIManager.RNTMyLegacyNativeView.Constants.PI}
+      </Text>
       <Button
         title="Change Background"
         onPress={() => {

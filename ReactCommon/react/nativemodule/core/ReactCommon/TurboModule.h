@@ -54,7 +54,15 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
         // Method was not found, let JS decide what to do.
         return facebook::jsi::Value::undefined();
       } else {
-        return get(runtime, propName, p->second);
+        auto moduleMethod = createHostFunction(runtime, propName, p->second);
+        // If we have a JS wrapper, cache the result of this lookup
+        // We don't cache misses, to allow for methodMap_ to dynamically be
+        // extended
+        if (jsRepresentation_) {
+          jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
+              runtime, propName, moduleMethod);
+        }
+        return moduleMethod;
       }
     }
   }
@@ -108,7 +116,7 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
   friend class TurboModuleBinding;
   std::unique_ptr<jsi::WeakObject> jsRepresentation_;
 
-  facebook::jsi::Value get(
+  facebook::jsi::Value createHostFunction(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName,
       const MethodMetadata &meta);
