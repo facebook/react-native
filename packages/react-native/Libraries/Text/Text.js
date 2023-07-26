@@ -105,7 +105,13 @@ const Text: React.AbstractComponent<
             onLongPress,
             onPress,
             onPressIn(event: PressEvent) {
-              setHighlighted(!suppressHighlighting);
+              // Updating isHighlighted causes unnecessary re-renders for platforms that don't use it
+              // in the best case, and cause issues with text selection in the worst case. Forcing
+              // the isHighlighted prop to false on all platforms except iOS.
+              setHighlighted(
+                (suppressHighlighting == null || !suppressHighlighting) &&
+                  Platform.OS === 'ios',
+              );
               onPressIn?.(event);
             },
             onPressOut(event: PressEvent) {
