@@ -39,7 +39,7 @@ const Platform = {
       prerelease: ?number,
     |},
     systemName: string,
-    isMacCatalyst: boolean,
+    isMacCatalyst?: boolean,
   |} {
     // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
