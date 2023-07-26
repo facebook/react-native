@@ -6,6 +6,7 @@
   "singleQuote": true,
   "trailingComma": "all",
   "endOfLine": "lf",
+  "plugins": ["prettier-plugin-hermes-parser"],
   "overrides": [
     {
       "files": [
