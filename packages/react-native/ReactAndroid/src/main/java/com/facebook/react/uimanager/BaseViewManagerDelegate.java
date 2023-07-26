@@ -122,7 +122,7 @@ public abstract class BaseViewManagerDelegate<T extends View, U extends BaseView
         mViewManager.setTransform(view, (ReadableArray) value);
         break;
       case ViewProps.TRANSFORM_ORIGIN:
-        mViewManager.setTransformOrigin(view, (String) value);
+        mViewManager.setTransformOrigin(view, (ReadableArray) value);
         break;
       case ViewProps.TRANSLATE_X:
         mViewManager.setTranslateX(view, value == null ? 0.0f : ((Double) value).floatValue());

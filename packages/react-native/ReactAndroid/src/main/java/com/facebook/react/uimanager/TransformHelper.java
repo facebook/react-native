@@ -45,7 +45,7 @@ public class TransformHelper {
     return inRadians ? value : MatrixMathHelper.degreesToRadians(value);
   }
 
-  public static void processTransform(ReadableArray transforms, double[] result, float viewWidth, float viewHeight, String transformOrigin) {
+  public static void processTransform(ReadableArray transforms, double[] result, float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     double[] helperMatrix = sHelperMatrix.get();
     MatrixMathHelper.resetIdentityMatrix(result);
 
@@ -120,7 +120,7 @@ public class TransformHelper {
     }
   }
 
-  public static float[] getTranslateForTransformOrigin(float viewWidth, float viewHeight, String transformOrigin) {
+  public static float[] getTranslateForTransformOrigin(float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     if (transformOrigin == null || (viewHeight == 0 && viewWidth == 0)) {
       return null;
     }
@@ -129,24 +129,19 @@ public class TransformHelper {
 
     float[] origin = {viewCenterX, viewCenterY, 0.0f};
 
-    String[] parts = transformOrigin.split(" ");
-    for (int i = 0; i < parts.length && i < 3; i++) {
-      String part = parts[i];
-      if (part.endsWith("%")) {
-        float val = Float.parseFloat(part.substring(0, part.length() - 1));
-        origin[i] = (i == 0 ? viewWidth : viewHeight) * val / 100.0f;
-      } else if (part.equals("top")) {
-        origin[1] = 0.0f;
-      } else if (part.equals("bottom")) {
-        origin[1] = viewHeight;
-      } else if (part.equals("left")) {
-        origin[0] = 0.0f;
-      } else if (part.equals("right")) {
-        origin[0] = viewWidth;
-      } else if (part.equals("center")) {
-        continue;
-      } else {
-        origin[i] = Float.parseFloat(part);
+    for (int i = 0; i < transformOrigin.size() && i < 3; i++) {
+      switch (transformOrigin.getType(i)) {
+        case Number:
+          origin[i] = (float) transformOrigin.getDouble(i);
+          break;
+        case String: {
+          String part = transformOrigin.getString(i);
+          if (part.endsWith("%")) {
+            float val = Float.parseFloat(part.substring(0, part.length() - 1));
+            origin[i] = (i == 0 ? viewWidth : viewHeight) * val / 100.0f;
+          }
+          break;
+        }
       }
     }
 

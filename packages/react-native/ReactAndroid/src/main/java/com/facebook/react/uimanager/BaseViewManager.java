@@ -151,7 +151,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     int currentHeight = bottom - top;
 
     if ((currentHeight != oldHeight || currentWidth != oldWidth)) {
-      String transformOrigin = (String) v.getTag(R.id.transform_origin);
+      ReadableArray transformOrigin = (ReadableArray) v.getTag(R.id.transform_origin);
       ReadableArray transformMatrix = (ReadableArray) v.getTag(R.id.transform);
       if (transformMatrix != null && transformOrigin != null) {
         setTransformProperty((T) v, transformMatrix, transformOrigin);
@@ -175,14 +175,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (matrix == null) {
       resetTransformProperty(view);
     } else {
-      String transformOrigin = (String) view.getTag(R.id.transform_origin);
+      ReadableArray transformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
       setTransformProperty(view, matrix, transformOrigin);
     }
   }
 
   @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
-  public void setTransformOrigin(@NonNull T view, @Nullable String transformOrigin) {
+  public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     view.setTag(R.id.transform_origin, transformOrigin);
     ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
     if (transformMatrix != null) {
@@ -482,7 +482,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, String transformOrigin) {
+  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, ReadableArray transformOrigin) {
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(transforms, sTransformDecompositionArray,
       PixelUtil.toDIPFromPixel(view.getWidth()), PixelUtil.toDIPFromPixel(view.getHeight()), transformOrigin);
