@@ -556,6 +556,36 @@ inline void fromRawValue(
   result = transformMatrix;
 }
 
+ inline void fromRawValue(
+     const PropsParserContext &context,
+     const RawValue &value,
+     TransformOrigin &result) {
+   react_native_expect(value.hasType<std::vector<RawValue>>());
+   auto origins = (std::vector<RawValue>)value;
+   
+   TransformOrigin transformOrigin;
+
+   size_t i = 0;
+   for (const auto& origin : origins) {
+     if (origin.hasType<Float>()) {
+       transformOrigin.origin[i] = yogaStyleValueFromFloat((Float)origin);
+     } else if (origin.hasType<std::string>()) {
+       const auto stringValue = (std::string)origin;
+
+       if (stringValue.back() == '%') {
+         auto tryValue = folly::tryTo<float>(
+                                             std::string_view(stringValue).substr(0, stringValue.length() - 1));
+         if (tryValue.hasValue()) {
+           transformOrigin.origin[i] = YGValue{tryValue.value(), YGUnitPercent};
+         }
+       }
+     }
+     i++;
+   }
+   
+   result = transformOrigin;
+ }
+
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,

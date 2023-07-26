@@ -16,6 +16,7 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/Vector.h>
+#include <yoga/Yoga.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -48,6 +49,23 @@ struct TransformOperation {
   Float x;
   Float y;
   Float z;
+};
+
+struct TransformOrigin {
+  std::array<YGValue, 3> origin;
+  bool operator==(const TransformOrigin& other) const {
+    return origin[0].value == other.origin[0].value && origin[0].unit == other.origin[0].unit
+    && origin[1].value == other.origin[1].value && origin[1].unit == other.origin[1].unit
+    && origin[2].value == other.origin[2].value && origin[2].unit == other.origin[2].unit;
+  }
+  bool operator!=(const TransformOrigin& other) const {
+    return !(*this == other);
+  };
+  bool isSet() const {
+    return !(origin[0].value == 0.0f && origin[0].unit == YGUnitUndefined
+        && origin[1].value == 0.0f && origin[1].unit == YGUnitUndefined
+        && origin[2].value == 0.0f && origin[2].unit == YGUnitUndefined);
+  }
 };
 
 /*

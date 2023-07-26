@@ -399,7 +399,7 @@ using namespace facebook::react;
     _contentView.frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
   }
   
-  if (_props->transformOrigin.length() > 0) {
+  if (_props->transformOrigin.isSet()) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }

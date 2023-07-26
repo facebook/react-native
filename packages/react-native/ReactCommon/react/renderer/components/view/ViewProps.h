@@ -65,7 +65,7 @@ class ViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Transform
   Transform transform{};
-  std::string transformOrigin;
+  TransformOrigin transformOrigin{};
 
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
