@@ -560,15 +560,16 @@ inline void fromRawValue(
      const PropsParserContext &context,
      const RawValue &value,
      TransformOrigin &result) {
-   react_native_expect(value.hasType<std::vector<RawValue>>());
-   auto origins = (std::vector<RawValue>)value;
-   
-   TransformOrigin transformOrigin;
+  react_native_expect(value.hasType<std::vector<RawValue>>());
+  auto origins = (std::vector<RawValue>)value;
+  react_native_expect(origins.size() == 3);
 
-   size_t i = 0;
-   for (const auto& origin : origins) {
+  TransformOrigin transformOrigin;
+
+   for (size_t i = 0; i < 2; i++) {
+     const auto& origin = origins[i];
      if (origin.hasType<Float>()) {
-       transformOrigin.origin[i] = yogaStyleValueFromFloat((Float)origin);
+       transformOrigin.xy[i] = yogaStyleValueFromFloat((Float)origin);
      } else if (origin.hasType<std::string>()) {
        const auto stringValue = (std::string)origin;
 
@@ -576,12 +577,15 @@ inline void fromRawValue(
          auto tryValue = folly::tryTo<float>(
                                              std::string_view(stringValue).substr(0, stringValue.length() - 1));
          if (tryValue.hasValue()) {
-           transformOrigin.origin[i] = YGValue{tryValue.value(), YGUnitPercent};
+           transformOrigin.xy[i] = YGValue{tryValue.value(), YGUnitPercent};
          }
        }
      }
-     i++;
    }
+
+    if (origins[2].hasType<Float>()) {
+      transformOrigin.z = (Float)origins[2];
+    }
    
    result = transformOrigin;
  }

@@ -52,19 +52,21 @@ struct TransformOperation {
 };
 
 struct TransformOrigin {
-  std::array<YGValue, 3> origin;
+  std::array<YGValue, 2> xy;
+  float z = 0.0f;
+
   bool operator==(const TransformOrigin& other) const {
-    return origin[0].value == other.origin[0].value && origin[0].unit == other.origin[0].unit
-    && origin[1].value == other.origin[1].value && origin[1].unit == other.origin[1].unit
-    && origin[2].value == other.origin[2].value && origin[2].unit == other.origin[2].unit;
+    return xy[0].value == other.xy[0].value && xy[0].unit == other.xy[0].unit
+    && xy[1].value == other.xy[1].value && xy[1].unit == other.xy[1].unit
+    && z == other.z;
   }
   bool operator!=(const TransformOrigin& other) const {
     return !(*this == other);
   };
   bool isSet() const {
-    return !(origin[0].value == 0.0f && origin[0].unit == YGUnitUndefined
-        && origin[1].value == 0.0f && origin[1].unit == YGUnitUndefined
-        && origin[2].value == 0.0f && origin[2].unit == YGUnitUndefined);
+    return xy[0].value != 0.0f || xy[0].unit != YGUnitUndefined
+        || xy[1].value != 0.0f || xy[1].unit != YGUnitUndefined
+        || z != 0.0f;
   }
 };
 

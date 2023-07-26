@@ -439,13 +439,14 @@ std::array<float, 3> ViewProps::getTranslateForTransformOrigin(float viewWidth, 
   float viewCenterX = viewWidth / 2;
   float viewCenterY = viewHeight / 2;
 
-  std::array<float, 3> origin = {viewCenterX, viewCenterY, 0.0f};
+  std::array<float, 3> origin = {viewCenterX, viewCenterY, transformOrigin.z};
   
-  for (size_t i = 0; i < 3; ++i) {
-    if (transformOrigin.origin[i].unit == YGUnitPoint) {
-      origin[i] = transformOrigin.origin[i].value;
-    } else if (transformOrigin.origin[i].unit == YGUnitPercent && i < 2) {
-        origin[i] = ((i == 0) ? viewWidth : viewHeight) * transformOrigin.origin[i].value / 100.0f;
+  for (size_t i = 0; i < 2; ++i) {
+    auto& currentOrigin = transformOrigin.xy[i];
+    if (currentOrigin.unit == YGUnitPoint) {
+      origin[i] = currentOrigin.value;
+    } else if (currentOrigin.unit == YGUnitPercent) {
+        origin[i] = ((i == 0) ? viewWidth : viewHeight) * currentOrigin.value / 100.0f;
       }
     }
 
