@@ -15,6 +15,7 @@
 #import "RCTConvert.h"
 #import "RCTLog.h"
 #import "RCTShadowView.h"
+#import "RCTTransformOrigin.h"
 #import "RCTUIManager.h"
 #import "RCTUIManagerUtils.h"
 #import "RCTUtils.h"
@@ -121,27 +122,13 @@ RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
 
-+ (CATransform3D)transformOrigin:(id)json
++ (RCTTransformOrigin)RCTTransformOrigin:(id)json
  {
-   CATransform3D transformOrigin = CATransform3DMakeScale(0, 0, 0);
-   id anchorPointX = json[0];
-   id anchorPointY = json[1];
-   id anchorPointZ = json[2];
-
-   if ([anchorPointX isKindOfClass:NSString.class] && [(NSString *)anchorPointX hasSuffix:@"%"]) {
-     transformOrigin.m11 = [anchorPointX doubleValue] / 100;
-   } else {
-     transformOrigin.m14 = [RCTConvert CGFloat:anchorPointX];
-   }
-
-   if ([anchorPointY isKindOfClass:NSString.class] && [(NSString *)anchorPointY hasSuffix:@"%"]) {
-     transformOrigin.m22 = [anchorPointY doubleValue] / 100;
-   } else {
-     transformOrigin.m24 = [RCTConvert CGFloat:anchorPointY];
-   }
-
-   transformOrigin.m34 = [RCTConvert CGFloat:anchorPointZ];
-
+   RCTTransformOrigin transformOrigin = {
+     [RCTConvert YGValue:json[0]],
+     [RCTConvert YGValue:json[1]],
+     [RCTConvert CGFloat:json[2]]
+   };
    return transformOrigin;
  }
 
@@ -240,17 +227,8 @@ RCT_CUSTOM_VIEW_PROPERTY(shouldRasterizeIOS, BOOL, RCTView)
       view.layer.shouldRasterize ? [UIScreen mainScreen].scale : defaultView.layer.rasterizationScale;
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
-{
-  CATransform3D transform = json ? [RCTConvert CATransform3D:json] : defaultView.reactTransformOrigin;
-  [view setReactTransform:transform];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(transformOrigin, NSArray, RCTView)
-{
-  CATransform3D transformOrigin = json ? [RCTConvert transformOrigin:json] : defaultView.reactTransformOrigin;
-  [view setReactTransformOrigin:transformOrigin];
-}
+RCT_REMAP_VIEW_PROPERTY(transform, reactTransform, CATransform3D)
+RCT_REMAP_VIEW_PROPERTY(transformOrigin, reactTransformOrigin, RCTTransformOrigin)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {

@@ -222,29 +222,50 @@
   [self updateTransform];
 }
 
-- (CATransform3D)reactTransformOrigin
+- (RCTTransformOrigin)reactTransformOrigin
 {
+  RCTTransformOrigin transformOrigin = {
+    (YGValue){50, YGUnitPercent},
+    (YGValue){50, YGUnitPercent},
+    0
+  };
   id obj = objc_getAssociatedObject(self, _cmd);
-  return obj != nil ? [obj CATransform3DValue] : CATransform3DMakeScale(0.5, 0.5, 0);
+  if (obj != nil) {
+    [obj getValue:&transformOrigin];
+  }
+  return transformOrigin;
 }
 
-- (void)setReactTransformOrigin:(CATransform3D)reactTransformOrigin
+- (void)setReactTransformOrigin:(RCTTransformOrigin)reactTransformOrigin
 {
+  id obj = [NSValue value:&reactTransformOrigin withObjCType:@encode(RCTTransformOrigin)];
   objc_setAssociatedObject(
-      self, @selector(reactTransformOrigin), @(reactTransformOrigin), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+      self, @selector(reactTransformOrigin), obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   [self updateTransform];
 }
 
 - (void)updateTransform
 {
   CGSize size = self.bounds.size;
-  CATransform3D transformOrigin = self.reactTransformOrigin;
+  RCTTransformOrigin transformOrigin = self.reactTransformOrigin;
 
-  // There's no 3D vector type in CoreAnimation, so we'll have to do the matrix multiplication manually
-  // Note we only compute the elements we know might be set
-  CGFloat anchorPointX = transformOrigin.m11 * size.width + transformOrigin.m14 - size.width / 2;
-  CGFloat anchorPointY = transformOrigin.m22 * size.height + transformOrigin.m24 - size.height / 2;
-  CGFloat anchorPointZ = transformOrigin.m34;
+  CGFloat anchorPointX = 0;
+  CGFloat anchorPointY = 0;
+  CGFloat anchorPointZ = 0;
+
+  if (transformOrigin.x.unit == YGUnitPoint) {
+    anchorPointX = transformOrigin.x.value - size.width * 0.5;
+  } else if (transformOrigin.x.unit == YGUnitPercent) {
+    anchorPointX = (transformOrigin.x.value * 0.01 - 0.5) * size.width;
+  }
+
+  if (transformOrigin.y.unit == YGUnitPoint) {
+    anchorPointY = transformOrigin.y.value - size.height * 0.5;
+  } else if (transformOrigin.y.unit == YGUnitPercent) {
+    anchorPointY = (transformOrigin.y.value * 0.01 - 0.5) * size.height;
+  }
+
+  anchorPointZ = transformOrigin.z;
 
   CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
   transform = CATransform3DConcat(self.reactTransform, transform);

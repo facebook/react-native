@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponent.h>
+#import <React/RCTTransformOrigin.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
@@ -105,11 +106,7 @@
 @property (nonatomic, readonly) CGRect reactContentFrame;
 
 @property (nonatomic, assign) CATransform3D reactTransform;
-/**
- * Matrix form of transform-origin.
- * Vector form is calculated by multiplying matrix with the vector `[width, height, 0]`.
- */
-@property (nonatomic, assign) CATransform3D reactTransformOrigin;
+@property (nonatomic, assign) RCTTransformOrigin reactTransformOrigin;
 
 /**
  * The (sub)view which represents this view in terms of accessibility.
