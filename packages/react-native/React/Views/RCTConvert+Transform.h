@@ -10,6 +10,5 @@
 @interface RCTConvert (Transform)
 
 + (CATransform3D)CATransform3D:(id)json;
-+ (CATransform3D)CATransform3D:(id)json viewWidth: (CGFloat) viewWidth viewHeight: (CGFloat) viewHeight transformOrigin: (NSString*) transformOrigin;
 
 @end

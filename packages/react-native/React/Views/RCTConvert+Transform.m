@@ -9,46 +9,6 @@
 
 static const NSUInteger kMatrixArrayLength = 4 * 4;
 
-static NSArray* getTranslateForTransformOrigin(CGFloat viewWidth, CGFloat viewHeight, NSString *transformOrigin) {
-  if (transformOrigin.length == 0 || (viewWidth == 0 && viewHeight == 0)) {
-    return nil;
-  }
-  
-  CGFloat viewCenterX = viewWidth / 2;
-  CGFloat viewCenterY = viewHeight / 2;
-  
-  CGFloat origin[3] = {viewCenterX, viewCenterY, 0.0};
-
-  NSArray *parts = [transformOrigin componentsSeparatedByString:@" "];
-  for (NSInteger i = 0; i < parts.count && i < 3; i++) {
-    NSString *part = parts[i];
-    NSRange percentRange = [part rangeOfString:@"%"];
-    BOOL isPercent = percentRange.location != NSNotFound;
-    if (isPercent) {
-      CGFloat val = [[part substringToIndex:percentRange.location] floatValue];
-      origin[i] = (i == 0 ? viewWidth : viewHeight) * val / 100.0;
-    } else if ([part isEqualToString:@"top"]) {
-      origin[1] = 0.0;
-    } else if ([part isEqualToString:@"bottom"]) {
-      origin[1] = viewHeight;
-    } else if ([part isEqualToString:@"left"]) {
-      origin[0] = 0.0;
-    } else if ([part isEqualToString:@"right"]) {
-      origin[0] = viewWidth;
-    } else if ([part isEqualToString:@"center"]) {
-      continue;
-    } else {
-      origin[i] = [part floatValue];
-    }
-  }
-  
-  CGFloat newTranslateX = -viewCenterX + origin[0];
-  CGFloat newTranslateY = -viewCenterY + origin[1];
-  CGFloat newTranslateZ = origin[2];
-     
-  return @[@(newTranslateX), @(newTranslateY), @(newTranslateZ)];
-}
-
 @implementation RCTConvert (Transform)
 
 + (CGFloat)convertToRadians:(id)json
@@ -88,12 +48,6 @@ static NSArray* getTranslateForTransformOrigin(CGFloat viewWidth, CGFloat viewHe
 
 + (CATransform3D)CATransform3D:(id)json
 {
-  CATransform3D transform = [self CATransform3D:json viewWidth:0 viewHeight:0 transformOrigin:nil];
-  return transform;
-}
-
-+ (CATransform3D)CATransform3D:(id)json viewWidth: (CGFloat) viewWidth viewHeight: (CGFloat) viewHeight transformOrigin: (NSString*) transformOrigin
-{
   CATransform3D transform = CATransform3DIdentity;
   if (!json) {
     return transform;
@@ -112,12 +66,6 @@ static NSArray* getTranslateForTransformOrigin(CGFloat viewWidth, CGFloat viewHe
   CGFloat zeroScaleThreshold = FLT_EPSILON;
 
   CATransform3D next;
-  
-  NSArray *offsets = getTranslateForTransformOrigin(viewWidth, viewHeight, transformOrigin);
-  if (offsets) {
-    transform = CATransform3DTranslate(transform, [offsets[0] floatValue], [offsets[1] floatValue], [offsets[2] floatValue]);
-  }
-
   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
     if (transformConfig.count != 1) {
       RCTLogConvertError(json, @"a CATransform3D. You must specify exactly one property per transform object.");
@@ -193,11 +141,6 @@ static NSArray* getTranslateForTransformOrigin(CGFloat viewWidth, CGFloat viewHe
       RCTLogInfo(@"Unsupported transform type for a CATransform3D: %@.", property);
     }
   }
-  
-  if (offsets) {
-    transform = CATransform3DTranslate(transform, -[offsets[0] floatValue], -[offsets[1] floatValue], -[offsets[2] floatValue]);
-  }
-  
   return transform;
 }
 
