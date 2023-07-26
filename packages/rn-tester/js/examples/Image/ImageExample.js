@@ -132,9 +132,7 @@ class NetworkImageCallbackExample extends React.Component<
           source={this.props.source}
           style={[styles.base, styles.visibleOverflow]}
           onLoadStart={() =>
-            this._loadEventFired(
-              `✔ onLoadStart (+${Date.now() - mountTime}ms)`,
-            )
+            this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
           onProgress={event => {
             const {loaded, total} = event.nativeEvent;
