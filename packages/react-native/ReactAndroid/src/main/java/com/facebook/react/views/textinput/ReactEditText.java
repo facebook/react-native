@@ -315,10 +315,11 @@ public class ReactEditText extends AppCompatEditText
       } else {
         ClipboardManager clipboard =
             (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = clipboard.getPrimaryClip();
-        if (clip != null) {
-          for (int i = 0; i < clip.getItemCount(); i++) {
-            final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
+        ClipData previousClipData = clipboard.getPrimaryClip();
+        // STEP 1 - save previousClipData
+        if (previousClipData != null) {
+          for (int i = 0; i < previousClipData.getItemCount(); i++) {
+            final CharSequence text = previousClipData.getItemAt(i).coerceToText(getContext());
             final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
             if (paste != null) {
               ClipData clipData = ClipData.newPlainText("rebase_copy", text);
@@ -328,6 +329,14 @@ public class ReactEditText extends AppCompatEditText
             }
           }
         }
+        boolean actionPerformed = super.onTextContextMenuItem(id);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && previousClipData != null) {
+          // STEP 2 - Restore the original clipboard
+          ClipboardManager manager =
+              (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+          manager.setPrimaryClip(previousClipData);
+        }
+        return actionPerformed;
       }
     }
     return super.onTextContextMenuItem(id);
