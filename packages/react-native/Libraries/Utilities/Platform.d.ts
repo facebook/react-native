@@ -29,7 +29,7 @@ type PlatformConstants = {
 };
 interface PlatformStatic {
   isTV: boolean;
-  isMacCatalyst: boolean;
+  isMacCatalyst?: boolean | undefined;
   isTesting: boolean;
   Version: number | string;
   constants: PlatformConstants;
