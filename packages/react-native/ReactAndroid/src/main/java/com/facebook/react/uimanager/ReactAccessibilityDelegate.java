@@ -295,6 +295,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     public static AccessibilityRole fromValue(@Nullable String value) {
+      if (value == null) {
+        return NONE;
+      }
+
       for (AccessibilityRole role : AccessibilityRole.values()) {
         if (role.name().equalsIgnoreCase(value)) {
           return role;
