@@ -16,7 +16,7 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/Vector.h>
-#include <yoga/Yoga.h>
+#include <yoga/YGValue.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -56,9 +56,7 @@ struct TransformOrigin {
   float z = 0.0f;
 
   bool operator==(const TransformOrigin& other) const {
-    return xy[0].value == other.xy[0].value && xy[0].unit == other.xy[0].unit
-    && xy[1].value == other.xy[1].value && xy[1].unit == other.xy[1].unit
-    && z == other.z;
+    return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
   }
   bool operator!=(const TransformOrigin& other) const {
     return !(*this == other);
