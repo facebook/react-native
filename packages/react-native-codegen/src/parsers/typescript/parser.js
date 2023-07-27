@@ -557,6 +557,10 @@ class TypeScriptParser implements Parser {
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.members;
   }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.literal.value;
+  }
 }
 
 module.exports = {

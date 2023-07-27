@@ -543,6 +543,10 @@ class FlowParser implements Parser {
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.properties;
   }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.value;
+  }
 }
 
 module.exports = {
