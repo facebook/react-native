@@ -56,18 +56,23 @@ React Native is developed and supported by many companies and individual core co
 
 ## Contents
 
-- [Requirements](#-requirements)
-- [Building your first React Native app](#-building-your-first-react-native-app)
-- [Documentation](#-documentation)
-- [Upgrading](#-upgrading)
-- [How to Contribute](#-how-to-contribute)
-- [Code of Conduct](#code-of-conduct)
-- [License](#-license)
+- [Contents](#contents)
+- [📋 Requirements](#-requirements)
+- [🎉 Building your first React Native app](#-building-your-first-react-native-app)
+- [📖 Documentation](#-documentation)
+- [🚀 Upgrading](#-upgrading)
+- [👏 How to Contribute](#-how-to-contribute)
+  - [Code of Conduct](#code-of-conduct)
+  - [Contributing Guide](#contributing-guide)
+  - [Open Source Roadmap](#open-source-roadmap)
+  - [Good First Issues](#good-first-issues)
+  - [Discussions](#discussions)
+- [📄 License](#-license)
 
 
 ## 📋 Requirements
 
-React Native apps may target iOS 13.4 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
+React Native apps may target iOS 13.0 and Android 5.0 (API 21) or newer. You may use Windows, macOS, or Linux as your development operating system, though building and running iOS apps is limited to macOS. Tools like [Expo](https://expo.dev) can be used to work around this.
 
 ## 🎉 Building your first React Native app
 

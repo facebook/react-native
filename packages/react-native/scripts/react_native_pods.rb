@@ -39,7 +39,7 @@ require Pod::Executable.execute_command('node', ['-p',
 # By using this function, you won't have to manually change your Podfile
 # when we change the minimum version supported by the framework.
 def min_ios_version_supported
-  return '13.4'
+  return '13.0'
 end
 
 # This function prepares the project for React Native, before processing
