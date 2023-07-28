@@ -77,9 +77,7 @@ static void UpdateActiveTouchWithUITouch(
   if (RCTForceTouchAvailable()) {
     activeTouch.touch.force = RCTZeroIfNaN(uiTouch.force / uiTouch.maximumPossibleForce);
   }
-#endif // macOS]
-/*
-  macOS-specific stuff
+#else // [macOS
   NSEventType type = uiTouch.type;
   if (type == NSEventTypeLeftMouseDown || type == NSEventTypeLeftMouseUp || type == NSEventTypeLeftMouseDragged) {
     activeTouch.touch.button = 0;
@@ -91,7 +89,7 @@ static void UpdateActiveTouchWithUITouch(
   if (modifierFlags & NSEventModifierFlagOption) {
     activeTouch.touch.altKey = true;
   }
-  if (modifierFlags & NSEventModifierFlagCommand) {
+  if (modifierFlags & NSEventModifierFlagControl) {
     activeTouch.touch.ctrlKey = true;
   }
   if (modifierFlags & NSEventModifierFlagShift) {
@@ -100,7 +98,7 @@ static void UpdateActiveTouchWithUITouch(
   if (modifierFlags & NSEventModifierFlagCommand) {
     activeTouch.touch.metaKey = true;
   }
-*/
+#endif // macOS]
 }
 
 static ActiveTouch CreateTouchWithUITouch(RCTUITouch *uiTouch, RCTUIView *rootComponentView, CGPoint rootViewOriginOffset) // [macOS]
