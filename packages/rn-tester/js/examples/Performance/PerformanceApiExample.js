@@ -73,6 +73,9 @@ function StartupTimingExample(): React.Node {
           <Text>{`startTime: ${
             startUpTiming == null ? 'N/A' : startUpTiming.startTime
           } ms`}</Text>
+          <Text>{`initializeRuntimeStart: ${
+            startUpTiming == null ? 'N/A' : startUpTiming.initializeRuntimeStart
+          } ms`}</Text>
           <Text>
             {`executeJavaScriptBundleEntryPointStart: ${
               startUpTiming == null
@@ -84,6 +87,9 @@ function StartupTimingExample(): React.Node {
             startUpTiming == null
               ? 'N/A'
               : startUpTiming.executeJavaScriptBundleEntryPointEnd
+          } ms`}</Text>
+          <Text>{`initializeRuntimeEnd: ${
+            startUpTiming == null ? 'N/A' : startUpTiming.initializeRuntimeEnd
           } ms`}</Text>
           <Text>{`endTime: ${
             startUpTiming == null ? 'N/A' : startUpTiming.endTime

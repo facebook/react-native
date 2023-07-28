@@ -159,8 +159,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion = "33.0.0"
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -230,17 +230,6 @@ android {
                 }
             }
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlin {
-        // We intentionally don't build on JDK 17 to keep this version aligned with
-        // the JVM toolchain of :ReactAndroid
-        jvmToolchain(11)
     }
 
     sourceSets {

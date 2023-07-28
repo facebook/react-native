@@ -31,7 +31,7 @@ function getCachedConstants(): Object {
 
 module.exports = {
   getViewManagerConfig: (viewManagerName: string): mixed => {
-    if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode) {
+    if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode()) {
       return getCachedConstants()[viewManagerName];
     } else {
       console.error(
@@ -46,7 +46,7 @@ module.exports = {
     return unstable_hasComponent(viewManagerName);
   },
   getConstants: (): Object => {
-    if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode) {
+    if (ReactNativeFeatureFlags.enableNativeViewConfigsInBridgelessMode()) {
       return getCachedConstants();
     } else {
       console.error(errorMessageForMethod('getConstants'));
