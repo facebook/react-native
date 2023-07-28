@@ -1,8 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSource: 'fromFile'
-      versionFilePath: '.node-version'
+      versionSpec: '18.x'
 
   - task: UseRubyVersion@0
     inputs:
