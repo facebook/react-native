@@ -1,9 +1,8 @@
 name: Check for reproducer
 # This workflow is triggered when issue is created or edited.
-# Also, when a comment is added, edited or deleted.
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 
 jobs:
   check-for-reproducer:
