@@ -1125,6 +1125,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
+      isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
           ? {
@@ -2056,9 +2057,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  verticallyInverted: {
-    transform: [{scaleY: -1}],
-  },
+  verticallyInverted:
+    Platform.OS === 'android'
+      ? {transform: [{scale: -1}]}
+      : {transform: [{scaleY: -1}]},
   horizontallyInverted: {
     transform: [{scaleX: -1}],
   },
