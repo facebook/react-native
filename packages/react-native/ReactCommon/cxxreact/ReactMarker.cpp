@@ -64,18 +64,6 @@ void StartupLogger::logStartupEvent(
       }
       return;
 
-    case ReactMarkerId::INIT_REACT_RUNTIME_START:
-      if (initReactRuntimeStartTime == 0) {
-        initReactRuntimeStartTime = markerTime;
-      }
-      return;
-
-    case ReactMarkerId::INIT_REACT_RUNTIME_STOP:
-      if (initReactRuntimeEndTime == 0) {
-        initReactRuntimeEndTime = markerTime;
-      }
-      return;
-
     case ReactMarkerId::RUN_JS_BUNDLE_START:
       if (runJSBundleStartTime == 0) {
         runJSBundleStartTime = markerTime;
@@ -95,14 +83,6 @@ void StartupLogger::logStartupEvent(
 
 double StartupLogger::getAppStartupStartTime() {
   return appStartupStartTime;
-}
-
-double StartupLogger::getInitReactRuntimeStartTime() {
-  return initReactRuntimeStartTime;
-}
-
-double StartupLogger::getInitReactRuntimeEndTime() {
-  return initReactRuntimeEndTime;
 }
 
 double StartupLogger::getRunJSBundleStartTime() {

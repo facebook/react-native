@@ -159,8 +159,6 @@ void JSIExecutor::loadBundle(
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
-    ReactMarker::logMarker(ReactMarker::INIT_REACT_RUNTIME_STOP);
-    ReactMarker::logMarker(ReactMarker::APP_STARTUP_STOP);
   }
 }
 
