@@ -109,7 +109,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_graphics",
                 [
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
-                    new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
+                    new Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
