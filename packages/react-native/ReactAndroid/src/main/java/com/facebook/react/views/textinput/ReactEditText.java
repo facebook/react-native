@@ -10,6 +10,8 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,8 +30,11 @@ import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -180,6 +185,35 @@ public class ReactEditText extends AppCompatEditText
           }
         };
     ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
+    ActionMode.Callback customActionModeCallback =
+        new ActionMode.Callback() {
+          /*
+           * Editor onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * and paste as plain text items to the context menu.
+           */
+          @Override
+          public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.removeItem(android.R.id.pasteAsPlainText);
+            return true;
+          }
+
+          @Override
+          public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+          }
+
+          @Override
+          public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+          }
+
+          @Override
+          public void onDestroyActionMode(ActionMode mode) {}
+        };
+    setCustomSelectionActionModeCallback(customActionModeCallback);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setCustomInsertionActionModeCallback(customActionModeCallback);
+    }
   }
 
   @Override
@@ -266,6 +300,37 @@ public class ReactEditText extends AppCompatEditText
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
     return inputConnection;
+  }
+
+  /*
+   * Called when a context menu option for the text view is selected.
+   * React Native replaces copy (as rich text) with copy as plain text.
+   */
+  @Override
+  public boolean onTextContextMenuItem(int id) {
+    if (id == android.R.id.paste) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        id = android.R.id.pasteAsPlainText;
+      } else {
+        ClipboardManager clipboard =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData previousClipData = clipboard.getPrimaryClip();
+        if (previousClipData != null) {
+          for (int i = 0; i < previousClipData.getItemCount(); i++) {
+            final CharSequence text = previousClipData.getItemAt(i).coerceToText(getContext());
+            final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
+            if (paste != null) {
+              ClipData clipData = ClipData.newPlainText(null, text);
+              clipboard.setPrimaryClip(clipData);
+            }
+          }
+          boolean actionPerformed = super.onTextContextMenuItem(id);
+          clipboard.setPrimaryClip(previousClipData);
+          return actionPerformed;
+        }
+      }
+    }
+    return super.onTextContextMenuItem(id);
   }
 
   @Override
