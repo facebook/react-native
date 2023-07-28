@@ -55,74 +55,125 @@ if (
 // Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/src
 // The reference code bloat comes from Unicode issues with URLs, so those won't work here.
 export class URLSearchParams {
-  _searchParams: Array<Array<string>> = [];
+  _params: Array<Array<string>> = [];
 
-  constructor(params: any) {
-    if (typeof params === 'object') {
-      Object.keys(params).forEach(key => this.append(key, params[key]));
+  constructor(init?: string | {[key: string]: string | string[] | void}) {
+    if (typeof init === 'string' && init.trim() !== '') {
+      this._parseSearchParams(init.trim());
+    } else if (typeof init === 'object') {
+      this._searchParamsFromObject(init);
     }
   }
 
-  append(key: string, value: string): void {
-    this._searchParams.push([key, value]);
+  _parseSearchParams(init: string) {
+    if (init.startsWith('?')) {
+      init = init.slice(1);
+    }
+
+    const pairs = init.split('&');
+
+    for (const pair of pairs) {
+      const [key, value] = pair.split('=');
+
+      this.append(decodeURIComponent(key), decodeURIComponent(value));
+    }
   }
 
-  delete(name: string): void {
-    throw new Error('URLSearchParams.delete is not implemented');
+  _searchParamsFromObject(init: {[key: string]: string | string[] | void}) {
+    for (const [key, val] of Object.entries(init)) {
+      if (!Array.isArray(val)) {
+        this.append(key, val);
+        continue;
+      }
+
+      for (const value of val) {
+        this.append(key, value);
+      }
+    }
   }
 
-  get(name: string): void {
-    throw new Error('URLSearchParams.get is not implemented');
+  append(key: string, value: string | void): void {
+    key = encodeURIComponent(key);
+    value = value ? encodeURIComponent(value) : '';
+    this._params.push([key, value]);
   }
 
-  getAll(name: string): void {
-    throw new Error('URLSearchParams.getAll is not implemented');
+  delete(key: string): void {
+    key = encodeURIComponent(key);
+    this._params = this._params.filter(param => param[0] !== key);
   }
 
-  has(name: string): void {
-    throw new Error('URLSearchParams.has is not implemented');
+  get(key: string): string | null {
+    return this.getAll(key)[0] || null;
   }
 
-  set(name: string, value: string): void {
-    throw new Error('URLSearchParams.set is not implemented');
+  getAll(key: string): Array<string> {
+    key = encodeURIComponent(key);
+    const pairs = this._params.reduce((acc, cur) => {
+      if (cur[0] === key) {
+        return [...acc, cur[1]];
+      }
+
+      return acc;
+    }, ([]: Array<string>));
+    return pairs.map(decodeURIComponent);
+  }
+
+  has(key: string): boolean {
+    key = encodeURIComponent(key);
+    return this._params.some(pair => pair[0] === key);
+  }
+
+  set(key: string, value: string): void {
+    this.delete(key);
+    this.append(key, value);
   }
 
   sort(): void {
     throw new Error('URLSearchParams.sort is not implemented');
   }
 
+  toString(): string {
+    if (this._params.length === 0) {
+      return '';
+    }
+
+    return this._params.map(pair => pair.join('=')).join('&');
+  }
+
   // $FlowFixMe[unsupported-syntax]
   // $FlowFixMe[missing-local-annot]
   [Symbol.iterator]() {
-    return this._searchParams[Symbol.iterator]();
-  }
-
-  toString(): string {
-    if (this._searchParams.length === 0) {
-      return '';
-    }
-    const last = this._searchParams.length - 1;
-    return this._searchParams.reduce((acc, curr, index) => {
-      return (
-        acc +
-        encodeURIComponent(curr[0]) +
-        '=' +
-        encodeURIComponent(curr[1]) +
-        (index === last ? '' : '&')
-      );
-    }, '');
+    return this._params[Symbol.iterator]();
   }
 }
 
-function validateBaseUrl(url: string) {
-  // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
-    url,
-  );
-}
+// function validateBaseUrl(url: string) {
+//   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
+//   return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
+//     url,
+//   );
+// }
+
+const DEFAULT_PORTS = Object.freeze({
+  https: '443',
+  http: '80',
+  wss: '443',
+  ws: '80',
+  ftp: '21',
+});
+
+const URL_PATTERN =
+  /^(?:(?<protocol>\w+:)\/\/)?(?<hostname>(?:[\w.-]+\.[a-z]{2,})|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::(?<port>\d+))?(?<pathname>[/\w.-]*)?(?<search>\?[^#]*)?(?<hash>#.*)?$/;
 
 export class URL {
-  _url: string;
+  _protocol: string;
+  _hostname: string;
+  _port: string;
+  _pathname: string;
+  _search: string;
+  _hash: string;
+
   _searchParamsInstance: ?URLSearchParams = null;
 
   static createObjectURL(blob: Blob): string {
@@ -137,78 +188,192 @@ export class URL {
   }
 
   // $FlowFixMe[missing-local-annot]
-  constructor(url: string, base: string | URL) {
-    let baseUrl = null;
-    if (!base || validateBaseUrl(url)) {
-      this._url = url;
-      if (!this._url.endsWith('/')) {
-        this._url += '/';
-      }
-    } else {
+  constructor(url: string, base?: string | URL) {
+    url = url.trim();
+
+    const urlMatch = url.match(URL_PATTERN);
+
+    if (base && !urlMatch) {
       if (typeof base === 'string') {
-        baseUrl = base;
-        if (!validateBaseUrl(baseUrl)) {
-          throw new TypeError(`Invalid base URL: ${baseUrl}`);
-        }
+        base = new URL(base);
+      }
+
+      if (url.startsWith('/')) {
+        base.pathname = url;
       } else {
-        baseUrl = base.toString();
+        base.pathname += url;
       }
-      if (baseUrl.endsWith('/')) {
-        baseUrl = baseUrl.slice(0, baseUrl.length - 1);
+
+      this._protocol = base.protocol;
+      this._hostname = base.hostname;
+      this._port = base.port;
+      this._pathname = base.pathname;
+      this._search = base.search;
+      this._hash = base.hash;
+    } else {
+      if (!urlMatch || !urlMatch.groups) {
+        throw new TypeError('Invalid URL');
       }
-      if (!url.startsWith('/')) {
-        url = `/${url}`;
-      }
-      if (baseUrl.endsWith(url)) {
-        url = '';
-      }
-      this._url = `${baseUrl}${url}`;
+
+      this.href = url;
     }
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    return this._hash;
+  }
+
+  set hash(newhash: string) {
+    newhash = newhash.trim();
+
+    if (!newhash.startsWith('#') && newhash !== '') {
+      newhash = '#' + newhash;
+    }
+
+    this._hash = newhash;
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    if (this.port) {
+      return `${this._hostname}:${this.port}`;
+    }
+
+    return this._hostname;
+  }
+
+  set host(newhost: string): void {
+    const urlMatch = newhost.trim().match(URL_PATTERN);
+
+    if (!urlMatch || !urlMatch.groups) {
+      throw new TypeError('Invalid URL');
+    }
+
+    this.hostname = urlMatch.groups.hostname || '';
+    this.port = urlMatch.groups.port || '';
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    return this._hostname;
+  }
+
+  set hostname(newhostname: string): void {
+    this._hostname = newhostname.trim();
   }
 
   get href(): string {
     return this.toString();
   }
 
+  set href(newurl: string): void {
+    const urlMatch = newurl.match(URL_PATTERN);
+
+    if (!urlMatch || !urlMatch.groups) {
+      throw new TypeError('Invalid URL');
+    }
+
+    this.protocol = urlMatch.groups.protocol || 'http:';
+    this.hostname = urlMatch.groups.hostname || '';
+    this.port = urlMatch.groups.port || '';
+    this.pathname = urlMatch.groups.pathname || '';
+    this.search = urlMatch.groups.search || '';
+    this.hash = urlMatch.groups.hash || '';
+  }
+
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    if (this.protocol) {
+      return `${this.protocol}//${this.host}`;
+    }
+
+    return this.host;
   }
 
   get password(): string {
     throw new Error('URL.password is not implemented');
   }
 
+  set password(newpassword: string): string {
+    throw new Error('URL.password is not implemented');
+  }
+
+  get username(): string {
+    throw new Error('URL.username is not implemented');
+  }
+
+  set username(newusername: string): string {
+    throw new Error('URL.username is not implemented');
+  }
+
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    return this._pathname;
+  }
+
+  set pathname(newpathname: string): void {
+    newpathname = newpathname.trim();
+
+    if (newpathname === '') {
+      this._pathname = '/';
+      return;
+    }
+
+    if (!newpathname.startsWith('/')) {
+      newpathname = '/' + newpathname;
+    }
+
+    this._pathname = newpathname;
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    return this._port;
+  }
+
+  set port(newport: string | number) {
+    newport = newport.toString().trim();
+
+    if (!newport.match(/^[0-9]+$/g) && newport !== '') {
+      return;
+    }
+
+    if (DEFAULT_PORTS[this.protocol.replace(/(\w)*/g, '')] === newport) {
+      this._port = '';
+      return;
+    }
+
+    this._port = newport;
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    return this._protocol;
+  }
+
+  set protocol(newprotocol: string): void {
+    newprotocol = newprotocol.trim().replace(/\/*/g, '');
+
+    if (!newprotocol.endsWith(':')) {
+      newprotocol += ':';
+    }
+
+    this._protocol = newprotocol;
+
+    if (
+      newprotocol in DEFAULT_PORTS &&
+      DEFAULT_PORTS[newprotocol.replace(/(\w)*/g, '')] === this.port
+    ) {
+      this._port = '';
+    }
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    return this._search;
+  }
+
+  set search(newsearch: string) {
+    this._searchParamsInstance = new URLSearchParams(newsearch.trim());
+    this._search = this._searchParamsInstance.toString();
   }
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+      this._searchParamsInstance = new URLSearchParams(this.search);
     }
     return this._searchParamsInstance;
   }
@@ -218,16 +383,24 @@ export class URL {
   }
 
   toString(): string {
-    if (this._searchParamsInstance === null) {
-      return this._url;
-    }
-    // $FlowFixMe[incompatible-use]
-    const instanceString = this._searchParamsInstance.toString();
-    const separator = this._url.indexOf('?') > -1 ? '&' : '?';
-    return this._url + separator + instanceString;
-  }
+    let _href = '';
 
-  get username(): string {
-    throw new Error('URL.username is not implemented');
+    if (this.origin) {
+      _href += this.origin;
+    }
+
+    if (this.pathname) {
+      _href += this.pathname;
+    }
+
+    if (this.search) {
+      _href += '?' + this.search;
+    }
+
+    if (this.hash) {
+      _href += this.hash;
+    }
+
+    return _href;
   }
 }
