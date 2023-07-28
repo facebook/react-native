@@ -833,15 +833,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     props: Props,
   ): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const last = Math.min(itemCount - 1, cells.last);
+    const lastPossibleCellIndex = itemCount - 1;
 
+    // Constraining `last` may significantly shrink the window. Adjust `first`
+    // to expand the window if the new `last` results in a new window smaller
+    // than the number of cells rendered per batch.
     const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
       props.maxToRenderPerBatch,
     );
+    const maxFirst = Math.max(0, lastPossibleCellIndex - maxToRenderPerBatch);
 
     return {
-      first: clamp(0, itemCount - 1 - maxToRenderPerBatch, cells.first),
-      last,
+      first: clamp(0, cells.first, maxFirst),
+      last: Math.min(lastPossibleCellIndex, cells.last),
     };
   }
 
