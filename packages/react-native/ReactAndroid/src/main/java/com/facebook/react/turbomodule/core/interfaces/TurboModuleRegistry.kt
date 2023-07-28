@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.turbomodule.core.interfaces;
+package com.facebook.react.turbomodule.core.interfaces
 
-import androidx.annotation.Nullable;
-import com.facebook.react.bridge.NativeModule;
-import java.util.Collection;
-import java.util.List;
+import com.facebook.react.bridge.NativeModule
+import java.util.Collection
 
 /**
  * Interface to allow for creating and retrieving NativeModules. Why is this this class prefixed
@@ -18,25 +16,23 @@ import java.util.List;
  * already is a NativeModuleRegistry (a part of the legacy architecture). Once that class is
  * deleted, we should rename this interface accordingly.
  */
-public interface TurboModuleRegistry {
+interface TurboModuleRegistry {
   /**
    * Return the NativeModule instance that has that name `moduleName`. If the `moduleName`
    * TurboModule hasn't been instantiated, instantiate it. If no TurboModule is registered under
    * `moduleName`, return null.
    */
-  @Nullable
-  NativeModule getModule(String moduleName);
+  fun getModule(moduleName: String): NativeModule?
 
   /** Get all instantiated NativeModules. */
-  Collection<NativeModule> getModules();
+  val modules: Collection<NativeModule>
 
   /** Has the NativeModule with name `moduleName` been instantiated? */
-  boolean hasModule(String moduleName);
-
+  fun hasModule(moduleName: String): Boolean
   /**
    * Return the names of all the NativeModules that are supposed to be eagerly initialized. By
    * calling getModule on each name, this allows the application to eagerly initialize its
    * NativeModules.
    */
-  List<String> getEagerInitModuleNames();
+  val eagerInitModuleNames: List<String>
 }
