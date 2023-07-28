@@ -212,7 +212,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
   [NSApp addObserver:self
           forKeyPath:@"effectiveAppearance"
              options:NSKeyValueObservingOptionNew
-             context:nil];  
+             context:nil];
 #endif // macOS]
 }
 
@@ -223,7 +223,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
     [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
 #else // [macOS
-  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];  
+  [NSApp removeObserver:self forKeyPath:@"effectiveAppearance" context:nil];
 #endif // macOS]
 }
 
