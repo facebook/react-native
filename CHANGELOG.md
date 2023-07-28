@@ -1080,6 +1080,12 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.70.13
+
+### Fixed
+
+- Fix: bumped CLI to address broken backward compatibility ([549ff6380a](https://github.com/facebook/react-native/commit/549ff6380aa1cf85b86545a22fcb4a850995c8e3) by [@Titozzz](https://github.com/Titozzz))
+
 ## v0.70.12
 
 ### Fixed
