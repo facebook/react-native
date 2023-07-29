@@ -25,7 +25,6 @@ import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,11 +37,14 @@ import java.util.Map;
  * a Java module, that the C++ counterpart calls.
  */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
-  private static volatile boolean sIsSoLibraryLoaded;
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
   private final TurboModuleManagerDelegate mDelegate;
+
+  static {
+    NativeModuleSoLoader.maybeLoadSoLibrary();
+  }
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
   private final Object mModuleCleanupLock = new Object();
@@ -63,7 +65,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
       NativeMethodCallInvokerHolder nativeMethodCallInvokerHolder) {
-    maybeLoadSoLibrary();
     mDelegate = delegate;
     mHybridData =
         initHybrid(
@@ -449,14 +450,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
     // Delete the native part of this hybrid class.
     mHybridData.resetNative();
-  }
-
-  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
-  private static synchronized void maybeLoadSoLibrary() {
-    if (!sIsSoLibraryLoaded) {
-      SoLoader.loadLibrary("turbomodulejsijni");
-      sIsSoLibraryLoaded = true;
-    }
   }
 
   private static class ModuleHolder {
