@@ -12,7 +12,6 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,8 +19,6 @@ import java.util.List;
 @DoNotStrip
 public class CompositeReactPackageTurboModuleManagerDelegate
     extends ReactPackageTurboModuleManagerDelegate {
-
-  private static volatile boolean sIsSoLibraryLoaded;
 
   protected native HybridData initHybrid();
 
@@ -51,14 +48,6 @@ public class CompositeReactPackageTurboModuleManagerDelegate
         delegates.add(delegatesBuilder.build(context, Collections.<ReactPackage>emptyList()));
       }
       return new CompositeReactPackageTurboModuleManagerDelegate(context, packages, delegates);
-    }
-  }
-
-  protected synchronized void maybeLoadOtherSoLibraries() {
-    // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
-    if (!sIsSoLibraryLoaded) {
-      SoLoader.loadLibrary("turbomodulejsijni");
-      sIsSoLibraryLoaded = true;
     }
   }
 }
