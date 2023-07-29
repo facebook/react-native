@@ -396,7 +396,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return false;
   }
 
-  public static void logError(String message) {
+  private static void logError(String message) {
     FLog.e("TurboModuleManager", message);
     if (shouldRouteTurboModulesThroughInteropLayer()) {
       ReactSoftExceptionLogger.logSoftException(
