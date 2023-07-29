@@ -148,7 +148,9 @@ static UIColor *defaultPlaceholderColor(void)
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
+  self.scrollEnabled = false;
   [super setAttributedText:attributedText];
+  self.scrollEnabled = true;
   [self textDidChange];
 }
 
