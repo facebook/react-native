@@ -9,8 +9,10 @@
     <string name="header_description" gender="unknown">სათაური</string>
     <string name="alert_description" gender="unknown">გაფრთხილება</string>
     <string name="menu_description" gender="unknown">მენიუ</string>
+    <string name="menubar_description" gender="unknown">მენიუს ზოლი</string>
     <string name="menuitem_description" gender="unknown">მენიუს ერთეული</string>
     <string name="progressbar_description" gender="unknown">პროგრესის ზოლი</string>
+    <string name="radiogroup_description" gender="unknown">რადიო ჯგუფი</string>
     <string name="scrollbar_description" gender="unknown">გადაადგილების პანელი</string>
     <string name="spinbutton_description" gender="unknown">დატრიალების ღილაკი</string>
     <string name="rn_tab_description" gender="unknown">ჩანართი</string>

@@ -173,6 +173,16 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
   void simulateImagePropsMemoryAccess(
       ShadowViewMutationList const &mutations) const;
+
+  /**
+   * Interpolates the props values.
+   */
+  Props::Shared interpolateProps(
+      const ComponentDescriptor &componentDescriptor,
+      const PropsParserContext &context,
+      Float animationProgress,
+      const Props::Shared &props,
+      const Props::Shared &newProps) const;
 };
 
 } // namespace facebook::react

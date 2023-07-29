@@ -6,6 +6,7 @@ version: 2.1
 
 orbs:
   win: circleci/windows@2.4.0
+  android: circleci/android@2.3.0
 
 # -------------------------
 #        REFERENCES
@@ -113,7 +114,7 @@ executors:
   reactnativeandroid:
     <<: *defaults
     docker:
-      - image: reactnativecommunity/react-native-android:9.0
+      - image: reactnativecommunity/react-native-android:v10.0
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
@@ -259,7 +260,7 @@ commands:
           command: cp packages/rn-tester/Podfile.lock packages/rn-tester/Podfile.lock.bak
       - restore_cache:
           keys:
-            # The committed lockfile is generated using USE_FRAMEWORKS=0 and USE_HERMES=1 so it could load an outdated cache if a change
+            # The committed lockfile is generated using static libraries and USE_HERMES=1 so it could load an outdated cache if a change
             # only affects the frameworks or hermes config. To help prevent this also cache based on the content of Podfile.
             - *pods_cache_key
       - steps: << parameters.steps >>
@@ -724,6 +725,136 @@ jobs:
           path: ./reports/junit
 
   # -------------------------
+  #     JOBS: iOS E2E Tests
+  # -------------------------
+  test_e2e_ios:
+    executor: reactnativeios
+    parameters:
+      ruby_version:
+        default: "2.7.7"
+        description: The version of ruby that must be used
+        type: string
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install appium
+          command: npm install appium@2.0.0 -g
+      - run:
+          name: Install appium drivers
+          command: |
+            appium driver install uiautomator2
+            appium driver install xcuitest
+      - run:
+          name: Start Appium server
+          command: appium --base-path /wd/hub
+          background: true
+      - run:
+          name: Start Metro
+          command: |
+            cd packages/rn-tester
+            yarn start
+          background: true
+      - brew_install:
+          package: cmake
+      - setup_ruby:
+          ruby_version: << parameters.ruby_version >>
+      - run:
+          name: Install Bundler
+          command: |
+            cd packages/rn-tester
+            bundle check || bundle install
+            bundle exec pod setup
+            bundle exec pod install --verbose
+      - run:
+          name: Boot iOS Simulator
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
+      - run:
+          name: Build app
+          command: |
+              xcodebuild build \
+                -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                -configuration Debug \
+                -scheme RNTester \
+                -sdk iphonesimulator \
+                -derivedDataPath /tmp/e2e/
+      - run:
+          name: Move app to correct directory
+          command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
+      - run:
+          name: Check Appium server status
+          command: |
+            if ! nc -z 127.0.0.1 4723; then
+              echo Could not find Appium server!
+              exit 1
+            fi
+      - run:
+          name: Run E2E tests
+          command: |
+            cd packages/rn-tester-e2e
+            yarn test-ios-e2e
+
+  # -------------------------
+  #     JOBS: Android E2E Tests
+  # -------------------------
+  test_e2e_android:
+    executor:
+        name: android/android-machine
+        tag: 2023.07.1
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - android/create-avd:
+          avd-name: e2e_emulator
+          system-image: system-images;android-33;google_apis;x86_64
+          install: true
+      - android/start-emulator:
+          avd-name: e2e_emulator
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: ""
+      - run:
+          name: Install appium
+          command: npm install appium@2.0.0 -g
+      - run:
+          name: Install appium drivers
+          command: |
+            appium driver install uiautomator2
+            appium driver install xcuitest
+      - run:
+          name: Start Appium server
+          command: appium --base-path /wd/hub
+          background: true
+      - run:
+          name: Start Metro
+          command: |
+            cd packages/rn-tester
+            yarn start
+          background: true
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build app
+          command: |
+            ./gradlew :packages:rn-tester:android:app:assembleHermesDebug -PreactNativeArchitectures=x86_64
+      - run:
+          name: Move app to correct directory
+          command: mv packages/rn-tester/android/app/build/outputs/apk/hermes/debug/app-hermes-x86_64-debug.apk packages/rn-tester-e2e/apps/rn-tester.apk
+      - run:
+          name: Check Appium server status
+          command: |
+            if ! nc -z 127.0.0.1 4723; then
+              echo Could not find Appium server
+              exit 1
+            fi
+      - run:
+          name: Run E2E tests
+          command: |
+            cd packages/rn-tester-e2e
+            yarn test-android-e2e
+  # -------------------------
   #    JOBS: Test Android
   # -------------------------
   test_android:
@@ -847,7 +978,7 @@ jobs:
         default: "StaticLibraries"
         description: Which kind of option we want to use for `use_frameworks!`
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+        enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -898,9 +1029,7 @@ jobs:
               export NO_FLIPPER=1
             fi
 
-            if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
-              export USE_FRAMEWORKS=static
-            elif [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+            if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
               export USE_FRAMEWORKS=dynamic
             fi
 
@@ -960,9 +1089,9 @@ jobs:
         enum: ["NewArch", "OldArch"]
       use_frameworks:
         default: "StaticLibraries"
-        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "StaticFrameworks", "DynamicFrameworks"
+        description: The dependency building and linking strategy to use. Must be one of "StaticLibraries", "DynamicFrameworks"
         type: enum
-        enum: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+        enum: ["StaticLibraries", "DynamicFrameworks"]
       ruby_version:
         default: "2.6.10"
         description: The version of ruby that must be used
@@ -997,11 +1126,6 @@ jobs:
                     export USE_HERMES=0
                   fi
 
-                  if [[ << parameters.use_frameworks >> == "StaticFrameworks" ]]; then
-                    export NO_FLIPPER=1
-                    export USE_FRAMEWORKS=static
-                  fi
-
                   if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
                     export NO_FLIPPER=1
                     export USE_FRAMEWORKS=dynamic
@@ -1034,7 +1158,7 @@ jobs:
       - ANDROID_HOME: "C:\\Android\\android-sdk"
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
       - ANDROID_BUILD_VERSION: 33
-      - ANDROID_TOOLS_VERSION: 33.0.0
+      - ANDROID_TOOLS_VERSION: 33.0.1
       - GRADLE_OPTS: -Dorg.gradle.daemon=false
       - CHOCO_CACHE_DIR: "C:\\ChocoCache"
     steps:
@@ -1653,6 +1777,9 @@ workflows:
           run_disabled_tests: false
       - test_android
       - test_android_docker_image
+      - test_e2e_ios:
+          ruby_version: "2.7.7"
+      - test_e2e_android
       - test_android_template:
           requires:
             - build_npm_package
@@ -1661,13 +1788,6 @@ workflows:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               flavor: ["Debug", "Release"]
-      - test_ios_template:
-          requires:
-            - build_npm_package
-          name: "Test Template with Ruby 2.7.7"
-          ruby_version: "2.7.7"
-          architecture: "NewArch"
-          flavor: "Debug"
       - test_ios_template:
           requires:
             - build_npm_package
@@ -1684,7 +1804,7 @@ workflows:
               flavor: ["Debug", "Release"]
               jsengine: ["Hermes", "JSC"]
               flipper: ["WithFlipper", "WithoutFlipper"]
-              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
             exclude:
               - architecture: "NewArch"
                 flavor: "Release"
@@ -1695,22 +1815,12 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "StaticLibraries"
-              - architecture: "NewArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Release"
                 jsengine: "JSC"
@@ -1725,11 +1835,6 @@ workflows:
                 flavor: "Release"
                 jsengine: "Hermes"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
               - architecture: "OldArch"
                 flavor: "Release"
@@ -1740,32 +1845,7 @@ workflows:
                 flavor: "Release"
                 jsengine: "JSC"
                 flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Release"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "NewArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "Hermes"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
-              - architecture: "OldArch"
-                flavor: "Debug"
-                jsengine: "JSC"
-                flipper: "WithFlipper"
-                use_frameworks: "StaticFrameworks"
               - architecture: "NewArch"
                 flavor: "Debug"
                 jsengine: "Hermes"
@@ -1786,12 +1866,6 @@ workflows:
                 jsengine: "JSC"
                 flipper: "WithFlipper"
                 use_frameworks: "DynamicFrameworks"
-      - test_ios_rntester:
-          requires:
-            - build_hermes_macos
-          name: "Test RNTester with Ruby 2.7.7"
-          ruby_version: "2.7.7"
-          architecture: "NewArch"
       - test_ios_rntester:
           requires:
             - build_hermes_macos
@@ -1805,13 +1879,7 @@ workflows:
             parameters:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
-              use_frameworks: ["StaticLibraries", "StaticFrameworks", "DynamicFrameworks"]
-      - test_ios:
-          name: "Test iOS with Ruby 2.7.7"
-          run_unit_tests: true
-          requires:
-            - build_hermes_macos
-          ruby_version: "2.7.7"
+              use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
       - test_ios:
           name: "Test iOS with Ruby 3.2.0"
           run_unit_tests: true

@@ -159,8 +159,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion = "33.0.0"
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -232,17 +232,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlin {
-        // We intentionally don't build on JDK 17 to keep this version aligned with
-        // the JVM toolchain of :ReactAndroid
-        jvmToolchain(11)
-    }
-
     sourceSets {
         main {
             manifest.srcFile "$hermesDir/android/hermes/src/main/AndroidManifest.xml"
@@ -258,7 +247,7 @@ android {
     }
 
     dependencies {
-        implementation("com.facebook.fbjni:fbjni:0.4.0")
+        implementation("com.facebook.fbjni:fbjni:0.5.1")
         implementation("com.facebook.soloader:soloader:0.10.5")
         implementation("com.facebook.yoga:proguard-annotations:1.19.0")
         implementation("androidx.annotation:annotation:1.3.0")

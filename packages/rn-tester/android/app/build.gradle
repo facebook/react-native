@@ -89,8 +89,8 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing

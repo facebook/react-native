@@ -65,7 +65,7 @@ struct ReactMarkerEvent {
   double time;
 };
 
-class StartupLogger {
+class RN_EXPORT StartupLogger {
  public:
   static StartupLogger &getInstance();
 
