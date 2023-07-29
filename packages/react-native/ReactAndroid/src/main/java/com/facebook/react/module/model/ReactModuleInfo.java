@@ -18,7 +18,7 @@ public class ReactModuleInfo {
   private final boolean mNeedsEagerInit;
   private final boolean mHasConstants;
   private final boolean mIsCxxModule;
-  private String mClassName;
+  private final String mClassName;
   private final boolean mIsTurboModule;
 
   public ReactModuleInfo(
