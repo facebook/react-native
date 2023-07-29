@@ -32,7 +32,7 @@ import java.util.Set;
  * read and means fewer JNI calls.
  */
 @DoNotStrip
-public class JavaModuleWrapper {
+class JavaModuleWrapper {
   @DoNotStrip
   public class MethodDescriptor {
     @DoNotStrip Method method;
