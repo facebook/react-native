@@ -119,6 +119,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
   }
 
+  @Override
+  @NonNull
   public List<String> getEagerInitModuleNames() {
     return mEagerInitModuleNames;
   }
