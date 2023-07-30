@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -11,7 +12,10 @@
 
 + (NSArray<NSString *> *)legacyInteropComponents
 {
-  return @[ @"RNTMyLegacyNativeView", @"RNTMyNativeView" ];
+  return @[
+			@"RNTMyLegacyNativeView",
+			@"RNTMyNativeView"
+  ];
 }
 
 @end

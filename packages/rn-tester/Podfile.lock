@@ -1077,6 +1077,7 @@ PODS:
     - React-perflogger (= 1000.0.0)
   - ScreenshotManager (0.0.1):
     - glog
+    - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - SocketRocket (0.6.0)
