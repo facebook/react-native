@@ -82,13 +82,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
 
       if (shouldSupportLegacyPackages() && reactPackage instanceof ReactInstancePackage) {
         // TODO(T145105887): Output error that ReactPackage was used
-
         continue;
       }
 
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
-
         final List<NativeModule> nativeModules =
             reactPackage.createNativeModules(reactApplicationContext);
 
@@ -151,11 +149,11 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
-         * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
-         * this happens, it's safe to ignore the exception because a later TurboReactPackage could
-         * provide the module.
-         */
+        /*
+         TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
+         this happens, it's safe to ignore the exception because a later TurboReactPackage could
+         provide the module.
+        */
       }
     }
 
@@ -213,7 +211,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
         }
 
       } catch (IllegalArgumentException ex) {
-        /**
+        /*
          * TurboReactPackages can throw an IllegalArgumentException when a module isn't found. If
          * this happens, it's safe to ignore the exception because a later TurboReactPackage could
          * provide the module.
