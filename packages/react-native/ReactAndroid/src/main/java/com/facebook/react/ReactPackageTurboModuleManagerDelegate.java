@@ -168,6 +168,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return (TurboModule) resolvedModule;
   }
 
+  @Override
   public boolean unstable_isModuleRegistered(String moduleName) {
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
@@ -178,6 +179,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
     return false;
   }
 
+  @Override
   public boolean unstable_isLegacyModuleRegistered(String moduleName) {
     for (final ModuleProvider moduleProvider : mModuleProviders) {
       final ReactModuleInfo moduleInfo = mPackageModuleInfos.get(moduleProvider).get(moduleName);
