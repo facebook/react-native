@@ -1752,6 +1752,11 @@ workflows:
         - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
         - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
     jobs:
+      - prepare_package_for_release:
+          name: prepare_package_for_release
+          version: ''
+          latest : false
+          dryrun: true
       - prepare_hermes_workspace
       - test_ios_rntester_hermes_xcode_integration
       - build_hermesc_linux:
@@ -1934,40 +1939,6 @@ workflows:
           name: build_and_publish_npm_package
           release_type: "release"
           filters: *only_release_tags
-          requires:
-            - build_hermesc_linux
-            - build_hermes_macos
-            - build_hermesc_windows
-
-  package_and_publish_release_dryrun:
-    when:
-      and:
-        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-    jobs:
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: ''
-          latest : false
-          dryrun: true
-      - prepare_hermes_workspace:
-          requires:
-            - prepare_package_for_release
-      - build_hermesc_linux:
-          requires:
-            - prepare_hermes_workspace
-      - build_hermes_macos:
-          requires:
-            - prepare_hermes_workspace
-          matrix:
-            parameters:
-              flavor: ["Debug", "Release"]
-      - build_hermesc_windows:
-          requires:
-            - prepare_hermes_workspace
-      - build_npm_package:
-          name: build_and_publish_npm_package
-          release_type: "dry-run"
           requires:
             - build_hermesc_linux
             - build_hermes_macos
