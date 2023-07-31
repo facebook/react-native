@@ -7,6 +7,7 @@
 
 #include "ViewShadowNode.h"
 #include <react/config/ReactNativeConfig.h>
+#include <react/renderer/components/view/ViewTraitsInitializer.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/utils/CoreFeatures.h>
 
@@ -54,24 +55,13 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityElementsHidden ||
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
-      viewProps.removeClippedSubviews;
-
-#ifdef ANDROID
-  formsStackingContext = formsStackingContext || viewProps.elevation != 0;
-#endif
+      viewProps.removeClippedSubviews ||
+      ViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
-      !viewProps.testId.empty();
-
-#ifdef ANDROID
-  formsView = formsView || viewProps.nativeBackground.has_value() ||
-      viewProps.nativeForeground.has_value() || viewProps.focusable ||
-      viewProps.hasTVPreferredFocus ||
-      viewProps.needsOffscreenAlphaCompositing ||
-      viewProps.renderToHardwareTextureAndroid;
-#endif
+      !viewProps.testId.empty() || ViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);
@@ -85,9 +75,7 @@ void ViewShadowNode::initialize() noexcept {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
 
-#ifdef ANDROID
-  traits_.set(ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported);
-#endif
+  traits_.set(ViewTraitsInitializer::extraTraits());
 }
 
 } // namespace facebook::react
