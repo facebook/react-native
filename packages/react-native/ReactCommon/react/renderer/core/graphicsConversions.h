@@ -46,7 +46,8 @@ inline void fromRawValue(
     colorComponents.blue = items.at(2);
     colorComponents.alpha = length == 4 ? items.at(3) : 1.0f;
   } else {
-    colorComponents = parsePlatformColor(context, value);
+    result = parsePlatformColor(context, value);
+    return;
   }
 
   result = colorFromComponents(colorComponents);
