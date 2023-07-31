@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef ANDROID
-
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
@@ -35,4 +33,3 @@ constexpr MapBuffer::Key ACCESSIBILITY_ACTION_NAME = 0;
 constexpr MapBuffer::Key ACCESSIBILITY_ACTION_LABEL = 1;
 
 } // namespace facebook::react
-#endif

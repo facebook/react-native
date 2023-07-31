@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ViewProps.h"
+#include "BaseViewProps.h"
 
 #include <algorithm>
 
@@ -18,9 +18,9 @@
 
 namespace facebook::react {
 
-ViewProps::ViewProps(
+BaseViewProps::BaseViewProps(
     const PropsParserContext &context,
-    ViewProps const &sourceProps,
+    BaseViewProps const &sourceProps,
     RawProps const &rawProps,
     bool shouldSetRawProps)
     : YogaStylableProps(context, sourceProps, rawProps, shouldSetRawProps),
@@ -190,74 +190,7 @@ ViewProps::ViewProps(
                     rawProps,
                     "removeClippedSubviews",
                     sourceProps.removeClippedSubviews,
-                    false))
-#ifdef ANDROID
-      ,
-      elevation(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "elevation",
-                                                       sourceProps.elevation,
-                                                       {})),
-      nativeBackground(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.nativeBackground
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "nativeBackgroundAndroid",
-                    sourceProps.nativeBackground,
-                    {})),
-      nativeForeground(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.nativeForeground
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "nativeForegroundAndroid",
-                    sourceProps.nativeForeground,
-                    {})),
-      focusable(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.focusable
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "focusable",
-                                                       sourceProps.focusable,
-                                                       {})),
-      hasTVPreferredFocus(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.hasTVPreferredFocus
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "hasTVPreferredFocus",
-                    sourceProps.hasTVPreferredFocus,
-                    {})),
-      needsOffscreenAlphaCompositing(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.needsOffscreenAlphaCompositing
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "needsOffscreenAlphaCompositing",
-                    sourceProps.needsOffscreenAlphaCompositing,
-                    {})),
-      renderToHardwareTextureAndroid(
-          CoreFeatures::enablePropIteratorSetter
-              ? sourceProps.renderToHardwareTextureAndroid
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "renderToHardwareTextureAndroid",
-                    sourceProps.renderToHardwareTextureAndroid,
-                    {}))
-
-#endif
-{
-}
+                    false)) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
@@ -271,7 +204,7 @@ ViewProps::ViewProps(
     return;                                             \
   }
 
-void ViewProps::setProp(
+void BaseViewProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
@@ -282,7 +215,7 @@ void ViewProps::setProp(
   YogaStylableProps::setProp(context, hash, propName, value);
   AccessibilityProps::setProp(context, hash, propName, value);
 
-  static auto defaults = ViewProps{};
+  static auto defaults = BaseViewProps{};
 
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(opacity);
@@ -326,15 +259,6 @@ void ViewProps::setProp(
     VIEW_EVENT_CASE(TouchMove);
     VIEW_EVENT_CASE(TouchEnd);
     VIEW_EVENT_CASE(TouchCancel);
-#ifdef ANDROID
-    RAW_SET_PROP_SWITCH_CASE_BASIC(elevation);
-    RAW_SET_PROP_SWITCH_CASE(nativeBackground, "nativeBackgroundAndroid");
-    RAW_SET_PROP_SWITCH_CASE(nativeForeground, "nativeForegroundAndroid");
-    RAW_SET_PROP_SWITCH_CASE_BASIC(focusable);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(hasTVPreferredFocus);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(needsOffscreenAlphaCompositing);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(renderToHardwareTextureAndroid);
-#endif
     // BorderRadii
     SET_CASCADED_RECTANGLE_CORNERS(borderRadii, "border", "Radius", value);
     SET_CASCADED_RECTANGLE_EDGES(borderColors, "border", "Color", value);
@@ -380,7 +304,7 @@ static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
   };
 }
 
-BorderMetrics ViewProps::resolveBorderMetrics(
+BorderMetrics BaseViewProps::resolveBorderMetrics(
     LayoutMetrics const &layoutMetrics) const {
   auto isRTL =
       bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
@@ -412,33 +336,27 @@ BorderMetrics ViewProps::resolveBorderMetrics(
   };
 }
 
-bool ViewProps::getClipsContentToBounds() const {
+bool BaseViewProps::getClipsContentToBounds() const {
   return yogaStyle.overflow() != YGOverflowVisible;
 }
-
-#ifdef ANDROID
-bool ViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED() const {
-  return yogaStyle.flexDirection() == YGFlexDirectionRow;
-}
-#endif
 
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
-  const auto &defaultViewProps = ViewProps();
+SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
+  const auto &defaultBaseViewProps = BaseViewProps();
 
   return AccessibilityProps::getDebugProps() +
       YogaStylableProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "opacity", opacity, defaultViewProps.opacity),
+              "opacity", opacity, defaultBaseViewProps.opacity),
           debugStringConvertibleItem(
               "backgroundColor",
               backgroundColor,
-              defaultViewProps.backgroundColor),
+              defaultBaseViewProps.backgroundColor),
           debugStringConvertibleItem(
-              "zIndex", zIndex, defaultViewProps.zIndex.value_or(0)),
+              "zIndex", zIndex, defaultBaseViewProps.zIndex.value_or(0)),
       };
 }
 #endif
