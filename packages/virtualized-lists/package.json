@@ -1,10 +1,10 @@
 {
-  "name": "@react-native/virtualized-lists",
-  "version": "0.72.2",
-  "description": "Virtualized lists for React Native.",
+  "name": "@react-native-macos/virtualized-lists",
+  "version": "0.0.1",
+  "description": "Virtualized lists for React Native macOS.",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "git@github.com:microsoft/react-native-macos.git",
     "directory": "packages/virtualized-lists"
   },
   "license": "MIT",

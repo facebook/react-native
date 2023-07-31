@@ -10,13 +10,13 @@
 
 'use strict';
 
-import {typeof VirtualizedSectionList as VirtualizedSectionListType} from '@react-native/virtualized-lists';
+import {typeof VirtualizedSectionList as VirtualizedSectionListType} from '@react-native-macos/virtualized-lists'; // [macOS]
 
 const VirtualizedSectionList: VirtualizedSectionListType =
-  require('@react-native/virtualized-lists').VirtualizedSectionList;
+  require('@react-native-macos/virtualized-lists').VirtualizedSectionList; // [macOS]
 
 export type {
   SectionBase,
   ScrollToLocationParamsType,
-} from '@react-native/virtualized-lists';
+} from '@react-native-macos/virtualized-lists'; // [macOS]
 module.exports = VirtualizedSectionList;

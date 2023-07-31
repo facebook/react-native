@@ -10,9 +10,9 @@
 
 'use strict';
 
-import {typeof VirtualizedListContextResetter as VirtualizedListContextResetterType} from '@react-native/virtualized-lists';
+import {typeof VirtualizedListContextResetter as VirtualizedListContextResetterType} from '@react-native-macos/virtualized-lists'; // [macOS]
 
 const VirtualizedListContextResetter: VirtualizedListContextResetterType =
-  require('@react-native/virtualized-lists').VirtualizedListContextResetter;
+  require('@react-native-macos/virtualized-lists').VirtualizedListContextResetter; // [macOS]
 
 module.exports = {VirtualizedListContextResetter};
