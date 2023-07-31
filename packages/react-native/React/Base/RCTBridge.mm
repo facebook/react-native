@@ -108,18 +108,6 @@ void RCTEnableTurboModuleEagerInit(BOOL enabled)
   turboModuleEagerInitEnabled = enabled;
 }
 
-// Turn off TurboModule delegate locking
-static BOOL turboModuleManagerDelegateLockingDisabled = YES;
-BOOL RCTTurboModuleManagerDelegateLockingDisabled(void)
-{
-  return turboModuleManagerDelegateLockingDisabled;
-}
-
-void RCTDisableTurboModuleManagerDelegateLocking(BOOL disabled)
-{
-  turboModuleManagerDelegateLockingDisabled = disabled;
-}
-
 static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {
