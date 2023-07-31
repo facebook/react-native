@@ -235,7 +235,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (BOOL)bridgelessEnabled
 {
-  return YES;
+  return NO;
 }
 
 #pragma mark - New Arch Utilities
