@@ -97,17 +97,6 @@ void RCTEnableTurboModule(BOOL enabled)
   turboModuleEnabled = enabled;
 }
 
-static BOOL turboModuleEagerInitEnabled = NO;
-BOOL RCTTurboModuleEagerInitEnabled(void)
-{
-  return turboModuleEagerInitEnabled;
-}
-
-void RCTEnableTurboModuleEagerInit(BOOL enabled)
-{
-  turboModuleEagerInitEnabled = enabled;
-}
-
 static BOOL turboModuleInteropEnabled = NO;
 BOOL RCTTurboModuleInteropEnabled(void)
 {

@@ -111,15 +111,13 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
-  if (!RCTTurboModuleEagerInitEnabled()) {
-    /**
-     * Instantiating DevMenu has the side-effect of registering
-     * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
-     * Therefore, when TurboModules are enabled, we must manually create this
-     * NativeModule.
-     */
-    [turboModuleManager moduleForName:"RCTDevMenu"];
-  }
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif
 
 #if RCT_USE_HERMES
