@@ -105,8 +105,8 @@ Now, make sure that the iOS simulator/the Android emulator is up and running.
 Finally, you can open a third terminal window and run:
 
 ```bash
-yarn test-android-e2e # for android
-yarn test-ios-e2e # for ios
+yarn test-e2e android # for android
+yarn test-e2e ios # for ios
 ```
 
 Now you should see the RNTester app being open, and the defined test being run.
