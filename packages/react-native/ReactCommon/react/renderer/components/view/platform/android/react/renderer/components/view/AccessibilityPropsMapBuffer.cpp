@@ -6,11 +6,9 @@
  */
 
 #include "AccessibilityPropsMapBuffer.h"
-#include "AccessibilityProps.h"
+#include <react/renderer/components/view/AccessibilityProps.h>
 
 namespace facebook::react {
-
-#ifdef ANDROID
 
 static MapBuffer convertAccessibilityActions(
     std::vector<AccessibilityAction> const &actions) {
@@ -163,6 +161,5 @@ void AccessibilityProps::propsDiffMapBuffer(
     builder.putInt(AP_ROLE, static_cast<int32_t>(newProps.role));
   }
 }
-#endif
 
 } // namespace facebook::react

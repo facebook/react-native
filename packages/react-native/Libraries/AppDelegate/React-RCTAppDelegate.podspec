@@ -44,6 +44,7 @@ header_search_paths = [
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
 ] : []).concat(use_frameworks ? [
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx/",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/",
   "$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
   "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
