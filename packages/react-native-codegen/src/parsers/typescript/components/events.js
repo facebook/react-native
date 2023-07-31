@@ -202,9 +202,7 @@ function findEventArgumentsAndType(
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
-      typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].literal.value
-        : null;
+      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
 
     switch (typeAnnotation.typeParameters.params[0].type) {
       case parser.nullLiteralTypeAnnotation:

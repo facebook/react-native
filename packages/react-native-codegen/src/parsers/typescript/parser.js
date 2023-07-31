@@ -561,6 +561,12 @@ class TypeScriptParser implements Parser {
   getLiteralValue(option: $FlowFixMe): $FlowFixMe {
     return option.literal.value;
   }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].literal.value
+      : null;
+  }
 }
 
 module.exports = {

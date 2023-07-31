@@ -421,4 +421,11 @@ export interface Parser {
    * @returns: the literal value of an union represented.
    */
   getLiteralValue(option: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a type annotation, it returns top level name in the AST if it exists else returns null.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the top level name properties in the AST if it exists else null.
+   */
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }
