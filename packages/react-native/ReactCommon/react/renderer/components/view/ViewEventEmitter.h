@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <react/renderer/components/view/BaseViewProps.h>
+#include <react/renderer/components/view/HostPlatformViewEventEmitter.h>
 
 namespace facebook::react {
-using ViewProps = BaseViewProps;
-using SharedViewProps = std::shared_ptr<ViewProps const>;
+using ViewEventEmitter = HostPlatformViewEventEmitter;
+using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
 } // namespace facebook::react

@@ -10,18 +10,18 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ShadowNodeTraits.h>
 
-namespace facebook::react::ViewTraitsInitializer {
+namespace facebook::react::HostPlatformViewTraitsInitializer {
 
-static bool formsStackingContext(ViewProps const &props) {
+inline bool formsStackingContext(ViewProps const &props) {
   return false;
 }
 
-static bool formsView(ViewProps const &props) {
+inline bool formsView(ViewProps const &props) {
   return false;
 }
 
-static ShadowNodeTraits::Trait extraTraits() {
+inline ShadowNodeTraits::Trait extraTraits() {
   return ShadowNodeTraits::Trait::None;
 }
 
-} // namespace facebook::react::ViewTraitsInitializer
+} // namespace facebook::react::HostPlatformViewTraitsInitializer

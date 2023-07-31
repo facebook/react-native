@@ -7,7 +7,7 @@
 
 #include "ViewShadowNode.h"
 #include <react/config/ReactNativeConfig.h>
-#include <react/renderer/components/view/ViewTraitsInitializer.h>
+#include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/utils/CoreFeatures.h>
 
@@ -56,12 +56,13 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews ||
-      ViewTraitsInitializer::formsStackingContext(viewProps);
+      HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
       !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
-      !viewProps.testId.empty() || ViewTraitsInitializer::formsView(viewProps);
+      !viewProps.testId.empty() ||
+      HostPlatformViewTraitsInitializer::formsView(viewProps);
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);
@@ -75,7 +76,7 @@ void ViewShadowNode::initialize() noexcept {
     traits_.unset(ShadowNodeTraits::Trait::FormsStackingContext);
   }
 
-  traits_.set(ViewTraitsInitializer::extraTraits());
+  traits_.set(HostPlatformViewTraitsInitializer::extraTraits());
 }
 
 } // namespace facebook::react

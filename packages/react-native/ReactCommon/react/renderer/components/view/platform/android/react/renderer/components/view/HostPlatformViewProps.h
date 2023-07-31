@@ -20,16 +20,12 @@
 
 namespace facebook::react {
 
-class ViewProps;
-
-using SharedViewProps = std::shared_ptr<ViewProps const>;
-
-class ViewProps : public BaseViewProps {
+class HostPlatformViewProps : public BaseViewProps {
  public:
-  ViewProps() = default;
-  ViewProps(
+  HostPlatformViewProps() = default;
+  HostPlatformViewProps(
       const PropsParserContext &context,
-      ViewProps const &sourceProps,
+      HostPlatformViewProps const &sourceProps,
       RawProps const &rawProps,
       bool shouldSetRawProps = true);
 

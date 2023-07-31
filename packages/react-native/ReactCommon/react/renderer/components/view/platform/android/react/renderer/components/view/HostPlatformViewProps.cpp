@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ViewProps.h"
+#include "HostPlatformViewProps.h"
 
 #include <algorithm>
 
@@ -17,9 +17,9 @@
 
 namespace facebook::react {
 
-ViewProps::ViewProps(
+HostPlatformViewProps::HostPlatformViewProps(
     const PropsParserContext &context,
-    ViewProps const &sourceProps,
+    HostPlatformViewProps const &sourceProps,
     RawProps const &rawProps,
     bool shouldSetRawProps)
     : BaseViewProps(context, sourceProps, rawProps, shouldSetRawProps),
@@ -89,7 +89,7 @@ ViewProps::ViewProps(
     return;                                             \
   }
 
-void ViewProps::setProp(
+void HostPlatformViewProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
@@ -99,7 +99,7 @@ void ViewProps::setProp(
   // reuse the same values.
   BaseViewProps::setProp(context, hash, propName, value);
 
-  static auto defaults = ViewProps{};
+  static auto defaults = HostPlatformViewProps{};
 
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(elevation);
@@ -112,12 +112,13 @@ void ViewProps::setProp(
   }
 }
 
-bool ViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED() const {
+bool HostPlatformViewProps::getProbablyMoreHorizontalThanVertical_DEPRECATED()
+    const {
   return yogaStyle.flexDirection() == YGFlexDirectionRow;
 }
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-SharedDebugStringConvertibleList ViewProps::getDebugProps() const {
+SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
   return BaseViewProps::getDebugProps();
 }
 #endif

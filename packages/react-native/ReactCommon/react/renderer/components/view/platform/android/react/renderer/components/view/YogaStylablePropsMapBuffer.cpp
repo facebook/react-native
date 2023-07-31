@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ViewProps.h"
 #include "ViewPropsMapBuffer.h"
 
+#include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/viewPropConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
