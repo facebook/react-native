@@ -17,11 +17,7 @@
 
 namespace facebook::react {
 
-class ViewEventEmitter;
-
-using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
-
-class ViewEventEmitter : public TouchEventEmitter {
+class BaseViewEventEmitter : public TouchEventEmitter {
  public:
   using TouchEventEmitter::TouchEventEmitter;
 
