@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/components/view/HostPlatformTouch.h>
+#include <react/renderer/components/view/BaseTouch.h>
 
 namespace facebook::react {
-using Touch = HostPlatformTouch;
-using Touches = std::unordered_set<Touch, Touch::Hasher, Touch::Comparator>;
+using HostPlatformTouch = BaseTouch;
 } // namespace facebook::react

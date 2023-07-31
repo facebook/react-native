@@ -11,22 +11,6 @@ namespace facebook::react {
 
 #pragma mark - Touches
 
-static void setTouchPayloadOnObject(
-    jsi::Object &object,
-    jsi::Runtime &runtime,
-    Touch const &touch) {
-  object.setProperty(runtime, "locationX", touch.offsetPoint.x);
-  object.setProperty(runtime, "locationY", touch.offsetPoint.y);
-  object.setProperty(runtime, "pageX", touch.pagePoint.x);
-  object.setProperty(runtime, "pageY", touch.pagePoint.y);
-  object.setProperty(runtime, "screenX", touch.screenPoint.x);
-  object.setProperty(runtime, "screenY", touch.screenPoint.y);
-  object.setProperty(runtime, "identifier", touch.identifier);
-  object.setProperty(runtime, "target", touch.target);
-  object.setProperty(runtime, "timestamp", touch.timestamp * 1000);
-  object.setProperty(runtime, "force", touch.force);
-}
-
 static jsi::Value touchesPayload(
     jsi::Runtime &runtime,
     Touches const &touches) {
