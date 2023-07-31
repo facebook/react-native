@@ -78,7 +78,9 @@ function getPropertyType(
         optional,
         typeAnnotation: {
           type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.value),
+          options: typeAnnotation.types.map(option =>
+            parser.getLiteralValue(option),
+          ),
         },
       };
     case 'UnsafeMixed':
@@ -119,7 +121,9 @@ function extractArrayElementType(
     case 'UnionTypeAnnotation':
       return {
         type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option => option.value),
+        options: typeAnnotation.types.map(option =>
+          parser.getLiteralValue(option),
+        ),
       };
     case 'UnsafeMixed':
       return {type: 'MixedTypeAnnotation'};

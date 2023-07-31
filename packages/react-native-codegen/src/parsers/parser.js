@@ -414,4 +414,11 @@ export interface Parser {
    * @returns: the properties of an object represented by a type annotation.
    */
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a option return the literal value.
+   * @parameter option
+   * @returns: the literal value of an union represented.
+   */
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe;
 }
