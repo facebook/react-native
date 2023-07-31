@@ -62,7 +62,6 @@ import {
   maxToRenderPerBatchOrDefault,
   onStartReachedThresholdOrDefault,
   onEndReachedThresholdOrDefault,
-  scrollEventThrottleOrDefault,
   windowSizeOrDefault,
 } from './VirtualizedListProps';
 
@@ -1073,9 +1072,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
-      scrollEventThrottle: scrollEventThrottleOrDefault(
-        this.props.scrollEventThrottle,
-      ), // TODO: Android support
+      // iOS/macOS requires a non-zero scrollEventThrottle to fire more than a
+      // single notification while scrolling. This will otherwise no-op.
+      scrollEventThrottle: this.props.scrollEventThrottle ?? 0.0001,
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
           ? this.props.invertStickyHeaders
