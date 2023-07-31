@@ -1,0 +1,5 @@
+ext.resolveJSModule = { String path ->
+  def js = "require.resolve('$path');"
+
+  return "node -p $js".execute().text.trim()
+}
