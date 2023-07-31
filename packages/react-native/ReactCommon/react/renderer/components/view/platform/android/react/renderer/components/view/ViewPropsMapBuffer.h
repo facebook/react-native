@@ -11,7 +11,6 @@
 
 namespace facebook::react {
 
-#ifdef ANDROID
 constexpr MapBuffer::Key VP_BACKFACE_VISIBILITY = 9;
 constexpr MapBuffer::Key VP_BG_COLOR = 10;
 constexpr MapBuffer::Key VP_BORDER_COLOR = 11;
@@ -48,6 +47,5 @@ constexpr MapBuffer::Key VP_BORDER_CURVES = 45;
 // Yoga values
 constexpr MapBuffer::Key YG_BORDER_WIDTH = 100;
 constexpr MapBuffer::Key YG_OVERFLOW = 101;
-#endif
 
 } // namespace facebook::react
