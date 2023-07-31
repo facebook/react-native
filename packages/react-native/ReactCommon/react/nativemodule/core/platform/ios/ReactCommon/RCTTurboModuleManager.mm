@@ -786,10 +786,8 @@ static Class getFallbackClassFromName(const char *name)
     return _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
   }
 
-  Class moduleClass;
-  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-    moduleClass = [_delegate getModuleClassFromName:moduleName];
-  } else {
+  Class moduleClass = nil;
+  {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     moduleClass = [_delegate getModuleClassFromName:moduleName];
   }
@@ -828,12 +826,11 @@ static Class getFallbackClassFromName(const char *name)
   }
 
   id<RCTBridgeModule> module = nil;
-  if (RCTTurboModuleManagerDelegateLockingDisabled()) {
-    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
-  } else {
+  {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
   }
+
   if (!module) {
     module = [moduleClass new];
   }
