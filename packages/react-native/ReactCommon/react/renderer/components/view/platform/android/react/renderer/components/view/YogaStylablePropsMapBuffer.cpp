@@ -5,13 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef ANDROID
-
 #include "ViewProps.h"
 #include "ViewPropsMapBuffer.h"
 
-#include "viewPropConversions.h"
-
+#include <react/renderer/components/view/viewPropConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
 namespace facebook::react {
@@ -81,5 +78,3 @@ void YogaStylableProps::propsDiffMapBuffer(
 }
 
 } // namespace facebook::react
-
-#endif

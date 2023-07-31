@@ -5,13 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef ANDROID
-
 #include "ViewPropsMapBuffer.h"
 #include "ViewProps.h"
 
-#include "viewPropConversions.h"
-
+#include <react/renderer/components/view/viewPropConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 
@@ -192,5 +189,3 @@ void ViewProps::propsDiffMapBuffer(
 }
 
 } // namespace facebook::react
-
-#endif
