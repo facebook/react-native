@@ -1216,7 +1216,13 @@ function InternalTextInput(props: Props): React.Node {
         lastNativeSelection?.end ?? -1,
       );
     }
-  }, [props.secureTextEntry, viewCommands, lastNativeSelection, lastNativeText, mostRecentEventCount]);
+  }, [
+    props.secureTextEntry,
+    viewCommands,
+    lastNativeSelection,
+    lastNativeText,
+    mostRecentEventCount,
+  ]);
 
   const setLocalRef = useCallback(
     (instance: TextInputInstance | null) => {
