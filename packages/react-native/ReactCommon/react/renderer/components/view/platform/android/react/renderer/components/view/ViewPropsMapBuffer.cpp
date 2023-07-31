@@ -6,8 +6,8 @@
  */
 
 #include "ViewPropsMapBuffer.h"
-#include "ViewProps.h"
 
+#include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/viewPropConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>

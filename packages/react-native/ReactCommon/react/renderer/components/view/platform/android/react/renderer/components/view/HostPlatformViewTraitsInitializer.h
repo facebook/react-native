@@ -10,13 +10,13 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/ShadowNodeTraits.h>
 
-namespace facebook::react::ViewTraitsInitializer {
+namespace facebook::react::HostPlatformViewTraitsInitializer {
 
-static bool formsStackingContext(ViewProps const &viewProps) {
+inline bool formsStackingContext(ViewProps const &viewProps) {
   return viewProps.elevation != 0;
 }
 
-static bool formsView(ViewProps const &viewProps) {
+inline bool formsView(ViewProps const &viewProps) {
   return viewProps.nativeBackground.has_value() ||
       viewProps.nativeForeground.has_value() || viewProps.focusable ||
       viewProps.hasTVPreferredFocus ||
@@ -24,8 +24,8 @@ static bool formsView(ViewProps const &viewProps) {
       viewProps.renderToHardwareTextureAndroid;
 }
 
-static ShadowNodeTraits::Trait extraTraits() {
+inline ShadowNodeTraits::Trait extraTraits() {
   return ShadowNodeTraits::Trait::AndroidMapBufferPropsSupported;
 }
 
-} // namespace facebook::react::ViewTraitsInitializer
+} // namespace facebook::react::HostPlatformViewTraitsInitializer

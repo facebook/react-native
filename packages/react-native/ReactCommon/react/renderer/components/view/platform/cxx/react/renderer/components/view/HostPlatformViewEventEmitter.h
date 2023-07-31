@@ -10,6 +10,5 @@
 #include <react/renderer/components/view/BaseViewEventEmitter.h>
 
 namespace facebook::react {
-using ViewEventEmitter = BaseViewEventEmitter;
-using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
+using HostPlatformViewEventEmitter = BaseViewEventEmitter;
 } // namespace facebook::react
