@@ -785,11 +785,7 @@ jobs:
           command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
       - run:
           name: Check Appium server status
-          command: |
-            if ! nc -z 127.0.0.1 4723; then
-              echo Could not find Appium server!
-              exit 1
-            fi
+          command: scripts/circleci/check_appium_server_status.sh
       - run:
           name: Run E2E tests
           command: |
