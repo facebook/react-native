@@ -26,6 +26,7 @@ const switchStyle = {
 };
 
 function KeyEventExample(): React.Node {
+  // $FlowFixMe[missing-empty-array-annot]
   const [log, setLog] = React.useState([]);
 
   const clearLog = React.useCallback(() => {
