@@ -331,7 +331,7 @@ export interface TextInputMacOSProps {
   /**
    * Fired when a supported element is pasted
    */
-  onPaste?: ((event: PasteEvent) => void) | undefined;
+  onPaste?: ((event: PasteEvent) => void) | undefined; // [macOS]
 
   /**
    * Callback that is called when the text input's autoCorrect setting changes.
@@ -339,7 +339,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onAutoCorrectChange?: ((e: SettingChangeEvent) => void) | undefined;
+  onAutoCorrectChange?: ((e: SettingChangeEvent) => void) | undefined; // [macOS]
 
   /**
    * Callback that is called when the text input's spellCheck setting changes.
@@ -347,7 +347,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onSpellCheckChange?: ((e: SettingChangeEvent) => void) | undefined;
+  onSpellCheckChange?: ((e: SettingChangeEvent) => void) | undefined; // [macOS]
 
   /**
    * Callback that is called when the text input's grammarCheck setting changes.
@@ -355,7 +355,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onGrammarCheckChange?: ((e: SettingChangeEvent) => void) | undefined;
+  onGrammarCheckChange?: ((e: SettingChangeEvent) => void) | undefined; // [macOS]
 
   /**
    * Enables Paste support for certain types of pasted types
