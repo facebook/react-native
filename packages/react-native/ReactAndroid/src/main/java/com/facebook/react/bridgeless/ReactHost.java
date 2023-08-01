@@ -427,7 +427,8 @@ public class ReactHost implements ReactHostInterface {
    *     tap on reload button)
    * @return A task that completes when React Native reloads
    */
-  public Task<Void> reload(String reason) {
+  @Override
+  public TaskInterface<Void> reload(String reason) {
     final String method = "reload()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
