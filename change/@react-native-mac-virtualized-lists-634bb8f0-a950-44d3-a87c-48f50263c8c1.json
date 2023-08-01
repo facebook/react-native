@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "Make our virtualized-lists package specific to react-native-macos",
+  "packageName": "@react-native-mac/virtualized-lists",
+  "email": "adgleitm@microsoft.com",
+  "dependentChangeType": "patch"
+}
