@@ -373,6 +373,10 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
+    if (commitOptions.shouldYield && commitOptions.shouldYield()) {
+      return CommitStatus::Cancelled;
+    }
+
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
     }
