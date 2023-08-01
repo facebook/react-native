@@ -461,7 +461,8 @@ public class ReactHost implements ReactHostInterface {
    *     This exception will be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public Task<Void> destroy(String reason, @Nullable Exception ex) {
+  @Override
+  public TaskInterface<Void> destroy(String reason, @Nullable Exception ex) {
     final String method = "destroy()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
