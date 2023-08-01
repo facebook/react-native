@@ -19,8 +19,8 @@ import type {
   RenderItemProps,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from '@react-native-macos/virtualized-lists'; // [macOS]
-import {typeof VirtualizedList} from '@react-native-macos/virtualized-lists'; // [macOS]
+} from '@react-native-mac/virtualized-lists'; // [macOS]
+import {typeof VirtualizedList} from '@react-native-mac/virtualized-lists'; // [macOS]
 
 type RequiredProps<ItemT> = {|
   /**
