@@ -128,7 +128,8 @@ public class ReactSurface implements ReactSurfaceInterface {
     mReactHost.set(null);
   }
 
-  public SurfaceHandler getSurfaceHandler() {
+  /** package */
+  SurfaceHandler getSurfaceHandler() {
     return mSurfaceHandler;
   }
 
