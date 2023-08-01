@@ -52,6 +52,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.interfaces.ReactSurfaceInterface;
+import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -189,7 +190,8 @@ public class ReactHost implements ReactHostInterface {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> start() {
+  @Override
+  public TaskInterface<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return newStart();
     }
