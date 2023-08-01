@@ -219,7 +219,8 @@ public class ReactHost implements ReactHostInterface {
    * @param surface The ReactSurface to render
    * @return A Task that will complete when startSurface has been called.
    */
-  public Task<Void> startSurface(final ReactSurface surface) {
+  /** package */
+  TaskInterface<Void> startSurface(final ReactSurface surface) {
     final String method = "startSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
