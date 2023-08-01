@@ -174,7 +174,7 @@ public class ReactSurface implements ReactSurfaceInterface {
           new IllegalStateException(
               "Trying to call ReactSurface.stop(), but no ReactHost is attached."));
     }
-    return host.stopSurface(this).makeVoid();
+    return host.stopSurface(this);
   }
 
   public int getSurfaceID() {
