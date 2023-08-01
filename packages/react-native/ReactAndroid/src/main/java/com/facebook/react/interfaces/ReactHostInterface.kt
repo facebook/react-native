@@ -72,4 +72,15 @@ interface ReactHostInterface {
       moduleName: String,
       initialProps: Bundle?
   ): ReactSurfaceInterface?
+
+  /**
+   * This function can be used to initialize the ReactInstance in a background thread before a
+   * surface needs to be rendered. It is not necessary to call this function; startSurface() will
+   * initialize the ReactInstance if it hasn't been preloaded.
+   *
+   * @return A Task that completes when the instance is initialized. The task will be faulted if any
+   *   errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
+   *   before it completes.
+   */
+  fun start(): TaskInterface<Void?>?
 }
