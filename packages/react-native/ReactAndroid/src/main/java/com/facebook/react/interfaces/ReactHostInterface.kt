@@ -82,5 +82,15 @@ interface ReactHostInterface {
    *   errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *   before it completes.
    */
-  fun start(): TaskInterface<Void?>?
+  fun start(): TaskInterface<Void>
+
+  /**
+   * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
+   * destroy is finished, before reloading.
+   *
+   * @param reason [String] describing why ReactHost is being reloaded (e.g. js error, user tap on
+   *   reload button)
+   * @return A task that completes when React Native reloads
+   */
+  fun reload(reason: String): TaskInterface<Void>
 }
