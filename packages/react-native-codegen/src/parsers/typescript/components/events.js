@@ -36,6 +36,7 @@ const {
   emitStringProp,
   emitInt32Prop,
   emitObjectProp,
+  emitUnionProp,
 } = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -72,16 +73,7 @@ function getPropertyType(
         extractArrayElementType,
       );
     case 'TSUnionType':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option =>
-            parser.getLiteralValue(option),
-          ),
-        },
-      };
+      return emitUnionProp(name, optional, parser, typeAnnotation);
     case 'UnsafeMixed':
       return emitMixedProp(name, optional);
     case 'TSArrayType':

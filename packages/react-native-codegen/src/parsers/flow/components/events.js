@@ -34,6 +34,7 @@ const {
   emitStringProp,
   emitInt32Prop,
   emitObjectProp,
+  emitUnionProp,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
@@ -73,16 +74,7 @@ function getPropertyType(
         extractArrayElementType,
       );
     case 'UnionTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option =>
-            parser.getLiteralValue(option),
-          ),
-        },
-      };
+      return emitUnionProp(name, optional, parser, typeAnnotation);
     case 'UnsafeMixed':
       return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
