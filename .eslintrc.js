@@ -24,7 +24,7 @@ module.exports = {
     // overriding the JS config from @react-native/eslint-config to ensure
     // that we use hermes-eslint for all js files
     {
-      files: ['*.js'],
+      files: ['*.js', '.js.flow'],
       parser: 'hermes-eslint',
       rules: {
         // These rules are not required with hermes-eslint
