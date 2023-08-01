@@ -54,6 +54,13 @@ const getPreset = (src, options) => {
     ]);
   }
 
+  if (
+    !options.disableStaticViewConfigsCodegen &&
+    /\bcodegenNativeComponent</.test(src)
+  ) {
+    extraPlugins.push([require('@react-native/babel-plugin-codegen')]);
+  }
+
   if (!options || !options.disableImportExportTransform) {
     extraPlugins.push(
       [require('@babel/plugin-proposal-export-default-from')],
