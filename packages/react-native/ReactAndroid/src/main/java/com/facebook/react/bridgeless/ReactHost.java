@@ -52,6 +52,7 @@ import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
 import com.facebook.react.interfaces.ReactSurfaceInterface;
+import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
@@ -189,7 +190,8 @@ public class ReactHost implements ReactHostInterface {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> start() {
+  @Override
+  public TaskInterface<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return newStart();
     }
@@ -198,7 +200,7 @@ public class ReactHost implements ReactHostInterface {
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
-  public Task<Void> prerenderSurface(final ReactSurface surface) {
+  /* package */ Task<Void> prerenderSurface(final ReactSurface surface) {
     final String method = "prerenderSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -217,7 +219,8 @@ public class ReactHost implements ReactHostInterface {
    * @param surface The ReactSurface to render
    * @return A Task that will complete when startSurface has been called.
    */
-  public Task<Void> startSurface(final ReactSurface surface) {
+  /** package */
+  TaskInterface<Void> startSurface(final ReactSurface surface) {
     final String method = "startSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -236,17 +239,19 @@ public class ReactHost implements ReactHostInterface {
    * @param surface The surface to stop
    * @return A Task that will complete when stopSurface has been called.
    */
-  public Task<Boolean> stopSurface(final ReactSurface surface) {
+  /** package */
+  TaskInterface<Void> stopSurface(final ReactSurface surface) {
     final String method = "stopSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
     detachSurface(surface);
     return callWithExistingReactInstance(
-        method,
-        reactInstance -> {
-          log(method, "Execute");
-          reactInstance.stopSurface(surface);
-        });
+            method,
+            reactInstance -> {
+              log(method, "Execute");
+              reactInstance.stopSurface(surface);
+            })
+        .makeVoid();
   }
 
   /**
@@ -422,7 +427,8 @@ public class ReactHost implements ReactHostInterface {
    *     tap on reload button)
    * @return A task that completes when React Native reloads
    */
-  public Task<Void> reload(String reason) {
+  @Override
+  public TaskInterface<Void> reload(String reason) {
     final String method = "reload()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
@@ -455,7 +461,8 @@ public class ReactHost implements ReactHostInterface {
    *     This exception will be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public Task<Void> destroy(String reason, @Nullable Exception ex) {
+  @Override
+  public TaskInterface<Void> destroy(String reason, @Nullable Exception ex) {
     final String method = "destroy()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
