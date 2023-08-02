@@ -11,9 +11,7 @@
   "directory": "packages/rn-tester-e2e"
   },
   "scripts": {
-    "test": "jest --runInBand",
-    "test-android-e2e": "E2E_DEVICE=\"android\" yarn test",
-    "test-ios-e2e": "E2E_DEVICE=\"ios\" yarn test"
+    "test-e2e": "node ./../../scripts/e2e/run-e2e-tests.js"
   },
   "devDependencies": {
     "appium": "^2.0.0",

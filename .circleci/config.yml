@@ -790,7 +790,7 @@ jobs:
           name: Run E2E tests
           command: |
             cd packages/rn-tester-e2e
-            yarn test-ios-e2e
+            yarn test-e2e ios
 
   # -------------------------
   #     JOBS: Android E2E Tests
@@ -849,7 +849,7 @@ jobs:
           name: Run E2E tests
           command: |
             cd packages/rn-tester-e2e
-            yarn test-android-e2e
+            yarn test-e2e android
   # -------------------------
   #    JOBS: Test Android
   # -------------------------
