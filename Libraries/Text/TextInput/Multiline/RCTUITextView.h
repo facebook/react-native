@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setReadablePasteBoardTypes:(NSArray<NSPasteboardType> *)readablePasteboardTypes;
 #endif // macOS]
 
+@property (nonatomic, getter=isGhostTextChanging) BOOL ghostTextChanging; // [macOS]
+
 @end
 
 NS_ASSUME_NONNULL_END

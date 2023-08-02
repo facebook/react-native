@@ -87,6 +87,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Use `attributedText.string` instead.
 @property (nonatomic, copy, nullable) NSString *text NS_UNAVAILABLE;
 
+@property (nonatomic, getter=isGhostTextChanging) BOOL ghostTextChanging; // [macOS]
+
 @end
 
 NS_ASSUME_NONNULL_END

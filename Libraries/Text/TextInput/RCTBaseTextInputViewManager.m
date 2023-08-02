@@ -171,6 +171,17 @@ RCT_EXPORT_METHOD(setTextAndSelection
   }];
 }
 
+// [macOS
+RCT_EXPORT_METHOD(setGhostText
+				  :(nonnull NSNumber *)reactTag
+				  :(NSString *)text) {
+
+	[self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry) {
+		[(RCTBaseTextInputView *)viewRegistry[reactTag] setGhostText:text];
+	}];
+}
+// macOS]
+
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillPerformMounting:(__unused RCTUIManager *)uiManager

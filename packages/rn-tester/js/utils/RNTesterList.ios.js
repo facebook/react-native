@@ -41,6 +41,12 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/FocusOnMount/FocusOnMount'),
   },
   // macOS]
+  // [macOS
+  {
+    key: 'GhostText',
+    module: require('../examples/GhostText/GhostText'),
+  },
+  // macOS]
   {
     key: 'KeyboardEvents',
     module: require('../examples/KeyboardEventsExample/KeyboardEventsExample'),

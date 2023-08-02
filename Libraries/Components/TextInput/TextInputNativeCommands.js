@@ -22,8 +22,20 @@ export interface TextInputNativeCommands<T> {
     start: Int32,
     end: Int32,
   ) => void;
+  // [macOS
+  // NYI on Android
+  +setGhostText: (
+    viewRef: React.ElementRef<T>,
+    value: ?string, // in theory this is nullable
+  ) => void;
+  // macOS]
 }
 
-const supportedCommands = ['focus', 'blur', 'setTextAndSelection'];
+const supportedCommands = [
+  'focus',
+  'blur',
+  'setTextAndSelection',
+  'setGhostText',
+]; // [macOS]
 
 export default supportedCommands;

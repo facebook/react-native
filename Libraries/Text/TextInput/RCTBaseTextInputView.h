@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
 #endif // [macOS]
 
+@property (nonatomic, copy, nullable) NSString *ghostText; // [macOS]
+
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/
