@@ -433,6 +433,8 @@ void Binding::installFabricUIManager(
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
   CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
       getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
+  CoreFeatures::enableCleanParagraphYogaNode =
+      getFeatureFlagValue("enableCleanParagraphYogaNode");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
