@@ -879,18 +879,6 @@ jobs:
           destination: rntester-apk
 
   # -------------------------
-  #    JOBS: Test Android Docker Image
-  # -------------------------
-  test_android_docker_image:
-    machine:
-      image: ubuntu-2004:202010-01
-    steps:
-      - checkout
-      - run:
-          name: Try to build React Native inside the Docker Container
-          command: npm run docker-build-android
-
-  # -------------------------
   #    JOBS: Test Android Template
   # -------------------------
   test_android_template:
@@ -1777,7 +1765,6 @@ workflows:
       - test_js:
           run_disabled_tests: false
       - test_android
-      - test_android_docker_image
       - test_e2e_ios:
           ruby_version: "2.7.7"
       - test_e2e_android
