@@ -431,6 +431,8 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
+      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
