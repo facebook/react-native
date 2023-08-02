@@ -136,6 +136,11 @@ const Components: Array<RNTesterModuleInfo> = [
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
   },
+  {
+    key: 'PerformanceComparisonExample',
+    category: 'Basic',
+    module: require('../examples/Performance/PerformanceComparisonExample'),
+  },
 ];
 
 const APIs: Array<RNTesterModuleInfo> = ([
