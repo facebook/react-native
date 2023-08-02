@@ -154,4 +154,7 @@ public class ReactFeatureFlags {
 
   /** Use native view configs in bridgeless mode. */
   public static boolean useNativeViewConfigsInBridgelessMode = false;
+
+  /** Only swap left and right on Android in RTL scripts. */
+  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
 }
