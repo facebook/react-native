@@ -40,7 +40,7 @@ constexpr static RawPropsValueIndex kRawPropsValueIndexEmpty =
  * about twenty. It's okay if some `*Props` class has more than this amount of
  * props but the majority of those classes should be below this cap.
  */
-constexpr static auto kNumberOfPropsPerComponentSoftCap = 150;
+constexpr static auto kNumberOfPropsPerComponentSoftCap = 250;
 
 /*
  * The maximum length of the prop name.
