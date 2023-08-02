@@ -157,4 +157,7 @@ public class ReactFeatureFlags {
 
   /** Only swap left and right on Android in RTL scripts. */
   public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
+
+  /** Clean yoga node when <Text /> does not change. */
+  public static boolean enableCleanParagraphYogaNode = false;
 }
