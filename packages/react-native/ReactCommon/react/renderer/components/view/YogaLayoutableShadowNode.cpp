@@ -17,6 +17,7 @@
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -550,8 +551,15 @@ void YogaLayoutableShadowNode::layoutTree(
 
   threadLocalLayoutContext = layoutContext;
 
-  if (layoutContext.swapLeftAndRightInRTL) {
-    swapLeftAndRightInTree(*this);
+  if (CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR) {
+    if (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft &&
+        layoutContext.swapLeftAndRightInRTL) {
+      swapLeftAndRightInTree(*this);
+    }
+  } else {
+    if (layoutContext.swapLeftAndRightInRTL) {
+      swapLeftAndRightInTree(*this);
+    }
   }
 
   {
