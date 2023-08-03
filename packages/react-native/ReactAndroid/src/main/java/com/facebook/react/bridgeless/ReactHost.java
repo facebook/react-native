@@ -200,7 +200,8 @@ public class ReactHost implements ReactHostInterface {
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
-  /* package */ Task<Void> prerenderSurface(final ReactSurface surface) {
+  /* package */
+  TaskInterface<Void> prerenderSurface(final ReactSurface surface) {
     final String method = "prerenderSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
