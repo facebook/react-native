@@ -32,7 +32,7 @@ def setup_hermes!(react_native_path: "../node_modules/react-native", fabric_enab
     pod 'React-jsi', :path => "#{react_native_path}/ReactCommon/jsi"
     # This `:tag => hermestag` below is only to tell CocoaPods to update hermes-engine when React Native version changes.
     # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*
-    hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
+    hermestag_file = File.join(react_native_dir, "sdks", ".hermesversion")
     hermestag = File.exist?(hermestag_file) ? File.read(hermestag_file).strip : ''
 
     pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec", :tag => hermestag
