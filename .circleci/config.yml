@@ -243,6 +243,12 @@ commands:
             - ~/.cache/yarn
           key: << parameters.yarn_base_cache_key >>-{{ arch }}-{{ checksum "yarn.lock" }}
 
+  build_packages:
+    steps:
+      - run:
+          name: Build packages
+          command: yarn build
+
   brew_install:
     parameters:
       package:
@@ -1775,6 +1781,7 @@ jobs:
             cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
 
       - run_yarn
+      - build_packages
       - download_gradle_dependencies
 
       # START: Stables and nightlies
@@ -1870,6 +1877,7 @@ jobs:
     steps:
       - checkout
       - run_yarn
+      - build_packages
       - run:
           name: Set NPM auth token
           command: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
