@@ -62,29 +62,34 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
+    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    # Hermes iOS
     hermesc_apple_cache_key: &hermesc_apple_cache_key v2-hermesc-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_apple_slices_cache_key: &hermes_apple_slices_cache_key v2-hermes-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v1-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v1-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+
+    # Cocoapods - RNTester
     pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    xcodebuild_cache_key: &xcodebuild_cache_key test-v7-xcodebuild-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/week_year" }}
-    xcodeproj_cache_key: &xcodeproj_cache_key test-v1-xcodeproj-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/week_year" }}
-    pods_cache_key: &pods_cache_key test-v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    cocoapods_cache_key: &cocoapods_cache_key test-v7-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}
-    rntester_podfile_lock_cahce_key: &rntester_podfile_lock_cahce_key test-v5-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}
-    template_cocoapods_cache_key: &template_cocoapods_cache_key test-v1-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}
-    template_podfile_lock_cahce_key: &template_podfile_lock_cahce_key test-v1-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}
+    cocoapods_cache_key: &cocoapods_cache_key v7-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v5-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}
+
+    # Cocoapods - Template
+    template_cocoapods_cache_key: &template_cocoapods_cache_key v1-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}
+    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v1-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}
+
+    # Windows
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
-    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -569,13 +574,10 @@ commands:
         default: packages/rn-tester/Pods
       podfile_lock_cache_key:
         type: string
-        default: *rntester_podfile_lock_cahce_key
+        default: *rntester_podfile_lock_cache_key
       cocoapods_cache_key:
         type: string
         default: *cocoapods_cache_key
-      xcodeproj_path:
-        type: string
-        default: packages/rn-tester/RNTesterPods.xcodeproj
     steps:
       - run:
           name: Prepare Xcodebuild cache
@@ -583,46 +585,19 @@ commands:
             WEEK=$(date +"%U")
             YEAR=$(date +"%Y")
             echo "$WEEK-$YEAR" > /tmp/week_year
-      - brew_install:
-          package: git-tools
       - restore_cache:
           key: << parameters.podfile_lock_cache_key >>
       - restore_cache:
-          key: *xcodebuild_cache_key
-      - restore_cache:
           key: << parameters.cocoapods_cache_key >>
-      - restore_cache:
-          key: *xcodeproj_cache_key
-      # Cloning the repo updates the file modification time (mtime) from the ones stated in git to
-      # now, when they are copied in the file system.
-      # This script restores the mtime to the ones set in git.
-      - run:
-          name: Update mtime for incremental builds
-          command: |
-            echo "Restoring mtime in working directory $pwd"
-            git restore-mtime --force
-      # The device inode changes can invalidate the derived data
-      # https://stackoverflow.com/questions/53753511/is-it-possible-to-copy-an-xcode-derived-data-cache
-      - run:
-          name: Set IgnoreFileSystemDeviceInodeChanges flag
-          command: defaults write com.apple.dt.XCBuild IgnoreFileSystemDeviceInodeChanges -bool YES
       - steps: << parameters.steps >>
       - save_cache:
           key: << parameters.podfile_lock_cache_key >>
           paths:
             - << parameters.podfile_lock_path >>
       - save_cache:
-          key: *xcodebuild_cache_key
-          paths:
-            - *xcodebuild_derived_data_path
-      - save_cache:
           key: << parameters.cocoapods_cache_key >>
           paths:
             - << parameters.pods_build_folder >>
-      - save_cache:
-          key: *xcodeproj_cache_key
-          paths:
-            - << parameters.xcodeproj_path >>
 
 
 
@@ -1111,7 +1086,7 @@ jobs:
         default: "/tmp/iOSTemplateProject/ios/Pods"
       podfile_lock_cache_key:
         type: string
-        default: *template_podfile_lock_cahce_key
+        default: *template_podfile_lock_cache_key
       cocoapods_cache_key:
         type: string
         default: *template_cocoapods_cache_key
@@ -2032,7 +2007,7 @@ workflows:
           latest : false
           dryrun: true
       - prepare_hermes_workspace
-      # - test_ios_rntester_hermes_xcode_integration
+      - test_ios_rntester_hermes_xcode_integration
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
