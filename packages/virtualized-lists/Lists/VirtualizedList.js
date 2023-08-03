@@ -1608,9 +1608,32 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    this._listMetrics.notifyListContentLayout({
+      layout: {width, height},
+      orientation: this._orientation(),
+    });
+
+    this._maybeScrollToInitialScrollIndex(width, height);
+
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEdgeReached();
+  };
+
+  /**
+   * Scroll to a specified `initialScrollIndex` prop after the ScrollView
+   * content has been laid out, if it is still valid. Only a single scroll is
+   * triggered throughout the lifetime of the list.
+   */
+  _maybeScrollToInitialScrollIndex(
+    contentWidth: number,
+    contentHeight: number,
+  ) {
     if (
-      width > 0 &&
-      height > 0 &&
+      contentWidth > 0 &&
+      contentHeight > 0 &&
       this.props.initialScrollIndex != null &&
       this.props.initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
@@ -1630,16 +1653,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       }
       this._hasTriggeredInitialScrollToIndex = true;
     }
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
-    }
-    this._listMetrics.notifyListContentLayout({
-      layout: {width, height},
-      orientation: this._orientation(),
-    });
-    this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEdgeReached();
-  };
+  }
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
    * coordinates relative to the child list.
