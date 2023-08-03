@@ -17,7 +17,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.interfaces.ReactHostInterface;
-import com.facebook.react.interfaces.ReactSurfaceInterface;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
 /**
@@ -37,7 +37,7 @@ public class ReactDelegate {
 
   @Nullable private ReactNativeHost mReactNativeHost;
   @Nullable private ReactHostInterface mReactHost;
-  @Nullable private ReactSurfaceInterface mReactSurface;
+  @Nullable private ReactSurface mReactSurface;
 
   private boolean mFabricEnabled = false;
 

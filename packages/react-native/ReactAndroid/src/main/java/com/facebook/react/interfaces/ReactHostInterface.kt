@@ -15,6 +15,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
 /**
@@ -67,11 +68,7 @@ interface ReactHostInterface {
   fun onHostDestroy(activity: Activity?)
 
   /** To be called to create and setup an ReactSurface. */
-  fun createSurface(
-      context: Context,
-      moduleName: String,
-      initialProps: Bundle?
-  ): ReactSurfaceInterface?
+  fun createSurface(context: Context, moduleName: String, initialProps: Bundle?): ReactSurface?
 
   /**
    * This function can be used to initialize the ReactInstance in a background thread before a

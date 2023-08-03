@@ -45,6 +45,7 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;

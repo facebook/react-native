@@ -134,7 +134,9 @@ class BridgelessDevSupportManager extends DevSupportManagerBase {
       public View createRootView(String appKey) {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
-          ReactSurface reactSurface = ReactSurface.createWithView(currentActivity, appKey, null);
+          ReactSurfaceImpl reactSurface =
+              ReactSurfaceImpl.createWithView(currentActivity, appKey, null);
+
           reactSurface.attach(reactHost);
           reactSurface.start();
 
