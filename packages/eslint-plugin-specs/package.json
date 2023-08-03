@@ -20,10 +20,10 @@
     "postpack": "node postpack.js"
   },
   "dependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/eslint-parser": "^7.20.0",
+    "@babel/core": "^7.22.0",
+    "@babel/eslint-parser": "^7.22.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
-    "@babel/preset-flow": "^7.20.0",
+    "@babel/preset-flow": "^7.22.0",
     "@react-native/codegen": "*",
     "flow-parser": "^0.206.0",
     "make-dir": "^2.1.0",

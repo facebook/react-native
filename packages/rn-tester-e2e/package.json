@@ -20,8 +20,8 @@
     "eslint": "^8.19.0",
     "jest": "^29.2.1",
     "webdriverio": "^7.32.0",
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
     "@types/jest": "^29.2.1"
   }

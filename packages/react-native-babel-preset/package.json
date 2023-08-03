@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "^7.22.0",
     "@babel/plugin-proposal-async-generator-functions": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.18.0",
     "@babel/plugin-proposal-export-default-from": "^7.0.0",

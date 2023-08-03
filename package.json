@@ -43,12 +43,12 @@
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/eslint-parser": "^7.20.0",
+    "@babel/core": "^7.22.0",
+    "@babel/eslint-parser": "^7.22.0",
     "@babel/generator": "^7.20.0",
     "@babel/plugin-transform-regenerator": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/preset-flow": "^7.20.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/preset-flow": "^7.22.0",
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.2.1",
     "@pkgjs/parseargs": "^0.11.0",
