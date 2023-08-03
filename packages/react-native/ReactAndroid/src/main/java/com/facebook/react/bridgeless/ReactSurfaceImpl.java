@@ -23,8 +23,8 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.fabric.SurfaceHandlerBinding;
-import com.facebook.react.interfaces.ReactSurfaceInterface;
 import com.facebook.react.interfaces.TaskInterface;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 /** A class responsible for creating and rendering a full-screen React surface. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
 @ThreadSafe
-public class ReactSurface implements ReactSurfaceInterface {
+public class ReactSurfaceImpl implements ReactSurface {
 
   private final AtomicReference<ReactSurfaceView> mSurfaceView = new AtomicReference<>(null);
 
@@ -50,9 +50,9 @@ public class ReactSurface implements ReactSurfaceInterface {
    */
   private Context mContext;
 
-  public static ReactSurface createWithView(
+  public static ReactSurfaceImpl createWithView(
       Context context, String moduleName, @Nullable Bundle initialProps) {
-    ReactSurface surface = new ReactSurface(context, moduleName, initialProps);
+    ReactSurfaceImpl surface = new ReactSurfaceImpl(context, moduleName, initialProps);
     surface.attachView(new ReactSurfaceView(context, surface));
     return surface;
   }
@@ -62,7 +62,7 @@ public class ReactSurface implements ReactSurfaceInterface {
    * @param moduleName The string key used to register this surface in JS with SurfaceRegistry
    * @param initialProps A Bundle of properties to be passed to the root React component
    */
-  public ReactSurface(Context context, String moduleName, @Nullable Bundle initialProps) {
+  public ReactSurfaceImpl(Context context, String moduleName, @Nullable Bundle initialProps) {
     this(new SurfaceHandlerBinding(moduleName), context);
 
     NativeMap nativeProps =
@@ -83,7 +83,7 @@ public class ReactSurface implements ReactSurfaceInterface {
   }
 
   @VisibleForTesting
-  ReactSurface(SurfaceHandler surfaceHandler, Context context) {
+  ReactSurfaceImpl(SurfaceHandler surfaceHandler, Context context) {
     mSurfaceHandler = surfaceHandler;
     mContext = context;
   }
@@ -128,6 +128,7 @@ public class ReactSurface implements ReactSurfaceInterface {
     mReactHost.set(null);
   }
 
+  @Override
   public SurfaceHandler getSurfaceHandler() {
     return mSurfaceHandler;
   }
@@ -176,14 +177,17 @@ public class ReactSurface implements ReactSurfaceInterface {
     return host.stopSurface(this);
   }
 
+  @Override
   public int getSurfaceID() {
     return mSurfaceHandler.getSurfaceId();
   }
 
+  @Override
   public String getModuleName() {
     return mSurfaceHandler.getModuleName();
   }
 
+  @Override
   public void clear() {
     UiThreadUtil.runOnUiThread(
         () -> {
@@ -222,10 +226,12 @@ public class ReactSurface implements ReactSurfaceInterface {
     return mReactHost.get() != null;
   }
 
+  @Override
   public boolean isRunning() {
     return mSurfaceHandler.isRunning();
   }
 
+  @Override
   public Context getContext() {
     return mContext;
   }

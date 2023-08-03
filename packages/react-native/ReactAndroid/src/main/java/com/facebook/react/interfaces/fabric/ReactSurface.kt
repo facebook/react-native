@@ -5,14 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.interfaces
+package com.facebook.react.interfaces.fabric
 
+import android.content.Context
 import android.view.ViewGroup
+import com.facebook.react.interfaces.TaskInterface
 
 /** Represents a Surface in React Native. */
-interface ReactSurfaceInterface {
+interface ReactSurface {
+
   // the API of this interface will be completed as we analyze and refactor API of ReactSurface,
   // ReactRootView, etc.
+
+  // Returns surface ID of this surface
+  val surfaceID: Int
+
+  // Returns module name of this surface
+  val moduleName: String
+
+  // Returns whether the surface is running or not
+  val isRunning: Boolean
 
   // Prerender this surface
   fun prerender(): TaskInterface<Void>
@@ -23,6 +35,15 @@ interface ReactSurfaceInterface {
   // Stop running this surface
   fun stop(): TaskInterface<Void>
 
+  // Returns Surface handler
+  fun getSurfaceHandler(): SurfaceHandler
+
   // Get React root view of this surface
   fun getView(): ViewGroup?
+
+  // Returns context associated with the surface
+  fun getContext(): Context
+
+  // Clear surface
+  fun clear()
 }

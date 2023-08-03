@@ -51,9 +51,9 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
-import com.facebook.react.interfaces.ReactSurfaceInterface;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -364,9 +364,9 @@ public class ReactHost implements ReactHostInterface {
   }
 
   @Override
-  public ReactSurfaceInterface createSurface(
+  public ReactSurface createSurface(
       Context context, String moduleName, @Nullable Bundle initialProps) {
-    ReactSurface surface = new ReactSurface(context, moduleName, initialProps);
+    ReactSurfaceImpl surface = new ReactSurfaceImpl(context, moduleName, initialProps);
     surface.attachView(new ReactSurfaceView(context, surface));
     surface.attach(this);
     return surface;

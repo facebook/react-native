@@ -33,7 +33,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   private static final String TAG = "ReactSurfaceView";
 
-  private final ReactSurface mSurface;
+  private final ReactSurfaceImpl mSurface;
 
   private final JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
@@ -42,7 +42,7 @@ public class ReactSurfaceView extends ReactRootView {
   private int mWidthMeasureSpec = 0;
   private int mHeightMeasureSpec = 0;
 
-  public ReactSurfaceView(Context context, ReactSurface surface) {
+  public ReactSurfaceView(Context context, ReactSurfaceImpl surface) {
     super(context);
     mSurface = surface;
     mJSTouchDispatcher = new JSTouchDispatcher(this);
