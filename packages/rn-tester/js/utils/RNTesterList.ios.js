@@ -87,7 +87,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'ScrollViewIndicatorInsetsExample',
-    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsIOSExample'),
   },
   {
     key: 'SectionListIndex',
