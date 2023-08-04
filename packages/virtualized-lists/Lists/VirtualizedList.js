@@ -849,7 +849,7 @@ class VirtualizedList extends StateSafePureComponent<
 
     return {
       first: clamp(0, cells.first, maxFirst),
-      last: Math.min(lastPossibleCellIndex, cells.last),
+      last: clamp(-1, cells.last, lastPossibleCellIndex),
     };
   }
 
