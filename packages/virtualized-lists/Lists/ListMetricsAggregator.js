@@ -256,8 +256,8 @@ export default class ListMetricsAggregator {
   }
 
   /**
-   * Converts a cartesian offset along the x or y axis to a flow-relative
-   * offset, (e.g. starting from the left in LTR, but right in RTL).
+   * Finds the flow-relative offset (e.g. starting from the left in LTR, but
+   * right in RTL) from a layout box.
    */
   flowRelativeOffset(layout: Layout, referenceContentLength?: ?number): number {
     const {horizontal, rtl} = this._orientation;
@@ -268,7 +268,10 @@ export default class ListMetricsAggregator {
         contentLength != null,
         'ListMetricsAggregator must be notified of list content layout before resolving offsets',
       );
-      return contentLength - this._selectOffset(layout);
+      return (
+        contentLength -
+        (this._selectOffset(layout) + this._selectLength(layout))
+      );
     } else {
       return this._selectOffset(layout);
     }
