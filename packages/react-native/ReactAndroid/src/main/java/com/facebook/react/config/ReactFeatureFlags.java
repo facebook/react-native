@@ -167,7 +167,7 @@ public class ReactFeatureFlags {
   public static boolean enableTurboModuleStableAPI = false;
 
   /** Enable keeping Composing Spans on Text input change if the new text has the same length. */
-  public static boolean enableComposingSpanRestorationOnSameLength = false;
+  public static boolean enableComposingSpanRestorationOnSameLength = true;
 
   /**
    * When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with
