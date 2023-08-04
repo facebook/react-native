@@ -56,6 +56,10 @@ class CoreFeatures {
 
   // Clean yoga node when <Text /> does not change.
   static bool enableCleanParagraphYogaNode;
+
+  // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
+  // props, and provide continuous `onScroll` upates like other platforms.
+  static bool disableScrollEventThrottleRequirement;
 };
 
 } // namespace facebook::react
