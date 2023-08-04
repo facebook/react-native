@@ -95,6 +95,7 @@
     "micromatch": "^4.0.4",
     "mkdirp": "^0.5.1",
     "mock-fs": "^5.1.4",
+    "node-fetch": "^2.6.12",
     "nullthrows": "^1.1.1",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.14.0",
@@ -103,6 +104,7 @@
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
     "typescript": "5.0.4",
-    "ws": "^6.2.2"
+    "ws": "^6.2.2",
+    "yargs": "^17.7.2"
   }
 }
