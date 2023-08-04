@@ -2137,47 +2137,6 @@ workflows:
             - build_hermes_macos
             - build_hermesc_windows
 
-  package_and_publish_release_dryrun:
-    when:
-      and:
-        - equal: [ false, << pipeline.parameters.run_release_workflow >> ]
-        - equal: [ false, << pipeline.parameters.run_nightly_workflow >> ]
-    jobs:
-      - prepare_package_for_release:
-          name: prepare_package_for_release
-          version: ''
-          latest : false
-          dryrun: true
-      - prepare_hermes_workspace:
-          requires:
-            - prepare_package_for_release
-      - build_hermesc_linux:
-          requires:
-            - prepare_hermes_workspace
-      - build_apple_slices_hermes:
-          requires:
-            - prepare_hermes_workspace
-          matrix:
-            parameters:
-              flavor: ["Debug", "Release"]
-              slice: ["macosx", "iphoneos", "iphonesimulator", "catalyst"]
-      - build_hermesc_windows:
-          requires:
-            - prepare_hermes_workspace
-      - build_hermes_macos:
-          requires:
-            - build_apple_slices_hermes
-          matrix:
-            parameters:
-              flavor: ["Debug", "Release"]
-      - build_npm_package:
-          name: build_and_publish_npm_package
-          release_type: "dry-run"
-          requires:
-            - build_hermesc_linux
-            - build_hermes_macos
-            - build_hermesc_windows
-
   analysis:
     when:
       and:
