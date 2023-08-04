@@ -276,8 +276,21 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     scrollRef.scrollTo({
       animated,
-      ...this._cartesianScrollOffset(offset),
+      ...this._scrollToParamsFromOffset(offset),
     });
+  }
+
+  _scrollToParamsFromOffset(offset: number): {x?: number, y?: number} {
+    const {horizontal, rtl} = this._orientation();
+    if (horizontal && rtl) {
+      // Add the visible length of the scrollview so that the offset is right-aligned
+      const cartOffset = this._listMetrics.cartesianOffset(
+        offset + this._scrollMetrics.visibleLength,
+      );
+      return horizontal ? {x: cartOffset} : {y: cartOffset};
+    } else {
+      return horizontal ? {x: offset} : {y: offset};
+    }
   }
 
   recordInteraction() {
@@ -1480,39 +1493,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       : metrics.width;
   }
 
-  _flowRelativeScrollOffset(
-    metrics: $ReadOnly<{
-      x: number,
-      y: number,
-      ...
-    }>,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-      ...
-    }>,
-  ): number {
-    let offset = this._selectOffset(metrics);
-
-    const {horizontal, rtl} = this._orientation();
-    if (horizontal && rtl && Platform.OS !== 'ios') {
-      offset = this._selectLength(contentSize) - offset;
-    }
-
-    return offset;
-  }
-
-  _cartesianScrollOffset(offset: number): {x?: number, y?: number} {
-    const {horizontal, rtl} = this._orientation();
-    const normalizedOffset =
-      horizontal && rtl && Platform.OS !== 'ios'
-        ? this._listMetrics.getContentLength() - offset
-        : offset;
-
-    const cartOffset = this._listMetrics.cartesianOffset(normalizedOffset);
-    return horizontal ? {x: cartOffset} : {y: cartOffset};
-  }
-
   _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
     return this._orientation().horizontal ? x : y;
   }
@@ -1688,7 +1668,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
-    let offset = this._flowRelativeScrollOffset(
+    let offset = this._offsetFromScrollEvent(
       e.nativeEvent.contentOffset,
       e.nativeEvent.contentSize,
     );
@@ -1754,6 +1734,26 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._computeBlankness();
     this._scheduleCellsToRenderUpdate();
   };
+
+  _offsetFromScrollEvent(
+    contentOffset: $ReadOnly<{
+      x: number,
+      y: number,
+      ...
+    }>,
+    contentSize: $ReadOnly<{
+      width: number,
+      height: number,
+      ...
+    }>,
+  ): number {
+    const {horizontal, rtl} = this._orientation();
+    if (Platform.OS === 'ios' || !(horizontal && rtl)) {
+      return this._selectOffset(contentOffset);
+    }
+
+    return this._selectLength(contentSize) - this._selectOffset(contentOffset);
+  }
 
   _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
     const allowImmediateExecution = opts?.allowImmediateExecution ?? true;
