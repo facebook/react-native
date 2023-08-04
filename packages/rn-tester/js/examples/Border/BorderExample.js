@@ -5,18 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
 
-const React = require('react');
-const {
+import type {RNTesterModule} from '../../types/RNTesterTypes';
+import * as React from 'react';
+
+import {
   StyleSheet,
   View,
   PlatformColor,
   Platform,
   DynamicColorIOS,
-} = require('react-native');
+} from 'react-native';
 
 const styles = StyleSheet.create({
   box: {
@@ -199,144 +202,164 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Border';
-exports.category = 'UI';
-exports.description =
-  'Demonstrates some of the border styles available to Views.';
-exports.examples = [
-  {
-    title: 'Equal-Width / Same-Color',
-    description: 'borderWidth & borderColor',
-    render() {
-      return <View style={[styles.box, styles.border1]} />;
+export default ({
+  title: 'Border',
+  category: 'UI',
+  description: 'Demonstrates some of the border styles available to Views.',
+  examples: [
+    {
+      title: 'Equal-Width / Same-Color',
+      name: 'equal-width-same-color',
+      description: 'borderWidth & borderColor',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border1]} />;
+      },
     },
-  },
-  {
-    title: 'Equal-Width / Same-Color',
-    description: 'borderWidth & borderColor & borderRadius',
-    render() {
-      return <View style={[styles.box, styles.borderRadius]} />;
+    {
+      title: 'Equal-Width / Same-Color',
+      name: 'equal-width-same-color-border-radius',
+      description: 'borderWidth & borderColor & borderRadius',
+      render: function ({testID}): React.Node {
+        return (
+          <View testID={testID} style={[styles.box, styles.borderRadius]} />
+        );
+      },
     },
-  },
-  {
-    title: 'Equal-Width Borders',
-    description: 'borderWidth & border*Color',
-    render() {
-      return <View style={[styles.box, styles.border2]} />;
+    {
+      title: 'Equal-Width Borders',
+      name: 'equal-width-borders',
+      description: 'borderWidth & border*Color',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border2]} />;
+      },
     },
-  },
-  {
-    title: 'Same-Color Borders',
-    description: 'border*Width & borderColor',
-    render() {
-      return <View style={[styles.box, styles.border3]} />;
+    {
+      title: 'Same-Color Borders',
+      name: 'same-color-borders',
+      description: 'border*Width & borderColor',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border3]} />;
+      },
     },
-  },
-  {
-    title: 'Custom Borders',
-    description: 'border*Width & border*Color',
-    render() {
-      return <View style={[styles.box, styles.border4]} />;
+    {
+      title: 'Custom Borders',
+      name: 'custom-borders',
+      description: 'border*Width & border*Color',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border4]} />;
+      },
     },
-  },
-  {
-    title: 'Custom Borders',
-    description: 'border*Width & border*Color',
-    platform: 'ios',
-    render() {
-      return <View style={[styles.box, styles.border5]} />;
+    {
+      title: 'Custom Borders',
+      name: 'custom-borders-ios-1',
+      description: 'border*Width & border*Color',
+      platform: 'ios',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border5]} />;
+      },
     },
-  },
-  {
-    title: 'Custom Borders',
-    description: 'border*Width & border*Color',
-    platform: 'ios',
-    render() {
-      return <View style={[styles.box, styles.border6]} />;
+    {
+      title: 'Custom Borders',
+      name: 'custom-borders-ios-2',
+      description: 'border*Width & border*Color',
+      platform: 'ios',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border6]} />;
+      },
     },
-  },
-  {
-    title: 'Custom Borders',
-    description: 'borderRadius & clipping',
-    platform: 'ios',
-    render() {
-      return (
-        <View style={[styles.box, styles.border7]}>
-          <View style={styles.border7_inner} />
-        </View>
-      );
+    {
+      title: 'Custom Borders',
+      name: 'custom-borders-ios-clipping',
+      description: 'borderRadius & clipping',
+      platform: 'ios',
+      render: function ({testID}): React.Node {
+        return (
+          <View testID={testID} style={[styles.box, styles.border7]}>
+            <View style={styles.border7_inner} />
+          </View>
+        );
+      },
     },
-  },
-  {
-    title: 'Single Borders',
-    description: 'top, left, bottom right',
-    render() {
-      return (
-        <View style={styles.wrapper}>
-          <View style={[styles.box, styles.border8, styles.border8Top]} />
-          <View style={[styles.box, styles.border8, styles.border8Left]} />
-          <View style={[styles.box, styles.border8, styles.border8Bottom]} />
-          <View style={[styles.box, styles.border8, styles.border8Right]} />
-        </View>
-      );
+    {
+      title: 'Single Borders',
+      name: 'single-borders',
+      description: 'top, left, bottom right',
+      render: function ({testID}): React.Node {
+        return (
+          <View testID={testID} style={styles.wrapper}>
+            <View style={[styles.box, styles.border8, styles.border8Top]} />
+            <View style={[styles.box, styles.border8, styles.border8Left]} />
+            <View style={[styles.box, styles.border8, styles.border8Bottom]} />
+            <View style={[styles.box, styles.border8, styles.border8Right]} />
+          </View>
+        );
+      },
     },
-  },
-  {
-    title: 'Corner Radii',
-    description: 'borderTopLeftRadius & borderBottomRightRadius',
-    render() {
-      return <View style={[styles.box, styles.border9]} />;
+    {
+      title: 'Corner Radii',
+      name: 'corner-radii',
+      description: 'borderTopLeftRadius & borderBottomRightRadius',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border9]} />;
+      },
     },
-  },
-  {
-    title: 'Corner Radii / Elevation',
-    description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
-    platform: 'android',
-    render() {
-      return <View style={[styles.box, styles.border10]} />;
+    {
+      title: 'Corner Radii / Elevation',
+      name: 'corner-radii-elevation',
+      description: 'borderTopLeftRadius & borderBottomRightRadius & elevation',
+      platform: 'android',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border10]} />;
+      },
     },
-  },
-  {
-    title: 'CSS Trick - Triangle',
-    description: 'create a triangle by manipulating border colors and widths',
-    render() {
-      return <View style={[styles.border11]} />;
+    {
+      title: 'CSS Trick - Triangle',
+      name: 'css-trick-triangle',
+      description: 'create a triangle by manipulating border colors and widths',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.border11]} />;
+      },
     },
-  },
-  {
-    title: 'Curved border(Left|Right|Bottom|Top)Width',
-    description: 'Make a non-uniform width curved border',
-    render() {
-      return <View style={[styles.box, styles.border12]} />;
+    {
+      title: 'Curved border(Left|Right|Bottom|Top)Width',
+      name: 'curved-border-lrbt-width',
+      description: 'Make a non-uniform width curved border',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border12]} />;
+      },
     },
-  },
-  {
-    title: 'Curved border(Left|Right|Bottom|Top)Color',
-    description: 'Make a non-uniform color curved border',
-    render() {
-      return <View style={[styles.box, styles.border13]} />;
+    {
+      title: 'Curved border(Left|Right|Bottom|Top)Color',
+      name: 'curved-border-lrbt-color',
+      description: 'Make a non-uniform color curved border',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border13]} />;
+      },
     },
-  },
-  {
-    title: 'Curved border(Top|Bottom)(Left|Right)Radius',
-    description: 'Make a non-uniform radius curved border',
-    render() {
-      return <View style={[styles.box, styles.border14]} />;
+    {
+      title: 'Curved border(Top|Bottom)(Left|Right)Radius',
+      name: 'curved-border-tb-lr-radius',
+      description: 'Make a non-uniform radius curved border',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border14]} />;
+      },
     },
-  },
-  {
-    title: 'System color',
-    description: 'Using a platform color',
-    render() {
-      return <View style={[styles.box, styles.border15]} />;
+    {
+      title: 'System color',
+      name: 'system-color',
+      description: 'Using a platform color',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border15]} />;
+      },
     },
-  },
-  {
-    title: 'Dynamic color',
-    description: 'Using a custom dynamic color',
-    platform: 'ios',
-    render() {
-      return <View style={[styles.box, styles.border16]} />;
+    {
+      title: 'Dynamic color',
+      name: 'dynamic-color-ios',
+      description: 'Using a custom dynamic color',
+      platform: 'ios',
+      render: function ({testID}): React.Node {
+        return <View testID={testID} style={[styles.box, styles.border16]} />;
+      },
     },
-  },
-];
+  ],
+}: RNTesterModule);

@@ -14,6 +14,7 @@ const nullthrows = require('nullthrows');
 
 const {
   getImports,
+  getCppArrayTypeForAnnotation,
   getCppTypeForAnnotation,
   generateEventStructName,
 } = require('./CppHelpers');
@@ -54,7 +55,6 @@ const FileTemplate = ({
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 ${[...extraIncludes].join('\n')}
 
 namespace facebook {
@@ -74,7 +74,7 @@ const ComponentTemplate = ({
   events: string,
 }) =>
   `
-class JSI_EXPORT ${className}EventEmitter : public ViewEventEmitter {
+class ${className}EventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -134,6 +134,17 @@ function getNativeTypeFromAnnotation(
     case 'StringEnumTypeAnnotation':
     case 'ObjectTypeAnnotation':
       return generateEventStructName([...nameParts, eventProperty.name]);
+    case 'ArrayTypeAnnotation':
+      const eventTypeAnnotation = eventProperty.typeAnnotation;
+      if (eventTypeAnnotation.type !== 'ArrayTypeAnnotation') {
+        throw new Error(
+          "Inconsistent Codegen state: type was ArrayTypeAnnotation at the beginning of the body and now it isn't",
+        );
+      }
+      return getCppArrayTypeForAnnotation(eventTypeAnnotation.elementType, [
+        ...nameParts,
+        eventProperty.name,
+      ]);
     default:
       (type: empty);
       throw new Error(`Received invalid event property type ${type}`);
@@ -166,6 +177,33 @@ function generateEnum(
   );
 }
 
+function handleGenerateStructForArray(
+  structs: StructsMap,
+  name: string,
+  componentName: string,
+  elementType: EventTypeAnnotation,
+  nameParts: $ReadOnlyArray<string>,
+): void {
+  if (elementType.type === 'ObjectTypeAnnotation') {
+    generateStruct(
+      structs,
+      componentName,
+      nameParts.concat([name]),
+      nullthrows(elementType.properties),
+    );
+  } else if (elementType.type === 'StringEnumTypeAnnotation') {
+    generateEnum(structs, elementType.options, nameParts.concat([name]));
+  } else if (elementType.type === 'ArrayTypeAnnotation') {
+    handleGenerateStructForArray(
+      structs,
+      name,
+      componentName,
+      elementType.elementType,
+      nameParts,
+    );
+  }
+}
+
 function generateStruct(
   structs: StructsMap,
   componentName: string,
@@ -194,6 +232,15 @@ function generateStruct(
       case 'DoubleTypeAnnotation':
       case 'FloatTypeAnnotation':
       case 'MixedTypeAnnotation':
+        return;
+      case 'ArrayTypeAnnotation':
+        handleGenerateStructForArray(
+          structs,
+          name,
+          componentName,
+          typeAnnotation.elementType,
+          nameParts,
+        );
         return;
       case 'ObjectTypeAnnotation':
         generateStruct(
@@ -272,7 +319,7 @@ module.exports = {
       .map(moduleName => {
         const module = schema.modules[moduleName];
         if (module.type !== 'Component') {
-          return;
+          return null;
         }
 
         const {components} = module;

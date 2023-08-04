@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 void Transform::print(Transform const &t, std::string prefix) {
   LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
              << t.matrix[2] << " " << t.matrix[3] << " ]";
@@ -366,22 +366,25 @@ Point operator*(Point const &point, Transform const &transform) {
 }
 
 Rect operator*(Rect const &rect, Transform const &transform) {
-  auto centre = rect.getCenter();
+  auto center = rect.getCenter();
+  return transform.applyWithCenter(rect, center);
+}
 
-  auto a = Point{rect.origin.x, rect.origin.y} - centre;
-  auto b = Point{rect.getMaxX(), rect.origin.y} - centre;
-  auto c = Point{rect.getMaxX(), rect.getMaxY()} - centre;
-  auto d = Point{rect.origin.x, rect.getMaxY()} - centre;
+Rect Transform::applyWithCenter(Rect const &rect, Point const &center) const {
+  auto a = Point{rect.origin.x, rect.origin.y} - center;
+  auto b = Point{rect.getMaxX(), rect.origin.y} - center;
+  auto c = Point{rect.getMaxX(), rect.getMaxY()} - center;
+  auto d = Point{rect.origin.x, rect.getMaxY()} - center;
 
-  auto vectorA = transform * Vector{a.x, a.y, 0, 1};
-  auto vectorB = transform * Vector{b.x, b.y, 0, 1};
-  auto vectorC = transform * Vector{c.x, c.y, 0, 1};
-  auto vectorD = transform * Vector{d.x, d.y, 0, 1};
+  auto vectorA = *this * Vector{a.x, a.y, 0, 1};
+  auto vectorB = *this * Vector{b.x, b.y, 0, 1};
+  auto vectorC = *this * Vector{c.x, c.y, 0, 1};
+  auto vectorD = *this * Vector{d.x, d.y, 0, 1};
 
-  Point transformedA{vectorA.x + centre.x, vectorA.y + centre.y};
-  Point transformedB{vectorB.x + centre.x, vectorB.y + centre.y};
-  Point transformedC{vectorC.x + centre.x, vectorC.y + centre.y};
-  Point transformedD{vectorD.x + centre.x, vectorD.y + centre.y};
+  Point transformedA{vectorA.x + center.x, vectorA.y + center.y};
+  Point transformedB{vectorB.x + center.x, vectorB.y + center.y};
+  Point transformedC{vectorC.x + center.x, vectorC.y + center.y};
+  Point transformedD{vectorD.x + center.x, vectorD.y + center.y};
 
   return Rect::boundingRect(
       transformedA, transformedB, transformedC, transformedD);

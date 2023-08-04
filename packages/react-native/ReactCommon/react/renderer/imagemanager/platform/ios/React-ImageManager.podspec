@@ -42,12 +42,15 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_ImageManager"
-    s.header_mappings_dir  = "./"
+    s.header_mappings_dir  = File.absolute_path("./")
     header_search_paths = header_search_paths + [
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
       "\"$(PODS_ROOT)/DoubleConversion\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\"",
+      "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\"",
+      "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",
     ]
   end
 
@@ -61,4 +64,8 @@ Pod::Spec.new do |s|
   s.dependency "React-Fabric"
   s.dependency "React-Core/Default"
   s.dependency "React-RCTImage"
+  s.dependency "React-debug"
+  s.dependency "React-rendererdebug"
+  s.dependency "React-utils"
+  s.dependency "glog"
 end

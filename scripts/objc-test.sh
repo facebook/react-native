@@ -106,8 +106,7 @@ xcbeautifyFormat() {
 }
 
 preloadBundlesRNIntegrationTests() {
-  # Preload IntegrationTests bundles (/)
-  # TODO(T149119847): These need to be relocated into a dir with a Metro config
+  # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
@@ -127,15 +126,14 @@ main() {
 
     # Start the WebSocket test server
     echo "Launch WebSocket Server"
-    sh "$ROOT/IntegrationTests/launchWebSocketServer.sh" &
+    sh "./IntegrationTests/launchWebSocketServer.sh" &
     waitForWebSocketServer
 
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
     waitForPackager
     preloadBundlesRNTester
-    # TODO(T149119847)
-    # preloadBundlesRNIntegrationTests
+    preloadBundlesRNIntegrationTests
 
     # Build and run tests.
     if [ -x "$(command -v xcbeautify)" ]; then

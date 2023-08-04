@@ -16,6 +16,7 @@
 #import <react/renderer/components/image/ImageProps.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
+#import <react/utils/CoreFeatures.h>
 
 using namespace facebook::react;
 
@@ -53,8 +54,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldImageProps = *std::static_pointer_cast<ImageProps const>(_props);
-  auto const &newImageProps = *std::static_pointer_cast<ImageProps const>(props);
+  const auto &oldImageProps = static_cast<ImageProps const &>(*_props);
+  const auto &newImageProps = static_cast<ImageProps const &>(*props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -87,7 +88,7 @@ using namespace facebook::react;
       (newImageState && newImageState->getData().getImageSource() != oldImageState->getData().getImageSource())) {
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component
-    std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadStart();
+    static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadStart();
 
     // TODO (T58941612): Tracking for visibility should be done directly on this class.
     // For now, we consolidate instrumentation logic in the image loader, so that pre-Fabric gets the same treatment.
@@ -97,8 +98,18 @@ using namespace facebook::react;
 - (void)_setStateAndResubscribeImageResponseObserver:(ImageShadowNode::ConcreteState::Shared const &)state
 {
   if (_state) {
-    auto &observerCoordinator = _state->getData().getImageRequest().getObserverCoordinator();
+    auto const &imageRequest = _state->getData().getImageRequest();
+    auto &observerCoordinator = imageRequest.getObserverCoordinator();
     observerCoordinator.removeObserver(_imageResponseObserverProxy);
+    if (CoreFeatures::cancelImageDownloadsOnRecycle) {
+      // Cancelling image request because we are no longer observing it.
+      // This is not 100% correct place to do this because we may want to
+      // re-create RCTImageComponentView with the same image and if it
+      // was cancelled before downloaded, download is not resumed.
+      // This will only become issue if we decouple life cycle of a
+      // ShadowNode from ComponentView, which is not something we do now.
+      imageRequest.cancel();
+    }
   }
 
   _state = state;
@@ -127,10 +138,10 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoad();
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoad();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadEnd();
 
-  const auto &imageProps = *std::static_pointer_cast<ImageProps const>(_props);
+  const auto &imageProps = static_cast<ImageProps const &>(*_props);
 
   if (imageProps.tintColor) {
     image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -165,7 +176,7 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onProgress(progress);
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onProgress(progress);
 }
 
 - (void)didReceiveFailureFromObserver:(void const *)observer
@@ -176,8 +187,8 @@ using namespace facebook::react;
     return;
   }
 
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onError();
-  std::static_pointer_cast<ImageEventEmitter const>(_eventEmitter)->onLoadEnd();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onError();
+  static_cast<ImageEventEmitter const &>(*_eventEmitter).onLoadEnd();
 }
 
 @end

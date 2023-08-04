@@ -74,9 +74,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = "${moduleName}";
+
 protected:
   ${hasteModuleName}CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule("${moduleName}", jsInvoker),
+    : TurboModule(std::string{${hasteModuleName}CxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -338,12 +340,12 @@ enum ${enumName} { ${values} };
 
 template <>
 struct Bridging<${enumName}> {
-  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}) {
     ${fromValueConversion}
     ${fromCases}
   }
 
-  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value) {
     ${toCases}
   }
 };`;

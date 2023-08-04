@@ -44,4 +44,7 @@
 
   <!-- tag is used store bitset of pointer events observed -->
   <item type="id" name="pointer_events"/>
+
+  <!-- tag is used to store role tag-->
+  <item type="id" name="role"/>
 </resources>

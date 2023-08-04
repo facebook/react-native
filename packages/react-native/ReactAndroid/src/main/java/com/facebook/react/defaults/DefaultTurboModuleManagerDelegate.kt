@@ -27,7 +27,7 @@ private constructor(context: ReactApplicationContext, packages: List<ReactPackag
   @DoNotStrip external override fun initHybrid(): HybridData?
 
   class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
-    override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
+    public override fun build(context: ReactApplicationContext, packages: List<ReactPackage>) =
         DefaultTurboModuleManagerDelegate(context, packages)
   }
 }

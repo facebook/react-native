@@ -131,8 +131,8 @@ void CatalystInstanceImpl::registerNatives() {
           "getJSCallInvokerHolder",
           CatalystInstanceImpl::getJSCallInvokerHolder),
       makeNativeMethod(
-          "getNativeCallInvokerHolder",
-          CatalystInstanceImpl::getNativeCallInvokerHolder),
+          "getNativeMethodCallInvokerHolder",
+          CatalystInstanceImpl::getNativeMethodCallInvokerHolder),
       makeNativeMethod(
           "jniHandleMemoryPressure",
           CatalystInstanceImpl::handleMemoryPressure),
@@ -358,43 +358,51 @@ CatalystInstanceImpl::getJSCallInvokerHolder() {
   return jsCallInvokerHolder_;
 }
 
-jni::alias_ref<CallInvokerHolder::javaobject>
-CatalystInstanceImpl::getNativeCallInvokerHolder() {
-  if (!nativeCallInvokerHolder_) {
-    class NativeThreadCallInvoker : public CallInvoker {
+jni::alias_ref<NativeMethodCallInvokerHolder::javaobject>
+CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
+  if (!nativeMethodCallInvokerHolder_) {
+    class NativeMethodCallInvokerImpl : public NativeMethodCallInvoker {
      private:
       std::shared_ptr<JMessageQueueThread> messageQueueThread_;
 
      public:
-      NativeThreadCallInvoker(
+      NativeMethodCallInvokerImpl(
           std::shared_ptr<JMessageQueueThread> messageQueueThread)
           : messageQueueThread_(messageQueueThread) {}
-      void invokeAsync(std::function<void()> &&work) override {
+      void invokeAsync(
+          const std::string &methodName,
+          std::function<void()> &&work) override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
-      void invokeSync(std::function<void()> &&work) override {
+      void invokeSync(
+          const std::string &methodName,
+          std::function<void()> &&work) override {
         messageQueueThread_->runOnQueueSync(std::move(work));
       }
     };
 
-    std::shared_ptr<CallInvoker> nativeInvoker =
-        std::make_shared<NativeThreadCallInvoker>(moduleMessageQueue_);
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
+        std::make_shared<NativeMethodCallInvokerImpl>(moduleMessageQueue_);
 
-    std::shared_ptr<CallInvoker> decoratedNativeInvoker =
-        instance_->getDecoratedNativeCallInvoker(nativeInvoker);
+    std::shared_ptr<NativeMethodCallInvoker> decoratedNativeMethodCallInvoker =
+        instance_->getDecoratedNativeMethodCallInvoker(nativeMethodCallInvoker);
 
-    nativeCallInvokerHolder_ = jni::make_global(
-        CallInvokerHolder::newObjectCxxArgs(decoratedNativeInvoker));
+    nativeMethodCallInvokerHolder_ =
+        jni::make_global(NativeMethodCallInvokerHolder::newObjectCxxArgs(
+            decoratedNativeMethodCallInvoker));
   }
 
-  return nativeCallInvokerHolder_;
+  return nativeMethodCallInvokerHolder_;
 }
 
 jni::alias_ref<JRuntimeExecutor::javaobject>
 CatalystInstanceImpl::getRuntimeExecutor() {
   if (!runtimeExecutor_) {
-    runtimeExecutor_ = jni::make_global(
-        JRuntimeExecutor::newObjectCxxArgs(instance_->getRuntimeExecutor()));
+    auto executor = instance_->getRuntimeExecutor();
+    if (executor) {
+      runtimeExecutor_ =
+          jni::make_global(JRuntimeExecutor::newObjectCxxArgs(executor));
+    }
   }
   return runtimeExecutor_;
 }
@@ -403,15 +411,16 @@ jni::alias_ref<JRuntimeScheduler::javaobject>
 CatalystInstanceImpl::getRuntimeScheduler() {
   if (!runtimeScheduler_) {
     auto runtimeExecutor = instance_->getRuntimeExecutor();
-    auto runtimeScheduler = std::make_shared<RuntimeScheduler>(runtimeExecutor);
-
-    runtimeScheduler_ =
-        jni::make_global(JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
-
-    runtimeExecutor([runtimeScheduler](jsi::Runtime &runtime) {
-      RuntimeSchedulerBinding::createAndInstallIfNeeded(
-          runtime, runtimeScheduler);
-    });
+    if (runtimeExecutor) {
+      auto runtimeScheduler =
+          std::make_shared<RuntimeScheduler>(runtimeExecutor);
+      runtimeScheduler_ = jni::make_global(
+          JRuntimeScheduler::newObjectCxxArgs(runtimeScheduler));
+      runtimeExecutor([scheduler =
+                           std::move(runtimeScheduler)](jsi::Runtime &runtime) {
+        RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, scheduler);
+      });
+    }
   }
 
   return runtimeScheduler_;

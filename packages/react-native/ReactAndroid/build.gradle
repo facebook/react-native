@@ -109,7 +109,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_graphics",
                 [
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
-                    new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
+                    new Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
@@ -118,7 +118,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
-                new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+                [
+                    new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/"),
+                    new Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "rrc_legacyviewmanagerinterop",
@@ -184,6 +187,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/utils/", "react/utils/"),
                     new Pair("src/main/jni/react/jni", "react/jni/"),
                 ]
+            ),
+            new PrefabPreprocessingEntry(
+                    "react_utils",
+                    new Pair("../ReactCommon/react/utils/", "react/utils/"),
             ),
             new PrefabPreprocessingEntry(
                 "react_render_imagemanager",
@@ -332,6 +339,23 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
+task downloadGtest(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
+    onlyIfModified(true)
+    overwrite(false)
+    retries(5)
+    dest(new File(downloadsDir, "gtest.tar.gz"))
+}
+
+task prepareGtest(dependsOn: dependenciesPath ? [] : [downloadGtest], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadGtest.dest))
+    eachFile { fname -> {
+        fname.path = (fname.path - "googletest-release-${GTEST_VERSION}/")
+     }
+    }
+    into(new File(thirdPartyNdkDir,"googletest"))
+}
+
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
@@ -356,6 +380,7 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGlog)
     dependsOn(downloadFmt)
     dependsOn(downloadLibevent)
+    dependsOn(downloadGtest)
 }
 
 /**
@@ -431,12 +456,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -444,9 +469,19 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        // Using '-Xjvm-default=all' to generate default java methods for interfaces
+        freeCompilerArgs = ['-Xjvm-default=all']
+    }
+
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(33)
+        minSdk = 21
+        targetSdk = 33
         versionCode(1)
         versionName("1.0")
 
@@ -468,11 +503,19 @@ android {
                     "-DREACT_BUILD_DIR=$buildDir",
                     "-DANDROID_STL=c++_shared",
                     "-DANDROID_TOOLCHAIN=clang",
-                    "-DANDROID_PLATFORM=android-21"
+                    "-DANDROID_PLATFORM=android-21",
+                    // Due to https://github.com/android/ndk/issues/1693 we're losing Android
+                    // specific compilation flags. This can be removed once we moved to NDK 25/26
+                    "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON"
 
                 targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "bridgeless",
+                    "rninstance",
+                    "hermesinstancejni",
+                    "uimanagerjni",
+                    "jscinstance",
                     // prefab targets
                     "reactnativejni",
                     "react_render_debug",
@@ -480,6 +523,7 @@ android {
                     "runtimeexecutor",
                     "react_codegen_rncore",
                     "react_debug",
+                    "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
                     "react_render_animations",
@@ -528,7 +572,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
@@ -559,6 +603,7 @@ android {
     buildFeatures {
         prefab true
         prefabPublishing !skipPrefabPublishing
+        buildConfig true
     }
 
     prefab {
@@ -576,6 +621,9 @@ android {
         }
         react_debug {
             headers(new File(prefabHeadersDir, "react_debug").absolutePath)
+        }
+        react_utils {
+            headers(new File(prefabHeadersDir, "react_utils").absolutePath)
         }
         react_render_componentregistry {
             headers(new File(prefabHeadersDir, "react_render_componentregistry").absolutePath)
@@ -659,13 +707,8 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-            // Robolectric tests are downloading JARs at runtime. This allows to specify
-            // a local file mirror with REACT_NATIVE_ROBOLECTRIC_MIRROR to go in offline more.
-            if (System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR") != null) {
-                systemProperty 'robolectric.offline', 'true'
-                systemProperty 'robolectric.dependency.dir', System.getenv("REACT_NATIVE_ROBOLECTRIC_MIRROR")
-            }
+        unitTests {
+            includeAndroidResources = true
         }
     }
 }
@@ -679,6 +722,7 @@ dependencies {
 
     api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
+    api("com.facebook.fresco:middleware:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
     api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
@@ -708,12 +752,6 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-
-    // This compileOnly dependency is needed to be able to update the offline
-    // mirror from a non-linux machine, while still executing inside a Linux CI
-    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
-    // gets downloaded at some point.
-    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {
@@ -723,11 +761,16 @@ react {
     jsRootDir = file("../Libraries")
 }
 
+kotlin {
+    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
+    // not running well on JDK 17.
+    jvmToolchain(11)
+}
+
 tasks.withType(Test).all {
     // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
     if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
         jvmArgs += [
-            "-XX:+AllowRedefinitionToAddDeleteMethods",
             "--illegal-access=permit",
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",

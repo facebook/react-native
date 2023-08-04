@@ -15,6 +15,7 @@ require_relative './cocoapods/codegen_utils.rb'
 require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
+require_relative './cocoapods/bridgeless.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -57,7 +58,7 @@ end
 # - path: path to react_native installation.
 # - fabric_enabled: whether fabric should be enabled or not.
 # - new_arch_enabled: whether the new architecture should be enabled or not.
-# - production: whether the dependencies must be installed to target a Debug or a Release build.
+# - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - flipper_configuration: The configuration to use for flipper.
 # - app_path: path to the React Native app. Required by the New Architecture.
@@ -67,7 +68,7 @@ def use_react_native! (
   path: "../node_modules/react-native",
   fabric_enabled: false,
   new_arch_enabled: ENV['RCT_NEW_ARCH_ENABLED'] == '1',
-  production: ENV['PRODUCTION'] == '1',
+  production: false, # deprecated
   hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
   flipper_configuration: FlipperConfiguration.disabled,
   app_path: '..',
@@ -117,6 +118,11 @@ def use_react_native! (
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
   pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
+  pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
+  pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
+  pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
+  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
@@ -129,6 +135,7 @@ def use_react_native! (
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
   pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
@@ -163,11 +170,12 @@ def use_react_native! (
     build_codegen!(prefix, relative_installation_root)
   end
 
-  # CocoaPods `configurations` option ensures that the target is copied only for the specified configurations,
-  # but those dependencies are still built.
-  # Flipper doesn't currently compile for release https://github.com/facebook/react-native/issues/33764
-  # Setting the production flag to true when build for production make sure that we don't install Flipper in the app in the first place.
-  if flipper_configuration.flipper_enabled && !production
+  if new_arch_enabled
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
+  end
+
+  # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
+  if flipper_configuration.flipper_enabled
     install_flipper_dependencies(prefix)
     use_flipper_pods(flipper_configuration.versions, :configurations => flipper_configuration.configurations)
   end
@@ -222,11 +230,10 @@ end
 # - mac_catalyst_enabled: whether we are running the Pod on a Mac Catalyst project or not.
 # - enable_hermes_profiler: whether the hermes profiler should be turned on in Release mode
 def react_native_post_install(
-  installer, react_native_path = "../node_modules/react-native",
-  mac_catalyst_enabled: false,
-  enable_hermes_profiler: false
+  installer,
+  react_native_path = "../node_modules/react-native",
+  mac_catalyst_enabled: false
 )
-  enable_hermes_profiler = enable_hermes_profiler || ENV["ENABLE_HERMES_PROFILER"] == "1"
   ReactNativePodsUtils.turn_off_resource_bundle_react_core(installer)
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
@@ -237,17 +244,21 @@ def react_native_post_install(
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
 
-  ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+  if ReactNativePodsUtils.has_pod(installer, "React-hermes")
+    ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+    ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+  end
+
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
-  ReactNativePodsUtils.enable_hermes_profiler(installer, enable_hermes_profiler: enable_hermes_profiler)
+  ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  ReactNativePodsUtils.apply_ats_config(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
-
 
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end
@@ -353,7 +364,7 @@ def use_react_native_codegen!(spec, options={})
   }
 end
 
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
+# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon machines.
 # Call this in the app's main Podfile's post_install hook.
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.

@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 @property (nonatomic, weak) UIViewController *reactViewController;
+@property (nonatomic, strong, readonly) UIView *view;
 @property (nonatomic, strong, readonly) UIView *contentView;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL passThroughTouches;

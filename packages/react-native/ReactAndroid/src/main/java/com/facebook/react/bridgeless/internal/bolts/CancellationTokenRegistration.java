@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.Closeable;
 
 /**
@@ -17,12 +19,12 @@ import java.io.Closeable;
 public class CancellationTokenRegistration implements Closeable {
 
   private final Object lock = new Object();
-  private CancellationTokenSource tokenSource;
-  private Runnable action;
+  private @Nullable CancellationTokenSource tokenSource;
+  private @Nullable Runnable action;
   private boolean closed;
 
   /* package */ CancellationTokenRegistration(
-      CancellationTokenSource tokenSource, Runnable action) {
+      @NonNull CancellationTokenSource tokenSource, @NonNull Runnable action) {
     this.tokenSource = tokenSource;
     this.action = action;
   }

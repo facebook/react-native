@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <yoga/Yoga.h>
+
 const short int LAYOUT_EDGE_SET_FLAG_INDEX = 0;
 const short int LAYOUT_WIDTH_INDEX = 1;
 const short int LAYOUT_HEIGHT_INDEX = 2;
@@ -36,14 +38,14 @@ public:
 
   YGNodeEdges(YGNodeRef node) {
     auto context = YGNodeContext{};
-    context.asVoidPtr = node->getContext();
+    context.asVoidPtr = YGNodeGetContext(node);
     edges_ = context.edgesSet;
   }
 
   void setOn(YGNodeRef node) {
     auto context = YGNodeContext{};
     context.edgesSet = edges_;
-    node->setContext(context.asVoidPtr);
+    YGNodeSetContext(node, context.asVoidPtr);
   }
 
   bool has(Edge edge) { return (edges_ & edge) == edge; }

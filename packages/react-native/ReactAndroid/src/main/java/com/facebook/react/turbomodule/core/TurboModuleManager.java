@@ -22,9 +22,9 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
-import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,11 +37,14 @@ import java.util.Map;
  * a Java module, that the C++ counterpart calls.
  */
 public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
-  private static volatile boolean sIsSoLibraryLoaded;
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
   private final TurboModuleManagerDelegate mDelegate;
+
+  static {
+    NativeModuleSoLoader.maybeLoadSoLibrary();
+  }
 
   // Prevents the creation of new TurboModules once cleanup as been initiated.
   private final Object mModuleCleanupLock = new Object();
@@ -61,14 +64,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
       RuntimeExecutor runtimeExecutor,
       @Nullable final TurboModuleManagerDelegate delegate,
       CallInvokerHolder jsCallInvokerHolder,
-      CallInvokerHolder nativeCallInvokerHolder) {
-    maybeLoadSoLibrary();
+      NativeMethodCallInvokerHolder nativeMethodCallInvokerHolder) {
     mDelegate = delegate;
     mHybridData =
         initHybrid(
             runtimeExecutor,
             (CallInvokerHolderImpl) jsCallInvokerHolder,
-            (CallInvokerHolderImpl) nativeCallInvokerHolder,
+            (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
             delegate);
     installJSIBindings(shouldCreateLegacyModules());
 
@@ -117,6 +119,8 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
         && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
   }
 
+  @Override
+  @NonNull
   public List<String> getEagerInitModuleNames() {
     return mEagerInitModuleNames;
   }
@@ -394,7 +398,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return false;
   }
 
-  public static void logError(String message) {
+  private static void logError(String message) {
     FLog.e("TurboModuleManager", message);
     if (shouldRouteTurboModulesThroughInteropLayer()) {
       ReactSoftExceptionLogger.logSoftException(
@@ -405,7 +409,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   private native HybridData initHybrid(
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
-      CallInvokerHolderImpl nativeCallInvokerHolder,
+      NativeMethodCallInvokerHolderImpl nativeMethodCallInvoker,
       TurboModuleManagerDelegate tmmDelegate);
 
   private native void installJSIBindings(boolean shouldCreateLegacyModules);
@@ -448,14 +452,6 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
 
     // Delete the native part of this hybrid class.
     mHybridData.resetNative();
-  }
-
-  // Prevents issues with initializer interruptions. See T38996825 and D13793825 for more context.
-  private static synchronized void maybeLoadSoLibrary() {
-    if (!sIsSoLibraryLoaded) {
-      SoLoader.loadLibrary("turbomodulejsijni");
-      sIsSoLibraryLoaded = true;
-    }
   }
 
   private static class ModuleHolder {

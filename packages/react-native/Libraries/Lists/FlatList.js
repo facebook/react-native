@@ -36,7 +36,7 @@ type RequiredProps<ItemT> = {|
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
-  data: ?$ArrayLike<ItemT>,
+  data: ?$ReadOnly<$ArrayLike<ItemT>>,
 |};
 type OptionalProps<ItemT> = {|
   /**
@@ -91,7 +91,7 @@ type OptionalProps<ItemT> = {|
    * specify `ItemSeparatorComponent`.
    */
   getItemLayout?: (
-    data: ?$ArrayLike<ItemT>,
+    data: ?$ReadOnly<$ArrayLike<ItemT>>,
     index: number,
   ) => {
     length: number,

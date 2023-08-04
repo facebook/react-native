@@ -17,6 +17,7 @@
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/utils/CoreFeatures.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -103,10 +104,8 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     ShadowNodeFragment const &fragment)
     : LayoutableShadowNode(sourceShadowNode, fragment),
       yogaConfig_(FabricDefaultYogaLog),
-      yogaNode_(
-          static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
-              .yogaNode_,
-          &initializeYogaConfig(yogaConfig_)) {
+      yogaNode_(static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+                    .yogaNode_) {
   // Note, cloned `YGNode` instance (copied using copy-constructor) inherits
   // dirty flag, measure function, and other properties being set originally in
   // the `YogaLayoutableShadowNode` constructor above.
@@ -122,8 +121,13 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     }
   }
 
+  YGConfigRef previousConfig = YGNodeGetConfig(
+      &static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
+           .yogaNode_);
+
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
+  yogaNode_.setConfig(&initializeYogaConfig(yogaConfig_, previousConfig));
   updateYogaChildrenOwnersIfNeeded();
 
   // This is the only legit place where we can dirty cloned Yoga node.
@@ -489,7 +493,7 @@ void YogaLayoutableShadowNode::layoutTree(
    * the only value in the config of the root node is taken into account
    * (and this is by design).
    */
-  yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
+  YGConfigSetPointScaleFactor(&yogaConfig_, layoutContext.pointScaleFactor);
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -547,8 +551,15 @@ void YogaLayoutableShadowNode::layoutTree(
 
   threadLocalLayoutContext = layoutContext;
 
-  if (layoutContext.swapLeftAndRightInRTL) {
-    swapLeftAndRightInTree(*this);
+  if (CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR) {
+    if (layoutConstraints.layoutDirection == LayoutDirection::RightToLeft &&
+        layoutContext.swapLeftAndRightInRTL) {
+      swapLeftAndRightInTree(*this);
+    }
+  } else {
+    if (layoutContext.swapLeftAndRightInRTL) {
+      swapLeftAndRightInTree(*this);
+    }
   }
 
   {
@@ -743,12 +754,19 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
       *static_cast<ShadowNode *>(yogaNode->getContext()));
 }
 
-YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.setCloneNodeCallback(
-      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
-  config.useLegacyStretchBehaviour = true;
+YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(
+    YGConfig &config,
+    const YGConfigRef previousConfig) {
+  YGConfigSetCloneNodeFunc(
+      &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
+  YGConfigSetErrata(&config, YGErrataAll);
+  if (previousConfig != nullptr) {
+    YGConfigSetPointScaleFactor(
+        &config, YGConfigGetPointScaleFactor(previousConfig));
+  }
+
 #ifdef RN_DEBUG_YOGA_LOGGER
-  config.printTree = true;
+  YGConfigSetPrintTreeFlag(&config, true);
 #endif
   return config;
 }

@@ -76,14 +76,11 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 
       final SimpleSettableFuture<Void> semaphore = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(
-          new Runnable() {
-            @Override
-            public void run() {
-              if (contextToDestroy != null) {
-                contextToDestroy.destroy();
-              }
-              semaphore.set(null);
+          () -> {
+            if (contextToDestroy != null) {
+              contextToDestroy.destroy();
             }
+            semaphore.set(null);
           });
       semaphore.getOrThrow();
     }
@@ -137,14 +134,10 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
     final SimpleSettableFuture<TimingModule> simpleSettableFuture =
         new SimpleSettableFuture<TimingModule>();
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            ReactChoreographer.initialize();
-            TimingModule timingModule =
-                new TimingModule(getContext(), mock(DevSupportManager.class));
-            simpleSettableFuture.set(timingModule);
-          }
+        () -> {
+          ReactChoreographer.initialize();
+          TimingModule timingModule = new TimingModule(getContext(), mock(DevSupportManager.class));
+          simpleSettableFuture.set(timingModule);
         });
     try {
       return simpleSettableFuture.get(5000, TimeUnit.MILLISECONDS);
@@ -188,15 +181,12 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   protected static void initializeJavaModule(final BaseJavaModule javaModule) {
     final Semaphore semaphore = new Semaphore(0);
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            javaModule.initialize();
-            if (javaModule instanceof LifecycleEventListener) {
-              ((LifecycleEventListener) javaModule).onHostResume();
-            }
-            semaphore.release();
+        () -> {
+          javaModule.initialize();
+          if (javaModule instanceof LifecycleEventListener) {
+            ((LifecycleEventListener) javaModule).onHostResume();
           }
+          semaphore.release();
         });
     try {
       SoftAssertions.assertCondition(

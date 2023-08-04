@@ -12,6 +12,7 @@
 
 #import <React/RCTJavaScriptExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
+#import <atomic>
 
 namespace facebook::react {
 

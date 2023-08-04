@@ -13,6 +13,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/ShadowNodeFamily.h>
 #include <react/renderer/core/StateData.h>
 
 namespace facebook::react {
@@ -86,9 +87,9 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   }
 
   static ConcreteStateData initialStateData(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamilyFragment const &familyFragment,
-      ComponentDescriptor const &componentDescriptor) {
+      Props::Shared const & /*props*/,
+      ShadowNodeFamily::Shared const & /*family*/,
+      ComponentDescriptor const & /*componentDescriptor*/) {
     return {};
   }
 

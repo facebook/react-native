@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaConfigFactory;
+import com.facebook.yoga.YogaErrata;
 
 public class ReactYogaConfigProvider {
 
@@ -18,7 +19,7 @@ public class ReactYogaConfigProvider {
     if (YOGA_CONFIG == null) {
       YOGA_CONFIG = YogaConfigFactory.create();
       YOGA_CONFIG.setPointScaleFactor(0f);
-      YOGA_CONFIG.setUseLegacyStretchBehaviour(true);
+      YOGA_CONFIG.setErrata(YogaErrata.ALL);
     }
     return YOGA_CONFIG;
   }

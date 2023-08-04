@@ -21,6 +21,7 @@
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -49,8 +50,6 @@ static void RCTPerformMountInstructions(
 {
   SystraceSection s("RCTPerformMountInstructions");
 
-  [CATransaction begin];
-  [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
   for (auto const &mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
@@ -149,7 +148,6 @@ static void RCTPerformMountInstructions(
       }
     }
   }
-  [CATransaction commit];
 }
 
 @implementation RCTMountingManager {
@@ -311,7 +309,7 @@ static void RCTPerformMountInstructions(
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 
-  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(newProps);
+  const auto &newViewProps = static_cast<ViewProps const &>(*newProps);
 
   if (props[@"transform"] &&
       !CATransform3DEqualToTransform(

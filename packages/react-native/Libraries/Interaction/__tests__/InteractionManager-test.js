@@ -171,6 +171,10 @@ describe('promise tasks', () => {
     sequenceId = 0;
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should run a basic promise task', () => {
     const task1 = jest.fn(() => {
       expect(++sequenceId).toBe(1);

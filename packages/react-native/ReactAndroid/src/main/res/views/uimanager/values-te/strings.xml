@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: te_IN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">లింక్</string>
+    <string name="image_description" gender="unknown">చిత్రం</string>
+    <string name="imagebutton_description" gender="unknown">బటన్, చిత్రం</string>
+    <string name="header_description" gender="unknown">శీర్షిక</string>
+    <string name="alert_description" gender="unknown">హెచ్చరిక</string>
+    <string name="combobox_description" gender="unknown">కాంబో బాక్స్</string>
+    <string name="menu_description" gender="unknown">మెను</string>
+    <string name="menubar_description" gender="unknown">మెను బార్</string>
+    <string name="menuitem_description" gender="unknown">మెను ఐటమ్</string>
+    <string name="progressbar_description" gender="unknown">ప్రోగ్రెస్ బార్</string>
+    <string name="radiogroup_description" gender="unknown">రేడియో గ్రూప్</string>
+    <string name="scrollbar_description" gender="unknown">స్క్రోల్ బార్</string>
+    <string name="spinbutton_description" gender="unknown">స్పిన్ బటన్</string>
+    <string name="rn_tab_description" gender="unknown">ట్యాబ్</string>
+    <string name="tablist_description" gender="unknown">ట్యాబ్ జాబితా</string>
+    <string name="timer_description" gender="unknown">టైమర్</string>
+    <string name="toolbar_description" gender="unknown">టూల్ బార్</string>
+    <string name="summary_description" gender="unknown">సమ్మరీ</string>
+    <string name="state_busy_description" gender="unknown">బిజీగా ఉన్నారు</string>
+    <string name="state_expanded_description" gender="unknown">విస్తరింపబడింది</string>
+    <string name="state_collapsed_description" gender="unknown">కుదించబడింది</string>
+    <string name="state_unselected_description" gender="unknown">ఎంపిక తీసివేసారు</string>
+    <string name="state_on_description" gender="unknown">ఆన్ చేయి</string>
+    <string name="state_off_description" gender="unknown">ఆఫ్ చేయి</string>
+    <string name="state_mixed_description" gender="unknown">మిక్స్డ్</string>
+</resources>

@@ -14,12 +14,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT ArrayPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
+class ArrayPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -46,12 +45,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT BooleanPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class BooleanPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -78,12 +76,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT ColorPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class ColorPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -110,12 +107,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT DimensionPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class DimensionPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -142,12 +138,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT EdgeInsetsPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class EdgeInsetsPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -174,12 +169,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT EnumPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class EnumPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -206,12 +200,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT EventNestedObjectPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
+class EventNestedObjectPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -250,12 +243,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT EventPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
+class EventPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -329,12 +321,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT FloatPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
+class FloatPropsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -361,12 +352,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT ImagePropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class ImagePropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -393,12 +383,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT IntegerPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class IntegerPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -425,12 +414,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT InterfaceOnlyNativeComponentViewEventEmitter : public ViewEventEmitter {
+class InterfaceOnlyNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -459,12 +447,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT MixedPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class MixedPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -491,12 +478,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT MultiNativePropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class MultiNativePropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -523,12 +509,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT NoPropsNoEventsNativeComponentViewEventEmitter : public ViewEventEmitter {
+class NoPropsNoEventsNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -555,12 +540,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT ObjectPropsNativeComponentEventEmitter : public ViewEventEmitter {
+class ObjectPropsNativeComponentEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -587,12 +571,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT PointPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class PointPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 
@@ -619,12 +602,11 @@ Object {
 #pragma once
 
 #include <react/renderer/components/view/ViewEventEmitter.h>
-#include <jsi/jsi.h>
 
 
 namespace facebook {
 namespace react {
-class JSI_EXPORT StringPropNativeComponentViewEventEmitter : public ViewEventEmitter {
+class StringPropNativeComponentViewEventEmitter : public ViewEventEmitter {
  public:
   using ViewEventEmitter::ViewEventEmitter;
 

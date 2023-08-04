@@ -46,6 +46,7 @@ class LayoutableShadowNode : public ShadowNode {
   struct LayoutInspectingPolicy {
     bool includeTransform{true};
     bool includeViewportOffset{false};
+    bool enableOverflowClipping{false};
   };
 
   using UnsharedList = butter::
@@ -60,6 +61,13 @@ class LayoutableShadowNode : public ShadowNode {
   static LayoutMetrics computeRelativeLayoutMetrics(
       ShadowNodeFamily const &descendantNodeFamily,
       LayoutableShadowNode const &ancestorNode,
+      LayoutInspectingPolicy policy);
+
+  /*
+   * Computes the layout metrics of a node relative to its specified ancestors.
+   */
+  static LayoutMetrics computeRelativeLayoutMetrics(
+      AncestorList const &ancestors,
       LayoutInspectingPolicy policy);
 
   /*

@@ -37,11 +37,12 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                 "GCC_WARN_PEDANTIC" => "YES" }
     if ENV['USE_FRAMEWORKS']
-        s.header_mappings_dir     = './'
+        s.header_mappings_dir     = File.absolute_path('./')
     end
 
     s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
 
+    s.dependency "glog"
     s.dependency "ReactCommon/turbomodule/core"
     s.dependency "ReactCommon/turbomodule/bridging"
     s.dependency "React-callinvoker"

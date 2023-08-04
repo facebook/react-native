@@ -25,6 +25,8 @@ public class PointerEventHelper {
   public static enum EVENT {
     CANCEL,
     CANCEL_CAPTURE,
+    CLICK,
+    CLICK_CAPTURE,
     DOWN,
     DOWN_CAPTURE,
     ENTER,
@@ -49,6 +51,7 @@ public class PointerEventHelper {
   public static final String POINTER_UP = "topPointerUp";
   public static final String POINTER_OVER = "topPointerOver";
   public static final String POINTER_OUT = "topPointerOut";
+  public static final String CLICK = "topClick";
 
   // https://w3c.github.io/pointerevents/#the-buttons-property
   public static int getButtons(String eventName, String pointerType, int buttonState) {
@@ -117,6 +120,8 @@ public class PointerEventHelper {
       case UP_CAPTURE:
       case CANCEL:
       case CANCEL_CAPTURE:
+      case CLICK:
+      case CLICK_CAPTURE:
         return true;
     }
 

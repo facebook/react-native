@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -130,6 +131,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mScroller = getOverScrollerFromParent();
     mReactScrollViewScrollState =
         new ReactScrollViewScrollState(
+            // TODO: The ScrollView content may be laid out in a different direction than the
+            // instance if the `direction` style is set on the ScrollView or above it.
             I18nUtil.getInstance().isRTL(context)
                 ? ViewCompat.LAYOUT_DIRECTION_RTL
                 : ViewCompat.LAYOUT_DIRECTION_LTR);
@@ -606,7 +609,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // Hence, we can use the absolute value from whatever the OS gives
     // us and use the sign of what mOnScrollDispatchHelper has tracked.
     final int correctedVelocityX =
-        (int) (Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()));
+        Build.VERSION.SDK_INT == Build.VERSION_CODES.P
+            ? (int) (Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()))
+            : velocityX;
 
     if (mPagingEnabled) {
       flingAndSnap(correctedVelocityX);
@@ -825,7 +830,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         new Runnable() {
 
           private boolean mSnappingToPage = false;
-          private boolean mRunning = true;
           private int mStableFrames = 0;
 
           @Override
@@ -834,7 +838,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               // We are still scrolling.
               mActivelyScrolling = false;
               mStableFrames = 0;
-              mRunning = true;
+              ViewCompat.postOnAnimationDelayed(
+                  ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
               // There has not been a scroll update since the last time this Runnable executed.
               ReactScrollViewHelper.updateFabricScrollState(ReactHorizontalScrollView.this);
@@ -847,30 +852,24 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               // fire before the first scroll event of an animated scroll/fling, and stop
               // immediately.
               mStableFrames++;
-              mRunning = (mStableFrames < 3);
 
-              if (mPagingEnabled && !mSnappingToPage) {
-                // Only if we have pagingEnabled and we have not snapped to the page do we
-                // need to continue checking for the scroll.  And we cause that scroll by asking for
-                // it
-                mSnappingToPage = true;
-                flingAndSnap(0);
-                ViewCompat.postOnAnimationDelayed(
-                    ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
-              } else {
+              if (mStableFrames >= 3) {
+                mPostTouchRunnable = null;
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
                 }
                 disableFpsListener();
+              } else {
+                if (mPagingEnabled && !mSnappingToPage) {
+                  // If we have pagingEnabled and we have not snapped to the page
+                  // we need to cause that scroll by asking for it
+                  mSnappingToPage = true;
+                  flingAndSnap(0);
+                }
+                // The scrollview has not "stabilized" so we just post to check again a frame later
+                ViewCompat.postOnAnimationDelayed(
+                    ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
               }
-            }
-
-            // We are still scrolling so we just post to check again a frame later
-            if (mRunning) {
-              ViewCompat.postOnAnimationDelayed(
-                  ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
-            } else {
-              mPostTouchRunnable = null;
             }
           }
         };
@@ -1300,8 +1299,59 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       return;
     }
 
-    if (mMaintainVisibleContentPositionHelper != null) {
+    // Adjust the scroll position to follow new content. In RTL, this means we keep a constant
+    // offset from the right edge instead of the left edge, so content added to the end of the flow
+    // does not shift layout. If `maintainVisibleContentPosition` is enabled, we try to adjust
+    // position so that the viewport keeps the same insets to previously visible views. TODO: MVCP
+    // does not work in RTL.
+    if (mReactScrollViewScrollState.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+      adjustPositionForContentChangeRTL(left, right, oldLeft, oldRight);
+    } else if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.updateScrollPosition();
+    }
+  }
+
+  private void adjustPositionForContentChangeRTL(int left, int right, int oldLeft, int oldRight) {
+    // If we have any pending custon flings (e.g. from aninmated `scrollTo`, or flinging to a snap
+    // point), finish them, commiting the final `scrollX`.
+    // TODO: Can we be more graceful (like OverScroller flings)?
+    if (getFlingAnimator().isRunning()) {
+      getFlingAnimator().end();
+    }
+
+    int distanceToRightEdge = oldRight - getScrollX();
+    int newWidth = right - left;
+    int scrollX = newWidth - distanceToRightEdge;
+    scrollTo(scrollX, getScrollY());
+
+    // If we are in the middle of a fling animation from the user removing their finger
+    // (OverScroller is in `FLING_MODE`), we must cancel and recreate the existing fling animation
+    // since it was calculated against outdated scroll offsets.
+    if (mScroller != null && !mScroller.isFinished()) {
+      // Calculate the veliocity and position of the fling animation at the time of this layout
+      // event, which may be later than the last ScrollView tick. These values are not commited to
+      // the underlying ScrollView, which will recalculate positions on its next tick.
+      int scrollerXBeforeTick = mScroller.getCurrX();
+      boolean hasMoreTicks = mScroller.computeScrollOffset();
+
+      // Stop the existing animation at the current state of the scroller. We will then recreate
+      // it starting at the adjusted x offset.
+      mScroller.forceFinished(true);
+
+      if (hasMoreTicks) {
+        // OverScroller.getCurrVelocity() returns an absolute value of the velocity a current fling
+        // animation (only FLING_MODE animations). We derive direction along the X axis from the
+        // start and end of the, animation assuming HorizontalScrollView never fires vertical fling
+        // animations.
+        // TODO: This does not fully handle overscroll.
+        float direction = Math.signum(mScroller.getFinalX() - mScroller.getStartX());
+        float flingVelocityX = mScroller.getCurrVelocity() * direction;
+
+        mScroller.fling(
+            scrollX, getScrollY(), (int) flingVelocityX, 0, 0, newWidth - getWidth(), 0, 0);
+      } else {
+        scrollTo(scrollX + (mScroller.getCurrX() - scrollerXBeforeTick), getScrollY());
+      }
     }
   }
 

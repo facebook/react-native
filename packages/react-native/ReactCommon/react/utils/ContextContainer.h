@@ -82,7 +82,7 @@ class ContextContainer final {
     react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-    return *std::static_pointer_cast<T>(instances_.at(key));
+    return *static_cast<T *>(instances_.at(key).get());
   }
 
   /*
@@ -99,7 +99,7 @@ class ContextContainer final {
       return {};
     }
 
-    return *std::static_pointer_cast<T>(iterator->second);
+    return *static_cast<T *>(iterator->second.get());
   }
 
  private:

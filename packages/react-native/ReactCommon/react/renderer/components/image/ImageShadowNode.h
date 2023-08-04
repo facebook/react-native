@@ -11,6 +11,7 @@
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/ImageState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
+#include <react/renderer/core/ShadowNodeFamily.h>
 #include <react/renderer/imagemanager/ImageManager.h>
 #include <react/renderer/imagemanager/primitives.h>
 
@@ -41,11 +42,11 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   void setImageManager(const SharedImageManager &imageManager);
 
   static ImageState initialStateData(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamilyFragment const &familyFragment,
+      Props::Shared const &props,
+      ShadowNodeFamily::Shared const & /*family*/,
       ComponentDescriptor const &componentDescriptor) {
     auto imageSource = ImageSource{ImageSource::Type::Invalid};
-    return {imageSource, {imageSource, nullptr}, 0};
+    return {imageSource, {imageSource, nullptr, {}}, 0};
   }
 
 #pragma mark - LayoutableShadowNode

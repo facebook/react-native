@@ -398,6 +398,13 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
       stringCounter_(0)
 #endif
 {
+#ifndef NDEBUG
+#ifdef TARGET_OS_MAC
+  if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
+    JSGlobalContextSetInspectable(ctx_, true);
+  }
+#endif
+#endif
 }
 
 JSCRuntime::~JSCRuntime() {
@@ -1238,6 +1245,11 @@ jsi::Function JSCRuntime::createFunctionFromHostFunction(
       } catch (const std::exception &ex) {
         std::string exceptionString("Exception in HostFunction: ");
         exceptionString += ex.what();
+        *exception = makeError(rt, exceptionString);
+        res = JSValueMakeUndefined(ctx);
+      } catch (const std::string &ex) {
+        std::string exceptionString("Exception in HostFunction: ");
+        exceptionString += ex;
         *exception = makeError(rt, exceptionString);
         res = JSValueMakeUndefined(ctx);
       } catch (...) {

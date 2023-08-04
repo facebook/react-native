@@ -15,6 +15,7 @@
 #include <condition_variable>
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
@@ -76,6 +77,8 @@ void MountingCoordinator::resetLatestRevision() const {
 
 std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
+  SystraceSection section("MountingCoordinator::pullTransaction");
+
   std::lock_guard<std::mutex> lock(mutex_);
 
   auto transaction = std::optional<MountingTransaction>{};
@@ -175,8 +178,16 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   return transaction;
 }
 
+bool MountingCoordinator::hasPendingTransactions() const {
+  return lastRevision_.has_value();
+}
+
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
+}
+
+ShadowTreeRevision const &MountingCoordinator::getBaseRevision() const {
+  return baseRevision_;
 }
 
 void MountingCoordinator::setMountingOverrideDelegate(

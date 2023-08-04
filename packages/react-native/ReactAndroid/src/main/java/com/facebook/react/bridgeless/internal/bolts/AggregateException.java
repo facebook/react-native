@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class AggregateException extends Exception {
 
   private static final String DEFAULT_MESSAGE = "There were multiple errors.";
 
-  private List<Throwable> innerThrowables;
+  @NonNull private final List<Throwable> innerThrowables;
 
   /**
    * Constructs a new {@code AggregateException} with the current stack trace, the specified detail
@@ -33,7 +35,7 @@ public class AggregateException extends Exception {
    * @param detailMessage The detail message for this exception.
    * @param innerThrowables The exceptions that are the cause of the current exception.
    */
-  public AggregateException(String detailMessage, Throwable[] innerThrowables) {
+  public AggregateException(@NonNull String detailMessage, @NonNull Throwable[] innerThrowables) {
     this(detailMessage, Arrays.asList(innerThrowables));
   }
 
@@ -44,11 +46,13 @@ public class AggregateException extends Exception {
    * @param detailMessage The detail message for this exception.
    * @param innerThrowables The exceptions that are the cause of the current exception.
    */
-  public AggregateException(String detailMessage, List<? extends Throwable> innerThrowables) {
+  public AggregateException(
+      @NonNull String detailMessage, @Nullable List<? extends Throwable> innerThrowables) {
     super(
         detailMessage,
         innerThrowables != null && innerThrowables.size() > 0 ? innerThrowables.get(0) : null);
-    this.innerThrowables = Collections.unmodifiableList(innerThrowables);
+    this.innerThrowables =
+        Collections.unmodifiableList(innerThrowables != null ? innerThrowables : new ArrayList<>());
   }
 
   /**
@@ -57,7 +61,7 @@ public class AggregateException extends Exception {
    *
    * @param innerThrowables The exceptions that are the cause of the current exception.
    */
-  public AggregateException(List<? extends Throwable> innerThrowables) {
+  public AggregateException(@Nullable List<? extends Throwable> innerThrowables) {
     this(DEFAULT_MESSAGE, innerThrowables);
   }
 
@@ -65,12 +69,12 @@ public class AggregateException extends Exception {
    * Returns a read-only {@link List} of the {@link Throwable} instances that caused the current
    * exception.
    */
-  public List<Throwable> getInnerThrowables() {
+  public @NonNull List<Throwable> getInnerThrowables() {
     return innerThrowables;
   }
 
   @Override
-  public void printStackTrace(PrintStream err) {
+  public void printStackTrace(@NonNull PrintStream err) {
     super.printStackTrace(err);
 
     int currentIndex = -1;
@@ -85,7 +89,7 @@ public class AggregateException extends Exception {
   }
 
   @Override
-  public void printStackTrace(PrintWriter err) {
+  public void printStackTrace(@NonNull PrintWriter err) {
     super.printStackTrace(err);
 
     int currentIndex = -1;
@@ -101,7 +105,7 @@ public class AggregateException extends Exception {
 
   /** @deprecated Please use {@link #getInnerThrowables()} instead. */
   @Deprecated
-  public List<Exception> getErrors() {
+  public @NonNull List<Exception> getErrors() {
     List<Exception> errors = new ArrayList<Exception>();
     if (innerThrowables == null) {
       return errors;
@@ -119,7 +123,7 @@ public class AggregateException extends Exception {
 
   /** @deprecated Please use {@link #getInnerThrowables()} instead. */
   @Deprecated
-  public Throwable[] getCauses() {
+  public @NonNull Throwable[] getCauses() {
     return innerThrowables.toArray(new Throwable[innerThrowables.size()]);
   }
 }

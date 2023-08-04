@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 
@@ -29,7 +30,7 @@ public class CancellationToken {
 
   private final CancellationTokenSource tokenSource;
 
-  /* package */ CancellationToken(CancellationTokenSource tokenSource) {
+  /* package */ CancellationToken(@NonNull CancellationTokenSource tokenSource) {
     this.tokenSource = tokenSource;
   }
 
@@ -49,7 +50,7 @@ public class CancellationToken {
    * @return a {@link CancellationTokenRegistration} instance that can be used to unregister the
    *     action.
    */
-  public CancellationTokenRegistration register(Runnable action) {
+  public @NonNull CancellationTokenRegistration register(@NonNull Runnable action) {
     return tokenSource.register(action);
   }
 

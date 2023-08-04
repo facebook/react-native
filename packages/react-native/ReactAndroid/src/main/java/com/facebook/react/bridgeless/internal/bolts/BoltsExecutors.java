@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
 import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +15,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 /** Collection of {@link Executor}s to use in conjunction with {@link Task}. */
-/* package */ final class BoltsExecutors {
+/* package */
+final class BoltsExecutors {
 
   private static final BoltsExecutors INSTANCE = new BoltsExecutors();
 
@@ -26,9 +28,9 @@ import java.util.concurrent.ScheduledExecutorService;
     return javaRuntimeName.toLowerCase(Locale.US).contains("android");
   }
 
-  private final ExecutorService background;
-  private final ScheduledExecutorService scheduled;
-  private final Executor immediate;
+  private final @NonNull ExecutorService background;
+  private final @NonNull ScheduledExecutorService scheduled;
+  private final @NonNull Executor immediate;
 
   private BoltsExecutors() {
     background =
@@ -40,11 +42,11 @@ import java.util.concurrent.ScheduledExecutorService;
   }
 
   /** An {@link java.util.concurrent.Executor} that executes tasks in parallel. */
-  public static ExecutorService background() {
+  public static @NonNull ExecutorService background() {
     return INSTANCE.background;
   }
 
-  /* package */ static ScheduledExecutorService scheduled() {
+  /* package */ static @NonNull ScheduledExecutorService scheduled() {
     return INSTANCE.scheduled;
   }
 
@@ -53,7 +55,7 @@ import java.util.concurrent.ScheduledExecutorService;
    * stack runs too deep, at which point it will delegate to {@link BoltsExecutors#background} in
    * order to trim the stack.
    */
-  /* package */ static Executor immediate() {
+  /* package */ static @NonNull Executor immediate() {
     return INSTANCE.immediate;
   }
 
@@ -102,7 +104,7 @@ import java.util.concurrent.ScheduledExecutorService;
     }
 
     @Override
-    public void execute(Runnable command) {
+    public void execute(@NonNull Runnable command) {
       int depth = incrementDepth();
       try {
         if (depth <= MAX_DEPTH) {

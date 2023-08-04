@@ -14,6 +14,7 @@ require_relative "./test_utils/FileMock.rb"
 require_relative "./test_utils/systemUtils.rb"
 require_relative "./test_utils/PathnameMock.rb"
 require_relative "./test_utils/TargetDefinitionMock.rb"
+require_relative "./test_utils/XcodeprojMock.rb"
 
 class UtilsTests < Test::Unit::TestCase
     def setup
@@ -28,6 +29,7 @@ class UtilsTests < Test::Unit::TestCase
         Pod::Config.reset()
         SysctlChecker.reset()
         Environment.reset()
+        Xcodeproj::Plist.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
         ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
@@ -174,6 +176,47 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(result, true)
     end
 
+    # ======================================================== #
+    # Test -  Set GCC Preprocessor Definition for React-hermes #
+    # ======================================================== #
+
+    def test_SetGCCPreprocessorDefinitionForHermes_itSetsThePreprocessorForDebug
+        # Arrange
+        react_hermes_name = "React-hermes"
+        react_core_name = "React-Core"
+        hermes_engine_name = "hermes-engine"
+        react_hermes_debug_config = BuildConfigurationMock.new("Debug")
+        react_hermes_release_config = BuildConfigurationMock.new("Release")
+        react_core_debug_config = BuildConfigurationMock.new("Debug")
+        react_core_release_config = BuildConfigurationMock.new("Release")
+        hermes_engine_debug_config = BuildConfigurationMock.new("Debug")
+        hermes_engine_release_config = BuildConfigurationMock.new("Release")
+        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
+        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
+        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config])
+
+        installer = InstallerMock.new(
+          :pod_target_installation_results => {
+            react_hermes_name => TargetInstallationResultMock.new(react_hermes_target, react_hermes_target),
+            react_core_name => TargetInstallationResultMock.new(react_core_target, react_core_target),
+            hermes_engine_name => TargetInstallationResultMock.new(hermes_engine_target, hermes_engine_target),
+          }
+        )
+
+        # Act
+        ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+
+        # Assert
+        build_setting = "GCC_PREPROCESSOR_DEFINITIONS"
+        expected_value = "$(inherited) HERMES_ENABLE_DEBUGGER=1"
+        assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
+        assert_nil(react_hermes_release_config.build_settings[build_setting])
+        assert_nil(react_core_debug_config.build_settings[build_setting])
+        assert_nil(react_core_release_config.build_settings[build_setting])
+        assert_equal(expected_value, hermes_engine_debug_config.build_settings[build_setting])
+        assert_nil(hermes_engine_release_config.build_settings[build_setting])
+    end
+
     # ============================ #
     # Test - Exclude Architectures #
     # ============================ #
@@ -283,7 +326,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -393,7 +436,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -432,6 +475,60 @@ class UtilsTests < Test::Unit::TestCase
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
+    end
+
+    # ================================= #
+    # Test - Apply Xcode 15 Patch       #
+    # ================================= #
+
+    def test_applyXcode15Patch_correctlyAppliesNecessaryPatch
+        # Arrange
+        first_target = prepare_target("FirstTarget")
+        second_target = prepare_target("SecondTarget")
+        third_target = TargetMock.new("ThirdTarget", [
+            BuildConfigurationMock.new("Debug", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+            BuildConfigurationMock.new("Release", {
+              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
+            }),
+        ], nil)
+
+        user_project_mock = UserProjectMock.new("/a/path", [
+                prepare_config("Debug"),
+                prepare_config("Release"),
+            ],
+            :native_targets => [
+                first_target,
+                second_target
+            ]
+        )
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
+            third_target
+        ])
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.apply_xcode_15_patch(installer)
+
+        # Assert
+        first_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        second_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
+        third_target.build_configurations.each do |config|
+            assert_equal(config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"].strip,
+                '$(inherited) "SomeFlag=1" "_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION"'
+            )
+        end
     end
 
     # ==================================== #
@@ -549,7 +646,7 @@ class UtilsTests < Test::Unit::TestCase
             DependencyMock.new("React-ImageManager"),
         ])
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -569,7 +666,7 @@ class UtilsTests < Test::Unit::TestCase
         # Assert
         user_project_mock.build_configurations.each do |config|
             received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
+            expected_search_path = "$(inherited) ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core ${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios ${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx ${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers ${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios"
             assert_equal(expected_search_path, received_search_path)
         end
 
@@ -577,7 +674,7 @@ class UtilsTests < Test::Unit::TestCase
             if pod_name == "SecondTarget"
                 target_installation_result.native_target.build_configurations.each do |config|
                     received_search_path = config.build_settings["HEADER_SEARCH_PATHS"]
-                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+                    expected_Search_path = "$(inherited) \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
                     assert_equal(received_search_path, expected_Search_path)
                 end
             else
@@ -593,7 +690,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -655,7 +752,7 @@ class UtilsTests < Test::Unit::TestCase
         first_target = prepare_target("FirstTarget")
         second_target = prepare_target("SecondTarget")
         third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
+        user_project_mock = UserProjectMock.new("/a/path", [
                 prepare_config("Debug"),
                 prepare_config("Release"),
             ],
@@ -678,73 +775,58 @@ class UtilsTests < Test::Unit::TestCase
         end
     end
 
-    # ============================= #
-    # Test - Enable Hermes Profiler #
-    # ============================= #
+    # ============================== #
+    # Test - Apply ATS configuration #
+    # ============================== #
 
-    def test_enableHermesProfiler_whenEnableHermesProfileIsTrue_setsFlagsInRelease
+    def test_applyATSConfig_plistNil
         # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
         installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
         ])
 
-         # Act
-         ReactNativePodsUtils.enable_hermes_profiler(installer, enable_hermes_profiler: true)
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
 
-         # Assert
-         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            target_installation_result.native_target.build_configurations.each do |config|
-                if config.name != "Release"
-                    assert_nil(config.build_settings["OTHER_CFLAGS"])
-                else
-                    assert_equal(config.build_settings["OTHER_CFLAGS"], "$(inherited) -DRCT_REMOTE_PROFILE=1")
-                end
-            end
-         end
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
     end
 
-    def test_enableHermesProfiler_whenEnableHermesProfileIsFalse_doesNothing
+    def test_applyATSConfig_plistNonNil
         # Arrange
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = prepare_target("ThirdTarget", "com.apple.product-type.bundle")
-        user_project_mock = UserProjectMock.new("a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([third_target], {"hermes-engine" => {}})
+        user_project_mock = prepare_user_project_mock_with_plists()
+        pods_projects_mock = PodsProjectMock.new([], {"some_pod" => {}})
         installer = InstallerMock.new(pods_projects_mock, [
             AggregatedProjectMock.new(user_project_mock)
         ])
+        Xcodeproj::Plist.write_to_path({}, "/test/Info.plist")
+        Xcodeproj::Plist.write_to_path({}, "/test/Extension-Info.plist")
 
-         # Act
-         ReactNativePodsUtils.enable_hermes_profiler(installer)
+        # # Act
+        ReactNativePodsUtils.apply_ats_config(installer)
 
-         # Assert
-         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            target_installation_result.native_target.build_configurations.each do |config|
-                assert_nil(config.build_settings["OTHER_CFLAGS"])
-            end
-         end
+        # # Assert
+        assert_equal(user_project_mock.files.length, 2)
+        user_project_mock.files.each do |file|
+            path = File.join(user_project_mock.path.parent, file.name)
+            plist = Xcodeproj::Plist.read_from_path(path)
+            assert_equal(plist['NSAppTransportSecurity'], {
+                'NSAllowsArbitraryLoads' => false,
+                'NSAllowsLocalNetworking' => true,
+            });
+        end
     end
+
 end
 
 # ===== #
@@ -752,9 +834,16 @@ end
 # ===== #
 
 def prepare_empty_user_project_mock
-    return UserProjectMock.new("a/path", [
+    return UserProjectMock.new("/a/path", [
         BuildConfigurationMock.new("Debug"),
         BuildConfigurationMock.new("Release"),
+    ])
+end
+
+def prepare_user_project_mock_with_plists
+    return UserProjectMock.new(:files => [
+        PBXFileRefMock.new("Info.plist"),
+        PBXFileRefMock.new("Extension-Info.plist"),
     ])
 end
 

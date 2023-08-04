@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.13...3.26)
 project(yogacore)
 set(CMAKE_VERBOSE_MAKEFILE on)
 

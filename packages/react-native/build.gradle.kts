@@ -11,8 +11,8 @@
 // their settings.gradle.kts file.
 // More on this here: https://reactnative.dev/contributing/how-to-build-from-source
 plugins {
-  id("com.android.library") version "7.4.2" apply false
-  id("com.android.application") version "7.4.2" apply false
+  id("com.android.library") version "8.1.0" apply false
+  id("com.android.application") version "8.1.0" apply false
   id("de.undercouch.download") version "5.0.1" apply false
-  kotlin("android") version "1.7.22" apply false
+  kotlin("android") version "1.8.0" apply false
 }

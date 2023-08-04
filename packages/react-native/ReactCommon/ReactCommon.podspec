@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "GCC_WARN_PEDANTIC" => "YES" }
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
+    s.header_mappings_dir     = File.absolute_path("./")
   end
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
@@ -69,9 +69,5 @@ Pod::Spec.new do |s|
     ss.subspec "core" do |sss|
       sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
     end
-  end
-
-  s.subspec "react_debug_core" do |sss|
-    sss.source_files = "react/debug/*.{cpp,h}"
   end
 end

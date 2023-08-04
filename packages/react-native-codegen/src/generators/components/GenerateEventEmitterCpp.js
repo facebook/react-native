@@ -102,9 +102,12 @@ function generateSetter(
   variableName: string,
   propertyName: string,
   propertyParts: $ReadOnlyArray<string>,
+  usingEvent: boolean,
   valueMapper: string => string = value => value,
 ) {
-  const eventChain = `$event.${[...propertyParts, propertyName].join('.')}`;
+  const eventChain = usingEvent
+    ? `$event.${[...propertyParts, propertyName].join('.')}`
+    : [propertyParts, propertyName].join('.');
   return `${variableName}.setProperty(runtime, "${propertyName}", ${valueMapper(
     eventChain,
   )});`;
@@ -116,6 +119,7 @@ function generateObjectSetter(
   propertyParts: $ReadOnlyArray<string>,
   typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
+  usingEvent: boolean,
 ) {
   return `
 {
@@ -126,6 +130,7 @@ function generateObjectSetter(
       typeAnnotation.properties,
       propertyParts.concat([propertyName]),
       extraIncludes,
+      usingEvent,
     ),
     2,
   )}
@@ -134,11 +139,165 @@ function generateObjectSetter(
 `.trim();
 }
 
+function setValueAtIndex(
+  propertyName: string,
+  indexVariable: string,
+  loopLocalVariable: string,
+  mappingFunction: string => string = value => value,
+) {
+  return `${propertyName}.setValueAtIndex(runtime, ${indexVariable}++, ${mappingFunction(
+    loopLocalVariable,
+  )});`;
+}
+
+function generateArraySetter(
+  variableName: string,
+  propertyName: string,
+  propertyParts: $ReadOnlyArray<string>,
+  elementType: EventTypeAnnotation,
+  extraIncludes: Set<string>,
+  usingEvent: boolean,
+): string {
+  const eventChain = usingEvent
+    ? `$event.${[...propertyParts, propertyName].join('.')}`
+    : [propertyParts, propertyName].join('.');
+  const indexVar = `${propertyName}Index`;
+  const innerLoopVar = `${propertyName}Value`;
+  return `
+    auto ${propertyName} = jsi::Array(runtime, ${eventChain}.size());
+    size_t ${indexVar} = 0;
+    for (auto ${innerLoopVar} : ${eventChain}) {
+      ${handleArrayElementType(
+        elementType,
+        propertyName,
+        indexVar,
+        innerLoopVar,
+        propertyParts,
+        extraIncludes,
+        usingEvent,
+      )}
+    }
+    ${variableName}.setProperty(runtime, "${propertyName}", ${propertyName});
+  `;
+}
+
+function handleArrayElementType(
+  elementType: EventTypeAnnotation,
+  propertyName: string,
+  indexVariable: string,
+  loopLocalVariable: string,
+  propertyParts: $ReadOnlyArray<string>,
+  extraIncludes: Set<string>,
+  usingEvent: boolean,
+): string {
+  switch (elementType.type) {
+    case 'BooleanTypeAnnotation':
+      return setValueAtIndex(
+        propertyName,
+        indexVariable,
+        loopLocalVariable,
+        val => `(bool)${val}`,
+      );
+    case 'StringTypeAnnotation':
+    case 'Int32TypeAnnotation':
+    case 'DoubleTypeAnnotation':
+    case 'FloatTypeAnnotation':
+      return setValueAtIndex(propertyName, indexVariable, loopLocalVariable);
+    case 'MixedTypeAnnotation':
+      return setValueAtIndex(
+        propertyName,
+        indexVariable,
+        loopLocalVariable,
+        val => `jsi::valueFromDynamic(runtime, ${val})`,
+      );
+    case 'StringEnumTypeAnnotation':
+      return setValueAtIndex(
+        propertyName,
+        indexVariable,
+        loopLocalVariable,
+        val => `toString(${val})`,
+      );
+    case 'ObjectTypeAnnotation':
+      return convertObjectTypeArray(
+        propertyName,
+        indexVariable,
+        loopLocalVariable,
+        propertyParts,
+        elementType,
+        extraIncludes,
+      );
+    case 'ArrayTypeAnnotation':
+      return convertArrayTypeArray(
+        propertyName,
+        indexVariable,
+        loopLocalVariable,
+        propertyParts,
+        elementType,
+        extraIncludes,
+        usingEvent,
+      );
+    default:
+      throw new Error(
+        `Received invalid elementType for array ${elementType.type}`,
+      );
+  }
+}
+
+function convertObjectTypeArray(
+  propertyName: string,
+  indexVariable: string,
+  loopLocalVariable: string,
+  propertyParts: $ReadOnlyArray<string>,
+  objectTypeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
+  extraIncludes: Set<string>,
+): string {
+  return `auto ${propertyName}Object = jsi::Object(runtime);
+      ${generateSetters(
+        `${propertyName}Object`,
+        objectTypeAnnotation.properties,
+        [].concat([loopLocalVariable]),
+        extraIncludes,
+        false,
+      )}
+      ${setValueAtIndex(propertyName, indexVariable, `${propertyName}Object`)}`;
+}
+
+function convertArrayTypeArray(
+  propertyName: string,
+  indexVariable: string,
+  loopLocalVariable: string,
+  propertyParts: $ReadOnlyArray<string>,
+  eventTypeAnnotation: EventTypeAnnotation,
+  extraIncludes: Set<string>,
+  usingEvent: boolean,
+): string {
+  if (eventTypeAnnotation.type !== 'ArrayTypeAnnotation') {
+    throw new Error(
+      `Inconsistent eventTypeAnnotation received. Expected type = 'ArrayTypeAnnotation'; received = ${eventTypeAnnotation.type}`,
+    );
+  }
+  return `auto ${propertyName}Array = jsi::Array(runtime, ${loopLocalVariable}.size());
+      size_t ${indexVariable}Internal = 0;
+      for (auto ${loopLocalVariable}Internal : ${loopLocalVariable}) {
+        ${handleArrayElementType(
+          eventTypeAnnotation.elementType,
+          `${propertyName}Array`,
+          `${indexVariable}Internal`,
+          `${loopLocalVariable}Internal`,
+          propertyParts,
+          extraIncludes,
+          usingEvent,
+        )}
+      }
+      ${setValueAtIndex(propertyName, indexVariable, `${propertyName}Array`)}`;
+}
+
 function generateSetters(
   parentPropertyName: string,
   properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
   propertyParts: $ReadOnlyArray<string>,
   extraIncludes: Set<string>,
+  usingEvent: boolean = true,
 ): string {
   const propSetters = properties
     .map(eventProperty => {
@@ -153,6 +312,7 @@ function generateSetters(
             parentPropertyName,
             eventProperty.name,
             propertyParts,
+            usingEvent,
           );
         case 'MixedTypeAnnotation':
           extraIncludes.add('#include <jsi/JSIDynamic.h>');
@@ -160,6 +320,7 @@ function generateSetters(
             parentPropertyName,
             eventProperty.name,
             propertyParts,
+            usingEvent,
             prop => `jsi::valueFromDynamic(runtime, ${prop})`,
           );
         case 'StringEnumTypeAnnotation':
@@ -167,6 +328,7 @@ function generateSetters(
             parentPropertyName,
             eventProperty.name,
             propertyParts,
+            usingEvent,
             prop => `toString(${prop})`,
           );
         case 'ObjectTypeAnnotation':
@@ -176,6 +338,16 @@ function generateSetters(
             propertyParts,
             typeAnnotation,
             extraIncludes,
+            usingEvent,
+          );
+        case 'ArrayTypeAnnotation':
+          return generateArraySetter(
+            parentPropertyName,
+            eventProperty.name,
+            propertyParts,
+            typeAnnotation.elementType,
+            extraIncludes,
+            usingEvent,
           );
         default:
           (typeAnnotation.type: empty);

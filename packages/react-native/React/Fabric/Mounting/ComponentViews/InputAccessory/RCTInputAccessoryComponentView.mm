@@ -107,8 +107,8 @@ static UIView<RCTBackedTextInputViewProtocol> *_Nullable RCTFindTextInputWithNat
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldInputAccessoryProps = *std::static_pointer_cast<InputAccessoryProps const>(_props);
-  auto const &newInputAccessoryProps = *std::static_pointer_cast<InputAccessoryProps const>(props);
+  const auto &oldInputAccessoryProps = static_cast<InputAccessoryProps const &>(*_props);
+  const auto &newInputAccessoryProps = static_cast<InputAccessoryProps const &>(*props);
 
   if (newInputAccessoryProps.backgroundColor != oldInputAccessoryProps.backgroundColor) {
     _contentView.backgroundColor = RCTUIColorFromSharedColor(newInputAccessoryProps.backgroundColor);

@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * APIs for asynchronously loading the JS bundle.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class BridgelessDevSupportManager extends DevSupportManagerBase {
+class BridgelessDevSupportManager extends DevSupportManagerBase {
 
   private final ReactHost mReactHost;
 
@@ -134,7 +134,9 @@ public class BridgelessDevSupportManager extends DevSupportManagerBase {
       public View createRootView(String appKey) {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null && !reactHost.isSurfaceWithModuleNameAttached(appKey)) {
-          ReactSurface reactSurface = ReactSurface.createWithView(currentActivity, appKey, null);
+          ReactSurfaceImpl reactSurface =
+              ReactSurfaceImpl.createWithView(currentActivity, appKey, null);
+
           reactSurface.attach(reactHost);
           reactSurface.start();
 

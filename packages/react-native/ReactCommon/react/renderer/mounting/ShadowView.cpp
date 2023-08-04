@@ -55,7 +55,7 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
   return !(*this == rhs);
 }
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(ShadowView const &object) {
   return object.componentHandle == 0 ? "Invalid" : object.componentName;

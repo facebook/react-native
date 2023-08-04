@@ -43,7 +43,6 @@ ValueFactory EventEmitter::defaultPayloadFactory() {
 
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
-    Tag /*tag*/,
     EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
@@ -75,6 +74,18 @@ void EventEmitter::dispatchEvent(
     const ValueFactory &payloadFactory,
     EventPriority priority,
     RawEvent::Category category) const {
+  dispatchEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory),
+      priority,
+      category);
+}
+
+void EventEmitter::dispatchEvent(
+    std::string type,
+    SharedEventPayload payload,
+    EventPriority priority,
+    RawEvent::Category category) const {
   SystraceSection s("EventEmitter::dispatchEvent", "type", type);
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -85,7 +96,7 @@ void EventEmitter::dispatchEvent(
   eventDispatcher->dispatchEvent(
       RawEvent(
           normalizeEventType(std::move(type)),
-          payloadFactory,
+          std::move(payload),
           eventTarget_,
           category),
       priority);
@@ -94,6 +105,14 @@ void EventEmitter::dispatchEvent(
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
     const ValueFactory &payloadFactory) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<ValueFactoryEventPayload>(payloadFactory));
+}
+
+void EventEmitter::dispatchUniqueEvent(
+    std::string type,
+    SharedEventPayload payload) const {
   SystraceSection s("EventEmitter::dispatchUniqueEvent");
 
   auto eventDispatcher = eventDispatcher_.lock();
@@ -103,7 +122,7 @@ void EventEmitter::dispatchUniqueEvent(
 
   eventDispatcher->dispatchUniqueEvent(RawEvent(
       normalizeEventType(std::move(type)),
-      payloadFactory,
+      std::move(payload),
       eventTarget_,
       RawEvent::Category::Continuous));
 }
@@ -129,10 +148,6 @@ void EventEmitter::setEnabled(bool enabled) const {
       eventTarget_.reset();
     }
   }
-}
-
-const SharedEventTarget &EventEmitter::getEventTarget() const {
-  return eventTarget_;
 }
 
 } // namespace facebook::react

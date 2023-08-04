@@ -8,6 +8,7 @@
 #pragma once
 
 #include <optional>
+#include <tuple>
 
 namespace facebook::react {
 

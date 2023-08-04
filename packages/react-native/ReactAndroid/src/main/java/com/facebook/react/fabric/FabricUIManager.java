@@ -22,6 +22,8 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -35,6 +37,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeArray;
 import com.facebook.react.bridge.NativeMap;
@@ -52,16 +55,18 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
+import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
+import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -74,15 +79,20 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.TextLayoutManagerMapBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * We instruct ProGuard not to strip out any fields or methods, because many of these methods are
@@ -159,10 +169,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull private final MountItemDispatcher mMountItemDispatcher;
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
-  @NonNull private final EventBeatManager mEventBeatManager;
+  @NonNull private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
+
+  @NonNull private final AtomicBoolean mMountNotificationScheduled = new AtomicBoolean(false);
+  @NonNull private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @ThreadConfined(UI)
   @NonNull
@@ -201,14 +214,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public FabricUIManager(
       @NonNull ReactApplicationContext reactContext,
       @NonNull ViewManagerRegistry viewManagerRegistry,
-      @NonNull EventBeatManager eventBeatManager) {
+      @NonNull BatchEventDispatchedListener batchEventDispatchedListener) {
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
     mEventDispatcher = new EventDispatcherImpl(reactContext);
-    mEventBeatManager = eventBeatManager;
+    mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
     mViewManagerRegistry = viewManagerRegistry;
@@ -376,12 +389,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
-    mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
+    mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
     if (ENABLE_FABRIC_PERF_LOGS) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
+    }
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
+      mReactApplicationContext.internal_registerInteropModule(
+          RCTEventEmitter.class, interopEventEmitter);
     }
   }
 
@@ -410,10 +428,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // memory immediately.
     mDispatchUIFrameCallback.stop();
 
-    mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
+    mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
     mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
+    mViewManagerRegistry.invalidate();
 
     // Remove lifecycle listeners (onHostResume, onHostPause) since the FabricUIManager is going
     // away. Then stop the mDispatchUIFrameCallback false will cause the choreographer
@@ -488,6 +507,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public int getColor(int surfaceId, String[] resourcePaths) {
     ThemedReactContext context =
         mMountingManager.getSurfaceManagerEnforced(surfaceId, "getColor").getContext();
+    // Surface may have been stopped
+    if (context == null) {
+      return 0;
+    }
+
     for (String resourcePath : resourcePaths) {
       Integer color = ColorPropConverter.resolveResourcePath(context, resourcePath);
       if (color != null) {
@@ -581,16 +605,14 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    * @return if theme data is available in the output parameters.
    */
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
-    SurfaceMountingManager surfaceMountingManager =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData");
-    ThemedReactContext themedReactContext = surfaceMountingManager.getContext();
-
-    if (themedReactContext == null) {
+    Context context =
+        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData").getContext();
+    if (context == null) {
       FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
       return false;
     }
-    float[] defaultTextInputPaddingForTheme =
-        UIManagerHelper.getDefaultTextInputPadding(themedReactContext);
+
+    float[] defaultTextInputPaddingForTheme = UIManagerHelper.getDefaultTextInputPadding(context);
     defaultTextInputPadding[0] = defaultTextInputPaddingForTheme[PADDING_START_INDEX];
     defaultTextInputPadding[1] = defaultTextInputPaddingForTheme[PADDING_END_INDEX];
     defaultTextInputPadding[2] = defaultTextInputPaddingForTheme[PADDING_TOP_INDEX];
@@ -769,9 +791,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (shouldSchedule) {
       mMountItemDispatcher.addMountItem(mountItem);
       Runnable runnable =
-          new Runnable() {
+          new GuardedRunnable(mReactApplicationContext) {
             @Override
-            public void run() {
+            public void runGuarded() {
               mMountItemDispatcher.tryDispatchMountItems();
             }
           };
@@ -852,12 +874,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       return;
     }
 
-    ThemedReactContext reactContext = surfaceMountingManager.getContext();
+    Context context = surfaceMountingManager.getContext();
     boolean isRTL = false;
     boolean doLeftAndRightSwapInRTL = false;
-    if (reactContext != null) {
-      isRTL = I18nUtil.getInstance().isRTL(reactContext);
-      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(reactContext);
+    if (context != null) {
+      isRTL = I18nUtil.getInstance().isRTL(context);
+      doLeftAndRightSwapInRTL = I18nUtil.getInstance().doLeftAndRightSwapInRTL(context);
     }
 
     mBinding.setConstraints(
@@ -1026,9 +1048,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.dispatchCommandMountItem(
-        MountItemFactory.createDispatchCommandMountItem(
-            surfaceId, reactTag, commandId, commandArgs));
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
+      // overload of dispatchCommand. Otherwise, we use the string overload.
+      // and the events won't be correctly dispatched.
+      mMountItemDispatcher.dispatchCommandMountItem(
+          createDispatchCommandMountItemForInterop(surfaceId, reactTag, commandId, commandArgs));
+    } else {
+      mMountItemDispatcher.dispatchCommandMountItem(
+          MountItemFactory.createDispatchCommandMountItem(
+              surfaceId, reactTag, commandId, commandArgs));
+    }
   }
 
   @Override
@@ -1171,16 +1201,49 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private class MountItemDispatchListener implements MountItemDispatcher.ItemDispatchListener {
     @Override
-    public void willMountItems() {
+    public void willMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.willMountItems(FabricUIManager.this);
       }
     }
 
     @Override
-    public void didMountItems() {
+    public void didMountItems(@Nullable List<MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
+      }
+
+      if (!ReactFeatureFlags.enableMountHooks) {
+        return;
+      }
+
+      boolean mountNotificationScheduled = mMountNotificationScheduled.getAndSet(true);
+      if (!mountNotificationScheduled) {
+        // Notify mount when the effects are visible and prevent mount hooks to
+        // delay paint.
+        mMainThreadHandler.postAtFrontOfQueue(
+            new Runnable() {
+              @Override
+              public void run() {
+                mMountNotificationScheduled.set(false);
+
+                if (mountItems == null) {
+                  return;
+                }
+
+                // Collect surface IDs for all the mount items
+                List<Integer> surfaceIds = new ArrayList();
+                for (MountItem mountItem : mountItems) {
+                  if (!surfaceIds.contains(mountItem.getSurfaceId())) {
+                    surfaceIds.add(mountItem.getSurfaceId());
+                  }
+                }
+
+                for (int surfaceId : surfaceIds) {
+                  mBinding.reportMount(surfaceId);
+                }
+              }
+            });
       }
     }
 
@@ -1189,6 +1252,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       for (UIManagerListener listener : mListeners) {
         listener.didDispatchMountItems(FabricUIManager.this);
       }
+    }
+  }
+
+  /**
+   * Util function that takes care of handling commands for Fabric Interop. If the command is a
+   * string that represents a number (say "42"), it will be parsed as an integer and the
+   * corresponding dispatch command mount item will be created.
+   */
+  /* package */ DispatchCommandMountItem createDispatchCommandMountItemForInterop(
+      final int surfaceId,
+      final int reactTag,
+      final String commandId,
+      @Nullable final ReadableArray commandArgs) {
+    try {
+      int commandIdInteger = Integer.parseInt(commandId);
+      return MountItemFactory.createDispatchCommandMountItem(
+          surfaceId, reactTag, commandIdInteger, commandArgs);
+    } catch (NumberFormatException e) {
+      return MountItemFactory.createDispatchCommandMountItem(
+          surfaceId, reactTag, commandId, commandArgs);
     }
   }
 

@@ -12,6 +12,7 @@
 #include <react/renderer/components/scrollview/ScrollViewState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/ShadowNodeFamily.h>
 
 namespace facebook::react {
 
@@ -29,8 +30,8 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   static ScrollViewState initialStateData(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamilyFragment const &familyFragment,
+      Props::Shared const &props,
+      ShadowNodeFamily::Shared const &family,
       ComponentDescriptor const &componentDescriptor);
 
 #pragma mark - LayoutableShadowNode

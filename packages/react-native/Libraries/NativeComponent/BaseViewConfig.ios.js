@@ -144,6 +144,18 @@ const bubblingEventTypes = {
       bubbled: 'onPointerOut',
     },
   },
+  topGotPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onGotPointerCaptureCapture',
+      bubbled: 'onGotPointerCapture',
+    },
+  },
+  topLostPointerCapture: {
+    phasedRegistrationNames: {
+      captured: 'onLostPointerCaptureCapture',
+      bubbled: 'onLostPointerCapture',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -198,6 +210,7 @@ const validAttributesForNonEventProps = {
   nativeID: true,
   pointerEvents: true,
   removeClippedSubviews: true,
+  role: true,
   borderRadius: true,
   borderColor: {process: require('../StyleSheet/processColor').default},
   borderCurve: true,
@@ -365,6 +378,8 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
   onPointerLeave: true,
   onPointerOver: true,
   onPointerOut: true,
+  onGotPointerCapture: true,
+  onLostPointerCapture: true,
 });
 
 /**

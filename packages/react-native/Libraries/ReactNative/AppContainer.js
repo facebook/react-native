@@ -34,7 +34,6 @@ type State = {|
   devtoolsOverlay: ?React.Node,
   traceUpdateOverlay: ?React.Node,
   mainKey: number,
-  hasError: boolean,
 |};
 
 class AppContainer extends React.Component<Props, State> {
@@ -43,7 +42,6 @@ class AppContainer extends React.Component<Props, State> {
     devtoolsOverlay: null,
     traceUpdateOverlay: null,
     mainKey: 1,
-    hasError: false,
   };
   _mainRef: ?React.ElementRef<typeof View>;
   _subscription: ?EventSubscription = null;
@@ -128,10 +126,11 @@ class AppContainer extends React.Component<Props, State> {
         </Wrapper>
       );
     }
+
     return (
       <RootTagContext.Provider value={createRootTag(this.props.rootTag)}>
         <View style={styles.appContainer} pointerEvents="box-none">
-          {!this.state.hasError && innerView}
+          {innerView}
           {this.state.traceUpdateOverlay}
           {this.state.devtoolsOverlay}
           {this.state.inspector}

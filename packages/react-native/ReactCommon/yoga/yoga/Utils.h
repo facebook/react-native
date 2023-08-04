@@ -7,8 +7,6 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include "YGNode.h"
 #include "Yoga-internal.h"
 #include "CompactValue.h"
@@ -146,5 +144,3 @@ inline YGFloatOptional YGResolveValueMargin(
     const float ownerSize) {
   return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }
-
-#endif

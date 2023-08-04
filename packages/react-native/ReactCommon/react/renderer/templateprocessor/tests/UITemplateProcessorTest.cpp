@@ -104,13 +104,13 @@ TEST(UITemplateProcessorTest, testSimpleBytecode) {
 #ifndef NDEBUG
   LOG(INFO) << std::endl << root1->getDebugDescription();
 #endif
-  auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
+  auto props1 = std::static_pointer_cast<const ViewProps>(root1->getProps());
   EXPECT_NEAR(props1->opacity, 0.5, 0.001);
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
   EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
-      std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
+      std::static_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "child");
 }
 
@@ -143,12 +143,12 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
 #ifndef NDEBUG
   LOG(INFO) << std::endl << root1->getDebugDescription();
 #endif
-  auto props1 = std::dynamic_pointer_cast<const ViewProps>(root1->getProps());
+  auto props1 = std::static_pointer_cast<const ViewProps>(root1->getProps());
   ASSERT_STREQ(props1->testId.c_str(), "root");
   auto children1 = root1->getChildren();
   EXPECT_EQ(children1.size(), 1);
   auto child_props1 =
-      std::dynamic_pointer_cast<const ViewProps>(children1.at(0)->getProps());
+      std::static_pointer_cast<const ViewProps>(children1.at(0)->getProps());
   ASSERT_STREQ(child_props1->testId.c_str(), "cond_true");
 
   mockSimpleTestValue_ = false;
@@ -160,7 +160,7 @@ TEST(UITemplateProcessorTest, testConditionalBytecode) {
       *componentDescriptorRegistry,
       nativeModuleRegistry,
       mockReactNativeConfig_);
-  auto child_props2 = std::dynamic_pointer_cast<const ViewProps>(
+  auto child_props2 = std::static_pointer_cast<const ViewProps>(
       root2->getChildren().at(0)->getProps());
   ASSERT_STREQ(child_props2->testId.c_str(), "cond_false");
 }

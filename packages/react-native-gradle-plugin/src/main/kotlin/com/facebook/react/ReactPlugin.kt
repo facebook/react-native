@@ -18,7 +18,8 @@ import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
-import com.facebook.react.utils.DependencyUtils.readVersionString
+import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
+import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
@@ -54,8 +55,10 @@ class ReactPlugin : Plugin<Project> {
       project.afterEvaluate {
         val reactNativeDir = extension.reactNativeDir.get().asFile
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
-        val versionString = readVersionString(propertiesFile)
-        configureDependencies(project, versionString)
+        val versionAndGroupStrings = readVersionAndGroupStrings(propertiesFile)
+        val versionString = versionAndGroupStrings.first
+        val groupString = versionAndGroupStrings.second
+        configureDependencies(project, versionString, groupString)
         configureRepositories(project, reactNativeDir)
       }
 
@@ -76,17 +79,20 @@ class ReactPlugin : Plugin<Project> {
     project.pluginManager.withPlugin("com.android.library") {
       configureCodegen(project, extension, rootExtension, isLibrary = true)
     }
+
+    // Library and App Configurations
+    configureJavaToolChains(project)
   }
 
   private fun checkJvmVersion(project: Project) {
     val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
-    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 16) {
       project.logger.error(
           """
 
       ********************************************************************************
 
-      ERROR: requires JDK11 or higher.
+      ERROR: requires JDK17 or higher.
       Incompatible major version detected: '$jvmVersion'
 
       ********************************************************************************

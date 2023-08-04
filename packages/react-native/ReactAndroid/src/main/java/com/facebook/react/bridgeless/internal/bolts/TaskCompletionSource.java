@@ -7,6 +7,9 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Allows safe orchestration of a task's completion, preventing the consumer from prematurely
  * completing the task. Essentially, it represents the producer side of a Task<TResult>, providing
@@ -15,7 +18,7 @@ package com.facebook.react.bridgeless.internal.bolts;
  */
 public class TaskCompletionSource<TResult> {
 
-  private final Task<TResult> task;
+  @NonNull private final Task<TResult> task;
 
   /**
    * Creates a TaskCompletionSource that orchestrates a Task. This allows the creator of a task to
@@ -26,7 +29,7 @@ public class TaskCompletionSource<TResult> {
   }
 
   /** @return the Task associated with this TaskCompletionSource. */
-  public Task<TResult> getTask() {
+  public @NonNull Task<TResult> getTask() {
     return task;
   }
 
@@ -36,12 +39,12 @@ public class TaskCompletionSource<TResult> {
   }
 
   /** Sets the result on the Task if the Task hasn't already been completed. */
-  public boolean trySetResult(TResult result) {
+  public boolean trySetResult(@Nullable TResult result) {
     return task.trySetResult(result);
   }
 
   /** Sets the error on the Task if the Task hasn't already been completed. */
-  public boolean trySetError(Exception error) {
+  public boolean trySetError(@Nullable Exception error) {
     return task.trySetError(error);
   }
 
@@ -53,14 +56,14 @@ public class TaskCompletionSource<TResult> {
   }
 
   /** Sets the result of the Task, throwing if the Task has already been completed. */
-  public void setResult(TResult result) {
+  public void setResult(@Nullable TResult result) {
     if (!trySetResult(result)) {
       throw new IllegalStateException("Cannot set the result of a completed task.");
     }
   }
 
   /** Sets the error of the Task, throwing if the Task has already been completed. */
-  public void setError(Exception error) {
+  public void setError(@Nullable Exception error) {
     if (!trySetError(error)) {
       throw new IllegalStateException("Cannot set the error on a completed task.");
     }

@@ -67,8 +67,7 @@ void ComponentNameResolverManager::installJSIBindings() {
       return thizz->componentNames_.find(name) != thizz->componentNames_.end();
     };
 
-    react::NativeComponentRegistryBinding::install(
-        runtime, std::move(viewManagerProvider));
+    bindHasComponentProvider(runtime, std::move(viewManagerProvider));
   });
 }
 

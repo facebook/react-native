@@ -14,7 +14,10 @@ import android.view.KeyEvent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
+import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
 /**
@@ -32,7 +35,9 @@ public class ReactDelegate {
 
   @Nullable private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
-  private ReactNativeHost mReactNativeHost;
+  @Nullable private ReactNativeHost mReactNativeHost;
+  @Nullable private ReactHostInterface mReactHost;
+  @Nullable private ReactSurface mReactSurface;
 
   private boolean mFabricEnabled = false;
 
@@ -50,6 +55,18 @@ public class ReactDelegate {
 
   public ReactDelegate(
       Activity activity,
+      ReactHostInterface reactHost,
+      @Nullable String appKey,
+      @Nullable Bundle launchOptions) {
+    mActivity = activity;
+    mMainComponentName = appKey;
+    mLaunchOptions = launchOptions;
+    mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
+    mReactHost = reactHost;
+  }
+
+  public ReactDelegate(
+      Activity activity,
       ReactNativeHost reactNativeHost,
       @Nullable String appKey,
       @Nullable Bundle launchOptions,
@@ -63,48 +80,72 @@ public class ReactDelegate {
   }
 
   public void onHostResume() {
-    if (getReactNativeHost().hasInstance()) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
       if (mActivity instanceof DefaultHardwareBackBtnHandler) {
-        getReactNativeHost()
-            .getReactInstanceManager()
-            .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
-      } else {
-        throw new ClassCastException(
-            "Host Activity does not implement DefaultHardwareBackBtnHandler");
+        mReactHost.onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
+      }
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        if (mActivity instanceof DefaultHardwareBackBtnHandler) {
+          getReactNativeHost()
+              .getReactInstanceManager()
+              .onHostResume(mActivity, (DefaultHardwareBackBtnHandler) mActivity);
+        } else {
+          throw new ClassCastException(
+              "Host Activity does not implement DefaultHardwareBackBtnHandler");
+        }
       }
     }
   }
 
   public void onHostPause() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostPause(mActivity);
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onHostPause(mActivity);
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onHostPause(mActivity);
+      }
     }
   }
 
   public void onHostDestroy() {
-    if (mReactRootView != null) {
-      mReactRootView.unmountReactApplication();
-      mReactRootView = null;
-    }
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onHostDestroy(mActivity);
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onHostDestroy(mActivity);
+    } else {
+      if (mReactRootView != null) {
+        mReactRootView.unmountReactApplication();
+        mReactRootView = null;
+      }
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onHostDestroy(mActivity);
+      }
     }
   }
 
   public boolean onBackPressed() {
-    if (getReactNativeHost().hasInstance()) {
-      getReactNativeHost().getReactInstanceManager().onBackPressed();
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      mReactHost.onBackPressed();
       return true;
+    } else {
+      if (getReactNativeHost().hasInstance()) {
+        getReactNativeHost().getReactInstanceManager().onBackPressed();
+        return true;
+      }
     }
     return false;
   }
 
   public void onActivityResult(
       int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
-    if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
-      getReactNativeHost()
-          .getReactInstanceManager()
-          .onActivityResult(mActivity, requestCode, resultCode, data);
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: Implement onActivityResult for Bridgeless
+      return;
+    } else {
+      if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
+        getReactNativeHost()
+            .getReactInstanceManager()
+            .onActivityResult(mActivity, requestCode, resultCode, data);
+      }
     }
   }
 
@@ -113,16 +154,31 @@ public class ReactDelegate {
   }
 
   public void loadApp(String appKey) {
-    if (mReactRootView != null) {
-      throw new IllegalStateException("Cannot loadApp while app is already running.");
+    // With Bridgeless enabled, create and start the surface
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      if (mReactSurface == null) {
+        // Create a ReactSurface
+        mReactSurface = mReactHost.createSurface(mActivity, appKey, mLaunchOptions);
+        // Set main Activity's content view
+        mActivity.setContentView(mReactSurface.getView());
+      }
+      mReactSurface.start();
+    } else {
+      if (mReactRootView != null) {
+        throw new IllegalStateException("Cannot loadApp while app is already running.");
+      }
+      mReactRootView = createRootView();
+      mReactRootView.startReactApplication(
+          getReactNativeHost().getReactInstanceManager(), appKey, mLaunchOptions);
     }
-    mReactRootView = createRootView();
-    mReactRootView.startReactApplication(
-        getReactNativeHost().getReactInstanceManager(), appKey, mLaunchOptions);
   }
 
   public ReactRootView getReactRootView() {
-    return mReactRootView;
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      return (ReactRootView) mReactSurface.getView();
+    } else {
+      return mReactRootView;
+    }
   }
 
   protected ReactRootView createRootView() {
@@ -139,7 +195,11 @@ public class ReactDelegate {
    *     application.
    */
   public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
-    if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      // TODO T156475655: Implement shouldShowDevMenuOrReload for Bridgeless
+      return false;
+    } else if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getUseDeveloperSupport()) {
       if (keyCode == KeyEvent.KEYCODE_MENU) {
         getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
         return true;

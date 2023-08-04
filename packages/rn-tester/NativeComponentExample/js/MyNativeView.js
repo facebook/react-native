@@ -98,7 +98,22 @@ export default function MyNativeView(props: {}): React.Node {
   return (
     <View ref={containerRef} style={{flex: 1}}>
       <Text style={{color: 'red'}}>Fabric View</Text>
-      <RNTMyNativeView ref={ref} style={{flex: 1}} opacity={opacity} />
+      <RNTMyNativeView
+        ref={ref}
+        style={{flex: 1}}
+        opacity={opacity}
+        values={[0, 1, 2, 3, 4]}
+        onIntArrayChanged={event => {
+          console.log(event.nativeEvent.values);
+          console.log(event.nativeEvent.boolValues);
+          console.log(event.nativeEvent.floats);
+          console.log(event.nativeEvent.doubles);
+          console.log(event.nativeEvent.yesNos);
+          console.log(event.nativeEvent.strings);
+          console.log(event.nativeEvent.latLons);
+          console.log(event.nativeEvent.multiArrays);
+        }}
+      />
       <Text style={{color: 'red'}}>Legacy View</Text>
       <RNTMyLegacyNativeView
         ref={legacyRef}

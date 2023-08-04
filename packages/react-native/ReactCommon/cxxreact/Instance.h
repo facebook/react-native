@@ -101,10 +101,10 @@ class RN_EXPORT Instance {
   std::shared_ptr<CallInvoker> getJSCallInvoker();
 
   /**
-   * Native CallInvoker is used by TurboModules to schedule work on the
+   * NativeMethodCallInvoker is used by TurboModules to schedule work on the
    * NativeModule thread(s).
    *
-   * Why is the bridge decorating native CallInvoker?
+   * Why is the bridge decorating NativeMethodCallInvoker?
    *
    * - The bridge must be informed of all TurboModule async method calls. Why?
    *   When all queued NativeModule method calls are flushed by a call from
@@ -116,16 +116,16 @@ class RN_EXPORT Instance {
    *   since the last time the bridge was flushed. If this number is non-zero,
    *   we fire onBatchComplete.
    *
-   * Why can't we just create and return a new native CallInvoker?
+   * Why can't we just create and return a new NativeMethodCallInvoker?
    *
    * - On Android, we have one NativeModule thread. That thread is created and
    *   managed outside of NativeToJsBridge. On iOS, we have one MethodQueue per
    *   module. Those MethodQueues are also created and managed outside of
-   *   NativeToJsBridge. Therefore, we need to pass in a CallInvoker that
-   *   schedules work on the respective thread.
+   *   NativeToJsBridge. Therefore, we need to pass in a
+   * NativeMethodCallInvoker that schedules work on the respective thread.
    */
-  std::shared_ptr<CallInvoker> getDecoratedNativeCallInvoker(
-      std::shared_ptr<CallInvoker> nativeInvoker);
+  std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
+      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker);
 
   /**
    * RuntimeExecutor is used by Fabric to access the jsi::Runtime.

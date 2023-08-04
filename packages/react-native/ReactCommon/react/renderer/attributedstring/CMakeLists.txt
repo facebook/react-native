@@ -26,6 +26,7 @@ target_link_libraries(react_render_attributedstring
         glog
         glog_init
         react_debug
+        rrc_view
         react_render_core
         react_render_debug
         react_render_graphics

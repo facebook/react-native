@@ -8,16 +8,14 @@
  * @flow strict
  */
 
+import type {
+  Platform as PlatformType,
+  PlatformSelectSpec,
+} from './Platform.flow';
+
 import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
-export type PlatformSelectSpec<T> = {
-  default?: T,
-  native?: T,
-  ios?: T,
-  ...
-};
-
-const Platform = {
+const Platform: PlatformType = {
   __constants: null,
   OS: 'ios',
   // $FlowFixMe[unsafe-getters-setters]
@@ -30,6 +28,7 @@ const Platform = {
     forceTouchAvailable: boolean,
     interfaceIdiom: string,
     isTesting: boolean,
+    isDisableAnimations?: boolean,
     osVersion: string,
     reactNativeVersion: {|
       major: number,
@@ -64,6 +63,11 @@ const Platform = {
       return this.constants.isTesting;
     }
     return false;
+  },
+  // $FlowFixMe[unsafe-getters-setters]
+  get isDisableAnimations(): boolean {
+    // $FlowFixMe[object-this-reference]
+    return this.constants.isDisableAnimations ?? this.isTesting;
   },
   select: <T>(spec: PlatformSelectSpec<T>): T =>
     // $FlowFixMe[incompatible-return]

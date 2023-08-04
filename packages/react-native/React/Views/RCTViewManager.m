@@ -26,54 +26,97 @@
 RCT_MULTI_ENUM_CONVERTER(
     UIAccessibilityTraits,
     (@{
-      @"none" : @(UIAccessibilityTraitNone),
+      @"adjustable" : @(UIAccessibilityTraitAdjustable),
+      @"alert" : @(UIAccessibilityTraitNone),
+      @"alertdialog" : @(UIAccessibilityTraitNone),
+      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
+      @"application" : @(UIAccessibilityTraitNone),
+      @"article" : @(UIAccessibilityTraitNone),
+      @"banner" : @(UIAccessibilityTraitNone),
       @"button" : @(UIAccessibilityTraitButton),
+      @"cell" : @(UIAccessibilityTraitNone),
+      @"checkbox" : @(UIAccessibilityTraitNone),
+      @"columnheader" : @(UIAccessibilityTraitNone),
+      @"combobox" : @(UIAccessibilityTraitNone),
+      @"complementary" : @(UIAccessibilityTraitNone),
+      @"contentinfo" : @(UIAccessibilityTraitNone),
+      @"definition" : @(UIAccessibilityTraitNone),
+      @"dialog" : @(UIAccessibilityTraitNone),
+      @"directory" : @(UIAccessibilityTraitNone),
+      @"disabled" : @(UIAccessibilityTraitNotEnabled),
+      @"document" : @(UIAccessibilityTraitNone),
+      @"drawerlayout" : @(UIAccessibilityTraitNone),
       @"dropdownlist" : @(UIAccessibilityTraitNone),
-      @"togglebutton" : @(UIAccessibilityTraitButton),
-      @"link" : @(UIAccessibilityTraitLink),
+      @"feed" : @(UIAccessibilityTraitNone),
+      @"figure" : @(UIAccessibilityTraitNone),
+      @"form" : @(UIAccessibilityTraitNone),
+      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
+      @"grid" : @(UIAccessibilityTraitNone),
+      @"group" : @(UIAccessibilityTraitNone),
       @"header" : @(UIAccessibilityTraitHeader),
-      @"search" : @(UIAccessibilityTraitSearchField),
+      @"heading" : @(UIAccessibilityTraitHeader),
+      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"iconmenu" : @(UIAccessibilityTraitNone),
       @"image" : @(UIAccessibilityTraitImage),
       @"imagebutton" : @(UIAccessibilityTraitImage | UIAccessibilityTraitButton),
-      @"selected" : @(UIAccessibilityTraitSelected),
-      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"img" : @(UIAccessibilityTraitImage),
       @"key" : @(UIAccessibilityTraitKeyboardKey),
       @"keyboardkey" : @(UIAccessibilityTraitKeyboardKey),
-      @"text" : @(UIAccessibilityTraitStaticText),
-      @"summary" : @(UIAccessibilityTraitSummaryElement),
-      @"disabled" : @(UIAccessibilityTraitNotEnabled),
-      @"frequentUpdates" : @(UIAccessibilityTraitUpdatesFrequently),
-      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
-      @"adjustable" : @(UIAccessibilityTraitAdjustable),
-      @"allowsDirectInteraction" : @(UIAccessibilityTraitAllowsDirectInteraction),
-      @"pageTurn" : @(UIAccessibilityTraitCausesPageTurn),
-      @"alert" : @(UIAccessibilityTraitNone),
-      @"checkbox" : @(UIAccessibilityTraitNone),
-      @"combobox" : @(UIAccessibilityTraitNone),
+      @"link" : @(UIAccessibilityTraitLink),
+      @"list" : @(UIAccessibilityTraitNone),
+      @"listitem" : @(UIAccessibilityTraitNone),
+      @"log" : @(UIAccessibilityTraitNone),
+      @"main" : @(UIAccessibilityTraitNone),
+      @"marquee" : @(UIAccessibilityTraitNone),
+      @"math" : @(UIAccessibilityTraitNone),
       @"menu" : @(UIAccessibilityTraitNone),
       @"menubar" : @(UIAccessibilityTraitNone),
       @"menuitem" : @(UIAccessibilityTraitNone),
+      @"meter" : @(UIAccessibilityTraitNone),
+      @"navigation" : @(UIAccessibilityTraitNone),
+      @"none" : @(UIAccessibilityTraitNone),
+      @"note" : @(UIAccessibilityTraitNone),
+      @"option" : @(UIAccessibilityTraitNone),
+      @"pager" : @(UIAccessibilityTraitNone),
+      @"pageTurn" : @(UIAccessibilityTraitCausesPageTurn),
+      @"plays" : @(UIAccessibilityTraitPlaysSound),
+      @"presentation" : @(UIAccessibilityTraitNone),
       @"progressbar" : @(UIAccessibilityTraitUpdatesFrequently),
       @"radio" : @(UIAccessibilityTraitNone),
       @"radiogroup" : @(UIAccessibilityTraitNone),
+      @"region" : @(UIAccessibilityTraitNone),
+      @"row" : @(UIAccessibilityTraitNone),
+      @"rowgroup" : @(UIAccessibilityTraitNone),
+      @"rowheader" : @(UIAccessibilityTraitNone),
       @"scrollbar" : @(UIAccessibilityTraitNone),
+      @"scrollview" : @(UIAccessibilityTraitNone),
+      @"search" : @(UIAccessibilityTraitSearchField),
+      @"searchbox" : @(UIAccessibilityTraitNone),
+      @"selected" : @(UIAccessibilityTraitSelected),
+      @"separator" : @(UIAccessibilityTraitNone),
+      @"slider" : @(UIAccessibilityTraitNone),
+      @"slidingdrawer" : @(UIAccessibilityTraitNone),
       @"spinbutton" : @(UIAccessibilityTraitNone),
+      @"startsMedia" : @(UIAccessibilityTraitStartsMediaSession),
+      @"status" : @(UIAccessibilityTraitNone),
+      @"summary" : @(UIAccessibilityTraitSummaryElement),
       @"switch" : @(SwitchAccessibilityTrait),
       @"tab" : @(UIAccessibilityTraitNone),
       @"tabbar" : @(UIAccessibilityTraitTabBar),
+      @"table" : @(UIAccessibilityTraitNone),
       @"tablist" : @(UIAccessibilityTraitNone),
+      @"tabpanel" : @(UIAccessibilityTraitNone),
+      @"term" : @(UIAccessibilityTraitNone),
+      @"text" : @(UIAccessibilityTraitStaticText),
       @"timer" : @(UIAccessibilityTraitNone),
+      @"togglebutton" : @(UIAccessibilityTraitButton),
       @"toolbar" : @(UIAccessibilityTraitNone),
-      @"pager" : @(UIAccessibilityTraitNone),
-      @"scrollview" : @(UIAccessibilityTraitNone),
-      @"horizontalscrollview" : @(UIAccessibilityTraitNone),
+      @"tooltip" : @(UIAccessibilityTraitNone),
+      @"tree" : @(UIAccessibilityTraitNone),
+      @"treegrid" : @(UIAccessibilityTraitNone),
+      @"treeitem" : @(UIAccessibilityTraitNone),
       @"viewgroup" : @(UIAccessibilityTraitNone),
       @"webview" : @(UIAccessibilityTraitNone),
-      @"drawerlayout" : @(UIAccessibilityTraitNone),
-      @"slidingdrawer" : @(UIAccessibilityTraitNone),
-      @"iconmenu" : @(UIAccessibilityTraitNone),
-      @"list" : @(UIAccessibilityTraitNone),
-      @"grid" : @(UIAccessibilityTraitNone),
     }),
     UIAccessibilityTraitNone,
     unsignedLongLongValue)
@@ -183,21 +226,40 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
+  UIAccessibilityTraits accessibilityRoleTraits =
+      json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.accessibilityRoleTraits != accessibilityRoleTraits) {
+    view.accessibilityRoleTraits = accessibilityRoleTraits;
+    view.reactAccessibilityElement.accessibilityRole = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(role, UIAccessibilityTraits, RCTView)
+{
+  UIAccessibilityTraits roleTraits = json ? [RCTConvert UIAccessibilityTraits:json] : UIAccessibilityTraitNone;
+  if (view.reactAccessibilityElement.roleTraits != roleTraits) {
+    view.roleTraits = roleTraits;
+    view.reactAccessibilityElement.role = json ? [RCTConvert NSString:json] : nil;
+    [self updateAccessibilityTraitsForRole:view withDefaultView:defaultView];
+  }
+}
+
+- (void)updateAccessibilityTraitsForRole:(RCTView *)view withDefaultView:(RCTView *)defaultView
+{
   const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton |
       UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage |
       UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable |
       UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | UIAccessibilityTraitTabBar |
       UIAccessibilityTraitUpdatesFrequently | SwitchAccessibilityTrait;
-  view.reactAccessibilityElement.accessibilityTraits =
-      view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
-  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
-  if (newTraits != UIAccessibilityTraitNone) {
-    UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
-    view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
-  } else {
-    NSString *role = json ? [RCTConvert NSString:json] : @"";
-    view.reactAccessibilityElement.accessibilityRole = role;
-  }
+
+  // Clear any existing traits set for AccessibilityRole
+  view.reactAccessibilityElement.accessibilityTraits &= ~(AccessibilityRolesMask);
+
+  view.reactAccessibilityElement.accessibilityTraits |= view.reactAccessibilityElement.role
+      ? view.reactAccessibilityElement.roleTraits
+      : view.reactAccessibilityElement.accessibilityRole ? view.reactAccessibilityElement.accessibilityRoleTraits
+                                                         : (defaultView.accessibilityTraits & AccessibilityRolesMask);
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
@@ -487,5 +549,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPointerEnter, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerLeave, RCTCapturingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onGotPointerCapture, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onLostPointerCapture, RCTBubblingEventBlock)
 
 @end

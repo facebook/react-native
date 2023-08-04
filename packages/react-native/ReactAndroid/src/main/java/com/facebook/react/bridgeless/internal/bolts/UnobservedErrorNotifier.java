@@ -7,15 +7,17 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.Nullable;
+
 /**
  * This class is used to retain a faulted task until either its error is observed or it is
  * finalized. If it is finalized with a task, then the uncaught exception handler is exected with an
  * UnobservedTaskException.
  */
 class UnobservedErrorNotifier {
-  private Task<?> task;
+  @Nullable private Task<?> task;
 
-  public UnobservedErrorNotifier(Task<?> task) {
+  public UnobservedErrorNotifier(@Nullable Task<?> task) {
     this.task = task;
   }
 

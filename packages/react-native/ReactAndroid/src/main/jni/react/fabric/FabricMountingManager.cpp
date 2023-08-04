@@ -13,11 +13,12 @@
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -117,8 +118,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
     std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems,
-    ShadowViewMutationList &cppViewMutations) {
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (auto const &mountItem : cppCommonMountItems) {
@@ -177,11 +177,6 @@ static inline void computeBufferSizes(
       cppDeleteMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
-
-  if (cppViewMutations.size() > 0) {
-    batchMountItemIntsSize++;
-    batchMountItemObjectsSize++;
-  }
 }
 
 static inline void writeIntBufferTypePreamble(
@@ -206,19 +201,14 @@ static inline void writeIntBufferTypePreamble(
 // TODO: this method will be removed when binding for components are code-gen
 jni::local_ref<jstring> getPlatformComponentName(ShadowView const &shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
-
-  jni::local_ref<jstring> componentName;
   if (scrollViewComponentName == shadowView.componentName) {
-    auto newViewProps =
-        std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
-    if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
-      componentName = jni::make_jstring("AndroidHorizontalScrollView");
-      return componentName;
+    const auto &newViewProps =
+        static_cast<const ScrollViewProps &>(*shadowView.props);
+    if (newViewProps.getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
+      return jni::make_jstring("AndroidHorizontalScrollView");
     }
   }
-
-  componentName = jni::make_jstring(shadowView.componentName);
-  return componentName;
+  return jni::make_jstring(shadowView.componentName);
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {
@@ -257,24 +247,17 @@ jni::local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    const MountingCoordinator::Shared &mountingCoordinator) {
+    const MountingTransaction &transaction) {
+  SystraceSection section("FabricMountingManager::executeMount");
+
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
-
-  SystraceSection s(
-      "FabricUIManagerBinding::schedulerDidFinishTransactionIntBuffer");
   auto finishTransactionStartTime = telemetryTimePointNow();
-
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
-
-  if (!mountingTransaction.has_value()) {
-    return;
-  }
 
   auto env = jni::Environment::current();
 
-  auto telemetry = mountingTransaction->getTelemetry();
-  auto surfaceId = mountingTransaction->getSurfaceId();
-  auto &mutations = mountingTransaction->getMutations();
+  auto telemetry = transaction.getTelemetry();
+  auto surfaceId = transaction.getSurfaceId();
+  auto &mutations = transaction.getMutations();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -286,7 +269,7 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
-  auto cppViewMutations = ShadowViewMutationList();
+
   {
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
@@ -505,8 +488,7 @@ void FabricMountingManager::executeMount(
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
       cppUpdateOverflowInsetMountItems,
-      cppUpdateEventEmitterMountItems,
-      cppViewMutations);
+      cppUpdateEventEmitterMountItems);
 
   static auto createMountItemsIntBufferBatchContainer =
       JFabricUIManager::javaClassStatic()

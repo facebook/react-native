@@ -19,18 +19,11 @@ if (NativePerformance) {
 } else {
   if (!global.performance) {
     // $FlowExpectedError[cannot-write]
-    global.performance = ({}: {now?: () => number});
-  }
-
-  /**
-   * Returns a double, measured in milliseconds.
-   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
-   */
-  if (typeof global.performance.now !== 'function') {
-    // $FlowExpectedError[cannot-write]
-    global.performance.now = function () {
-      const performanceNow = global.nativePerformanceNow || Date.now;
-      return performanceNow();
-    };
+    global.performance = ({
+      now: function () {
+        const performanceNow = global.nativePerformanceNow || Date.now;
+        return performanceNow();
+      },
+    }: {now?: () => number});
   }
 }

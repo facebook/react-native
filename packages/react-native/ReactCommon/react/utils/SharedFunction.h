@@ -21,9 +21,9 @@ namespace facebook::react {
  * - When captured by `std::function` arguments are not copyable;
  * - When we need to replace the content of the callable later on the go.
  */
-template <typename ReturnT = void, typename... ArgumentT>
+template <typename... ArgumentT>
 class SharedFunction {
-  using T = ReturnT(ArgumentT...);
+  using T = void(ArgumentT...);
 
   struct Pair {
     Pair(std::function<T> &&function) : function(std::move(function)) {}
@@ -46,9 +46,11 @@ class SharedFunction {
     pair_->function = function;
   }
 
-  ReturnT operator()(ArgumentT... args) const {
+  void operator()(ArgumentT... args) const {
     std::shared_lock lock(pair_->mutex);
-    return pair_->function(args...);
+    if (pair_->function) {
+      pair_->function(args...);
+    }
   }
 
  private:

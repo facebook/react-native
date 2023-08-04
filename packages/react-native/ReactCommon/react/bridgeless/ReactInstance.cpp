@@ -11,10 +11,8 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/SystraceSection.h>
 #include <glog/logging.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
-#include <jsi/jsi/JSIDynamic.h>
-#include <jsireact/JSIExecutor.h>
-#include <jsireact/JSITracing.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #include <cxxreact/ReactMarker.h>
@@ -155,6 +153,12 @@ static void defineReadOnlyGlobal(
     jsi::Runtime &runtime,
     std::string propName,
     jsi::Value &&value) {
+  if (runtime.global().hasProperty(runtime, propName.c_str())) {
+    throw jsi::JSError(
+        runtime,
+        "Tried to redefine read-only global \"" + propName +
+            "\", but read-only globals can only be defined once.");
+  }
   jsi::Object jsObject =
       runtime.global().getProperty(runtime, "Object").asObject(runtime);
   jsi::Function defineProperty = jsObject.getProperty(runtime, "defineProperty")
@@ -314,8 +318,6 @@ void defineReactInstanceFlags(
     jsi::Runtime &runtime,
     ReactInstance::JSRuntimeFlags options) noexcept {
   defineReadOnlyGlobal(runtime, "RN$Bridgeless", jsi::Value(true));
-
-  jsi::addNativeTracingHooks(runtime);
 
   if (options.isProfiling) {
     defineReadOnlyGlobal(runtime, "__RCTProfileIsProfiling", jsi::Value(true));

@@ -27,6 +27,7 @@ header_search_paths = [
   "\"$(PODS_ROOT)/DoubleConversion\"",
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/React-Codegen\"",
   "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers\"",
 
@@ -34,13 +35,19 @@ header_search_paths = [
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/textlayoutmanager/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/textinput/iostextinput\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/imagemanager/platform/ios\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-nativeconfig/React_nativeconfig.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\""
   header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\""
+  header_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\""
 end
 
 Pod::Spec.new do |s|
@@ -58,7 +65,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.module_name            = "RCTFabric"
-  s.framework              = "JavaScriptCore"
+  s.framework              = ["JavaScriptCore", "MobileCoreServices"]
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags,
@@ -71,7 +78,22 @@ Pod::Spec.new do |s|
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
   s.dependency "React-ImageManager"
+  s.dependency "React-graphics"
   s.dependency "RCT-Folly/Fabric", folly_version
+  s.dependency "glog"
+  s.dependency "Yoga"
+  s.dependency "React-RCTText"
+  s.dependency "React-FabricImage"
+  s.dependency "React-debug"
+  s.dependency "React-utils"
+  s.dependency "React-rendererdebug"
+  s.dependency "React-nativeconfig"
+
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsi"
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = "Tests/**/*.{mm}"

@@ -7,7 +7,7 @@
 
 #include "ParagraphLayoutManager.h"
 #include <folly/Hash.h>
-#include <react/renderer/core/CoreFeatures.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -15,40 +15,18 @@ TextMeasurement ParagraphLayoutManager::measure(
     AttributedString const &attributedString,
     ParagraphAttributes const &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
-  bool cacheLastTextMeasurement = CoreFeatures::cacheLastTextMeasurement;
-  if (cacheLastTextMeasurement &&
-      (layoutConstraints.maximumSize.width == availableWidth_ ||
-       layoutConstraints.maximumSize.width ==
-           cachedTextMeasurement_.size.width)) {
-    /* Yoga has requested measurement for this size before. Let's use cached
-     * value. `TextLayoutManager` might not have cached this because it could be
-     * using different width to generate cache key. This happens because Yoga
-     * switches between available width and exact width but since we already
-     * know exact width, it is wasteful to calculate it again.
-     */
-    return cachedTextMeasurement_;
-  }
-  if (CoreFeatures::cacheNSTextStorage) {
-    size_t newHash = folly::hash::hash_combine(
-        0,
-        textAttributedStringHashLayoutWise(attributedString),
-        paragraphAttributes);
+  if (CoreFeatures::cacheLastTextMeasurement) {
+    bool shouldMeasure = shoudMeasureString(
+        attributedString, paragraphAttributes, layoutConstraints);
 
-    if (!hostTextStorage_ || newHash != hash_) {
-      hostTextStorage_ = textLayoutManager_->getHostTextStorage(
-          attributedString, paragraphAttributes, layoutConstraints);
-      hash_ = newHash;
+    if (shouldMeasure) {
+      cachedTextMeasurement_ = textLayoutManager_->measure(
+          AttributedStringBox(attributedString),
+          paragraphAttributes,
+          layoutConstraints,
+          hostTextStorage_);
+      lastAvailableWidth_ = layoutConstraints.maximumSize.width;
     }
-  }
-
-  if (cacheLastTextMeasurement) {
-    cachedTextMeasurement_ = textLayoutManager_->measure(
-        AttributedStringBox(attributedString),
-        paragraphAttributes,
-        layoutConstraints,
-        hostTextStorage_);
-
-    availableWidth_ = layoutConstraints.maximumSize.width;
 
     return cachedTextMeasurement_;
   } else {
@@ -56,8 +34,43 @@ TextMeasurement ParagraphLayoutManager::measure(
         AttributedStringBox(attributedString),
         paragraphAttributes,
         layoutConstraints,
-        hostTextStorage_);
+        nullptr);
   }
+}
+
+bool ParagraphLayoutManager::shoudMeasureString(
+    AttributedString const &attributedString,
+    ParagraphAttributes const &paragraphAttributes,
+    LayoutConstraints layoutConstraints) const {
+  size_t newParagraphInputHash =
+      folly::hash::hash_combine(0, attributedString, paragraphAttributes);
+
+  if (newParagraphInputHash != paragraphInputHash_) {
+    // AttributedString or ParagraphAttributes have changed.
+    // Must create new host text storage and trigger measure.
+    hostTextStorage_ = textLayoutManager_->getHostTextStorage(
+        attributedString, paragraphAttributes, layoutConstraints);
+    paragraphInputHash_ = newParagraphInputHash;
+
+    return true; // Must measure again.
+  }
+
+  // Detect the case when available width for Paragraph meaningfully changes.
+  // This is to prevent unnecessary re-creation of NSTextStorage on iOS.
+  // On Android, this is no-op.
+  bool hasMaximumSizeChanged =
+      layoutConstraints.maximumSize.width != lastAvailableWidth_;
+  Float threshold = 0.01f;
+  bool doesMaximumSizeMatchLastMeasurement =
+      std::abs(
+          layoutConstraints.maximumSize.width -
+          cachedTextMeasurement_.size.width) < threshold;
+  if (hasMaximumSizeChanged && !doesMaximumSizeMatchLastMeasurement) {
+    hostTextStorage_ = textLayoutManager_->getHostTextStorage(
+        attributedString, paragraphAttributes, layoutConstraints);
+    return true;
+  }
+  return false;
 }
 
 LinesMeasurements ParagraphLayoutManager::measureLines(

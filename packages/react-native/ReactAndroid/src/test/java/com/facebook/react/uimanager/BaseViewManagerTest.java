@@ -14,6 +14,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.facebook.react.views.view.ReactViewManager;
 import java.util.Locale;
@@ -45,7 +46,7 @@ public class BaseViewManagerTest {
   @Before
   public void setUp() {
     mViewManager = new ReactViewManager();
-    mView = new ReactViewGroup(RuntimeEnvironment.application);
+    mView = new ReactViewGroup(RuntimeEnvironment.getApplication());
     PowerMockito.mockStatic(Arguments.class);
     PowerMockito.when(Arguments.createMap())
         .thenAnswer(
@@ -77,5 +78,11 @@ public class BaseViewManagerTest {
     mViewManager.setViewState(mView, accessibilityState);
     assertThat(mView.getTag(R.id.accessibility_state)).isEqualTo(accessibilityState);
     assertThat(mView.isSelected()).isEqualTo(true);
+  }
+
+  @Test
+  public void testRoleList() {
+    mViewManager.setRole(mView, "list");
+    assertThat(mView.getTag(R.id.role)).isEqualTo(Role.LIST);
   }
 }

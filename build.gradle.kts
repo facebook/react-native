@@ -7,10 +7,10 @@
 
 plugins {
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-  id("com.android.library") version "7.4.2" apply false
-  id("com.android.application") version "7.4.2" apply false
+  id("com.android.library") version "8.1.0" apply false
+  id("com.android.application") version "8.1.0" apply false
   id("de.undercouch.download") version "5.0.1" apply false
-  kotlin("android") version "1.7.22" apply false
+  kotlin("android") version "1.8.0" apply false
 }
 
 val reactAndroidProperties = java.util.Properties()
@@ -30,7 +30,7 @@ version =
 group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION"))
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "25.1.8937393")
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 
@@ -100,6 +100,8 @@ tasks.register("publishAllToMavenTempLocal") {
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
   // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
   dependsOn(
+      ":packages:react-native:ReactAndroid:flipper-integration:publishAllPublicationsToMavenTempLocalRepository")
+  dependsOn(
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
 
@@ -107,5 +109,6 @@ tasks.register("publishAllToSonatype") {
   description = "Publish all the artifacts to Sonatype (Maven Central or Snapshot repository)"
   dependsOn(":packages:react-native:ReactAndroid:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:external-artifacts:publishToSonatype")
+  dependsOn(":packages:react-native:ReactAndroid:flipper-integration:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }

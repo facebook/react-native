@@ -62,7 +62,7 @@ struct Transform {
   /**
    * For debugging only. Prints out the matrix.
    */
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
   static void print(Transform const &t, std::string prefix);
 #endif
 
@@ -154,6 +154,8 @@ struct Transform {
    * Concatenates (multiplies) transform matrices.
    */
   Transform operator*(Transform const &rhs) const;
+
+  Rect applyWithCenter(Rect const &rect, Point const &center) const;
 
   /**
    * Convert to folly::dynamic.

@@ -18,9 +18,9 @@
 #include <stdbool.h>
 #endif
 
-#include "YGEnums.h"
-#include "YGMacros.h"
-#include "YGValue.h"
+#include <yoga/YGEnums.h>
+#include <yoga/YGMacros.h>
+#include <yoga/YGValue.h>
 
 YG_EXTERN_C_BEGIN
 
@@ -317,14 +317,26 @@ WIN_EXPORT void YGAssertWithConfig(
 WIN_EXPORT void YGConfigSetPointScaleFactor(
     YGConfigRef config,
     float pixelsInPoint);
+WIN_EXPORT float YGConfigGetPointScaleFactor(YGConfigRef config);
 
 // Yoga previously had an error where containers would take the maximum space
 // possible instead of the minimum like they are supposed to. In practice this
 // resulted in implicit behaviour similar to align-self: stretch; Because this
 // was such a long-standing bug we must allow legacy users to switch back to
 // this behaviour.
-WIN_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef config);
-WIN_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
+WIN_EXPORT YG_DEPRECATED(
+    "Please use "
+    "\"YGConfigGetErrata()\"") bool YGConfigGetUseLegacyStretchBehaviour(YGConfigRef
+                                                                             config);
+WIN_EXPORT
+YG_DEPRECATED(
+    "\"YGConfigSetUseLegacyStretchBehaviour\" will be removed in the next "
+    "release. Usage should be replaced with \"YGConfigSetErrata(YGErrataAll)\" "
+    "to opt out of all future breaking conformance fixes, or "
+    "\"YGConfigSetErrata(YGErrataStretchFlexBasis)\" to opt out of the "
+    "specific conformance fix previously disabled by "
+    "\"UseLegacyStretchBehaviour\".")
+void YGConfigSetUseLegacyStretchBehaviour(
     YGConfigRef config,
     bool useLegacyStretchBehaviour);
 
@@ -356,6 +368,9 @@ WIN_EXPORT YGConfigRef YGConfigGetDefault(void);
 
 WIN_EXPORT void YGConfigSetContext(YGConfigRef config, void* context);
 WIN_EXPORT void* YGConfigGetContext(YGConfigRef config);
+
+WIN_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata);
+WIN_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config);
 
 WIN_EXPORT float YGRoundValueToPixelGrid(
     double value,

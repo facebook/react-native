@@ -18,7 +18,7 @@ type FlexAlignType =
   | 'stretch'
   | 'baseline';
 
-type DimensionValue =
+export type DimensionValue =
   | number
   | 'auto'
   | `${number}%`
@@ -69,13 +69,6 @@ export interface FlexStyle {
   flexShrink?: number | undefined;
   flexWrap?: 'wrap' | 'nowrap' | 'wrap-reverse' | undefined;
   height?: DimensionValue | undefined;
-  inset?: DimensionValue | undefined;
-  insetBlock?: DimensionValue | undefined;
-  insetBlockEnd?: DimensionValue | undefined;
-  insetBlockStart?: DimensionValue | undefined;
-  insetInline?: DimensionValue | undefined;
-  insetInlineEnd?: DimensionValue | undefined;
-  insetInlineStart?: DimensionValue | undefined;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -86,15 +79,9 @@ export interface FlexStyle {
     | undefined;
   left?: DimensionValue | undefined;
   margin?: DimensionValue | undefined;
-  marginBlock?: DimensionValue | undefined;
-  marginBlockEnd?: DimensionValue | undefined;
-  marginBlockStart?: DimensionValue | undefined;
   marginBottom?: DimensionValue | undefined;
   marginEnd?: DimensionValue | undefined;
   marginHorizontal?: DimensionValue | undefined;
-  marginInline?: DimensionValue | undefined;
-  marginInlineEnd?: DimensionValue | undefined;
-  marginInlineStart?: DimensionValue | undefined;
   marginLeft?: DimensionValue | undefined;
   marginRight?: DimensionValue | undefined;
   marginStart?: DimensionValue | undefined;
@@ -107,14 +94,8 @@ export interface FlexStyle {
   overflow?: 'visible' | 'hidden' | 'scroll' | undefined;
   padding?: DimensionValue | undefined;
   paddingBottom?: DimensionValue | undefined;
-  paddingBlock?: DimensionValue | undefined;
-  paddingBlockEnd?: DimensionValue | undefined;
-  paddingBlockStart?: DimensionValue | undefined;
   paddingEnd?: DimensionValue | undefined;
   paddingHorizontal?: DimensionValue | undefined;
-  paddingInline?: DimensionValue | undefined;
-  paddingInlineEnd?: DimensionValue | undefined;
-  paddingInlineStart?: DimensionValue | undefined;
   paddingLeft?: DimensionValue | undefined;
   paddingRight?: DimensionValue | undefined;
   paddingStart?: DimensionValue | undefined;
@@ -192,23 +173,28 @@ interface MatrixTransform {
   matrix: AnimatableNumericValue[];
 }
 
+type MaximumOneOf<T, K extends keyof T = keyof T> = K extends keyof T
+  ? {[P in K]: T[K]} & {[P in Exclude<keyof T, K>]?: never}
+  : never;
+
 export interface TransformsStyle {
   transform?:
-    | (
-        | PerpectiveTransform
-        | RotateTransform
-        | RotateXTransform
-        | RotateYTransform
-        | RotateZTransform
-        | ScaleTransform
-        | ScaleXTransform
-        | ScaleYTransform
-        | TranslateXTransform
-        | TranslateYTransform
-        | SkewXTransform
-        | SkewYTransform
-        | MatrixTransform
-      )[]
+    | MaximumOneOf<
+        PerpectiveTransform &
+          RotateTransform &
+          RotateXTransform &
+          RotateYTransform &
+          RotateZTransform &
+          ScaleTransform &
+          ScaleXTransform &
+          ScaleYTransform &
+          TranslateXTransform &
+          TranslateYTransform &
+          SkewXTransform &
+          SkewYTransform &
+          MatrixTransform
+      >[]
+    | string
     | undefined;
   /**
    * @deprecated Use matrix in transform prop instead.
@@ -353,7 +339,6 @@ export interface TextStyle extends TextStyleIOS, TextStyleAndroid, ViewStyle {
   textShadowOffset?: {width: number; height: number} | undefined;
   textShadowRadius?: number | undefined;
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase' | undefined;
-  testID?: string | undefined;
 }
 
 /**

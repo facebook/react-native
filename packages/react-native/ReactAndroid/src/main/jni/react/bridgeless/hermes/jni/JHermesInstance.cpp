@@ -7,7 +7,7 @@
 
 #include "JHermesInstance.h"
 
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 
 namespace facebook::react {
 

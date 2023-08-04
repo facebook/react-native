@@ -9,11 +9,9 @@ package com.facebook.react.bridge;
 
 import android.content.Context;
 import com.facebook.react.common.DebugServerException;
+import java.util.Objects;
 
-/**
- * A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate} (e.g.
- * {@link CatalystInstance}) to load a correct bundle through {@link ReactBridge}.
- */
+/** A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate}. */
 public abstract class JSBundleLoader {
 
   /**
@@ -67,7 +65,8 @@ public abstract class JSBundleLoader {
           delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+          throw DebugServerException.makeGeneric(
+              sourceURL, Objects.toString(e.getMessage(), ""), e);
         }
       }
     };
@@ -86,7 +85,8 @@ public abstract class JSBundleLoader {
           delegate.loadSplitBundleFromFile(cachedFileLocation, sourceURL);
           return sourceURL;
         } catch (Exception e) {
-          throw DebugServerException.makeGeneric(sourceURL, e.getMessage(), e);
+          throw DebugServerException.makeGeneric(
+              sourceURL, Objects.toString(e.getMessage(), ""), e);
         }
       }
     };

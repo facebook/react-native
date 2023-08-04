@@ -5,5 +5,15 @@
   "requirePragma": true,
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [
+        "*.js"
+      ],
+      "options": {
+        "parser": "hermes"
+      }
+    }
+  ]
 }

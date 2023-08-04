@@ -373,7 +373,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             '[Codegen] warn: using experimental new codegen integration'
         ])
         assert_equal(codegen_utils_mock.get_react_codegen_script_phases_params,  [{
-            :app_path => "~/app",
+            :app_path => app_path,
             :config_file_dir => "",
             :config_key => "codegenConfig",
             :fabric_enabled => false,
@@ -382,7 +382,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
         assert_equal(codegen_utils_mock.get_react_codegen_spec_params,  [{
             :fabric_enabled => false,
             :folly_version=>"2021.07.22.00",
-            :package_json_file => "../node_modules/react-native/package.json",
+            :package_json_file => "#{app_path}/ios/../node_modules/react-native/package.json",
             :script_phases => "echo TestScript"
         }])
         assert_equal(codegen_utils_mock.generate_react_codegen_spec_params,  [{
@@ -544,12 +544,15 @@ class CodegenUtilsTests < Test::Unit::TestCase
             [
               "\"$(PODS_ROOT)/boost\"",
               "\"$(PODS_ROOT)/RCT-Folly\"",
+              "\"$(PODS_ROOT)/DoubleConversion\"",
               "\"${PODS_ROOT}/Headers/Public/React-Codegen/react/renderer/components\"",
               "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
               "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
+              "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
             ].join(' ')
           },
           'dependencies': {
+            "DoubleConversion": [],
             "FBReactNativeSpec":  [],
             "RCT-Folly": [],
             "RCTRequired": [],
@@ -561,7 +564,8 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "ReactCommon/turbomodule/bridging": [],
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
-            'React-NativeModulesApple': [],
+            "React-NativeModulesApple": [],
+            "glog": [],
           }
         }
     end
@@ -573,7 +577,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
             'React-graphics': [],
             'React-rncore':  [],
             'React-Fabric': [],
-
+            'React-utils': [],
+            'React-debug': [],
+            'React-rendererdebug': [],
         })
 
         specs[:'script_phases'] = script_phases
@@ -585,11 +591,14 @@ class CodegenUtilsTests < Test::Unit::TestCase
         specs = get_podspec_no_fabric_no_script()
 
         specs["pod_target_xcconfig"]["FRAMEWORK_SEARCH_PATHS"].concat([])
-        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\"")
+        specs["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"].concat(" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-FabricImage/React_FabricImage.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric/RCTFabric.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"")
 
         specs[:dependencies].merge!({
             'React-graphics': [],
             'React-Fabric': [],
+            'React-utils': [],
+            'React-debug': [],
+            'React-rendererdebug': [],
         })
 
         return specs
