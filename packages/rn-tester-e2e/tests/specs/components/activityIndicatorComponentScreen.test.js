@@ -15,7 +15,7 @@ const {
 } = require('../../screens/components/buttonComponent.screen.js');
 
 describe('Test is checking default activity indicator component', () => {
-    test('Should view properly submit alert text', async () => {
+    test('Should view properly default indicator component', async () => {
       expect(
         await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
       ).toBeTruthy();

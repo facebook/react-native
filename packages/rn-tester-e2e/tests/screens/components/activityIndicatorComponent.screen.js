@@ -27,10 +27,10 @@ export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenT
       ios: iOSLabel('ActivityIndicator'),
       android: androidWidget('ViewGroup', 'text', 'ActivityIndicator'),
     }),
-    // References to elements within the Button Component screen
+    // References to elements within the Activity Indicator Component screen
     defaultActivityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSLabel('In progress'),
-      android: androidWidget('ActivityIndicator', 'class', 'button_default_styling'),
+      ios: iOSLabel('default_activity_indicator'),
+      android: androidWidget('ProgressBar', 'resource-id', 'default_activity_indicator'),
     }),
     // Methods to interact with the elements
     checkDefaultActivityIndicatorIsDisplayed: async function (
