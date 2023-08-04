@@ -71,7 +71,7 @@ type UnresolvedCellMetrics = {
  */
 export default class ListMetricsAggregator {
   _averageCellLength = 0;
-  _cellMetrics: {[string]: UnresolvedCellMetrics} = {};
+  _cellMetrics: Map<string, UnresolvedCellMetrics> = new Map();
   _contentLength: ?number;
   _highestMeasuredCellIndex = 0;
   _measuredCellsLength = 0;
@@ -80,6 +80,10 @@ export default class ListMetricsAggregator {
     horizontal: false,
     rtl: false,
   };
+
+  // Fabric and Paper may call onLayout in different orders. We can tell which
+  // direction layout events happen on the first layout.
+  _onLayoutDirection: 'top-down' | 'bottom-up' = 'top-down';
 
   /**
    * Notify the ListMetricsAggregator that a cell has been laid out.
@@ -97,14 +101,25 @@ export default class ListMetricsAggregator {
     orientation: ListOrientation,
     layout: Layout,
   }): boolean {
+    if (this._contentLength == null) {
+      this._onLayoutDirection = 'bottom-up';
+    }
+
     this._invalidateIfOrientationChanged(orientation);
+
+    // If layout is top-down, our most recently cached content length
+    // corresponds to this cell. Otherwise, we need to resolve when events fire
+    // up the tree to the new length.
+    const listContentLength =
+      this._onLayoutDirection === 'top-down' ? this._contentLength : null;
 
     const next: UnresolvedCellMetrics = {
       index: cellIndex,
       layout: layout,
       isMounted: true,
+      listContentLength,
     };
-    const curr = this._cellMetrics[cellKey];
+    const curr = this._cellMetrics.get(cellKey);
 
     if (
       !curr ||
@@ -124,14 +139,14 @@ export default class ListMetricsAggregator {
 
       this._averageCellLength =
         this._measuredCellsLength / this._measuredCellsCount;
-      this._cellMetrics[cellKey] = next;
+      this._cellMetrics.set(cellKey, next);
       this._highestMeasuredCellIndex = Math.max(
         this._highestMeasuredCellIndex,
         cellIndex,
       );
       return true;
     } else {
-      this._cellMetrics[cellKey].isMounted = true;
+      curr.isMounted = true;
       return false;
     }
   }
@@ -140,13 +155,9 @@ export default class ListMetricsAggregator {
    * Notify ListMetricsAggregator that a cell has been unmounted.
    */
   notifyCellUnmounted(cellKey: string): void {
-    const curr = this._cellMetrics[cellKey];
+    const curr = this._cellMetrics.get(cellKey);
     if (curr) {
-      this._cellMetrics[cellKey] = {
-        ...curr,
-        isMounted: false,
-        listContentLength: curr.listContentLength ?? this._contentLength,
-      };
+      curr.isMounted = false;
     }
   }
 
@@ -162,6 +173,19 @@ export default class ListMetricsAggregator {
   }): void {
     this._invalidateIfOrientationChanged(orientation);
     const newLength = this._selectLength(layout);
+
+    // Fill in any just-measured cells which did not have this length available.
+    // This logic assumes that cell relayout will always change list content
+    // size, which isn't strictly correct, but issues should be rare and only
+    // on Paper.
+    if (this._onLayoutDirection === 'bottom-up') {
+      for (const cellMetric of this._cellMetrics.values()) {
+        if (cellMetric.listContentLength == null) {
+          cellMetric.listContentLength = newLength;
+        }
+      }
+    }
+
     this._contentLength = newLength;
   }
 
@@ -173,7 +197,8 @@ export default class ListMetricsAggregator {
   }
 
   /**
-   * Return the highest measured cell index
+   * Return the highest measured cell index (or 0 if nothing has been measured
+   * yet)
    */
   getHighestMeasuredCellIndex(): number {
     return this._highestMeasuredCellIndex;
@@ -214,13 +239,17 @@ export default class ListMetricsAggregator {
       'Tried to get metrics for out of range cell index ' + index,
     );
     const keyExtractor = props.keyExtractor ?? defaultKeyExtractor;
-    const frame = this._cellMetrics[keyExtractor(getItem(data, index), index)];
+    const frame = this._cellMetrics.get(
+      keyExtractor(getItem(data, index), index),
+    );
     if (frame && frame.index === index) {
       return this._resolveCellMetrics(frame);
     }
 
     if (getItemLayout) {
       const {length, offset} = getItemLayout(data, index);
+      // TODO: `isMounted` is used for both "is exact layout" and "has been
+      // unmounted". Should be refactored.
       return {index, length, offset, isMounted: true};
     }
 
@@ -296,7 +325,7 @@ export default class ListMetricsAggregator {
 
   _invalidateIfOrientationChanged(orientation: ListOrientation): void {
     if (orientation.rtl !== this._orientation.rtl) {
-      this._cellMetrics = {};
+      this._cellMetrics.clear();
     }
 
     if (orientation.horizontal !== this._orientation.horizontal) {
@@ -322,7 +351,6 @@ export default class ListMetricsAggregator {
   }
 
   _resolveCellMetrics(metrics: UnresolvedCellMetrics): CellMetrics {
-    metrics.listContentLength ??= this._contentLength;
     const {index, layout, isMounted, listContentLength} = metrics;
 
     return {
