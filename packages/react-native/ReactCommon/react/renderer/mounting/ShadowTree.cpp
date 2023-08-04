@@ -355,6 +355,11 @@ CommitStatus ShadowTree::tryCommit(
   newRootShadowNode = delegate_.shadowTreeWillCommit(
       *this, oldRootShadowNode, newRootShadowNode);
 
+  if (!newRootShadowNode ||
+      (commitOptions.shouldYield && commitOptions.shouldYield())) {
+    return CommitStatus::Cancelled;
+  }
+
   // Layout nodes.
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
@@ -372,16 +377,15 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
+    if (commitOptions.shouldYield && commitOptions.shouldYield()) {
+      return CommitStatus::Cancelled;
+    }
+
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
     }
 
     auto newRevisionNumber = oldRevision.number + 1;
-
-    if (!newRootShadowNode ||
-        (commitOptions.shouldYield && commitOptions.shouldYield())) {
-      return CommitStatus::Cancelled;
-    }
 
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
