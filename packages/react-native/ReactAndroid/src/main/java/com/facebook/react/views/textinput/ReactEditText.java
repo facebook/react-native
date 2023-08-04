@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
+import static com.facebook.react.config.ReactFeatureFlags.enableComposingSpanRestorationOnSameLength;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -47,6 +48,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -694,20 +696,20 @@ public class ReactEditText extends AppCompatEditText {
    * as long as the text they cover is the same unless they are {@link Spanned#SPAN_COMPOSING}.
    * All other spans will remain the same, since they will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
    * them.
-   * Keep copy of {@link Spanned#SPAN_COMPOSING} Spans in {@param spannableStringBuilder}, because they are important for
+   * When {@link ReactFeatureFlags#enableComposingSpanRestorationOnSameLength} is enabled,
+   * keep copy of {@link Spanned#SPAN_COMPOSING} Spans in {@param spannableStringBuilder}, because they are important for
    * keyboard suggestions. Without keeping these Spans, suggestions default to be put after the current selection position,
    * possibly resulting in letter duplication (ex. Samsung Keyboard).
    */
   private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
-    boolean shouldKeepComposingSpans = length() == spannableStringBuilder.length();
+    boolean shouldKeepComposingSpans = enableComposingSpanRestorationOnSameLength
+      && length() == spannableStringBuilder.length();
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       Object span = spans[spanIdx];
       int spanFlags = getText().getSpanFlags(span);
       boolean isExclusiveExclusive =
           (spanFlags & Spanned.SPAN_EXCLUSIVE_EXCLUSIVE) == Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
-      boolean isComposing =
-        (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
 
       // Remove all styling spans we might have previously set
       if (span instanceof ReactSpan) {
@@ -722,10 +724,13 @@ public class ReactEditText extends AppCompatEditText {
       final int spanStart = getText().getSpanStart(span);
       final int spanEnd = getText().getSpanEnd(span);
 
-      // We keep a copy of Composing spans
-      if (shouldKeepComposingSpans && isComposing) {
-        spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
-        continue;
+      if (shouldKeepComposingSpans) {
+        // We keep a copy of Composing spans
+        boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
+        if (isComposing) {
+          spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
+          continue;
+        }
       }
 
       // Make sure the span is removed from existing text, otherwise the spans we set will be
@@ -856,13 +861,18 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   /**
-   * Attaches the {@link Spanned#SPAN_COMPOSING} from {@param spannableStringBuilder} to {@link ReactEditText#getText}
-   * if they are the same length.
+   * When {@link ReactFeatureFlags#enableComposingSpanRestorationOnSameLength} is enabled, this
+   * function attaches the {@link Spanned#SPAN_COMPOSING} from {@param spannableStringBuilder} to
+   * {@link ReactEditText#getText} if they are the same length.
    *
    * See {@link ReactEditText#manageSpans} for more details.
-   * Also https://github.com/facebook/react-native/issues/11068
+   * Also this <a href="https://github.com/facebook/react-native/issues/11068">GitHub issue</a>
    */
   private void attachCompositeSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
+    if (!enableComposingSpanRestorationOnSameLength) {
+      return;
+    }
+
     Editable text = getText();
     if (text == null || text.length() != spannableStringBuilder.length()) {
       return;
