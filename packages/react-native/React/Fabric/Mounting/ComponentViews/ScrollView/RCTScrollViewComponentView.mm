@@ -442,7 +442,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   NSTimeInterval now = CACurrentMediaTime();
-  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+  if (CoreFeatures::disableScrollEventThrottleRequirement || (_lastScrollEventDispatchTime == 0) ||
+      (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
       static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);
