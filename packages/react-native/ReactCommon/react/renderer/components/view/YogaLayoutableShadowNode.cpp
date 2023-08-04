@@ -251,7 +251,7 @@ void YogaLayoutableShadowNode::appendChild(
 void YogaLayoutableShadowNode::replaceChild(
     ShadowNode const &oldChild,
     ShadowNode::Shared const &newChild,
-    size_t suggestedIndex) {
+    int32_t suggestedIndex) {
   LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
 
   ensureUnsealed();
