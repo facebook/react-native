@@ -114,6 +114,9 @@ Pod::Spec.new do |spec|
       spec.script_phases = [
         {
           :name => '[RN] [1] Build Hermesc',
+          :output_files => [
+            "${PODS_ROOT}/hermes_engine/build_host_hermesc/ImportHermesc.cmake"
+          ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
@@ -122,6 +125,10 @@ Pod::Spec.new do |spec|
         },
         {
           :name => '[RN] [2] Build Hermes',
+          :input_files => ["${PODS_ROOT}/hermes_engine/build_host_hermesc/ImportHermesc.cmake"],
+          :output_files => [
+            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermes.framework/hermes"
+          ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}

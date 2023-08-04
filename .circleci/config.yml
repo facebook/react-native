@@ -34,6 +34,8 @@ references:
   attach_hermes_workspace: &attach_hermes_workspace
     attach_workspace:
       at: *hermes_workspace_root
+  xcodebuild_derived_data_path: &xcodebuild_derived_data_path
+    ~/Library/Developer/Xcode/DerivedData/
 
   main_or_stable_only: &main_or_stable_only
     filters:
@@ -60,22 +62,34 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
+    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_workspace_release_cache_key: &hermes_workspace_release_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_linux_cache_key: &hermes_linux_cache_key v1-hermes-{{ .Environment.CIRCLE_JOB }}-linux-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_windows_cache_key: &hermes_windows_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-windows-{{ checksum "/Users/circleci/project/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    # Hermes iOS
     hermesc_apple_cache_key: &hermesc_apple_cache_key v2-hermesc-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_apple_slices_cache_key: &hermes_apple_slices_cache_key v2-hermes-apple-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
     hermes_tarball_debug_cache_key: &hermes_tarball_debug_cache_key v4-hermes-tarball-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v1-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v1-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+
+    # Cocoapods - RNTester
     pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    cocoapods_cache_key: &cocoapods_cache_key v7-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}
+    rntester_podfile_lock_cache_key: &rntester_podfile_lock_cache_key v5-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile" }}-{{ checksum "/tmp/week_year" }}
+
+    # Cocoapods - Template
+    template_cocoapods_cache_key: &template_cocoapods_cache_key v1-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile.lock" }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}
+    template_podfile_lock_cache_key: &template_podfile_lock_cache_key v1-podfilelock-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/iOSTemplateProject/ios/Podfile" }}-{{ checksum "/tmp/week_year" }}
+
+    # Windows
     windows_yarn_cache_key: &windows_yarn_cache_key v1-win-yarn-cache-{{ arch }}-{{ checksum "yarn.lock" }}
     windows_choco_cache_key: &windows_choco_cache_key v1-win-choco-cache-{{ .Environment.CIRCLE_JOB }}
-    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
-    rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
+
 
   cache_paths:
     hermes_workspace_macos_cache_paths: &hermes_workspace_macos_cache_paths
@@ -544,6 +558,46 @@ commands:
             mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./packages/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ./packages/react-native/sdks/hermes/.
             cp -r ./packages/react-native/sdks/hermes-engine/utils ./packages/react-native/sdks/hermes/.
+
+
+
+  with_xcodebuild_cache:
+    description: "Add caching to iOS jobs to speed up builds"
+    parameters:
+      steps:
+        type: steps
+      podfile_lock_path:
+        type: string
+        default: packages/rn-tester/Podfile.lock
+      pods_build_folder:
+        type: string
+        default: packages/rn-tester/Pods
+      podfile_lock_cache_key:
+        type: string
+        default: *rntester_podfile_lock_cache_key
+      cocoapods_cache_key:
+        type: string
+        default: *cocoapods_cache_key
+    steps:
+      - run:
+          name: Prepare Xcodebuild cache
+          command: |
+            WEEK=$(date +"%U")
+            YEAR=$(date +"%Y")
+            echo "$WEEK-$YEAR" > /tmp/week_year
+      - restore_cache:
+          key: << parameters.podfile_lock_cache_key >>
+      - restore_cache:
+          key: << parameters.cocoapods_cache_key >>
+      - steps: << parameters.steps >>
+      - save_cache:
+          key: << parameters.podfile_lock_cache_key >>
+          paths:
+            - << parameters.podfile_lock_path >>
+      - save_cache:
+          key: << parameters.cocoapods_cache_key >>
+          paths:
+            - << parameters.pods_build_folder >>
 
 
 
@@ -1024,6 +1078,18 @@ jobs:
         default: "2.6.10"
         description: The version of ruby that must be used
         type: string
+      podfile_lock_path:
+        type: string
+        default: "/tmp/iOSTemplateProject/ios/Podfile.lock"
+      pods_build_folder:
+        type: string
+        default: "/tmp/iOSTemplateProject/ios/Pods"
+      podfile_lock_cache_key:
+        type: string
+        default: *template_podfile_lock_cache_key
+      cocoapods_cache_key:
+        type: string
+        default: *template_cocoapods_cache_key
     environment:
       - PROJECT_NAME: "iOSTemplateProject"
       - HERMES_WS_DIR: *hermes_workspace_root
@@ -1053,38 +1119,44 @@ jobs:
             PATH_TO_PACKAGE="$REPO_ROOT/build/$PACKAGE"
             node ./scripts/update-template-package.js "{\"react-native\":\"file:$PATH_TO_PACKAGE\"}"
             node ./scripts/template/initialize.js --reactNativeRootPath $REPO_ROOT --templateName $PROJECT_NAME --templateConfigPath "$REPO_ROOT/packages/react-native" --directory "/tmp/$PROJECT_NAME"
-      - run:
-          name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
-          command: |
-            cd /tmp/$PROJECT_NAME/ios
+      - with_xcodebuild_cache:
+          podfile_lock_path: << parameters.podfile_lock_path >>
+          pods_build_folder: << parameters.pods_build_folder >>
+          cocoapods_cache_key: << parameters.cocoapods_cache_key >>
+          podfile_lock_cache_key: << parameters.podfile_lock_cache_key >>
+          steps:
+            - run:
+                name: Install iOS dependencies - Configuration << parameters.flavor >>; New Architecture << parameters.architecture >>; JS Engine << parameters.jsengine>>; Flipper << parameters.flipper >>
+                command: |
+                  cd /tmp/$PROJECT_NAME/ios
 
-            if [[ << parameters.architecture >> == "NewArch" ]]; then
-              export RCT_NEW_ARCH_ENABLED=1
-            fi
+                  if [[ << parameters.architecture >> == "NewArch" ]]; then
+                    export RCT_NEW_ARCH_ENABLED=1
+                  fi
 
-            if [[ << parameters.jsengine >> == "JSC" ]]; then
-              export USE_HERMES=0
-            fi
+                  if [[ << parameters.jsengine >> == "JSC" ]]; then
+                    export USE_HERMES=0
+                  fi
 
-            if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
-              export NO_FLIPPER=1
-            fi
+                  if [[ << parameters.flipper >> == "WithoutFlipper" ]]; then
+                    export NO_FLIPPER=1
+                  fi
 
-            if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-              export USE_FRAMEWORKS=dynamic
-            fi
+                  if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+                    export USE_FRAMEWORKS=dynamic
+                  fi
 
-            cd ..
-            bundle install
-            bundle exec pod install --project-directory=ios
-      - run:
-          name: Build template project
-          command: |
-            xcodebuild build \
-              -configuration << parameters.flavor >> \
-              -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
-              -scheme $PROJECT_NAME \
-              -sdk iphonesimulator
+                  cd ..
+                  bundle install
+                  bundle exec pod install --project-directory=ios
+            - run:
+                name: Build template project
+                command: |
+                  xcodebuild build \
+                    -configuration << parameters.flavor >> \
+                    -workspace /tmp/$PROJECT_NAME/ios/$PROJECT_NAME.xcworkspace \
+                    -scheme $PROJECT_NAME \
+                    -sdk iphonesimulator
 
   # -------------------------
   #    JOBS: Test iOS RNTester
@@ -1100,20 +1172,21 @@ jobs:
       - run_yarn
       - brew_install:
           package: cmake
-      - run:
-          name: Pod install
-          command: |
-            cd packages/rn-tester
-            rm -rf Pods Podfile.lock
-            bundle install
-            RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
-      - run:
-          name: Build RNTester
-          command: |
-            xcodebuild build \
-              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-              -scheme RNTester \
-              -sdk iphonesimulator
+      - with_xcodebuild_cache:
+          steps:
+            - run:
+                name: Pod install
+                command: |
+                  cd packages/rn-tester
+                  bundle install
+                  RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
+            - run:
+                name: Build RNTester
+                command: |
+                  xcodebuild build \
+                    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                    -scheme RNTester \
+                    -sdk iphonesimulator
 
   test_ios_rntester:
     executor: reactnativeios
@@ -1154,36 +1227,35 @@ jobs:
       - with_hermes_tarball_cache_span:
           set_tarball_path: True
           steps:
-            - run:
-                name: Install CocoaPods dependencies - Architecture << parameters.architecture >>
-                command: |
-                  rm -rf packages/rn-tester/Pods
+            - with_xcodebuild_cache:
+                steps:
+                  - run:
+                      name: Install CocoaPods dependencies - Architecture << parameters.architecture >>
+                      command: |
+                        if [[ << parameters.architecture >> == "NewArch" ]]; then
+                          export RCT_NEW_ARCH_ENABLED=1
+                        fi
 
-                  if [[ << parameters.architecture >> == "NewArch" ]]; then
-                    export RCT_NEW_ARCH_ENABLED=1
-                  fi
+                        if [[ << parameters.jsengine >> == "JSC" ]]; then
+                          export USE_HERMES=0
+                        fi
 
-                  if [[ << parameters.jsengine >> == "JSC" ]]; then
-                    export USE_HERMES=0
-                  fi
+                        if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
+                          export NO_FLIPPER=1
+                          export USE_FRAMEWORKS=dynamic
+                        fi
 
-                  if [[ << parameters.use_frameworks >> == "DynamicFrameworks" ]]; then
-                    export NO_FLIPPER=1
-                    export USE_FRAMEWORKS=dynamic
-                  fi
+                        cd packages/rn-tester
 
-                  cd packages/rn-tester
-
-                  bundle install
-                  bundle exec pod install
-
-      - run:
-          name: Build RNTester
-          command: |
-            xcodebuild build \
-              -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-              -scheme RNTester \
-              -sdk iphonesimulator
+                        bundle install
+                        bundle exec pod install
+                  - run:
+                      name: Build RNTester
+                      command: |
+                        xcodebuild build \
+                          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                          -scheme RNTester \
+                          -sdk iphonesimulator
 
   # -------------------------
   #    JOBS: Windows
@@ -1935,7 +2007,7 @@ workflows:
           latest : false
           dryrun: true
       - prepare_hermes_workspace
-      # - test_ios_rntester_hermes_xcode_integration
+      - test_ios_rntester_hermes_xcode_integration
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
