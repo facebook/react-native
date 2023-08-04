@@ -96,8 +96,8 @@ export class MockedParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    return typeAnnotation?.id?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {

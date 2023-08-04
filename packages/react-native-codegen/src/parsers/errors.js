@@ -117,9 +117,7 @@ class UnsupportedGenericParserError extends ParserError {
     genericTypeAnnotation: $FlowFixMe,
     parser: Parser,
   ) {
-    const genericName = parser.nameForGenericTypeAnnotation(
-      genericTypeAnnotation,
-    );
+    const genericName = parser.getTypeAnnotationName(genericTypeAnnotation);
     super(
       nativeModuleName,
       genericTypeAnnotation,
@@ -136,9 +134,7 @@ class MissingTypeParameterGenericParserError extends ParserError {
     genericTypeAnnotation: $FlowFixMe,
     parser: Parser,
   ) {
-    const genericName = parser.nameForGenericTypeAnnotation(
-      genericTypeAnnotation,
-    );
+    const genericName = parser.getTypeAnnotationName(genericTypeAnnotation);
 
     super(
       nativeModuleName,
@@ -154,9 +150,7 @@ class MoreThanOneTypeParameterGenericParserError extends ParserError {
     genericTypeAnnotation: $FlowFixMe,
     parser: Parser,
   ) {
-    const genericName = parser.nameForGenericTypeAnnotation(
-      genericTypeAnnotation,
-    );
+    const genericName = parser.getTypeAnnotationName(genericTypeAnnotation);
 
     super(
       nativeModuleName,

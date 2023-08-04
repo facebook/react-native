@@ -125,6 +125,20 @@ describe('FlowParser', () => {
     });
   });
 
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        id: {
+          name: 'StringTypeAnnotation',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toBe(
+        'StringTypeAnnotation',
+      );
+    });
+  });
+
   describe('computePartialProperties', () => {
     it('returns partial properties', () => {
       const properties = [
@@ -548,6 +562,19 @@ describe('TypeScriptParser', () => {
     it('returns null if it is a invalid node', () => {
       const node = {};
       expect(parser.callExpressionTypeParameters(node)).toBe(null);
+    });
+  });
+
+  describe('getTypeAnnotationName', () => {
+    it('returns type annotation name', () => {
+      const typeAnnotation = {
+        type: 'TSTypeReference',
+        typeName: {
+          name: 'Foo',
+        },
+      };
+
+      expect(parser.getTypeAnnotationName(typeAnnotation)).toEqual('Foo');
     });
   });
 

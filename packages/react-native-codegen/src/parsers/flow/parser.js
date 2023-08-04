@@ -99,7 +99,7 @@ class FlowParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.id?.name;
   }
 
@@ -421,7 +421,7 @@ class FlowParser implements Parser {
         break;
       }
 
-      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const typeAnnotationName = this.getTypeAnnotationName(node);
       const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;

@@ -51,7 +51,10 @@ function getPropertyType(
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type =
+    typeAnnotation.type === 'TSTypeReference'
+      ? parser.getTypeAnnotationName(typeAnnotation)
+      : typeAnnotation.type;
 
   switch (type) {
     case 'TSBooleanKeyword':
@@ -92,7 +95,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'TSParenthesizedType':
@@ -154,6 +157,15 @@ function extractArrayElementType(
   }
 }
 
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'TSTypeReference'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
+}
+
 function findEventArgumentsAndType(
   parser: Parser,
   typeAnnotation: $FlowFixMe,
@@ -182,7 +194,7 @@ function findEventArgumentsAndType(
   }
 
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.typeName.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === 'Readonly') {
     return findEventArgumentsAndType(
       parser,

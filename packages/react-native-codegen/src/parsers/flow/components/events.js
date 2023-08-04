@@ -45,7 +45,7 @@ function getPropertyType(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -94,7 +94,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -163,6 +163,15 @@ function prettify(jsonObject: $FlowFixMe): string {
   return JSON.stringify(jsonObject, null, 2);
 }
 
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'GenericTypeAnnotation'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
+}
+
 function findEventArgumentsAndType(
   parser: Parser,
   typeAnnotation: $FlowFixMe,
@@ -175,7 +184,7 @@ function findEventArgumentsAndType(
   paperTopLevelNameDeprecated: ?$FlowFixMe,
 } {
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.id.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
@@ -236,8 +245,8 @@ function buildEventSchema(
 
   if (
     typeAnnotation.type !== 'GenericTypeAnnotation' ||
-    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
-      typeAnnotation.id.name !== 'DirectEventHandler')
+    (parser.getTypeAnnotationName(typeAnnotation) !== 'BubblingEventHandler' &&
+      parser.getTypeAnnotationName(typeAnnotation) !== 'DirectEventHandler')
   ) {
     return null;
   }
