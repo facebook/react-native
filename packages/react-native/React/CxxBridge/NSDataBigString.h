@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef __cplusplus
+
 #include <cxxreact/JSBigString.h>
 
 namespace facebook::react {
@@ -38,3 +40,5 @@ class NSDataBigString : public JSBigString {
 };
 
 } // namespace facebook::react
+
+#endif // __cplusplus

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
+
 #import <React/RCTModuleData.h>
 #import <cxxreact/NativeModule.h>
 
@@ -30,3 +32,5 @@ class RCTNativeModule : public NativeModule {
 };
 
 } // namespace facebook::react
+
+#endif // __cplusplus

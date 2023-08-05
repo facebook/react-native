@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
+
 #include <functional>
 #include <memory>
 
@@ -29,3 +31,5 @@ class RCTObjcExecutorFactory : public JSExecutorFactory {
 };
 
 } // namespace facebook::react
+
+#endif // __cplusplus

@@ -6,6 +6,7 @@
  */
 
 #pragma once
+#ifdef __cplusplus
 
 #include <jsireact/JSIExecutor.h>
 
@@ -19,3 +20,5 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
 } // namespace facebook::react
+
+#endif // __cplusplus

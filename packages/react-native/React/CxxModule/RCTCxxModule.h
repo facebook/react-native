@@ -5,15 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <memory>
-
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
 
+#ifdef __cplusplus
+
+#import <memory>
+
 namespace facebook::xplat::module {
 class CxxModule;
 } // namespace facebook::react::module
+
+#endif // __cplusplus
 
 /**
  * Subclass RCTCxxModule to use cross-platform CxxModule on iOS.
@@ -23,7 +27,9 @@ class CxxModule;
  */
 @interface RCTCxxModule : NSObject <RCTBridgeModule>
 
+#ifdef __cplusplus
 // To be implemented by subclasses
 - (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule;
+#endif // __cplusplus
 
 @end

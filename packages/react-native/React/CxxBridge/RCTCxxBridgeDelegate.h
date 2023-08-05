@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
+#ifdef __cplusplus
 
-#import <React/RCTBridgeDelegate.h>
+#include <memory>
 
 namespace facebook::react {
 
@@ -15,11 +15,16 @@ class JSExecutorFactory;
 
 } // namespace facebook::react
 
+#endif // __cplusplus
+
+#import <React/RCTBridgeDelegate.h>
+
 // This is a separate class so non-C++ implementations don't need to
 // take a C++ dependency.
 
 @protocol RCTCxxBridgeDelegate <RCTBridgeDelegate>
 
+#ifdef __cplusplus
 /**
  * In the RCTCxxBridge, if this method is implemented, return a
  * ExecutorFactory instance which can be used to create the executor.
@@ -27,5 +32,6 @@ class JSExecutorFactory;
  * will be used with a JSCRuntime.
  */
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
+#endif // __cplusplus
 
 @end

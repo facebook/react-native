@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef __cplusplus
+
 #include <glog/logging.h>
 
 #include <React/RCTLog.h>
@@ -43,3 +45,5 @@ class DispatchMessageQueueThread : public MessageQueueThread {
 };
 
 } // namespace facebook::react
+
+#endif // __cplusplus

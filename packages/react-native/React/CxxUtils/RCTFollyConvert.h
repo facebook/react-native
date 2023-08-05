@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef __cplusplus
+
 #include <folly/dynamic.h>
 
 namespace facebook::react {
@@ -15,3 +17,5 @@ folly::dynamic convertIdToFollyDynamic(id json);
 id convertFollyDynamicToId(const folly::dynamic &dyn);
 
 } // namespace facebook::react
+
+#endif // __cplusplus
