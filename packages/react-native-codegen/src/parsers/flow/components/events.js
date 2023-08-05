@@ -16,6 +16,7 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+import type {EventArgumentReturnType} from '../../parsers-commons';
 
 const {
   throwIfEventHasNoName,
@@ -25,6 +26,7 @@ const {
 const {
   getEventArgument,
   buildPropertiesForEvent,
+  handleEventHandler,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -178,11 +180,7 @@ function findEventArgumentsAndType(
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-): {
-  argumentProps: $FlowFixMe,
-  bubblingType: ?('direct' | 'bubble'),
-  paperTopLevelNameDeprecated: ?$FlowFixMe,
-} {
+): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
   const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
@@ -192,25 +190,12 @@ function findEventArgumentsAndType(
       bubblingType,
     };
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
-    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
-    const paperTopLevelNameDeprecated =
-      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
-    if (
-      typeAnnotation.typeParameters.params[0].type ===
-      parser.nullLiteralTypeAnnotation
-    ) {
-      return {
-        argumentProps: [],
-        bubblingType: eventType,
-        paperTopLevelNameDeprecated,
-      };
-    }
-    return findEventArgumentsAndType(
+    return handleEventHandler(
+      name,
+      typeAnnotation,
       parser,
-      typeAnnotation.typeParameters.params[0],
       types,
-      eventType,
-      paperTopLevelNameDeprecated,
+      findEventArgumentsAndType,
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
