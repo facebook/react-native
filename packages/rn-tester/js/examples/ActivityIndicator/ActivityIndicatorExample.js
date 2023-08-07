@@ -88,8 +88,6 @@ exports.examples = [
           style={[styles.centering, styles.gray]}
           color="white"
           {...testProps('default_activity_indicator')}
-          title="Default Activity Indicator"
-          accessibilityLabel="Default Activity Indicator"
         />
       );
     },
@@ -126,7 +124,7 @@ exports.examples = [
           style={[styles.centering, styles.gray]}
           size="large"
           color="white"
-          {...testProps('default_activity_indicator')}
+          {...testProps('large_activity_indicator')}
         />
       );
     },
@@ -157,7 +155,6 @@ exports.examples = [
         <ActivityIndicator
           style={[styles.centering, {transform: [{scale: 1.5}]}]}
           size="large"
-          {...testProps('default_activity_indicator')}
         />
       );
     },

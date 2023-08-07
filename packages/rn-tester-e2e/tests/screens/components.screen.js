@@ -14,14 +14,18 @@ import {UtilsSingleton as Utils, iOSLabel} from '../helpers/utils';
 
 const buttonComponentLabel = 'Button Simple React Native button component.';
 const activityIndicatorComponentLabel = 'Animated loading indicators.';
+const imageComponentLabel = 'Base component for displaying different types of images.';
 
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
   activityIndicatorComponentLabelElement: string,
+  imageComponentLabelElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
+  checkImageComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
+  clickImageComponent: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -34,6 +38,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     ios: iOSLabel(activityIndicatorComponentLabel),
     android: `~${activityIndicatorComponentLabel}`,
   }),
+  imageComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(imageComponentLabel),
+    android: `~${imageComponentLabel}`,
+  }),
   // Methods to interact with top level elements in the list
   checkButtonComponentIsDisplayed: async function (
     this: ComponentsScreenType,
@@ -45,6 +53,11 @@ export const ComponentsScreen: ComponentsScreenType = {
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.activityIndicatorComponentLabelElement);
   },
+  checkImageComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.imageComponentLabelElement);
+  },
   clickButtonComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
@@ -54,5 +67,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<void> {
     await Utils.clickElement(this.activityIndicatorComponentLabelElement);
+  },
+  clickImageComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.imageComponentLabelElement);
   },
 };

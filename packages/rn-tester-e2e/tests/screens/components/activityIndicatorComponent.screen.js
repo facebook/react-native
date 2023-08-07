@@ -30,7 +30,7 @@ export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenT
     // References to elements within the Activity Indicator Component screen
     defaultActivityIndicatorScreenElement: Utils.platformSelect({
       ios: iOSLabel('default_activity_indicator'),
-      android: androidWidget('ProgressBar', 'resource-id', 'default_activity_indicator'),
+      android: androidWidget('ProgressBar', 'accessibility-id', 'default_activity_indicator'),
     }),
     // Methods to interact with the elements
     checkDefaultActivityIndicatorIsDisplayed: async function (
