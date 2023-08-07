@@ -81,8 +81,6 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewHeight) const;
   bool getClipsContentToBounds() const;
 
-#pragma mark - DebugStringConvertible
-
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif
