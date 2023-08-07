@@ -61,7 +61,7 @@ references:
   cache_keys:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
-    gradle_cache_key: &gradle_cache_key v1-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
+    gradle_cache_key: &gradle_cache_key v2-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
     yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
     rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
@@ -302,8 +302,8 @@ commands:
       - save_cache:
           paths:
             - ~/.gradle
-            - ReactAndroid/build/downloads
-            - ReactAndroid/build/third-party-ndk
+            - packages/react-native/ReactAndroid/build/downloads
+            - packages/react-native/ReactAndroid/build/third-party-ndk
           key: *gradle_cache_key
 
   run_e2e:
