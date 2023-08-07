@@ -52,6 +52,7 @@ references:
     xcode_version: &xcode_version "14.3.0"
     nodelts_image: &nodelts_image "cimg/node:20.2.0"
     nodeprevlts_image: &nodeprevlts_image "cimg/node:18.12.1"
+    nodelts_browser_image: &nodelts_browser_image "cimg/node:20.2.0-browsers"
 
   # -------------------------
   #        Cache Key Anchors
@@ -62,7 +63,7 @@ references:
     checkout_cache_key: &checkout_cache_key v1-checkout
     gems_cache_key: &gems_cache_key v1-gems-{{ checksum "Gemfile.lock" }}
     gradle_cache_key: &gradle_cache_key v2-gradle-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "packages/react-native/ReactAndroid/gradle.properties" }}
-    yarn_cache_key: &yarn_cache_key v5-yarn-cache-{{ .Environment.CIRCLE_JOB }}
+    yarn_cache_key: &yarn_cache_key v6-yarn-cache-{{ .Environment.CIRCLE_JOB }}
     rbenv_cache_key: &rbenv_cache_key v1-rbenv-{{ checksum "/tmp/required_ruby" }}
     hermes_workspace_cache_key: &hermes_workspace_cache_key v5-hermes-{{ .Environment.CIRCLE_JOB }}-{{ checksum "/tmp/hermes/hermesversion" }}
     hermes_workspace_debug_cache_key: &hermes_workspace_debug_cache_key v2-hermes-{{ .Environment.CIRCLE_JOB }}-debug-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}-{{ checksum "packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh" }}
@@ -129,6 +130,12 @@ executors:
     docker:
       - image: *nodeprevlts_image
     resource_class: "xlarge"
+  # Executor with Node & Java used to inspect and lint
+  node-browsers-small:
+    <<: *defaults
+    docker:
+      - image: *nodelts_browser_image
+    resource_class: "small"
   reactnativeandroid:
     <<: *defaults
     docker:
@@ -610,7 +617,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    executor: reactnativeandroid
+    executor: node-browsers-small
     steps:
       - checkout
       - run_yarn
@@ -622,7 +629,7 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze_code:
-    executor: reactnativeandroid
+    executor: node-browsers-small
     steps:
       - checkout
       - setup_artifacts
@@ -636,6 +643,13 @@ jobs:
       - run:
           name: Lint Java
           command: scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+          when: always
+
+      - run:
+          name: Set server.max_workers=1 in .flowconfig
+          command: |
+            sed -i '/\[options\]/a server.max_workers=1' .flowconfig
+            sed -i '/\[options\]/a server.max_workers=1' .flowconfig.android
           when: always
 
       - run:
