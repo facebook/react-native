@@ -49,7 +49,7 @@ let argv = yargs
   .check(() => {
     const branch = exitIfNotOnGit(
       () => getBranchName(),
-      "Not in git. You can't invoke bump-oss-versions.js from outside a git repo.",
+      "Not in git. You can't invoke trigger-react-native-release from outside a git repo.",
     );
     exitIfNotOnReleaseBranch(branch);
     return true;
@@ -125,7 +125,7 @@ function triggerReleaseWorkflow(options) {
 async function main() {
   const branch = exitIfNotOnGit(
     () => getBranchName(),
-    "Not in git. You can't invoke bump-oss-versions.js from outside a git repo.",
+    "Not in git. You can't invoke trigger-react-native-release from outside a git repo.",
   );
 
   // check for uncommitted changes

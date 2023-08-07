@@ -35,7 +35,7 @@
     "test-typescript": "dtslint packages/react-native/types",
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib  packages/react-native/types",
     "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
-    "bump-oss-version": "node ./scripts/bump-oss-version.js"
+    "trigger-react-native-release": "node ./scripts/trigger-react-native-release.js"
   },
   "workspaces": [
     "packages/*"
