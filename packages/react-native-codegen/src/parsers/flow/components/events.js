@@ -34,6 +34,7 @@ const {
   emitStringProp,
   emitInt32Prop,
   emitObjectProp,
+  emitUnionProp,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
@@ -44,7 +45,7 @@ function getPropertyType(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -73,14 +74,7 @@ function getPropertyType(
         extractArrayElementType,
       );
     case 'UnionTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.value),
-        },
-      };
+      return emitUnionProp(name, optional, parser, typeAnnotation);
     case 'UnsafeMixed':
       return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
@@ -100,7 +94,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -119,7 +113,9 @@ function extractArrayElementType(
     case 'UnionTypeAnnotation':
       return {
         type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option => option.value),
+        options: typeAnnotation.types.map(option =>
+          parser.getLiteralValue(option),
+        ),
       };
     case 'UnsafeMixed':
       return {type: 'MixedTypeAnnotation'};
@@ -167,6 +163,15 @@ function prettify(jsonObject: $FlowFixMe): string {
   return JSON.stringify(jsonObject, null, 2);
 }
 
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'GenericTypeAnnotation'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
+}
+
 function findEventArgumentsAndType(
   parser: Parser,
   typeAnnotation: $FlowFixMe,
@@ -179,7 +184,7 @@ function findEventArgumentsAndType(
   paperTopLevelNameDeprecated: ?$FlowFixMe,
 } {
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.id.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
@@ -189,9 +194,7 @@ function findEventArgumentsAndType(
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
-      typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].value
-        : null;
+      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
     if (
       typeAnnotation.typeParameters.params[0].type ===
       parser.nullLiteralTypeAnnotation
@@ -242,8 +245,8 @@ function buildEventSchema(
 
   if (
     typeAnnotation.type !== 'GenericTypeAnnotation' ||
-    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
-      typeAnnotation.id.name !== 'DirectEventHandler')
+    (parser.getTypeAnnotationName(typeAnnotation) !== 'BubblingEventHandler' &&
+      parser.getTypeAnnotationName(typeAnnotation) !== 'DirectEventHandler')
   ) {
     return null;
   }

@@ -11,7 +11,6 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
-import type {NativeColorValue} from './PlatformColorValueTypes';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -21,6 +20,7 @@ import type {
 } from './private/_StyleSheetTypesOverrides';
 import type {____TransformStyle_Internal} from './private/_TransformStyle';
 
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {

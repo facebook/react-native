@@ -14,28 +14,18 @@
     "directory": "packages/dev-middleware"
   },
   "license": "MIT",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "yarn clean && babel src --out-dir dist",
-    "dev": "babel src --out-dir dist --source-maps --watch",
-    "clean": "rimraf dist",
-    "prepare": "yarn build"
-  },
   "dependencies": {
     "chrome-launcher": "^0.15.2",
     "connect": "^3.6.5",
     "node-fetch": "^2.2.0",
     "temp-dir": "^2.0.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.20.0",
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/preset-flow": "^7.20.0",
-    "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"

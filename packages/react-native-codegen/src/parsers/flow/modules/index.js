@@ -64,7 +64,7 @@ function translateTypeAnnotation(
 
   switch (typeAnnotation.type) {
     case 'GenericTypeAnnotation': {
-      switch (typeAnnotation.id.name) {
+      switch (parser.getTypeAnnotationName(typeAnnotation)) {
         case 'RootTag': {
           return emitRootTag(nullable);
         }

@@ -213,6 +213,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public void scrollTo(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
+    scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(data.mDestX, data.mDestY);
     } else {
@@ -378,5 +379,23 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "scrollEventThrottle")
   public void setScrollEventThrottle(ReactScrollView view, int scrollEventThrottle) {
     view.setScrollEventThrottle(scrollEventThrottle);
+  }
+
+  @ReactProp(name = "isInvertedVirtualizedList")
+  public void setIsInvertedVirtualizedList(ReactScrollView view, boolean applyFix) {
+    // Usually when inverting the scroll view we are using scaleY: -1 on the list
+    // and on the parent container. HOWEVER, starting from android API 33 there is
+    // a bug that can cause an ANR due to that. Thus we are using different transform
+    // commands to circumvent the ANR. This however causes the vertical scrollbar to
+    // be on the wrong side. Thus we are moving it to the other side, when the list
+    // is inverted.
+    // See also:
+    //  - https://github.com/facebook/react-native/issues/35350
+    //  - https://issuetracker.google.com/issues/287304310
+    if (applyFix) {
+      view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+    } else {
+      view.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_DEFAULT);
+    }
   }
 }

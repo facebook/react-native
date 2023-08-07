@@ -187,6 +187,7 @@ declare interface Request extends Object, Body {
   readonly mode: RequestMode_;
   readonly referrer: string;
   readonly url: string;
+  readonly signal: AbortSignal | undefined;
   clone(): Request;
 }
 

@@ -17,8 +17,6 @@
 #import <ReactCommon/TurboModuleBinding.h>
 #import "RCTTurboModule.h"
 
-RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBindingMode bindingMode);
-
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
 /**
@@ -66,11 +64,6 @@ RCT_EXTERN void RCTTurboModuleSetBindingMode(facebook::react::TurboModuleBinding
                           jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
-
-/**
- * @deprecated: use installJSBindings instead
- */
-- (void)installJSBindingWithRuntimeExecutor:(facebook::react::RuntimeExecutor &)runtimeExecutor;
 
 - (void)invalidate;
 

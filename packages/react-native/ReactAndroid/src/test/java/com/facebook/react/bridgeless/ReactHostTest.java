@@ -24,11 +24,11 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.MemoryPressureListener;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
-import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
 import com.facebook.react.fabric.ComponentFactory;
+import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.testutils.shadows.ShadowSoLoader;
@@ -183,7 +183,7 @@ public class ReactHostTest {
     assertThat(mReactHost.getLifecycleState()).isEqualTo(LifecycleState.BEFORE_CREATE);
   }
 
-  private static <T> void waitForTaskUIThread(Task<T> task) throws InterruptedException {
+  private static <T> void waitForTaskUIThread(TaskInterface<T> task) throws InterruptedException {
     boolean isTaskCompleted = false;
     while (!isTaskCompleted) {
       if (!task.waitForCompletion(4, TimeUnit.MILLISECONDS)) {

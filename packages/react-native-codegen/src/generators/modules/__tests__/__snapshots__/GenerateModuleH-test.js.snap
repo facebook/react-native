@@ -36,9 +36,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -104,9 +106,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -349,9 +353,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleCxx\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleCxx\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -450,9 +456,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -580,9 +588,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"AliasTurboModule\\";
+
 protected:
   AliasTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"AliasTurboModule\\", jsInvoker),
+    : TurboModule(std::string{AliasTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -897,9 +907,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"CameraRollManager\\";
+
 protected:
   NativeCameraRollManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"CameraRollManager\\", jsInvoker),
+    : TurboModule(std::string{NativeCameraRollManagerCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1118,9 +1130,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"ExceptionsManager\\";
+
 protected:
   NativeExceptionsManagerCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"ExceptionsManager\\", jsInvoker),
+    : TurboModule(std::string{NativeExceptionsManagerCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1319,9 +1333,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1492,9 +1508,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1537,9 +1555,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule2\\";
+
 protected:
   NativeSampleTurboModule2CxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule2\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModule2CxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:

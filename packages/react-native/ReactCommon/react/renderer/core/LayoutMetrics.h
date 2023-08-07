@@ -81,7 +81,7 @@ struct LayoutMetrics {
 static LayoutMetrics const EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(LayoutMetrics const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(

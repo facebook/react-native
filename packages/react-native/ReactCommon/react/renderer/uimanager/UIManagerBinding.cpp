@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -93,10 +94,36 @@ void UIManagerBinding::dispatchEvent(
     EventTarget const *eventTarget,
     std::string const &type,
     ReactEventPriority priority,
-    ValueFactory const &payloadFactory) const {
+    const EventPayload &eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
-  auto payload = payloadFactory(runtime);
+  if (eventPayload.getType() == EventPayloadType::PointerEvent) {
+    auto pointerEvent = static_cast<const PointerEvent &>(eventPayload);
+    auto dispatchCallback = [this](
+                                jsi::Runtime &runtime,
+                                EventTarget const *eventTarget,
+                                std::string const &type,
+                                ReactEventPriority priority,
+                                const EventPayload &eventPayload) {
+      this->dispatchEventToJS(
+          runtime, eventTarget, type, priority, eventPayload);
+    };
+    pointerEventsProcessor_.interceptPointerEvent(
+        runtime, eventTarget, type, priority, pointerEvent, dispatchCallback);
+  } else {
+    dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
+  }
+}
+
+void UIManagerBinding::dispatchEventToJS(
+    jsi::Runtime &runtime,
+    EventTarget const *eventTarget,
+    std::string const &type,
+    ReactEventPriority priority,
+    const EventPayload &eventPayload) const {
+  SystraceSection s("UIManagerBinding::dispatchEventToJS", "type", type);
+
+  auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
   if (payload.isNull()) {

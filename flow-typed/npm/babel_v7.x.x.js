@@ -10,8 +10,6 @@
 
 'use strict';
 
-declare type BabelNode_DEPRECATED = any;
-
 type _BabelSourceMap = $ReadOnly<{
   file?: string,
   mappings: string,
@@ -736,6 +734,8 @@ declare module '@babel/core' {
      */
     only?: MatchPattern | Array<MatchPattern>,
 
+    extensions?: Array<string>,
+
     // Source Map options
 
     /**
@@ -833,7 +833,7 @@ declare module '@babel/core' {
      */
     wrapPluginVisitorMethod?: (
       key: string,
-      nodeType: $PropertyType<BabelNode, 'type'>,
+      nodeType: BabelNode['type'],
       fn: Function,
     ) => Function,
 
@@ -1223,6 +1223,12 @@ declare module '@babel/generator' {
     options?: Options,
     code?: string | {|[filename: string]: string|},
   ) => GeneratorResult;
+}
+
+declare module '@babel/register' {
+  import type {BabelCoreOptions} from '@babel/core';
+
+  declare module.exports: (options?: BabelCoreOptions) => void;
 }
 
 declare module '@babel/template' {

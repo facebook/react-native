@@ -20,7 +20,7 @@ import android.content.Context;
 import android.view.View;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridgeless.internal.bolts.Task;
-import com.facebook.react.fabric.SurfaceHandler;
+import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.concurrent.Callable;
 import org.junit.Before;
@@ -40,7 +40,7 @@ public class ReactSurfaceTest {
 
   private ReactHost mReactHost;
   private Context mContext;
-  private ReactSurface mReactSurface;
+  private ReactSurfaceImpl mReactSurface;
   private TestSurfaceHandler mSurfaceHandler;
 
   @Before
@@ -50,13 +50,13 @@ public class ReactSurfaceTest {
     mContext = Robolectric.buildActivity(Activity.class).create().get();
 
     mReactHost = spy(new ReactHost(mContext, mReactHostDelegate, null, false, null, false));
-    doAnswer(mockedStartSurface()).when(mReactHost).startSurface(any(ReactSurface.class));
-    doAnswer(mockedStartSurface()).when(mReactHost).prerenderSurface(any(ReactSurface.class));
-    doAnswer(mockedStopSurface()).when(mReactHost).stopSurface(any(ReactSurface.class));
+    doAnswer(mockedStartSurface()).when(mReactHost).startSurface(any(ReactSurfaceImpl.class));
+    doAnswer(mockedStartSurface()).when(mReactHost).prerenderSurface(any(ReactSurfaceImpl.class));
+    doAnswer(mockedStopSurface()).when(mReactHost).stopSurface(any(ReactSurfaceImpl.class));
     doReturn(mEventDispatcher).when(mReactHost).getEventDispatcher();
 
     mSurfaceHandler = new TestSurfaceHandler();
-    mReactSurface = new ReactSurface(mSurfaceHandler, mContext);
+    mReactSurface = new ReactSurfaceImpl(mSurfaceHandler, mContext);
     mReactSurface.attachView(new ReactSurfaceView(mContext, mReactSurface));
   }
 

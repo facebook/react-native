@@ -11,6 +11,7 @@
 #include <react/renderer/core/EventPipe.h>
 #include <react/renderer/core/EventQueueProcessor.h>
 #include <react/renderer/core/StatePipe.h>
+#include <react/renderer/core/ValueFactoryEventPayload.h>
 
 #include <memory>
 
@@ -26,7 +27,7 @@ class EventQueueProcessorTest : public testing::Test {
                          const EventTarget * /*eventTarget*/,
                          const std::string &type,
                          ReactEventPriority priority,
-                         const ValueFactory & /*payloadFactory*/) {
+                         const EventPayload & /*payload*/) {
       eventTypes_.push_back(type);
       eventPriorities_.push_back(priority);
     };
@@ -49,7 +50,7 @@ TEST_F(EventQueueProcessorTest, singleUnspecifiedEvent) {
       *runtime_,
       {RawEvent(
           "my type",
-          dummyValueFactory_,
+          std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
           nullptr,
           RawEvent::Category::Unspecified)});
 
@@ -63,22 +64,22 @@ TEST_F(EventQueueProcessorTest, continuousEvent) {
       *runtime_,
       {RawEvent(
            "touchStart",
-           dummyValueFactory_,
+           std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
            nullptr,
            RawEvent::Category::ContinuousStart),
        RawEvent(
            "touchMove",
-           dummyValueFactory_,
+           std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
            nullptr,
            RawEvent::Category::Unspecified),
        RawEvent(
            "touchEnd",
-           dummyValueFactory_,
+           std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
            nullptr,
            RawEvent::Category::ContinuousEnd),
        RawEvent(
            "custom event",
-           dummyValueFactory_,
+           std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
            nullptr,
            RawEvent::Category::Unspecified)});
 
@@ -103,7 +104,7 @@ TEST_F(EventQueueProcessorTest, alwaysContinuousEvent) {
       {
           RawEvent(
               "onScroll",
-              dummyValueFactory_,
+              std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
               nullptr,
               RawEvent::Category::Continuous),
       });
@@ -120,7 +121,7 @@ TEST_F(EventQueueProcessorTest, alwaysDiscreteEvent) {
       {
           RawEvent(
               "onChange",
-              dummyValueFactory_,
+              std::make_shared<ValueFactoryEventPayload>(dummyValueFactory_),
               nullptr,
               RawEvent::Category::Discrete),
       });

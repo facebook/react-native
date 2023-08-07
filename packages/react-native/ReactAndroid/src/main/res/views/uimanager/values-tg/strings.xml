@@ -6,4 +6,5 @@
     <string name="link_description" gender="unknown">Пайванд</string>
     <string name="image_description" gender="unknown">Тасвир</string>
     <string name="imagebutton_description" gender="unknown">Тугма, тасвир</string>
+    <string name="state_off_description" gender="unknown">хомӯш</string>
 </resources>

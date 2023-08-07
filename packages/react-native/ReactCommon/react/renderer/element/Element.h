@@ -123,7 +123,11 @@ class Element final {
   Element &reference(
       std::function<void(ConcreteUnsharedShadowNode const &shadowNode)>
           callback) {
-    fragment_.referenceCallback = callback;
+    fragment_.referenceCallback =
+        [callback = std::move(callback)](ShadowNode::Shared const &shadowNode) {
+          callback(std::const_pointer_cast<ConcreteShadowNode>(
+              std::static_pointer_cast<ConcreteShadowNode const>(shadowNode)));
+        };
     return *this;
   }
 

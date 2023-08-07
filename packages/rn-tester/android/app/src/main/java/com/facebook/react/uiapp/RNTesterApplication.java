@@ -18,8 +18,8 @@ import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridgeless.ReactHost;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
+import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.defaults.DefaultComponentsRegistry;
@@ -28,13 +28,13 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.flipper.ReactNativeFlipper;
 import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.uiapp.component.MyLegacyViewManager;
 import com.facebook.react.uiapp.component.MyNativeViewManager;
 import com.facebook.react.uimanager.ViewManager;
-import com.facebook.react.views.text.ReactFontManager;
 import com.facebook.soloader.SoLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,6 +192,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     return mReactHost;
   }
 
+  @UnstableReactNativeAPI
   public static class RNTesterReactJsExceptionHandler implements ReactJsExceptionHandler {
     public void reportJsException(ReadableMapBuffer errorMap) {}
   }

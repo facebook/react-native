@@ -10,6 +10,7 @@
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/uimanager/PointerEventsProcessor.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/primitives.h>
 
@@ -52,7 +53,7 @@ class UIManagerBinding : public jsi::HostObject {
       EventTarget const *eventTarget,
       std::string const &type,
       ReactEventPriority priority,
-      ValueFactory const &payloadFactory) const;
+      const EventPayload &payload) const;
 
   /*
    * Invalidates the binding and underlying UIManager.
@@ -71,8 +72,20 @@ class UIManagerBinding : public jsi::HostObject {
   UIManager &getUIManager();
 
  private:
+  /*
+   * Internal method that sends the event to JS. Should only be called from
+   * UIManagerBinding::dispatchEvent.
+   */
+  void dispatchEventToJS(
+      jsi::Runtime &runtime,
+      EventTarget const *eventTarget,
+      std::string const &type,
+      ReactEventPriority priority,
+      const EventPayload &payload) const;
+
   std::shared_ptr<UIManager> uiManager_;
   std::unique_ptr<EventHandler const> eventHandler_;
+  mutable PointerEventsProcessor pointerEventsProcessor_;
   mutable ReactEventPriority currentEventPriority_;
 };
 

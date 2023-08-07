@@ -9,9 +9,10 @@
  */
 
 import type {ProcessedColorValue} from './processColor';
-import type {ColorValue} from './StyleSheet';
+import type {ColorValue, NativeColorValue} from './StyleSheet';
 
-export opaque type NativeColorValue = {
+/** The actual type of the opaque NativeColorValue on iOS platform */
+type LocalNativeColorValue = {
   semantic?: Array<string>,
   dynamic?: {
     light: ?(ColorValue | ProcessedColorValue),
@@ -22,7 +23,8 @@ export opaque type NativeColorValue = {
 };
 
 export const PlatformColor = (...names: Array<string>): ColorValue => {
-  return {semantic: names};
+  // $FlowExpectedError[incompatible-return] LocalNativeColorValue is the iOS LocalNativeColorValue type
+  return ({semantic: names}: LocalNativeColorValue);
 };
 
 export type DynamicColorIOSTuplePrivate = {
@@ -35,19 +37,21 @@ export type DynamicColorIOSTuplePrivate = {
 export const DynamicColorIOSPrivate = (
   tuple: DynamicColorIOSTuplePrivate,
 ): ColorValue => {
-  return {
+  return ({
     dynamic: {
       light: tuple.light,
       dark: tuple.dark,
       highContrastLight: tuple.highContrastLight,
       highContrastDark: tuple.highContrastDark,
     },
-  };
+    /* $FlowExpectedError[incompatible-return]
+     * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
+  }: LocalNativeColorValue);
 };
 
-export const normalizeColorObject = (
-  color: NativeColorValue,
-): ?ProcessedColorValue => {
+const _normalizeColorObject = (
+  color: LocalNativeColorValue,
+): ?LocalNativeColorValue => {
   if ('semantic' in color) {
     // an ios semantic color
     return color;
@@ -56,7 +60,7 @@ export const normalizeColorObject = (
 
     // a dynamic, appearance aware color
     const dynamic = color.dynamic;
-    const dynamicColor: NativeColorValue = {
+    const dynamicColor: LocalNativeColorValue = {
       dynamic: {
         // $FlowFixMe[incompatible-use]
         light: normalizeColor(dynamic.light),
@@ -70,17 +74,22 @@ export const normalizeColorObject = (
     };
     return dynamicColor;
   }
-
   return null;
 };
 
-export const processColorObject = (
+export const normalizeColorObject: (
   color: NativeColorValue,
-): ?NativeColorValue => {
+  /* $FlowExpectedError[incompatible-type]
+   * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
+) => ?ProcessedColorValue = _normalizeColorObject;
+
+const _processColorObject = (
+  color: LocalNativeColorValue,
+): ?LocalNativeColorValue => {
   if ('dynamic' in color && color.dynamic != null) {
     const processColor = require('./processColor').default;
     const dynamic = color.dynamic;
-    const dynamicColor: NativeColorValue = {
+    const dynamicColor: LocalNativeColorValue = {
       dynamic: {
         // $FlowFixMe[incompatible-use]
         light: processColor(dynamic.light),
@@ -96,3 +105,9 @@ export const processColorObject = (
   }
   return color;
 };
+
+export const processColorObject: (
+  color: NativeColorValue,
+  /* $FlowExpectedError[incompatible-type]
+   * LocalNativeColorValue is the actual type of the opaque NativeColorValue on iOS platform */
+) => ?NativeColorValue = _processColorObject;

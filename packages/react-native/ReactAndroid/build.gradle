@@ -109,7 +109,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_graphics",
                 [
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
-                    new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
+                    new Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
@@ -118,7 +118,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
-                new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+                [
+                    new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/"),
+                    new Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "rrc_legacyviewmanagerinterop",
@@ -453,12 +456,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -719,6 +722,7 @@ dependencies {
 
     api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
     api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
+    api("com.facebook.fresco:middleware:${FRESCO_VERSION}")
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
     api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")

@@ -19,6 +19,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
@@ -1152,8 +1153,13 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   PropsParserContext propsParserContext{
       finalView.surfaceId, *contextContainer_};
-  mutatedShadowView.props = componentDescriptor.interpolateProps(
-      propsParserContext, progress, startingView.props, finalView.props);
+  mutatedShadowView.props = interpolateProps(
+      componentDescriptor,
+      propsParserContext,
+      progress,
+      startingView.props,
+      finalView.props);
+
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
     return finalView;
@@ -1655,5 +1661,33 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
     }
   }
 }
+
+Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
+    const ComponentDescriptor &componentDescriptor,
+    const PropsParserContext &context,
+    Float animationProgress,
+    const Props::Shared &props,
+    const Props::Shared &newProps) const {
+#ifdef ANDROID
+  // On Android only, the merged props should have the same RawProps as the
+  // final props struct
+  Props::Shared interpolatedPropsShared =
+      (newProps != nullptr
+           ? componentDescriptor.cloneProps(
+                 context, newProps, newProps->rawProps)
+           : componentDescriptor.cloneProps(context, newProps, {}));
+#else
+  Props::Shared interpolatedPropsShared =
+      componentDescriptor.cloneProps(context, newProps, {});
+#endif
+
+  if (componentDescriptor.getTraits().check(
+          ShadowNodeTraits::Trait::ViewKind)) {
+    interpolateViewProps(
+        animationProgress, props, newProps, interpolatedPropsShared);
+  }
+
+  return interpolatedPropsShared;
+};
 
 } // namespace facebook::react

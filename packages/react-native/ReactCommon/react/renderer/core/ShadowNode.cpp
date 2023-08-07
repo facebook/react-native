@@ -236,7 +236,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
 void ShadowNode::replaceChild(
     ShadowNode const &oldChild,
     ShadowNode::Shared const &newChild,
-    size_t suggestedIndex) {
+    int32_t suggestedIndex) {
   ensureUnsealed();
 
   cloneChildrenIfShared();

@@ -924,6 +924,7 @@ class JSI_EXPORT Array : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   void setValueAtIndexImpl(Runtime& runtime, size_t i, const Value& value)
       const {
@@ -959,6 +960,7 @@ class JSI_EXPORT ArrayBuffer : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   ArrayBuffer(Runtime::PointerValue* value) : Object(value) {}
 };
@@ -1067,6 +1069,7 @@ class JSI_EXPORT Function : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   Function(Runtime::PointerValue* value) : Object(value) {}
 };

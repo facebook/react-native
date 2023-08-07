@@ -39,7 +39,6 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.queue.QueueThreadExceptionHandler;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
-import com.facebook.react.bridgeless.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.bridgeless.internal.bolts.Continuation;
 import com.facebook.react.bridgeless.internal.bolts.Task;
 import com.facebook.react.bridgeless.internal.bolts.TaskCompletionSource;
@@ -52,7 +51,9 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.interfaces.ReactHostInterface;
-import com.facebook.react.interfaces.ReactSurfaceInterface;
+import com.facebook.react.interfaces.TaskInterface;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -189,7 +190,8 @@ public class ReactHost implements ReactHostInterface {
    *     errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
    *     before it completes.
    */
-  public Task<Void> start() {
+  @Override
+  public TaskInterface<Void> start() {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return newStart();
     }
@@ -198,7 +200,8 @@ public class ReactHost implements ReactHostInterface {
   }
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
-  public Task<Void> prerenderSurface(final ReactSurface surface) {
+  /* package */
+  TaskInterface<Void> prerenderSurface(final ReactSurface surface) {
     final String method = "prerenderSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -217,7 +220,8 @@ public class ReactHost implements ReactHostInterface {
    * @param surface The ReactSurface to render
    * @return A Task that will complete when startSurface has been called.
    */
-  public Task<Void> startSurface(final ReactSurface surface) {
+  /** package */
+  TaskInterface<Void> startSurface(final ReactSurface surface) {
     final String method = "startSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -236,17 +240,19 @@ public class ReactHost implements ReactHostInterface {
    * @param surface The surface to stop
    * @return A Task that will complete when stopSurface has been called.
    */
-  public Task<Boolean> stopSurface(final ReactSurface surface) {
+  /** package */
+  TaskInterface<Void> stopSurface(final ReactSurface surface) {
     final String method = "stopSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
     detachSurface(surface);
     return callWithExistingReactInstance(
-        method,
-        reactInstance -> {
-          log(method, "Execute");
-          reactInstance.stopSurface(surface);
-        });
+            method,
+            reactInstance -> {
+              log(method, "Execute");
+              reactInstance.stopSurface(surface);
+            })
+        .makeVoid();
   }
 
   /**
@@ -358,9 +364,9 @@ public class ReactHost implements ReactHostInterface {
   }
 
   @Override
-  public ReactSurfaceInterface createSurface(
+  public ReactSurface createSurface(
       Context context, String moduleName, @Nullable Bundle initialProps) {
-    ReactSurface surface = new ReactSurface(context, moduleName, initialProps);
+    ReactSurfaceImpl surface = new ReactSurfaceImpl(context, moduleName, initialProps);
     surface.attachView(new ReactSurfaceView(context, surface));
     surface.attach(this);
     return surface;
@@ -422,7 +428,8 @@ public class ReactHost implements ReactHostInterface {
    *     tap on reload button)
    * @return A task that completes when React Native reloads
    */
-  public Task<Void> reload(String reason) {
+  @Override
+  public TaskInterface<Void> reload(String reason) {
     final String method = "reload()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
@@ -455,7 +462,8 @@ public class ReactHost implements ReactHostInterface {
    *     This exception will be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public Task<Void> destroy(String reason, @Nullable Exception ex) {
+  @Override
+  public TaskInterface<Void> destroy(String reason, @Nullable Exception ex) {
     final String method = "destroy()";
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
@@ -1415,6 +1423,13 @@ public class ReactHost implements ReactHostInterface {
     raiseSoftException(method, reason, ex);
 
     synchronized (mReactInstanceTaskRef) {
+      // Prevent re-destroy when ReactInstance has been reset already, which could happen when
+      // calling destroy multiple times on the same thread
+      ReactInstance reactInstance = mReactInstanceTaskRef.get().getResult();
+      if (reactInstance == null) {
+        return;
+      }
+
       // Retain a reference to current ReactContext before de-referenced by mReactContextRef
       final ReactContext reactContext = getCurrentReactContext();
 

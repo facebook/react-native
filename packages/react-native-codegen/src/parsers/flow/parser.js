@@ -99,7 +99,7 @@ class FlowParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.id?.name;
   }
 
@@ -421,7 +421,7 @@ class FlowParser implements Parser {
         break;
       }
 
-      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const typeAnnotationName = this.getTypeAnnotationName(node);
       const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
@@ -542,6 +542,16 @@ class FlowParser implements Parser {
 
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.properties;
+  }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.value;
+  }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].value
+      : null;
   }
 }
 

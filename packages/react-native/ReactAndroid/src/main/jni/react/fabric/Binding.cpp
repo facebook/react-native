@@ -431,6 +431,10 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
+      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
+  CoreFeatures::enableCleanParagraphYogaNode =
+      getFeatureFlagValue("enableCleanParagraphYogaNode");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
@@ -448,8 +452,7 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (reactNativeConfig_->getBool(
-          "react_fabric:enable_background_executor_android")) {
+  if (getFeatureFlagValue("enableBackgroundExecutor")) {
     backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
     toolbox.backgroundExecutor = backgroundExecutor_;
   }
