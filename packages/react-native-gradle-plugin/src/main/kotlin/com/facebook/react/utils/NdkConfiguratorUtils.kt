@@ -107,6 +107,7 @@ internal object NdkConfiguratorUtils {
               "**/libreact_render_graphics.so",
               "**/libreact_render_imagemanager.so",
               "**/libreact_render_mapbuffer.so",
+              "**/libreact_utils.so",
               "**/librrc_image.so",
               "**/librrc_legacyviewmanagerinterop.so",
               "**/librrc_view.so",
