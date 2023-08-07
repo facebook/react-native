@@ -1052,6 +1052,7 @@ type ImperativeMethods = $ReadOnly<{|
   isFocused: () => boolean,
   getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
   setSelection: (start: number, end: number) => void,
+  setGhostText: (ghostText: ?string) => void, // [macOS]
 |}>;
 
 /**

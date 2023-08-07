@@ -145,6 +145,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int BLUR_TEXT_INPUT = 2;
   private static final int SET_MOST_RECENT_EVENT_COUNT = 3;
   private static final int SET_TEXT_AND_SELECTION = 4;
+  private static final int SET_GHOST_TEXT = 5; // [macOS]
 
   private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER;
   private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD =
@@ -278,7 +279,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("focusTextInput", FOCUS_TEXT_INPUT, "blurTextInput", BLUR_TEXT_INPUT);
+    return MapBuilder.of("focusTextInput", FOCUS_TEXT_INPUT, "blurTextInput", BLUR_TEXT_INPUT, "setGhostText", SET_GHOST_TEXT); // [macOS]
   }
 
   @Override
@@ -297,6 +298,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       case SET_TEXT_AND_SELECTION:
         this.receiveCommand(reactEditText, "setTextAndSelection", args);
         break;
+// [macOS
+      case SET_GHOST_TEXT:
+        this.receiveCommand(reactEditText, "setGhostText", args);
+        break;
+// macOS]
     }
   }
 
@@ -331,6 +337,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         }
         reactEditText.maybeSetSelection(mostRecentEventCount, start, end);
         break;
+// [macOS
+      case "setGhostText":
+      default:
+        throw new IllegalArgumentException(
+          "Unsupported command setGhostText received by ReactTextInputManager.");
+// macOS]
     }
   }
 

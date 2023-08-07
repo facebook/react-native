@@ -23,7 +23,7 @@ type NativeType = HostComponent<mixed>;
 type NativeCommands = TextInputNativeCommands<NativeType>;
 
 export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['focus', 'blur', 'setTextAndSelection'],
+  supportedCommands: ['focus', 'blur', 'setTextAndSelection', 'setGhostText'], // [macOS]
 });
 
 export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {

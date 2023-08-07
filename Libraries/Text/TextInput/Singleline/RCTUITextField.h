@@ -62,6 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat pointScaleFactor;
 #endif // macOS]
 
+@property (nonatomic, getter=isGhostTextChanging) BOOL ghostTextChanging; // [macOS]
+
 @end
 
 NS_ASSUME_NONNULL_END
