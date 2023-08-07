@@ -87,6 +87,12 @@ type ExtendedPropResult = {
   knownTypeName: 'ReactNativeCoreViewProps',
 } | null;
 
+export type EventArgumentReturnType = {
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  paperTopLevelNameDeprecated: ?$FlowFixMe,
+  bubblingType: ?'direct' | 'bubble',
+};
+
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
   hasteModuleName: string,
@@ -1083,6 +1089,42 @@ function verifyPropNotAlreadyDefined(
   }
 }
 
+function handleEventHandler(
+  name: 'BubblingEventHandler' | 'DirectEventHandler',
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+  types: TypeDeclarationMap,
+  findEventArgumentsAndType: (
+    parser: Parser,
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+    bubblingType: void | 'direct' | 'bubble',
+    paperName: ?$FlowFixMe,
+  ) => EventArgumentReturnType,
+): EventArgumentReturnType {
+  const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
+  const paperTopLevelNameDeprecated =
+    parser.getPaperTopLevelNameDeprecated(typeAnnotation);
+
+  switch (typeAnnotation.typeParameters.params[0].type) {
+    case parser.nullLiteralTypeAnnotation:
+    case parser.undefinedLiteralTypeAnnotation:
+      return {
+        argumentProps: [],
+        bubblingType: eventType,
+        paperTopLevelNameDeprecated,
+      };
+    default:
+      return findEventArgumentsAndType(
+        parser,
+        typeAnnotation.typeParameters.params[0],
+        types,
+        eventType,
+        paperTopLevelNameDeprecated,
+      );
+  }
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -1111,4 +1153,5 @@ module.exports = {
   getTypeResolutionStatus,
   buildPropertiesForEvent,
   verifyPropNotAlreadyDefined,
+  handleEventHandler,
 };
