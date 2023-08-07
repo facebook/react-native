@@ -1,0 +1,35 @@
+# -------------------------
+#        EXECUTORS
+# -------------------------
+executors:
+  nodelts:
+    <<: *defaults
+    docker:
+      # Note: Version set separately for Windows builds, see below.
+      - image: *nodelts_image
+    resource_class: "xlarge"
+  nodeprevlts:
+    <<: *defaults
+    docker:
+      - image: *nodeprevlts_image
+    resource_class: "xlarge"
+  reactnativeandroid:
+    <<: *defaults
+    docker:
+      - image: reactnativecommunity/react-native-android:v10.0
+    resource_class: "xlarge"
+    environment:
+      - TERM: "dumb"
+      - GRADLE_OPTS: '-Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+      # Repeated here, as the environment key in this executor will overwrite the one in defaults
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
+  reactnativeios:
+    <<: *defaults
+    macos:
+      xcode: *xcode_version
+    resource_class: macos.x86.medium.gen2
+    environment:
+      - BUILD_FROM_SOURCE: true
