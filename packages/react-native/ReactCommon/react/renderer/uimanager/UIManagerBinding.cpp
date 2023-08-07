@@ -121,8 +121,6 @@ void UIManagerBinding::dispatchEventToJS(
     std::string const &type,
     ReactEventPriority priority,
     const EventPayload &eventPayload) const {
-  SystraceSection s("UIManagerBinding::dispatchEventToJS", "type", type);
-
   auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
