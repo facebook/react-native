@@ -136,9 +136,7 @@ executors:
     resource_class: "xlarge"
     environment:
       - TERM: "dumb"
-      - ADB_INSTALL_TIMEOUT: 10
-      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-      - BUILD_THREADS: 2
+      - GRADLE_OPTS: '-Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
@@ -1272,7 +1270,6 @@ jobs:
       - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
       - ANDROID_BUILD_VERSION: 33
       - ANDROID_TOOLS_VERSION: 33.0.1
-      - GRADLE_OPTS: -Dorg.gradle.daemon=false
       - CHOCO_CACHE_DIR: "C:\\ChocoCache"
     steps:
       - checkout_code_with_cache
