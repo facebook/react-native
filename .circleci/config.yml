@@ -878,7 +878,7 @@ jobs:
             cd packages/rn-tester
             bundle check || bundle install
             bundle exec pod setup
-            bundle exec pod install --verbose
+            RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --verbose
       - run:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
