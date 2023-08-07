@@ -2,6 +2,8 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+<!-- Do not commit this -->
+
 ## v0.72.3
 
 ### Fixed
