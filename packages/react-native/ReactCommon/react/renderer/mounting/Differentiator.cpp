@@ -1037,7 +1037,6 @@ static void calculateShadowViewMutationsV2(
     ShadowViewNodePair::NonOwningList &&oldChildPairs,
     ShadowViewNodePair::NonOwningList &&newChildPairs,
     bool isRecursionRedundant) {
-  SystraceSection s("Differentiator::calculateShadowViewMutationsV2");
   if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
