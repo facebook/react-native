@@ -218,6 +218,12 @@ public class ReactScrollView extends ScrollView
     }
   }
 
+  public void abortAnimation() {
+    if (mScroller != null && !mScroller.isFinished()) {
+      mScroller.abortAnimation();
+    }
+  }
+
   public void setSnapInterval(int snapInterval) {
     mSnapInterval = snapInterval;
   }
@@ -1070,7 +1076,6 @@ public class ReactScrollView extends ScrollView
    */
   @Override
   public void scrollTo(int x, int y) {
-    mScroller.abortAnimation();
     super.scrollTo(x, y);
     ReactScrollViewHelper.updateFabricScrollState(this);
     setPendingContentOffsets(x, y);

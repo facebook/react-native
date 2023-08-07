@@ -53,6 +53,10 @@ export type FeatureFlags = {|
    * Enables use of setNativeProps in JS driven animations.
    */
   shouldUseSetNativePropsInFabric: () => boolean,
+  /**
+   * Enables native view configs in brdgeless mode.
+   */
+  enableNativeViewConfigsInBridgelessMode: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -65,6 +69,7 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   enableAccessToHostTreeInFabric: () => false,
   shouldUseAnimatedObjectForTransform: () => false,
   shouldUseSetNativePropsInFabric: () => false,
+  enableNativeViewConfigsInBridgelessMode: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

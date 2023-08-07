@@ -15,6 +15,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
 /**
@@ -67,9 +68,37 @@ interface ReactHostInterface {
   fun onHostDestroy(activity: Activity?)
 
   /** To be called to create and setup an ReactSurface. */
-  fun createSurface(
-      context: Context,
-      moduleName: String,
-      initialProps: Bundle?
-  ): ReactSurfaceInterface?
+  fun createSurface(context: Context, moduleName: String, initialProps: Bundle?): ReactSurface?
+
+  /**
+   * This function can be used to initialize the ReactInstance in a background thread before a
+   * surface needs to be rendered. It is not necessary to call this function; startSurface() will
+   * initialize the ReactInstance if it hasn't been preloaded.
+   *
+   * @return A Task that completes when the instance is initialized. The task will be faulted if any
+   *   errors occur during initialization, and will be cancelled if ReactHost.destroy() is called
+   *   before it completes.
+   */
+  fun start(): TaskInterface<Void>
+
+  /**
+   * Entrypoint to reload the ReactInstance. If the ReactInstance is destroying, will wait until
+   * destroy is finished, before reloading.
+   *
+   * @param reason describing why ReactHost is being reloaded (e.g. js error, user tap on reload
+   *   button)
+   * @return A task that completes when React Native reloads
+   */
+  fun reload(reason: String): TaskInterface<Void>
+
+  /**
+   * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
+   * reload is finished, before destroying.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memmory pressure)
+   * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
+   *   be used to log properly the cause of destroy operation.
+   * @return A task that completes when React Native gets destroyed.
+   */
+  fun destroy(reason: String, ex: Exception?): TaskInterface<Void>
 }

@@ -168,7 +168,7 @@ class ShadowNode : public Sealable,
   virtual void replaceChild(
       ShadowNode const &oldChild,
       Shared const &newChild,
-      size_t suggestedIndex = -1);
+      int32_t suggestedIndex = -1);
 
   /*
    * Performs all side effects associated with mounting/unmounting in one place.

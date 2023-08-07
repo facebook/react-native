@@ -7,8 +7,8 @@
 
 plugins {
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-  id("com.android.library") version "8.0.2" apply false
-  id("com.android.application") version "8.0.2" apply false
+  id("com.android.library") version "8.1.0" apply false
+  id("com.android.application") version "8.1.0" apply false
   id("de.undercouch.download") version "5.0.1" apply false
   kotlin("android") version "1.8.0" apply false
 }
@@ -30,7 +30,7 @@ version =
 group = "com.facebook.react"
 
 val ndkPath by extra(System.getenv("ANDROID_NDK"))
-val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "23.1.7779620")
+val ndkVersion by extra(System.getenv("ANDROID_NDK_VERSION") ?: "25.1.8937393")
 val sonatypeUsername = findProperty("SONATYPE_USERNAME")?.toString()
 val sonatypePassword = findProperty("SONATYPE_PASSWORD")?.toString()
 

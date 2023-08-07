@@ -10,6 +10,8 @@ package com.facebook.react.views.textinput;
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,8 +30,11 @@ import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -181,6 +186,35 @@ public class ReactEditText extends AppCompatEditText
           }
         };
     ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
+    ActionMode.Callback customActionModeCallback =
+        new ActionMode.Callback() {
+          /*
+           * Editor onCreateActionMode adds the cut, copy, paste, share, autofill,
+           * and paste as plain text items to the context menu.
+           */
+          @Override
+          public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            menu.removeItem(android.R.id.pasteAsPlainText);
+            return true;
+          }
+
+          @Override
+          public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+          }
+
+          @Override
+          public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            return false;
+          }
+
+          @Override
+          public void onDestroyActionMode(ActionMode mode) {}
+        };
+    setCustomSelectionActionModeCallback(customActionModeCallback);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      setCustomInsertionActionModeCallback(customActionModeCallback);
+    }
   }
 
   @Override
@@ -267,6 +301,37 @@ public class ReactEditText extends AppCompatEditText
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
     return inputConnection;
+  }
+
+  /*
+   * Called when a context menu option for the text view is selected.
+   * React Native replaces copy (as rich text) with copy as plain text.
+   */
+  @Override
+  public boolean onTextContextMenuItem(int id) {
+    if (id == android.R.id.paste) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        id = android.R.id.pasteAsPlainText;
+      } else {
+        ClipboardManager clipboard =
+            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData previousClipData = clipboard.getPrimaryClip();
+        if (previousClipData != null) {
+          for (int i = 0; i < previousClipData.getItemCount(); i++) {
+            final CharSequence text = previousClipData.getItemAt(i).coerceToText(getContext());
+            final CharSequence paste = (text instanceof Spanned) ? text.toString() : text;
+            if (paste != null) {
+              ClipData clipData = ClipData.newPlainText(null, text);
+              clipboard.setPrimaryClip(clipData);
+            }
+          }
+          boolean actionPerformed = super.onTextContextMenuItem(id);
+          clipboard.setPrimaryClip(previousClipData);
+          return actionPerformed;
+        }
+      }
+    }
+    return super.onTextContextMenuItem(id);
   }
 
   @Override
@@ -632,13 +697,10 @@ public class ReactEditText extends AppCompatEditText
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
     } else {
-      boolean shouldRestoreComposingSpans = length() == spannableStringBuilder.length();
-
+      // When we update text, we trigger onChangeText code that will
+      // try to update state if the wrapper is available. Temporarily disable
+      // to prevent an infinite loop.
       getText().replace(0, length(), spannableStringBuilder);
-
-      if (shouldRestoreComposingSpans) {
-        restoreComposingSpansToTextFrom(spannableStringBuilder);
-      }
     }
     mDisableTextDiffing = false;
 
@@ -653,13 +715,10 @@ public class ReactEditText extends AppCompatEditText
   }
 
   /**
-   * Remove and/or add {@link Spanned#SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
-   * as long as the text they cover is the same unless they are {@link Spanned#SPAN_COMPOSING}. All
-   * other spans will remain the same, since they will adapt to the new text, hence why {@link
-   * SpannableStringBuilder#replace} never removes them. Keep copy of {@link Spanned#SPAN_COMPOSING}
-   * Spans in {@param spannableStringBuilder}, because they are important for keyboard suggestions.
-   * Without keeping these Spans, suggestions default to be put after the current selection
-   * position, possibly resulting in letter duplication.
+   * Remove and/or add {@link Spanned.SPAN_EXCLUSIVE_EXCLUSIVE} spans, since they should only exist
+   * as long as the text they cover is the same. All other spans will remain the same, since they
+   * will adapt to the new text, hence why {@link SpannableStringBuilder#replace} never removes
+   * them.
    */
   private void manageSpans(SpannableStringBuilder spannableStringBuilder) {
     Object[] spans = getText().getSpans(0, length(), Object.class);
@@ -668,7 +727,6 @@ public class ReactEditText extends AppCompatEditText
       int spanFlags = getText().getSpanFlags(span);
       boolean isExclusiveExclusive =
           (spanFlags & Spanned.SPAN_EXCLUSIVE_EXCLUSIVE) == Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
-      boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
 
       // Remove all styling spans we might have previously set
       if (span instanceof ReactSpan) {
@@ -682,12 +740,6 @@ public class ReactEditText extends AppCompatEditText
 
       final int spanStart = getText().getSpanStart(span);
       final int spanEnd = getText().getSpanEnd(span);
-
-      // We keep a copy of Composing spans
-      if (isComposing) {
-        spannableStringBuilder.setSpan(span, spanStart, spanEnd, spanFlags);
-        continue;
-      }
 
       // Make sure the span is removed from existing text, otherwise the spans we set will be
       // ignored or it will cover text that has changed.
@@ -813,34 +865,6 @@ public class ReactEditText extends AppCompatEditText
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
       workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
-    }
-  }
-
-  /**
-   * Attaches the {@link Spanned#SPAN_COMPOSING} from {@param spannableStringBuilder} to {@link
-   * ReactEditText#getText}
-   *
-   * <p>See {@link ReactEditText#manageSpans} for more details. Also
-   * https://github.com/facebook/react-native/issues/11068
-   */
-  private void restoreComposingSpansToTextFrom(SpannableStringBuilder spannableStringBuilder) {
-    Editable text = getText();
-    if (text == null) {
-      return;
-    }
-    Object[] spans = spannableStringBuilder.getSpans(0, length(), Object.class);
-    for (Object span : spans) {
-      int spanFlags = spannableStringBuilder.getSpanFlags(span);
-      boolean isComposing = (spanFlags & Spanned.SPAN_COMPOSING) == Spanned.SPAN_COMPOSING;
-
-      if (!isComposing) {
-        continue;
-      }
-
-      final int spanStart = spannableStringBuilder.getSpanStart(span);
-      final int spanEnd = spannableStringBuilder.getSpanEnd(span);
-
-      text.setSpan(span, spanStart, spanEnd, spanFlags);
     }
   }
 

@@ -9,6 +9,8 @@
 
 #include <jsi/jsi.h>
 
+#include <react/renderer/core/EventPayloadType.h>
+
 namespace facebook::react {
 
 /**
@@ -24,6 +26,13 @@ struct EventPayload {
   EventPayload &operator=(EventPayload &&) = default;
 
   virtual jsi::Value asJSIValue(jsi::Runtime &runtime) const = 0;
+
+  /**
+   * Reports the type of the event payload for efficient downcasting.
+   * When adding a new EventPayload be sure to add a new type of it
+   * in `EventPayloadType` and return it from its overriden `getType()` method.
+   */
+  virtual EventPayloadType getType() const = 0;
 };
 
 using SharedEventPayload = std::shared_ptr<const EventPayload>;

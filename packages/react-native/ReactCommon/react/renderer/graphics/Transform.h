@@ -80,7 +80,7 @@ struct Transform {
   /**
    * For debugging only. Prints out the matrix.
    */
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
   static void print(Transform const &t, std::string prefix);
 #endif
 
