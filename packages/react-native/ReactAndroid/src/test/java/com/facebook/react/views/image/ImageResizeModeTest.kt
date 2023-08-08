@@ -18,24 +18,23 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ImageResizeModeTest {
-  @get:Rule
-  var rule = PowerMockRule()
+    @get:Rule var rule = PowerMockRule()
 
-  @Test
-  fun testImageResizeMode() {
-    Assertions.assertThat(ImageResizeMode.toScaleType(null))
-      .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
-    Assertions.assertThat(ImageResizeMode.toScaleType("contain"))
-      .isEqualTo(ScalingUtils.ScaleType.FIT_CENTER)
-    Assertions.assertThat(ImageResizeMode.toScaleType("cover"))
-      .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
-    Assertions.assertThat(ImageResizeMode.toScaleType("stretch"))
-      .isEqualTo(ScalingUtils.ScaleType.FIT_XY)
-    Assertions.assertThat(ImageResizeMode.toScaleType("center"))
-      .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE)
+    @Test
+    fun testImageResizeMode() {
+        Assertions.assertThat(ImageResizeMode.toScaleType(null))
+            .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
+        Assertions.assertThat(ImageResizeMode.toScaleType("contain"))
+            .isEqualTo(ScalingUtils.ScaleType.FIT_CENTER)
+        Assertions.assertThat(ImageResizeMode.toScaleType("cover"))
+            .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
+        Assertions.assertThat(ImageResizeMode.toScaleType("stretch"))
+            .isEqualTo(ScalingUtils.ScaleType.FIT_XY)
+        Assertions.assertThat(ImageResizeMode.toScaleType("center"))
+            .isEqualTo(ScalingUtils.ScaleType.CENTER_INSIDE)
 
-    // No resizeMode set
-    Assertions.assertThat(ImageResizeMode.defaultValue())
-      .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
-  }
+        // No resizeMode set
+        Assertions.assertThat(ImageResizeMode.defaultValue())
+            .isEqualTo(ScalingUtils.ScaleType.CENTER_CROP)
+    }
 }
