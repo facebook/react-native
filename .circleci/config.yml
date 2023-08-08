@@ -137,7 +137,7 @@ executors:
     <<: *defaults
     docker:
       - image: *nodelts_image
-    resource_class: "xlarge"
+    resource_class: "large"
   nodeprevlts:
     <<: *defaults
     docker:
