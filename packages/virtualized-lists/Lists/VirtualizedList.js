@@ -1668,10 +1668,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
-    let offset = this._offsetFromScrollEvent(
-      e.nativeEvent.contentOffset,
-      e.nativeEvent.contentSize,
-    );
+    let offset = this._offsetFromScrollEvent(e);
     let dOffset = offset - this._scrollMetrics.offset;
 
     if (this._isNestedWithSameOrientation()) {
@@ -1735,24 +1732,18 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._scheduleCellsToRenderUpdate();
   };
 
-  _offsetFromScrollEvent(
-    contentOffset: $ReadOnly<{
-      x: number,
-      y: number,
-      ...
-    }>,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-      ...
-    }>,
-  ): number {
+  _offsetFromScrollEvent(e: ScrollEvent): number {
+    const {contentOffset, contentSize, layoutMeasurement} = e.nativeEvent;
     const {horizontal, rtl} = this._orientation();
     if (Platform.OS === 'ios' || !(horizontal && rtl)) {
       return this._selectOffset(contentOffset);
     }
 
-    return this._selectLength(contentSize) - this._selectOffset(contentOffset);
+    return (
+      this._selectLength(contentSize) -
+      (this._selectOffset(contentOffset) +
+        this._selectLength(layoutMeasurement))
+    );
   }
 
   _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
