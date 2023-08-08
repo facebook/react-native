@@ -43,11 +43,11 @@ android {
 
     dependencies {
         implementation project(':packages:react-native:ReactAndroid')
-        debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-        debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+        debugImplementation(libs.flipper)
+        debugImplementation(libs.flipper.network.plugin) {
             exclude group:'com.squareup.okhttp3', module:'okhttp'
         }
-        debugImplementation("com.facebook.fresco:flipper-fresco-plugin:${FLIPPER_FRESCO_VERSION}")
+        debugImplementation(libs.flipper.fresco.plugin)
     }
 
     publishing {

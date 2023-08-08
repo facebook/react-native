@@ -247,10 +247,10 @@ android {
     }
 
     dependencies {
-        implementation("com.facebook.fbjni:fbjni:0.5.1")
-        implementation("com.facebook.soloader:soloader:0.10.5")
-        implementation("com.facebook.yoga:proguard-annotations:1.19.0")
-        implementation("androidx.annotation:annotation:1.3.0")
+        implementation(libs.fbjni)
+        implementation(libs.soloader)
+        implementation(libs.yoga.proguard.annotations)
+        implementation(libs.androidx.annotation)
     }
 
     packagingOptions {
