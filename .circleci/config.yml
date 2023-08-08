@@ -31,6 +31,8 @@ references:
     environment:
       - TERM: "dumb"
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+      # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
+      - ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
       # Repeated here, as the environment key in this executor will overwrite the one in defaults
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
       - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
@@ -1844,6 +1846,14 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+      - run:
+          name: Set the reactNativeArchitectures to build only required architectures
+          command: |
+            if [ "${release_type}" = "dry-run" ]; then
+              export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
+            else
+              export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
+            fi
       - checkout
       - *attach_hermes_workspace
       - run:
