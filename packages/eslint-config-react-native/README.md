@@ -5,7 +5,7 @@
 ## Installation
 
 ```
-yarn add --dev eslint prettier @react-native/eslint-config
+yarn add --dev eslint prettier@2 @react-native/eslint-config
 ```
 
 *Note: We're using `yarn` to install deps. Feel free to change commands to use `npm` 3+ and `npx` if you like*
