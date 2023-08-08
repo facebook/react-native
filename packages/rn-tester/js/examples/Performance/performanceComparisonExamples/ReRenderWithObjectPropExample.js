@@ -13,8 +13,8 @@
 
 import * as React from 'react';
 import {Text} from 'react-native';
-import ItemList from './ItemList';
-import {LIST_100_ITEMS} from './itemData';
+import ItemList from '../components/ItemList';
+import {LIST_100_ITEMS} from '../components/itemData';
 import type {ScrollEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const {useState, useCallback} = React;
