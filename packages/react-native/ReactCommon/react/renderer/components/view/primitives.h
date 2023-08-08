@@ -87,6 +87,8 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
+enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
+
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;

@@ -132,6 +132,27 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void adoptYogaChild(size_t index);
 
+  /**
+   * Applies contextual values to the ShadowNode's Yoga tree after the
+   * ShadowTree has been constructed, but before it has been is laid out or
+   * committed.
+   */
+  void configureYogaTree(
+      float pointScaleFactor,
+      YGErrata defaultErrata,
+      bool swapLeftAndRight);
+
+  /**
+   * Return an errata based on a `layoutConformance` prop if given, otherwise
+   * the passed default
+   */
+  YGErrata resolveErrata(YGErrata defaultErrata) const;
+
+  /**
+   * Replcaes a child with a mutable clone of itself, returning the clone.
+   */
+  YogaLayoutableShadowNode &cloneChildInPlace(int32_t layoutableChildIndex);
+
   static YGConfig &initializeYogaConfig(
       YGConfig &config,
       YGConfigRef previousConfig = nullptr);
@@ -150,7 +171,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 #pragma mark - RTL Legacy Autoflip
 
   /*
-   * Walks though shadow node hierarchy and reassign following values:
+   * Reassigns the following values:
    * - (left|right) → (start|end)
    * - margin(Left|Right) → margin(Start|End)
    * - padding(Left|Right) → padding(Start|End)
@@ -161,8 +182,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * This is neccesarry to be backwards compatible with old renderer, it swaps
    * the values as well in https://fburl.com/diffusion/kl7bjr3h
    */
-  static void swapLeftAndRightInTree(
-      YogaLayoutableShadowNode const &shadowNode);
+  void swapStyleLeftAndRight();
   /*
    * In shadow node passed as argument, reassigns following values
    * - borderTop(Left|Right)Radius → borderTop(Start|End)Radius
@@ -193,7 +213,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   void ensureConsistency() const;
   void ensureYogaChildrenAlignment() const;
-  void ensureYogaChildrenOwnersConsistency() const;
   void ensureYogaChildrenLookFine() const;
 
 #pragma mark - Private member variables
@@ -201,6 +220,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * List of children which derive from YogaLayoutableShadowNode
    */
   ListOfShared yogaLayoutableChildren_;
+
+  /*
+   * Whether the full Yoga subtree of this Node has been configured.
+   */
+  bool yogaTreeHasBeenConfigured_{false};
 };
 
 } // namespace facebook::react
