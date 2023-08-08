@@ -34,125 +34,130 @@ import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/**
- * Verify that [ScalingUtils] properties are being applied correctly by [ ].
- */
+/** Verify that [ScalingUtils] properties are being applied correctly by [ ]. */
 @PrepareForTest(Arguments::class, RNLog::class)
 @RunWith(RobolectricTestRunner::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactImagePropertyTes {
 
+    @get:Rule var rule = PowerMockRule()
 
-  @get:Rule var rule = PowerMockRule()
+    private var mContext: ReactApplicationContext? = null
+    private var mCatalystInstanceMock: CatalystInstance? = null
+    private var mThemeContext: ThemedReactContext? = null
 
-  private var mContext: ReactApplicationContext? = null
-  private var mCatalystInstanceMock: CatalystInstance? = null
-  private var mThemeContext: ThemedReactContext? = null
+    @Before
+    fun setup() {
+        PowerMockito.mockStatic(Arguments::class.java)
+        PowerMockito.`when`(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
+        PowerMockito.`when`(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
 
-  @Before
-  fun setup() {
-    PowerMockito.mockStatic(Arguments::class.java)
-    PowerMockito.`when`(Arguments.createArray())
-      .thenAnswer { JavaOnlyArray() }
-    PowerMockito.`when`(Arguments.createMap())
-      .thenAnswer { JavaOnlyMap() }
+        // RNLog is stubbed out and the whole class need to be mocked
+        PowerMockito.mockStatic(RNLog::class.java)
+        SoLoader.setInTestMode()
+        mContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
+        mCatalystInstanceMock = createMockCatalystInstance()
+        mContext!!.initializeWithInstance(mCatalystInstanceMock)
+        mThemeContext = ThemedReactContext(mContext, mContext)
+        Fresco.initialize(mContext)
+        DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
+    }
 
-    // RNLog is stubbed out and the whole class need to be mocked
-    PowerMockito.mockStatic(RNLog::class.java)
-    SoLoader.setInTestMode()
-    mContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
-    mCatalystInstanceMock = createMockCatalystInstance()
-    mContext!!.initializeWithInstance(mCatalystInstanceMock)
-    mThemeContext = ThemedReactContext(mContext, mContext)
-    Fresco.initialize(mContext)
-    DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
-  }
+    @After
+    fun teardown() {
+        DisplayMetricsHolder.setWindowDisplayMetrics(null)
+    }
 
-  @After
-  fun teardown() {
-    DisplayMetricsHolder.setWindowDisplayMetrics(null)
-  }
+    fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
+        return ReactStylesDiffMap(JavaOnlyMap.of(*keysAndValues))
+    }
 
-  fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
-    return ReactStylesDiffMap(JavaOnlyMap.of(*keysAndValues))
-  }
+    @Test
+    fun testBorderColor() {
+        val viewManager = ReactImageManager()
+        val view = viewManager.createViewInstance(mThemeContext!!)
+        viewManager.updateProperties(
+            view,
+            buildStyles(
+                "src",
+                JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))
+            )
+        )
+        viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)))
+        var borderColor = view.hierarchy.roundingParams!!.borderColor
+        Assert.assertEquals(0, Color.alpha(borderColor).toLong())
+        Assert.assertEquals(0, Color.red(borderColor).toLong())
+        Assert.assertEquals(255, Color.green(borderColor).toLong())
+        Assert.assertEquals(255, Color.blue(borderColor).toLong())
+        viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 255, 50, 128)))
+        borderColor = view.hierarchy.roundingParams!!.borderColor
+        Assert.assertEquals(0, Color.alpha(borderColor).toLong())
+        Assert.assertEquals(255, Color.red(borderColor).toLong())
+        Assert.assertEquals(50, Color.green(borderColor).toLong())
+        Assert.assertEquals(128, Color.blue(borderColor).toLong())
+        viewManager.updateProperties(view, buildStyles("borderColor", null))
+        borderColor = view.hierarchy.roundingParams!!.borderColor
+        Assert.assertEquals(0, Color.alpha(borderColor).toLong())
+        Assert.assertEquals(0, Color.red(borderColor).toLong())
+        Assert.assertEquals(0, Color.green(borderColor).toLong())
+        Assert.assertEquals(0, Color.blue(borderColor).toLong())
+    }
 
-  @Test
-  fun testBorderColor() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(mThemeContext!!)
-    viewManager.updateProperties(
-      view,
-      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
-    viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)))
-    var borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(0, Color.red(borderColor).toLong())
-    Assert.assertEquals(255, Color.green(borderColor).toLong())
-    Assert.assertEquals(255, Color.blue(borderColor).toLong())
-    viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 255, 50, 128)))
-    borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(255, Color.red(borderColor).toLong())
-    Assert.assertEquals(50, Color.green(borderColor).toLong())
-    Assert.assertEquals(128, Color.blue(borderColor).toLong())
-    viewManager.updateProperties(view, buildStyles("borderColor", null))
-    borderColor = view.hierarchy.roundingParams!!.borderColor
-    Assert.assertEquals(0, Color.alpha(borderColor).toLong())
-    Assert.assertEquals(0, Color.red(borderColor).toLong())
-    Assert.assertEquals(0, Color.green(borderColor).toLong())
-    Assert.assertEquals(0, Color.blue(borderColor).toLong())
-  }
+    @Test
+    fun testRoundedCorners() {
+        val viewManager = ReactImageManager()
+        val view = viewManager.createViewInstance(mThemeContext!!)
+        viewManager.updateProperties(
+            view,
+            buildStyles(
+                "src",
+                JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))
+            )
+        )
 
-  @Test
-  fun testRoundedCorners() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(mThemeContext!!)
-    viewManager.updateProperties(
-      view,
-      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))))
+        // We can't easily verify if rounded corner was honored or not, this tests simply verifies
+        // we're not crashing..
+        viewManager.updateProperties(view, buildStyles("borderRadius", 10.0))
+        viewManager.updateProperties(view, buildStyles("borderRadius", 0.0))
+        viewManager.updateProperties(view, buildStyles("borderRadius", null))
+    }
 
-    // We can't easily verify if rounded corner was honored or not, this tests simply verifies
-    // we're not crashing..
-    viewManager.updateProperties(view, buildStyles("borderRadius", 10.0))
-    viewManager.updateProperties(view, buildStyles("borderRadius", 0.0))
-    viewManager.updateProperties(view, buildStyles("borderRadius", null))
-  }
+    @Test
+    fun testAccessibilityFocus() {
+        val viewManager = ReactImageManager()
+        val view = viewManager.createViewInstance(mThemeContext!!)
+        viewManager.setAccessible(view, true)
+        Assert.assertEquals(true, view.isFocusable)
+    }
 
-  @Test
-  fun testAccessibilityFocus() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(mThemeContext!!)
-    viewManager.setAccessible(view, true)
-    Assert.assertEquals(true, view.isFocusable)
-  }
+    @Test
+    fun testTintColor() {
+        val viewManager = ReactImageManager()
+        val view = viewManager.createViewInstance(mThemeContext!!)
+        Assert.assertNull(view.colorFilter)
+        viewManager.updateProperties(view, buildStyles("tintColor", Color.argb(50, 0, 0, 255)))
+        // Can't actually assert the specific color so this is the next best thing.
+        // Does the color filter now exist?
+        Assert.assertNotNull(view.colorFilter)
+        viewManager.updateProperties(view, buildStyles("tintColor", null))
+        Assert.assertNull(view.colorFilter)
+    }
 
-  @Test
-  fun testTintColor() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(mThemeContext!!)
-    Assert.assertNull(view.colorFilter)
-    viewManager.updateProperties(view, buildStyles("tintColor", Color.argb(50, 0, 0, 255)))
-    // Can't actually assert the specific color so this is the next best thing.
-    // Does the color filter now exist?
-    Assert.assertNotNull(view.colorFilter)
-    viewManager.updateProperties(view, buildStyles("tintColor", null))
-    Assert.assertNull(view.colorFilter)
-  }
-
-  @Test
-  fun testNullSrcs() {
-    val viewManager = ReactImageManager()
-    val view = viewManager.createViewInstance(mThemeContext!!)
-    val sources = Arguments.createArray()
-    val srcObj = Arguments.createMap()
-    srcObj.putNull("uri")
-    srcObj.putNull("width")
-    srcObj.putNull("height")
-    sources.pushMap(srcObj)
-    viewManager.setSource(view, sources)
-    view.maybeUpdateView()
-    Assert.assertEquals(
-      ImageSource.getTransparentBitmapImageSource(view.context), view.imageSource)
-  }
+    @Test
+    fun testNullSrcs() {
+        val viewManager = ReactImageManager()
+        val view = viewManager.createViewInstance(mThemeContext!!)
+        val sources = Arguments.createArray()
+        val srcObj = Arguments.createMap()
+        srcObj.putNull("uri")
+        srcObj.putNull("width")
+        srcObj.putNull("height")
+        sources.pushMap(srcObj)
+        viewManager.setSource(view, sources)
+        view.maybeUpdateView()
+        Assert.assertEquals(
+            ImageSource.getTransparentBitmapImageSource(view.context),
+            view.imageSource
+        )
+    }
 }
