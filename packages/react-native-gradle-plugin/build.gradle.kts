@@ -36,14 +36,14 @@ dependencies {
 
   // The KGP/AGP version is defined by React Native Gradle plugin.
   // Therefore we specify an implementation dep rather than a compileOnly.
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
-  implementation("com.android.tools.build:gradle:8.1.0")
+  implementation(libs.kotlin.gradle.plugin)
+  implementation(libs.android.gradle.plugin)
 
-  implementation("com.google.code.gson:gson:2.8.9")
-  implementation("com.google.guava:guava:31.0.1-jre")
-  implementation("com.squareup:javapoet:1.13.0")
+  implementation(libs.gson)
+  implementation(libs.guava)
+  implementation(libs.javapoet)
 
-  testImplementation("junit:junit:4.13.2")
+  testImplementation(libs.junit)
 
   testRuntimeOnly(
       files(
