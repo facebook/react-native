@@ -142,7 +142,7 @@ executors:
     <<: *defaults
     docker:
       - image: *nodeprevlts_image
-    resource_class: "xlarge"
+    resource_class: "large"
   # Executor with Node & Java used to inspect and lint
   node-browsers-small:
     <<: *defaults
