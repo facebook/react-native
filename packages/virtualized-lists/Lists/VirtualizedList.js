@@ -25,6 +25,7 @@ import type {
 } from './VirtualizedListProps';
 
 import {
+  Platform,
   RefreshControl,
   ScrollView,
   View,
