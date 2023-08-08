@@ -24,6 +24,18 @@ references:
       # Homebrew currently breaks while updating:
       # https://discuss.circleci.com/t/brew-install-fails-while-updating/32992
       - HOMEBREW_NO_AUTO_UPDATE: 1
+  android-defaults: &android-defaults
+    working_directory: ~/react-native
+    docker:
+      - image: reactnativecommunity/react-native-android:v10.0
+    environment:
+      - TERM: "dumb"
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+      # Repeated here, as the environment key in this executor will overwrite the one in defaults
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
+      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
+      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
 
   hermes_workspace_root: &hermes_workspace_root
     /tmp/hermes
@@ -122,7 +134,6 @@ executors:
   nodelts:
     <<: *defaults
     docker:
-      # Note: Version set separately for Windows builds, see below.
       - image: *nodelts_image
     resource_class: "xlarge"
   nodeprevlts:
@@ -136,19 +147,12 @@ executors:
     docker:
       - image: *nodelts_browser_image
     resource_class: "small"
-  reactnativeandroid:
-    <<: *defaults
-    docker:
-      - image: reactnativecommunity/react-native-android:v10.0
+  reactnativeandroid-xlarge:
+    <<: *android-defaults
     resource_class: "xlarge"
-    environment:
-      - TERM: "dumb"
-      - GRADLE_OPTS: '-Dfile.encoding=utf-8 -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-      # Repeated here, as the environment key in this executor will overwrite the one in defaults
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A: *github_analysisbot_token_a
-      - PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B: *github_analysisbot_token_b
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_A: *github_pullbot_token_a
-      - PUBLIC_PULLBOT_GITHUB_TOKEN_B: *github_pullbot_token_b
+  reactnativeandroid-large:
+    <<: *android-defaults
+    resource_class: "large"
   reactnativeios:
     <<: *defaults
     macos:
@@ -977,7 +981,7 @@ jobs:
   #    JOBS: Test Android
   # -------------------------
   test_android:
-    executor: reactnativeandroid
+    executor: reactnativeandroid-xlarge
     steps:
       - checkout
       - setup_artifacts
@@ -1005,7 +1009,7 @@ jobs:
   #    JOBS: Test Android Template
   # -------------------------
   test_android_template:
-    executor: reactnativeandroid
+    executor: reactnativeandroid-large
     parameters:
       flavor:
         default: "Debug"
@@ -1831,7 +1835,7 @@ jobs:
         type: enum
         enum: ["nightly", "release", "dry-run"]
         default: "dry-run"
-    executor: reactnativeandroid
+    executor: reactnativeandroid-xlarge
     environment:
       - HERMES_WS_DIR: *hermes_workspace_root
     steps:
