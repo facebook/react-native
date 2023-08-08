@@ -42,9 +42,9 @@ class ReactImagePropertyTes {
 
     @get:Rule var rule = PowerMockRule()
 
-    private var mContext: ReactApplicationContext? = null
-    private var mCatalystInstanceMock: CatalystInstance? = null
-    private var mThemeContext: ThemedReactContext? = null
+    private var context: ReactApplicationContext? = null
+    private var catalystInstanceMock: CatalystInstance? = null
+    private var themeContext: ThemedReactContext? = null
 
     @Before
     fun setup() {
@@ -55,11 +55,11 @@ class ReactImagePropertyTes {
         // RNLog is stubbed out and the whole class need to be mocked
         PowerMockito.mockStatic(RNLog::class.java)
         SoLoader.setInTestMode()
-        mContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
-        mCatalystInstanceMock = createMockCatalystInstance()
-        mContext!!.initializeWithInstance(mCatalystInstanceMock)
-        mThemeContext = ThemedReactContext(mContext, mContext)
-        Fresco.initialize(mContext)
+        context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+        catalystInstanceMock = createMockCatalystInstance()
+        context!!.initializeWithInstance(catalystInstanceMock)
+        themeContext = ThemedReactContext(context, context)
+        Fresco.initialize(context)
         DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
     }
 
@@ -68,14 +68,14 @@ class ReactImagePropertyTes {
         DisplayMetricsHolder.setWindowDisplayMetrics(null)
     }
 
-    fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
+    private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
         return ReactStylesDiffMap(JavaOnlyMap.of(*keysAndValues))
     }
 
     @Test
     fun testBorderColor() {
         val viewManager = ReactImageManager()
-        val view = viewManager.createViewInstance(mThemeContext!!)
+        val view = viewManager.createViewInstance(themeContext!!)
         viewManager.updateProperties(
             view,
             buildStyles(
@@ -106,7 +106,7 @@ class ReactImagePropertyTes {
     @Test
     fun testRoundedCorners() {
         val viewManager = ReactImageManager()
-        val view = viewManager.createViewInstance(mThemeContext!!)
+        val view = viewManager.createViewInstance(themeContext!!)
         viewManager.updateProperties(
             view,
             buildStyles(
@@ -125,7 +125,7 @@ class ReactImagePropertyTes {
     @Test
     fun testAccessibilityFocus() {
         val viewManager = ReactImageManager()
-        val view = viewManager.createViewInstance(mThemeContext!!)
+        val view = viewManager.createViewInstance(themeContext!!)
         viewManager.setAccessible(view, true)
         Assert.assertEquals(true, view.isFocusable)
     }
@@ -133,7 +133,7 @@ class ReactImagePropertyTes {
     @Test
     fun testTintColor() {
         val viewManager = ReactImageManager()
-        val view = viewManager.createViewInstance(mThemeContext!!)
+        val view = viewManager.createViewInstance(themeContext!!)
         Assert.assertNull(view.colorFilter)
         viewManager.updateProperties(view, buildStyles("tintColor", Color.argb(50, 0, 0, 255)))
         // Can't actually assert the specific color so this is the next best thing.
@@ -146,7 +146,7 @@ class ReactImagePropertyTes {
     @Test
     fun testNullSrcs() {
         val viewManager = ReactImageManager()
-        val view = viewManager.createViewInstance(mThemeContext!!)
+        val view = viewManager.createViewInstance(themeContext!!)
         val sources = Arguments.createArray()
         val srcObj = Arguments.createMap()
         srcObj.putNull("uri")
