@@ -28,6 +28,7 @@ const {
   getEventArgument,
   buildPropertiesForEvent,
   handleEventHandler,
+  emitBuildEventSchema,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -259,36 +260,19 @@ function buildEventSchema(
   );
   const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
-  if (paperTopLevelNameDeprecated != null) {
-    return {
-      name,
-      optional,
-      bubblingType: nonNullableBubblingType,
-      paperTopLevelNameDeprecated,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(
-          nonNullableArgumentProps,
-          parser,
-          getPropertyType,
-        ),
-      },
-    };
-  }
+  const argument = getEventArgument(
+    nonNullableArgumentProps,
+    parser,
+    getPropertyType,
+  );
 
-  return {
+  return emitBuildEventSchema(
+    paperTopLevelNameDeprecated,
     name,
     optional,
-    bubblingType: nonNullableBubblingType,
-    typeAnnotation: {
-      type: 'EventTypeAnnotation',
-      argument: getEventArgument(
-        nonNullableArgumentProps,
-        parser,
-        getPropertyType,
-      ),
-    },
-  };
+    nonNullableBubblingType,
+    argument,
+  );
 }
 
 function getEvents(
