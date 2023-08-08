@@ -53,7 +53,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.interop.InteropEventEmitter;
@@ -61,6 +60,7 @@ import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager;
 import com.facebook.react.fabric.mounting.SurfaceMountingManager.ViewEvent;
+import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchIntCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchStringCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.IntBufferBatchMountItem;
@@ -79,6 +79,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventCategoryDef;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcherImpl;
@@ -168,7 +169,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @NonNull private final MountItemDispatcher mMountItemDispatcher;
   @NonNull private final ViewManagerRegistry mViewManagerRegistry;
 
-  @NonNull private final EventBeatManager mEventBeatManager;
+  @NonNull private final BatchEventDispatchedListener mBatchEventDispatchedListener;
 
   @NonNull
   private final CopyOnWriteArrayList<UIManagerListener> mListeners = new CopyOnWriteArrayList<>();
@@ -208,16 +209,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       };
 
   public FabricUIManager(
-      ReactApplicationContext reactContext,
-      ViewManagerRegistry viewManagerRegistry,
-      EventBeatManager eventBeatManager) {
+      @NonNull ReactApplicationContext reactContext,
+      @NonNull ViewManagerRegistry viewManagerRegistry,
+      @NonNull BatchEventDispatchedListener batchEventDispatchedListener) {
     mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
     mMountingManager = new MountingManager(viewManagerRegistry, mMountItemExecutor);
     mMountItemDispatcher =
         new MountItemDispatcher(mMountingManager, new MountItemDispatchListener());
     mEventDispatcher = new EventDispatcherImpl(reactContext);
-    mEventBeatManager = eventBeatManager;
+    mBatchEventDispatchedListener = batchEventDispatchedListener;
     mReactApplicationContext.addLifecycleEventListener(this);
 
     mViewManagerRegistry = viewManagerRegistry;
@@ -385,7 +386,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
-    mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
+    mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
     if (ENABLE_FABRIC_PERF_LOGS) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
@@ -424,7 +425,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     // memory immediately.
     mDispatchUIFrameCallback.stop();
 
-    mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
+    mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
     mReactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
@@ -1039,8 +1040,16 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    mMountItemDispatcher.dispatchCommandMountItem(
-        new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs));
+    if (ReactFeatureFlags.unstable_useFabricInterop) {
+      // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
+      // overload of dispatchCommand. Otherwise, we use the string overload.
+      // and the events won't be correctly dispatched.
+      mMountItemDispatcher.dispatchCommandMountItem(
+          createDispatchCommandMountItemForInterop(surfaceId, reactTag, commandId, commandArgs));
+    } else {
+      mMountItemDispatcher.dispatchCommandMountItem(
+          new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs));
+    }
   }
 
   @Override
@@ -1197,6 +1206,24 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       for (UIManagerListener listener : mListeners) {
         listener.didDispatchMountItems(FabricUIManager.this);
       }
+    }
+  }
+
+  /**
+   * Util function that takes care of handling commands for Fabric Interop. If the command is a
+   * string that represents a number (say "42"), it will be parsed as an integer and the
+   * corresponding dispatch command mount item will be created.
+   */
+  /* package */ DispatchCommandMountItem createDispatchCommandMountItemForInterop(
+      final int surfaceId,
+      final int reactTag,
+      final String commandId,
+      @Nullable final ReadableArray commandArgs) {
+    try {
+      int commandIdInteger = Integer.parseInt(commandId);
+      return new DispatchIntCommandMountItem(surfaceId, reactTag, commandIdInteger, commandArgs);
+    } catch (NumberFormatException e) {
+      return new DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs);
     }
   }
 
