@@ -17,7 +17,7 @@
     "appium": "^2.0.0",
     "appium-uiautomator2-driver": "^2.29.1",
     "appium-xcuitest-driver": "^4.32.10",
-    "eslint": "^8.19.0",
+    "eslint": "^8.46.0",
     "jest": "^29.2.1",
     "webdriverio": "^7.32.0",
     "@babel/core": "^7.20.0",
