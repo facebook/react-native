@@ -47,18 +47,18 @@ class SimpleViewPropertyTest {
     }
   }
 
-  private lateinit var mContext: ReactApplicationContext
-  private lateinit var mCatalystInstanceMock: CatalystInstance
-  private lateinit var mThemedContext: ThemedReactContext
-  private lateinit var mManager: ConcreteViewManager
+  private lateinit var context: ReactApplicationContext
+  private lateinit var catalystInstanceMock: CatalystInstance
+  private lateinit var themedContext: ThemedReactContext
+  private lateinit var manager: ConcreteViewManager
 
   @Before
   fun setup() {
-    mContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
-    mCatalystInstanceMock = createMockCatalystInstance()
-    mContext.initializeWithInstance(mCatalystInstanceMock)
-    mThemedContext = ThemedReactContext(mContext, mContext)
-    mManager = ConcreteViewManager()
+    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    catalystInstanceMock = createMockCatalystInstance()
+    context.initializeWithInstance(catalystInstanceMock)
+    themedContext = ThemedReactContext(context, context)
+    manager = ConcreteViewManager()
   }
 
   fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
@@ -68,35 +68,35 @@ class SimpleViewPropertyTest {
   @Test
   fun testOpacity() {
     val view =
-      mManager.createView(sViewTag, mThemedContext, buildStyles(), null, JSResponderHandler())
-    mManager.updateProperties(view, buildStyles())
+      manager.createView(viewTag, themedContext, buildStyles(), null, JSResponderHandler())
+    manager.updateProperties(view, buildStyles())
     Assertions.assertThat(view.alpha).isEqualTo(1.0f)
-    mManager.updateProperties(view, buildStyles("opacity", 0.31))
+    manager.updateProperties(view, buildStyles("opacity", 0.31))
     Assertions.assertThat(view.alpha).isEqualTo(0.31f, Assertions.offset(1e-5f))
-    mManager.updateProperties(view, buildStyles("opacity", null))
+    manager.updateProperties(view, buildStyles("opacity", null))
     Assertions.assertThat(view.alpha).isEqualTo(1.0f)
   }
 
   @Test
   fun testBackgroundColor() {
     val view =
-      mManager.createView(sViewTag, mThemedContext, buildStyles(), null, JSResponderHandler())
-    mManager.updateProperties(view, buildStyles())
+      manager.createView(viewTag, themedContext, buildStyles(), null, JSResponderHandler())
+    manager.updateProperties(view, buildStyles())
     Assertions.assertThat(view.background).isEqualTo(null)
-    mManager.updateProperties(view, buildStyles("backgroundColor", 12))
+    manager.updateProperties(view, buildStyles("backgroundColor", 12))
     Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(12)
-    mManager.updateProperties(view, buildStyles("backgroundColor", null))
+    manager.updateProperties(view, buildStyles("backgroundColor", null))
     Assertions.assertThat((view.background as ColorDrawable).color).isEqualTo(0)
   }
 
   @Test
   fun testGetNativeProps() {
-    val nativeProps = mManager.nativeProps
+    val nativeProps = manager.nativeProps
     Assertions.assertThat(nativeProps["foo"]).isEqualTo("boolean")
     Assertions.assertThat(nativeProps["bar"]).isEqualTo("Map")
   }
 
   companion object {
-    private const val sViewTag = 2
+    private const val viewTag = 2
   }
 }
