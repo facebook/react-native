@@ -891,35 +891,37 @@ jobs:
       - setup_ruby:
           ruby_version: << parameters.ruby_version >>
       - run:
-          name: Install Bundler
-          command: |
-            cd packages/rn-tester
-            bundle check || bundle install
-            bundle exec pod setup
-            RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --verbose
-      - run:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
-      - run:
-          name: Build app
-          command: |
-              xcodebuild build \
-                -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-                -configuration Debug \
-                -scheme RNTester \
-                -sdk iphonesimulator \
-                -derivedDataPath /tmp/e2e/
-      - run:
-          name: Move app to correct directory
-          command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
-      - run:
-          name: Check Appium server status
-          command: scripts/circleci/check_appium_server_status.sh
-      - run:
-          name: Run E2E tests
-          command: |
-            cd packages/rn-tester-e2e
-            yarn test-e2e ios
+      - with_xcodebuild_cache:
+          steps:
+            - run:
+                name: Install Bundler
+                command: |
+                  cd packages/rn-tester
+                  bundle check || bundle install
+                  bundle exec pod setup
+                  RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --verbose
+            - run:
+                name: Build app
+                command: |
+                    xcodebuild build \
+                      -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+                      -configuration Debug \
+                      -scheme RNTester \
+                      -sdk iphonesimulator \
+                      -derivedDataPath /tmp/e2e/
+            - run:
+                name: Move app to correct directory
+                command: mv /tmp/e2e/Build/Products/Debug-iphonesimulator/RNTester.app packages/rn-tester-e2e/apps/rn-tester.app
+            - run:
+                name: Check Appium server status
+                command: scripts/circleci/check_appium_server_status.sh
+            - run:
+                name: Run E2E tests
+                command: |
+                  cd packages/rn-tester-e2e
+                  yarn test-e2e ios
 
   # -------------------------
   #     JOBS: Android E2E Tests
