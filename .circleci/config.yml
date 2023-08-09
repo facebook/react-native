@@ -1848,14 +1848,6 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             echo '|1|If6MU203eXTaaWL678YEfWkVMrw=|kqLeIAyTy8pzpj8x8Ae4Fr8Mtlc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
-      - run:
-          name: Set the reactNativeArchitectures to build only required architectures
-          command: |
-            if [ "${release_type}" = "dry-run" ]; then
-              export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
-            else
-              export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
-            fi
       - checkout
       - *attach_hermes_workspace
       - run:
@@ -1894,7 +1886,19 @@ jobs:
             - run: echo "//registry.npmjs.org/:_authToken=${CIRCLE_NPM_TOKEN}" > ~/.npmrc
       # END: Stables and nightlies
 
-      - run: node ./scripts/publish-npm.js --<< parameters.release_type >>
+      - run:
+          name: "Publish NPM"
+          command: |
+              # We can't have a separate step because each command is executed in a separate shell
+              # so variables exported in a command are not visible in another.
+
+              if [[ << parameters.release_type >> == "dry-run" ]]; then
+                export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
+              else
+                export ORG_GRADLE_PROJECT_reactNativeArchitectures="armeabi-v7a,arm64-v8a,x86,x86_64"
+              fi
+
+              node ./scripts/publish-npm.js --<< parameters.release_type >>
       - run:
           name: Zip Hermes Native Symbols
           command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/packages/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
