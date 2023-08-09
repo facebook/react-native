@@ -26,3 +26,4 @@ jobs:
         id: needs-attention
       - name: Result
         run: echo '${{ steps.needs-attention.outputs.result }}'
+    continue-on-error: true  # [macOS]

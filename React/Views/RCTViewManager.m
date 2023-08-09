@@ -429,6 +429,8 @@ RCT_CUSTOM_VIEW_PROPERTY(acceptsFirstMouse, BOOL, RCTView)
 
 RCT_EXPORT_VIEW_PROPERTY(mouseDownCanMoveWindow, BOOL)
 
+RCT_REMAP_VIEW_PROPERTY(allowsVibrancy, allowsVibrancyInternal, BOOL)
+
 RCT_CUSTOM_VIEW_PROPERTY(focusable, BOOL, RCTView)
 {
   if ([view respondsToSelector:@selector(setFocusable:)]) {

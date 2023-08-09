@@ -48,6 +48,7 @@ const directEventTypes = {
 const validAttributesForNonEventProps = {
   acceptsFirstMouse: true,
   accessibilityTraits: true,
+  allowsVibrancy: true,
   cursor: true,
   draggedTypes: true,
   enableFocusRing: true,
