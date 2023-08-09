@@ -113,7 +113,7 @@ function getNpmInfo(buildType) {
   );
 
   // See if releaser indicated that this version should be tagged "latest"
-  // Set in `bump-oss-version`
+  // Set in `trigger-react-native-release`
   const isLatest = exitIfNotOnGit(
     () => isTaggedLatest(currentCommit),
     'Not in git. We do not want to publish anything',
