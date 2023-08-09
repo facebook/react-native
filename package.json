@@ -103,7 +103,8 @@
     "test-typescript": "dtslint types",
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib types",
     "bump-all-updated-packages": "node ./scripts/monorepo/bump-all-updated-packages",
-    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js"
+    "align-package-versions": "node ./scripts/monorepo/align-package-versions.js",
+    "trigger-react-native-release": "node ./scripts/trigger-react-native-release.js"
   },
   "peerDependencies": {
     "react": "18.2.0"
