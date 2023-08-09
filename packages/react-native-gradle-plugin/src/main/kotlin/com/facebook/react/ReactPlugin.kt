@@ -10,7 +10,6 @@ package com.facebook.react
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
-import com.facebook.react.tasks.BuildCodegenCLITask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFields
@@ -123,24 +122,10 @@ class ReactPlugin : Plugin<Project> {
       localExtension.jsRootDir.convention(localExtension.root)
     }
 
-    val buildCodegenTask =
-        project.tasks.register("buildCodegenCLI", BuildCodegenCLITask::class.java) {
-          it.codegenDir.set(rootExtension.codegenDir)
-          val bashWindowsHome = project.findProperty("REACT_WINDOWS_BASH") as String?
-          it.bashWindowsHome.set(bashWindowsHome)
-
-          // Please note that appNeedsCodegen is triggering a read of the package.json at
-          // configuration time as we need to feed the onlyIf condition of this task.
-          // Therefore, the appNeedsCodegen needs to be invoked inside this lambda.
-          val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
-          it.onlyIf { isLibrary || needsCodegenFromPackageJson }
-        }
-
     // We create the task to produce schema from JS files.
     val generateCodegenSchemaTask =
         project.tasks.register(
             "generateCodegenSchemaFromJavaScript", GenerateCodegenSchemaTask::class.java) { it ->
-              it.dependsOn(buildCodegenTask)
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)

@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.tasks
+package com.facebook.react.tasks.internal
 
 import com.facebook.react.utils.Os.unixifyPath
 import com.facebook.react.utils.windowsAwareBashCommandLine
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
@@ -27,21 +27,14 @@ abstract class BuildCodegenCLITask : Exec() {
   @get:Internal abstract val bashWindowsHome: Property<String>
 
   @get:InputFiles
-  val input: FileCollection by lazy {
-    codegenDir.get().files("scripts", "src", "package.json", ".babelrc", ".prettierrc")
-  }
+  val inputFiles: FileTree = project.fileTree(codegenDir) { it.include("src/**/*.js") }
 
-  @get:OutputDirectories
-  val output: FileCollection by lazy { codegenDir.get().files("lib", "node_modules") }
-
-  init {
-    // We need this condition as we want a single instance of BuildCodegenCLITask to execute
-    // per project. Therefore we can safely skip the task if the lib/cli/ folder is available.
-    onlyIf {
-      val cliDir = codegenDir.file("lib/cli/").get().asFile
-      !cliDir.exists() || cliDir.listFiles()?.size == 0
-    }
-  }
+  @get:OutputFiles
+  val outputFiles: FileTree =
+      project.fileTree(codegenDir) {
+        it.include("lib/**/*.js")
+        it.include("lib/**/*.js.flow")
+      }
 
   override fun exec() {
     commandLine(
