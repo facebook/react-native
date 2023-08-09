@@ -186,11 +186,15 @@ class ReactNativePodsUtils
     def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
         file_path = file_manager.join(relative_path, '.xcode.env')
-        if file_manager.exist?(file_path)
-            return
+
+        if !file_manager.exist?(file_path)
+            system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
         end
 
-        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+        if !file_manager.exist?("#{file_path}.local")
+            node_binary = `command -v node`
+            system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
+        end
     end
 
     # It examines the target_definition property and sets the appropriate value for
