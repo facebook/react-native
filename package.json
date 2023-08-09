@@ -14,6 +14,7 @@
     "start": "cd packages/rn-tester && npm run start",
     "android": "cd packages/rn-tester && npm run android",
     "build": "node ./scripts/build/build.js",
+    "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
     "clean": "node ./scripts/build/clean.js",
     "test": "jest",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
