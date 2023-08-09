@@ -86,13 +86,13 @@ class ReactPlugin : Plugin<Project> {
 
   private fun checkJvmVersion(project: Project) {
     val jvmVersion = Jvm.current()?.javaVersion?.majorVersion
-    if ((jvmVersion?.toIntOrNull() ?: 0) <= 8) {
+    if ((jvmVersion?.toIntOrNull() ?: 0) <= 16) {
       project.logger.error(
           """
 
       ********************************************************************************
 
-      ERROR: requires JDK11 or higher.
+      ERROR: requires JDK17 or higher.
       Incompatible major version detected: '$jvmVersion'
 
       ********************************************************************************

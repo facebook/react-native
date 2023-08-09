@@ -33,7 +33,7 @@ void registerComponents(
 std::shared_ptr<TurboModule> cxxModuleProvider(
     const std::string &name,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
-  if (name == "NativeCxxModuleExampleCxx") {
+  if (name == NativeCxxModuleExample::kModuleName) {
     return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   }
   return nullptr;

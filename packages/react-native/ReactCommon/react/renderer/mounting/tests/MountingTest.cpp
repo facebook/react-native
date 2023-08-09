@@ -53,7 +53,7 @@ static ShadowNode::Shared makeNode(
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           props, std::make_shared<ShadowNode::ListOfShared>(children)},
-      componentDescriptor.createFamily({tag, SurfaceId(1), nullptr}, nullptr));
+      componentDescriptor.createFamily({tag, SurfaceId(1), nullptr}));
 }
 
 /**
@@ -79,8 +79,8 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
 
-  auto rootFamily = rootComponentDescriptor.createFamily(
-      {Tag(1), SurfaceId(1), nullptr}, nullptr);
+  auto rootFamily =
+      rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
 
   // Creating an initial root shadow node.
   auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
@@ -110,8 +110,8 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   auto childJ = makeNode(viewComponentDescriptor, 109, {});
   auto childK = makeNode(viewComponentDescriptor, 110, {});
 
-  auto family = viewComponentDescriptor.createFamily(
-      {10, SurfaceId(1), nullptr}, nullptr);
+  auto family =
+      viewComponentDescriptor.createFamily({10, SurfaceId(1), nullptr});
 
   // Construct "identical" shadow nodes: they differ only in children.
   auto shadowNodeV1 = viewComponentDescriptor.createShadowNode(
@@ -390,8 +390,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   auto rootComponentDescriptor =
       RootComponentDescriptor(componentDescriptorParameters);
 
-  auto rootFamily = rootComponentDescriptor.createFamily(
-      {Tag(1), SurfaceId(1), nullptr}, nullptr);
+  auto rootFamily =
+      rootComponentDescriptor.createFamily({Tag(1), SurfaceId(1), nullptr});
 
   // Creating an initial root shadow node.
   auto emptyRootNode = std::const_pointer_cast<RootShadowNode>(
@@ -422,8 +422,8 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   auto childJ = makeNode(viewComponentDescriptor, 109, {});
   auto childK = makeNode(viewComponentDescriptor, 110, {});
 
-  auto family = viewComponentDescriptor.createFamily(
-      {10, SurfaceId(1), nullptr}, nullptr);
+  auto family =
+      viewComponentDescriptor.createFamily({10, SurfaceId(1), nullptr});
 
   auto reparentedViewA = makeNode(
       viewComponentDescriptor,

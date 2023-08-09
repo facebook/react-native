@@ -225,9 +225,6 @@ ShadowTree::ShadowTree(
     ShadowTreeDelegate const &delegate,
     ContextContainer const &contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
-      nullptr, -1, std::shared_ptr<const EventDispatcher>());
-
   static auto globalRootComponentDescriptor =
       std::make_unique<RootComponentDescriptor const>(
           ComponentDescriptorParameters{
@@ -239,9 +236,8 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  auto const fragment =
-      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
-  auto family = globalRootComponentDescriptor->createFamily(fragment, nullptr);
+  auto const fragment = ShadowNodeFamilyFragment{surfaceId, surfaceId, nullptr};
+  auto family = globalRootComponentDescriptor->createFamily(fragment);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(
@@ -355,6 +351,11 @@ CommitStatus ShadowTree::tryCommit(
   newRootShadowNode = delegate_.shadowTreeWillCommit(
       *this, oldRootShadowNode, newRootShadowNode);
 
+  if (!newRootShadowNode ||
+      (commitOptions.shouldYield && commitOptions.shouldYield())) {
+    return CommitStatus::Cancelled;
+  }
+
   // Layout nodes.
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
@@ -372,16 +373,15 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
+    if (commitOptions.shouldYield && commitOptions.shouldYield()) {
+      return CommitStatus::Cancelled;
+    }
+
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
     }
 
     auto newRevisionNumber = oldRevision.number + 1;
-
-    if (!newRootShadowNode ||
-        (commitOptions.shouldYield && commitOptions.shouldYield())) {
-      return CommitStatus::Cancelled;
-    }
 
     {
       std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
@@ -450,7 +450,7 @@ void ShadowTree::emitLayoutEvents(
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    auto const &viewProps =
+    const auto &viewProps =
         static_cast<ViewProps const &>(*viewShadowNode.getProps());
     if (!viewProps.onLayout) {
       continue;

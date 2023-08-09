@@ -27,6 +27,8 @@ const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleA
 const PixelRatio = require('../Utilities/PixelRatio').default;
 const flatten = require('./flattenStyle');
 
+export type {NativeColorValue} from './StyleSheetTypes';
+
 /**
  * This type should be used as the type for anything that is a color. It is
  * most useful when using DynamicColorIOS which can be a string or a dynamic

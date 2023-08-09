@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <hermes/API/hermes/hermes.h>
+#include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/config/ReactNativeConfig.h>
 

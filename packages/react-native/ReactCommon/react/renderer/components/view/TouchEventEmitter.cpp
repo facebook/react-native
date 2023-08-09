@@ -11,22 +11,6 @@ namespace facebook::react {
 
 #pragma mark - Touches
 
-static void setTouchPayloadOnObject(
-    jsi::Object &object,
-    jsi::Runtime &runtime,
-    Touch const &touch) {
-  object.setProperty(runtime, "locationX", touch.offsetPoint.x);
-  object.setProperty(runtime, "locationY", touch.offsetPoint.y);
-  object.setProperty(runtime, "pageX", touch.pagePoint.x);
-  object.setProperty(runtime, "pageY", touch.pagePoint.y);
-  object.setProperty(runtime, "screenX", touch.screenPoint.x);
-  object.setProperty(runtime, "screenY", touch.screenPoint.y);
-  object.setProperty(runtime, "identifier", touch.identifier);
-  object.setProperty(runtime, "target", touch.target);
-  object.setProperty(runtime, "timestamp", touch.timestamp * 1000);
-  object.setProperty(runtime, "force", touch.force);
-}
-
 static jsi::Value touchesPayload(
     jsi::Runtime &runtime,
     Touches const &touches) {
@@ -58,43 +42,6 @@ static jsi::Value touchEventPayload(
   return object;
 }
 
-static jsi::Value pointerEventPayload(
-    jsi::Runtime &runtime,
-    PointerEvent const &event) {
-  auto object = jsi::Object(runtime);
-  object.setProperty(runtime, "pointerId", event.pointerId);
-  object.setProperty(runtime, "pressure", event.pressure);
-  object.setProperty(runtime, "pointerType", event.pointerType);
-  object.setProperty(runtime, "clientX", event.clientPoint.x);
-  object.setProperty(runtime, "clientY", event.clientPoint.y);
-  // x/y are an alias to clientX/Y
-  object.setProperty(runtime, "x", event.clientPoint.x);
-  object.setProperty(runtime, "y", event.clientPoint.y);
-  // since RN doesn't have a scrollable root, pageX/Y will always equal
-  // clientX/Y
-  object.setProperty(runtime, "pageX", event.clientPoint.x);
-  object.setProperty(runtime, "pageY", event.clientPoint.y);
-  object.setProperty(runtime, "screenX", event.screenPoint.x);
-  object.setProperty(runtime, "screenY", event.screenPoint.y);
-  object.setProperty(runtime, "offsetX", event.offsetPoint.x);
-  object.setProperty(runtime, "offsetY", event.offsetPoint.y);
-  object.setProperty(runtime, "width", event.width);
-  object.setProperty(runtime, "height", event.height);
-  object.setProperty(runtime, "tiltX", event.tiltX);
-  object.setProperty(runtime, "tiltY", event.tiltY);
-  object.setProperty(runtime, "detail", event.detail);
-  object.setProperty(runtime, "buttons", event.buttons);
-  object.setProperty(runtime, "tangentialPressure", event.tangentialPressure);
-  object.setProperty(runtime, "twist", event.twist);
-  object.setProperty(runtime, "ctrlKey", event.ctrlKey);
-  object.setProperty(runtime, "shiftKey", event.shiftKey);
-  object.setProperty(runtime, "altKey", event.altKey);
-  object.setProperty(runtime, "metaKey", event.metaKey);
-  object.setProperty(runtime, "isPrimary", event.isPrimary);
-  object.setProperty(runtime, "button", event.button);
-  return object;
-}
-
 void TouchEventEmitter::dispatchTouchEvent(
     std::string type,
     TouchEvent const &event,
@@ -116,9 +63,7 @@ void TouchEventEmitter::dispatchPointerEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [event](jsi::Runtime &runtime) {
-        return pointerEventPayload(runtime, event);
-      },
+      std::make_shared<PointerEvent>(event),
       priority,
       category);
 }
@@ -178,9 +123,7 @@ void TouchEventEmitter::onPointerDown(const PointerEvent &event) const {
 }
 
 void TouchEventEmitter::onPointerMove(const PointerEvent &event) const {
-  dispatchUniqueEvent("pointerMove", [event](jsi::Runtime &runtime) {
-    return pointerEventPayload(runtime, event);
-  });
+  dispatchUniqueEvent("pointerMove", std::make_shared<PointerEvent>(event));
 }
 
 void TouchEventEmitter::onPointerUp(const PointerEvent &event) const {
@@ -221,6 +164,22 @@ void TouchEventEmitter::onPointerOut(const PointerEvent &event) const {
       event,
       EventPriority::AsynchronousBatched,
       RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onGotPointerCapture(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "gotPointerCapture",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousStart);
+}
+
+void TouchEventEmitter::onLostPointerCapture(const PointerEvent &event) const {
+  dispatchPointerEvent(
+      "lostPointerCapture",
+      event,
+      EventPriority::AsynchronousBatched,
+      RawEvent::Category::ContinuousEnd);
 }
 
 } // namespace facebook::react

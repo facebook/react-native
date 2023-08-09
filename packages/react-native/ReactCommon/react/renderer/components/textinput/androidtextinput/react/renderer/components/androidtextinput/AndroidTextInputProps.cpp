@@ -7,9 +7,9 @@
 
 #include "AndroidTextInputProps.h"
 #include <react/renderer/components/image/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 

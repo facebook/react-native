@@ -127,11 +127,11 @@ export interface Parser {
    */
   language(): ParserType;
   /**
-   * Given a type annotation for a generic type, it returns the type name.
+   * Given a type annotation, it returns the type name.
    * @parameter typeAnnotation: the annotation for a type in the AST.
    * @returns: the name of the type.
    */
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string;
   /**
    * Given a type arguments, it returns a boolean specifying if the Module is Invalid.
    * @parameter typeArguments: the type arguments.
@@ -357,6 +357,13 @@ export interface Parser {
 
   getGetSchemaInfoFN(): GetSchemaInfoFN;
 
+  /**
+   * Given a property return the type annotation.
+   * @parameter property
+   * @returns: the annotation for a type in the AST.
+   */
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe;
+
   getResolvedTypeAnnotation(
     typeAnnotation: $FlowFixMe,
     types: TypeDeclarationMap,
@@ -378,4 +385,47 @@ export interface Parser {
   };
 
   getProperties(typeName: string, types: TypeDeclarationMap): $FlowFixMe;
+
+  /**
+   * Given a typeAlias, it returns the next node.
+   */
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given an enum Declaration, it returns the next node.
+   */
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a unsupported typeAnnotation, returns an error message.
+   */
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a type annotation, it extracts the type.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the extracted type.
+   */
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+
+  /**
+   * Given a typeAnnotation return the properties of an object.
+   * @parameter property
+   * @returns: the properties of an object represented by a type annotation.
+   */
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a option return the literal value.
+   * @parameter option
+   * @returns: the literal value of an union represented.
+   */
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe;
+
+  /**
+   * Given a type annotation, it returns top level name in the AST if it exists else returns null.
+   * @parameter typeAnnotation: the annotation for a type in the AST.
+   * @returns: the top level name properties in the AST if it exists else null.
+   */
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe;
 }

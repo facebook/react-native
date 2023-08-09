@@ -1543,19 +1543,13 @@ static void YGNodeAbsoluteLayoutChild(
       depth,
       generationCount);
 
-  auto trailingMarginOuterSize =
-      node->getConfig()->isExperimentalFeatureEnabled(
-          YGExperimentalFeatureFixAbsoluteTrailingColumnMargin)
-      ? isMainAxisRow ? height : width
-      : width;
-
   if (child->isTrailingPosDefined(mainAxis) &&
       !child->isLeadingPositionDefined(mainAxis)) {
     child->setLayoutPosition(
         node->getLayout().measuredDimensions[dim[mainAxis]] -
             child->getLayout().measuredDimensions[dim[mainAxis]] -
             node->getTrailingBorder(mainAxis) -
-            child->getTrailingMargin(mainAxis, trailingMarginOuterSize)
+            child->getTrailingMargin(mainAxis, isMainAxisRow ? width : height)
                 .unwrap() -
             child->getTrailingPosition(mainAxis, isMainAxisRow ? width : height)
                 .unwrap(),
@@ -1598,7 +1592,7 @@ static void YGNodeAbsoluteLayoutChild(
         node->getLayout().measuredDimensions[dim[crossAxis]] -
             child->getLayout().measuredDimensions[dim[crossAxis]] -
             node->getTrailingBorder(crossAxis) -
-            child->getTrailingMargin(crossAxis, trailingMarginOuterSize)
+            child->getTrailingMargin(crossAxis, isMainAxisRow ? height : width)
                 .unwrap() -
             child
                 ->getTrailingPosition(crossAxis, isMainAxisRow ? height : width)

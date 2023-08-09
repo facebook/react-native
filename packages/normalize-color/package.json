@@ -12,6 +12,6 @@
   "keywords": ["color", "normalization", "normalize-colors", "react-native"],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   }
 }

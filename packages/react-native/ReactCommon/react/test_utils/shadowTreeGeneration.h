@@ -290,7 +290,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
     int deviation = 3) {
   if (size <= 1) {
     auto family = componentDescriptor.createFamily(
-        {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
+        {generateReactTag(), SurfaceId(1), nullptr});
     return componentDescriptor.createShadowNode(
         ShadowNodeFragment{generateDefaultProps(componentDescriptor)}, family);
   }
@@ -306,7 +306,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   }
 
   auto family = componentDescriptor.createFamily(
-      {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
+      {generateReactTag(), SurfaceId(1), nullptr});
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           generateDefaultProps(componentDescriptor),

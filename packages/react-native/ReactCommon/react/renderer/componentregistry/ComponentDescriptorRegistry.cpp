@@ -126,12 +126,13 @@ ShadowNode::Shared ComponentDescriptorRegistry::createNode(
     std::string const &viewName,
     SurfaceId surfaceId,
     folly::dynamic const &propsDynamic,
-    SharedEventTarget const &eventTarget) const {
+    InstanceHandle::Shared const &instanceHandle) const {
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
 
-  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family = componentDescriptor.createFamily(fragment, eventTarget);
+  auto const fragment =
+      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
+  auto family = componentDescriptor.createFamily(fragment);
   auto const props = componentDescriptor.cloneProps(
       PropsParserContext{surfaceId, *contextContainer_.get()},
       nullptr,

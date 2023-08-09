@@ -26,7 +26,6 @@
 #include <jsi/jsi.h>
 #include <react/renderer/animations/LayoutAnimationDriver.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventBeat.h>
 #include <react/renderer/core/EventEmitter.h>
 #include <react/renderer/core/conversions.h>
@@ -36,6 +35,7 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -431,6 +431,10 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
+      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
+  CoreFeatures::enableCleanParagraphYogaNode =
+      getFeatureFlagValue("enableCleanParagraphYogaNode");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =
@@ -440,7 +444,7 @@ void Binding::installFabricUIManager(
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
 
-  // TODO: (T130208323) runtimeExecutor should execute lambdas after
+  // TODO: (T132338609) runtimeExecutor should execute lambdas after
   // main bundle eval, and bindingsInstallExecutor should execute before.
   toolbox.bridgelessBindingsExecutor = std::nullopt;
   toolbox.runtimeExecutor = runtimeExecutor;
@@ -448,8 +452,7 @@ void Binding::installFabricUIManager(
   toolbox.synchronousEventBeatFactory = synchronousBeatFactory;
   toolbox.asynchronousEventBeatFactory = asynchronousBeatFactory;
 
-  if (reactNativeConfig_->getBool(
-          "react_fabric:enable_background_executor_android")) {
+  if (getFeatureFlagValue("enableBackgroundExecutor")) {
     backgroundExecutor_ = JBackgroundExecutor::create("fabric_bg");
     toolbox.backgroundExecutor = backgroundExecutor_;
   }

@@ -21,9 +21,9 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 {
   switch (size) {
     case ActivityIndicatorViewSize::Small:
-      return UIActivityIndicatorViewStyleWhite;
+      return UIActivityIndicatorViewStyleMedium;
     case ActivityIndicatorViewSize::Large:
-      return UIActivityIndicatorViewStyleWhiteLarge;
+      return UIActivityIndicatorViewStyleLarge;
   }
 }
 
@@ -64,8 +64,8 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &oldViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(_props);
-  const auto &newViewProps = *std::static_pointer_cast<const ActivityIndicatorViewProps>(props);
+  const auto &oldViewProps = static_cast<ActivityIndicatorViewProps const &>(*_props);
+  const auto &newViewProps = static_cast<ActivityIndicatorViewProps const &>(*props);
 
   if (oldViewProps.animating != newViewProps.animating) {
     if (newViewProps.animating) {

@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 void Transform::print(Transform const &t, std::string prefix) {
   LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
              << t.matrix[2] << " " << t.matrix[3] << " ]";

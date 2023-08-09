@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@class RCTBridge;
+@protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -36,6 +36,7 @@
  *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
  *)initProps;
  *   - (UIViewController *)createRootViewController;
+ *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
  *   - (BOOL)turboModuleEnabled;
@@ -94,6 +95,16 @@
  */
 - (UIViewController *)createRootViewController;
 
+/**
+ * It assigns the rootView to the rootViewController
+ * By default, it assigns the rootView to the view property of the rootViewController
+ * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
+ * For example: UISplitViewController requires `setViewController(_:for:)`
+ *
+ * @return: void
+ */
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
+
 /// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
 ///
 /// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
@@ -120,6 +131,14 @@
 ///
 /// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
 - (BOOL)fabricEnabled;
+
+/// This method controls whether React Native's new initialization layer is enabled.
+///
+/// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
+- (BOOL)bridgelessEnabled;
+
+/// Return the bundle URL for the main bundle.
+- (NSURL *)getBundleURL;
 
 #endif
 

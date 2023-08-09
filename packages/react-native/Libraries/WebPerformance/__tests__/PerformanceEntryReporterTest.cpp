@@ -146,8 +146,11 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
   reporter.measure("measure3", 0.0, 0.0, 5.0, "mark1");
   reporter.measure("measure4", 1.5, 0.0, std::nullopt, std::nullopt, "mark2");
 
+  reporter.setTimeStampProvider([]() { return 3.5; });
+  reporter.measure("measure5", 0.0, 0.0, std::nullopt, "mark2");
+
   reporter.mark("mark3", 2.0);
-  reporter.measure("measure5", 2.0, 2.0);
+  reporter.measure("measure6", 2.0, 2.0);
   reporter.mark("mark4", 2.0);
 
   auto res = reporter.popPendingEntries();
@@ -226,10 +229,17 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
        std::nullopt,
        std::nullopt,
        std::nullopt},
-      {"measure5",
+      {"measure6",
        static_cast<int>(PerformanceEntryType::MEASURE),
        2.0,
        0.0,
+       std::nullopt,
+       std::nullopt,
+       std::nullopt},
+      {"measure5",
+       static_cast<int>(PerformanceEntryType::MEASURE),
+       2.0,
+       1.5,
        std::nullopt,
        std::nullopt,
        std::nullopt},

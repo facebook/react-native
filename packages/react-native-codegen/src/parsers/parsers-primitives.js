@@ -611,7 +611,7 @@ function emitCommonTypes(
   }
 
   const genericTypeAnnotationName =
-    parser.nameForGenericTypeAnnotation(typeAnnotation);
+    parser.getTypeAnnotationName(typeAnnotation);
 
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {
@@ -644,6 +644,55 @@ function emitBoolProp(
   };
 }
 
+function emitMixedProp(
+  name: string,
+  optional: boolean,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'MixedTypeAnnotation',
+    },
+  };
+}
+
+function emitObjectProp(
+  name: string,
+  optional: boolean,
+  parser: Parser,
+  typeAnnotation: $FlowFixMe,
+  extractArrayElementType: (
+    typeAnnotation: $FlowFixMe,
+    name: string,
+    parser: Parser,
+  ) => EventTypeAnnotation,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: extractArrayElementType(typeAnnotation, name, parser),
+  };
+}
+
+function emitUnionProp(
+  name: string,
+  optional: boolean,
+  parser: Parser,
+  typeAnnotation: $FlowFixMe,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'StringEnumTypeAnnotation',
+      options: typeAnnotation.types.map(option =>
+        parser.getLiteralValue(option),
+      ),
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -655,6 +704,7 @@ module.exports = {
   emitFunction,
   emitInt32,
   emitInt32Prop,
+  emitMixedProp,
   emitNumber,
   emitGenericObject,
   emitDictionary,
@@ -673,4 +723,6 @@ module.exports = {
   typeEnumResolution,
   translateArrayTypeAnnotation,
   Visitor,
+  emitObjectProp,
+  emitUnionProp,
 };

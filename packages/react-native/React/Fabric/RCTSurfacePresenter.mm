@@ -29,12 +29,12 @@
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
-#import <react/renderer/core/CoreFeatures.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/renderer/scheduler/SynchronousEventBeat.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #import "PlatformRunLoopObserver.h"
@@ -272,16 +272,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
-    CoreFeatures::disableTransactionCommit = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
     CoreFeatures::enableMountHooks = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_scroll_event_throttle_requirement")) {
+    CoreFeatures::disableScrollEventThrottleRequirement = true;
   }
 
   auto componentRegistryFactory =

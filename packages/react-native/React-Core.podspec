@@ -69,7 +69,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
-  s.resource_bundle        = { "AccessibilityResources" => ["React/AccessibilityResources/*.lproj"]}
+  s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
@@ -91,7 +91,7 @@ Pod::Spec.new do |s|
       "React/Fabric/**/*",
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
-      "React/Inspector/**/*"
+      "React/Inspector/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
@@ -99,7 +99,7 @@ Pod::Spec.new do |s|
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
-    ss.private_header_files   = "React/Cxx*/*.h"
+    ss.private_header_files   = "React/CxxLogUtils/*.h"
   end
 
   s.subspec "DevSupport" do |ss|
@@ -130,6 +130,7 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger", version
   s.dependency "React-jsi", version
   s.dependency "React-jsiexecutor", version
+  s.dependency "React-utils"
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "Yoga"
   s.dependency "glog"

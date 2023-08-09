@@ -9,8 +9,8 @@ package com.facebook.react.defaults
 
 import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridgeless.BindingsInstaller
 import com.facebook.react.bridgeless.JSEngineInstance
 import com.facebook.react.bridgeless.ReactHostDelegate
@@ -18,7 +18,6 @@ import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.turbomodule.core.TurboModuleManager
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 
 /**
  * A utility class that allows you to simplify the initialization of React Native by setting up a
@@ -46,14 +45,10 @@ class DefaultReactHostDelegate(
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jSEngineInstance: JSEngineInstance = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),
-    private val turboModuleManagerDelegate:
-        (context: ReactApplicationContext) -> TurboModuleManagerDelegate,
     private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
-    private val exceptionHandler: (Exception) -> Unit = {}
+    private val exceptionHandler: (Exception) -> Unit = {},
+    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
-
-  override fun getTurboModuleManagerDelegate(context: ReactApplicationContext) =
-      turboModuleManagerDelegate(context)
 
   override fun getReactNativeConfig(turboModuleManager: TurboModuleManager) = reactNativeConfig
 

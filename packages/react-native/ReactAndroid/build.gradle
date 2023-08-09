@@ -109,7 +109,7 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 "react_render_graphics",
                 [
                     new Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
-                    new Pair("../ReactCommon/react/renderer/graphics/platform/cxx/", ""),
+                    new Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
                 ]
             ),
             new PrefabPreprocessingEntry(
@@ -118,7 +118,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
-                new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+                [
+                    new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/"),
+                    new Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "rrc_legacyviewmanagerinterop",
@@ -184,6 +187,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                     new Pair("../ReactCommon/react/utils/", "react/utils/"),
                     new Pair("src/main/jni/react/jni", "react/jni/"),
                 ]
+            ),
+            new PrefabPreprocessingEntry(
+                    "react_utils",
+                    new Pair("../ReactCommon/react/utils/", "react/utils/"),
             ),
             new PrefabPreprocessingEntry(
                 "react_render_imagemanager",
@@ -332,6 +339,23 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
+task downloadGtest(dependsOn: createNativeDepsDirectories, type: Download) {
+    src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
+    onlyIfModified(true)
+    overwrite(false)
+    retries(5)
+    dest(new File(downloadsDir, "gtest.tar.gz"))
+}
+
+task prepareGtest(dependsOn: dependenciesPath ? [] : [downloadGtest], type: Copy) {
+    from(dependenciesPath ?: tarTree(downloadGtest.dest))
+    eachFile { fname -> {
+        fname.path = (fname.path - "googletest-release-${GTEST_VERSION}/")
+     }
+    }
+    into(new File(thirdPartyNdkDir,"googletest"))
+}
+
 // Prepare glog sources to be compiled, this task will perform steps that normally should've been
 // executed by automake. This way we can avoid dependencies on make/automake
 final def prepareGlog = tasks.register("prepareGlog", PrepareGlogTask) {
@@ -356,6 +380,7 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGlog)
     dependsOn(downloadFmt)
     dependsOn(downloadLibevent)
+    dependsOn(downloadGtest)
 }
 
 /**
@@ -431,12 +456,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -447,6 +472,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        // Using '-Xjvm-default=all' to generate default java methods for interfaces
+        freeCompilerArgs = ['-Xjvm-default=all']
     }
 
     defaultConfig {
@@ -481,6 +511,11 @@ android {
                 targets "jsijniprofiler",
                     "reactnativeblob",
                     "reactperfloggerjni",
+                    "bridgeless",
+                    "rninstance",
+                    "hermesinstancejni",
+                    "uimanagerjni",
+                    "jscinstance",
                     // prefab targets
                     "reactnativejni",
                     "react_render_debug",
@@ -488,6 +523,7 @@ android {
                     "runtimeexecutor",
                     "react_codegen_rncore",
                     "react_debug",
+                    "react_utils",
                     "react_render_componentregistry",
                     "react_newarchdefaults",
                     "react_render_animations",
@@ -536,7 +572,7 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent)
+    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
     preBuild.dependsOn("generateCodegenArtifactsFromSchema")
     preBuild.dependsOn(preparePrefab)
 
@@ -567,6 +603,7 @@ android {
     buildFeatures {
         prefab true
         prefabPublishing !skipPrefabPublishing
+        buildConfig true
     }
 
     prefab {
@@ -584,6 +621,9 @@ android {
         }
         react_debug {
             headers(new File(prefabHeadersDir, "react_debug").absolutePath)
+        }
+        react_utils {
+            headers(new File(prefabHeadersDir, "react_utils").absolutePath)
         }
         react_render_componentregistry {
             headers(new File(prefabHeadersDir, "react_render_componentregistry").absolutePath)
@@ -674,43 +714,43 @@ android {
 }
 
 dependencies {
-    api("androidx.appcompat:appcompat-resources:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
-    api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
+    api(libs.androidx.appcompat)
+    api(libs.androidx.appcompat.resources)
+    api(libs.androidx.autofill)
+    api(libs.androidx.swiperefreshlayout)
+    api(libs.androidx.tracing)
 
-    api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
-    api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
-    api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
-    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
-    api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
-    api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
-    api("com.facebook.yoga:proguard-annotations:${PROGUARD_ANNOTATIONS_VERSION}")
+    api(libs.fbjni)
+    api(libs.fresco)
+    api(libs.fresco.middleware)
+    api(libs.fresco.imagepipeline.okhttp3)
+    api(libs.fresco.ui.common)
+    api(libs.infer.annotation)
+    api(libs.soloader)
+    api(libs.yoga.proguard.annotations)
 
-    api("com.google.code.findbugs:jsr305:${JSR305_VERSION}")
-    api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:${OKIO_VERSION}")
-    api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
+    api(libs.jsr305)
+    api(libs.okhttp3.urlconnection)
+    api(libs.okhttp3)
+    api(libs.okio)
+    api(libs.javax.inject)
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    testImplementation("junit:junit:${JUNIT_VERSION}")
-    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
-    testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
-    testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
-    testImplementation("com.thoughtworks.xstream:xstream:1.4.20")
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito)
+    testImplementation(libs.powermock.api.mockito2)
+    testImplementation(libs.powermock.classloading.xstream)
+    testImplementation(libs.powermock.module.junit4.rule)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.thoughtworks)
 
-    androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.mockito)
 }
 
 react {
@@ -721,6 +761,8 @@ react {
 }
 
 kotlin {
+    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
+    // not running well on JDK 17.
     jvmToolchain(11)
 }
 

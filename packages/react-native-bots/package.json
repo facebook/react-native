@@ -11,7 +11,7 @@
   },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/react-native-bots#readme",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "devDependencies": {
     "@rnx-kit/rn-changelog-generator": "^0.4.0",

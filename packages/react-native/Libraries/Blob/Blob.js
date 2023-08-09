@@ -81,7 +81,7 @@ class Blob {
     return this._data;
   }
 
-  slice(start?: number, end?: number): Blob {
+  slice(start?: number, end?: number, contentType: string = ''): Blob {
     const BlobManager = require('./BlobManager');
     let {offset, size} = this.data;
 
@@ -109,6 +109,7 @@ class Blob {
       blobId: this.data.blobId,
       offset,
       size,
+      type: contentType,
       /* Since `blob.slice()` creates a new view onto the same binary
        * data as the original blob, we should re-use the same collector
        * object so that the underlying resource gets deallocated when

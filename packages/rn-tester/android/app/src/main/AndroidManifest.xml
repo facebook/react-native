@@ -60,7 +60,6 @@
         <data android:scheme="rntester" android:host="example" />
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
     <provider
       android:name="com.facebook.react.modules.blob.BlobProvider"
       android:authorities="@string/blob_provider_authority"

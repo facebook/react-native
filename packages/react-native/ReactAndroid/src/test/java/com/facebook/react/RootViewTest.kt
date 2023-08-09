@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as we want to test RCTEventEmitter here
 package com.facebook.react
 
 import android.app.Activity
@@ -63,7 +64,7 @@ class RootViewTest {
     whenever(SystemClock.uptimeMillis()).thenAnswer { ts }
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
-    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.application))
+    reactContext = spy(ReactApplicationContext(RuntimeEnvironment.getApplication()))
     reactContext.initializeWithInstance(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)

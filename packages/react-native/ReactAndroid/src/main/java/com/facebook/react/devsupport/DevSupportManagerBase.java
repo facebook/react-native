@@ -19,6 +19,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
@@ -509,16 +510,19 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     title.setGravity(Gravity.CENTER);
     title.setTextSize(16);
     title.setTypeface(title.getTypeface(), Typeface.BOLD);
-
-    final TextView jsExecutorLabel = new TextView(context);
-    jsExecutorLabel.setText(
-        context.getString(R.string.catalyst_dev_menu_sub_header, getJSExecutorDescription()));
-    jsExecutorLabel.setPadding(0, 20, 0, 0);
-    jsExecutorLabel.setGravity(Gravity.CENTER);
-    jsExecutorLabel.setTextSize(14);
-
     header.addView(title);
-    header.addView(jsExecutorLabel);
+
+    String jsExecutorDescription = getJSExecutorDescription();
+
+    if (jsExecutorDescription != null) {
+      final TextView jsExecutorLabel = new TextView(context);
+      jsExecutorLabel.setText(
+          context.getString(R.string.catalyst_dev_menu_sub_header, jsExecutorDescription));
+      jsExecutorLabel.setPadding(0, 20, 0, 0);
+      jsExecutorLabel.setGravity(Gravity.CENTER);
+      jsExecutorLabel.setTextSize(14);
+      header.addView(jsExecutorLabel);
+    }
 
     mDevOptionsDialog =
         new AlertDialog.Builder(context)
@@ -538,7 +542,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
   }
 
   private String getJSExecutorDescription() {
-    return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    try {
+      return getReactInstanceDevHelper().getJavaScriptExecutorFactory().toString();
+    } catch (IllegalStateException e) {
+      return null;
+    }
   }
 
   /**
@@ -687,7 +695,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mCurrentContext;
   }
 
-  protected @Nullable String getJSAppBundleName() {
+  public @Nullable String getJSAppBundleName() {
     return mJSAppBundleName;
   }
 
@@ -695,7 +703,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mApplicationContext;
   }
 
-  protected DevServerHelper getDevServerHelper() {
+  public DevServerHelper getDevServerHelper() {
     return mDevServerHelper;
   }
 
@@ -1022,7 +1030,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
       if (!mIsReceiverRegistered) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(getReloadAppAction(mApplicationContext));
-        mApplicationContext.registerReceiver(mReloadAppBroadcastReceiver, filter);
+        compatRegisterReceiver(mApplicationContext, mReloadAppBroadcastReceiver, filter, true);
         mIsReceiverRegistered = true;
       }
 
@@ -1119,5 +1127,22 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
 
     return mSurfaceDelegateFactory.createSurfaceDelegate(moduleName);
+  }
+
+  /**
+   * Starting with Android 14, apps and services that target Android 14 and use context-registered
+   * receivers are required to specify a flag to indicate whether or not the receiver should be
+   * exported to all other apps on the device: either RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED
+   *
+   * <p>https://developer.android.com/about/versions/14/behavior-changes-14#runtime-receivers-exported
+   */
+  private void compatRegisterReceiver(
+      Context context, BroadcastReceiver receiver, IntentFilter filter, boolean exported) {
+    if (Build.VERSION.SDK_INT >= 34 && context.getApplicationInfo().targetSdkVersion >= 34) {
+      context.registerReceiver(
+          receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
+    } else {
+      context.registerReceiver(receiver, filter);
+    }
   }
 }

@@ -7,11 +7,11 @@
 
 package com.facebook.react.bridgeless
 
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
-import com.facebook.react.turbomodule.core.TurboModuleManagerDelegate
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -32,8 +32,8 @@ class ReactHostDelegateTest {
   @Test
   fun testDefaultReactHostDelegateCreation() {
     val jsBundleLoader: JSBundleLoader = Mockito.mock(JSBundleLoader::class.java)
-    val turboModuleManagerDelegateMock: TurboModuleManagerDelegate =
-        Mockito.mock(TurboModuleManagerDelegate::class.java)
+    val turboModuleManagerDelegateBuilderMock: ReactPackageTurboModuleManagerDelegate.Builder =
+        Mockito.mock(ReactPackageTurboModuleManagerDelegate.Builder::class.java)
     val hermesInstance: JSEngineInstance = Mockito.mock(HermesInstance::class.java)
     val jsMainModulePathMocked = "mockedJSMainModulePath"
     val delegate =
@@ -41,7 +41,7 @@ class ReactHostDelegateTest {
             jSMainModulePath = jsMainModulePathMocked,
             jSBundleLoader = jsBundleLoader,
             jSEngineInstance = hermesInstance,
-            turboModuleManagerDelegate = { turboModuleManagerDelegateMock })
+            turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
 
     assertThat(delegate.jSMainModulePath).isEqualTo(jsMainModulePathMocked)
   }

@@ -1,4 +1,7 @@
 name: Automatic Rebase
+# This workflow is used to automatically rebase a PR when a comment is made
+# containing the text "/rebase". It uses the cirrus-actions/rebase action.
+# See https://github.com/cirrus-actions/rebase
 on:
   issue_comment:
     types: [created]
@@ -6,12 +9,12 @@ permissions:
   contents: read
 jobs:
   rebase:
-    permissions:
-      contents: write  # for cirrus-actions/rebase to push code to rebase
-      pull-requests: read  # for cirrus-actions/rebase to get info about PR
     name: Rebase
-    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/rebase')
+    permissions:
+      contents: write # for cirrus-actions/rebase to push code to rebase
+      pull-requests: read # for cirrus-actions/rebase to get info about PR
     runs-on: ubuntu-latest
+    if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/rebase')
     steps:
       - name: Checkout the latest code
         uses: actions/checkout@v3
@@ -19,6 +22,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
       - name: Automatic Rebase
-        uses: cirrus-actions/rebase@1.7
+        uses: cirrus-actions/rebase@1.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

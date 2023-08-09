@@ -7,7 +7,11 @@
  * @format
  */
 
-const {getPackageVersionStrByTag, publishPackage} = require('../npm-utils');
+const {
+  applyPackageVersions,
+  getPackageVersionStrByTag,
+  publishPackage,
+} = require('../npm-utils');
 
 const execMock = jest.fn();
 jest.mock('shelljs', () => ({
@@ -18,6 +22,47 @@ describe('npm-utils', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.resetAllMocks();
+  });
+
+  describe('applyPackageVersions', () => {
+    it('should replace package.json with dependencies', () => {
+      const originalPackageJson = {
+        name: 'my-package',
+        dependencies: {
+          'my-dependency-a': 'nightly',
+          'my-dependency-b': '^1.2.3',
+        },
+        devDependencies: {
+          'my-dev-dependency-a': 'nightly',
+          'my-dev-dependency-b': '^1.2.3',
+        },
+        someOtherField: {
+          'my-dependency-a': 'should-be-untouched',
+        },
+      };
+
+      const dependencies = {
+        'my-dependency-a': '0.72.0-nightly-shortcommit',
+        'my-dev-dependency-a': 'updated-version',
+        'my-non-existant-dep': 'some-version',
+      };
+
+      const package = applyPackageVersions(originalPackageJson, dependencies);
+      expect(package).toEqual({
+        name: 'my-package',
+        dependencies: {
+          'my-dependency-a': '0.72.0-nightly-shortcommit',
+          'my-dependency-b': '^1.2.3',
+        },
+        devDependencies: {
+          'my-dev-dependency-a': 'updated-version',
+          'my-dev-dependency-b': '^1.2.3',
+        },
+        someOtherField: {
+          'my-dependency-a': 'should-be-untouched',
+        },
+      });
+    });
   });
 
   describe('getPackageVersionStrByTag', () => {

@@ -68,8 +68,8 @@ ShadowNode::Shared UIManager::createNode(
     std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
-    SharedEventTarget eventTarget) const {
-  SystraceSection s("UIManager::createNode");
+    const InstanceHandle::Shared &instanceHandle) const {
+  SystraceSection s("UIManager::createNode", "componentName", name);
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
   auto fallbackDescriptor =
@@ -77,9 +77,9 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family =
-      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto const fragment =
+      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
+  auto family = componentDescriptor.createFamily(fragment);
   auto const props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
   auto const state = componentDescriptor.createInitialState(props, family);
@@ -114,7 +114,8 @@ ShadowNode::Shared UIManager::cloneNode(
     ShadowNode const &shadowNode,
     ShadowNode::SharedListOfShared const &children,
     RawProps const *rawProps) const {
-  SystraceSection s("UIManager::cloneNode");
+  SystraceSection s(
+      "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
@@ -166,7 +167,7 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     ShadowNode::UnsharedListOfShared const &rootChildren,
     ShadowTree::CommitOptions commitOptions) const {
-  SystraceSection s("UIManager::completeSurface");
+  SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
     shadowTree.commit(
@@ -231,19 +232,19 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
+  if (shadowTree) {
+    // We execute JavaScript/React part of the process at the very end to
+    // minimize any visible side-effects of stopping the Surface. Any possible
+    // commits from the JavaScript side will not be able to reference a
+    // `ShadowTree` and will fail silently.
+    runtimeExecutor_([=](jsi::Runtime &runtime) {
+      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+    });
 
-  // We execute JavaScript/React part of the process at the very end to minimize
-  // any visible side-effects of stopping the Surface. Any possible commits from
-  // the JavaScript side will not be able to reference a `ShadowTree` and will
-  // fail silently.
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
-  });
-
-  if (leakChecker_) {
-    leakChecker_->stopSurface(surfaceId);
+    if (leakChecker_) {
+      leakChecker_->stopSurface(surfaceId);
+    }
   }
-
   return shadowTree;
 }
 
@@ -403,6 +404,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
+  SystraceSection s(
+      "UIManager::updateState",
+      "componentName",
+      stateUpdate.family->getComponentName());
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();

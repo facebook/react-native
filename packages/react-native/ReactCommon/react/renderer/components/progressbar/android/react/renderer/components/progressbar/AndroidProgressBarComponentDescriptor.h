@@ -29,17 +29,17 @@ class AndroidProgressBarComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto androidProgressBarShadowNode =
-        std::static_pointer_cast<AndroidProgressBarShadowNode>(shadowNode);
+    auto &androidProgressBarShadowNode =
+        static_cast<AndroidProgressBarShadowNode &>(*shadowNode);
 
     // `AndroidProgressBarShadowNode` uses
     // `AndroidProgressBarMeasurementsManager` to provide measurements to Yoga.
-    androidProgressBarShadowNode->setAndroidProgressBarMeasurementsManager(
+    androidProgressBarShadowNode.setAndroidProgressBarMeasurementsManager(
         measurementsManager_);
 
     // All `AndroidProgressBarShadowNode`s must have leaf Yoga nodes with
     // properly setup measure function.
-    androidProgressBarShadowNode->enableMeasurement();
+    androidProgressBarShadowNode.enableMeasurement();
   }
 
  private:

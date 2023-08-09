@@ -13,6 +13,7 @@ const {
   parseTopLevelType,
   flattenIntersectionType,
 } = require('../parseTopLevelType');
+const {verifyPropNotAlreadyDefined} = require('../../parsers-commons');
 import type {TypeDeclarationMap, PropAST, ASTNode} from '../../utils';
 import type {BuildSchemaFN, Parser} from '../../parser';
 
@@ -120,8 +121,8 @@ function detectArrayType<T>(
   // Covers: Array<T> and ReadonlyArray<T>
   if (
     typeAnnotation.type === 'TSTypeReference' &&
-    (typeAnnotation.typeName.name === 'ReadonlyArray' ||
-      typeAnnotation.typeName.name === 'Array')
+    (parser.getTypeAnnotationName(typeAnnotation) === 'ReadonlyArray' ||
+      parser.getTypeAnnotationName(typeAnnotation) === 'Array')
   ) {
     return {
       type: 'ArrayTypeAnnotation',
@@ -377,7 +378,7 @@ function getTypeAnnotation<T>(
   const type =
     typeAnnotation.type === 'TSTypeReference' ||
     typeAnnotation.type === 'TSTypeAliasDeclaration'
-      ? typeAnnotation.typeName.name
+      ? parser.getTypeAnnotationName(typeAnnotation)
       : typeAnnotation.type;
 
   const common = getCommonTypeAnnotation(
@@ -413,7 +414,6 @@ function getTypeAnnotation<T>(
         `Cannot use "${type}" type annotation for "${name}": must use a specific function type like BubblingEventHandler, or DirectEventHandler`,
       );
     default:
-      (type: empty);
       throw new Error(`Unknown prop type for "${name}": "${type}"`);
   }
 }
@@ -451,17 +451,6 @@ function getSchemaInfo(
     defaultValue: topLevelType.defaultValue,
     withNullDefault: false, // Just to make `getTypeAnnotation` signature match with the one from Flow
   };
-}
-
-function verifyPropNotAlreadyDefined(
-  props: $ReadOnlyArray<PropAST>,
-  needleProp: PropAST,
-) {
-  const propName = needleProp.key.name;
-  const foundProp = props.some(prop => prop.key.name === propName);
-  if (foundProp) {
-    throw new Error(`A prop was already defined with the name ${propName}`);
-  }
 }
 
 function flattenProperties(

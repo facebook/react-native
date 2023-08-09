@@ -2224,6 +2224,53 @@ it('handles maintainVisibleContentPosition', () => {
   expect(component).toMatchSnapshot();
 });
 
+it('handles maintainVisibleContentPosition when anchor moves before minIndexForVisible', () => {
+  const items = generateItems(20);
+  const ITEM_HEIGHT = 10;
+
+  // Render a list with `minIndexForVisible: 1`
+  let component;
+  ReactTestRenderer.act(() => {
+    component = ReactTestRenderer.create(
+      <VirtualizedList
+        initialNumToRender={1}
+        windowSize={1}
+        maintainVisibleContentPosition={{minIndexForVisible: 1}}
+        {...baseItemProps(items)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  ReactTestRenderer.act(() => {
+    simulateLayout(component, {
+      viewport: {width: 10, height: 50},
+      content: {width: 10, height: items.length * ITEM_HEIGHT},
+    });
+
+    performAllBatches();
+  });
+
+  expect(component).toMatchSnapshot();
+
+  // Remove the first item to shift the previous anchor to be before
+  // `minIndexForVisible`.
+  const [, ...restItems] = items;
+  ReactTestRenderer.act(() => {
+    component.update(
+      <VirtualizedList
+        initialNumToRender={1}
+        windowSize={1}
+        maintainVisibleContentPosition={{minIndexForVisible: 1}}
+        {...baseItemProps(restItems)}
+        {...fixedHeightItemLayoutProps(ITEM_HEIGHT)}
+      />,
+    );
+  });
+
+  expect(component).toMatchSnapshot();
+});
+
 function generateItems(count, startKey = 0) {
   return Array(count)
     .fill()

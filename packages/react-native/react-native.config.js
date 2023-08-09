@@ -24,16 +24,4 @@ module.exports = {
       dependencyConfig: android.dependencyConfig,
     },
   },
-  /**
-   * Used when running RNTester (with React Native from source)
-   */
-  reactNativePath: '.',
-  project: {
-    ios: {
-      sourceDir: '../packages/rn-tester',
-    },
-    android: {
-      sourceDir: '../packages/rn-tester',
-    },
-  },
 };

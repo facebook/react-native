@@ -10,12 +10,11 @@
 'use strict';
 
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const {cat, echo, exec, exit, sed} = require('shelljs');
+const {cat, echo, exit, sed} = require('shelljs');
 const yargs = require('yargs');
 const {parseVersion, validateBuildType} = require('./version-utils');
-const {saveFiles} = require('./scm-utils');
+const updateTemplatePackage = require('./update-template-package');
+const {applyPackageVersions} = require('./npm-utils');
 
 /**
  * This script updates relevant React Native files with supplied version:
@@ -31,13 +30,32 @@ if (require.main === module) {
       type: 'string',
       required: true,
     })
+    .option('d', {
+      alias: 'dependency-versions',
+      type: 'string',
+      describe:
+        'JSON string of package versions. Ex. "{"react-native":"0.64.1"}"',
+      default: null,
+    })
+    .coerce('d', dependencyVersions => {
+      if (dependencyVersions == null) {
+        return null;
+      }
+      return JSON.parse(dependencyVersions);
+    })
     .option('b', {
       alias: 'build-type',
       type: 'string',
+      choices: ['dry-run', 'nightly', 'release'],
       required: true,
     }).argv;
 
-  setReactNativeVersion(argv.toVersion, argv.buildType);
+  setReactNativeVersion(
+    argv.toVersion,
+    argv.dependencyVersions,
+    argv.buildType,
+  );
+  exit(0);
 }
 
 function setSource({major, minor, patch, prerelease}) {
@@ -108,8 +126,15 @@ function setGradle({version}) {
   }
 }
 
-function setPackage({version}) {
-  const packageJson = JSON.parse(cat('packages/react-native/package.json'));
+function setPackage({version}, dependencyVersions) {
+  const originalPackageJson = JSON.parse(
+    cat('packages/react-native/package.json'),
+  );
+  const packageJson =
+    dependencyVersions != null
+      ? applyPackageVersions(originalPackageJson, dependencyVersions)
+      : originalPackageJson;
+
   packageJson.version = version;
 
   fs.writeFileSync(
@@ -119,58 +144,22 @@ function setPackage({version}) {
   );
 }
 
-function setTemplatePackage({version}) {
-  const result = exec(`node scripts/set-rn-template-version.js ${version}`);
-  if (result.code) {
-    echo("Failed to update React Native template's version of React Native");
-    throw result.stderr;
-  }
-}
-
-function setReactNativeVersion(argVersion, buildType) {
+function setReactNativeVersion(argVersion, dependencyVersions, buildType) {
   validateBuildType(buildType);
 
   const version = parseVersion(argVersion, buildType);
 
-  // Create tmp folder for copies of files to verify files have changed
-  const filesToValidate = [
-    'packages/react-native/package.json',
-    'packages/react-native/ReactAndroid/gradle.properties',
-    'packages/react-native/template/package.json',
-  ];
-  const tmpVersioningFolder = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'rn-set-version'),
-  );
-  echo(`The tmp versioning folder is ${tmpVersioningFolder}`);
-  saveFiles(tmpVersioningFolder);
-
   setSource(version);
-  setPackage(version);
-  setTemplatePackage(version);
+  setPackage(version, dependencyVersions);
+
+  const templateDependencyVersions = {
+    'react-native': version.version,
+    ...(dependencyVersions != null ? dependencyVersions : {}),
+  };
+  updateTemplatePackage(templateDependencyVersions);
+
   setGradle(version);
-
-  // Validate changes
-  // We just do a git diff and check how many times version is added across files
-  const numberOfChangedLinesWithNewVersion = exec(
-    `diff -r ${tmpVersioningFolder} . | grep '^[>]' | grep -c ${version.version} `,
-    {silent: true},
-  ).stdout.trim();
-
-  if (+numberOfChangedLinesWithNewVersion !== filesToValidate.length) {
-    // TODO: the logic that checks whether all the changes have been applied
-    // is missing several files. For example, it is not checking Ruby version nor that
-    // the Objecive-C files, the codegen and other files are properly updated.
-    // We are going to work on this in another PR.
-    echo('WARNING:');
-    echo(
-      `Failed to update all the files: [${filesToValidate.join(
-        ', ',
-      )}] must have versions in them`,
-    );
-    echo(`These files already had version ${version.version} set.`);
-  }
-
-  return exit(0);
+  return;
 }
 
 module.exports = setReactNativeVersion;

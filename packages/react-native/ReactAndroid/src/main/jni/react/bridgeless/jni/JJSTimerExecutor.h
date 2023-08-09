@@ -8,7 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <fb/fbjni.h>
+#include <fbjni/fbjni.h>
 #include <jni.h>
 #include <react/bridgeless/TimerManager.h>
 #include <react/jni/WritableNativeArray.h>

@@ -563,6 +563,19 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 
 @end
 
+@implementation RCTBridgeProxy (RCTDevMenu)
+
+- (RCTDevMenu *)devMenu
+{
+#if RCT_DEV_MENU
+  return [self moduleForClass:[RCTDevMenu class]];
+#else
+  return nil;
+#endif
+}
+
+@end
+
 Class RCTDevMenuCls(void)
 {
   return RCTDevMenu.class;

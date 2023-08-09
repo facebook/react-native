@@ -21,6 +21,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 **/.xcode.env.local
+/poackages/react-native/sdks/downloads/
 
 # Gradle
 /build/
@@ -38,6 +39,7 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/gradlew.bat
 /packages/react-native/ReactAndroid/external-artifacts/build/
 /packages/react-native/ReactAndroid/external-artifacts/artifacts/
+/packages/react-native/ReactAndroid/flipper-integration/build/
 /packages/react-native/ReactAndroid/hermes-engine/build/
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
 /packages/react-native/template/android/app/build/
@@ -50,6 +52,7 @@ buck-out
 /.lsp-buck-out
 /packages/react-native/ReactAndroid/src/main/jni/prebuilt/lib/
 /packages/react-native/ReactAndroid/src/main/gen
+/.cpplsp.buckd
 
 # Android Studio
 .project
@@ -144,3 +147,7 @@ package-lock.json
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+
+# E2E files
+/packages/rn-tester-e2e/apps/*.apk
+/packages/rn-tester-e2e/apps/*.app

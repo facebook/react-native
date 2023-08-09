@@ -52,13 +52,8 @@ function build_host_hermesc {
 
 # Utility function to configure an Apple framework
 function configure_apple_framework {
-  local enable_bitcode enable_debugger cmake_build_type
+  local enable_debugger cmake_build_type
 
-  if [[ $1 == iphoneos || $1 == catalyst ]]; then
-    enable_bitcode="true"
-  else
-    enable_bitcode="false"
-  fi
   if [[ $BUILD_TYPE == "Debug" ]]; then
     enable_debugger="true"
   else
@@ -82,7 +77,7 @@ function configure_apple_framework {
       -DHERMES_ENABLE_LIBFUZZER:BOOLEAN=false \
       -DHERMES_ENABLE_FUZZILLI:BOOLEAN=false \
       -DHERMES_ENABLE_TEST_SUITE:BOOLEAN=false \
-      -DHERMES_ENABLE_BITCODE:BOOLEAN="$enable_bitcode" \
+      -DHERMES_ENABLE_BITCODE:BOOLEAN=false \
       -DHERMES_BUILD_APPLE_FRAMEWORK:BOOLEAN=true \
       -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
       -DIMPORT_HERMESC:PATH="$IMPORT_HERMESC_PATH" \
@@ -92,11 +87,18 @@ function configure_apple_framework {
     popd > /dev/null || exit 1
 }
 
+function build_host_hermesc_if_needed {
+  if [[ ! -f "$IMPORT_HERMESC_PATH" ]]; then
+    build_host_hermesc
+  else
+    echo "[HermesC] Skipping! Found an existent hermesc already at: $IMPORT_HERMESC_PATH"
+  fi
+}
+
 # Utility function to build an Apple framework
 function build_apple_framework {
   # Only build host HermesC if no file found at $IMPORT_HERMESC_PATH
-  [ ! -f "$IMPORT_HERMESC_PATH" ] &&
-  build_host_hermesc
+  build_host_hermesc_if_needed
 
   # Confirm ImportHermesc.cmake is now available.
   [ ! -f "$IMPORT_HERMESC_PATH" ] &&
@@ -124,6 +126,22 @@ function build_apple_framework {
     cp API/hermes/*.h destroot/include/hermes
     cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
   popd > /dev/null || exit 1
+}
+
+function prepare_dest_root_for_ci {
+  mkdir -p "destroot/Library/Frameworks/macosx" "destroot/bin" "destroot/Library/Frameworks/iphoneos" "destroot/Library/Frameworks/iphonesimulator" "destroot/Library/Frameworks/catalyst"
+
+  cp -R "./build_macosx/API/hermes/hermes.framework"* "destroot/Library/Frameworks/macosx"
+  cp -R "./build_iphoneos/API/hermes/hermes.framework"* "destroot/Library/Frameworks/iphoneos"
+  cp -R "./build_iphonesimulator/API/hermes/hermes.framework"* "destroot/Library/Frameworks/iphonesimulator"
+  cp -R "./build_catalyst/API/hermes/hermes.framework"* "destroot/Library/Frameworks/catalyst"
+  cp "./build_macosx/bin/"* "destroot/bin"
+
+  mkdir -p destroot/include/hermes/Public destroot/include/jsi
+
+  cp public/hermes/Public/*.h destroot/include/hermes/Public
+  cp API/hermes/*.h destroot/include/hermes
+  cp "$JSI_PATH"/jsi/*.h destroot/include/jsi
 }
 
 # Accepts an array of frameworks and will place all of

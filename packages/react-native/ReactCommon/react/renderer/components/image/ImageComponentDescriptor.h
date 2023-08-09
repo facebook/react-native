@@ -27,12 +27,11 @@ class ImageComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto imageShadowNode =
-        std::static_pointer_cast<ImageShadowNode>(shadowNode);
+    auto &imageShadowNode = static_cast<ImageShadowNode &>(*shadowNode);
 
     // `ImageShadowNode` uses `ImageManager` to initiate image loading and
     // communicate the loading state and results to mounting layer.
-    imageShadowNode->setImageManager(imageManager_);
+    imageShadowNode.setImageManager(imageManager_);
   }
 
  private:

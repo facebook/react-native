@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
+  s.framework              = ["Accelerate", "UIKit"]
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "React-Codegen", version

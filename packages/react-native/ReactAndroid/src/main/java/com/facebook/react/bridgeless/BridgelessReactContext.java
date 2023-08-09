@@ -40,8 +40,7 @@ import javax.annotation.Nullable;
  * com.facebook.react.bridge.CatalystInstance}, which doesn't exist in bridgeless mode.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class BridgelessReactContext extends ReactApplicationContext
-    implements EventDispatcherProvider {
+class BridgelessReactContext extends ReactApplicationContext implements EventDispatcherProvider {
 
   private final ReactHost mReactHost;
   private final AtomicReference<String> mSourceURL = new AtomicReference<>();
@@ -95,7 +94,7 @@ public class BridgelessReactContext extends ReactApplicationContext
     return mReactHost.isInstanceInitialized();
   }
 
-  public DevSupportManager getDevSupportManager() {
+  DevSupportManager getDevSupportManager() {
     return mReactHost.getDevSupportManager();
   }
 
@@ -115,7 +114,7 @@ public class BridgelessReactContext extends ReactApplicationContext
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) {
       NativeArray jsArgs = args != null ? Arguments.fromJavaArgs(args) : new WritableNativeArray();
       mReactHost.callFunctionOnModule(
           JavaScriptModuleRegistry.getJSModuleName(mJSModuleInterface), method.getName(), jsArgs);
@@ -154,7 +153,7 @@ public class BridgelessReactContext extends ReactApplicationContext
     mReactHost.handleHostException(e);
   }
 
-  public DefaultHardwareBackBtnHandler getDefaultHardwareBackBtnHandler() {
+  DefaultHardwareBackBtnHandler getDefaultHardwareBackBtnHandler() {
     return mReactHost.getDefaultBackButtonHandler();
   }
 }

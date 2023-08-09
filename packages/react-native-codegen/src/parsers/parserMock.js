@@ -96,8 +96,8 @@ export class MockedParser implements Parser {
     return 'Flow';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
-    return typeAnnotation.id.name;
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    return typeAnnotation?.id?.name;
   }
 
   checkIfInvalidModule(typeArguments: $FlowFixMe): boolean {
@@ -282,6 +282,10 @@ export class MockedParser implements Parser {
     return property.optional || false;
   }
 
+  getTypeAnnotationFromProperty(property: PropAST): $FlowFixMe {
+    return property.typeAnnotation.typeAnnotation;
+  }
+
   getGetTypeAnnotationFN(): GetTypeAnnotationFN {
     return () => {
       return {};
@@ -455,5 +459,37 @@ export class MockedParser implements Parser {
         `Failed to find type definition for "${typeName}", please check that you have a valid codegen flow file`,
       );
     }
+  }
+
+  nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.right;
+  }
+
+  nextNodeForEnum(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.body;
+  }
+
+  genericTypeAnnotationErrorMessage(typeAnnotation: $FlowFixMe): string {
+    return `A non GenericTypeAnnotation must be a type declaration ('${this.typeAlias}') or enum ('${this.enumDeclaration}'). Instead, got the unsupported ${typeAnnotation.type}.`;
+  }
+
+  extractTypeFromTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+    return typeAnnotation.type === 'GenericTypeAnnotation'
+      ? typeAnnotation.id.name
+      : typeAnnotation.type;
+  }
+
+  getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.properties;
+  }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.value;
+  }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].value
+      : null;
   }
 }
