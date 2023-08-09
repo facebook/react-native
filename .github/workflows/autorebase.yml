@@ -22,3 +22,4 @@ jobs:
         uses: cirrus-actions/rebase@1.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    continue-on-error: true  # [macOS]
