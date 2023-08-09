@@ -173,6 +173,7 @@ export type DraggedTypesType = DraggedType | DraggedType[];
 
 export interface ViewPropsMacOS {
   acceptsFirstMouse?: boolean | undefined;
+  allowsVibrancy?: boolean | undefined;
   mouseDownCanMoveWindow?: boolean | undefined;
   enableFocusRing?: boolean | undefined;
   onMouseEnter?: ((event: MouseEvent) => void) | undefined;

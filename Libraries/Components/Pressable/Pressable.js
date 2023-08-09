@@ -233,6 +233,16 @@ type Props = $ReadOnly<{|
   enableFocusRing?: ?boolean,
 
   /**
+   * Specifies whether the view ensures it is vibrant on top of other content.
+   * For more information, see the following apple documentation:
+   * https://developer.apple.com/documentation/appkit/nsview/1483793-allowsvibrancy
+   * https://developer.apple.com/documentation/appkit/nsvisualeffectview#1674177
+   *
+   * @platform macos
+   */
+  allowsVibrancy?: ?boolean,
+
+  /**
    * Specifies the Tooltip for the Pressable.
    * @platform macos
    */

@@ -1519,6 +1519,9 @@ setBorderColor() setBorderColor(Top) setBorderColor(Right) setBorderColor(Bottom
 	_mouseDownCanMoveWindow = mouseDownCanMoveWindow;
 }
 
+- (BOOL)allowsVibrancy {
+  return _allowsVibrancyInternal;
+}
 
 - (NSDictionary*)locationInfoFromEvent:(NSEvent*)event
 {

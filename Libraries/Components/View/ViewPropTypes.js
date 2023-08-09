@@ -554,6 +554,16 @@ type MacOSViewProps = $ReadOnly<{|
   mouseDownCanMoveWindow?: ?boolean,
 
   /**
+   * Specifies whether the view ensures it is vibrant on top of other content.
+   * For more information, see the following apple documentation:
+   * https://developer.apple.com/documentation/appkit/nsview/1483793-allowsvibrancy
+   * https://developer.apple.com/documentation/appkit/nsvisualeffectview#1674177
+   *
+   * @platform macos
+   */
+  allowsVibrancy?: ?boolean,
+
+  /**
    * Specifies whether system focus ring should be drawn when the view has keyboard focus.
    *
    * @platform macos
