@@ -421,6 +421,10 @@ void Connection::Impl::onMessageAdded(
     const ConsoleMessageInfo &info) {
   m::runtime::ConsoleAPICalledNotification apiCalledNote;
   apiCalledNote.type = info.level;
+  apiCalledNote.timestamp =
+      std::chrono::duration<double, std::ratio<1, 1000>>(
+          std::chrono::system_clock::now().time_since_epoch())
+          .count();
   // TODO(jpporto): fix test cases sending invalid context id.
   // apiCalledNote.executionContextId = kHermesExecutionContextId;
 

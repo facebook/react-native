@@ -114,19 +114,30 @@ class UserProjectMock
     attr_reader :path
     attr_reader :build_configurations
     attr_reader :native_targets
+    attr_reader :files
 
     attr_reader :save_invocation_count
 
-
-    def initialize(path = "/test/path.xcproj", build_configurations = [], native_targets: [])
-        @path = path
+    def initialize(path = "/test/path.xcproj", build_configurations = [], parent = "/test", native_targets: [], files: [])
+        @path = Pathname.new(path, parent)
         @build_configurations = build_configurations
         @native_targets = native_targets
+        @files = files
         @save_invocation_count = 0
     end
 
     def save()
         @save_invocation_count += 1
+    end
+end
+
+class PBXFileRefMock
+    attr_reader :name
+    attr_reader :path
+
+    def initialize(name)
+        @name = name
+        @path = name
     end
 end
 

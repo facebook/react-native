@@ -60,11 +60,11 @@ Scheduler::Scheduler(
                        const EventTarget *eventTarget,
                        const std::string &type,
                        ReactEventPriority priority,
-                       const ValueFactory &payloadFactory) {
+                       const EventPayload &payload) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, priority, payloadFactory);
+              runtime, eventTarget, type, priority, payload);
         },
         runtime);
     if (runtimeScheduler != nullptr) {

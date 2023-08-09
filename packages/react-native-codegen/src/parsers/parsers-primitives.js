@@ -611,7 +611,7 @@ function emitCommonTypes(
   }
 
   const genericTypeAnnotationName =
-    parser.nameForGenericTypeAnnotation(typeAnnotation);
+    parser.getTypeAnnotationName(typeAnnotation);
 
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {
@@ -675,6 +675,24 @@ function emitObjectProp(
   };
 }
 
+function emitUnionProp(
+  name: string,
+  optional: boolean,
+  parser: Parser,
+  typeAnnotation: $FlowFixMe,
+): NamedShape<EventTypeAnnotation> {
+  return {
+    name,
+    optional,
+    typeAnnotation: {
+      type: 'StringEnumTypeAnnotation',
+      options: typeAnnotation.types.map(option =>
+        parser.getLiteralValue(option),
+      ),
+    },
+  };
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -706,4 +724,5 @@ module.exports = {
   translateArrayTypeAnnotation,
   Visitor,
   emitObjectProp,
+  emitUnionProp,
 };

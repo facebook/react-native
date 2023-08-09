@@ -52,7 +52,7 @@ public class ReactTextInputPropertyTest {
 
   @Before
   public void setup() {
-    mContext = new ReactApplicationContext(RuntimeEnvironment.application);
+    mContext = new ReactApplicationContext(RuntimeEnvironment.getApplication());
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemedContext = new ThemedReactContext(mContext, mContext);

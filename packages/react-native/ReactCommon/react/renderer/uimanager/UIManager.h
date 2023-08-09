@@ -201,6 +201,10 @@ class UIManager final : public ShadowTreeDelegate {
 
   void reportMount(SurfaceId surfaceId) const;
 
+  bool hasBackgroundExecutor() const {
+    return backgroundExecutor_ != nullptr;
+  }
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;

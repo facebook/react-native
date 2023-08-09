@@ -2,6 +2,78 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.72.3
+
+### Fixed
+
+#### iOS specific
+
+- Revert "Fix pod install for swift libs using new arch (#38121)" to fix [build error with Xcode lower than Xcode 14.3](https://github.com/facebook/react-native/issues/38294) ([8f41f25](https://github.com/facebook/react-native/commit/8f41f25c214f995073e90b786c805eb45ff7dee5) by [@kelset](https://github.com/kelset))
+
+## v0.72.2
+
+### Changed
+
+- Remove deprecated stub types `@types/metro-config` from template ([63f78ea8de](https://github.com/facebook/react-native/commit/63f78ea8de68688005e7f48c6849bdf9f95e26ff) by [@kelset](https://github.com/kelset))
+- Bump CLI to 11.3.5 and Metro do 0.76.7 ([ba5fa9c394](https://github.com/facebook/react-native/commit/ba5fa9c394e7cd127e3ee543e0716c37912b0b40) by [@kelset](https://github.com/kelset))
+- Bump `@react-native/metro-config` to `0.72.9` ([21daa6e790](https://github.com/facebook/react-native/commit/21daa6e79030574ce41665ea13c39316eac8c305), [f37386176](https://github.com/facebook/react-native/commit/f37386176cb081e7b38fad8b5442099598bf1968)  by [@kelset](https://github.com/kelset))
+
+#### Android specific
+
+- Remove okhttp3 internal util usage ([3e3032636d](https://github.com/facebook/react-native/commit/3e3032636dc90a21a499492dcb88f819bcf4f003) by [@adrianha](https://github.com/adrianha))
+
+#### iOS specific
+
+- Update logic to add and remove views in the view registry for the interop layer. ([8d2eec367d](https://github.com/facebook/react-native/commit/8d2eec367dd6fbd60792ca1bde12b875a8261fa6) by [@cipolleschi](https://github.com/cipolleschi))
+- Disable NSTextStorage caching in OSS ([5bda54c1f1](https://github.com/facebook/react-native/commit/5bda54c1f183fbc51dc7264b0ab94d5bbcc3f172) by [@sammy-SC](https://github.com/sammy-SC))
+
+### Fixed
+
+- `global.performance` in undefined when starting metro from Expo CLI ([0ccbd65581](https://github.com/facebook/react-native/commit/0ccbd65581304faa286b452f75058b6292a6240f) by [@Kudo](https://github.com/Kudo))
+- Re-enabled debugging for debug builds ([41477c898c](https://github.com/facebook/react-native/commit/41477c898cf5726eae9edbb1596366a6eea2b01e) by Matt Blagden)
+- Add global hook to assert that base Metro config is called ([29f2602ff9](https://github.com/facebook/react-native/commit/29f2602ff9c3c9a9999c54a6004c99d6fd15ebc3) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+- Do not create RuntimeExecutor on non-JSI executors (#38125) ([d73b61c7c7](https://github.com/facebook/react-native/commit/d73b61c7c7dae23630b51b00048eafe5fcb47bd3) by [@lunaleaps](https://github.com/lunaleaps))
+- Prevent crash on OnePlus/Oppo devices in runAnimationStep ([a46a7cd1](https://github.com/facebook/react-native/commit/a46a7cd1f613d6eaea1d1cd07751f17cdc07c21b) by [@hsource](https://github.com/hsource))
+
+#### iOS specific
+
+- Fix build error when there are multiple EXTRA_COMPILER_ARGS ([28f4ebab8a](https://github.com/facebook/react-native/commit/28f4ebab8ab4b0f337699e6a135e2aa983866f42) by [@fergusean](https://github.com/fergusean))
+- Build failure with pnpm and use_frameworks! due to incorrect header paths ([58adc5e4b9](https://github.com/facebook/react-native/commit/58adc5e4b9ab74b67b4af04d1e72c387af848ea7) by evelant)
+- Fix onChangeText not firing when clearing the value of TextInput with multiline=true on iOS ([0c9c57a9f7](https://github.com/facebook/react-native/commit/0c9c57a9f73294414d92428c5d2472dc1e1e5e96) by [@kkoudev](https://github.com/kkoudev))
+- Fix pod install for libraries using Swift code when the new architecture is enabled ([a4a0655496](https://github.com/facebook/react-native/commit/a4a065549677c61eb91bf587032976ed48c75821) by [@louiszawadzki](https://github.com/louiszawadzki))
+
+## v0.72.1
+
+### Added
+
+#### iOS specific
+
+- Add warning to help users migrate away from the interop layer. ([a702d0515f](https://github.com/facebook/react-native/commit/a702d0515f9005714da52cda7f6851e06b4103da) by [@cipolleschi](https://github.com/cipolleschi))
+- Allow to lookup for ViewManager without the RCT prefix in the Interop Layer ([a28881a3d7](https://github.com/facebook/react-native/commit/a28881a3d79e732670157638aa5207c88c79718c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Changed
+
+- `react-native/metro-config` now includes all base config values from `metro-config` ([bbcedd385b](https://github.com/facebook/react-native/commit/bbcedd385bf7fe374955378d2c2a065318f740cb) by [@huntie](https://github.com/huntie))
+- Bump CLI to 11.3.3 ([da84901f78](https://github.com/facebook/react-native/commit/da84901f78bdfc8c84ed71996c01f585d8b96367) by [@kelset](https://github.com/kelset))
+- Bumped `@react-native/metro-config` to `0.72.7`, `@react-native/gradle-plugin` to `0.72.11`, `@react-native/virtualized-lists` to `0.72.6` ([95db9f98f2](https://github.com/facebook/react-native/commit/95db9f98f2673d9015f6786db2df4e5f16dc74fc) by [@kelset](https://github.com/kelset))
+
+### Fixed
+
+- `react-native/virtualized-lists` does not need `react-test-renderer` at runtime ([7a2a3278d0](https://github.com/facebook/react-native/commit/7a2a3278d08b13dbde7a6e967474c20d6a5c76a5) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- Exclude trailing whitespace from newline character on measuring text line width ([83d7a48a46](https://github.com/facebook/react-native/commit/83d7a48a46c00b99c52a8ac5897c013924e10152) by [@bernhardoj](https://github.com/bernhardoj))
+- Set kotlin.jvm.target.validation.mode=warning on user projects ([10beefbbfa](https://github.com/facebook/react-native/commit/10beefbbfadcbe6e40314564e409bf592a16e571) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- Bump SocketRocket to 6.1.0 ([8ce471e2fa](https://github.com/facebook/react-native/commit/8ce471e2fa802cc50ff2d6ab346627cb5f6d79b4) by [@cipolleschi](https://github.com/cipolleschi))
+- fix `pod install --project-directory=ios` failing ([0b96bdcf32](https://github.com/facebook/react-native/commit/0b96bdcf326944b13e447f71739dee3c25c7b59a) by [@tido64](https://github.com/tido64))
+
 ## v0.72.0
 
 ### Breaking
@@ -348,6 +420,20 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 #### iOS specific
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
+
+## v0.71.12
+
+### Fixed
+
+- Prevent LogBox from crashing on very long messages ([cd56347dca](https://github.com/facebook/react-native/commit/cd56347dca4e948f5038643bcd804c41f037727a) by [@motiz88](https://github.com/motiz88))
+
+#### Android specific
+
+- Added CSS logical properties by mapping layout props ([2b06a75631](https://github.com/facebook/react-native/commit/2b06a75631c6d9f1fdc13bc8a5567f264d2c9b9a) by [@NickGerleman](https://github.com/NickGerleman) and [@AlexanderEggers](https://github.com/AlexanderEggers)) to fix view flattening on Android.
+
+#### iOS specific
+
+- fix `pod install --project-directory=ios` failing ([fc1abe1d69](https://github.com/facebook/react-native/commit/fc1abe1d69530e95bc39b439d7d883f620b86fb9) by [@tido64](https://github.com/tido64))
 
 ## v0.71.11
 
@@ -993,6 +1079,26 @@ Read the [announcement blogpost here](https://reactnative.dev/blog/2023/01/12/ve
 ### Security
 
 - Bump terser minor version to mitigate CVE-2022-25858 ([743f9ff63b](https://github.com/facebook/react-native/commit/743f9ff63bf1e3825a1788978a9f6bad8ebddc0d) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.70.13
+
+### Fixed
+
+- Fix: bumped CLI to address broken backward compatibility ([549ff6380a](https://github.com/facebook/react-native/commit/549ff6380aa1cf85b86545a22fcb4a850995c8e3) by [@Titozzz](https://github.com/Titozzz))
+
+## v0.70.12
+
+### Fixed
+
+#### iOS specific
+
+- Prefer `Content-Location` header in bundle response as JS source URL ([671ea383fe](https://github.com/facebook/react-native/commit/671ea383fe45dd9834a0c0481360de050df7f0c9) by [@robhogan](https://github.com/robhogan))
+
+## v0.70.11
+
+### Changed
+
+- Bump CLI to 9.3.3 and Metro do 0.72.4 ([2a9d71dc34](https://github.com/facebook/react-native/commit/2a9d71dc341992dce40038dcccefc3abfc745fe8) by [@kelset](https://github.com/kelset)) to address https://github.com/facebook/react-native/issues/36794
 
 ## v0.70.10
 

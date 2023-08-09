@@ -272,16 +272,16 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::cancelImageDownloadsOnRecycle = true;
   }
 
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_transaction_commit")) {
-    CoreFeatures::disableTransactionCommit = true;
-  }
-
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
     CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
   }
 
   if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_mount_hooks_ios")) {
     CoreFeatures::enableMountHooks = true;
+  }
+
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_scroll_event_throttle_requirement")) {
+    CoreFeatures::disableScrollEventThrottleRequirement = true;
   }
 
   auto componentRegistryFactory =

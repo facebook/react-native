@@ -185,7 +185,7 @@ public class ReactInstanceManager {
   private final @Nullable JSIModulePackage mJSIModulePackage;
   private final @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private List<ViewManager> mViewManagers;
-  private boolean mUseFallbackBundle = false;
+  private boolean mUseFallbackBundle = true;
 
   private class ReactContextInitParams {
     private final JavaScriptExecutorFactory mJsExecutorFactory;

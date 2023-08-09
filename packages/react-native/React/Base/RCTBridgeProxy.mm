@@ -27,6 +27,7 @@ using namespace facebook;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
   void (^_dispatchToJSThread)(dispatch_block_t);
+  void (^_registerSegmentWithId)(NSNumber *, NSString *);
 }
 
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
@@ -34,6 +35,7 @@ using namespace facebook;
                        bundleManager:(RCTBundleManager *)bundleManager
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
                   dispatchToJSThread:(void (^)(dispatch_block_t))dispatchToJSThread
+               registerSegmentWithId:(void (^)(NSNumber *, NSString *))registerSegmentWithId
 {
   self = [super self];
   if (self) {
@@ -42,6 +44,7 @@ using namespace facebook;
     self->_bundleManager = bundleManager;
     self->_callableJSModules = callableJSModules;
     self->_dispatchToJSThread = dispatchToJSThread;
+    self->_registerSegmentWithId = registerSegmentWithId;
   }
   return self;
 }
@@ -159,7 +162,7 @@ using namespace facebook;
 
 - (void)registerSegmentWithId:(NSUInteger)segmentId path:(NSString *)path
 {
-  [self logError:@"Please migrate to RCTHost registerSegmentWithId. Nooping" cmd:_cmd];
+  self->_registerSegmentWithId(@(segmentId), path);
 }
 
 - (id<RCTBridgeDelegate>)delegate
@@ -368,12 +371,17 @@ using namespace facebook;
  */
 - (void)logWarning:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogWarn(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning) {
+    RCTLogWarn(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 - (void)logError:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogError(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning ||
+      RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelError) {
+    RCTLogError(@"RCTBridgeProxy: Calling [bridge %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 @end
@@ -434,14 +442,19 @@ using namespace facebook;
  */
 - (void)logWarning:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogWarn(
-      @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning) {
+    RCTLogWarn(
+        @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 - (void)logError:(NSString *)message cmd:(SEL)cmd
 {
-  RCTLogError(
-      @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  if (RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelWarning ||
+      RCTTurboModuleInteropBridgeProxyLogLevel() == kRCTBridgeProxyLoggingLevelError) {
+    RCTLogError(
+        @"RCTBridgeProxy (RCTUIManagerProxy): Calling [bridge.uiManager %@]. %@", NSStringFromSelector(cmd), message);
+  }
 }
 
 @end

@@ -2,6 +2,20 @@
 
 This file contains all changelogs for releases in the 0.60-0.69 range. Please check out the other `CHANGELOG-*.md` files for newer and older versions.
 
+## v0.69.12
+
+### Changed
+
+- [0.69] Bump CLI to ^8.0.7, Metro to 0.70.4 ([56807fadfa](https://github.com/facebook/react-native/commit/56807fadfacf3c5cc62a8d1948b3d72ca51a5e6b) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+- [0.69] Use `Content-Location` header in bundle response as JS source URL (#37501) ([367fc7ad52](https://github.com/facebook/react-native/commit/367fc7ad5254c5dd2c8ef38248766173525cc77c) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### Android specific
+- Prevent crash in runAnimationStep on OnePlus and Oppo devices (#37487) ([4db7a10e25](https://github.com/facebook/react-native/commit/4db7a10e257c664aced8cd8a1737d7ed9ced14fe) by [@hsource](https://github.com/hsource))
+
 ## v0.69.11
 
 ### Fixed
@@ -38,14 +52,6 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 
 - Fix React Codegen podspec to build on Xcode 14.3 ([74ba411b55](https://github.com/facebook/react-native/commit/74ba411b55535cee1b98062875b7b4b1428c931a) by [@cipolleschi](https://github.com/cipolleschi))
 - Blob data is no longer prematurely deallocated when using blob.slice ([36cc71ab36](https://github.com/facebook/react-native/commit/36cc71ab36aac5e5a78f2fbae44583d1df9c3cef) by [@awinograd](https://github.com/awinograd))
-
-## v0.69.8
-
-### Fixed
-
-#### Android specific
-
-- Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
 
 ## v0.69.8
 
@@ -370,14 +376,6 @@ This file contains all changelogs for releases in the 0.60-0.69 range. Please ch
 - Minimize Spans 3/N: ReactBackgroundColorSpan ([cc0ba57ea4](https://github.com/facebook/react-native/commit/cc0ba57ea42d876155b2fd7d9ee78604ff8aa57a) by [@NickGerleman](https://github.com/NickGerleman))
 - Minimize Spans 1/N: Fix precedence ([1743dd7ab4](https://github.com/facebook/react-native/commit/1743dd7ab40998c4d3491e3b2c56c531daf5dc47) by [@NickGerleman](https://github.com/NickGerleman))
 - Fix measurement of uncontrolled TextInput after edit ([8a0fe30591](https://github.com/facebook/react-native/commit/8a0fe30591e21b90a3481c1ef3eeadd4b592f3ed) by [@NickGerleman](https://github.com/NickGerleman))
-
-## v0.68.6
-
-### Fixed
-
-#### Android specific
-
-- Mitigation for Samsung TextInput Hangs ([be69c8b5a7](https://github.com/facebook/react-native/commit/be69c8b5a77ae60cced1b2af64e48b90d9955be5) by [@NickGerleman](https://github.com/NickGerleman))
 
 ## v0.68.6
 

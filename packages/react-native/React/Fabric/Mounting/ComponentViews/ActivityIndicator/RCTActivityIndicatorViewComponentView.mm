@@ -21,9 +21,9 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 {
   switch (size) {
     case ActivityIndicatorViewSize::Small:
-      return UIActivityIndicatorViewStyleWhite;
+      return UIActivityIndicatorViewStyleMedium;
     case ActivityIndicatorViewSize::Large:
-      return UIActivityIndicatorViewStyleWhiteLarge;
+      return UIActivityIndicatorViewStyleLarge;
   }
 }
 

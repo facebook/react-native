@@ -42,13 +42,13 @@ Pod::Spec.new do |s|
   s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
-  s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-    "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_utils"
-    s.header_mappings_dir  = "../.."
+    s.header_mappings_dir  = File.absolute_path("../..")
   end
 
   s.dependency "RCT-Folly", folly_version

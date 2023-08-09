@@ -19,6 +19,10 @@ pluginManagement {
   }
 }
 
+dependencyResolutionManagement {
+  versionCatalogs { create("libs") { from(files("gradle/libs.versions.toml")) } }
+}
+
 rootProject.name = "react-native-github"
 
 include(":packages:react-native:ReactAndroid")
@@ -29,3 +33,8 @@ include(":packages:react-native:ReactAndroid:hermes-engine")
 
 project(":packages:react-native:ReactAndroid:hermes-engine").projectDir =
     file("ReactAndroid/hermes-engine/")
+
+include(":packages:react-native:ReactAndroid:flipper-integration")
+
+project(":packages:react-native:ReactAndroid:flipper-integration").projectDir =
+    file("ReactAndroid/flipper-integration/")

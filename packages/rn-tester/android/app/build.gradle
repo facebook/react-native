@@ -8,6 +8,7 @@
 plugins {
     id("com.android.application")
     id("com.facebook.react")
+    id("org.jetbrains.kotlin.android")
 }
 
 /**
@@ -89,12 +90,12 @@ repositories {
 }
 
 android {
-    buildToolsVersion = "33.0.0"
-    compileSdkVersion 33
+    compileSdk 33
+    buildToolsVersion = "33.0.1"
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing
-    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    // users to customize the NDK path/version from their root project (e.g. for Apple Silicon support)
     if (rootProject.hasProperty("ndkPath")) {
         ndkPath rootProject.ext.ndkPath
     }
@@ -156,17 +157,14 @@ android {
 dependencies {
     // Build React Native from source
     implementation project(':packages:react-native:ReactAndroid')
+    implementation project(':packages:react-native:ReactAndroid:flipper-integration')
 
     // Consume Hermes as built from source only for the Hermes variant.
     hermesImplementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
-
     jscImplementation jscFlavor
 
-    androidTestImplementation 'junit:junit:4.12'
+    testImplementation(libs.junit)
 }
 
 android {
@@ -184,7 +182,7 @@ android {
 afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermes")
+    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
 
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.

@@ -17,7 +17,12 @@ using Fragments = AttributedString::Fragments;
 #pragma mark - Fragment
 
 std::string Fragment::AttachmentCharacter() {
-  return u8"\uFFFC"; // Unicode `OBJECT REPLACEMENT CHARACTER`
+  // C++20 makes char8_t a distinct type from char, and u8 string literals
+  // consist of char8_t instead of char, which in turn requires std::u8string,
+  // etc. Here we were assuming char was UTF-8 anyway, so just cast to that
+  // (which is valid because char* is allowed to alias anything).
+  return reinterpret_cast<const char *>(
+      u8"\uFFFC"); // Unicode `OBJECT REPLACEMENT CHARACTER`
 }
 
 bool Fragment::isAttachment() const {

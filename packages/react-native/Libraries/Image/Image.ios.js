@@ -91,6 +91,7 @@ export type ImageComponentStatics = $ReadOnly<{|
   getSizeWithHeaders: typeof getSizeWithHeaders,
   prefetch: typeof prefetch,
   prefetchWithMetadata: typeof prefetchWithMetadata,
+  abortPrefetch?: number => void,
   queryCache: typeof queryCache,
   resolveAssetSource: typeof resolveAssetSource,
 |}>;

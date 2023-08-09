@@ -44,17 +44,22 @@ class CoreFeatures {
   // from view hierarchy. This feature flag enables this feature.
   static bool cancelImageDownloadsOnRecycle;
 
-  // On iOS, every transaction is wrapperd in [CATransaction begin] and
-  // [CATransaction end] This feature flag disables it to measure its impact in
-  // production.
-  static bool disableTransactionCommit;
-
   // When enabled, RCTScrollViewComponentView will trigger ShadowTree state
   // updates for all changes in scroll position.
   static bool enableGranularScrollViewStateUpdatesIOS;
 
   // Report mount operations from the host platform to notify mount hooks.
   static bool enableMountHooks;
+
+  // Only swap left and right on Android in RTL scripts.
+  static bool doNotSwapLeftAndRightOnAndroidInLTR;
+
+  // Clean yoga node when <Text /> does not change.
+  static bool enableCleanParagraphYogaNode;
+
+  // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
+  // props, and provide continuous `onScroll` upates like other platforms.
+  static bool disableScrollEventThrottleRequirement;
 };
 
 } // namespace facebook::react

@@ -31,7 +31,7 @@ server.on('connection', ws => {
       console.log('WebSocket integration test server exit');
       process.exit(0);
     }
-    ws.send(message + '_response');
+    ws.send(String(message) + '_response');
   });
 
   ws.send('hello');

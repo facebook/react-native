@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@class RCTBridge;
+@protocol RCTBridgeDelegate;
 @protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
 
@@ -131,6 +131,14 @@
 ///
 /// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
 - (BOOL)fabricEnabled;
+
+/// This method controls whether React Native's new initialization layer is enabled.
+///
+/// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
+- (BOOL)bridgelessEnabled;
+
+/// Return the bundle URL for the main bundle.
+- (NSURL *)getBundleURL;
 
 #endif
 

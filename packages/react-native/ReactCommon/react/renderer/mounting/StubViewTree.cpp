@@ -75,7 +75,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
               << std::hash<ShadowView>{}((ShadowView)*stubView)
               << " old mutation hash: ##"
               << std::hash<ShadowView>{}(mutation.oldChildShadowView);
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
           LOG(ERROR) << "StubView: "
                      << getDebugPropsDescription((ShadowView)*stubView, {});
           LOG(ERROR) << "OldChildShadowView: "
@@ -161,7 +161,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
                 << std::hash<ShadowView>{}((ShadowView)*childStubView)
                 << " old mutation hash: ##"
                 << std::hash<ShadowView>{}(mutation.oldChildShadowView);
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
             LOG(ERROR) << "ChildStubView: "
                        << getDebugPropsDescription(
                               (ShadowView)*childStubView, {});
@@ -228,7 +228,7 @@ void StubViewTree::mutate(ShadowViewMutationList const &mutations) {
               << std::hash<ShadowView>{}((ShadowView)*oldStubView)
               << " old mutation hash: ##"
               << std::hash<ShadowView>{}(mutation.oldChildShadowView);
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
           LOG(ERROR) << "OldStubView: "
                      << getDebugPropsDescription((ShadowView)*oldStubView, {});
           LOG(ERROR) << "OldChildShadowView: "

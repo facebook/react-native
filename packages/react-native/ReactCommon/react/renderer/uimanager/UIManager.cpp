@@ -69,7 +69,7 @@ ShadowNode::Shared UIManager::createNode(
     SurfaceId surfaceId,
     const RawProps &rawProps,
     const InstanceHandle::Shared &instanceHandle) const {
-  SystraceSection s("UIManager::createNode");
+  SystraceSection s("UIManager::createNode", "componentName", name);
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
   auto fallbackDescriptor =
@@ -114,7 +114,8 @@ ShadowNode::Shared UIManager::cloneNode(
     ShadowNode const &shadowNode,
     ShadowNode::SharedListOfShared const &children,
     RawProps const *rawProps) const {
-  SystraceSection s("UIManager::cloneNode");
+  SystraceSection s(
+      "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
@@ -166,7 +167,7 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     ShadowNode::UnsharedListOfShared const &rootChildren,
     ShadowTree::CommitOptions commitOptions) const {
-  SystraceSection s("UIManager::completeSurface");
+  SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
     shadowTree.commit(
@@ -403,6 +404,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
+  SystraceSection s(
+      "UIManager::updateState",
+      "componentName",
+      stateUpdate.family->getComponentName());
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();

@@ -66,7 +66,6 @@ YG_ENUM_SEQ_DECL(
     YGExperimentalFeature,
     YGExperimentalFeatureWebFlexBasis,
     YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge,
-    YGExperimentalFeatureFixAbsoluteTrailingColumnMargin,
     YGExperimentalFeatureFixJNILocalRefOverflows)
 
 YG_ENUM_SEQ_DECL(

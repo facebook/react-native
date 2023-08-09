@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import com.facebook.react.interfaces.TaskInterface;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @param <TResult> The type of the result of the task.
  */
-public class Task<TResult> {
+public class Task<TResult> implements TaskInterface<TResult> {
   /** An {@link java.util.concurrent.Executor} that executes tasks in parallel. */
   public static final ExecutorService BACKGROUND_EXECUTOR = BoltsExecutors.background();
 
@@ -112,6 +113,7 @@ public class Task<TResult> {
    * @return {@code true} if the task completed (has a result, an error, or was cancelled. {@code
    *     false} otherwise.
    */
+  @Override
   public boolean isCompleted() {
     synchronized (lock) {
       return complete;
@@ -119,6 +121,7 @@ public class Task<TResult> {
   }
 
   /** @return {@code true} if the task was cancelled, {@code false} otherwise. */
+  @Override
   public boolean isCancelled() {
     synchronized (lock) {
       return cancelled;
@@ -126,6 +129,7 @@ public class Task<TResult> {
   }
 
   /** @return {@code true} if the task has an error, {@code false} otherwise. */
+  @Override
   public boolean isFaulted() {
     synchronized (lock) {
       return getError() != null;
@@ -133,6 +137,7 @@ public class Task<TResult> {
   }
 
   /** @return The result of the task, if set. {@code null} otherwise. */
+  @Override
   public TResult getResult() {
     synchronized (lock) {
       return result;
@@ -140,6 +145,7 @@ public class Task<TResult> {
   }
 
   /** @return The error for the task, if set. {@code null} otherwise. */
+  @Override
   public Exception getError() {
     synchronized (lock) {
       if (error != null) {
@@ -154,6 +160,7 @@ public class Task<TResult> {
   }
 
   /** Blocks until the task is complete. */
+  @Override
   public void waitForCompletion() throws InterruptedException {
     synchronized (lock) {
       if (!isCompleted()) {
@@ -168,6 +175,7 @@ public class Task<TResult> {
    * @return {@code true} if the task completed (has a result, an error, or was cancelled). {@code
    *     false} otherwise.
    */
+  @Override
   public boolean waitForCompletion(long duration, TimeUnit timeUnit) throws InterruptedException {
     synchronized (lock) {
       if (!isCompleted()) {

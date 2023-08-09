@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as RCTEventEmitter is part of the API
 package com.facebook.react.fabric.interop
 
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener

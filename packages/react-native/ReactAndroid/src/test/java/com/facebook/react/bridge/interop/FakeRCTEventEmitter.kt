@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION") // Suppressing as we want to fake a RCTEventEmitter here
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.WritableArray

@@ -178,6 +178,10 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   return transaction;
 }
 
+bool MountingCoordinator::hasPendingTransactions() const {
+  return lastRevision_.has_value();
+}
+
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }

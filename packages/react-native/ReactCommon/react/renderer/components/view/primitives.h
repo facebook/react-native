@@ -87,6 +87,8 @@ enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
 
+enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
+
 template <typename T>
 struct CascadedRectangleEdges {
   using Counterpart = RectangleEdges<T>;
@@ -277,48 +279,5 @@ struct BorderMetrics {
     return !(*this == rhs);
   }
 };
-
-#ifdef ANDROID
-
-struct NativeDrawable {
-  enum class Kind : uint8_t {
-    Ripple,
-    ThemeAttr,
-  };
-
-  struct Ripple {
-    std::optional<int32_t> color{};
-    std::optional<Float> rippleRadius{};
-    bool borderless{false};
-
-    bool operator==(const Ripple &rhs) const {
-      return std::tie(this->color, this->borderless, this->rippleRadius) ==
-          std::tie(rhs.color, rhs.borderless, rhs.rippleRadius);
-    }
-  };
-
-  std::string themeAttr;
-  Ripple ripple;
-  Kind kind;
-
-  bool operator==(const NativeDrawable &rhs) const {
-    if (this->kind != rhs.kind)
-      return false;
-    switch (this->kind) {
-      case Kind::ThemeAttr:
-        return this->themeAttr == rhs.themeAttr;
-      case Kind::Ripple:
-        return this->ripple == rhs.ripple;
-    }
-  }
-
-  bool operator!=(const NativeDrawable &rhs) const {
-    return !(*this == rhs);
-  }
-
-  ~NativeDrawable() = default;
-};
-
-#endif
 
 } // namespace facebook::react

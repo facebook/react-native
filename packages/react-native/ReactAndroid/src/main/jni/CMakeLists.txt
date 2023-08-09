@@ -101,6 +101,7 @@ add_react_common_subdir(react/nativemodule/core)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/bridgeless)
 add_react_common_subdir(react/bridgeless/hermes)
+add_react_common_subdir(react/bridgeless/nativeviewconfig)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
@@ -120,6 +121,7 @@ add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
 add_react_android_subdir(src/main/jni/react/bridgeless/jni)
 add_react_android_subdir(src/main/jni/react/bridgeless/hermes/jni)
+add_react_android_subdir(src/main/jni/react/bridgeless/jsc/jni)
 
 # GTest dependencies
 add_executable(reactnative_unittest

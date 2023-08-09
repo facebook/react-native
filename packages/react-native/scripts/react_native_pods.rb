@@ -15,6 +15,7 @@ require_relative './cocoapods/codegen_utils.rb'
 require_relative './cocoapods/utils.rb'
 require_relative './cocoapods/new_architecture.rb'
 require_relative './cocoapods/local_podspec_patch.rb'
+require_relative './cocoapods/bridgeless.rb'
 
 $CODEGEN_OUTPUT_DIR = 'build/generated/ios'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
@@ -119,6 +120,9 @@ def use_react_native! (
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
+  pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
+  pod "React-nativeconfig", :path => "#{prefix}/ReactCommon"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
@@ -164,6 +168,10 @@ def use_react_native! (
   else
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
     build_codegen!(prefix, relative_installation_root)
+  end
+
+  if new_arch_enabled
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
   end
 
   # Flipper now build in Release mode but it is not linked to the Release binary (as specified by the Configuration option)
@@ -238,14 +246,15 @@ def react_native_post_install(
 
   if ReactNativePodsUtils.has_pod(installer, "React-hermes")
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
+    ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
-  ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
+  ReactNativePodsUtils.apply_ats_config(installer)
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   is_new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == "1"
@@ -355,7 +364,7 @@ def use_react_native_codegen!(spec, options={})
   }
 end
 
-# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon (M1) machines.
+# This provides a post_install workaround for build issues related Xcode 12.5 and Apple Silicon machines.
 # Call this in the app's main Podfile's post_install hook.
 # See https://github.com/facebook/react-native/issues/31480#issuecomment-902912841 for more context.
 # Actual fix was authored by https://github.com/mikehardy.
