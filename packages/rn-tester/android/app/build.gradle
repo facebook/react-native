@@ -193,4 +193,8 @@ afterEvaluate {
         mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
         mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
     }
+
+    // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
+    // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
+    generateCodegenSchemaFromJavaScript.dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
