@@ -560,24 +560,28 @@ class UtilsTests < Test::Unit::TestCase
     # =================================== #
     # Test - Prepare React Native Project #
     # =================================== #
-    def test_createXcodeEnvIfMissing_whenItIsPresent_doNothing
+    def test_createXcodeEnvIfMissing_whenTheyArePresent_doNothing
         # Arrange
         FileMock.mocked_existing_files("/.xcode.env")
+        FileMock.mocked_existing_files("/.xcode.env.local")
         # Act
         ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
         assert_equal($collected_commands, [])
     end
 
-    def test_createXcodeEnvIfMissing_whenItIsNotPresent_createsIt
+    def test_createXcodeEnvIfMissing_whenTheyAreNotPresent_createsThem
         # Arrange
 
         # Act
         ReactNativePodsUtils.create_xcode_env_if_missing(file_manager: FileMock)
         # Assert
-        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env"])
-        assert_equal($collected_commands, ["echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env"])
+        assert_equal(FileMock.exist_invocation_params, ["/.xcode.env", "/.xcode.env.local"])
+        assert_equal($collected_commands[0], "echo 'export NODE_BINARY=$(command -v node)' > /.xcode.env")
+
+        assert_true($collected_commands[1].start_with? "echo 'export NODE_BINARY=")
+        assert_true($collected_commands[1].end_with? "' > /.xcode.env.local")
     end
 
     # ============================ #
