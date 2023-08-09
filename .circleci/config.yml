@@ -1905,6 +1905,9 @@ jobs:
           command: zip -r /tmp/maven-local.zip /tmp/maven-local
       - store_artifacts:
           path: /tmp/maven-local.zip
+      - store_artifacts:
+          when: on_fail
+          path: /root/.npm/_logs
       - persist_to_workspace:
           root: /tmp
           paths:
