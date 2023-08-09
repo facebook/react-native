@@ -40,24 +40,21 @@ internal class RNTesterReactHostDelegate(private val context: Context) : ReactHo
 
   override val jSMainModulePath: String = "js/RNTesterApp.android"
 
-  override val jSBundleLoader: JSBundleLoader
-    get() =
-      JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
+  override val jSBundleLoader: JSBundleLoader =
+    JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
 
   @get:Synchronized
-  override val bindingsInstaller: BindingsInstaller?
-    get() = null
+  override val bindingsInstaller: BindingsInstaller? = null
 
-  override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
-    get() = DefaultTurboModuleManagerDelegate.Builder()
+  override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
+    DefaultTurboModuleManagerDelegate.Builder()
 
-  override val jSEngineInstance: JSEngineInstance
-    get() =
-      if (reactHost?.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
-        JSCInstance()
-      } else {
-        HermesInstance()
-      }
+  override val jSEngineInstance: JSEngineInstance =
+    if (reactHost?.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
+      JSCInstance()
+    } else {
+      HermesInstance()
+    }
 
   override fun handleInstanceException(error: Exception) {}
 
@@ -74,44 +71,43 @@ internal class RNTesterReactHostDelegate(private val context: Context) : ReactHo
               name: String,
               reactContext: ReactApplicationContext
             ): NativeModule? {
-              if (!ReactFeatureFlags.useTurboModules) {
+              if (
+                !ReactFeatureFlags.useTurboModules || SampleTurboModule.NAME != name
+              ) {
                 return null
               }
-              return if (SampleTurboModule.NAME == name) {
-                SampleTurboModule(reactContext)
-              } else null
+              return SampleTurboModule(reactContext)
             }
 
             // Note: Specialized annotation processor for @ReactModule isn't
             // configured in OSS
             // yet. For now, hardcode this information, though it's not necessary
-            // for most
-            // modules.
+            // for most modules
             override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
               return ReactModuleInfoProvider {
-                val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
                 if (ReactFeatureFlags.useTurboModules) {
-                  moduleInfos[SampleTurboModule.NAME] =
-                    ReactModuleInfo(
-                      SampleTurboModule.NAME,
-                      "SampleTurboModule",
-                      false, // canOverrideExistingModule
-                      false, // needsEagerInit
-                      true, // hasConstants
-                      false, // isCxxModule
-                      true // isTurboModule
-                    )
+                  mapOf(
+                    SampleTurboModule.NAME to
+                      ReactModuleInfo(
+                        SampleTurboModule.NAME,
+                        "SampleTurboModule",
+                        false, // canOverrideExistingModule
+                        false, // needsEagerInit
+                        true, // hasConstants
+                        false, // isCxxModule
+                        true // isTurboModule
+                      )
+                  )
+                } else {
+                  emptyMap()
                 }
-                moduleInfos
               }
             }
           },
           object : ReactPackage {
             override fun createNativeModules(
               reactContext: ReactApplicationContext
-            ): List<NativeModule> {
-              return emptyList()
-            }
+            ): List<NativeModule> = emptyList()
 
             override fun createViewManagers(
               reactContext: ReactApplicationContext
