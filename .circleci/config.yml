@@ -1896,11 +1896,6 @@ jobs:
 
               node ./scripts/publish-npm.js --<< parameters.release_type >>
       - run:
-          name: Zip Hermes Native Symbols
-          command: zip -r /tmp/hermes-native-symbols.zip ~/react-native/packages/react-native/ReactAndroid/hermes-engine/build/intermediates/cmake/
-      - store_artifacts:
-          path: /tmp/hermes-native-symbols.zip
-      - run:
           name: Zip Maven Artifacts from /tmp/maven-local
           command: zip -r /tmp/maven-local.zip /tmp/maven-local
       - store_artifacts:
