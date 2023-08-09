@@ -32,24 +32,17 @@ import com.facebook.react.turbomodule.core.TurboModuleManager
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uimanager.ViewManager
-import java.util.Arrays
 
 @UnstableReactNativeAPI
-class RNTesterReactHostDelegate internal constructor(private val mContext: Context) :
-  ReactHostDelegate {
-  private var mReactHost: ReactHost? = null
+internal class RNTesterReactHostDelegate(private val context: Context) : ReactHostDelegate {
+  var reactHost: ReactHost? = null
   private var mReactPackages: List<ReactPackage> = emptyList()
 
-  fun setReactHost(reactHost: ReactHost?) {
-    mReactHost = reactHost
-  }
-
-  override val jSMainModulePath: String
-    get() = "js/RNTesterApp.android"
+  override val jSMainModulePath: String = "js/RNTesterApp.android"
 
   override val jSBundleLoader: JSBundleLoader
     get() =
-      JSBundleLoader.createAssetLoader(mContext, "assets://RNTesterApp.android.bundle", true)
+      JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
 
   @get:Synchronized
   override val bindingsInstaller: BindingsInstaller?
@@ -60,79 +53,73 @@ class RNTesterReactHostDelegate internal constructor(private val mContext: Conte
 
   override val jSEngineInstance: JSEngineInstance
     get() =
-      if (mReactHost!!.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
+      if (reactHost?.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
         JSCInstance()
       } else {
         HermesInstance()
       }
 
-  override fun handleInstanceException(e: Exception) {}
+  override fun handleInstanceException(error: Exception) {}
 
-  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig {
-    return ReactNativeConfig.DEFAULT_CONFIG
-  }
+  override fun getReactNativeConfig(turboModuleManager: TurboModuleManager): ReactNativeConfig =
+    ReactNativeConfig.DEFAULT_CONFIG
 
-  override val reactPackages: List<ReactPackage>
-    get() {
-      if (mReactPackages == null) {
-        mReactPackages =
-          Arrays.asList(
-            MainReactPackage(),
-            object : TurboReactPackage() {
-              override fun getModule(
-                name: String,
-                reactContext: ReactApplicationContext
-              ): NativeModule? {
-                if (!ReactFeatureFlags.useTurboModules) {
-                  return null
+  override val reactPackages: List<ReactPackage> by lazy {
+    if (mReactPackages.isEmpty()) {
+      mReactPackages =
+        listOf(
+          MainReactPackage(),
+          object : TurboReactPackage() {
+            override fun getModule(
+              name: String,
+              reactContext: ReactApplicationContext
+            ): NativeModule? {
+              if (!ReactFeatureFlags.useTurboModules) {
+                return null
+              }
+              return if (SampleTurboModule.NAME == name) {
+                SampleTurboModule(reactContext)
+              } else null
+            }
+
+            // Note: Specialized annotation processor for @ReactModule isn't
+            // configured in OSS
+            // yet. For now, hardcode this information, though it's not necessary
+            // for most
+            // modules.
+            override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
+              return ReactModuleInfoProvider {
+                val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
+                if (ReactFeatureFlags.useTurboModules) {
+                  moduleInfos[SampleTurboModule.NAME] =
+                    ReactModuleInfo(
+                      SampleTurboModule.NAME,
+                      "SampleTurboModule",
+                      false, // canOverrideExistingModule
+                      false, // needsEagerInit
+                      true, // hasConstants
+                      false, // isCxxModule
+                      true // isTurboModule
+                    )
                 }
-                return if (SampleTurboModule.NAME == name) {
-                  SampleTurboModule(reactContext)
-                } else null
-              }
-
-              // Note: Specialized annotation processor for @ReactModule isn't
-              // configured in OSS
-              // yet. For now, hardcode this information, though it's not necessary
-              // for most
-              // modules.
-              override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
-                return ReactModuleInfoProvider {
-                  val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
-                  if (ReactFeatureFlags.useTurboModules) {
-                    moduleInfos[SampleTurboModule.NAME] =
-                      ReactModuleInfo(
-                        SampleTurboModule.NAME,
-                        "SampleTurboModule",
-                        false, // canOverrideExistingModule
-                        false, // needsEagerInit
-                        true, // hasConstants
-                        false, // isCxxModule
-                        true // isTurboModule
-                      )
-                  }
-                  moduleInfos
-                }
-              }
-            },
-            object : ReactPackage {
-              override fun createNativeModules(
-                reactContext: ReactApplicationContext
-              ): List<NativeModule> {
-                return emptyList()
-              }
-
-              override fun createViewManagers(
-                reactContext: ReactApplicationContext
-              ): List<ViewManager<*, *>> {
-                val viewManagers: MutableList<ViewManager<*, *>> = ArrayList()
-                viewManagers.add(MyNativeViewManager())
-                viewManagers.add(MyLegacyViewManager(reactContext))
-                return viewManagers
+                moduleInfos
               }
             }
-          )
-      }
-      return mReactPackages
+          },
+          object : ReactPackage {
+            override fun createNativeModules(
+              reactContext: ReactApplicationContext
+            ): List<NativeModule> {
+              return emptyList()
+            }
+
+            override fun createViewManagers(
+              reactContext: ReactApplicationContext
+            ): List<ViewManager<*, *>> =
+              listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+          }
+        )
     }
+    mReactPackages
+  }
 }
