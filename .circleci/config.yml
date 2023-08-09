@@ -178,12 +178,6 @@ commands:
           paths:
             - ".git"
 
-  setup_artifacts:
-    steps:
-      - run:
-          name: Initial Setup
-          command: mkdir -p ./reports/{buck,build,junit,outputs}
-
   setup_ruby:
     parameters:
       ruby_version:
@@ -634,7 +628,6 @@ jobs:
     executor: node-browsers-small
     steps:
       - checkout
-      - setup_artifacts
       - run_yarn
 
       - run:
@@ -698,7 +691,6 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - checkout
-      - setup_artifacts
       - run_yarn
       - run:
           name: Install rsync
@@ -749,7 +741,6 @@ jobs:
       - REPORTS_DIR: "./reports/junit"
     steps:
       - checkout_code_with_cache
-      - setup_artifacts
       - setup_ruby:
           ruby_version: << parameters.ruby_version >>
       - brew_install:
@@ -984,7 +975,6 @@ jobs:
     executor: reactnativeandroid-xlarge
     steps:
       - checkout
-      - setup_artifacts
       - run_yarn
       - download_gradle_dependencies
 
