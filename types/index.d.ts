@@ -51,7 +51,7 @@
 //                 Mateusz Wit <https://github.com/MateWW>
 //                 Saad Najmi <https://github.com/saadnajmi>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-// TypeScript Version: 3.0
+// Minimum TypeScript Version: 4.1
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +115,7 @@ export * from '../Libraries/LayoutAnimation/LayoutAnimation';
 export * from '../Libraries/Linking/Linking';
 export * from '../Libraries/Lists/FlatList';
 export * from '../Libraries/Lists/SectionList';
-export * from '../Libraries/Lists/VirtualizedList';
+export * from '@react-native-mac/virtualized-lists'; // [macOS]
 export * from '../Libraries/LogBox/LogBox';
 export * from '../Libraries/Modal/Modal';
 export * as Systrace from '../Libraries/Performance/Systrace';
@@ -137,7 +137,7 @@ export * from '../Libraries/StyleSheet/StyleSheetTypes';
 export * from '../Libraries/StyleSheet/processColor';
 export * from '../Libraries/Text/Text';
 export * from '../Libraries/TurboModule/RCTExport';
-export * from '../Libraries/TurboModule/TurboModuleRegistry';
+export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegistry';
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
@@ -148,7 +148,6 @@ export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
-export * from '../Libraries/vendor/emitter/EventEmitter';
 
 export * from './public/DeprecatedPropertiesAlias';
 export * from './public/Insets';

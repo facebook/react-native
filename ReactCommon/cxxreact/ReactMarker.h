@@ -36,21 +36,55 @@ using LogTaggedMarker =
     std::function<void(const ReactMarkerId, const char *tag)>; // Bridge only
 using LogTaggedMarkerBridgeless =
     std::function<void(const ReactMarkerId, const char *tag)>;
+using GetAppStartTime = std::function<double()>;
 #else
 typedef void (
     *LogTaggedMarker)(const ReactMarkerId, const char *tag); // Bridge only
 typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char *tag);
+typedef double (*GetAppStartTime)();
 #endif
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-extern RN_EXPORT LogTaggedMarker logTaggedMarker; // Bridge only
-extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgeless;
+extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl; // Bridge only
+extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
+extern RN_EXPORT GetAppStartTime getAppStartTimeImpl;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only
+extern RN_EXPORT void logTaggedMarker(
+    const ReactMarkerId markerId,
+    const char *tag); // Bridge only
 extern RN_EXPORT void logMarkerBridgeless(const ReactMarkerId markerId);
+extern RN_EXPORT void logTaggedMarkerBridgeless(
+    const ReactMarkerId markerId,
+    const char *tag);
+extern RN_EXPORT double getAppStartTime();
+
+struct ReactMarkerEvent {
+  const ReactMarkerId markerId;
+  const char *tag;
+  double time;
+};
+
+class StartupLogger {
+ public:
+  static StartupLogger &getInstance();
+
+  void logStartupEvent(const ReactMarker::ReactMarkerId markerId);
+  double getAppStartTime();
+  double getRunJSBundleStartTime();
+  double getRunJSBundleEndTime();
+
+ private:
+  StartupLogger() = default;
+  StartupLogger(const StartupLogger &) = delete;
+  StartupLogger &operator=(const StartupLogger &) = delete;
+
+  double runJSBundleStartTime;
+  double runJSBundleEndTime;
+};
 
 } // namespace ReactMarker
 } // namespace react

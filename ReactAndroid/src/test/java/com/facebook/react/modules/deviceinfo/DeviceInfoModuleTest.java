@@ -9,11 +9,11 @@ package com.facebook.react.modules.deviceinfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -23,7 +23,6 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import java.util.Arrays;
 import java.util.List;
@@ -50,27 +49,22 @@ public class DeviceInfoModuleTest extends TestCase {
   @Rule public PowerMockRule rule = new PowerMockRule();
 
   private DeviceInfoModule mDeviceInfoModule;
-  private DeviceEventManagerModule.RCTDeviceEventEmitter mRCTDeviceEventEmitterMock;
 
   private WritableMap fakePortraitDisplayMetrics;
   private WritableMap fakeLandscapeDisplayMetrics;
+
+  private ReactApplicationContext mContext;
 
   @Before
   public void setUp() {
     initTestData();
 
     mockStatic(DisplayMetricsHolder.class);
-
-    mRCTDeviceEventEmitterMock = mock(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-
-    final ReactApplicationContext context =
-        spy(new ReactApplicationContext(RuntimeEnvironment.application));
+    mContext = spy(new ReactApplicationContext(RuntimeEnvironment.application));
     CatalystInstance catalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
-    context.initializeWithInstance(catalystInstanceMock);
-    when(context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class))
-        .thenReturn(mRCTDeviceEventEmitterMock);
+    mContext.initializeWithInstance(catalystInstanceMock);
 
-    mDeviceInfoModule = new DeviceInfoModule(context);
+    mDeviceInfoModule = new DeviceInfoModule(mContext);
   }
 
   @After
@@ -86,7 +80,7 @@ public class DeviceInfoModuleTest extends TestCase {
     mDeviceInfoModule.getTypedExportedConstants();
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
-    verifyNoMoreInteractions(mRCTDeviceEventEmitterMock);
+    verify(mContext, times(0)).emitDeviceEvent(anyString(), anyObject());
   }
 
   @Test
@@ -97,7 +91,7 @@ public class DeviceInfoModuleTest extends TestCase {
     givenDisplayMetricsHolderContains(fakeLandscapeDisplayMetrics);
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
-    verifyUpdateDimensionsEventsEmitted(mRCTDeviceEventEmitterMock, fakeLandscapeDisplayMetrics);
+    verifyUpdateDimensionsEventsEmitted(mContext, fakeLandscapeDisplayMetrics);
   }
 
   @Test
@@ -108,7 +102,7 @@ public class DeviceInfoModuleTest extends TestCase {
     mDeviceInfoModule.emitUpdateDimensionsEvent();
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
-    verifyUpdateDimensionsEventsEmitted(mRCTDeviceEventEmitterMock, fakeLandscapeDisplayMetrics);
+    verifyUpdateDimensionsEventsEmitted(mContext, fakeLandscapeDisplayMetrics);
   }
 
   @Test
@@ -125,7 +119,7 @@ public class DeviceInfoModuleTest extends TestCase {
     mDeviceInfoModule.emitUpdateDimensionsEvent();
 
     verifyUpdateDimensionsEventsEmitted(
-        mRCTDeviceEventEmitterMock,
+        mContext,
         fakeLandscapeDisplayMetrics,
         fakePortraitDisplayMetrics,
         fakeLandscapeDisplayMetrics);
@@ -136,11 +130,11 @@ public class DeviceInfoModuleTest extends TestCase {
   }
 
   private static void verifyUpdateDimensionsEventsEmitted(
-      DeviceEventManagerModule.RCTDeviceEventEmitter emitter, WritableMap... expectedEvents) {
+      ReactApplicationContext context, WritableMap... expectedEvents) {
     List<WritableMap> expectedEventList = Arrays.asList(expectedEvents);
     ArgumentCaptor<WritableMap> captor = ArgumentCaptor.forClass(WritableMap.class);
-    verify(emitter, times(expectedEventList.size()))
-        .emit(eq("didUpdateDimensions"), captor.capture());
+    verify(context, times(expectedEventList.size()))
+        .emitDeviceEvent(eq("didUpdateDimensions"), captor.capture());
 
     List<WritableMap> actualEvents = captor.getAllValues();
     assertThat(actualEvents).isEqualTo(expectedEventList);

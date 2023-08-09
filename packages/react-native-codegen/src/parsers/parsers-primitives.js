@@ -16,6 +16,7 @@ import type {
   DoubleTypeAnnotation,
   Int32TypeAnnotation,
   NativeModuleAliasMap,
+  NativeModuleEnumMap,
   NativeModuleBaseTypeAnnotation,
   NativeModuleTypeAnnotation,
   NativeModuleFloatTypeAnnotation,
@@ -30,15 +31,22 @@ import type {
   ReservedTypeAnnotation,
   StringTypeAnnotation,
   VoidTypeAnnotation,
+  NativeModuleObjectTypeAnnotation,
+  NativeModuleEnumDeclaration,
 } from '../CodegenSchema';
 import type {Parser} from './parser';
 import type {
   ParserErrorCapturer,
-  TypeAliasResolutionStatus,
+  TypeResolutionStatus,
   TypeDeclarationMap,
 } from './utils';
 
-const {UnsupportedUnionTypeAnnotationParserError} = require('./errors');
+const {
+  UnsupportedUnionTypeAnnotationParserError,
+  UnsupportedTypeAnnotationParserError,
+  ParserError,
+} = require('./errors');
+
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
 } = require('./error-utils');
@@ -49,6 +57,8 @@ const {
   unwrapNullable,
   translateFunctionTypeAnnotation,
 } = require('./parsers-commons');
+
+const {isModuleRegistryCall} = require('./utils');
 
 function emitBoolean(nullable: boolean): Nullable<BooleanTypeAnnotation> {
   return wrapNullable(nullable, {
@@ -101,6 +111,7 @@ function emitFunction(
   typeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
@@ -112,6 +123,7 @@ function emitFunction(
       typeAnnotation,
       types,
       aliasMap,
+      enumMap,
       tryParse,
       cxxOnly,
       translateTypeAnnotation,
@@ -135,7 +147,7 @@ function emitString(nullable: boolean): Nullable<StringTypeAnnotation> {
 }
 
 function typeAliasResolution(
-  typeAliasResolutionStatus: TypeAliasResolutionStatus,
+  typeResolution: TypeResolutionStatus,
   objectTypeAnnotation: ObjectTypeAnnotation<
     Nullable<NativeModuleBaseTypeAnnotation>,
   >,
@@ -144,14 +156,14 @@ function typeAliasResolution(
 ):
   | Nullable<NativeModuleTypeAliasTypeAnnotation>
   | Nullable<ObjectTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>> {
-  if (!typeAliasResolutionStatus.successful) {
+  if (!typeResolution.successful) {
     return wrapNullable(nullable, objectTypeAnnotation);
   }
 
   /**
    * All aliases RHS are required.
    */
-  aliasMap[typeAliasResolutionStatus.aliasName] = objectTypeAnnotation;
+  aliasMap[typeResolution.name] = objectTypeAnnotation;
 
   /**
    * Nullability of type aliases is transitive.
@@ -184,7 +196,57 @@ function typeAliasResolution(
    */
   return wrapNullable(nullable, {
     type: 'TypeAliasTypeAnnotation',
-    name: typeAliasResolutionStatus.aliasName,
+    name: typeResolution.name,
+  });
+}
+
+function typeEnumResolution(
+  typeAnnotation: $FlowFixMe,
+  typeResolution: TypeResolutionStatus,
+  nullable: boolean,
+  hasteModuleName: string,
+  enumMap: {...NativeModuleEnumMap},
+  parser: Parser,
+): Nullable<NativeModuleEnumDeclaration> {
+  if (!typeResolution.successful || typeResolution.type !== 'enum') {
+    throw new UnsupportedTypeAnnotationParserError(
+      hasteModuleName,
+      typeAnnotation,
+      parser.language(),
+    );
+  }
+
+  const enumName = typeResolution.name;
+
+  const enumMemberType = parser.parseEnumMembersType(typeAnnotation);
+
+  try {
+    parser.validateEnumMembersSupported(typeAnnotation, enumMemberType);
+  } catch (e) {
+    if (e instanceof Error) {
+      throw new ParserError(
+        hasteModuleName,
+        typeAnnotation,
+        `Failed parsing the enum ${enumName} in ${hasteModuleName} with the error: ${e.message}`,
+      );
+    } else {
+      throw e;
+    }
+  }
+
+  const enumMembers = parser.parseEnumMembers(typeAnnotation);
+
+  enumMap[enumName] = {
+    name: enumName,
+    type: 'EnumDeclarationWithMembers',
+    memberType: enumMemberType,
+    members: enumMembers,
+  };
+
+  return wrapNullable(nullable, {
+    name: enumName,
+    type: 'EnumDeclaration',
+    memberType: enumMemberType,
   });
 }
 
@@ -195,6 +257,7 @@ function emitPromise(
   nullable: boolean,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
@@ -222,6 +285,7 @@ function emitPromise(
           typeAnnotation.typeParameters.params[0],
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           parser,
@@ -235,11 +299,21 @@ function emitPromise(
   }
 }
 
-function emitObject(
+function emitGenericObject(
   nullable: boolean,
 ): Nullable<NativeModuleGenericObjectTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'GenericObjectTypeAnnotation',
+  });
+}
+
+function emitObject(
+  nullable: boolean,
+  properties: Array<$FlowFixMe>,
+): Nullable<NativeModuleObjectTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'ObjectTypeAnnotation',
+    properties,
   });
 }
 
@@ -280,6 +354,7 @@ function translateArrayTypeAnnotation(
   hasteModuleName: string,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   cxxOnly: boolean,
   arrayType: 'Array' | 'ReadonlyArray',
   elementType: $FlowFixMe,
@@ -299,6 +374,7 @@ function translateArrayTypeAnnotation(
         elementType,
         types,
         aliasMap,
+        enumMap,
         /**
          * TODO(T72031674): Ensure that all ParsingErrors that are thrown
          * while parsing the array element don't get captured and collected.
@@ -338,6 +414,7 @@ function emitArrayType(
   parser: Parser,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   cxxOnly: boolean,
   nullable: boolean,
   translateTypeAnnotation: $FlowFixMe,
@@ -352,6 +429,7 @@ function emitArrayType(
     hasteModuleName,
     types,
     aliasMap,
+    enumMap,
     cxxOnly,
     typeAnnotation.type,
     typeAnnotation.typeParameters.params[0],
@@ -359,6 +437,40 @@ function emitArrayType(
     translateTypeAnnotation,
     parser,
   );
+}
+
+function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
+  [type: string]: (node: $FlowFixMe) => void,
+} {
+  return {
+    CallExpression(node: $FlowFixMe) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'codegenNativeComponent'
+      ) {
+        infoMap.isComponent = true;
+      }
+
+      if (isModuleRegistryCall(node)) {
+        infoMap.isModule = true;
+      }
+    },
+    InterfaceExtends(node: $FlowFixMe) {
+      if (node.id.name === 'TurboModule') {
+        infoMap.isModule = true;
+      }
+    },
+    TSInterfaceDeclaration(node: $FlowFixMe) {
+      if (
+        Array.isArray(node.extends) &&
+        node.extends.some(
+          extension => extension.expression.name === 'TurboModule',
+        )
+      ) {
+        infoMap.isModule = true;
+      }
+    },
+  };
 }
 
 module.exports = {
@@ -369,6 +481,7 @@ module.exports = {
   emitFunction,
   emitInt32,
   emitNumber,
+  emitGenericObject,
   emitObject,
   emitPromise,
   emitRootTag,
@@ -378,5 +491,7 @@ module.exports = {
   emitMixed,
   emitUnion,
   typeAliasResolution,
+  typeEnumResolution,
   translateArrayTypeAnnotation,
+  Visitor,
 };

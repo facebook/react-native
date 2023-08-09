@@ -15,9 +15,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -218,8 +219,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     } else if ("balanced".equals(textBreakStrategy)) {
       mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textBreakStrategy: " + textBreakStrategy);
+      FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: " + textBreakStrategy);
+      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
     }
   }
 

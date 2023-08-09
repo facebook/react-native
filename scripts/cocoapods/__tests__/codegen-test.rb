@@ -24,7 +24,7 @@ class CodegenTests < Test::Unit::TestCase
 
         @prefix = "../.."
         @third_party_provider_header = "RCTThirdPartyFabricComponentsProvider.h"
-        @third_party_provider_implementation = "RCTThirdPartyFabricComponentsProvider.cpp"
+        @third_party_provider_implementation = "RCTThirdPartyFabricComponentsProvider.mm"
         @base_path = "~/app/ios"
         @tmp_schema_list_file = "tmpSchemaList.txt"
         Pathname.pwd!(@base_path)
@@ -47,19 +47,19 @@ class CodegenTests < Test::Unit::TestCase
 
         # Arrange
         FileMock.mocked_existing_files([
-            @base_path + "/build/" + @third_party_provider_header,
-            @base_path + "/build/" + @third_party_provider_implementation,
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/" + @third_party_provider_implementation,
         ])
 
         # Act
-        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, 'build', dir_manager: DirMock, file_manager: FileMock)
+        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
-            @base_path + "/build/" + @third_party_provider_header,
-            @base_path + "/build/" + @third_party_provider_implementation,
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/" + @third_party_provider_implementation,
         ])
         assert_equal(DirMock.exist_invocation_params, [])
         assert_equal(Pod::UI.collected_messages, [])
@@ -77,14 +77,14 @@ class CodegenTests < Test::Unit::TestCase
 
         # Act
         assert_raise {
-            checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, 'build', dir_manager: DirMock, file_manager: FileMock)
+            checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
         }
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
-            @base_path + "/build/" + @third_party_provider_header
+            @prefix + "/React/Fabric/" + @third_party_provider_header
         ])
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/"+ @prefix + "/packages/react-native-codegen",
@@ -100,8 +100,8 @@ class CodegenTests < Test::Unit::TestCase
 
         # Arrange
         FileMock.mocked_existing_files([
-            @base_path + "/build/" + @third_party_provider_header,
-            @base_path + "/build/tmpSchemaList.txt"
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/tmpSchemaList.txt"
         ])
 
         DirMock.mocked_existing_dirs([
@@ -110,15 +110,15 @@ class CodegenTests < Test::Unit::TestCase
         ])
 
         # Act
-        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, 'build', dir_manager: DirMock, file_manager: FileMock)
+        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
-            @base_path + "/build/" + @third_party_provider_header,
-            @base_path + "/build/" + @third_party_provider_implementation,
-            @base_path + "/build/tmpSchemaList.txt",
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/" + @third_party_provider_implementation,
+            @prefix + "/React/Fabric/tmpSchemaList.txt",
         ])
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/"+ @prefix + "/packages/react-native-codegen",
@@ -127,7 +127,7 @@ class CodegenTests < Test::Unit::TestCase
         assert_equal(Pod::UI.collected_messages, ["[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"])
         assert_equal($collected_commands, [])
         assert_equal(FileMock.open_invocation_count, 1)
-        assert_equal(FileMock.open_files_with_mode[@base_path + "/build/tmpSchemaList.txt"], 'w')
+        assert_equal(FileMock.open_files_with_mode[@prefix + "/React/Fabric/tmpSchemaList.txt"], 'w')
         assert_equal(FileMock.open_files[0].collected_write, ["[]"])
         assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
         assert_equal(Pod::Executable.executed_commands[0], {
@@ -135,12 +135,12 @@ class CodegenTests < Test::Unit::TestCase
             "arguments" => [
                 @base_path + "/" + @prefix + "/scripts/generate-provider-cli.js",
                 "--platform", 'ios',
-                "--schemaListPath", @base_path + "/build/tmpSchemaList.txt",
-                "--outputDir", @base_path + "/build"
+                "--schemaListPath", @prefix + "/React/Fabric/tmpSchemaList.txt",
+                "--outputDir", @prefix + "/React/Fabric"
             ]
         })
         assert_equal(FileMock.delete_invocation_count, 1)
-        assert_equal(FileMock.deleted_files, [@base_path + "/build/tmpSchemaList.txt"])
+        assert_equal(FileMock.deleted_files, [ @prefix + "/React/Fabric/tmpSchemaList.txt"])
     end
 
     def testCheckAndGenerateEmptyThirdPartyProvider_whenBothMissing_buildCodegen()
@@ -150,14 +150,14 @@ class CodegenTests < Test::Unit::TestCase
             codegen_cli_path,
         ])
         # Act
-        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, 'build', dir_manager: DirMock, file_manager: FileMock)
+        checkAndGenerateEmptyThirdPartyProvider!(@prefix, false, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
         assert_equal(Pathname.pwd_invocation_count, 1)
         assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
         assert_equal(FileMock.exist_invocation_params, [
-            @base_path + "/build/" + @third_party_provider_header,
-            @base_path + "/build/" + @tmp_schema_list_file
+            @prefix + "/React/Fabric/" + @third_party_provider_header,
+            @prefix + "/React/Fabric/" + @tmp_schema_list_file
         ])
         assert_equal(DirMock.exist_invocation_params, [
             @base_path + "/" + @prefix + "/packages/react-native-codegen",
@@ -176,8 +176,8 @@ class CodegenTests < Test::Unit::TestCase
             "arguments" => [
                 @base_path + "/" + @prefix + "/scripts/generate-provider-cli.js",
                 "--platform", 'ios',
-                "--schemaListPath", @base_path + "/build/" + @tmp_schema_list_file,
-                "--outputDir", @base_path + "/build"
+                "--schemaListPath", @prefix + "/React/Fabric/" + @tmp_schema_list_file,
+                "--outputDir", @prefix + "/React/Fabric"
             ]
         })
     end

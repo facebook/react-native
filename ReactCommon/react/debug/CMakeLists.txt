@@ -22,3 +22,7 @@ add_library(react_debug SHARED ${react_debug_SRC})
 target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_debug log folly_runtime)
+
+if(${CMAKE_BUILD_TYPE} MATCHES Release)
+        target_compile_options(react_debug PUBLIC -DNDEBUG)
+endif()

@@ -9,9 +9,9 @@
 
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/renderer/graphics/conversions.h>
 
 namespace facebook::react {
 

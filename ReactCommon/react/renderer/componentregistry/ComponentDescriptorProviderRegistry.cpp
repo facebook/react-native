@@ -11,7 +11,7 @@ namespace facebook::react {
 
 void ComponentDescriptorProviderRegistry::add(
     const ComponentDescriptorProvider &provider) const {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
 
   /*
   // TODO: T57583139
@@ -44,7 +44,7 @@ void ComponentDescriptorProviderRegistry::add(
 void ComponentDescriptorProviderRegistry::setComponentDescriptorProviderRequest(
     ComponentDescriptorProviderRequest componentDescriptorProviderRequest)
     const {
-  std::shared_lock<butter::shared_mutex> lock(mutex_);
+  std::shared_lock lock(mutex_);
   componentDescriptorProviderRequest_ =
       std::move(componentDescriptorProviderRequest);
 }
@@ -54,7 +54,7 @@ void ComponentDescriptorProviderRegistry::request(
   ComponentDescriptorProviderRequest componentDescriptorProviderRequest;
 
   {
-    std::shared_lock<butter::shared_mutex> lock(mutex_);
+    std::shared_lock lock(mutex_);
     componentDescriptorProviderRequest = componentDescriptorProviderRequest_;
   }
 
@@ -66,7 +66,7 @@ void ComponentDescriptorProviderRegistry::request(
 ComponentDescriptorRegistry::Shared
 ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
     ComponentDescriptorParameters const &parameters) const {
-  std::shared_lock<butter::shared_mutex> lock(mutex_);
+  std::shared_lock lock(mutex_);
 
   auto registry = std::make_shared<ComponentDescriptorRegistry const>(
       parameters, *this, parameters.contextContainer);

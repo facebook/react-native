@@ -60,6 +60,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("react/renderer/core:core"),
         react_native_xplat_target("react/renderer/debug:debug"),
         react_native_xplat_target("react/renderer/graphics:graphics"),
+        react_native_xplat_target("react/renderer/mapbuffer:mapbuffer"),
         react_native_xplat_target("react/config:config"),
         react_native_xplat_target("logger:logger"),
     ],

@@ -102,7 +102,7 @@ if (argv.target === 'RNTester') {
 
     // launch the app on iOS simulator
     pushd('packages/rn-tester');
-    exec('npx react-native run-ios --scheme RNTester');
+    exec('npx react-native run-ios --scheme RNTester --simulator "iPhone 14"');
     popd();
   } else {
     // we do the android path here

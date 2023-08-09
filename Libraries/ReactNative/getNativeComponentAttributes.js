@@ -12,7 +12,7 @@
 
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const resolveAssetSource = require('../Image/resolveAssetSource');
-import processColor from '../StyleSheet/processColor';
+const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray');
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');

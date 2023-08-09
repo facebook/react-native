@@ -7,7 +7,6 @@
 
 #include "NativeArray.h"
 
-#include <fbjni/fbjni.h>
 #include <folly/json.h>
 
 using namespace facebook::jni;
@@ -15,8 +14,7 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-NativeArray::NativeArray(folly::dynamic array)
-    : isConsumed(false), array_(std::move(array)) {
+void NativeArray::assertInternalType() {
   if (!array_.isArray()) {
     throwNewJavaException(
         exceptions::gUnexpectedNativeTypeExceptionClass,

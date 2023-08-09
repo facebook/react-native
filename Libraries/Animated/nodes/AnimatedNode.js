@@ -12,7 +12,6 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import invariant from 'invariant';
 

@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
   s.dependency "glog"
   s.dependency "RCT-Folly/Futures", folly_version
   s.dependency "hermes-engine"
+  s.dependency "React-jsi"
 end

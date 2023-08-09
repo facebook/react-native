@@ -10,10 +10,10 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <shared_mutex>
 #include <string>
 
 #include <butter/map.h>
-#include <butter/mutex.h>
 
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -38,11 +38,11 @@ class ContextContainer final {
    * example if the type `T` is `std::shared_ptr<const ReactNativeConfig>`,
    * then one would use `"ReactNativeConfig"` for the `key`, even if the
    * instance is actually a `shared_ptr` of derived class
-   *`EmptyReactNativeConfig`.
+   *`ReactNativeConfig`.
    */
   template <typename T>
   void insert(std::string const &key, T const &instance) const {
-    std::unique_lock<butter::shared_mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     instances_.insert({key, std::make_shared<T>(instance)});
   }
@@ -52,7 +52,7 @@ class ContextContainer final {
    * Does nothing if the instance was not found.
    */
   void erase(std::string const &key) const {
-    std::unique_lock<butter::shared_mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     instances_.erase(key);
   }
@@ -63,7 +63,7 @@ class ContextContainer final {
    * values from the given container.
    */
   void update(ContextContainer const &contextContainer) const {
-    std::unique_lock<butter::shared_mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     for (auto const &pair : contextContainer.instances_) {
       instances_.erase(pair.first);
@@ -78,7 +78,7 @@ class ContextContainer final {
    */
   template <typename T>
   T at(std::string const &key) const {
-    std::shared_lock<butter::shared_mutex> lock(mutex_);
+    std::shared_lock lock(mutex_);
 
     react_native_assert(
         instances_.find(key) != instances_.end() &&
@@ -93,7 +93,7 @@ class ContextContainer final {
    */
   template <typename T>
   std::optional<T> find(std::string const &key) const {
-    std::shared_lock<butter::shared_mutex> lock(mutex_);
+    std::shared_lock lock(mutex_);
 
     auto iterator = instances_.find(key);
     if (iterator == instances_.end()) {
@@ -104,7 +104,7 @@ class ContextContainer final {
   }
 
  private:
-  mutable butter::shared_mutex mutex_;
+  mutable std::shared_mutex mutex_;
   // Protected by mutex_`.
   mutable butter::map<std::string, std::shared_ptr<void>> instances_;
 };

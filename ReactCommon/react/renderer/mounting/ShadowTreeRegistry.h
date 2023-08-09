@@ -7,8 +7,9 @@
 
 #pragma once
 
+#include <shared_mutex>
+
 #include <butter/map.h>
-#include <butter/mutex.h>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/mounting/ShadowTree.h>
@@ -62,7 +63,7 @@ class ShadowTreeRegistry final {
           &callback) const;
 
  private:
-  mutable butter::shared_mutex mutex_;
+  mutable std::shared_mutex mutex_;
   mutable butter::map<SurfaceId, std::unique_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };

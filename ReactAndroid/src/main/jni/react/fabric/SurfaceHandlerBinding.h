@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <shared_mutex>
+
 #include <fbjni/fbjni.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
@@ -50,7 +52,7 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
   SurfaceHandler const &getSurfaceHandler();
 
  private:
-  mutable butter::shared_mutex lifecycleMutex_;
+  mutable std::shared_mutex lifecycleMutex_;
   const SurfaceHandler surfaceHandler_;
 
   jni::alias_ref<SurfaceHandlerBinding::jhybriddata> jhybridobject_;

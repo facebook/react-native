@@ -21,7 +21,7 @@ import {
   NativeTouchEvent,
   TargetedEvent,
 } from '../../Types/CoreEventTypes';
-import {EventEmitter} from '../../vendor/emitter/EventEmitter';
+import EventEmitter from '../../vendor/emitter/EventEmitter';
 import {AccessibilityProps} from '../View/ViewAccessibility';
 import {ViewProps} from '../View/ViewPropTypes';
 
@@ -44,6 +44,16 @@ export type KeyboardTypeOptions =
   | KeyboardType
   | KeyboardTypeAndroid
   | KeyboardTypeIOS;
+
+export type InputModeOptions =
+  | 'none'
+  | 'text'
+  | 'decimal'
+  | 'numeric'
+  | 'tel'
+  | 'search'
+  | 'email'
+  | 'url';
 
 export type ReturnKeyType = 'done' | 'go' | 'next' | 'search' | 'send';
 export type ReturnKeyTypeAndroid = 'none' | 'previous';
@@ -321,7 +331,7 @@ export interface TextInputMacOSProps {
   /**
    * Fired when a supported element is pasted
    */
-  onPaste?: (event: PasteEvent) => void | undefined;
+  onPaste?: ((event: PasteEvent) => void) | undefined;
 
   /**
    * Callback that is called when the text input's autoCorrect setting changes.
@@ -329,7 +339,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onAutoCorrectChange?: (e: SettingChangeEvent) => void | undefined;
+  onAutoCorrectChange?: ((e: SettingChangeEvent) => void) | undefined;
 
   /**
    * Callback that is called when the text input's spellCheck setting changes.
@@ -337,7 +347,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onSpellCheckChange?: (e: SettingChangeEvent) => void | undefined;
+  onSpellCheckChange?: ((e: SettingChangeEvent) => void) | undefined;
 
   /**
    * Callback that is called when the text input's grammarCheck setting changes.
@@ -345,7 +355,7 @@ export interface TextInputMacOSProps {
    * `{ nativeEvent: { enabled } }`.
    * Does only work with 'multiline={true}'.
    */
-  onGrammarCheckChange?: (e: SettingChangeEvent) => void | undefined;
+  onGrammarCheckChange?: ((e: SettingChangeEvent) => void) | undefined;
 
   /**
    * Enables Paste support for certain types of pasted types
@@ -694,6 +704,11 @@ export interface TextInputProps
    * The following values work on Android: - visible-password
    */
   keyboardType?: KeyboardTypeOptions | undefined;
+
+  /**
+   * Works like the inputmode attribute in HTML, it determines which keyboard to open, e.g. numeric and has precedence over keyboardType.
+   */
+  inputMode?: InputModeOptions | undefined;
 
   /**
    * Limits the maximum number of characters that can be entered.

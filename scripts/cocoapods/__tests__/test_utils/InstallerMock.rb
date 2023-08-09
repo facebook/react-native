@@ -152,16 +152,17 @@ class TargetMock
     attr_reader :name
     attr_reader :build_configurations
     attr_reader :product_type
-
     attr_reader :received_resolved_build_setting_parameters
+    attr_reader :dependencies
 
-    def initialize(name, build_configurations = [], product_type = nil)
+    def initialize(name, build_configurations = [], product_type = nil, dependencies = [])
         @name = name
         @build_configurations = build_configurations
         unless product_type.nil?
           @product_type = product_type
         end
         @received_resolved_build_setting_parameters = []
+        @dependencies = dependencies
     end
 
     def resolved_build_setting(key, resolve_against_xcconfig: false)
@@ -209,5 +210,13 @@ class TargetInstallationResultMock
         @test_app_host_targets = test_app_host_targets
         @app_native_targets = app_native_targets
         @app_resource_bundle_targets = app_resource_bundle_targets
+    end
+end
+
+class DependencyMock
+    attr_reader :name
+
+    def initialize(name)
+        @name = name
     end
 end

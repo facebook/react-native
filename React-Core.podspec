@@ -22,6 +22,7 @@ socket_rocket_version = '0.7.0' # [macOS]
 boost_compiler_flags = '-Wno-documentation'
 
 use_hermes = ENV['USE_HERMES'] == '1'
+use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
@@ -37,6 +38,11 @@ header_subspecs = {
   'RCTVibrationHeaders'         => 'Libraries/Vibration/*.h',
 }
 
+frameworks_search_paths = []
+frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if use_hermes
+frameworks_search_paths << "\"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon\"" if use_frameworks
+frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTFabric\"" if use_frameworks
+
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
   "$(PODS_ROOT)/boost",
@@ -48,6 +54,10 @@ header_search_paths = [
 ].concat(use_hermes ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
+] : []).concat(use_frameworks ? [
+  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+  "$(PODS_CONFIGURATION_BUILD_DIR)/React-NativeModulesApple/React_NativeModulesApple.framework/Headers"
 ] : []).map{|p| "\"#{p}\""}.join(" ")
 
 Pod::Spec.new do |s|
@@ -68,20 +78,27 @@ Pod::Spec.new do |s|
                                "DEFINES_MODULE" => "YES",
                                "GCC_PREPROCESSOR_DEFINITIONS" => "RCT_METRO_PORT=${RCT_METRO_PORT}",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
-                             }.merge!(use_hermes ? {
-                               "FRAMEWORK_SEARCH_PATHS" => "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\""
-                             } : {})
+                               "FRAMEWORK_SEARCH_PATHS" => frameworks_search_paths.join(" ")
+                             }
   s.user_target_xcconfig   = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\""}
   s.default_subspec        = "Default"
 
   s.subspec "Default" do |ss|
     ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
-    ss.exclude_files          = "React/CoreModules/**/*",
-                                "React/DevSupport/**/*",
-                                "React/Fabric/**/*",
-                                "React/FBReactNativeSpec/**/*",
-                                "React/Tests/**/*",
-                                "React/Inspector/**/*"
+    exclude_files = [
+      "React/CoreModules/**/*",
+      "React/DevSupport/**/*",
+      "React/Fabric/**/*",
+      "React/FBReactNativeSpec/**/*",
+      "React/Tests/**/*",
+      "React/Inspector/**/*"
+    ]
+    # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
+    # So we have to exclude the JSCExecutorFactory
+    if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
+    end
+    ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
   end
 
@@ -116,4 +133,11 @@ Pod::Spec.new do |s|
   s.dependency "SocketRocket", socket_rocket_version
   s.dependency "Yoga"
   s.dependency "glog"
+
+  if ENV['USE_HERMES'] == "0"
+    s.dependency 'React-jsc'
+  else
+    s.dependency 'React-hermes'
+    s.dependency 'hermes-engine'
+  end
 end

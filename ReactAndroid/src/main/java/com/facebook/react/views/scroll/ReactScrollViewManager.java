@@ -323,6 +323,16 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setContentOffset(value);
   }
 
+  @ReactProp(name = "maintainVisibleContentPosition")
+  public void setMaintainVisibleContentPosition(ReactScrollView view, ReadableMap value) {
+    if (value != null) {
+      view.setMaintainVisibleContentPosition(
+          MaintainVisibleScrollPositionHelper.Config.fromReadableMap(value));
+    } else {
+      view.setMaintainVisibleContentPosition(null);
+    }
+  }
+
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {

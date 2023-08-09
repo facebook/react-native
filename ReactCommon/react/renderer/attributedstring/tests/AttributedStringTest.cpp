@@ -9,7 +9,7 @@
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
-#include <react/renderer/graphics/conversions.h>
+#include <react/renderer/core/graphicsConversions.h>
 
 namespace facebook {
 namespace react {

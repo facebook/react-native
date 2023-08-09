@@ -9,6 +9,7 @@
 
 #include <butter/map.h>
 #include <mutex>
+#include <shared_mutex>
 
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/mounting/MountingCoordinator.h>
@@ -59,7 +60,7 @@ class SurfaceManager final {
       const noexcept;
 
   Scheduler const &scheduler_;
-  mutable butter::shared_mutex mutex_; // Protects `registry_`.
+  mutable std::shared_mutex mutex_; // Protects `registry_`.
   mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
 };
 

@@ -13,6 +13,11 @@ import type {RootTag, TurboModule} from '../RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModuleRegistry';
 
+export enum EnumInt {
+  A = 23,
+  B = 42,
+}
+
 export interface Spec extends TurboModule {
   // Exported methods.
   +getConstants: () => {|
@@ -22,6 +27,7 @@ export interface Spec extends TurboModule {
   |};
   +voidFunc: () => void;
   +getBool: (arg: boolean) => boolean;
+  +getEnum?: (arg: EnumInt) => EnumInt;
   +getNumber: (arg: number) => number;
   +getString: (arg: string) => string;
   +getArray: (arg: Array<any>) => Array<any>;

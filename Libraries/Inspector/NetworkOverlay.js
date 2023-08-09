@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RenderItemProps} from '../Lists/VirtualizedList';
+import type {RenderItemProps} from '@react-native-mac/virtualized-lists'; // [macOS]
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');

@@ -17,7 +17,6 @@ const short int LAYOUT_BORDER_START_INDEX = 14;
 
 namespace {
 
-const int DOES_LEGACY_STRETCH_BEHAVIOUR = 8;
 const int HAS_NEW_LAYOUT = 16;
 
 union YGNodeContext {

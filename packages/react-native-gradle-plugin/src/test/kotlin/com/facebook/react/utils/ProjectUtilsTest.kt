@@ -125,7 +125,7 @@ class ProjectUtilsTest {
               .trimIndent())
     }
     extension.root.set(tempFolder.root)
-    assertTrue(project.needsCodegenFromPackageJson(extension))
+    assertTrue(project.needsCodegenFromPackageJson(extension.root))
   }
 
   @Test
@@ -143,7 +143,7 @@ class ProjectUtilsTest {
               .trimIndent())
     }
     extension.root.set(tempFolder.root)
-    assertFalse(project.needsCodegenFromPackageJson(extension))
+    assertFalse(project.needsCodegenFromPackageJson(extension.root))
   }
 
   @Test
@@ -167,7 +167,7 @@ class ProjectUtilsTest {
     val project = createProject()
     val extension = TestReactExtension(project)
 
-    assertFalse(project.needsCodegenFromPackageJson(extension))
+    assertFalse(project.needsCodegenFromPackageJson(extension.root))
   }
 
   @Test

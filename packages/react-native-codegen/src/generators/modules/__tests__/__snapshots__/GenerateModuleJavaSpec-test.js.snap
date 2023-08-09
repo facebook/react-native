@@ -425,6 +425,10 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
   @DoNotStrip
   public abstract WritableMap getValue(double x, String y, ReadableMap z);
 
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  @DoNotStrip
+  public abstract double getEnumReturn();
+
   @ReactMethod
   @DoNotStrip
   public abstract void getValueWithCallback(Callback callback);

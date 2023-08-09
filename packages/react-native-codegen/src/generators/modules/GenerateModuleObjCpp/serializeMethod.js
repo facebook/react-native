@@ -375,7 +375,7 @@ function getReturnObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapIntoNullableIfNeeded('NSDictionary *');
     default:
-      (typeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );
@@ -439,7 +439,7 @@ function getReturnJSType(
           );
       }
     default:
-      (typeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (typeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unsupported return type for ${methodName}. Found: ${typeAnnotation.type}`,
       );

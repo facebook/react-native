@@ -18,7 +18,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 /**
  * Mock Networking module that records last request received by {@link #sendRequest} method and
@@ -36,6 +35,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   public boolean mAbortedRequest;
 
   private boolean mCompleteRequest;
+  private ReactApplicationContext mContext;
 
   public NetworkRecordingModuleMock(ReactApplicationContext reactContext) {
     this(reactContext, true);
@@ -44,6 +44,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
   public NetworkRecordingModuleMock(ReactApplicationContext reactContext, boolean completeRequest) {
     super(reactContext);
     mCompleteRequest = completeRequest;
+    mContext = reactContext;
   }
 
   public interface RequestListener {
@@ -120,7 +121,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     args.pushInt(requestId);
     args.pushString(data);
 
-    getEventEmitter().emit("didReceiveNetworkData", args);
+    mContext.emitDeviceEvent("didReceiveNetworkData", args);
   }
 
   private void onRequestComplete(int requestId, @Nullable String error) {
@@ -128,7 +129,7 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     args.pushInt(requestId);
     args.pushString(error);
 
-    getEventEmitter().emit("didCompleteNetworkResponse", args);
+    mContext.emitDeviceEvent("didCompleteNetworkResponse", args);
   }
 
   private void onResponseReceived(int requestId, int code, WritableMap headers) {
@@ -137,11 +138,6 @@ public class NetworkRecordingModuleMock extends ReactContextBaseJavaModule {
     args.pushInt(code);
     args.pushMap(headers);
 
-    getEventEmitter().emit("didReceiveNetworkResponse", args);
-  }
-
-  private DeviceEventManagerModule.RCTDeviceEventEmitter getEventEmitter() {
-    return getReactApplicationContext()
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+    mContext.emitDeviceEvent("didReceiveNetworkResponse", args);
   }
 }

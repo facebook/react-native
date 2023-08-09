@@ -21,9 +21,9 @@ body:
   - type: input
     id: version
     attributes:
-      label: Version
-      description: What react-native version does this appear on? Please test against the latest stable version. Bug reports against older versions are more likely to stall.
-      placeholder: ex. 0.68.0
+      label: React Native Version
+      description: What is the latest version of react-native that this issue reproduces on? Please test against the latest stable version, and list only the highest version you tested. Bug reports against older versions are more likely to stall.
+      placeholder: ex. 0.71.0
     validations:
       required: true
   - type: textarea

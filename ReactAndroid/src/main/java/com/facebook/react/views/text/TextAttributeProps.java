@@ -13,9 +13,10 @@ import android.text.TextUtils;
 import android.util.LayoutDirection;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -249,35 +250,36 @@ public class TextAttributeProps {
     return result;
   }
 
-  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL) {
-    @Nullable
-    String textAlignPropValue =
-        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
-    int textAlignment;
+  public static int getTextAlignment(ReactStylesDiffMap props, boolean isRTL, int defaultValue) {
+    if (!props.hasKey(ViewProps.TEXT_ALIGN)) {
+      return defaultValue;
+    }
 
+    String textAlignPropValue = props.getString(ViewProps.TEXT_ALIGN);
     if ("justify".equals(textAlignPropValue)) {
-      textAlignment = Gravity.LEFT;
+      return Gravity.LEFT;
     } else {
       if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
-        textAlignment = Gravity.NO_GRAVITY;
+        return Gravity.NO_GRAVITY;
       } else if ("left".equals(textAlignPropValue)) {
-        textAlignment = isRTL ? Gravity.RIGHT : Gravity.LEFT;
+        return isRTL ? Gravity.RIGHT : Gravity.LEFT;
       } else if ("right".equals(textAlignPropValue)) {
-        textAlignment = isRTL ? Gravity.LEFT : Gravity.RIGHT;
+        return isRTL ? Gravity.LEFT : Gravity.RIGHT;
       } else if ("center".equals(textAlignPropValue)) {
-        textAlignment = Gravity.CENTER_HORIZONTAL;
+        return Gravity.CENTER_HORIZONTAL;
       } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlignPropValue);
+        FLog.w(ReactConstants.TAG, "Invalid textAlign: " + textAlignPropValue);
+        return Gravity.NO_GRAVITY;
       }
     }
-    return textAlignment;
   }
 
-  public static int getJustificationMode(ReactStylesDiffMap props) {
-    @Nullable
-    String textAlignPropValue =
-        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
+  public static int getJustificationMode(ReactStylesDiffMap props, int defaultValue) {
+    if (!props.hasKey(ViewProps.TEXT_ALIGN)) {
+      return defaultValue;
+    }
 
+    String textAlignPropValue = props.getString(ViewProps.TEXT_ALIGN);
     if ("justify".equals(textAlignPropValue) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       return Layout.JUSTIFICATION_MODE_INTER_WORD;
     }
@@ -563,8 +565,8 @@ public class TextAttributeProps {
     } else if ("ltr".equals(layoutDirection)) {
       androidLayoutDirection = LayoutDirection.LTR;
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid layoutDirection: " + layoutDirection);
+      FLog.w(ReactConstants.TAG, "Invalid layoutDirection: " + layoutDirection);
+      androidLayoutDirection = UNSET;
     }
     return androidLayoutDirection;
   }
@@ -595,7 +597,8 @@ public class TextAttributeProps {
     } else if ("capitalize".equals(textTransform)) {
       mTextTransform = TextTransform.CAPITALIZE;
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
+      FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
+      mTextTransform = TextTransform.NONE;
     }
   }
 

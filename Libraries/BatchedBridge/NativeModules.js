@@ -134,6 +134,7 @@ function genMethod(moduleID: number, methodID: number, type: MethodType) {
       const onSuccess: ?(mixed) => void = hasSuccessCallback ? lastArg : null;
       // $FlowFixMe[incompatible-type]
       const onFail: ?(mixed) => void = hasErrorCallback ? secondLastArg : null;
+      // $FlowFixMe[unsafe-addition]
       const callbackCount = hasSuccessCallback + hasErrorCallback;
       const newArgs = args.slice(0, args.length - callbackCount);
       if (type === 'sync') {

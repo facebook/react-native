@@ -11,13 +11,14 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+import com.facebook.common.logging.FLog;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
 import com.facebook.react.bridge.Dynamic;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.views.text.ReactTextInlineImageShadowNode;
@@ -84,8 +85,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     if (width.getType() == ReadableType.Number) {
       mWidth = (float) width.asDouble();
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Inline images must not have percentage based width");
+      FLog.w(ReactConstants.TAG, "Inline images must not have percentage based width");
+      mWidth = YogaConstants.UNDEFINED;
     }
   }
 
@@ -94,8 +95,8 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     if (height.getType() == ReadableType.Number) {
       mHeight = (float) height.asDouble();
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Inline images must not have percentage based height");
+      FLog.w(ReactConstants.TAG, "Inline images must not have percentage based height");
+      mHeight = YogaConstants.UNDEFINED;
     }
   }
 

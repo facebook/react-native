@@ -57,15 +57,6 @@ static void jni_YGConfigSetExperimentalFeatureEnabledJNI(
       config, static_cast<YGExperimentalFeature>(feature), enabled);
 }
 
-static void jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI(
-    JNIEnv* env,
-    jobject obj,
-    jlong nativePointer,
-    jboolean enabled) {
-  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(config, enabled);
-}
-
 static void jni_YGConfigSetUseWebDefaultsJNI(
     JNIEnv* env,
     jobject obj,
@@ -294,9 +285,6 @@ static void YGTransferLayoutOutputsRecursive(
 
   int fieldFlags = edgesSet.get();
   fieldFlags |= HAS_NEW_LAYOUT;
-  if (YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root)) {
-    fieldFlags |= DOES_LEGACY_STRETCH_BEHAVIOUR;
-  }
 
   const int arrSize = 6 + (marginFieldSet ? 4 : 0) + (paddingFieldSet ? 4 : 0) +
       (borderFieldSet ? 4 : 0);
@@ -776,9 +764,6 @@ static JNINativeMethod methods[] = {
     {"jni_YGConfigSetUseLegacyStretchBehaviourJNI",
      "(JZ)V",
      (void*) jni_YGConfigSetUseLegacyStretchBehaviourJNI},
-    {"jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI",
-     "(JZ)V",
-     (void*) jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviourJNI},
     {"jni_YGConfigSetLoggerJNI",
      "(JLcom/facebook/yoga/YogaLogger;)V",
      (void*) jni_YGConfigSetLoggerJNI},

@@ -5,17 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-buildscript {
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.hasProperty("kotlinVersion") ? rootProject.ext.kotlinVersion : KOTLIN_VERSION}"
-    }
-}
-
 plugins {
     id("com.android.library")
     id("com.facebook.react")
     id("de.undercouch.download")
     id("maven-publish")
+    id("org.jetbrains.kotlin.android")
 }
 
 import com.facebook.react.tasks.internal.*
@@ -38,6 +33,16 @@ def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
 def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 def reactNativeRootDir = projectDir.parent
+
+// We put the publishing version from gradle.properties inside ext. so other
+// subprojects can access it as well.
+ext.publishing_version = VERSION_NAME
+
+// This is the version of CMake we're requesting to the Android SDK to use.
+// If missing it will be downloaded automatically. Only CMake versions shipped with the
+// Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
+def cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.22.1"
+ext.cmake_version = cmakeVersion
 
 // You need to have following folders in this directory:
 //   - boost_1_76_0
@@ -108,8 +113,16 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
                 ]
             ),
             new PrefabPreprocessingEntry(
+                "rrc_root",
+                new Pair("../ReactCommon/react/renderer/components/root/", "react/renderer/components/root/")
+            ),
+            new PrefabPreprocessingEntry(
                 "rrc_view",
                 new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+            ),
+            new PrefabPreprocessingEntry(
+                "rrc_legacyviewmanagerinterop",
+                new Pair("../ReactCommon/react/renderer/components/legacyviewmanagerinterop/", "react/renderer/components/legacyviewmanagerinterop/")
             ),
             new PrefabPreprocessingEntry(
                 "jsi",
@@ -224,10 +237,6 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
     it.outputDir.set(prefabHeadersDir)
 }
 
-// We put the publishing version from gradle.properties inside ext. so other
-// subprojects can access it as well.
-ext.publishing_version = VERSION_NAME
-
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
@@ -237,12 +246,13 @@ task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
 
 final def prepareBoost = tasks.register("prepareBoost", PrepareBoostTask) {
     it.dependsOn(boostPath ? [] : [downloadBoost])
-    it.boostPath.setFrom(boostPath ?: tarTree(resources.gzip(downloadBoost.dest)))
+    it.boostPath.setFrom(boostPath ?: tarTree(downloadBoost.dest))
     it.boostVersion.set(BOOST_VERSION)
     it.outputDir.set(new File(thirdPartyNdkDir, "boost"))
 }
@@ -251,6 +261,7 @@ task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Down
     src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
 }
 
@@ -267,6 +278,7 @@ task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
 }
 
@@ -283,6 +295,7 @@ task downloadFmt(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
 }
 
@@ -299,6 +312,7 @@ task downloadLibevent(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/libevent/libevent/releases/download/release-${LIBEVENT_VERSION}-stable/libevent-${LIBEVENT_VERSION}-stable.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "libevent-${LIBEVENT_VERSION}.tar.gz"))
 }
 
@@ -314,6 +328,7 @@ task downloadGlog(dependsOn: createNativeDepsDirectories, type: Download) {
     src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
     onlyIfModified(true)
     overwrite(false)
+    retries(5)
     dest(new File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
 }
 
@@ -407,9 +422,18 @@ task installArchives {
     dependsOn("publishAllPublicationsToNpmRepository")
 }
 
+repositories {
+    // Normally RNGP will set repositories for all modules,
+    // but when consumed from source, we need to re-declare
+    // those repositories as there is no app module there.
+    mavenCentral()
+    google()
+}
+
 android {
     buildToolsVersion = "33.0.0"
     compileSdkVersion 33
+    namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -463,7 +487,9 @@ android {
                     "react_render_core",
                     "react_render_graphics",
                     "rrc_image",
+                    "rrc_root",
                     "rrc_view",
+                    "rrc_legacyviewmanagerinterop",
                     "jsi",
                     "glog",
                     "fabricjni",
@@ -487,6 +513,7 @@ android {
 
     externalNativeBuild {
         cmake {
+            version cmakeVersion
             path "src/main/jni/CMakeLists.txt"
         }
     }
@@ -558,8 +585,14 @@ android {
         rrc_image {
             headers(new File(prefabHeadersDir, "rrc_image").absolutePath)
         }
+        rrc_root {
+            headers(new File(prefabHeadersDir, "rrc_root").absolutePath)
+        }
         rrc_view {
             headers(new File(prefabHeadersDir, "rrc_view").absolutePath)
+        }
+        rrc_legacyviewmanagerinterop {
+            headers(new File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath)
         }
         jsi {
             headers(new File(prefabHeadersDir, "jsi").absolutePath)
@@ -653,18 +686,19 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+
+    // This compileOnly dependency is needed to be able to update the offline
+    // mirror from a non-linux machine, while still executing inside a Linux CI
+    // as we declare a dependency on aap2 @linux so we're sure the linux artifact
+    // gets downloaded at some point.
+    compileOnly("com.android.tools.build:aapt2:7.4.2-8841542:linux")
 }
 
 react {
     // TODO: The library name is chosen for parity with Fabric components & iOS
     // This should be changed to a more generic name, e.g. `ReactCoreSpec`.
     libraryName = "rncore"
-    root = file("..")
     jsRootDir = file("../Libraries")
-    reactNativeDir = file("$projectDir/..")
-    // We search for the codegen in either one of the `node_modules` folder or in the
-    // root packages folder (that's for when we build from source without calling `yarn install`).
-    codegenDir = file(findNodeModulePath(projectDir, "@react-native/codegen") ?: "../packages/react-native-codegen/")
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

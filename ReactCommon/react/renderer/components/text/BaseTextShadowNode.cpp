@@ -11,6 +11,7 @@
 #include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/components/text/TextProps.h>
 #include <react/renderer/components/text/TextShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/mounting/ShadowView.h>
 
 namespace facebook::react {

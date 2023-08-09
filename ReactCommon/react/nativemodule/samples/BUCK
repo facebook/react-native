@@ -1,5 +1,7 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "get_objc_arc_preprocessor_flags", "get_preprocessor_flags_for_build_mode", "get_static_library_ios_flags", "react_native_dep", "react_native_target", "react_native_xplat_target", "rn_android_library", "rn_xplat_cxx_library", "subdir_glob")
 
+oncall("react_native")
+
 rn_xplat_cxx_library(
     name = "samples",
     srcs = glob(
@@ -44,7 +46,7 @@ rn_xplat_cxx_library(
     ],
     ios_exported_headers = subdir_glob(
         [
-            ("platform/ios", "*.h"),
+            ("platform/ios/ReactCommon", "*.h"),
         ],
         prefix = "ReactCommon",
     ),

@@ -70,7 +70,7 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
   for (NSNumber *number in json) {
     NSInteger index = number.integerValue;
     if (RCT_DEBUG && index < 0) {
-      RCTLogError(@"Invalid index value %lld. Indices must be positive.", (long long)index);
+      RCTLogInfo(@"Invalid index value %lld. Indices must be positive.", (long long)index);
     }
     [indexSet addIndex:index];
   }
@@ -170,7 +170,7 @@ RCT_ENUM_CONVERTER(
       __block BOOL allHeadersAreStrings = YES;
       [headers enumerateKeysAndObjectsUsingBlock:^(NSString *key, id header, BOOL *stop) {
         if (![header isKindOfClass:[NSString class]]) {
-          RCTLogError(
+          RCTLogInfo(
               @"Values of HTTP headers passed must be  of type string. "
                "Value of header '%@' is not a string.",
               key);
@@ -201,11 +201,11 @@ RCT_ENUM_CONVERTER(
 {
   NSURL *fileURL = [self NSURL:json];
   if (!fileURL.fileURL) {
-    RCTLogError(@"URI must be a local file, '%@' isn't.", fileURL);
+    RCTLogInfo(@"URI must be a local file, '%@' isn't.", fileURL);
     return nil;
   }
   if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path]) {
-    RCTLogError(@"File '%@' could not be found.", fileURL);
+    RCTLogInfo(@"File '%@' could not be found.", fileURL);
     return nil;
   }
   return fileURL;
@@ -226,7 +226,7 @@ RCT_ENUM_CONVERTER(
     });
     NSDate *date = [formatter dateFromString:json];
     if (!date) {
-      RCTLogError(
+      RCTLogInfo(
           @"JSON String '%@' could not be interpreted as a date. "
            "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ",
           json);
@@ -243,7 +243,7 @@ RCT_ENUM_CONVERTER(
   if ([json isKindOfClass:[NSString class]]) {
     NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:json];
     if (!locale) {
-      RCTLogError(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
+      RCTLogInfo(@"JSON String '%@' could not be interpreted as a valid locale. ", json);
     }
     return locale;
   } else if (json) {
@@ -268,15 +268,15 @@ NSNumber *RCTConvertEnumValue(const char *typeName, NSDictionary *mapping, NSNum
     if ([allValues containsObject:json] || [json isEqual:defaultValue]) {
       return json;
     }
-    RCTLogError(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
+    RCTLogInfo(@"Invalid %s '%@'. should be one of: %@", typeName, json, allValues);
     return defaultValue;
   }
   if (RCT_DEBUG && ![json isKindOfClass:[NSString class]]) {
-    RCTLogError(@"Expected NSNumber or NSString for %s, received %@: %@", typeName, [json classForCoder], json);
+    RCTLogInfo(@"Expected NSNumber or NSString for %s, received %@: %@", typeName, [json classForCoder], json);
   }
   id value = mapping[json];
   if (RCT_DEBUG && !value && [json description].length > 0) {
-    RCTLogError(
+    RCTLogInfo(
         @"Invalid %s '%@'. should be one of: %@",
         typeName,
         json,
@@ -503,6 +503,18 @@ RCT_ENUM_CONVERTER(
     UIReturnKeyDefault,
     integerValue)
 
+#if !TARGET_OS_OSX // [macOS]
+RCT_ENUM_CONVERTER(
+    UIUserInterfaceStyle,
+    (@{
+      @"unspecified" : @(UIUserInterfaceStyleUnspecified),
+      @"light" : @(UIUserInterfaceStyleLight),
+      @"dark" : @(UIUserInterfaceStyleDark),
+    }),
+    UIUserInterfaceStyleUnspecified,
+    integerValue)
+#endif // [macOS]
+
 RCT_ENUM_CONVERTER(
     UIViewContentMode,
     (@{
@@ -560,7 +572,7 @@ static void convertCGStruct(const char *type, NSArray *fields, CGFloat *result, 
   NSUInteger count = fields.count;
   if ([json isKindOfClass:[NSArray class]]) {
     if (RCT_DEBUG && [json count] != count) {
-      RCTLogError(
+      RCTLogInfo(
           @"Expected array with count %llu, but count is %llu: %@",
           (unsigned long long)count,
           (unsigned long long)[json count],
@@ -1166,12 +1178,15 @@ static NSColor *RCTColorWithSystemEffect(NSColor* color, NSString *systemEffectS
     if ([s isEqualToString:@"auto"]) {
       return (YGValue){YGUndefined, YGUnitAuto};
     } else if ([s hasSuffix:@"%"]) {
-      return (YGValue){[[s substringToIndex:s.length] floatValue], YGUnitPercent};
+      float floatValue;
+      if ([[NSScanner scannerWithString:s] scanFloat:&floatValue]) {
+        return (YGValue){floatValue, YGUnitPercent};
+      }
     } else {
-      RCTLogConvertError(json, @"a YGValue. Did you forget the % or pt suffix?");
+      RCTLogAdvice(
+          @"\"%@\" is not a valid dimension. Dimensions must be a number, \"auto\", or a string suffixed with \"%%\".",
+          s);
     }
-  } else {
-    RCTLogConvertError(json, @"a YGValue.");
   }
   return YGValueUndefined;
 }
@@ -1583,7 +1598,7 @@ RCT_ARRAY_CONVERTER(RCTHandledKey);
 #endif // macOS]
 
   if (!CGSizeEqualToSize(imageSource.size, CGSizeZero) && !CGSizeEqualToSize(imageSource.size, image.size)) {
-    RCTLogError(
+    RCTLogInfo(
         @"Image source %@ size %@ does not match loaded image size %@.",
         URL.path.lastPathComponent,
         NSStringFromCGSize(imageSource.size),

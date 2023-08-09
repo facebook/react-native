@@ -33,8 +33,22 @@ ConstantsStruct NativeCxxModuleExample::getConstants(jsi::Runtime &rt) {
   return ConstantsStruct{true, 69, "react-native"};
 }
 
-int32_t NativeCxxModuleExample::getEnum(jsi::Runtime &rt, int32_t arg) {
+CustomEnumInt NativeCxxModuleExample::getCustomEnum(
+    jsi::Runtime &rt,
+    CustomEnumInt arg) {
   return arg;
+}
+
+NativeCxxModuleExampleCxxEnumFloat NativeCxxModuleExample::getNumEnum(
+    jsi::Runtime &rt,
+    NativeCxxModuleExampleCxxEnumInt arg) {
+  return NativeCxxModuleExampleCxxEnumFloat::FB;
+}
+
+NativeCxxModuleExampleCxxEnumStr NativeCxxModuleExample::getStrEnum(
+    jsi::Runtime &rt,
+    NativeCxxModuleExampleCxxEnumNone arg) {
+  return NativeCxxModuleExampleCxxEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(
@@ -105,6 +119,21 @@ AsyncPromise<std::string> NativeCxxModuleExample::getValueWithPromise(
 
 void NativeCxxModuleExample::voidFunc(jsi::Runtime &rt) {
   // Nothing to do
+}
+
+void NativeCxxModuleExample::emitCustomDeviceEvent(
+    jsi::Runtime &rt,
+    jsi::String eventName) {
+  // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
+  // TurboModule with arbitrary arguments
+  emitDeviceEvent(
+      rt,
+      eventName.utf8(rt).c_str(),
+      [](jsi::Runtime &rt, std::vector<jsi::Value> &args) {
+        args.emplace_back(jsi::Value(true));
+        args.emplace_back(jsi::Value(42));
+        args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
+      });
 }
 
 } // namespace facebook::react

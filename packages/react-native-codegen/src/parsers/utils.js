@@ -16,10 +16,11 @@ const path = require('path');
 
 export type TypeDeclarationMap = {[declarationName: string]: $FlowFixMe};
 
-export type TypeAliasResolutionStatus =
+export type TypeResolutionStatus =
   | $ReadOnly<{
+      type: 'alias' | 'enum',
       successful: true,
-      aliasName: string,
+      name: string,
     }>
   | $ReadOnly<{
       successful: false,
@@ -37,6 +38,7 @@ function createParserErrorCapturer(): [
   Array<ParserError>,
   ParserErrorCapturer,
 ] {
+  // $FlowFixMe[missing-empty-array-annot]
   const errors = [];
   function guard<T>(fn: () => T): ?T {
     try {
@@ -45,12 +47,14 @@ function createParserErrorCapturer(): [
       if (!(error instanceof ParserError)) {
         throw error;
       }
+      // $FlowFixMe[incompatible-call]
       errors.push(error);
 
       return null;
     }
   }
 
+  // $FlowFixMe[incompatible-return]
   return [errors, guard];
 }
 

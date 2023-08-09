@@ -8,8 +8,8 @@
 #pragma once
 
 #include <memory>
+#include <shared_mutex>
 
-#include <butter/mutex.h>
 #include <butter/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
@@ -108,7 +108,7 @@ class ShadowNodeFamily final {
 
   EventDispatcher::Weak eventDispatcher_;
   mutable std::shared_ptr<State const> mostRecentState_;
-  mutable butter::shared_mutex mutex_;
+  mutable std::shared_mutex mutex_;
 
   /*
    * Deprecated.

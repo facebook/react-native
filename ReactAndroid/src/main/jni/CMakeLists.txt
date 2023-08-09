@@ -19,6 +19,9 @@ endif(CCACHE_FOUND)
 add_link_options(-Wl,--build-id)
 add_compile_options(-Wall -Werror -std=c++17)
 
+# This exposes the check_for_circular_dependencies macro to all the submodules
+include(CircularDepsValidator.cmake)
+
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()
@@ -84,6 +87,7 @@ add_react_common_subdir(react/renderer/components/textinput)
 add_react_common_subdir(react/renderer/components/progressbar)
 add_react_common_subdir(react/renderer/components/root)
 add_react_common_subdir(react/renderer/components/image)
+add_react_common_subdir(react/renderer/components/legacyviewmanagerinterop)
 add_react_common_subdir(react/renderer/componentregistry/native)
 add_react_common_subdir(react/renderer/components/text)
 add_react_common_subdir(react/renderer/components/unimplementedview)

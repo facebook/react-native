@@ -14,6 +14,7 @@ jobs:
       issues: write  # for hramos/needs-attention to label issues
     name: Apply Needs Attention Label
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v3
       - name: Apply Needs Attention Label

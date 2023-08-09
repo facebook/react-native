@@ -12,6 +12,12 @@
 // test before moving on. When all issues have been found, maybe we can use
 // `UNDEBUG` flag to disable NDEBUG in debug builds on Android.
 
+// Asserting is appropriate for conditions that:
+//   1. May or may not be recoverable, and
+//   2. imply there is a bug in React Native when violated.
+// For recoverable conditions that can be violated by user mistake (e.g. JS
+// code passes an unexpected prop value), consider react_native_expect instead.
+
 #include "flags.h"
 
 #undef react_native_assert

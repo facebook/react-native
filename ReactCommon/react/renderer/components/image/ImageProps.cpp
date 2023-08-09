@@ -87,14 +87,16 @@ void ImageProps::setProp(
   // reuse the same values.
   ViewProps::setProp(context, hash, propName, value);
 
+  static auto defaults = ImageProps{};
+
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE(sources, "source", {});
-    RAW_SET_PROP_SWITCH_CASE(defaultSources, "defaultSource", {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMode, ImageResizeMode::Stretch);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(blurRadius, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(capInsets, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(tintColor, {});
-    RAW_SET_PROP_SWITCH_CASE_BASIC(internal_analyticTag, {});
+    RAW_SET_PROP_SWITCH_CASE(sources, "source");
+    RAW_SET_PROP_SWITCH_CASE(defaultSources, "defaultSource");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMode);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(blurRadius);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(capInsets);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(tintColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(internal_analyticTag);
   }
 }
 

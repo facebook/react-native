@@ -12,11 +12,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -90,13 +92,14 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
       if (Gravity.START == drawerPositionNum || Gravity.END == drawerPositionNum) {
         view.setDrawerPosition(drawerPositionNum);
       } else {
-        throw new JSApplicationIllegalArgumentException(
-            "Unknown drawerPosition " + drawerPositionNum);
+        FLog.w(ReactConstants.TAG, "Unknown drawerPosition " + drawerPositionNum);
+        view.setDrawerPosition(Gravity.START);
       }
     } else if (drawerPosition.getType() == ReadableType.String) {
       setDrawerPositionInternal(view, drawerPosition.asString());
     } else {
-      throw new JSApplicationIllegalArgumentException("drawerPosition must be a string or int");
+      FLog.w(ReactConstants.TAG, "drawerPosition must be a string or int");
+      view.setDrawerPosition(Gravity.START);
     }
   }
 
@@ -106,8 +109,10 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     } else if (drawerPosition.equals("right")) {
       view.setDrawerPosition(Gravity.END);
     } else {
-      throw new JSApplicationIllegalArgumentException(
+      FLog.w(
+          ReactConstants.TAG,
           "drawerPosition must be 'left' or 'right', received" + drawerPosition);
+      view.setDrawerPosition(Gravity.START);
     }
   }
 
@@ -139,7 +144,8 @@ public class ReactDrawerLayoutManager extends ViewGroupManager<ReactDrawerLayout
     } else if ("locked-open".equals(drawerLockMode)) {
       view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     } else {
-      throw new JSApplicationIllegalArgumentException("Unknown drawerLockMode " + drawerLockMode);
+      FLog.w(ReactConstants.TAG, "Unknown drawerLockMode " + drawerLockMode);
+      view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
   }
 

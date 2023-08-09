@@ -15,6 +15,7 @@ permissions:
 jobs:
   danger:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v3
       - name: Run Yarn Install on Root

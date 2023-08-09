@@ -193,7 +193,7 @@ function translateReturnTypeToKind(
     case 'ArrayTypeAnnotation':
       return 'ArrayKind';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for returning value, found: ${realTypeAnnotation.type}"`,
       );
@@ -272,7 +272,7 @@ function translateParamTypeToJniType(
     case 'FunctionTypeAnnotation':
       return 'Lcom/facebook/react/bridge/Callback;';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for method arg, found: ${realTypeAnnotation.type}"`,
       );
@@ -348,7 +348,7 @@ function translateReturnTypeToJniType(
     case 'ArrayTypeAnnotation':
       return 'Lcom/facebook/react/bridge/WritableArray;';
     default:
-      (realTypeAnnotation.type: 'EnumDeclaration' | 'MixedTypeAnnotation');
+      (realTypeAnnotation.type: 'MixedTypeAnnotation');
       throw new Error(
         `Unknown prop type for method return type, found: ${realTypeAnnotation.type}"`,
       );
@@ -438,10 +438,10 @@ module.exports = {
       .sort()
       .map(hasteModuleName => {
         const {
-          aliases,
+          aliasMap,
           spec: {properties},
         } = nativeModules[hasteModuleName];
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
 
         const translatedMethods = properties
           .map(property =>

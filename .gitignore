@@ -108,6 +108,8 @@ package-lock.json
 # Ruby Gems (Bundler)
 /vendor
 /template/vendor
+.ruby-version
+/**/.ruby-version
 
 # iOS / CocoaPods
 /template/ios/build/
@@ -127,6 +129,7 @@ package-lock.json
 /ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /packages/rn-tester/NativeModuleExample/react/renderer/components/ScreenshotManagerSpec/
+/**/RCTThirdPartyFabricComponentsProvider.*
 
 
 # Additional SDKs

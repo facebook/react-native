@@ -2,13 +2,15 @@
  * @format
  */
 
+// [macOS]
+
 import {ColorValue, OpaqueColorValue} from './StyleSheet';
 
 type DynamicColorMacOSTuple = {
   light: ColorValue;
   dark: ColorValue;
-  highContrastLight?: ColorValue;
-  highContrastDark?: ColorValue;
+  highContrastLight?: ColorValue | undefined;
+  highContrastDark?: ColorValue | undefined;
 };
 
 export function DynamicColorMacOS(

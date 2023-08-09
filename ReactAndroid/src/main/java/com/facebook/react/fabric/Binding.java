@@ -9,7 +9,6 @@ package com.facebook.react.fabric;
 
 import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
@@ -86,7 +85,7 @@ public class Binding {
 
   public void register(
       @NonNull RuntimeExecutor runtimeExecutor,
-      @Nullable RuntimeScheduler runtimeScheduler,
+      @NonNull RuntimeScheduler runtimeScheduler,
       @NonNull FabricUIManager fabricUIManager,
       @NonNull EventBeatManager eventBeatManager,
       @NonNull ComponentFactory componentFactory,

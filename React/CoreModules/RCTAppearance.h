@@ -8,6 +8,7 @@
 #import <React/RCTUIKit.h> // [macOS]
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTConvert.h>
 #import <React/RCTEventEmitter.h>
 
 RCT_EXTERN void RCTEnableAppearancePreference(BOOL enabled);

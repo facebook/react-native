@@ -111,7 +111,12 @@ jsi::Value TurboCxxModule::get(
 
   // If we have a JS wrapper, cache the result of this lookup
   if (jsRepresentation_) {
-    jsRepresentation_->setProperty(runtime, propName, result);
+    auto jsRepresentation = jsRepresentation_->lock(runtime);
+    if (!jsRepresentation.isUndefined()) {
+      std::move(jsRepresentation)
+          .asObject(runtime)
+          .setProperty(runtime, propName, result);
+    }
   }
 
   return result;

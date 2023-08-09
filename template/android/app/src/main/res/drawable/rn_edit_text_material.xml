@@ -20,7 +20,7 @@
        android:insetBottom="@dimen/abc_edit_text_inset_bottom_material">
 
     <selector>
-        <!-- 
+        <!--
           This file is a copy of abc_edit_text_material (https://bit.ly/3k8fX7I).
           The item below with state_pressed="false" and state_focused="false" causes a NullPointerException.
           NullPointerException:tempt to invoke virtual method 'android.graphics.drawable.Drawable android.graphics.drawable.Drawable$ConstantState.newDrawable(android.content.res.Resources)'

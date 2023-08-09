@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.fresco;
 
-import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -127,13 +126,14 @@ public class FrescoModule extends ReactContextBaseJavaModule
   @Override
   public void initialize() {
     super.initialize();
-    getReactApplicationContext().addLifecycleEventListener(this);
+
+    ReactApplicationContext reactContext = getReactApplicationContext();
+    reactContext.addLifecycleEventListener(this);
     if (!hasBeenInitialized()) {
       if (mConfig == null) {
-        mConfig = getDefaultConfig(getReactApplicationContext());
+        mConfig = getDefaultConfig(reactContext);
       }
-      Context context = getReactApplicationContext().getApplicationContext();
-      Fresco.initialize(context, mConfig);
+      Fresco.initialize(reactContext.getApplicationContext(), mConfig);
       sHasBeenInitialized = true;
     } else if (mConfig != null) {
       FLog.w(
@@ -219,11 +219,7 @@ public class FrescoModule extends ReactContextBaseJavaModule
 
   @Override
   public void invalidate() {
+    getReactApplicationContext().removeLifecycleEventListener(this);
     super.invalidate();
-
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
-    }
   }
 }

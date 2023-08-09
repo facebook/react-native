@@ -7,10 +7,11 @@
 
 package com.facebook.react.uimanager;
 
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.common.ReactConstants;
 
 /**
  * Class providing helper methods for converting transformation list (as accepted by 'transform'
@@ -100,8 +101,7 @@ public class TransformHelper {
       } else if ("skewY".equals(transformType)) {
         MatrixMathHelper.applySkewY(helperMatrix, convertToRadians(transform, transformType));
       } else {
-        throw new JSApplicationIllegalArgumentException(
-            "Unsupported transform type: " + transformType);
+        FLog.w(ReactConstants.TAG, "Unsupported transform type: " + transformType);
       }
 
       MatrixMathHelper.multiplyInto(result, result, helperMatrix);

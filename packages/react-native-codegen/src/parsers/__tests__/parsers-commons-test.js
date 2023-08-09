@@ -19,25 +19,42 @@ import {
   unwrapNullable,
   buildSchemaFromConfigType,
   buildSchema,
+  parseModuleName,
+  createComponentConfig,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
-const {Visitor} = require('../flow/Visitor');
-const {wrapComponentSchema} = require('../flow/components/schema');
+const {Visitor} = require('../parsers-primitives');
+const {wrapComponentSchema} = require('../schema.js');
 const {buildComponentSchema} = require('../flow/components');
-const {buildModuleSchema} = require('../flow/modules');
-const {isModuleRegistryCall} = require('../utils.js');
+const {buildModuleSchema} = require('../parsers-commons.js');
+const {
+  isModuleRegistryCall,
+  createParserErrorCapturer,
+} = require('../utils.js');
 const {
   ParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnusedModuleInterfaceParserError,
+  MoreThanOneModuleRegistryCallsParserError,
+  IncorrectModuleRegistryCallArityParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
+  UntypedModuleRegistryCallParserError,
+  ModuleInterfaceNotFoundParserError,
+  MoreThanOneModuleInterfaceParserError,
+  MisnamedModuleInterfaceParserError,
 } = require('../errors');
 
 import {MockedParser} from '../parserMock';
+import {FlowParser} from '../flow/parser';
 
 const parser = new MockedParser();
 
-const flowTranslateTypeAnnotation = require('../flow/modules/index');
+const flowParser = new FlowParser();
+
+const {flowTranslateTypeAnnotation} = require('../flow/modules/index');
 const typeScriptTranslateTypeAnnotation = require('../typescript/modules/index');
+const {resolveTypeAnnotation} = require('../flow/utils');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -277,6 +294,7 @@ describe('parseObjectProperty', () => {
   const moduleName = 'testModuleName';
   const types = {['wrongName']: 'wrongType'};
   const aliasMap = {};
+  const enumMap = {};
   const tryParse = () => null;
   const cxxOnly = false;
   const nullable = true;
@@ -305,6 +323,7 @@ describe('parseObjectProperty', () => {
           moduleName,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           nullable,
@@ -338,6 +357,7 @@ describe('parseObjectProperty', () => {
           moduleName,
           types,
           aliasMap,
+          enumMap,
           tryParse,
           cxxOnly,
           nullable,
@@ -374,14 +394,19 @@ describe('buildSchemaFromConfigType', () => {
 
   const moduleSchemaMock = {
     type: 'NativeModule',
-    aliases: {},
+    aliasMap: {},
+    enumMap: {},
     spec: {properties: []},
     moduleName: '',
   };
 
   const wrapComponentSchemaMock = jest.fn();
-  const buildComponentSchemaMock = jest.fn(_ => componentSchemaMock);
-  const buildModuleSchemaMock = jest.fn((_0, _1, _2, _3) => moduleSchemaMock);
+  const buildComponentSchemaMock = jest.fn(
+    (_ast, _parser) => componentSchemaMock,
+  );
+  const buildModuleSchemaMock = jest.fn(
+    (_0, _1, _2, _3, _4, _5) => moduleSchemaMock,
+  );
 
   const buildSchemaFromConfigTypeHelper = (
     configType: 'module' | 'component' | 'none',
@@ -395,6 +420,8 @@ describe('buildSchemaFromConfigType', () => {
       buildComponentSchemaMock,
       buildModuleSchemaMock,
       parser,
+      resolveTypeAnnotation,
+      flowTranslateTypeAnnotation,
     );
 
   describe('when configType is none', () => {
@@ -410,7 +437,7 @@ describe('buildSchemaFromConfigType', () => {
       buildSchemaFromConfigTypeHelper('component');
 
       expect(buildComponentSchemaMock).toHaveBeenCalledTimes(1);
-      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock);
+      expect(buildComponentSchemaMock).toHaveBeenCalledWith(astMock, parser);
       expect(wrapComponentSchemaMock).toHaveBeenCalledTimes(1);
       expect(wrapComponentSchemaMock).toHaveBeenCalledWith(componentSchemaMock);
 
@@ -476,6 +503,8 @@ describe('buildSchemaFromConfigType', () => {
             astMock,
             expect.any(Function),
             parser,
+            resolveTypeAnnotation,
+            flowTranslateTypeAnnotation,
           );
 
           expect(buildComponentSchemaMock).not.toHaveBeenCalled();
@@ -646,6 +675,8 @@ describe('buildSchema', () => {
         buildModuleSchema,
         Visitor,
         parser,
+        resolveTypeAnnotation,
+        flowTranslateTypeAnnotation,
       );
 
       expect(getConfigTypeSpy).not.toHaveBeenCalled();
@@ -657,13 +688,13 @@ describe('buildSchema', () => {
     const contents = `
       import type {ViewProps} from 'ViewPropTypes';
       import type {HostComponent} from 'react-native';
-      
+
       const codegenNativeComponent = require('codegenNativeComponent');
-      
+
       export type ModuleProps = $ReadOnly<{|
         ...ViewProps,
       |}>;
-      
+
       export default (codegenNativeComponent<ModuleProps>(
         'Module',
       ): HostComponent<ModuleProps>);
@@ -677,7 +708,9 @@ describe('buildSchema', () => {
         buildComponentSchema,
         buildModuleSchema,
         Visitor,
-        parser,
+        flowParser,
+        resolveTypeAnnotation,
+        flowTranslateTypeAnnotation,
       );
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
@@ -712,11 +745,11 @@ describe('buildSchema', () => {
     const contents = `
       import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
       import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
-      
+
       export interface Spec extends TurboModule {
         +getArray: (a: Array<any>) => Array<string>;
       }
-      
+
       export default (TurboModuleRegistry.getEnforcing<Spec>(
         'SampleTurboModule',
       ): Spec);
@@ -730,7 +763,9 @@ describe('buildSchema', () => {
         buildComponentSchema,
         buildModuleSchema,
         Visitor,
-        parser,
+        flowParser,
+        resolveTypeAnnotation,
+        flowTranslateTypeAnnotation,
       );
 
       expect(getConfigTypeSpy).toHaveBeenCalledTimes(1);
@@ -742,7 +777,8 @@ describe('buildSchema', () => {
         modules: {
           fileName: {
             type: 'NativeModule',
-            aliases: {},
+            aliasMap: {},
+            enumMap: {},
             spec: {
               properties: [
                 {
@@ -770,6 +806,474 @@ describe('buildSchema', () => {
           },
         },
       });
+    });
+  });
+});
+
+describe('parseModuleName', () => {
+  const hasteModuleName = 'testModuleName';
+  const emptyFlowAst = parser.getAst('');
+  const moduleSpecs = [{name: 'Spec'}];
+  const flowAstWithOneCallExpression = parser.getAst(
+    "export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');",
+  );
+
+  describe('throwIfUnusedModuleInterfaceParserError', () => {
+    it("throws an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'empty'", () => {
+      const expected = new UnusedModuleInterfaceParserError(
+        hasteModuleName,
+        moduleSpecs[0],
+      );
+
+      expect(() =>
+        parseModuleName(hasteModuleName, moduleSpecs[0], emptyFlowAst, parser),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'UnusedModuleInterfaceParserError' error if 'callExpressions' array is 'NOT empty'", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(UnusedModuleInterfaceParserError);
+    });
+  });
+
+  describe('throwIfMoreThanOneModuleRegistryCalls', () => {
+    it("throws an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains more than one 'callExpression'", () => {
+      const flowAstWithTwoCallExpressions = parser.getAst(
+        "export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule'); TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');",
+      );
+
+      const callExpressions: Array<$FlowFixMe> =
+        flowAstWithTwoCallExpressions.body;
+
+      const expected = new MoreThanOneModuleRegistryCallsParserError(
+        hasteModuleName,
+        callExpressions,
+        callExpressions.length,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithTwoCallExpressions,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'MoreThanOneModuleRegistryCallsParserError' error if 'callExpressions' array contains extactly one 'callExpression'", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(MoreThanOneModuleRegistryCallsParserError);
+    });
+  });
+
+  describe('throwIfWrongNumberOfCallExpressionArgs', () => {
+    it("throws an 'IncorrectModuleRegistryCallArityParserError' error if wrong number of call expression args is used", () => {
+      const flowAstWithZeroCallExpressionArgs = parser.getAst(
+        'export default TurboModuleRegistry.getEnforcing();',
+      );
+      const flowCallExpressionWithoutArgs =
+        flowAstWithZeroCallExpressionArgs.body[0].declaration;
+      const numberOfCallExpressionArgs =
+        flowCallExpressionWithoutArgs.arguments.length;
+      const flowCallExpressionWithoutArgsCallee =
+        flowCallExpressionWithoutArgs.callee.property.name;
+
+      const expected = new IncorrectModuleRegistryCallArityParserError(
+        hasteModuleName,
+        flowCallExpressionWithoutArgs,
+        flowCallExpressionWithoutArgsCallee,
+        numberOfCallExpressionArgs,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithZeroCallExpressionArgs,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'IncorrectModuleRegistryCallArityParserError' error if correct number of call expression args is used", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(IncorrectModuleRegistryCallArityParserError);
+    });
+  });
+
+  describe('throwIfIncorrectModuleRegistryCallArgument', () => {
+    it("throws an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is NOT a string literal", () => {
+      const flowAstWithNonStringLiteralCallExpressionArg = parser.getAst(
+        'export default TurboModuleRegistry.getEnforcing(Spec);',
+      );
+      const flowCallExpression =
+        flowAstWithNonStringLiteralCallExpressionArg.body[0].declaration;
+      const flowCallExpressionCalllee = flowCallExpression.callee.property.name;
+      const flowCallExpressionArg = flowCallExpression.arguments[0];
+
+      const expected = new IncorrectModuleRegistryCallArgumentTypeParserError(
+        hasteModuleName,
+        flowCallExpressionArg,
+        flowCallExpressionCalllee,
+        flowCallExpressionArg.type,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithNonStringLiteralCallExpressionArg,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'IncorrectModuleRegistryCallArgumentTypeParserError' error if call expression arg is a string literal", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+    });
+  });
+
+  describe('throwIfUntypedModule', () => {
+    it("throws an 'UntypedModuleRegistryCallParserError' error if call expression is untyped", () => {
+      const flowAstWithUntypedCallExpression = parser.getAst(
+        "export default TurboModuleRegistry.getEnforcing('SampleTurboModule');",
+      );
+      const flowCallExpression =
+        flowAstWithUntypedCallExpression.body[0].declaration;
+      const flowCallExpressionCallee = flowCallExpression.callee.property.name;
+      const moduleName = flowCallExpression.arguments[0].value;
+      const expected = new UntypedModuleRegistryCallParserError(
+        hasteModuleName,
+        flowCallExpression,
+        flowCallExpressionCallee,
+        moduleName,
+      );
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithUntypedCallExpression,
+          parser,
+        ),
+      ).toThrow(expected);
+    });
+
+    it("doesn't throw an 'UntypedModuleRegistryCallParserError' error if call expression is typed", () => {
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithOneCallExpression,
+          parser,
+        ),
+      ).not.toThrow(UntypedModuleRegistryCallParserError);
+    });
+  });
+
+  describe('when flow ast with valid module is passed', () => {
+    it("returns the correct ModuleName and doesn't throw any error", () => {
+      const moduleType = 'Spec';
+      const moduleName = 'SampleTurboModule';
+      const flowAstWithValidModule = parser.getAst(
+        `export default TurboModuleRegistry.getEnforcing<${moduleType}>('${moduleName}');`,
+      );
+
+      const expected = moduleName;
+
+      expect(
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithValidModule,
+          parser,
+        ),
+      ).toEqual(expected);
+
+      expect(() =>
+        parseModuleName(
+          hasteModuleName,
+          moduleSpecs[0],
+          flowAstWithValidModule,
+          parser,
+        ),
+      ).not.toThrow();
+    });
+  });
+});
+
+describe('buildModuleSchema', () => {
+  const hasteModuleName = 'TestModuleName';
+  const [, tryParse] = createParserErrorCapturer();
+  const language = flowParser.language();
+  const NATIVE_MODULE = `
+  import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+    import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+    export interface Spec extends TurboModule {
+      +getArray: (a: Array<any>) => Array<string>;
+    }
+
+    export default (TurboModuleRegistry.getEnforcing<Spec>(
+      'SampleTurboModule',
+    ): Spec);
+  `;
+
+  describe('throwIfModuleInterfaceNotFound', () => {
+    it('should throw ModuleInterfaceNotFoundParserError if no module interface is found', () => {
+      const ast = flowParser.getAst('');
+      const expected = new ModuleInterfaceNotFoundParserError(
+        hasteModuleName,
+        ast,
+        language,
+      );
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).toThrow(expected);
+    });
+
+    it('should not throw ModuleInterfaceNotFoundParserError if module interface is found', () => {
+      const ast = flowParser.getAst(NATIVE_MODULE);
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).not.toThrow();
+    });
+  });
+
+  describe('throwIfMoreThanOneModuleInterfaceParser', () => {
+    it('should throw an error if mulitple module interfaces are found', () => {
+      const contents = `
+      import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+        import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+    
+        export interface Spec extends TurboModule {
+          +getBool: (arg: boolean) => boolean;      }
+        export interface SpecOther extends TurboModule {
+          +getArray: (a: Array<any>) => Array<string>;
+        }
+      `;
+      const ast = flowParser.getAst(contents);
+      const types = flowParser.getTypes(ast);
+      const moduleSpecs = Object.values(types).filter(t =>
+        flowParser.isModuleInterface(t),
+      );
+      const expected = new MoreThanOneModuleInterfaceParserError(
+        hasteModuleName,
+        moduleSpecs,
+        moduleSpecs.map(node => node.id.name),
+        language,
+      );
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).toThrow(expected);
+    });
+
+    it('should not throw an error if exactly one module interface is found', () => {
+      const ast = flowParser.getAst(NATIVE_MODULE);
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).not.toThrow();
+    });
+  });
+
+  describe('throwIfModuleInterfaceIsMisnamed', () => {
+    it('should throw an error if module interface is misnamed', () => {
+      const contents = `
+      import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+        import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+  
+        export interface MisnamedSpec extends TurboModule {
+          +getArray: (a: Array<any>) => Array<string>;
+        }
+  
+        export default (TurboModuleRegistry.getEnforcing<Spec>(
+          'SampleTurboModule',
+        ): Spec);
+      `;
+      const ast = flowParser.getAst(contents);
+      const types = flowParser.getTypes(ast);
+      const moduleSpecs = Object.values(types).filter(t =>
+        flowParser.isModuleInterface(t),
+      );
+      const [moduleSpec] = moduleSpecs;
+
+      const expected = new MisnamedModuleInterfaceParserError(
+        hasteModuleName,
+        moduleSpec.id,
+        language,
+      );
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).toThrow(expected);
+    });
+
+    it('should not throw an error if module interface is correctly named', () => {
+      const ast = flowParser.getAst(NATIVE_MODULE);
+
+      expect(() =>
+        buildModuleSchema(
+          hasteModuleName,
+          ast,
+          tryParse,
+          flowParser,
+          resolveTypeAnnotation,
+          flowTranslateTypeAnnotation,
+        ),
+      ).not.toThrow();
+    });
+  });
+
+  it('should return valid module schema', () => {
+    const ast = flowParser.getAst(NATIVE_MODULE);
+    const schmeaMock = {
+      aliasMap: {},
+      enumMap: {},
+      excludedPlatforms: undefined,
+      moduleName: 'SampleTurboModule',
+      spec: {
+        properties: [
+          {
+            name: 'getArray',
+            optional: false,
+            typeAnnotation: {
+              params: [
+                {
+                  name: 'a',
+                  optional: false,
+                  typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                },
+              ],
+              returnTypeAnnotation: {
+                elementType: {type: 'StringTypeAnnotation'},
+                type: 'ArrayTypeAnnotation',
+              },
+              type: 'FunctionTypeAnnotation',
+            },
+          },
+        ],
+      },
+      type: 'NativeModule',
+    };
+    const schema = buildModuleSchema(
+      hasteModuleName,
+      ast,
+      tryParse,
+      flowParser,
+      resolveTypeAnnotation,
+      flowTranslateTypeAnnotation,
+    );
+
+    expect(schema).toEqual(schmeaMock);
+  });
+});
+
+describe('createComponentConfig', () => {
+  const foundConfig = {
+    propsTypeName: 'testPropsTypeName',
+    componentName: 'testComponentName',
+  };
+
+  describe('when commandTypeNames contains an object as first element', () => {
+    it('returns expected config', () => {
+      const commandsTypeNames = [
+        {
+          commandTypeName: 'testTypeName',
+          commandOptionsExpression: 'testOptionsExpression',
+        },
+      ];
+
+      const expectedConfig = {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+        commandTypeName: 'testTypeName',
+        commandOptionsExpression: 'testOptionsExpression',
+      };
+
+      const configs = createComponentConfig(foundConfig, commandsTypeNames);
+      expect(configs).toEqual(expectedConfig);
+    });
+  });
+
+  describe('when commandTypeNames is an empty array', () => {
+    it('returns the foundConfig and null for the command parameters', () => {
+      // $FlowFixMe[missing-empty-array-annot]
+      const commandsTypeNames = [];
+
+      const expectedConfig = {
+        propsTypeName: 'testPropsTypeName',
+        componentName: 'testComponentName',
+        commandTypeName: null,
+        commandOptionsExpression: null,
+      };
+
+      const configs = createComponentConfig(foundConfig, commandsTypeNames);
+      expect(configs).toEqual(expectedConfig);
     });
   });
 });

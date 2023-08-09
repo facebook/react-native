@@ -16,7 +16,6 @@ import android.util.DisplayMetrics;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -99,13 +98,6 @@ public class ReactImagePropertyTest {
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
     return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
-  }
-
-  @Test(expected = JSApplicationIllegalArgumentException.class)
-  public void testImageInvalidResizeMode() {
-    ReactImageManager viewManager = new ReactImageManager();
-    ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("resizeMode", "pancakes"));
   }
 
   @Test

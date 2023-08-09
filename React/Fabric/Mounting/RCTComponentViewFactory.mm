@@ -11,8 +11,8 @@
 #import <React/RCTConversions.h>
 
 #import <butter/map.h>
-#import <butter/mutex.h>
 #import <butter/set.h>
+#import <shared_mutex>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/componentNameByReactViewName.h>
@@ -23,19 +23,19 @@
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTFabricComponentPlugin/RCTFabricPluginProvider.h>
 #else
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 #endif
 
-#import "RCTComponentViewClassDescriptor.h"
-#import "RCTFabricComponentsPlugins.h"
-#import "RCTImageComponentView.h"
-#import "RCTLegacyViewManagerInteropComponentView.h"
-#import "RCTMountingTransactionObserving.h"
-#import "RCTParagraphComponentView.h"
-#import "RCTRootComponentView.h"
-#import "RCTTextInputComponentView.h"
-#import "RCTUnimplementedViewComponentView.h"
-#import "RCTViewComponentView.h"
+#import <React/RCTComponentViewClassDescriptor.h>
+#import <React/RCTFabricComponentsPlugins.h>
+#import <React/RCTImageComponentView.h>
+#import <React/RCTLegacyViewManagerInteropComponentView.h>
+#import <React/RCTMountingTransactionObserving.h>
+#import <React/RCTParagraphComponentView.h>
+#import <React/RCTRootComponentView.h>
+#import <React/RCTTextInputComponentView.h>
+#import <React/RCTUnimplementedViewComponentView.h>
+#import <React/RCTViewComponentView.h>
 
 #import <objc/runtime.h>
 
@@ -61,7 +61,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   butter::map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
   butter::set<std::string> _registeredComponentsNames;
   ComponentDescriptorProviderRegistry _providerRegistry;
-  butter::shared_mutex _mutex;
+  std::shared_mutex _mutex;
 }
 
 + (RCTComponentViewFactory *)currentComponentViewFactory
@@ -155,7 +155,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
 {
   RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
-  std::unique_lock<butter::shared_mutex> lock(_mutex);
+  std::unique_lock lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
   _componentViewClasses[componentDescriptorProvider.handle] =
@@ -177,7 +177,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
-  std::shared_lock<butter::shared_mutex> lock(_mutex);
+  std::shared_lock lock(_mutex);
 
   auto iterator = _componentViewClasses.find(componentHandle);
   RCTAssert(
@@ -198,7 +198,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 - (facebook::react::ComponentDescriptorRegistry::Shared)createComponentDescriptorRegistryWithParameters:
     (facebook::react::ComponentDescriptorParameters)parameters
 {
-  std::shared_lock<butter::shared_mutex> lock(_mutex);
+  std::shared_lock lock(_mutex);
 
   return _providerRegistry.createComponentDescriptorRegistry(parameters);
 }

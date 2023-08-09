@@ -31,16 +31,20 @@ const RNTesterBlock = ({description, title, children}: Props): React.Node => {
         },
       ]}>
       <View style={[styles.titleContainer]}>
-        <Text style={[styles.titleText, {color: theme.LabelColor}]}>
-          {title}
-        </Text>
-        <Text
-          style={[
-            styles.descriptionText,
-            {color: theme.LabelColor, marginTop: description ? 10 : 0},
-          ]}>
-          {description}
-        </Text>
+        {title && (
+          <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+            {title}
+          </Text>
+        )}
+        {description && (
+          <Text
+            style={[
+              styles.descriptionText,
+              {color: theme.LabelColor, marginTop: description ? 10 : 0},
+            ]}>
+            {description}
+          </Text>
+        )}
       </View>
       <View style={styles.children}>{children}</View>
     </View>

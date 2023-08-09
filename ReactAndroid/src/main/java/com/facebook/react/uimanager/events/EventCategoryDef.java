@@ -14,12 +14,15 @@ import static com.facebook.react.uimanager.events.EventCategoryDef.DISCRETE;
 import static com.facebook.react.uimanager.events.EventCategoryDef.UNSPECIFIED;
 
 import androidx.annotation.IntDef;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Java specific declaration of the `RawEvent::Category` enum. Keep in sync with
  * `renderer/core/RawEvent.h`.
  */
 @IntDef(value = {CONTINUOUS_START, CONTINUOUS_END, UNSPECIFIED, DISCRETE, CONTINUOUS})
+@Retention(RetentionPolicy.SOURCE)
 public @interface EventCategoryDef {
   /** Start of a continuous event. To be used with touchStart. */
   int CONTINUOUS_START = 0;

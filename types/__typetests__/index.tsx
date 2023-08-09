@@ -26,6 +26,7 @@ import {
   AccessibilityInfo,
   ActionSheetIOS,
   Alert,
+  Animated,
   AppState,
   AppStateStatus,
   Appearance,
@@ -246,6 +247,37 @@ const s = StyleSheet.create({
   },
 });
 const f1: TextStyle = s.shouldWork;
+
+const styleDimensionValueValidPoint: ViewStyle = {
+  width: 1,
+};
+
+const styleDimensionValueValidAuto: ViewStyle = {
+  width: 'auto',
+};
+
+const styleDimensionValueValidPct: ViewStyle = {
+  width: '5%',
+};
+
+const styleDimensionValueValidAnimated: ViewStyle = {
+  width: new Animated.Value(5),
+};
+
+const styleDimensionValueInvalid1: ViewStyle = {
+  // @ts-expect-error
+  width: '5',
+};
+
+const styleDimensionValueInvalid2: ViewStyle = {
+  // @ts-expect-error
+  width: '5px',
+};
+
+const styleDimensionValueInvalid3: ViewStyle = {
+  // @ts-expect-error
+  width: 'A%',
+};
 
 // StyleSheet.compose
 // It creates a new style object by composing two existing styles
@@ -704,6 +736,21 @@ export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
     );
   }
 }
+
+<FlatList
+  data={[1, 2, 3]}
+  renderItem={null}
+  getItemLayout={(
+    data: ArrayLike<number> | null | undefined,
+    index: number,
+  ) => {
+    return {
+      length: data![index] % 2 === 0 ? 10 : 5,
+      offset: 1234,
+      index,
+    };
+  }}
+/>;
 
 export class SectionListTest extends React.Component<
   SectionListProps<string>,

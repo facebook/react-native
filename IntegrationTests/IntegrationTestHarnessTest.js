@@ -61,6 +61,7 @@ class IntegrationTestHarnessTest extends React.Component<Props, State> {
              * native_oss) This comment suppresses an error found when Flow v0.54
              * was deployed. To see the error delete this comment and run Flow.
              */
+            // $FlowFixMe[unsafe-addition]
             this.constructor.displayName + ': '
           }
           {this.state.done ? 'Done' : 'Testing...'}

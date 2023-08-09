@@ -15,38 +15,47 @@ import type {
   NamedShape,
   NativeModuleAliasMap,
   NativeModuleBaseTypeAnnotation,
-  NativeModuleEnumDeclaration,
   NativeModuleSchema,
   NativeModuleTypeAnnotation,
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModulePropertyShape,
   SchemaType,
+  NativeModuleEnumMap,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
 import type {ParserType} from './errors';
 import type {ParserErrorCapturer, TypeDeclarationMap} from './utils';
-import type {ComponentSchemaBuilderConfig} from './flow/components/schema';
+import type {ComponentSchemaBuilderConfig} from './schema.js';
 
 const {
   getConfigType,
   extractNativeModuleName,
   createParserErrorCapturer,
+  visit,
+  isModuleRegistryCall,
+  verifyPlatforms,
 } = require('./utils');
-
 const {
   throwIfPropertyValueTypeIsUnsupported,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfModuleTypeIsUnsupported,
+  throwIfUnusedModuleInterfaceParserError,
+  throwIfMoreThanOneModuleRegistryCalls,
+  throwIfWrongNumberOfCallExpressionArgs,
+  throwIfUntypedModule,
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfModuleInterfaceNotFound,
+  throwIfMoreThanOneModuleInterfaceParserError,
+  throwIfModuleInterfaceIsMisnamed,
 } = require('./error-utils');
 
 const {
   MissingTypeParameterGenericParserError,
   MoreThanOneTypeParameterGenericParserError,
-  UnsupportedEnumDeclarationParserError,
-  UnsupportedGenericParserError,
   UnnamedFunctionParamParserError,
 } = require('./errors');
 
@@ -135,6 +144,7 @@ function parseObjectProperty(
   hasteModuleName: string,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   nullable: boolean,
@@ -157,6 +167,7 @@ function parseObjectProperty(
         languageTypeAnnotation,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -183,43 +194,6 @@ function parseObjectProperty(
   };
 }
 
-function translateDefault(
-  hasteModuleName: string,
-  typeAnnotation: $FlowFixMe,
-  types: TypeDeclarationMap,
-  nullable: boolean,
-  parser: Parser,
-): Nullable<NativeModuleEnumDeclaration> {
-  const maybeEnumDeclaration =
-    types[parser.nameForGenericTypeAnnotation(typeAnnotation)];
-
-  if (maybeEnumDeclaration && parser.isEnumDeclaration(maybeEnumDeclaration)) {
-    const memberType = parser.getMaybeEnumMemberType(maybeEnumDeclaration);
-
-    if (
-      memberType === 'NumberTypeAnnotation' ||
-      memberType === 'StringTypeAnnotation'
-    ) {
-      return wrapNullable(nullable, {
-        type: 'EnumDeclaration',
-        memberType: memberType,
-      });
-    } else {
-      throw new UnsupportedEnumDeclarationParserError(
-        hasteModuleName,
-        typeAnnotation,
-        memberType,
-      );
-    }
-  }
-
-  throw new UnsupportedGenericParserError(
-    hasteModuleName,
-    typeAnnotation,
-    parser,
-  );
-}
-
 function translateFunctionTypeAnnotation(
   hasteModuleName: string,
   // TODO(T108222691): Use flow-types for @babel/parser
@@ -227,6 +201,7 @@ function translateFunctionTypeAnnotation(
   functionTypeAnnotation: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   translateTypeAnnotation: $FlowFixMe,
@@ -252,6 +227,7 @@ function translateFunctionTypeAnnotation(
             parser.getParameterTypeAnnotation(param),
             types,
             aliasMap,
+            enumMap,
             tryParse,
             cxxOnly,
             parser,
@@ -292,6 +268,7 @@ function translateFunctionTypeAnnotation(
         parser.getFunctionTypeAnnotationReturnType(functionTypeAnnotation),
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         parser,
@@ -326,6 +303,7 @@ function buildPropertySchema(
   property: $FlowFixMe,
   types: TypeDeclarationMap,
   aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
   tryParse: ParserErrorCapturer,
   cxxOnly: boolean,
   resolveTypeAnnotation: $FlowFixMe,
@@ -350,7 +328,7 @@ function buildPropertySchema(
     property.value,
     key.name,
     value.type,
-    parser.language(),
+    parser,
   );
 
   return {
@@ -363,6 +341,7 @@ function buildPropertySchema(
         value,
         types,
         aliasMap,
+        enumMap,
         tryParse,
         cxxOnly,
         translateTypeAnnotation,
@@ -377,18 +356,25 @@ function buildSchemaFromConfigType(
   filename: ?string,
   ast: $FlowFixMe,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
+    resolveTypeAnnotation: $FlowFixMe,
+    translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   parser: Parser,
+  resolveTypeAnnotation: $FlowFixMe,
+  translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   switch (configType) {
     case 'component': {
-      return wrapComponentSchema(buildComponentSchema(ast));
+      return wrapComponentSchema(buildComponentSchema(ast, parser));
     }
     case 'module': {
       if (filename === undefined || filename === null) {
@@ -399,7 +385,14 @@ function buildSchemaFromConfigType(
       const [parsingErrors, tryParse] = createParserErrorCapturer();
 
       const schema = tryParse(() =>
-        buildModuleSchema(nativeModuleName, ast, tryParse, parser),
+        buildModuleSchema(
+          nativeModuleName,
+          ast,
+          tryParse,
+          parser,
+          resolveTypeAnnotation,
+          translateTypeAnnotation,
+        ),
       );
 
       if (parsingErrors.length > 0) {
@@ -430,17 +423,24 @@ function buildSchema(
   contents: string,
   filename: ?string,
   wrapComponentSchema: (config: ComponentSchemaBuilderConfig) => SchemaType,
-  buildComponentSchema: (ast: $FlowFixMe) => ComponentSchemaBuilderConfig,
+  buildComponentSchema: (
+    ast: $FlowFixMe,
+    parser: Parser,
+  ) => ComponentSchemaBuilderConfig,
   buildModuleSchema: (
     hasteModuleName: string,
     ast: $FlowFixMe,
     tryParse: ParserErrorCapturer,
     parser: Parser,
+    resolveTypeAnnotation: $FlowFixMe,
+    translateTypeAnnotation: $FlowFixMe,
   ) => NativeModuleSchema,
   Visitor: ({isComponent: boolean, isModule: boolean}) => {
     [type: string]: (node: $FlowFixMe) => void,
   },
   parser: Parser,
+  resolveTypeAnnotation: $FlowFixMe,
+  translateTypeAnnotation: $FlowFixMe,
 ): SchemaType {
   // Early return for non-Spec JavaScript files
   if (
@@ -461,7 +461,242 @@ function buildSchema(
     buildComponentSchema,
     buildModuleSchema,
     parser,
+    resolveTypeAnnotation,
+    translateTypeAnnotation,
   );
+}
+
+function createComponentConfig(
+  foundConfig: $FlowFixMe,
+  commandsTypeNames: $FlowFixMe,
+): $FlowFixMe {
+  return {
+    ...foundConfig,
+    commandTypeName:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandTypeName,
+    commandOptionsExpression:
+      commandsTypeNames[0] == null
+        ? null
+        : commandsTypeNames[0].commandOptionsExpression,
+  };
+}
+
+const parseModuleName = (
+  hasteModuleName: string,
+  moduleSpec: $FlowFixMe,
+  ast: $FlowFixMe,
+  parser: Parser,
+): string => {
+  const callExpressions = [];
+  visit(ast, {
+    CallExpression(node) {
+      if (isModuleRegistryCall(node)) {
+        callExpressions.push(node);
+      }
+    },
+  });
+
+  throwIfUnusedModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpec,
+    callExpressions,
+  );
+
+  throwIfMoreThanOneModuleRegistryCalls(
+    hasteModuleName,
+    callExpressions,
+    callExpressions.length,
+  );
+
+  const [callExpression] = callExpressions;
+  const typeParameters = parser.callExpressionTypeParameters(callExpression);
+  const methodName = callExpression.callee.property.name;
+
+  throwIfWrongNumberOfCallExpressionArgs(
+    hasteModuleName,
+    callExpression,
+    methodName,
+    callExpression.arguments.length,
+  );
+
+  throwIfIncorrectModuleRegistryCallArgument(
+    hasteModuleName,
+    callExpression.arguments[0],
+    methodName,
+  );
+
+  const $moduleName = callExpression.arguments[0].value;
+
+  throwIfUntypedModule(
+    typeParameters,
+    hasteModuleName,
+    callExpression,
+    methodName,
+    $moduleName,
+  );
+
+  throwIfIncorrectModuleRegistryCallTypeParameterParserError(
+    hasteModuleName,
+    typeParameters,
+    methodName,
+    $moduleName,
+    parser,
+  );
+
+  return $moduleName;
+};
+
+const buildModuleSchema = (
+  hasteModuleName: string,
+  /**
+   * TODO(T71778680): Flow-type this node.
+   */
+  ast: $FlowFixMe,
+  tryParse: ParserErrorCapturer,
+  parser: Parser,
+  resolveTypeAnnotation: $FlowFixMe,
+  translateTypeAnnotation: $FlowFixMe,
+): NativeModuleSchema => {
+  const language = parser.language();
+  const types = parser.getTypes(ast);
+  const moduleSpecs = (Object.values(types): $ReadOnlyArray<$FlowFixMe>).filter(
+    t => parser.isModuleInterface(t),
+  );
+
+  throwIfModuleInterfaceNotFound(
+    moduleSpecs.length,
+    hasteModuleName,
+    ast,
+    language,
+  );
+
+  throwIfMoreThanOneModuleInterfaceParserError(
+    hasteModuleName,
+    moduleSpecs,
+    language,
+  );
+
+  const [moduleSpec] = moduleSpecs;
+
+  throwIfModuleInterfaceIsMisnamed(hasteModuleName, moduleSpec.id, language);
+
+  // Parse Module Name
+  const moduleName = parseModuleName(hasteModuleName, moduleSpec, ast, parser);
+
+  // Some module names use platform suffix to indicate platform-exclusive modules.
+  // Eventually this should be made explicit in the Flow type itself.
+  // Also check the hasteModuleName for platform suffix.
+  // Note: this shape is consistent with ComponentSchema.
+  const {cxxOnly, excludedPlatforms} = verifyPlatforms(
+    hasteModuleName,
+    moduleName,
+  );
+
+  const properties: $ReadOnlyArray<$FlowFixMe> =
+    language === 'Flow' ? moduleSpec.body.properties : moduleSpec.body.body;
+
+  // $FlowFixMe[missing-type-arg]
+  return properties
+    .filter(
+      property =>
+        property.type === 'ObjectTypeProperty' ||
+        property.type === 'TSPropertySignature' ||
+        property.type === 'TSMethodSignature',
+    )
+    .map<?{
+      aliasMap: NativeModuleAliasMap,
+      enumMap: NativeModuleEnumMap,
+      propertyShape: NativeModulePropertyShape,
+    }>(property => {
+      const aliasMap: {...NativeModuleAliasMap} = {};
+      const enumMap: {...NativeModuleEnumMap} = {};
+
+      return tryParse(() => ({
+        aliasMap,
+        enumMap,
+        propertyShape: buildPropertySchema(
+          hasteModuleName,
+          property,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          resolveTypeAnnotation,
+          translateTypeAnnotation,
+          parser,
+        ),
+      }));
+    })
+    .filter(Boolean)
+    .reduce(
+      (
+        moduleSchema: NativeModuleSchema,
+        {aliasMap, enumMap, propertyShape},
+      ) => ({
+        type: 'NativeModule',
+        aliasMap: {...moduleSchema.aliasMap, ...aliasMap},
+        enumMap: {...moduleSchema.enumMap, ...enumMap},
+        spec: {
+          properties: [...moduleSchema.spec.properties, propertyShape],
+        },
+        moduleName: moduleSchema.moduleName,
+        excludedPlatforms: moduleSchema.excludedPlatforms,
+      }),
+      {
+        type: 'NativeModule',
+        aliasMap: {},
+        enumMap: {},
+        spec: {properties: []},
+        moduleName,
+        excludedPlatforms:
+          excludedPlatforms.length !== 0 ? [...excludedPlatforms] : undefined,
+      },
+    );
+};
+
+/**
+ * This function is used to find the type of a native component
+ * provided the default exports statement from generated AST.
+ * @param statement The statement to be parsed.
+ * @param foundConfigs The 'mutable' array of configs that have been found.
+ * @param parser The language parser to be used.
+ * @returns void
+ */
+function findNativeComponentType(
+  statement: $FlowFixMe,
+  foundConfigs: Array<{[string]: string}>,
+  parser: Parser,
+): void {
+  let declaration = statement.declaration;
+
+  // codegenNativeComponent can be nested inside a cast
+  // expression so we need to go one level deeper
+  if (
+    declaration.type === 'TSAsExpression' ||
+    declaration.type === 'TypeCastExpression'
+  ) {
+    declaration = declaration.expression;
+  }
+
+  try {
+    if (declaration.callee.name === 'codegenNativeComponent') {
+      const typeArgumentParams =
+        parser.getTypeArgumentParamsFromDeclaration(declaration);
+      const funcArgumentParams = declaration.arguments;
+
+      const nativeComponentType: {[string]: string} =
+        parser.getNativeComponentType(typeArgumentParams, funcArgumentParams);
+      if (funcArgumentParams.length > 1) {
+        nativeComponentType.optionsExpression = funcArgumentParams[1];
+      }
+      foundConfigs.push(nativeComponentType);
+    }
+  } catch (e) {
+    // ignore
+  }
 }
 
 module.exports = {
@@ -471,9 +706,12 @@ module.exports = {
   assertGenericTypeAnnotationHasExactlyOneTypeParameter,
   isObjectProperty,
   parseObjectProperty,
-  translateDefault,
   translateFunctionTypeAnnotation,
   buildPropertySchema,
   buildSchemaFromConfigType,
   buildSchema,
+  createComponentConfig,
+  parseModuleName,
+  buildModuleSchema,
+  findNativeComponentType,
 };

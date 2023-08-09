@@ -31,6 +31,7 @@ const UTFSequence: {|
   NBSP: string,
   NDASH: string,
   NDASH_SP: string,
+  NEWLINE: string,
   PIZZA: string,
   TRIANGLE_LEFT: string,
   TRIANGLE_RIGHT: string,
@@ -45,6 +46,7 @@ const UTFSequence: {|
   MDASH_SP: '\u00A0\u2014\u00A0', // &nbsp;&mdash;&nbsp;
   NDASH: '\u2013', // en dash: &ndash;
   NDASH_SP: '\u00A0\u2013\u00A0', // &nbsp;&ndash;&nbsp;
+  NEWLINE: '\u000A',
   NBSP: '\u00A0', // non-breaking space: &nbsp;
   PIZZA: '\uD83C\uDF55',
   TRIANGLE_LEFT: '\u25c0', // black left-pointing triangle

@@ -7,12 +7,16 @@
 
 @class RCTSource;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * This protocol should be adopted when a turbo module needs to tell React Native to load a script.
  * In bridge-less React Native, it is a replacement for [_bridge loadAndExecuteSplitBundleURL:].
  */
 @protocol RCTJSScriptLoaderModule <NSObject>
 
-@property (nonatomic, copy, nonnull) void (^loadScript)(RCTSource *source);
+@property (nonatomic, copy) void (^loadScript)(RCTSource *source);
 
 @end
+
+NS_ASSUME_NONNULL_END

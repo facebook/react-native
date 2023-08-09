@@ -47,10 +47,18 @@ public class Spacing {
    * Spacing type that represents all directions (left, top, right, bottom). E.g. {@code margin}.
    */
   public static final int ALL = 8;
+  /** Spacing type that represents block directions (top, bottom). E.g. {@code marginBlock}. */
+  public static final int BLOCK = 9;
+  /** Spacing type that represents the block end direction (bottom). E.g. {@code marginBlockEnd}. */
+  public static final int BLOCK_END = 10;
+  /**
+   * Spacing type that represents the block start direction (top). E.g. {@code marginBlockStart}.
+   */
+  public static final int BLOCK_START = 11;
 
   private static final int[] sFlagsMap = {
     1, /*LEFT*/ 2, /*TOP*/ 4, /*RIGHT*/ 8, /*BOTTOM*/ 16, /*START*/ 32, /*END*/ 64, /*HORIZONTAL*/
-    128, /*VERTICAL*/ 256, /*ALL*/
+    128, /*VERTICAL*/ 256, /*ALL*/ 512, /*BLOCK*/ 1024, /*BLOCK_END*/ 2048, /*BLOCK_START*/
   };
 
   private final float[] mSpacing;
@@ -96,7 +104,8 @@ public class Spacing {
       mHasAliasesSet =
           (mValueFlags & sFlagsMap[ALL]) != 0
               || (mValueFlags & sFlagsMap[VERTICAL]) != 0
-              || (mValueFlags & sFlagsMap[HORIZONTAL]) != 0;
+              || (mValueFlags & sFlagsMap[HORIZONTAL]) != 0
+              || (mValueFlags & sFlagsMap[BLOCK]) != 0;
 
       return true;
     }
@@ -111,7 +120,13 @@ public class Spacing {
    */
   public float get(int spacingType) {
     float defaultValue =
-        (spacingType == START || spacingType == END ? YogaConstants.UNDEFINED : mDefaultValue);
+        (spacingType == START
+                || spacingType == END
+                || spacingType == BLOCK
+                || spacingType == BLOCK_END
+                || spacingType == BLOCK_START
+            ? YogaConstants.UNDEFINED
+            : mDefaultValue);
 
     if (mValueFlags == 0) {
       return defaultValue;
@@ -165,6 +180,9 @@ public class Spacing {
 
   private static float[] newFullSpacingArray() {
     return new float[] {
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
+      YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,
       YogaConstants.UNDEFINED,

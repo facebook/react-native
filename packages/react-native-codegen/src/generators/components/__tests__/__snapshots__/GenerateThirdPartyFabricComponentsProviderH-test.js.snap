@@ -34,6 +34,7 @@ Class<RCTComponentViewProtocol> ColorPropNativeComponentCls(void) __attribute__(
 Class<RCTComponentViewProtocol> ImagePropNativeComponentCls(void) __attribute__((used)); // IMAGE_PROP
 Class<RCTComponentViewProtocol> PointPropNativeComponentCls(void) __attribute__((used)); // POINT_PROP
 Class<RCTComponentViewProtocol> InsetsPropNativeComponentCls(void) __attribute__((used)); // INSETS_PROP
+Class<RCTComponentViewProtocol> DimensionPropNativeComponentCls(void) __attribute__((used)); // DIMENSION_PROP
 Class<RCTComponentViewProtocol> ArrayPropsNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS
 Class<RCTComponentViewProtocol> ArrayPropsNativeComponentCls(void) __attribute__((used)); // ARRAY_PROPS_WITH_NESTED_OBJECT
 Class<RCTComponentViewProtocol> ObjectPropsCls(void) __attribute__((used)); // OBJECT_PROPS

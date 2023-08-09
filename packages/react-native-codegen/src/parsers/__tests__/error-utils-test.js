@@ -18,12 +18,16 @@ const {
   throwIfUnusedModuleInterfaceParserError,
   throwIfWrongNumberOfCallExpressionArgs,
   throwIfIncorrectModuleRegistryCallTypeParameterParserError,
+  throwIfIncorrectModuleRegistryCallArgument,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfModuleTypeIsUnsupported,
   throwIfUntypedModule,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
 } = require('../error-utils');
 const {
   UnsupportedModulePropertyParserError,
@@ -33,6 +37,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedFunctionReturnTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   MoreThanOneModuleInterfaceParserError,
@@ -461,6 +466,55 @@ describe('throwIfIncorrectModuleRegistryCallTypeParameterParserError', () => {
   });
 });
 
+describe('throwIfIncorrectModuleRegistryCallArgument', () => {
+  const nativeModuleName = 'moduleName';
+  const methodName = 'methodName';
+
+  it('throw error if callExpressionArg type is unsupported in Flow', () => {
+    const callExpressionArg = {type: 'NotLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it("don't throw error if callExpressionArg type is `Literal` in Flow", () => {
+    const callExpressionArg = {type: 'Literal'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it('throw error if callExpressionArg type is unsupported in TypeScript', () => {
+    const callExpressionArg = {type: 'NotStringLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+
+  it("don't throw error if callExpressionArg type is `StringLiteral` in TypeScript", () => {
+    const callExpressionArg = {type: 'StringLiteral'};
+    expect(() => {
+      throwIfIncorrectModuleRegistryCallArgument(
+        nativeModuleName,
+        callExpressionArg,
+        methodName,
+      );
+    }).not.toThrow(IncorrectModuleRegistryCallArgumentTypeParserError);
+  });
+});
+
 describe('throwIfUntypedModule', () => {
   const hasteModuleName = 'moduleName';
   const methodName = 'methodName';
@@ -501,9 +555,11 @@ describe('throwIfUntypedModule', () => {
 describe('throwIfModuleTypeIsUnsupported', () => {
   const hasteModuleName = 'moduleName';
   const property = {value: 'value', key: {name: 'name'}};
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+
   it("don't throw error if module type is FunctionTypeAnnotation in Flow", () => {
     const value = {type: 'FunctionTypeAnnotation'};
-    const language = 'Flow';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -511,13 +567,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        flowParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it('throw error if module type is unsupported in Flow', () => {
     const value = {type: ''};
-    const language = 'Flow';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -525,13 +580,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        flowParser,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
   });
   it("don't throw error if module type is TSFunctionType in TypeScript", () => {
     const value = {type: 'TSFunctionType'};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -539,13 +593,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it("don't throw error if module type is TSMethodSignature in TypeScript", () => {
     const value = {type: 'TSMethodSignature'};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -553,13 +606,12 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).not.toThrow(UnsupportedModulePropertyParserError);
   });
   it('throw error if module type is unsupported in TypeScript', () => {
     const value = {type: ''};
-    const language = 'TypeScript';
 
     expect(() => {
       throwIfModuleTypeIsUnsupported(
@@ -567,7 +619,7 @@ describe('throwIfModuleTypeIsUnsupported', () => {
         property.value,
         property.key.name,
         value.type,
-        language,
+        typescriptParser,
       );
     }).toThrow(UnsupportedModulePropertyParserError);
   });
@@ -667,5 +719,133 @@ describe('throwIfArrayElementTypeAnnotationIsUnsupported', () => {
         'StringTypeAnnotation',
       );
     }).not.toThrow(UnsupportedArrayElementTypeAnnotationParserError);
+  });
+});
+
+describe('throwIfPartialNotAnnotatingTypeParameter', () => {
+  const flowParser = new FlowParser();
+  const typescriptParser = new TypeScriptParser();
+  const typerscriptTypeAnnotation = {
+    typeParameters: {
+      params: [
+        {
+          typeName: {
+            name: 'TypeDeclaration',
+          },
+        },
+      ],
+    },
+  };
+  const flowTypeAnnotation = {
+    typeParameters: {
+      params: [
+        {
+          id: {
+            name: 'TypeDeclaration',
+          },
+        },
+      ],
+    },
+  };
+
+  it('throw error if Partial Not Annotating Type Parameter in Flow', () => {
+    const types = {};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        flowTypeAnnotation,
+        types,
+        flowParser,
+      );
+    }).toThrowError('Partials only support annotating a type parameter.');
+  });
+
+  it('throw error if Partial Not Annotating Type Parameter in TypeScript', () => {
+    const types = {};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        typerscriptTypeAnnotation,
+        types,
+        typescriptParser,
+      );
+    }).toThrowError('Partials only support annotating a type parameter.');
+  });
+
+  it('does not throw error if Partial Annotating Type Parameter in Flow', () => {
+    const types = {TypeDeclaration: {}};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        flowTypeAnnotation,
+        types,
+        flowParser,
+      );
+    }).not.toThrowError();
+  });
+
+  it('does not throw error if Partial Annotating Type Parameter in TypeScript', () => {
+    const types = {TypeDeclaration: {}};
+
+    expect(() => {
+      throwIfPartialNotAnnotatingTypeParameter(
+        typerscriptTypeAnnotation,
+        types,
+        typescriptParser,
+      );
+    }).not.toThrowError();
+  });
+});
+
+describe('throwIfPartialWithMoreParameter', () => {
+  it('throw error if Partial does not have exactly one parameter', () => {
+    const typeAnnotation = {
+      type: '',
+      typeParameters: {params: [{}, {}]},
+    };
+    expect(() => {
+      throwIfPartialWithMoreParameter(typeAnnotation);
+    }).toThrowError('Partials only support annotating exactly one parameter.');
+  });
+
+  it('does not throw error if Partial has exactly one parameter', () => {
+    const typeAnnotation = {
+      type: '',
+      typeParameters: {params: [{}]},
+    };
+
+    expect(() => {
+      throwIfPartialWithMoreParameter(typeAnnotation);
+    }).not.toThrowError();
+  });
+});
+
+describe('throwIfMoreThanOneCodegenNativecommands', () => {
+  it('throws an error if given more than one codegenNativeCommands', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).toThrowError('codegenNativeCommands may only be called once in a file');
+  });
+
+  it('does not throw an error if given exactly one codegenNativeCommand', () => {
+    const commandsTypeNames = [
+      {
+        commandTypeName: '',
+        commandOptionsExpression: {},
+      },
+    ];
+    expect(() => {
+      throwIfMoreThanOneCodegenNativecommands(commandsTypeNames);
+    }).not.toThrow();
   });
 });

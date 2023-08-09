@@ -110,9 +110,13 @@ def download_nightly_hermes(react_native_path, version)
     tarball_url = nightly_tarball_url(version)
 
     destination_folder = "#{react_native_path}/sdks/downloads"
-    destination_path = "#{destination_folder}/hermes-ios.tar.gz"
+    destination_path = "#{destination_folder}/hermes-ios-#{version}.tar.gz"
 
-    `mkdir -p "#{destination_folder}" && curl "#{tarball_url}" -Lo "#{destination_path}"`
+    unless File.exist?(destination_path)
+      # Download to a temporary file first so we don't cache incomplete downloads.
+      tmp_file = "#{destination_folder}/hermes-ios.download"
+      `mkdir -p "#{destination_folder}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
+    end
     return destination_path
 end
 

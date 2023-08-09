@@ -15,7 +15,8 @@ import type {
   NativeModuleParamTypeAnnotation,
 } from '../../../../CodegenSchema';
 
-const {parseString} = require('../../index.js');
+const invariant = require('invariant');
+
 const {unwrapNullable} = require('../../../parsers-commons');
 const {
   UnsupportedGenericParserError,
@@ -23,7 +24,9 @@ const {
   UnnamedFunctionParamParserError,
   MissingTypeParameterGenericParserError,
 } = require('../../../errors');
-const invariant = require('invariant');
+const {FlowParser} = require('../../parser');
+
+const flowParser = new FlowParser();
 
 type PrimitiveTypeAnnotationType =
   | 'StringTypeAnnotation'
@@ -57,7 +60,7 @@ type AnimalPointer = Animal;
 `;
 
 function expectAnimalTypeAliasToExist(module: NativeModuleSchema) {
-  const animalAlias = module.aliases.Animal;
+  const animalAlias = module.aliasMap.Animal;
 
   expect(animalAlias).not.toBe(null);
   invariant(animalAlias != null, '');
@@ -1229,7 +1232,7 @@ describe('Flow Module Parser', () => {
 });
 
 function parseModule(source: string) {
-  const schema = parseString(source, `${MODULE_NAME}.js`);
+  const schema = flowParser.parseString(source, `${MODULE_NAME}.js`);
   const module = schema.modules.NativeFoo;
   invariant(
     module.type === 'NativeModule',

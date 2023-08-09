@@ -68,6 +68,152 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetrics) {
 }
 
 /*
+ * ┌───────────────────┐
+ * │<View displayNone> │
+ * │                   │
+ * └───────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnNodeWithDisplayNone) {
+  auto builder = simpleComponentBuilder();
+
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.displayType = DisplayType::None;
+        shadowNode.setLayoutMetrics(layoutMetrics);
+    });
+  // clang-format on
+
+  auto shadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          shadowNode->getFamily(), *shadowNode, {});
+
+  // The node has display: none, so the relative layout is empty.
+  EXPECT_TRUE(relativeLayoutMetrics == EmptyLayoutMetrics);
+}
+
+/*
+ * ┌────────────────────┐
+ * │<View displayNone>  │
+ * │                    │
+ * │   ┌────────────────┴──┐
+ * │   │<View>             │
+ * └───┤                   │
+ *     │                   │
+ *     │                   │
+ *     └───────────────────┘
+ */
+TEST(
+    LayoutableShadowNodeTest,
+    relativeLayoutMetricsOnChildrenOfParentWithDisplayNone) {
+  auto builder = simpleComponentBuilder();
+
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {10, 20};
+        layoutMetrics.frame.size = {100, 200};
+        layoutMetrics.displayType = DisplayType::None;
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {10, 20};
+          layoutMetrics.frame.size = {100, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .reference(childShadowNode)
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *parentShadowNode, {});
+
+  // A parent node in the hierarchy has display: none, so the relative layout
+  // is empty.
+  EXPECT_TRUE(relativeLayoutMetrics == EmptyLayoutMetrics);
+}
+
+/*
+ * ┌────────────────────┐
+ * │<View displayNone>  │
+ * │                    │
+ * │   ┌────────────────┴──┐
+ * │   │<View ancestor>    │
+ * └───┤                   │
+ *     │                   │
+ *     │   ┌───────────────┴──┐
+ *     └───|<View descendant> |
+ *         |                  |
+ *         └──────────────────┘
+ */
+TEST(
+    LayoutableShadowNodeTest,
+    relativeLayoutMetricsOnOuterParentWithDisplayNone) {
+  auto builder = simpleComponentBuilder();
+
+  auto parentShadowNode = std::shared_ptr<ViewShadowNode>{};
+  auto childShadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<ViewShadowNode>()
+      .finalize([](ViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.origin = {0, 0};
+        layoutMetrics.frame.size = {1000, 1000};
+        layoutMetrics.displayType = DisplayType::None;
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {50, 50};
+          layoutMetrics.frame.size = {200, 200};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+        .children({
+          Element<ViewShadowNode>()
+            .finalize([](ViewShadowNode &shadowNode){
+              auto layoutMetrics = EmptyLayoutMetrics;
+              layoutMetrics.frame.origin = {10, 20};
+              layoutMetrics.frame.size = {100, 200};
+              shadowNode.setLayoutMetrics(layoutMetrics);
+            }).reference(childShadowNode)
+        })
+        .reference(parentShadowNode)
+    });
+  // clang-format on
+
+  auto outerParentShadowNode = builder.build(element);
+
+  auto relativeLayoutMetrics =
+      LayoutableShadowNode::computeRelativeLayoutMetrics(
+          childShadowNode->getFamily(), *parentShadowNode, {});
+
+  // The root view has display: none, but all the views between the descendant
+  // and the ancestor are visible, so we compute relative layout as usual.
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 100);
+  EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 200);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
+  EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 20);
+}
+
+/*
  * ┌──────────────┐
  * │<ScrollView>  │
  * │        ┌─────┴───┐

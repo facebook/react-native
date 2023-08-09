@@ -515,6 +515,30 @@ static inline CascadedRectangleEdges<T> convertRawProp(
       defaultValue.vertical,
       prefix,
       suffix);
+  result.block = convertRawProp(
+      context,
+      rawProps,
+      "Block",
+      sourceValue.block,
+      defaultValue.block,
+      prefix,
+      suffix);
+  result.blockEnd = convertRawProp(
+      context,
+      rawProps,
+      "BlockEnd",
+      sourceValue.blockEnd,
+      defaultValue.blockEnd,
+      prefix,
+      suffix);
+  result.blockStart = convertRawProp(
+      context,
+      rawProps,
+      "BlockStart",
+      sourceValue.blockStart,
+      defaultValue.blockStart,
+      prefix,
+      suffix);
 
   result.all = convertRawProp(
       context, rawProps, "", sourceValue.all, defaultValue.all, prefix, suffix);
@@ -700,13 +724,13 @@ static inline void fromRawValue(
   auto map = (butter::map<std::string, RawValue>)rawValue;
 
   auto typeIterator = map.find("type");
-  react_native_assert(
+  react_native_expect(
       typeIterator != map.end() && typeIterator->second.hasType<std::string>());
   std::string type = (std::string)typeIterator->second;
 
   if (type == "ThemeAttrAndroid") {
     auto attrIterator = map.find("attribute");
-    react_native_assert(
+    react_native_expect(
         attrIterator != map.end() &&
         attrIterator->second.hasType<std::string>());
 
@@ -737,7 +761,7 @@ static inline void fromRawValue(
     };
   } else {
     LOG(ERROR) << "Unknown native drawable type: " << type;
-    react_native_assert(false);
+    react_native_expect(false);
   }
 }
 

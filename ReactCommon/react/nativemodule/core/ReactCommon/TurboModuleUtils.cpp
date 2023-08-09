@@ -79,13 +79,13 @@ void Promise::reject(const std::string &message) {
 
 jsi::Value createPromiseAsJSIValue(
     jsi::Runtime &rt,
-    const PromiseSetupFunctionType func) {
+    PromiseSetupFunctionType &&func) {
   jsi::Function JSPromise = rt.global().getPropertyAsFunction(rt, "Promise");
   jsi::Function fn = jsi::Function::createFromHostFunction(
       rt,
       jsi::PropNameID::forAscii(rt, "fn"),
       2,
-      [func](
+      [func = std::move(func)](
           jsi::Runtime &rt2,
           const jsi::Value &thisVal,
           const jsi::Value *args,

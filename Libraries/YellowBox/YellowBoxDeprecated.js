@@ -12,8 +12,7 @@
 
 import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
 
-import LogBox from '../LogBox/LogBox';
-
+const LogBox = require('../LogBox/LogBox').default;
 const React = require('react');
 
 type Props = $ReadOnly<{||}>;

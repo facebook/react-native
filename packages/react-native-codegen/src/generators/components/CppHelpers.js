@@ -11,17 +11,7 @@
 'use strict';
 import type {NamedShape, PropTypeAnnotation} from '../../CodegenSchema';
 
-function upperCaseFirst(inString: string): string {
-  if (inString.length === 0) {
-    return inString;
-  }
-
-  return inString[0].toUpperCase() + inString.slice(1);
-}
-
-function toSafeCppString(input: string): string {
-  return input.split('-').map(upperCaseFirst).join('');
-}
+const {getEnumName, toSafeCppString} = require('../Utils');
 
 function toIntEnumValueName(propName: string, value: number): string {
   return `${toSafeCppString(propName)}${value}`;
@@ -63,7 +53,8 @@ function getImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageRequestPrimitive'
       | 'ImageSourcePrimitive'
-      | 'PointPrimitive',
+      | 'PointPrimitive'
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -76,6 +67,9 @@ function getImports(
         return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/renderer/components/image/conversions.h>');
+        return;
+      case 'DimensionPrimitive':
+        imports.add('#include <react/renderer/components/view/conversions.h>');
         return;
       default:
         (name: empty);
@@ -118,11 +112,6 @@ function generateStructName(
 ): string {
   const additional = parts.map(toSafeCppString).join('');
   return `${componentName}${additional}Struct`;
-}
-
-function getEnumName(componentName: string, propName: string): string {
-  const uppercasedPropName = toSafeCppString(propName);
-  return `${componentName}${uppercasedPropName}`;
 }
 
 function getEnumMaskName(enumName: string): string {
@@ -172,6 +161,8 @@ function convertDefaultTypeToString(
           return '';
         case 'EdgeInsetsPrimitive':
           return '';
+        case 'DimensionPrimitive':
+          return '';
         default:
           (typeAnnotation.name: empty);
           throw new Error(
@@ -218,10 +209,8 @@ function convertDefaultTypeToString(
 module.exports = {
   convertDefaultTypeToString,
   getCppTypeForAnnotation,
-  getEnumName,
   getEnumMaskName,
   getImports,
-  toSafeCppString,
   toIntEnumValueName,
   generateStructName,
   generateEventStructName,

@@ -107,6 +107,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _onKeyboardChange = (event: ?KeyboardEvent) => {
     this._keyboardEvent = event;
+    // $FlowFixMe[unused-promise]
     this._updateBottomIfNecessary();
   };
 

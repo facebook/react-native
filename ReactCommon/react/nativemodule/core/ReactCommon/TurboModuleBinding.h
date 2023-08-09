@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include <ReactCommon/LongLivedObject.h>
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
@@ -33,27 +32,24 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode);
+      TurboModuleBindingMode bindingMode,
+      TurboModuleProviderFunctionType &&moduleProvider);
 
  private:
   TurboModuleBinding(
-      const TurboModuleProviderFunctionType &&moduleProvider,
-      TurboModuleBindingMode bindingMode);
+      TurboModuleBindingMode bindingMode,
+      TurboModuleProviderFunctionType &&moduleProvider);
   virtual ~TurboModuleBinding();
 
   /**
    * A lookup function exposed to JS to get an instance of a TurboModule
    * for the given name.
    */
-  jsi::Value getModule(
-      jsi::Runtime &runtime,
-      const jsi::Value &thisVal,
-      const jsi::Value *args,
-      size_t count);
+  jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName)
+      const;
 
-  TurboModuleProviderFunctionType moduleProvider_;
   TurboModuleBindingMode bindingMode_;
+  TurboModuleProviderFunctionType moduleProvider_;
 };
 
 } // namespace react

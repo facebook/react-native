@@ -14,12 +14,6 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-// This attribute exports the ctor symbol, so ReadableNativeArray to be
-// constructed from other DSOs.
-__attribute__((visibility("default")))
-ReadableNativeArray::ReadableNativeArray(folly::dynamic array)
-    : HybridBase(std::move(array)) {}
-
 // TODO T112842309: Remove after fbjni upgraded in OSS
 void ReadableNativeArray::mapException(const std::exception &ex) {
   if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {

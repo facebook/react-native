@@ -11,8 +11,9 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/renderer/graphics/conversions.h>
 
 namespace facebook::react {
 
@@ -93,6 +94,9 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     // Layout metrics of a node computed relatively to the same node are equal
     // to `transform`-ed layout metrics of the node with zero `origin`.
     auto layoutMetrics = ancestorNode.getLayoutMetrics();
+    if (layoutMetrics.displayType == DisplayType::None) {
+      return EmptyLayoutMetrics;
+    }
     if (policy.includeTransform) {
       layoutMetrics.frame = layoutMetrics.frame * ancestorNode.getTransform();
     }
@@ -180,6 +184,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
+    // Descendants of display: none don't have relative layout metrics.
+    if (currentShadowNode->getLayoutMetrics().displayType ==
+        DisplayType::None) {
+      return EmptyLayoutMetrics;
+    }
+
     auto currentFrame = shouldCalculateTransformedFrames
         ? transformedFrames[i]
         : currentShadowNode->getLayoutMetrics().frame;
@@ -212,8 +222,12 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
 ShadowNodeTraits LayoutableShadowNode::BaseTraits() {
   auto traits = ShadowNodeTraits{};
-  traits.set(ShadowNodeTraits::Trait::LayoutableKind);
+  traits.set(IdentifierTrait());
   return traits;
+}
+
+ShadowNodeTraits::Trait LayoutableShadowNode::IdentifierTrait() {
+  return ShadowNodeTraits::Trait::LayoutableKind;
 }
 
 LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {

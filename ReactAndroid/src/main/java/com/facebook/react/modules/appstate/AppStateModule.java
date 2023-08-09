@@ -16,7 +16,6 @@ import com.facebook.react.bridge.WindowFocusChangeListener;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -96,7 +95,7 @@ public class AppStateModule extends NativeAppStateSpec
     if (!reactApplicationContext.hasActiveReactInstance()) {
       return;
     }
-    reactApplicationContext.getJSModule(RCTDeviceEventEmitter.class).emit(eventName, data);
+    reactApplicationContext.emitDeviceEvent(eventName, data);
   }
 
   private void sendAppStateChangeEvent() {
@@ -117,9 +116,6 @@ public class AppStateModule extends NativeAppStateSpec
   public void invalidate() {
     super.invalidate();
 
-    ReactApplicationContext applicationContext = getReactApplicationContextIfActiveOrWarn();
-    if (applicationContext != null) {
-      applicationContext.removeLifecycleEventListener(this);
-    }
+    getReactApplicationContext().removeLifecycleEventListener(this);
   }
 }

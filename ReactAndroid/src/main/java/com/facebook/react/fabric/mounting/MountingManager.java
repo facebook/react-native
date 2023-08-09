@@ -420,10 +420,6 @@ public class MountingManager {
             attachmentsPositions);
   }
 
-  public void initializeViewManager(String componentName) {
-    mViewManagerRegistry.get(componentName);
-  }
-
   public void enqueuePendingEvent(int reactTag, ViewEvent viewEvent) {
     @Nullable SurfaceMountingManager smm = getSurfaceManagerForView(reactTag);
     if (smm == null) {

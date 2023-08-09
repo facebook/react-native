@@ -51,8 +51,12 @@ export default function DevtoolsOverlay({
 
     function onAgentShowNativeHighlight(node: any) {
       clearTimeout(hideTimeoutId);
-      // Shape of `node` is different in Fabric.
-      const component = node.canonical ?? node;
+
+      // `publicInstance` => Fabric
+      // TODO: remove this check when syncing the new version of the renderer from React to React Native.
+      // `canonical` => Legacy Fabric
+      // `node` => Legacy renderer
+      const component = node.publicInstance ?? node.canonical ?? node;
       if (!component || !component.measure) {
         return;
       }

@@ -18,6 +18,7 @@ import type {
   NativeModuleFunctionTypeAnnotation,
   NativeModuleParamTypeAnnotation,
   NativeModuleTypeAnnotation,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
@@ -114,9 +115,11 @@ ${modules}
 type Param = NamedShape<Nullable<NativeModuleParamTypeAnnotation>>;
 
 function serializeArg(
+  moduleName: string,
   arg: Param,
   index: number,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ): string {
   const {typeAnnotation: nullableTypeAnnotation, optional} = arg;
   const [typeAnnotation, nullable] =
@@ -208,9 +211,11 @@ function serializeArg(
 }
 
 function serializePropertyIntoHostFunction(
+  moduleName: string,
   hasteModuleName: string,
   property: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ): string {
   const [propertyTypeAnnotation] =
     unwrapNullable<NativeModuleFunctionTypeAnnotation>(property.typeAnnotation);
@@ -220,7 +225,7 @@ function serializePropertyIntoHostFunction(
     methodName: property.name,
     returnTypeAnnotation: propertyTypeAnnotation.returnTypeAnnotation,
     args: propertyTypeAnnotation.params.map((p, i) =>
-      serializeArg(p, i, resolveAlias),
+      serializeArg(moduleName, p, i, resolveAlias, enumMap),
     ),
   });
 }
@@ -238,16 +243,19 @@ module.exports = {
       .map((hasteModuleName: string) => {
         const nativeModule = nativeModules[hasteModuleName];
         const {
-          aliases,
+          aliasMap,
+          enumMap,
           spec: {properties},
           moduleName,
         } = nativeModule;
-        const resolveAlias = createAliasResolver(aliases);
+        const resolveAlias = createAliasResolver(aliasMap);
         const hostFunctions = properties.map(property =>
           serializePropertyIntoHostFunction(
+            moduleName,
             hasteModuleName,
             property,
             resolveAlias,
+            enumMap,
           ),
         );
 

@@ -14,7 +14,9 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Canvas;
+import android.graphics.Insets;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -33,8 +35,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.graphics.Insets;
-import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -52,7 +52,6 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -180,7 +179,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mWasMeasured = true;
 
       // Check if we were waiting for onMeasure to attach the root view.
-      if (mReactInstanceManager != null && !mIsAttachedToInstance) {
+      if (hasActiveReactInstance() && !isViewAttachedToReactInstance()) {
         attachToReactInstanceManager();
       } else if (measureSpecsUpdated || mLastWidth != width || mLastHeight != height) {
         updateRootLayoutSpecs(true, mWidthMeasureSpec, mHeightMeasureSpec);
@@ -204,7 +203,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = getCurrentReactContext();
     UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
@@ -221,7 +220,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = getCurrentReactContext();
     UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
@@ -234,9 +233,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   private boolean isDispatcherReady() {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return false;
     }
@@ -263,14 +260,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, true);
     return super.onInterceptTouchEvent(ev);
-  }
-
-  @Override
-  public boolean onInterceptHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
-    return super.onInterceptHoverEvent(ev);
   }
 
   @Override
@@ -278,7 +269,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (shouldDispatchJSTouchEvent(ev)) {
       dispatchJSTouchEvent(ev);
     }
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     super.onTouchEvent(ev);
     // In case when there is no children interested in handling touch event, we return true from
     // the root view in order to receive subsequent events related to that gesture
@@ -286,8 +277,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
+  public boolean onInterceptHoverEvent(MotionEvent ev) {
+    dispatchJSPointerEvent(ev, true);
+    return super.onInterceptHoverEvent(ev);
+  }
+
+  @Override
   public boolean onHoverEvent(MotionEvent ev) {
-    dispatchJSPointerEvent(ev);
+    dispatchJSPointerEvent(ev, false);
     return super.onHoverEvent(ev);
   }
 
@@ -304,9 +301,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public boolean dispatchKeyEvent(KeyEvent ev) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
@@ -316,9 +311,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(
           TAG,
           "Unable to handle focus changed event as the catalyst instance has not been attached");
@@ -331,9 +324,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void requestChildFocus(View child, View focused) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(
           TAG,
           "Unable to handle child focus changed event as the catalyst instance has not been attached");
@@ -344,10 +335,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     super.requestChildFocus(child, focused);
   }
 
-  protected void dispatchJSPointerEvent(MotionEvent event) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+  protected void dispatchJSPointerEvent(MotionEvent event, boolean isCapture) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
@@ -358,19 +347,17 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = getCurrentReactContext();
     UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
       EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
-      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher);
+      mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
 
   protected void dispatchJSTouchEvent(MotionEvent event) {
-    if (mReactInstanceManager == null
-        || !mIsAttachedToInstance
-        || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to dispatch touch to JS as the catalyst instance has not been attached");
       return;
     }
@@ -378,7 +365,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+    ReactContext reactContext = getCurrentReactContext();
     UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
     if (uiManager != null) {
@@ -413,7 +400,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (mIsAttachedToInstance) {
+    if (isViewAttachedToReactInstance()) {
       removeOnGlobalLayoutListener();
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
@@ -422,7 +409,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    if (mIsAttachedToInstance) {
+    if (isViewAttachedToReactInstance()) {
       removeOnGlobalLayoutListener();
     }
   }
@@ -572,7 +559,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private void updateRootLayoutSpecs(
       boolean measureSpecsChanged, final int widthMeasureSpec, final int heightMeasureSpec) {
     ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_START);
-    if (mReactInstanceManager == null) {
+    if (!hasActiveReactInstance()) {
       ReactMarker.logMarker(ReactMarkerConstants.ROOT_VIEW_UPDATE_LAYOUT_SPECS_END);
       FLog.w(TAG, "Unable to update root layout specs for uninitialized ReactInstanceManager");
       return;
@@ -586,7 +573,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
-    final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+    final ReactContext reactApplicationContext = getCurrentReactContext();
 
     if (reactApplicationContext != null) {
       @Nullable
@@ -630,8 +617,8 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     // to be committed via the Scheduler, which will cause mounting instructions
     // to be queued up and synchronously executed to delete and remove
     // all the views in the hierarchy.
-    if (mReactInstanceManager != null) {
-      final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+    if (hasActiveReactInstance()) {
+      final ReactContext reactApplicationContext = getCurrentReactContext();
       if (reactApplicationContext != null && isFabric()) {
         @Nullable
         UIManager uiManager =
@@ -730,11 +717,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   public void runApplication() {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
     try {
-      if (mReactInstanceManager == null || !mIsAttachedToInstance) {
+      if (!hasActiveReactInstance() || !isViewAttachedToReactInstance()) {
         return;
       }
 
-      ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
+      ReactContext reactContext = getCurrentReactContext();
       if (reactContext == null) {
         return;
       }
@@ -776,7 +763,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @VisibleForTesting
   /* package */ void simulateCheckForKeyboardForTesting() {
-    if (Build.VERSION.SDK_INT >= 23) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       getCustomGlobalLayoutListener().checkForKeyboardEvents();
     } else {
       getCustomGlobalLayoutListener().checkForKeyboardEventsLegacy();
@@ -854,12 +841,12 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Override
   public void handleException(final Throwable t) {
-    if (mReactInstanceManager == null || mReactInstanceManager.getCurrentReactContext() == null) {
+    if (!hasActiveReactContext()) {
       throw new RuntimeException(t);
     }
 
     Exception e = new IllegalViewOperationException(t.getMessage(), this, t);
-    mReactInstanceManager.getCurrentReactContext().handleException(e);
+    getCurrentReactContext().handleException(e);
   }
 
   public void setIsFabric(boolean isFabric) {
@@ -877,12 +864,26 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   /* package */ void sendEvent(String eventName, @Nullable WritableMap params) {
-    if (mReactInstanceManager != null) {
-      mReactInstanceManager
-          .getCurrentReactContext()
-          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit(eventName, params);
+    if (hasActiveReactInstance()) {
+      getCurrentReactContext().emitDeviceEvent(eventName, params);
     }
+  }
+
+  public boolean hasActiveReactInstance() {
+    return mReactInstanceManager != null;
+  }
+
+  public boolean hasActiveReactContext() {
+    return mReactInstanceManager != null && mReactInstanceManager.getCurrentReactContext() != null;
+  }
+
+  @Nullable
+  public ReactContext getCurrentReactContext() {
+    return mReactInstanceManager.getCurrentReactContext();
+  }
+
+  public boolean isViewAttachedToReactInstance() {
+    return mIsAttachedToInstance;
   }
 
   private class CustomGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
@@ -901,15 +902,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     @Override
     public void onGlobalLayout() {
-      if (mReactInstanceManager == null
-          || !mIsAttachedToInstance
-          || mReactInstanceManager.getCurrentReactContext() == null) {
+      if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
         return;
       }
 
-      // WindowInsetsCompat IME measurement is reliable for API level 23+.
-      // https://developer.android.com/jetpack/androidx/releases/core#1.5.0-alpha02
-      if (Build.VERSION.SDK_INT >= 23) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         checkForKeyboardEvents();
       } else {
         checkForKeyboardEventsLegacy();
@@ -919,22 +916,32 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       checkForDeviceDimensionsChanges();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    private Activity getActivity() {
+      Context context = getContext();
+      while (!(context instanceof Activity) && context instanceof ContextWrapper) {
+        context = ((ContextWrapper) context).getBaseContext();
+      }
+      return (Activity) context;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.R)
     private void checkForKeyboardEvents() {
       getRootView().getWindowVisibleDisplayFrame(mVisibleViewArea);
       WindowInsets rootInsets = getRootView().getRootWindowInsets();
-      WindowInsetsCompat compatRootInsets = WindowInsetsCompat.toWindowInsetsCompat(rootInsets);
+      if (rootInsets == null) {
+        return;
+      }
 
-      boolean keyboardIsVisible = compatRootInsets.isVisible(WindowInsetsCompat.Type.ime());
+      boolean keyboardIsVisible = rootInsets.isVisible(WindowInsets.Type.ime());
       if (keyboardIsVisible != mKeyboardIsVisible) {
         mKeyboardIsVisible = keyboardIsVisible;
 
         if (keyboardIsVisible) {
-          Insets imeInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.ime());
-          Insets barInsets = compatRootInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+          Insets imeInsets = rootInsets.getInsets(WindowInsets.Type.ime());
+          Insets barInsets = rootInsets.getInsets(WindowInsets.Type.systemBars());
           int height = imeInsets.bottom - barInsets.bottom;
 
-          int softInputMode = ((Activity) getContext()).getWindow().getAttributes().softInputMode;
+          int softInputMode = getActivity().getWindow().getAttributes().softInputMode;
           int screenY =
               softInputMode == WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
                   ? mVisibleViewArea.bottom - height
@@ -1062,7 +1069,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
     private void emitUpdateDimensionsEvent() {
       DeviceInfoModule deviceInfo =
-          mReactInstanceManager.getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
+          getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
 
       if (deviceInfo != null) {
         deviceInfo.emitUpdateDimensionsEvent();

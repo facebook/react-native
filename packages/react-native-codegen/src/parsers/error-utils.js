@@ -13,6 +13,7 @@
 import type {NativeModuleTypeAnnotation} from '../CodegenSchema';
 import type {ParserType} from './errors';
 import type {Parser} from './parser';
+import type {TypeDeclarationMap} from '../parsers/utils';
 
 const {
   MisnamedModuleInterfaceParserError,
@@ -22,6 +23,7 @@ const {
   UnusedModuleInterfaceParserError,
   IncorrectModuleRegistryCallArityParserError,
   IncorrectModuleRegistryCallTypeParameterParserError,
+  IncorrectModuleRegistryCallArgumentTypeParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UntypedModuleRegistryCallParserError,
   UnsupportedModulePropertyParserError,
@@ -158,27 +160,15 @@ function throwIfModuleTypeIsUnsupported(
   propertyValue: $FlowFixMe,
   propertyName: string,
   propertyValueType: string,
-  language: ParserType,
+  parser: Parser,
 ) {
-  if (language === 'Flow' && propertyValueType !== 'FunctionTypeAnnotation') {
+  if (!parser.functionTypeAnnotation(propertyValueType)) {
     throw new UnsupportedModulePropertyParserError(
       nativeModuleName,
       propertyValue,
       propertyName,
       propertyValueType,
-      language,
-    );
-  } else if (
-    language === 'TypeScript' &&
-    propertyValueType !== 'TSFunctionType' &&
-    propertyValueType !== 'TSMethodSignature'
-  ) {
-    throw new UnsupportedModulePropertyParserError(
-      nativeModuleName,
-      propertyValue,
-      propertyName,
-      propertyValueType,
-      language,
+      parser.language(),
     );
   }
 }
@@ -260,6 +250,54 @@ function throwIfArrayElementTypeAnnotationIsUnsupported(
   }
 }
 
+function throwIfIncorrectModuleRegistryCallArgument(
+  nativeModuleName: string,
+  callExpressionArg: $FlowFixMe,
+  methodName: string,
+) {
+  if (
+    callExpressionArg.type !== 'StringLiteral' &&
+    callExpressionArg.type !== 'Literal'
+  ) {
+    const {type} = callExpressionArg;
+    throw new IncorrectModuleRegistryCallArgumentTypeParserError(
+      nativeModuleName,
+      callExpressionArg,
+      methodName,
+      type,
+    );
+  }
+}
+
+function throwIfPartialNotAnnotatingTypeParameter(
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  parser: Parser,
+) {
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+
+  if (!annotatedElement) {
+    throw new Error('Partials only support annotating a type parameter.');
+  }
+}
+
+function throwIfPartialWithMoreParameter(typeAnnotation: $FlowFixMe) {
+  if (typeAnnotation.typeParameters.params.length !== 1) {
+    throw new Error('Partials only support annotating exactly one parameter.');
+  }
+}
+
+function throwIfMoreThanOneCodegenNativecommands(
+  commandsTypeNames: $ReadOnlyArray<$FlowFixMe>,
+) {
+  if (commandsTypeNames.length > 1) {
+    throw new Error('codegenNativeCommands may only be called once in a file');
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -274,4 +312,8 @@ module.exports = {
   throwIfMoreThanOneModuleInterfaceParserError,
   throwIfUnsupportedFunctionParamTypeAnnotationParserError,
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfIncorrectModuleRegistryCallArgument,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
+  throwIfMoreThanOneCodegenNativecommands,
 };

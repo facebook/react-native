@@ -17,7 +17,6 @@ import android.content.res.Configuration;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -49,7 +48,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -109,11 +107,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
       new CopyOnWriteArrayList<>();
-  private @Nullable Map<String, WritableMap> mViewManagerConstantsCache;
-  private volatile int mViewManagerConstantsCacheSize;
 
   private int mBatchId = 0;
-  private int mNumRootViews = 0;
 
   public UIManagerModule(
       ReactApplicationContext reactContext,
@@ -251,50 +246,8 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
   }
 
-  /**
-   * Helper method to pre-compute the constants for a view manager. This method ensures that we
-   * don't block for getting the constants for view managers during TTI
-   *
-   * @deprecated this method will be removed in the future
-   * @param viewManagerNames {@link List<String>} names of ViewManagers
-   */
-  @Deprecated
-  @Override
-  public void preInitializeViewManagers(List<String> viewManagerNames) {
-    Map<String, WritableMap> constantsMap = new ArrayMap<>();
-    for (String viewManagerName : viewManagerNames) {
-      WritableMap constants = computeConstantsForViewManager(viewManagerName);
-      if (constants != null) {
-        constantsMap.put(viewManagerName, constants);
-      }
-    }
-
-    // To ensure that this is thread safe, we return an unmodifiableMap
-    // We use mViewManagerConstantsCacheSize to count the times we access the contents of the map
-    // Once we have accessed all the values, we free this cache
-    // Assumption is that JS gets the constants only once for each viewManager.
-    // Using this mechanism prevents expensive synchronized blocks, due to the nature of how this is
-    // accessed - write one, read multiple times, and then throw the data away.
-    mViewManagerConstantsCacheSize = viewManagerNames.size();
-    mViewManagerConstantsCache = Collections.unmodifiableMap(constantsMap);
-  }
-
   @ReactMethod(isBlockingSynchronousMethod = true)
   public @Nullable WritableMap getConstantsForViewManager(@Nullable String viewManagerName) {
-    if (mViewManagerConstantsCache != null
-        && mViewManagerConstantsCache.containsKey(viewManagerName)) {
-      WritableMap constants = mViewManagerConstantsCache.get(viewManagerName);
-      if (--mViewManagerConstantsCacheSize <= 0) {
-        // Looks like we have read all the values from the cache, so we may as well free this cache
-        mViewManagerConstantsCache = null;
-      }
-      return constants;
-    } else {
-      return computeConstantsForViewManager(viewManagerName);
-    }
-  }
-
-  private @Nullable WritableMap computeConstantsForViewManager(@Nullable String viewManagerName) {
     ViewManager targetView =
         viewManagerName != null ? mUIImplementation.resolveViewManager(viewManagerName) : null;
     if (targetView == null) {
@@ -403,7 +356,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
             -1);
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
-    mNumRootViews++;
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }
@@ -427,7 +379,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void removeRootView(int rootViewTag) {
     mUIImplementation.removeRootView(rootViewTag);
-    mNumRootViews--;
   }
 
   public void updateNodeSize(int nodeViewTag, int newWidth, int newHeight) {
@@ -768,12 +719,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       listener.willDispatchViewUpdates(this);
     }
     try {
-      // If there are no RootViews registered, there will be no View updates to dispatch.
-      // This is a hack to prevent this from being called when Fabric is used everywhere.
-      // This should no longer be necessary in Bridgeless Mode.
-      if (mNumRootViews > 0) {
-        mUIImplementation.dispatchViewUpdates(batchId);
-      }
+      mUIImplementation.dispatchViewUpdates(batchId);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }

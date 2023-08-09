@@ -22,6 +22,6 @@ rn_xplat_cxx_library(
     deps = [
         react_native_target("jni/react/jni:jni"),
         FBJNI_TARGET,
-        react_native_xplat_dep("hermes/API:HermesAPI"),
+        react_native_xplat_dep("hermes/API:HermesAPIFullOrLean"),
     ],
 )

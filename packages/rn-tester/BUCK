@@ -75,6 +75,7 @@ rn_library(
     skip_processors = True,
     visibility = ["PUBLIC"],
     deps = [
+        "//xplat/js:node_modules__flow_19enums_19runtime",
         "//xplat/js:node_modules__nullthrows",
         "//xplat/js/RKJSModules/Libraries/Core:Core",
         "//xplat/js/RKJSModules/vendor/react:react",
@@ -172,6 +173,9 @@ fb_apple_test(
         "UIKit",
     ],
     info_plist = "//xplat/configurations/buck/common_info_plists:ApplicationTest-Info.plist",
+    # There are some flavor dependencies in the call chain that prevent this target from building correctly
+    # using Buck2
+    labels = ["opt-out-buck2-runs"],
     preprocessor_flags = get_objc_arc_preprocessor_flags() + get_preprocessor_flags_for_build_mode(),
     test_host_app = "//fbobjc/Configurations/Buck/CommonTestHost:CommonTestHost",
     visibility = [

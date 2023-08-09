@@ -19,7 +19,7 @@ end
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-gnu-zero-variadic-macro-arguments'
 folly_version = '2021.07.22.00'
 boost_compiler_flags = '-Wno-documentation'
-
+using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 Pod::Spec.new do |s|
   s.name                   = "ReactCommon"
   s.module_name            = "ReactCommon"
@@ -36,19 +36,24 @@ Pod::Spec.new do |s|
                                "USE_HEADERMAP" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "GCC_WARN_PEDANTIC" => "YES" }
+  if ENV['USE_FRAMEWORKS']
+    s.header_mappings_dir     = './'
+  end
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
   s.subspec "turbomodule" do |ss|
     ss.dependency "React-callinvoker", version
     ss.dependency "React-perflogger", version
-    ss.dependency "React-Core", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "RCT-Folly", folly_version
     s.dependency "React-logger", version
     ss.dependency "DoubleConversion"
     ss.dependency "glog"
+    if using_hermes
+      ss.dependency "hermes-engine"
+    end
 
     ss.subspec "bridging" do |sss|
       sss.dependency           "React-jsi", version
@@ -56,23 +61,13 @@ Pod::Spec.new do |s|
       sss.exclude_files        = "react/bridging/tests"
       sss.header_dir           = "react/bridging"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+      if using_hermes
+        sss.dependency "hermes-engine"
+      end
     end
 
     ss.subspec "core" do |sss|
-      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}",
-                         "react/nativemodule/core/platform/ios/**/*.{mm,cpp,h}"
-      excluded_files = ENV['USE_FRAMEWORKS'] == nil ?
-        "react/nativemodule/core/ReactCommon/LongLivedObject.h" :
-        "react/nativemodule/core/ReactCommon/{LongLivedObject,CallbackWrapper}.h"
-      sss.exclude_files = excluded_files
-      # [macOS] For whatever reason, excluding the files above AND including RNTester-macOS causes a build error in RNTester.
-      sss.exclude_files = ""
-    end
-
-    ss.subspec "samples" do |sss|
-      sss.source_files = "react/nativemodule/samples/ReactCommon/**/*.{cpp,h}",
-      "react/nativemodule/samples/platform/ios/**/*.{mm,cpp,h}"
-      sss.dependency "ReactCommon/turbomodule/core", version
+      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
     end
   end
 

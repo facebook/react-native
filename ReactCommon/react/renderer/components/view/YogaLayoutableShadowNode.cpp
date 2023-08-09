@@ -10,9 +10,11 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
 #include <react/renderer/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
@@ -61,8 +63,12 @@ thread_local LayoutContext threadLocalLayoutContext;
 
 ShadowNodeTraits YogaLayoutableShadowNode::BaseTraits() {
   auto traits = LayoutableShadowNode::BaseTraits();
-  traits.set(ShadowNodeTraits::Trait::YogaLayoutableKind);
+  traits.set(IdentifierTrait());
   return traits;
+}
+
+ShadowNodeTraits::Trait YogaLayoutableShadowNode::IdentifierTrait() {
+  return ShadowNodeTraits::Trait::YogaLayoutableKind;
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -110,6 +116,12 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
               .yogaNode_.isDirty() == yogaNode_.isDirty() &&
       "Yoga node must inherit dirty flag.");
 
+  for (auto &child : getChildren()) {
+    if (auto layoutableChild = traitCast<YogaLayoutableShadowNode>(child)) {
+      yogaLayoutableChildren_.push_back(layoutableChild);
+    }
+  }
+
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
   updateYogaChildrenOwnersIfNeeded();
@@ -154,17 +166,17 @@ void YogaLayoutableShadowNode::enableMeasurement() {
       YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
 }
 
-void YogaLayoutableShadowNode::appendYogaChild(ShadowNode const &childNode) {
+void YogaLayoutableShadowNode::appendYogaChild(
+    YogaLayoutableShadowNode::Shared const &childNode) {
   // The caller must check this before calling this method.
   react_native_assert(
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
   ensureYogaChildrenLookFine();
 
-  auto &layoutableChildNode =
-      traitCast<YogaLayoutableShadowNode const &>(childNode);
+  yogaLayoutableChildren_.push_back(childNode);
   yogaNode_.insertChild(
-      &layoutableChildNode.yogaNode_,
+      &childNode->yogaNode_,
       static_cast<uint32_t>(yogaNode_.getChildren().size()));
 
   ensureYogaChildrenLookFine();
@@ -178,48 +190,21 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   react_native_assert(
       !getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode));
 
-  auto &children = getChildren();
+  auto &childNode =
+      traitCast<YogaLayoutableShadowNode const &>(*getChildren().at(index));
 
-  // Overflow checks.
-  react_native_assert(children.size() > index);
-  react_native_assert(children.size() >= yogaNode_.getChildren().size());
-
-  auto &childNode = *children.at(index);
-
-  auto &layoutableChildNode =
-      traitCast<YogaLayoutableShadowNode const &>(childNode);
-
-  // Note, the following (commented out) assert is conceptually valid but still
-  // might produce false-positive signals because of the ABA problem (different
-  // objects with non-interleaving life-times being allocated on the same
-  // address). react_native_assert(layoutableChildNode.yogaNode_.getOwner() !=
-  // &yogaNode_);
-
-  if (layoutableChildNode.yogaNode_.getOwner() == nullptr) {
+  if (childNode.yogaNode_.getOwner() == nullptr) {
     // The child node is not owned.
-    layoutableChildNode.yogaNode_.setOwner(&yogaNode_);
+    childNode.yogaNode_.setOwner(&yogaNode_);
     // At this point the child yoga node must be already inserted by the caller.
     // react_native_assert(layoutableChildNode.yogaNode_.isDirty());
   } else {
     // The child is owned by some other node, we need to clone that.
     // TODO: At this point, React has wrong reference to the node. (T138668036)
     auto clonedChildNode = childNode.clone({});
-    auto &layoutableClonedChildNode =
-        traitCast<YogaLayoutableShadowNode const &>(*clonedChildNode);
-
-    // The owner must be nullptr for a newly cloned node.
-    react_native_assert(
-        layoutableClonedChildNode.yogaNode_.getOwner() == nullptr);
-
-    // Establishing ownership.
-    layoutableClonedChildNode.yogaNode_.setOwner(&yogaNode_);
 
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, static_cast<int>(index));
-
-    // Replace the Yoga node inside the Yoga node children list.
-    yogaNode_.replaceChild(
-        &layoutableClonedChildNode.yogaNode_, static_cast<int>(index));
   }
 
   ensureYogaChildrenLookFine();
@@ -238,33 +223,79 @@ void YogaLayoutableShadowNode::appendChild(
     return;
   }
 
-  // Here we don't have information about the previous structure of the node (if
-  // it that existed before), so we don't have anything to compare the Yoga node
-  // with (like a previous version of this node). Therefore we must dirty the
-  // node.
-  yogaNode_.setDirty(true);
+  if (auto yogaLayoutableChild =
+          traitCast<YogaLayoutableShadowNode>(childNode)) {
+    // Here we don't have information about the previous structure of the node
+    // (if it that existed before), so we don't have anything to compare the
+    // Yoga node with (like a previous version of this node). Therefore we must
+    // dirty the node.
+    yogaNode_.setDirty(true);
 
-  // All children of a non-leaf `YogaLayoutableShadowNode` must be a
-  // `YogaLayoutableShadowNode`s to be appended. This happens when invalid
-  // string/numeric child is passed which is not YogaLayoutableShadowNode
-  // (e.g. RCTRawText). This used to throw an error, but we are ignoring it
-  // because we want core library components to be fault-tolerant and degrade
-  // gracefully. A soft error will be emitted from JavaScript.
-  if (traitCast<YogaLayoutableShadowNode const *>(childNode.get()) != nullptr) {
     // Appending the Yoga node.
-    appendYogaChild(*childNode);
+    appendYogaChild(yogaLayoutableChild);
 
     ensureYogaChildrenLookFine();
-    ensureYogaChildrenAlighment();
+    ensureYogaChildrenAlignment();
 
     // Adopting the Yoga node.
     adoptYogaChild(getChildren().size() - 1);
 
     ensureConsistency();
-  } else {
-    react_native_log_error(
-        "Text strings must be rendered within a <Text> component.");
   }
+}
+
+void YogaLayoutableShadowNode::replaceChild(
+    ShadowNode const &oldChild,
+    ShadowNode::Shared const &newChild,
+    size_t suggestedIndex) {
+  LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
+
+  ensureUnsealed();
+  ensureYogaChildrenLookFine();
+
+  auto layoutableOldChild =
+      traitCast<YogaLayoutableShadowNode const *>(&oldChild);
+  auto layoutableNewChild = traitCast<YogaLayoutableShadowNode>(newChild);
+
+  if (layoutableOldChild == nullptr && layoutableNewChild == nullptr) {
+    // No need to mutate yogaLayoutableChildren_
+    return;
+  }
+
+  bool suggestedIndexAccurate = suggestedIndex >= 0 &&
+      suggestedIndex < yogaLayoutableChildren_.size() &&
+      yogaLayoutableChildren_[suggestedIndex].get() == layoutableOldChild;
+
+  auto oldChildIter = suggestedIndexAccurate
+      ? yogaLayoutableChildren_.begin() + suggestedIndex
+      : std::find_if(
+            yogaLayoutableChildren_.begin(),
+            yogaLayoutableChildren_.end(),
+            [&](YogaLayoutableShadowNode::Shared const &layoutableChild) {
+              return layoutableChild.get() == layoutableOldChild;
+            });
+  auto oldChildIndex =
+      static_cast<int32_t>(oldChildIter - yogaLayoutableChildren_.begin());
+
+  if (oldChildIter == yogaLayoutableChildren_.end()) {
+    // oldChild does not exist as part of our node
+    return;
+  }
+
+  if (layoutableNewChild) {
+    // Both children are layoutable, replace the old one with the new one
+    react_native_assert(layoutableNewChild->yogaNode_.getOwner() == nullptr);
+    layoutableNewChild->yogaNode_.setOwner(&yogaNode_);
+    *oldChildIter = layoutableNewChild;
+    yogaNode_.replaceChild(&layoutableNewChild->yogaNode_, oldChildIndex);
+  } else {
+    // Layoutable child replaced with non layoutable child. Remove the previous
+    // child from the layoutable children list.
+    yogaLayoutableChildren_.erase(oldChildIter);
+    yogaNode_.removeChild(oldChildIndex);
+  }
+
+  ensureYogaChildrenLookFine();
 }
 
 bool YogaLayoutableShadowNode::doesOwn(
@@ -292,23 +323,28 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
 
   auto oldYogaChildren = isClean ? yogaNode_.getChildren() : YGVector{};
   yogaNode_.setChildren({});
+  yogaLayoutableChildren_.clear();
 
   for (size_t i = 0; i < getChildren().size(); i++) {
-    appendYogaChild(*getChildren().at(i));
-    adoptYogaChild(i);
+    if (auto yogaLayoutableChild =
+            traitCast<YogaLayoutableShadowNode>(getChildren()[i])) {
+      appendYogaChild(yogaLayoutableChild);
+      adoptYogaChild(i);
 
-    if (isClean) {
-      auto &oldYogaChildNode = *oldYogaChildren[i];
-      auto &newYogaChildNode =
-          traitCast<YogaLayoutableShadowNode const &>(*getChildren().at(i))
-              .yogaNode_;
+      if (isClean) {
+        auto yogaChildIndex = yogaLayoutableChildren_.size() - 1;
+        auto &oldYogaChildNode = *oldYogaChildren.at(yogaChildIndex);
+        auto &newYogaChildNode =
+            yogaLayoutableChildren_.at(yogaChildIndex)->yogaNode_;
 
-      isClean = isClean && !newYogaChildNode.isDirty() &&
-          (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
+        isClean = isClean && !newYogaChildNode.isDirty() &&
+            (newYogaChildNode.getStyle() == oldYogaChildNode.getStyle());
+      }
     }
   }
 
-  react_native_assert(getChildren().size() == yogaNode_.getChildren().size());
+  react_native_assert(
+      yogaLayoutableChildren_.size() == yogaNode_.getChildren().size());
 
   yogaNode_.setDirty(!isClean);
 }
@@ -550,8 +586,7 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
   auto contentFrame = Rect{};
   for (auto childYogaNode : yogaNode_.getChildren()) {
-    auto &childNode =
-        *static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
+    auto &childNode = shadowNodeFromContext(childYogaNode);
 
     // Verifying that the Yoga node belongs to the ShadowNode.
     react_native_assert(&childNode.yogaNode_ == childYogaNode);
@@ -590,12 +625,19 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
     auto layoutMetricsWithOverflowInset = childNode.getLayoutMetrics();
     if (layoutMetricsWithOverflowInset.displayType != DisplayType::None) {
+      auto viewChildNode = traitCast<ViewShadowNode const *>(&childNode);
+      auto hitSlop = viewChildNode != nullptr
+          ? viewChildNode->getConcreteProps().hitSlop
+          : EdgeInsets{};
+
       // The contentFrame should always union with existing child node layout +
       // overflowInset. The transform may in a deferred animation and not
       // applied yet.
       contentFrame.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
           layoutMetricsWithOverflowInset.overflowInset));
+      contentFrame.unionInPlace(
+          outsetBy(layoutMetricsWithOverflowInset.frame, hitSlop));
 
       auto childTransform = childNode.getTransform();
       if (childTransform != Transform::Identity()) {
@@ -605,6 +647,8 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
         contentFrame.unionInPlace(insetBy(
             layoutMetricsWithOverflowInset.frame * childTransform,
             layoutMetricsWithOverflowInset.overflowInset * childTransform));
+        contentFrame.unionInPlace(outsetBy(
+            layoutMetricsWithOverflowInset.frame * childTransform, hitSlop));
       }
     }
   }
@@ -635,17 +679,15 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
 
   // At this point it is guaranteed that all shadow nodes associated with yoga
   // nodes are `YogaLayoutableShadowNode` subclasses.
-  auto parentNode =
-      static_cast<YogaLayoutableShadowNode *>(parentYogaNode->getContext());
-  auto oldNode =
-      static_cast<YogaLayoutableShadowNode *>(oldYogaNode->getContext());
+  auto &parentNode = shadowNodeFromContext(parentYogaNode);
+  auto &oldNode = shadowNodeFromContext(oldYogaNode);
 
-  auto clonedNode = oldNode->clone(
+  auto clonedNode = oldNode.clone(
       {ShadowNodeFragment::propsPlaceholder(),
        ShadowNodeFragment::childrenPlaceholder(),
-       oldNode->getState()});
-  parentNode->replaceChild(*oldNode, clonedNode, childIndex);
-  return &static_cast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
+       oldNode.getState()});
+  parentNode.replaceChild(oldNode, clonedNode, childIndex);
+  return &traitCast<YogaLayoutableShadowNode &>(*clonedNode).yogaNode_;
 }
 
 YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
@@ -657,8 +699,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
   SystraceSection s(
       "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 
-  auto shadowNodeRawPtr =
-      static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
+  auto &shadowNode = shadowNodeFromContext(yogaNode);
 
   auto minimumSize = Size{0, 0};
   auto maximumSize = Size{
@@ -689,11 +730,17 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       break;
   }
 
-  auto size = shadowNodeRawPtr->measureContent(
+  auto size = shadowNode.measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};
+}
+
+YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
+    YGNode *yogaNode) {
+  return traitCast<YogaLayoutableShadowNode &>(
+      *static_cast<ShadowNode *>(yogaNode->getContext()));
 }
 
 YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
@@ -713,12 +760,9 @@ void YogaLayoutableShadowNode::swapLeftAndRightInTree(
   swapLeftAndRightInYogaStyleProps(shadowNode);
   swapLeftAndRightInViewProps(shadowNode);
 
-  for (auto &child : shadowNode.getChildren()) {
-    auto const yogaLayoutableChild =
-        traitCast<YogaLayoutableShadowNode const *>(child.get());
-    if ((yogaLayoutableChild != nullptr) &&
-        !yogaLayoutableChild->doesOwn(shadowNode)) {
-      swapLeftAndRightInTree(*yogaLayoutableChild);
+  for (auto &child : shadowNode.yogaLayoutableChildren_) {
+    if (!child->doesOwn(shadowNode)) {
+      swapLeftAndRightInTree(*child);
     }
   }
 }
@@ -830,7 +874,7 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
 
 void YogaLayoutableShadowNode::ensureConsistency() const {
   ensureYogaChildrenLookFine();
-  ensureYogaChildrenAlighment();
+  ensureYogaChildrenAlignment();
   ensureYogaChildrenOwnersConsistency();
 }
 
@@ -867,7 +911,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenLookFine() const {
 #endif
 }
 
-void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
+void YogaLayoutableShadowNode::ensureYogaChildrenAlignment() const {
 #ifdef REACT_NATIVE_DEBUG
   // If the node is not a leaf node, checking that:
   // - All children are `YogaLayoutableShadowNode` subclasses.
@@ -875,7 +919,7 @@ void YogaLayoutableShadowNode::ensureYogaChildrenAlighment() const {
   //   this node.
 
   auto &yogaChildren = yogaNode_.getChildren();
-  auto &children = getChildren();
+  auto &children = yogaLayoutableChildren_;
 
   if (getTraits().check(ShadowNodeTraits::Trait::LeafYogaNode)) {
     react_native_assert(yogaChildren.empty());

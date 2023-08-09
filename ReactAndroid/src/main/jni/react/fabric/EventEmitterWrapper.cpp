@@ -28,7 +28,7 @@ void EventEmitterWrapper::invokeEvent(
   if (eventEmitter != nullptr) {
     eventEmitter->dispatchEvent(
         eventName,
-        payload->consume(),
+        payload ? payload->consume() : folly::dynamic::object(),
         EventPriority::AsynchronousBatched,
         static_cast<RawEvent::Category>(category));
   }
@@ -43,7 +43,8 @@ void EventEmitterWrapper::invokeUniqueEvent(
   // EventEmitter. In those cases, make sure we noop/blackhole events instead of
   // crashing.
   if (eventEmitter != nullptr) {
-    eventEmitter->dispatchUniqueEvent(eventName, payload->consume());
+    eventEmitter->dispatchUniqueEvent(
+        eventName, payload ? payload->consume() : folly::dynamic::object());
   }
 }
 

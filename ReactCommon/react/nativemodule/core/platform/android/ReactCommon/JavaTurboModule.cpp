@@ -15,6 +15,7 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <ReactCommon/TurboModuleUtils.h>
+#include <butter/function.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>
@@ -77,12 +78,13 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   auto callbackWrapperOwner =
       std::make_shared<RAIICallbackWrapperDestroyer>(weakWrapper);
 
-  std::function<void(folly::dynamic)> fn =
-      [weakWrapper, callbackWrapperOwner, wrapperWasCalled = false](
-          folly::dynamic responses) mutable {
+  return JCxxCallbackImpl::newObjectCxxArgs(
+      [weakWrapper = std::move(weakWrapper),
+       callbackWrapperOwner = std::move(callbackWrapperOwner),
+       wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
           throw std::runtime_error(
-              "callback 2 arg cannot be called more than once");
+              "Callback arg cannot be called more than once");
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -91,37 +93,29 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
         }
 
         strongWrapper->jsInvoker().invokeAsync(
-            [weakWrapper, callbackWrapperOwner, responses]() mutable {
+            [weakWrapper = std::move(weakWrapper),
+             callbackWrapperOwner = std::move(callbackWrapperOwner),
+             responses = std::move(responses)]() {
               auto strongWrapper2 = weakWrapper.lock();
               if (!strongWrapper2) {
                 return;
               }
 
-              // TODO (T43155926) valueFromDynamic already returns a Value
-              // array. Don't iterate again
-              jsi::Value args =
-                  jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
-              auto argsArray = args.getObject(strongWrapper2->runtime())
-                                   .asArray(strongWrapper2->runtime());
-              std::vector<jsi::Value> result;
-              for (size_t i = 0; i < argsArray.size(strongWrapper2->runtime());
-                   i++) {
-                result.emplace_back(
-                    strongWrapper2->runtime(),
-                    argsArray.getValueAtIndex(strongWrapper2->runtime(), i));
+              std::vector<jsi::Value> args;
+              args.reserve(responses.size());
+              for (const auto &val : responses) {
+                args.emplace_back(
+                    jsi::valueFromDynamic(strongWrapper2->runtime(), val));
               }
+
               strongWrapper2->callback().call(
                   strongWrapper2->runtime(),
-                  (const jsi::Value *)result.data(),
-                  result.size());
-
-              callbackWrapperOwner.reset();
+                  (const jsi::Value *)args.data(),
+                  args.size());
             });
 
         wrapperWasCalled = true;
-      };
-
-  return JCxxCallbackImpl::newObjectCxxArgs(fn);
+      });
 }
 
 // This is used for generating short exception strings.
@@ -369,8 +363,7 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
       jArguments,
       "makeNativeMap",
       "(Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;");
-  auto constants =
-      (jobject)env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
+  auto constants = env->CallStaticObjectMethod(jArguments, jMakeNativeMap, arg);
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());

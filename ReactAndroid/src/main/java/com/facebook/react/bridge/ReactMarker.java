@@ -42,6 +42,9 @@ public class ReactMarker {
   private static final List<FabricMarkerListener> sFabricMarkerListeners =
       new CopyOnWriteArrayList<>();
 
+  // The android app start time that to be set by the corresponding app
+  private static long sAppStartTime;
+
   @DoNotStrip
   public static void addListener(MarkerListener listener) {
     if (!sListeners.contains(listener)) {
@@ -137,5 +140,15 @@ public class ReactMarker {
     for (MarkerListener listener : sListeners) {
       listener.logMarker(name, tag, instanceKey);
     }
+  }
+
+  @DoNotStrip
+  public static void setAppStartTime(long appStartTime) {
+    sAppStartTime = appStartTime;
+  }
+
+  @DoNotStrip
+  public static double getAppStartTime() {
+    return (double) sAppStartTime;
   }
 }

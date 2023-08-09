@@ -248,4 +248,5 @@ async function main(): Promise<void> {
   iw.write();
 }
 
+// $FlowFixMe[unused-promise]
 main();

@@ -7,7 +7,6 @@
 
 #import "RCTSurfaceRegistry.h"
 
-#import <butter/mutex.h>
 #import <mutex>
 #import <shared_mutex>
 
@@ -16,7 +15,7 @@
 using namespace facebook;
 
 @implementation RCTSurfaceRegistry {
-  butter::shared_mutex _mutex;
+  std::shared_mutex _mutex;
   NSMapTable<id, RCTFabricSurface *> *_registry;
 }
 
@@ -32,13 +31,13 @@ using namespace facebook;
 
 - (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block
 {
-  std::shared_lock<butter::shared_mutex> lock(_mutex);
+  std::shared_lock lock(_mutex);
   block([_registry objectEnumerator]);
 }
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
-  std::unique_lock<butter::shared_mutex> lock(_mutex);
+  std::unique_lock lock(_mutex);
 
   ReactTag rootTag = surface.rootViewTag.integerValue;
   [_registry setObject:surface forKey:(__bridge id)(void *)rootTag];
@@ -46,7 +45,7 @@ using namespace facebook;
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
-  std::unique_lock<butter::shared_mutex> lock(_mutex);
+  std::unique_lock lock(_mutex);
 
   ReactTag rootTag = surface.rootViewTag.integerValue;
   [_registry removeObjectForKey:(__bridge id)(void *)rootTag];
@@ -54,7 +53,7 @@ using namespace facebook;
 
 - (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
 {
-  std::shared_lock<butter::shared_mutex> lock(_mutex);
+  std::shared_lock lock(_mutex);
 
   return [_registry objectForKey:(__bridge id)(void *)rootTag];
 }

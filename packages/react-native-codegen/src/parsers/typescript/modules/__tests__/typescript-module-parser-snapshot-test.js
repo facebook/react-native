@@ -11,9 +11,12 @@
 
 'use strict';
 
-const TypeScriptParser = require('../../index.js');
+const {TypeScriptParser} = require('../../parser');
+
 const fixtures = require('../__test_fixtures__/fixtures.js');
 const failureFixtures = require('../__test_fixtures__/failures.js');
+
+const typeScriptParser = new TypeScriptParser();
 
 jest.mock('fs', () => ({
   readFileSync: filename => {
@@ -31,7 +34,7 @@ describe('RN Codegen TypeScript Parser', () => {
     .sort()
     .forEach(fixtureName => {
       it(`can generate fixture ${fixtureName}`, () => {
-        const schema = TypeScriptParser.parseModuleFixture(fixtureName);
+        const schema = typeScriptParser.parseModuleFixture(fixtureName);
         const serializedSchema = JSON.stringify(schema, null, 2).replace(
           /"/g,
           "'",
@@ -46,7 +49,7 @@ describe('RN Codegen TypeScript Parser', () => {
     .forEach(fixtureName => {
       it(`Fails with error message ${fixtureName}`, () => {
         expect(() => {
-          TypeScriptParser.parseModuleFixture(fixtureName);
+          typeScriptParser.parseModuleFixture(fixtureName);
         }).toThrowErrorMatchingSnapshot();
       });
     });

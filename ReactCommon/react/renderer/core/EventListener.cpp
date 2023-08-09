@@ -10,7 +10,7 @@
 namespace facebook::react {
 
 bool EventListenerContainer::willDispatchEvent(const RawEvent &event) {
-  std::shared_lock<butter::shared_mutex> lock(mutex_);
+  std::shared_lock lock(mutex_);
 
   bool handled = false;
   for (auto const &listener : eventListeners_) {
@@ -21,14 +21,14 @@ bool EventListenerContainer::willDispatchEvent(const RawEvent &event) {
 
 void EventListenerContainer::addListener(
     const std::shared_ptr<EventListener const> &listener) {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
 
   eventListeners_.push_back(listener);
 }
 
 void EventListenerContainer::removeListener(
     const std::shared_ptr<EventListener const> &listener) {
-  std::unique_lock<butter::shared_mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
 
   auto it = std::find(eventListeners_.begin(), eventListeners_.end(), listener);
   if (it != eventListeners_.end()) {

@@ -8,11 +8,24 @@
  * @flow strict
  */
 
-import type {HighResTimeStamp} from './PerformanceEntry';
+// flowlint unsafe-getters-setters:off
+
+import type {HighResTimeStamp, PerformanceEntryType} from './PerformanceEntry';
+import type {PerformanceEntryList} from './PerformanceObserver';
 
 import warnOnce from '../Utilities/warnOnce';
+import EventCounts from './EventCounts';
+import MemoryInfo from './MemoryInfo';
 import NativePerformance from './NativePerformance';
+import NativePerformanceObserver from './NativePerformanceObserver';
 import {PerformanceEntry} from './PerformanceEntry';
+import {warnNoNativePerformanceObserver} from './PerformanceObserver';
+import {
+  performanceEntryTypeToRaw,
+  rawToPerformanceEntry,
+} from './RawPerformanceEntry';
+import {RawPerformanceEntryTypeValues} from './RawPerformanceEntry';
+import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 
 type DetailType = mixed;
 
@@ -83,9 +96,49 @@ function warnNoNativePerformance() {
 /**
  * Partial implementation of the Performance interface for RN,
  * corresponding to the standard in
- *  https://www.w3.org/TR/user-timing/#extensions-performance-interface
+ * https://www.w3.org/TR/user-timing/#extensions-performance-interface
  */
 export default class Performance {
+  eventCounts: EventCounts = new EventCounts();
+
+  // Get the current JS memory information.
+  get memory(): MemoryInfo {
+    if (NativePerformance?.getSimpleMemoryInfo) {
+      // JSI API implementations may have different variants of names for the JS
+      // heap information we need here. We will parse the result based on our
+      // guess of the implementation for now.
+      const memoryInfo = NativePerformance.getSimpleMemoryInfo();
+      if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
+        // We got memory information from Hermes
+        const {
+          hermes_heapSize: totalJSHeapSize,
+          hermes_allocatedBytes: usedJSHeapSize,
+        } = memoryInfo;
+
+        return new MemoryInfo({
+          jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
+          totalJSHeapSize,
+          usedJSHeapSize,
+        });
+      } else {
+        // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
+        return new MemoryInfo();
+      }
+    }
+
+    return new MemoryInfo();
+  }
+
+  // Startup metrics is not used in web, but only in React Native.
+  get reactNativeStartupTiming(): ReactNativeStartupTiming {
+    if (NativePerformance?.getReactNativeStartupTiming) {
+      return new ReactNativeStartupTiming(
+        NativePerformance.getReactNativeStartupTiming(),
+      );
+    }
+    return new ReactNativeStartupTiming();
+  }
+
   mark(
     markName: string,
     markOptions?: PerformanceMarkOptions,
@@ -102,12 +155,15 @@ export default class Performance {
   }
 
   clearMarks(markName?: string): void {
-    if (!NativePerformance?.clearMarks) {
-      warnNoNativePerformance();
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
       return;
     }
 
-    NativePerformance.clearMarks(markName);
+    NativePerformanceObserver?.clearEntries(
+      RawPerformanceEntryTypeValues.MARK,
+      markName,
+    );
   }
 
   measure(
@@ -180,12 +236,15 @@ export default class Performance {
   }
 
   clearMeasures(measureName?: string): void {
-    if (!NativePerformance?.clearMeasures) {
-      warnNoNativePerformance();
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
       return;
     }
 
-    NativePerformance.clearMeasures(measureName);
+    NativePerformanceObserver?.clearEntries(
+      RawPerformanceEntryTypeValues.MEASURE,
+      measureName,
+    );
   }
 
   /**
@@ -194,5 +253,60 @@ export default class Performance {
    */
   now(): HighResTimeStamp {
     return getCurrentTimeStamp();
+  }
+
+  /**
+   * An extension that allows to get back to JS all currently logged marks/measures
+   * (in our case, be it from JS or native), see
+   * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
+   */
+  getEntries(): PerformanceEntryList {
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries().map(rawToPerformanceEntry);
+  }
+
+  getEntriesByType(entryType: PerformanceEntryType): PerformanceEntryList {
+    if (entryType !== 'mark' && entryType !== 'measure') {
+      console.log(
+        `Performance.getEntriesByType: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+      );
+      return [];
+    }
+
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries(
+      performanceEntryTypeToRaw(entryType),
+    ).map(rawToPerformanceEntry);
+  }
+
+  getEntriesByName(
+    entryName: string,
+    entryType?: PerformanceEntryType,
+  ): PerformanceEntryList {
+    if (
+      entryType !== undefined &&
+      entryType !== 'mark' &&
+      entryType !== 'measure'
+    ) {
+      console.log(
+        `Performance.getEntriesByName: Only valid for 'mark' and 'measure' entry types, got ${entryType}`,
+      );
+      return [];
+    }
+
+    if (!NativePerformanceObserver?.clearEntries) {
+      warnNoNativePerformanceObserver();
+      return [];
+    }
+    return NativePerformanceObserver.getEntries(
+      entryType != null ? performanceEntryTypeToRaw(entryType) : undefined,
+      entryName,
+    ).map(rawToPerformanceEntry);
   }
 }

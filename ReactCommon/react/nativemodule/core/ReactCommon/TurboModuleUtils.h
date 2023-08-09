@@ -36,7 +36,7 @@ using PromiseSetupFunctionType =
     std::function<void(jsi::Runtime &rt, std::shared_ptr<Promise>)>;
 jsi::Value createPromiseAsJSIValue(
     jsi::Runtime &rt,
-    const PromiseSetupFunctionType func);
+    PromiseSetupFunctionType &&func);
 
 class RAIICallbackWrapperDestroyer {
  public:

@@ -365,6 +365,7 @@ function AutoCorrectSpellCheckGrammarCheckCallbacks(): React.Node {
 }
 
 function OnDragEnterOnDragLeaveOnDrop(): React.Node {
+  // $FlowFixMe[missing-empty-array-annot]
   const [log, setLog] = React.useState([]);
   const appendLog = (line: string) => {
     const limit = 6;
@@ -408,6 +409,7 @@ function OnDragEnterOnDragLeaveOnDrop(): React.Node {
 }
 
 function OnPaste(): React.Node {
+  // $FlowFixMe[missing-empty-array-annot]
   const [log, setLog] = React.useState([]);
   const appendLog = (line: string) => {
     const limit = 3;
@@ -973,6 +975,13 @@ exports.examples = ([
           </WithLabel>
           <WithLabel label="name">
             <TextInput textContentType="name" style={styles.default} />
+          </WithLabel>
+          <WithLabel label="postalCode, when autoComplete set">
+            <TextInput
+              textContentType="postalCode"
+              autoComplete="email"
+              style={styles.default}
+            />
           </WithLabel>
         </View>
       );

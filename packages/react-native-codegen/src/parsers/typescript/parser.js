@@ -16,18 +16,26 @@ import type {
   NamedShape,
   Nullable,
   NativeModuleParamTypeAnnotation,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
+  NativeModuleAliasMap,
+  NativeModuleEnumMap,
 } from '../../CodegenSchema';
 import type {ParserType} from '../errors';
 import type {Parser} from '../parser';
+import type {ParserErrorCapturer, TypeDeclarationMap} from '../utils';
+
+const {typeScriptTranslateTypeAnnotation} = require('./modules');
 
 // $FlowFixMe[untyped-import] Use flow-types for @babel/parser
 const babelParser = require('@babel/parser');
 
 const {buildSchema} = require('../parsers-commons');
-const {Visitor} = require('./Visitor');
+const {Visitor} = require('../parsers-primitives');
 const {buildComponentSchema} = require('./components');
-const {wrapComponentSchema} = require('./components/schema');
-const {buildModuleSchema} = require('./modules');
+const {wrapComponentSchema} = require('../schema.js');
+const {buildModuleSchema} = require('../parsers-commons.js');
+const {resolveTypeAnnotation} = require('./utils');
 
 const fs = require('fs');
 
@@ -52,20 +60,6 @@ class TypeScriptParser implements Parser {
       );
     }
     return property.key.name;
-  }
-
-  getMaybeEnumMemberType(maybeEnumDeclaration: $FlowFixMe): string {
-    if (maybeEnumDeclaration.members[0].initializer) {
-      return maybeEnumDeclaration.members[0].initializer.type
-        .replace('NumericLiteral', 'NumberTypeAnnotation')
-        .replace('StringLiteral', 'StringTypeAnnotation');
-    }
-
-    return 'StringTypeAnnotation';
-  }
-
-  isEnumDeclaration(maybeEnumDeclaration: $FlowFixMe): boolean {
-    return maybeEnumDeclaration.type === 'TSEnumDeclaration';
   }
 
   language(): ParserType {
@@ -102,6 +96,10 @@ class TypeScriptParser implements Parser {
   parseFile(filename: string): SchemaType {
     const contents = fs.readFileSync(filename, 'utf8');
 
+    return this.parseString(contents, filename);
+  }
+
+  parseString(contents: string, filename: ?string): SchemaType {
     return buildSchema(
       contents,
       filename,
@@ -110,7 +108,15 @@ class TypeScriptParser implements Parser {
       buildModuleSchema,
       Visitor,
       this,
+      resolveTypeAnnotation,
+      typeScriptTranslateTypeAnnotation,
     );
+  }
+
+  parseModuleFixture(filename: string): SchemaType {
+    const contents = fs.readFileSync(filename, 'utf8');
+
+    return this.parseString(contents, 'path/NativeSampleTurboModule.ts');
   }
 
   getAst(contents: string): $FlowFixMe {
@@ -145,7 +151,156 @@ class TypeScriptParser implements Parser {
   ): $FlowFixMe {
     return functionTypeAnnotation.typeAnnotation.typeAnnotation;
   }
+
+  parseEnumMembersType(typeAnnotation: $FlowFixMe): NativeModuleEnumMemberType {
+    const enumInitializer = typeAnnotation.members[0]?.initializer;
+    const enumMembersType: ?NativeModuleEnumMemberType =
+      !enumInitializer || enumInitializer.type === 'StringLiteral'
+        ? 'StringTypeAnnotation'
+        : enumInitializer.type === 'NumericLiteral'
+        ? 'NumberTypeAnnotation'
+        : null;
+    if (!enumMembersType) {
+      throw new Error(
+        'Enum values must be either blank, number, or string values.',
+      );
+    }
+    return enumMembersType;
+  }
+
+  validateEnumMembersSupported(
+    typeAnnotation: $FlowFixMe,
+    enumMembersType: NativeModuleEnumMemberType,
+  ): void {
+    if (!typeAnnotation.members || typeAnnotation.members.length === 0) {
+      throw new Error('Enums should have at least one member.');
+    }
+
+    const enumInitializerType =
+      enumMembersType === 'StringTypeAnnotation'
+        ? 'StringLiteral'
+        : enumMembersType === 'NumberTypeAnnotation'
+        ? 'NumericLiteral'
+        : null;
+
+    typeAnnotation.members.forEach(member => {
+      if (
+        (member.initializer?.type ?? 'StringLiteral') !== enumInitializerType
+      ) {
+        throw new Error(
+          'Enum values can not be mixed. They all must be either blank, number, or string values.',
+        );
+      }
+    });
+  }
+
+  parseEnumMembers(typeAnnotation: $FlowFixMe): NativeModuleEnumMembers {
+    return typeAnnotation.members.map(member => ({
+      name: member.id.name,
+      value: member.initializer?.value ?? member.id.name,
+    }));
+  }
+
+  isModuleInterface(node: $FlowFixMe): boolean {
+    return (
+      node.type === 'TSInterfaceDeclaration' &&
+      node.extends?.length === 1 &&
+      node.extends[0].type === 'TSExpressionWithTypeArguments' &&
+      node.extends[0].expression.name === 'TurboModule'
+    );
+  }
+
+  extractAnnotatedElement(
+    typeAnnotation: $FlowFixMe,
+    types: TypeDeclarationMap,
+  ): $FlowFixMe {
+    return types[typeAnnotation.typeParameters.params[0].typeName.name];
+  }
+
+  /**
+   * TODO(T108222691): Use flow-types for @babel/parser
+   */
+  getTypes(ast: $FlowFixMe): TypeDeclarationMap {
+    return ast.body.reduce((types, node) => {
+      switch (node.type) {
+        case 'ExportNamedDeclaration': {
+          if (node.declaration) {
+            switch (node.declaration.type) {
+              case 'TSTypeAliasDeclaration':
+              case 'TSInterfaceDeclaration':
+              case 'TSEnumDeclaration': {
+                types[node.declaration.id.name] = node.declaration;
+                break;
+              }
+            }
+          }
+          break;
+        }
+        case 'TSTypeAliasDeclaration':
+        case 'TSInterfaceDeclaration':
+        case 'TSEnumDeclaration': {
+          types[node.id.name] = node;
+          break;
+        }
+      }
+      return types;
+    }, {});
+  }
+
+  callExpressionTypeParameters(callExpression: $FlowFixMe): $FlowFixMe | null {
+    return callExpression.typeParameters || null;
+  }
+
+  computePartialProperties(
+    properties: Array<$FlowFixMe>,
+    hasteModuleName: string,
+    types: TypeDeclarationMap,
+    aliasMap: {...NativeModuleAliasMap},
+    enumMap: {...NativeModuleEnumMap},
+    tryParse: ParserErrorCapturer,
+    cxxOnly: boolean,
+  ): Array<$FlowFixMe> {
+    return properties.map(prop => {
+      return {
+        name: prop.key.name,
+        optional: true,
+        typeAnnotation: typeScriptTranslateTypeAnnotation(
+          hasteModuleName,
+          prop.typeAnnotation.typeAnnotation,
+          types,
+          aliasMap,
+          enumMap,
+          tryParse,
+          cxxOnly,
+          this,
+        ),
+      };
+    });
+  }
+
+  functionTypeAnnotation(propertyValueType: string): boolean {
+    return (
+      propertyValueType === 'TSFunctionType' ||
+      propertyValueType === 'TSMethodSignature'
+    );
+  }
+
+  getTypeArgumentParamsFromDeclaration(declaration: $FlowFixMe): $FlowFixMe {
+    return declaration.typeParameters.params;
+  }
+
+  // This FlowFixMe is supposed to refer to typeArgumentParams and funcArgumentParams of generated AST.
+  getNativeComponentType(
+    typeArgumentParams: $FlowFixMe,
+    funcArgumentParams: $FlowFixMe,
+  ): {[string]: string} {
+    return {
+      propsTypeName: typeArgumentParams[0].typeName.name,
+      componentName: funcArgumentParams[0].value,
+    };
+  }
 }
+
 module.exports = {
   TypeScriptParser,
 };

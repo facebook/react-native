@@ -26,11 +26,11 @@ namespace react {
  */
 class LongLivedObject {
  public:
-  virtual void allowRelease();
+  void allowRelease();
 
  protected:
-  LongLivedObject();
-  virtual ~LongLivedObject();
+  LongLivedObject() = default;
+  virtual ~LongLivedObject() = default;
 };
 
 /**
@@ -40,17 +40,18 @@ class LongLivedObjectCollection {
  public:
   static LongLivedObjectCollection &get();
 
-  LongLivedObjectCollection();
   LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
   void operator=(LongLivedObjectCollection const &) = delete;
 
-  void add(std::shared_ptr<LongLivedObject> o) const;
-  void remove(const LongLivedObject *o) const;
-  void clear() const;
+  void add(std::shared_ptr<LongLivedObject> o);
+  void remove(const LongLivedObject *o);
+  void clear();
   size_t size() const;
 
  private:
-  mutable std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
+  LongLivedObjectCollection() = default;
+
+  std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
   mutable std::mutex collectionMutex_;
 };
 

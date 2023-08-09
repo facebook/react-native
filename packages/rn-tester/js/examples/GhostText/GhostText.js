@@ -107,6 +107,7 @@ function determineGhostText(
 
 function GhostTextExample(): React.Node {
   const counter = React.useRef(0);
+  // $FlowFixMe[missing-empty-array-annot]
   const [log, setLog] = React.useState([]);
 
   const clearLog = React.useCallback(() => {

@@ -21,12 +21,7 @@ public class RNTesterActivity extends ReactActivity {
     private final @Nullable ReactActivity mActivity;
 
     public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
-      super(
-          activity,
-          mainComponentName,
-          DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
-          DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
-          );
+      super(activity, mainComponentName, DefaultNewArchitectureEntryPoint.getFabricEnabled());
       this.mActivity = activity;
     }
 

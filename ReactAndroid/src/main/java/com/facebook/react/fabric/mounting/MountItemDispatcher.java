@@ -276,6 +276,10 @@ public class MountItemDispatcher {
           // If there's an exception, we want to log diagnostics in prod and rethrow.
           FLog.e(TAG, "dispatchMountItems: caught exception, displaying mount state", e);
           for (MountItem m : mountItemsToDispatch) {
+            if (m == mountItem) {
+              // We want to mark the mount item that caused exception
+              FLog.e(TAG, "dispatchMountItems: mountItem: next mountItem triggered exception!");
+            }
             printMountItem(m, "dispatchMountItems: mountItem");
           }
           if (mountItem.getSurfaceId() != View.NO_ID) {

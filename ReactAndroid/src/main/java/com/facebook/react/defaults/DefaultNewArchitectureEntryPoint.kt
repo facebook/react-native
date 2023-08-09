@@ -27,23 +27,45 @@ object DefaultNewArchitectureEntryPoint {
   fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      concurrentReactEnabled: Boolean = true,
       dynamicLibraryName: String = "appmodules",
   ) {
     ReactFeatureFlags.useTurboModules = turboModulesEnabled
     ReactFeatureFlags.enableFabricRenderer = fabricEnabled
 
-    this.fabricEnabled = fabricEnabled
-    this.turboModulesEnabled = turboModulesEnabled
-    this.concurrentReactEnabled = concurrentReactEnabled
+    this.privateFabricEnabled = fabricEnabled
+    this.privateTurboModulesEnabled = turboModulesEnabled
+    this.privateConcurrentReactEnabled = fabricEnabled
 
     SoLoader.loadLibrary("react_newarchdefaults")
     SoLoader.loadLibrary(dynamicLibraryName)
   }
 
-  @JvmStatic var fabricEnabled: Boolean = false
+  @Deprecated(
+      message =
+          "Calling DefaultNewArchitectureEntryPoint.load() with different fabricEnabled and concurrentReactEnabled is deprecated. Please use a single flag for both Fabric and Concurrent React",
+      replaceWith = ReplaceWith("load(turboModulesEnabled, fabricEnabled, dynamicLibraryName)"),
+      level = DeprecationLevel.WARNING)
+  fun load(
+      turboModulesEnabled: Boolean = true,
+      fabricEnabled: Boolean = true,
+      @Suppress("UNUSED_PARAMETER") concurrentReactEnabled: Boolean = true,
+      dynamicLibraryName: String = "appmodules",
+  ) {
+    load(turboModulesEnabled, fabricEnabled, dynamicLibraryName)
+  }
 
-  @JvmStatic var turboModulesEnabled: Boolean = false
+  private var privateFabricEnabled: Boolean = false
+  @JvmStatic
+  val fabricEnabled: Boolean
+    get() = privateFabricEnabled
 
-  @JvmStatic var concurrentReactEnabled: Boolean = false
+  private var privateTurboModulesEnabled: Boolean = false
+  @JvmStatic
+  val turboModulesEnabled: Boolean
+    get() = privateTurboModulesEnabled
+
+  private var privateConcurrentReactEnabled: Boolean = false
+  @JvmStatic
+  val concurrentReactEnabled: Boolean
+    get() = privateConcurrentReactEnabled
 }

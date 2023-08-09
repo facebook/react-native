@@ -20,6 +20,7 @@ const {
   emitFloat,
   emitNumber,
   emitInt32,
+  emitGenericObject,
   emitObject,
   emitPromise,
   emitRootTag,
@@ -28,6 +29,8 @@ const {
   emitStringish,
   emitMixed,
   typeAliasResolution,
+  typeEnumResolution,
+  Visitor,
 } = require('../parsers-primitives.js');
 const {MockedParser} = require('../parserMock');
 const {emitUnion} = require('../parsers-primitives');
@@ -263,14 +266,14 @@ describe('typeAliasResolution', () => {
     ],
   };
 
-  describe('when typeAliasResolutionStatus is successful', () => {
-    const typeAliasResolutionStatus = {successful: true, aliasName: 'Foo'};
+  describe('when typeResolution is successful', () => {
+    const typeResolution = {successful: true, type: 'alias', name: 'Foo'};
 
     describe('when nullable is true', () => {
       it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           true,
@@ -291,7 +294,7 @@ describe('typeAliasResolution', () => {
       it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           false,
@@ -306,14 +309,14 @@ describe('typeAliasResolution', () => {
     });
   });
 
-  describe('when typeAliasResolutionStatus is not successful', () => {
-    const typeAliasResolutionStatus = {successful: false};
+  describe('when typeResolution is not successful', () => {
+    const typeResolution = {successful: false};
 
     describe('when nullable is true', () => {
       it('returns nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           true,
@@ -331,7 +334,7 @@ describe('typeAliasResolution', () => {
       it('returns non nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          typeAliasResolutionStatus,
+          typeResolution,
           objectTypeAnnotation,
           aliasMap,
           false,
@@ -339,6 +342,96 @@ describe('typeAliasResolution', () => {
 
         expect(aliasMap).toEqual({});
         expect(result).toEqual(objectTypeAnnotation);
+      });
+    });
+  });
+});
+
+describe('typeEnumResolution', () => {
+  describe('when typeResolution is successful', () => {
+    describe('when nullable is true', () => {
+      it('returns nullable EnumDeclaration and map it in enumMap', () => {
+        const enumMap = {};
+        const mockTypeAnnotation = {type: 'StringTypeAnnotation'};
+
+        const result = typeEnumResolution(
+          mockTypeAnnotation,
+          {successful: true, type: 'enum', name: 'Foo'},
+          true /* nullable */,
+          'SomeModule' /* name */,
+          enumMap,
+          parser,
+        );
+
+        expect(enumMap).toEqual({
+          Foo: {
+            type: 'EnumDeclarationWithMembers',
+            name: 'Foo',
+            memberType: 'StringTypeAnnotation',
+            members: [
+              {
+                name: 'Hello',
+                value: 'hello',
+              },
+              {
+                name: 'Goodbye',
+                value: 'goodbye',
+              },
+            ],
+          },
+        });
+
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            name: 'Foo',
+            type: 'EnumDeclaration',
+            memberType: 'StringTypeAnnotation',
+          },
+        });
+      });
+    });
+
+    describe('when nullable is false', () => {
+      it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
+        const enumMap = {};
+        const mockTypeAnnotation = {type: 'NumberTypeAnnotation'};
+
+        const result = typeEnumResolution(
+          mockTypeAnnotation,
+          {successful: true, type: 'enum', name: 'Foo'},
+          true /* nullable */,
+          'SomeModule' /* name */,
+          enumMap,
+          parser,
+        );
+
+        expect(enumMap).toEqual({
+          Foo: {
+            type: 'EnumDeclarationWithMembers',
+            name: 'Foo',
+            memberType: 'NumberTypeAnnotation',
+            members: [
+              {
+                name: 'On',
+                value: '1',
+              },
+              {
+                name: 'Off',
+                value: '0',
+              },
+            ],
+          },
+        });
+
+        expect(result).toEqual({
+          type: 'NullableTypeAnnotation',
+          typeAnnotation: {
+            name: 'Foo',
+            type: 'EnumDeclaration',
+            memberType: 'NumberTypeAnnotation',
+          },
+        });
       });
     });
   });
@@ -360,6 +453,8 @@ describe('emitPromise', () => {
       /* types: TypeDeclarationMap */
       {},
       /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
       {},
       /* tryParse: ParserErrorCapturer */
       // $FlowFixMe[missing-local-annot]
@@ -430,10 +525,10 @@ describe('emitPromise', () => {
   });
 });
 
-describe('emitObject', () => {
+describe('emitGenericObject', () => {
   describe('when nullable is true', () => {
     it('returns nullable type annotation', () => {
-      const result = emitObject(true);
+      const result = emitGenericObject(true);
       const expected = {
         type: 'NullableTypeAnnotation',
         typeAnnotation: {
@@ -446,7 +541,7 @@ describe('emitObject', () => {
   });
   describe('when nullable is false', () => {
     it('returns non nullable type annotation', () => {
-      const result = emitObject(false);
+      const result = emitGenericObject(false);
       const expected = {
         type: 'GenericObjectTypeAnnotation',
       };
@@ -454,30 +549,94 @@ describe('emitObject', () => {
       expect(result).toEqual(expected);
     });
   });
+});
 
-  describe('emitFloat', () => {
-    describe('when nullable is true', () => {
-      it('returns nullable type annotation', () => {
-        const result = emitFloat(true);
-        const expected = {
-          type: 'NullableTypeAnnotation',
+describe('emitObject', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const props = [
+        {
+          name: 'a',
+          optional: true,
           typeAnnotation: {
-            type: 'FloatTypeAnnotation',
+            type: 'StringTypeAnnotation',
           },
-        };
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {
+            type: 'BooleanTypeAnnotation',
+          },
+        },
+      ];
 
-        expect(result).toEqual(expected);
-      });
+      const result = emitObject(true, props);
+
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'ObjectTypeAnnotation',
+          properties: props,
+        },
+      };
+
+      expect(result).toEqual(expected);
     });
-    describe('when nullable is false', () => {
-      it('returns non nullable type annotation', () => {
-        const result = emitFloat(false);
-        const expected = {
-          type: 'FloatTypeAnnotation',
-        };
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const props = [
+        {
+          name: 'a',
+          optional: true,
+          typeAnnotation: {
+            type: 'StringTypeAnnotation',
+          },
+        },
+        {
+          name: 'b',
+          optional: true,
+          typeAnnotation: {
+            type: 'BooleanTypeAnnotation',
+          },
+        },
+      ];
 
-        expect(result).toEqual(expected);
-      });
+      const result = emitObject(false, props);
+
+      const expected = {
+        type: 'ObjectTypeAnnotation',
+        properties: props,
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+});
+
+describe('emitFloat', () => {
+  describe('when nullable is true', () => {
+    it('returns nullable type annotation', () => {
+      const result = emitFloat(true);
+      const expected = {
+        type: 'NullableTypeAnnotation',
+        typeAnnotation: {
+          type: 'FloatTypeAnnotation',
+        },
+      };
+
+      expect(result).toEqual(expected);
+    });
+  });
+  describe('when nullable is false', () => {
+    it('returns non nullable type annotation', () => {
+      const result = emitFloat(false);
+      const expected = {
+        type: 'FloatTypeAnnotation',
+      };
+
+      expect(result).toEqual(expected);
     });
   });
 });
@@ -926,6 +1085,8 @@ describe('emitArrayType', () => {
       {},
       /* aliasMap: {...NativeModuleAliasMap} */
       {},
+      /* enumMap: {...NativeModuleEnumMap} */
+      {},
       /* cxxOnly: boolean */
       false,
       nullable,
@@ -990,6 +1151,105 @@ describe('emitArrayType', () => {
 
         expect(result).toEqual(expected);
       });
+    });
+  });
+});
+
+describe('Visitor', () => {
+  describe('CallExpression', () => {
+    it('sets isComponent to true if callee type is Identifier and callee name is codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: 'Identifier', name: 'codegenNativeComponent'},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(true);
+    });
+
+    it('should not set isComponent to true if callee type is not Identifier or callee name is not codegenNativeComponent', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {type: '', name: ''},
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isComponent).toBe(false);
+    });
+
+    it('sets isModule to true if isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        type: 'CallExpression',
+        callee: {
+          type: 'MemberExpression',
+          object: {type: 'Identifier', name: 'TurboModuleRegistry'},
+          property: {type: 'Identifier', name: 'getEnforcing'},
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if not isModuleRegistryCall', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {
+        callee: {
+          type: 'Expression',
+        },
+      };
+      const visitor = Visitor(infoMap);
+      visitor.CallExpression(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('InterfaceExtends', () => {
+    it('sets isModule to true if module interface extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: 'TurboModule'}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if module interface does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {id: {name: ''}};
+
+      const visitor = Visitor(infoMap);
+      visitor.InterfaceExtends(node);
+
+      expect(infoMap.isModule).toBe(false);
+    });
+  });
+
+  describe('TSInterfaceDeclaration', () => {
+    it('sets isModule to true if TypeScript Interface Declaration extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: 'TurboModule'}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(true);
+    });
+
+    it('should not set isModule to true if TypeScript Interface Declaration does not extends TurboModule', () => {
+      const infoMap = {isComponent: false, isModule: false};
+      const node = {extends: [{expression: {name: ''}}]};
+
+      const visitor = Visitor(infoMap);
+      visitor.TSInterfaceDeclaration(node);
+
+      expect(infoMap.isModule).toBe(false);
     });
   });
 });

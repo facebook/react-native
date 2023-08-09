@@ -17,10 +17,20 @@ import type {
   NativeModuleFunctionTypeAnnotation,
   NativeModulePropertyShape,
   NativeModuleAliasMap,
+  NativeModuleEnumMap,
+  NativeModuleEnumMembers,
+  NativeModuleEnumMemberType,
 } from '../../CodegenSchema';
 
 import type {AliasResolver} from './Utils';
-const {createAliasResolver, getModules} = require('./Utils');
+
+const {getEnumName, toSafeCppString} = require('../Utils');
+
+const {
+  createAliasResolver,
+  getModules,
+  getAreEnumMembersInteger,
+} = require('./Utils');
 const {indent} = require('../Utils');
 const {unwrapNullable} = require('../../parsers/parsers-commons');
 
@@ -30,12 +40,15 @@ const ModuleClassDeclarationTemplate = ({
   hasteModuleName,
   moduleProperties,
   structs,
+  enums,
 }: $ReadOnly<{
   hasteModuleName: string,
   moduleProperties: string[],
   structs: string,
+  enums: string,
 }>) => {
-  return `${structs}class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
+  return `${enums}
+  ${structs}class JSI_EXPORT ${hasteModuleName}CxxSpecJSI : public TurboModule {
 protected:
   ${hasteModuleName}CxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
 
@@ -112,10 +125,12 @@ ${modules.join('\n\n')}
 };
 
 function translatePrimitiveJSTypeToCpp(
+  moduleName: string,
   nullableTypeAnnotation: Nullable<NativeModuleTypeAnnotation>,
   optional: boolean,
   createErrorMessage: (typeName: string) => string,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ) {
   const [typeAnnotation, nullable] = unwrapNullable<NativeModuleTypeAnnotation>(
     nullableTypeAnnotation,
@@ -157,7 +172,11 @@ function translatePrimitiveJSTypeToCpp(
     case 'EnumDeclaration':
       switch (realTypeAnnotation.memberType) {
         case 'NumberTypeAnnotation':
-          return wrap('double');
+          return getAreEnumMembersInteger(
+            enumMap[realTypeAnnotation.name].members,
+          )
+            ? wrap('int')
+            : wrap('double');
         case 'StringTypeAnnotation':
           return wrap('jsi::String');
         default:
@@ -192,10 +211,11 @@ function translatePrimitiveJSTypeToCpp(
   }
 }
 
-function createStructs(
+function createStructsString(
   moduleName: string,
   aliasMap: NativeModuleAliasMap,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
 ): string {
   return Object.keys(aliasMap)
     .map(alias => {
@@ -213,11 +233,13 @@ function createStructs(
       const paramemterConversion = value.properties
         .map((v, i) => {
           const translatedParam = translatePrimitiveJSTypeToCpp(
+            moduleName,
             v.typeAnnotation,
             false,
             typeName =>
               `Unsupported type for param "${v.name}". Found: ${typeName}`,
             resolveAlias,
+            enumMap,
           );
           return `  static ${translatedParam} ${v.name}ToJs(jsi::Runtime &rt, P${i} value) {
     return bridging::toJs(rt, value);
@@ -281,9 +303,128 @@ ${paramemterConversion}
     .join('\n');
 }
 
+type NativeEnumMemberValueType = 'std::string' | 'int32_t' | 'float';
+
+const EnumTemplate = ({
+  enumName,
+  values,
+  fromCases,
+  toCases,
+  nativeEnumMemberType,
+}: {
+  enumName: string,
+  values: string,
+  fromCases: string,
+  toCases: string,
+  nativeEnumMemberType: NativeEnumMemberValueType,
+}) => {
+  const [fromValue, fromValueConversion, toValue] =
+    nativeEnumMemberType === 'std::string'
+      ? [
+          'const jsi::String &rawValue',
+          'std::string value = rawValue.utf8(rt);',
+          'jsi::String',
+        ]
+      : [
+          'const jsi::Value &rawValue',
+          'double value = (double)rawValue.asNumber();',
+          'jsi::Value',
+        ];
+
+  return `
+#pragma mark - ${enumName}
+
+enum ${enumName} { ${values} };
+
+template <>
+struct Bridging<${enumName}> {
+  static ${enumName} fromJs(jsi::Runtime &rt, ${fromValue}, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    ${fromValueConversion}
+    ${fromCases}
+  }
+
+  static ${toValue} toJs(jsi::Runtime &rt, ${enumName} value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+    ${toCases}
+  }
+};`;
+};
+
+function generateEnum(
+  moduleName: string,
+  origEnumName: string,
+  members: NativeModuleEnumMembers,
+  memberType: NativeModuleEnumMemberType,
+): string {
+  const enumName = getEnumName(moduleName, origEnumName);
+
+  const nativeEnumMemberType: NativeEnumMemberValueType =
+    memberType === 'StringTypeAnnotation'
+      ? 'std::string'
+      : getAreEnumMembersInteger(members)
+      ? 'int32_t'
+      : 'float';
+
+  const getMemberValueAppearance = (value: string) =>
+    memberType === 'StringTypeAnnotation'
+      ? `"${value}"`
+      : `${value}${nativeEnumMemberType === 'float' ? 'f' : ''}`;
+
+  const fromCases =
+    members
+      .map(
+        member => `if (value == ${getMemberValueAppearance(member.value)}) {
+      return ${enumName}::${toSafeCppString(member.name)};
+    }`,
+      )
+      .join(' else ') +
+    ` else {
+      throw jsi::JSError(rt, "No appropriate enum member found for value");
+    }`;
+
+  const toCases =
+    members
+      .map(
+        member => `if (value == ${enumName}::${toSafeCppString(member.name)}) {
+      return bridging::toJs(rt, ${getMemberValueAppearance(member.value)});
+    }`,
+      )
+      .join(' else ') +
+    ` else {
+      throw jsi::JSError(rt, "No appropriate enum member found for enum value");
+    }`;
+
+  return EnumTemplate({
+    enumName,
+    values: members.map(member => member.name).join(', '),
+    fromCases,
+    toCases,
+    nativeEnumMemberType,
+  });
+}
+
+function createEnums(
+  moduleName: string,
+  enumMap: NativeModuleEnumMap,
+  resolveAlias: AliasResolver,
+): string {
+  return Object.entries(enumMap)
+    .map(([enumName, enumNode]) => {
+      return generateEnum(
+        moduleName,
+        enumName,
+        enumNode.members,
+        enumNode.memberType,
+      );
+    })
+    .filter(Boolean)
+    .join('\n');
+}
+
 function translatePropertyToCpp(
+  moduleName: string,
   prop: NativeModulePropertyShape,
   resolveAlias: AliasResolver,
+  enumMap: NativeModuleEnumMap,
   abstract: boolean = false,
 ) {
   const [propTypeAnnotation] =
@@ -295,20 +436,24 @@ function translatePropertyToCpp(
 
   const paramTypes = propTypeAnnotation.params.map(param => {
     const translatedParam = translatePrimitiveJSTypeToCpp(
+      moduleName,
       param.typeAnnotation,
       param.optional,
       typeName =>
         `Unsupported type for param "${param.name}" in ${prop.name}. Found: ${typeName}`,
       resolveAlias,
+      enumMap,
     );
     return `${translatedParam} ${param.name}`;
   });
 
   const returnType = translatePrimitiveJSTypeToCpp(
+    moduleName,
     propTypeAnnotation.returnTypeAnnotation,
     false,
     typeName => `Unsupported return type for ${prop.name}. Found: ${typeName}`,
     resolveAlias,
+    enumMap,
   );
 
   // The first param will always be the runtime reference.
@@ -341,26 +486,40 @@ module.exports = {
 
     const modules = Object.keys(nativeModules).flatMap(hasteModuleName => {
       const {
-        aliases,
+        aliasMap,
+        enumMap,
         spec: {properties},
         moduleName,
       } = nativeModules[hasteModuleName];
-      const resolveAlias = createAliasResolver(aliases);
-      const structs = createStructs(moduleName, aliases, resolveAlias);
+      const resolveAlias = createAliasResolver(aliasMap);
+      const structs = createStructsString(
+        moduleName,
+        aliasMap,
+        resolveAlias,
+        enumMap,
+      );
+      const enums = createEnums(moduleName, enumMap, resolveAlias);
 
       return [
         ModuleClassDeclarationTemplate({
           hasteModuleName,
           moduleProperties: properties.map(prop =>
-            translatePropertyToCpp(prop, resolveAlias, true),
+            translatePropertyToCpp(
+              moduleName,
+              prop,
+              resolveAlias,
+              enumMap,
+              true,
+            ),
           ),
           structs,
+          enums,
         }),
         ModuleSpecClassDeclarationTemplate({
           hasteModuleName,
           moduleName,
           moduleProperties: properties.map(prop =>
-            translatePropertyToCpp(prop, resolveAlias),
+            translatePropertyToCpp(moduleName, prop, resolveAlias, enumMap),
           ),
         }),
       ];

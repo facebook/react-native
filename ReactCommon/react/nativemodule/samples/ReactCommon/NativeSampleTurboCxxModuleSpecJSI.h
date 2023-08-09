@@ -23,6 +23,7 @@ class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
  public:
   virtual void voidFunc(jsi::Runtime &rt) = 0;
   virtual bool getBool(jsi::Runtime &rt, bool arg) = 0;
+  virtual double getEnum(jsi::Runtime &rt, double arg) = 0;
   virtual double getNumber(jsi::Runtime &rt, double arg) = 0;
   virtual jsi::String getString(jsi::Runtime &rt, const jsi::String &arg) = 0;
   virtual jsi::Array getArray(jsi::Runtime &rt, const jsi::Array &arg) = 0;
