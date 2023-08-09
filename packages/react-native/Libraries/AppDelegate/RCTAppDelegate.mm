@@ -279,6 +279,12 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 - (NSURL *)getBundleURL
 {
+  // Fallback to legacy API
+  NSURL *bundleURL = [self sourceURLForBridge:nil];
+  if (bundleURL) {
+    return bundleURL;
+  }
+
   [NSException raise:@"RCTAppDelegate::getBundleURL not implemented"
               format:@"Subclasses must implement a valid getBundleURL method"];
   return nullptr;
