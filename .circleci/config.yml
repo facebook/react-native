@@ -737,10 +737,6 @@ jobs:
         description: Specifies whether unit tests should run.
         type: boolean
         default: false
-      run_disabled_tests:
-        description: Specifies whether disabled tests should run. Set this to true to debug failing tests.
-        type: boolean
-        default: false
       jsengine:
         default: "Hermes"
         description: Which JavaScript engine to use. Must be one of "Hermes", "JSC".
@@ -828,26 +824,7 @@ jobs:
                   tar -zcvf xcresults.tar.gz $XCRESULT_PATH
             - store_artifacts:
                 path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
-
-      # Optionally, run disabled tests
-      - when:
-          condition: << parameters.run_disabled_tests >>
-          steps:
-            - run: echo "Failing tests may be moved here temporarily."
-            - run:
-                name: "Run Tests: CocoaPods"
-                command: ./scripts/process-podspecs.sh
-            - run:
-                name: Free up port 8081 for iOS End-to-End Tests
-                command: |
-                  # free up port 8081 for the packager before running tests
-                  set +eo pipefail
-                  lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-                  set -eo pipefail
-            - run_e2e:
-                platform: ios
       # -------------------------
-
       # Collect Results
       - report_bundle_size:
           platform: ios
