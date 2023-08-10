@@ -78,7 +78,7 @@ public class RNTesterReactHostDelegate implements ReactHostDelegate {
   }
 
   @Override
-  public JSEngineInstance getJSEngineInstance() {
+  public JSEngineInstance getJsEngineInstance() {
     if (mReactHost.getJSEngineResolutionAlgorithm() == JSEngineResolutionAlgorithm.JSC) {
       return new JSCInstance();
     } else {

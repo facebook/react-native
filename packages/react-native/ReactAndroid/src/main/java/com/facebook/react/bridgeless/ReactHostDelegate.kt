@@ -39,7 +39,7 @@ interface ReactHostDelegate {
   val reactPackages: List<ReactPackage>
 
   /** Object that holds a native reference to the javascript engine */
-  val jSEngineInstance: JSEngineInstance
+  val jsEngineInstance: JSEngineInstance
 
   /**
    * Bundle loader to use when setting up JS environment. <p>Example:
@@ -66,7 +66,7 @@ interface ReactHostDelegate {
   class ReactHostDelegateBase(
       override val jsMainModulePath: String,
       override val jSBundleLoader: JSBundleLoader,
-      override val jSEngineInstance: JSEngineInstance,
+      override val jsEngineInstance: JSEngineInstance,
       override val turboModuleManagerDelegateBuilder:
           ReactPackageTurboModuleManagerDelegate.Builder,
       override val reactPackages: List<ReactPackage> = emptyList(),

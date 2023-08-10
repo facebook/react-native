@@ -165,7 +165,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance();
+    JSEngineInstance jsEngineInstance = mDelegate.getJsEngineInstance();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
