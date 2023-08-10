@@ -40,7 +40,7 @@ import com.facebook.react.turbomodule.core.TurboModuleManager
 @DoNotStrip
 @UnstableReactNativeAPI
 class DefaultReactHostDelegate(
-    override val jSMainModulePath: String,
+    override val jsMainModulePath: String,
     override val jSBundleLoader: JSBundleLoader,
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jSEngineInstance: JSEngineInstance = HermesInstance(),
