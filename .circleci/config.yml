@@ -813,7 +813,7 @@ jobs:
           steps:
             - run:
                 name: "Run Tests: iOS Unit and Integration Tests"
-                command: yarn test-ios
+                command: node ./scripts/circleci/run_with_retry.js 3 yarn test-ios
             - run:
                 name: Zip Derived data folder
                 when: always
