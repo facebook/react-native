@@ -1522,7 +1522,7 @@ jobs:
   build_hermesc_linux:
     docker:
       - image: debian:bullseye
-    resource_class: "xlarge"
+    resource_class: "large"
     steps:
       - checkout_code_with_cache
       - run:
