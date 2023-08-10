@@ -28,7 +28,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 @PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class CompositeReactPackageTest {
-  @get:Rule var rule = PowerMockRule()
+  @get:Rule val rule = PowerMockRule()
 
   @Mock lateinit var packageNo1: ReactPackage
 
