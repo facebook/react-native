@@ -17,12 +17,6 @@ commands:
           paths:
             - ".git"
 
-  setup_artifacts:
-    steps:
-      - run:
-          name: Initial Setup
-          command: mkdir -p ./reports/{buck,build,junit,outputs}
-
   setup_ruby:
     parameters:
       ruby_version:
@@ -139,17 +133,22 @@ commands:
             - packages/rn-tester/Pods
           key: *pods_cache_key
 
-  download_gradle_dependencies:
+  with_gradle_cache:
+    parameters:
+      steps:
+        type: steps
     steps:
       - restore_cache:
           keys:
             - *gradle_cache_key
-      - run:
-          name: Download Dependencies Using Gradle
-          command: ./gradlew downloadAll
+            - v3-gradle-{{ .Environment.CIRCLE_JOB }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-
+            - v3-gradle-{{ .Environment.CIRCLE_JOB }}-
+            - v3-gradle-
+      - steps: << parameters.steps >>
       - save_cache:
           paths:
-            - ~/.gradle
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
             - packages/react-native/ReactAndroid/build/downloads
             - packages/react-native/ReactAndroid/build/third-party-ndk
           key: *gradle_cache_key
@@ -269,18 +268,18 @@ commands:
       - run:
           name: Print Hermes version
           command: |
-              HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
-              TARBALL_FILENAME=$(node ~/react-native/packages/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
-              TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
-              if [[ -e $TARBALL_PATH ]]; then
-                tar -xf $TARBALL_PATH
-                echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
-                ./destroot/bin/hermes test.js
-                rm test.js
-                rm -rf destroot
-              else
-                echo 'No Hermes tarball found.'
-              fi
+            HERMES_TARBALL_ARTIFACTS_DIR=<< parameters.hermes_tarball_artifacts_dir >>
+            TARBALL_FILENAME=$(node ~/react-native/packages/react-native/scripts/hermes/get-tarball-name.js --buildType "<< parameters.flavor >>")
+            TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+            if [[ -e $TARBALL_PATH ]]; then
+              tar -xf $TARBALL_PATH
+              echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
+              ./destroot/bin/hermes test.js
+              rm test.js
+              rm -rf destroot
+            else
+              echo 'No Hermes tarball found.'
+            fi
       - steps: << parameters.steps >>
       - when:
           condition:
@@ -310,16 +309,18 @@ commands:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
           steps:
-            - store_artifacts:
+            - store_artifacts_if_needed:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-debug.tar.gz
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Release"]
           steps:
-            - store_artifacts:
+            - store_artifacts_if_needed:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-release.tar.gz
-      - store_artifacts:
+      - store_artifacts_if_needed:
           path: /tmp/hermes/osx-bin/<< parameters.flavor >>/hermesc
+      - store_artifacts:
+          path: /tmp/hermes/dSYM/<< parameters.flavor >>/hermes.framework.dSYM
 
   stop_job_if_apple_artifacts_are_there:
     description: Stops the current job if there are already the required artifacts
@@ -335,29 +336,47 @@ commands:
             equal: [ << parameters.flavor >>, "All"]
           steps:
             - run:
-                name: "Stop if tarballs are present"
+                name: "Export files to be checked"
                 command: |
-                  if [[ -f /tmp/hermes/Release_tarball_present && -f /tmp/hermes/Debug_tarball_present && -f /tmp/hermes/Release_osx_bin && -f /tmp/hermes/Debug_osx_bin ]]; then
-                    echo "Tarball and osx-bin present. Halting this job"
-                    circleci-agent step halt
-                  fi
+                  echo "/tmp/hermes/Release_tarball_present" > /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_tarball_present" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Release_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Release_dSYM" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_dSYM" >> /tmp/hermes_files
       - when:
           condition:
             not:
               equal: [ << parameters.flavor >>, "All"]
           steps:
             - run:
-                name: "Stop if tarballs are present"
+                name: "Export files to be checked"
                 command: |
-                  TARBALL_PATH=/tmp/hermes/<< parameters.flavor >>_tarball_present
-                  OSX_BIN_PATH=/tmp/hermes/<< parameters.flavor >>_osx_bin
+                  echo "/tmp/hermes/<< parameters.flavor >>_tarball_present" > /tmp/hermes_files
+                  echo "/tmp/hermes/<< parameters.flavor >>_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/<< parameters.flavor >>_dSYM" >> /tmp/hermes_files
+      - run:
+          name: Stop if files are present
+          command: |
+            files=($(cat /tmp/hermes_files))
+            # Initialize a flag indicating all files exist
 
-                  if [[ -f "$OSX_BIN_PATH" &&  -f "$TARBALL_PATH" ]]; then
-                      echo "[HERMES] Tarball and hermesc binary present. Halting this job"
-                      circleci-agent step halt
-                  else
-                      echo "[HERMES] Tarball not found. Building."
-                  fi
+            all_files_exist=true
+
+            for file in "${files[@]}"; do
+                if [[ ! -f "$file" ]]; then
+                    all_files_exist=false
+                    echo "$file does not exist."
+                else
+                    echo "$file exist."
+                fi
+            done
+
+            if [[  "$all_files_exist" == true ]]; then
+              echo "Tarball, osx-bin and dSYM are present. Halting this job"
+              circleci-agent step halt
+            fi
+
   check_if_tarball_is_present:
     description: "Checks if the tarball of a specific Flavor is present and adds a marker file"
     parameters:
@@ -379,6 +398,7 @@ commands:
               echo "[HERMES TARBALL] Found the << parameters.flavor >> tarball"
               touch /tmp/hermes/<< parameters.flavor >>_tarball_present
             fi
+
   check_if_osx_bin_is_present:
     description: "Checks if the osx bin of a specific Flavor is present and adds a marker file"
     parameters:
@@ -395,6 +415,24 @@ commands:
               echo "[HERMES MACOSX BIN] Found the osx bin << parameters.flavor >>"
               touch /tmp/hermes/<< parameters.flavor >>_osx_bin
             fi
+
+  check_if_dsym_are_present:
+    description: "Checks if the dSYM a specific Flavor are present and adds a marker file"
+    parameters:
+      flavor:
+        default: "Debug"
+        description: The flavor of artifacts to check. Must be one of "Debug" or "Release"
+        type: enum
+        enum: ["Debug", "Release"]
+    steps:
+      - run:
+          name: Check if dSYM are there
+          command: |
+            if [[ -d /tmp/hermes/dSYM/<< parameters.flavor >> ]]; then
+              echo "[HERMES dSYM] Found the dSYM << parameters.flavor >>"
+              touch /tmp/hermes/<< parameters.flavor >>_dSYM
+            fi
+
   setup_hermes_workspace:
     description: "Setup Hermes Workspace"
     steps:
@@ -404,8 +442,6 @@ commands:
             mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./packages/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ./packages/react-native/sdks/hermes/.
             cp -r ./packages/react-native/sdks/hermes-engine/utils ./packages/react-native/sdks/hermes/.
-
-
 
   with_xcodebuild_cache:
     description: "Add caching to iOS jobs to speed up builds"
@@ -444,3 +480,29 @@ commands:
           key: << parameters.cocoapods_cache_key >>
           paths:
             - << parameters.pods_build_folder >>
+
+  store_artifacts_if_needed:
+    description: "This step stores the artifacts only if we are on main or on a stable branch"
+    parameters:
+      path:
+        type: string
+      destination:
+        type: string
+        default: << parameters.path >>
+      when:
+        type: enum
+        enum: ['always', 'on_fail', 'on_success']
+        default: 'always'
+    steps:
+      - when:
+          condition:
+            or:
+              - equal: [ main, << pipeline.git.branch >> ]
+              - matches:
+                  pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
+                  value: << pipeline.git.branch >>
+          steps:
+            - store_artifacts:
+                when: << parameters.when >>
+                path: << parameters.path >>
+                destination: << parameters.destination >>
