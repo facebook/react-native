@@ -441,6 +441,11 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def enableWarningsAsErrors() {
+    def value = project.getProperties().get("enableWarningsAsErrors")
+    return value != null ? value : false
+}
+
 task packageReactNdkLibsForBuck(type: Copy) {
     dependsOn("mergeDebugNativeLibs")
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
@@ -484,6 +489,8 @@ android {
     kotlinOptions {
         // Using '-Xjvm-default=all' to generate default java methods for interfaces
         freeCompilerArgs = ['-Xjvm-default=all']
+        // Using -PenableWarningsAsErrors=true prop to enable allWarningsAsErrors
+        kotlinOptions.allWarningsAsErrors = enableWarningsAsErrors()
     }
 
     defaultConfig {
