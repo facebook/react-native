@@ -37,7 +37,7 @@ import java.util.Map;
       LogBoxModule.class,
       DeviceEventManagerModule.class,
     })
-public class BridgelessReactPackage extends TurboReactPackage {
+class BridgelessReactPackage extends TurboReactPackage {
 
   private DevSupportManager mDevSupportManager;
   private DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
