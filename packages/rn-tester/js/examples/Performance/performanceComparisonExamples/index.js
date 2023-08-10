@@ -11,3 +11,4 @@
 
 export {default as ReRenderWithNonPureChildExample} from './ReRenderWithNonPureChildExample';
 export {default as ReRenderWithObjectPropExample} from './ReRenderWithObjectPropExample';
+export {default as SetStateInWrongEffectExample} from './SetStateInWrongEffectExample';
