@@ -109,7 +109,13 @@ void UIManagerBinding::dispatchEvent(
           runtime, eventTarget, type, priority, eventPayload);
     };
     pointerEventsProcessor_.interceptPointerEvent(
-        runtime, eventTarget, type, priority, pointerEvent, dispatchCallback);
+        runtime,
+        eventTarget,
+        type,
+        priority,
+        pointerEvent,
+        dispatchCallback,
+        *uiManager_);
   } else {
     dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
   }
@@ -1198,6 +1204,66 @@ jsi::Value UIManagerBinding::get(
               jsi::Value{
                   runtime,
                   scrollPosition.y == 0 ? 0 : (double)-scrollPosition.y});
+        });
+  }
+
+  /**
+   * Pointer Capture APIs
+   */
+  if (methodName == "hasPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          bool isCapturing = pointerEventsProcessor_.hasPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value(isCapturing);
+        });
+  }
+
+  if (methodName == "setPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_.setPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]));
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "releasePointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_.releasePointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value::undefined();
         });
   }
 

@@ -170,6 +170,34 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   getClientRects(): DOMRectList {
     throw new TypeError('Unimplemented');
   }
+
+  /**
+   * Pointer Capture APIs
+   */
+  hasPointerCapture(pointerId: number): boolean {
+    const node = getShadowNode(this);
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).hasPointerCapture(
+        node,
+        pointerId,
+      );
+    }
+    return false;
+  }
+
+  setPointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).setPointerCapture(node, pointerId);
+    }
+  }
+
+  releasePointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).releasePointerCapture(node, pointerId);
+    }
+  }
 }
 
 function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
