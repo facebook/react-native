@@ -43,15 +43,17 @@ def overrideHermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") != nul
 def hermesDir = System.getenv("REACT_NATIVE_OVERRIDE_HERMES_DIR") ?: new File(reactNativeRootDir, "sdks/hermes")
 def hermesBuildDir = new File("$buildDir/hermes")
 def hermesCOutputBinary = new File("$buildDir/hermes/bin/hermesc")
+
 // This filetree represents the file of the Hermes build that we want as input/output
 // of the buildHermesC task. Gradle will compute the hash of files in the file tree
 // and won't rebuilt hermesc unless those files are changing.
 def hermesBuildOutputFileTree = fileTree(hermesBuildDir.toString())
-                    .exclude('**/*.make')
-                    .exclude('**/*.internal')
-                    .exclude('**/external/**')
-                    .exclude('**/hermes.framework/**')
-                    .exclude('**/bin/hermesc')
+                    .include('**/*.make')
+                    .include('**/*.cmake')
+                    .include('**/*.marks')
+                    .include('**/compiler_depends.ts')
+                    .include('**/Makefile')
+                    .include('**/link.txt')
 
 def hermesVersion = "main"
 def hermesVersionFile = new File(reactNativeRootDir, "sdks/.hermesversion")
