@@ -45,7 +45,7 @@ interface ReactHostDelegate {
    * Bundle loader to use when setting up JS environment. <p>Example:
    * [JSBundleLoader.createFileLoader(application, bundleFile)]
    */
-  val jSBundleLoader: JSBundleLoader
+  val jsBundleLoader: JSBundleLoader
 
   /** TODO: combine getTurboModuleManagerDelegate inside [ReactPackage] */
   val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
@@ -65,7 +65,7 @@ interface ReactHostDelegate {
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
       override val jsMainModulePath: String,
-      override val jSBundleLoader: JSBundleLoader,
+      override val jsBundleLoader: JSBundleLoader,
       override val jsEngineInstance: JSEngineInstance,
       override val turboModuleManagerDelegateBuilder:
           ReactPackageTurboModuleManagerDelegate.Builder,
