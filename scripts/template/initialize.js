@@ -41,6 +41,31 @@ const {argv} = yargs
 const {reactNativeRootPath, templateName, templateConfigPath, directory} = argv;
 
 const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/.circleci/verdaccio.yml`;
+const MAX_ATTEMPT = 5;
+const RETRY_ATTEMPT = 500;
+
+function installYarn() {
+  for (let attempt = 1; attempt < MAX_ATTEMPT; attempt++) {
+    const result = spawnSync('yarn', ['install'], {
+      cwd: directory,
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+    if (result.status === 0) {
+      break;
+    }
+    if (attempt >= MAX_ATTEMPT) {
+      logError(`Failed to install yarn after ${MAX_ATTEMPT} tries`);
+      process.exit(1);
+    }
+
+    setTimeout(
+      logError(
+        `Retyring installation of yarn after ${MAX_ARETRY_ATTEMPTTTEMPT} ms.`,
+      ),
+      RETRY_ATTEMPT,
+    );
+  }
+}
 
 function install() {
   const VERDACCIO_PID = setupVerdaccio(
@@ -79,10 +104,8 @@ function install() {
   process.stdout.write('Completed initialization of template app \u2705\n');
 
   process.stdout.write('Installing dependencies in template app folder...\n');
-  spawnSync('yarn', ['install'], {
-    cwd: directory,
-    stdio: [process.stdin, process.stdout, process.stderr],
-  });
+  installYarn();
+
   process.stdout.write('Installed dependencies via Yarn \u2705\n');
 
   process.stdout.write(`Killing verdaccio. PID — ${VERDACCIO_PID}...\n`);
