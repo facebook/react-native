@@ -204,7 +204,7 @@ final class ReactInstance {
 
     mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
     mReactPackages.add(
-        new BridgelessReactPackage(
+        new CoreReactPackage(
             bridgelessReactContext.getDevSupportManager(),
             bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
 
