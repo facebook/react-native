@@ -865,7 +865,7 @@ public class ReactHost implements ReactHostInterface {
           ReactMarker.logMarker(
               ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY);
 
-          return getJSBundleLoader()
+          return getJsBundleLoader()
               .onSuccess(
                   task -> {
                     final JSBundleLoader bundleLoader = task.getResult();
@@ -962,7 +962,7 @@ public class ReactHost implements ReactHostInterface {
           final BridgelessReactContext reactContext = getOrCreateReactContext();
           final DevSupportManager devSupportManager = getDevSupportManager();
 
-          return getJSBundleLoader()
+          return getJsBundleLoader()
               .onSuccess(
                   task -> {
                     final JSBundleLoader bundleLoader = task.getResult();
@@ -1029,7 +1029,7 @@ public class ReactHost implements ReactHostInterface {
         });
   }
 
-  private Task<JSBundleLoader> getJSBundleLoader() {
+  private Task<JSBundleLoader> getJsBundleLoader() {
     final String method = "getJSBundleLoader()";
     log(method);
 
@@ -1042,7 +1042,7 @@ public class ReactHost implements ReactHostInterface {
                   // Since metro is running, fetch the JS bundle from the server
                   return loadJSBundleFromMetro();
                 }
-                return Task.forResult(mReactHostDelegate.getJSBundleLoader());
+                return Task.forResult(mReactHostDelegate.getJsBundleLoader());
               },
               mBGExecutor);
     } else {
@@ -1057,7 +1057,7 @@ public class ReactHost implements ReactHostInterface {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactHostDelegate.getJSBundleLoader());
+      return Task.call(() -> mReactHostDelegate.getJsBundleLoader());
     }
   }
 

@@ -62,7 +62,7 @@ public class RNTesterReactHostDelegate implements ReactHostDelegate {
   }
 
   @Override
-  public JSBundleLoader getJSBundleLoader() {
+  public JSBundleLoader getJsBundleLoader() {
     return JSBundleLoader.createAssetLoader(mContext, "assets://RNTesterApp.android.bundle", true);
   }
 

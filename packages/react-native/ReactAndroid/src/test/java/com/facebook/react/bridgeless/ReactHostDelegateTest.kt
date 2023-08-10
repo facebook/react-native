@@ -39,7 +39,7 @@ class ReactHostDelegateTest {
     val delegate =
         DefaultReactHostDelegate(
             jsMainModulePath = jsMainModulePathMocked,
-            jSBundleLoader = jsBundleLoader,
+            jsBundleLoader = jsBundleLoader,
             jsEngineInstance = hermesInstance,
             turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
 
