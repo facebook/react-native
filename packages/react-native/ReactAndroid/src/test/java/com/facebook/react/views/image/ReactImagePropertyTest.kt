@@ -59,7 +59,7 @@ class ReactImagePropertyTest {
     context = ReactApplicationContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
     context!!.initializeWithInstance(catalystInstanceMock)
-    themeContext = ThemedReactContext(context, context)
+    themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
   }
