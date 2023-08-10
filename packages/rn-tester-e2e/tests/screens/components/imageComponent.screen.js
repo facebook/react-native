@@ -12,30 +12,31 @@ import {
     UtilsSingleton as Utils,
     iOSLabel,
     androidWidget,
+    iOSName,
   } from '../../helpers/utils';
 
 
 type ImageComponentScreenType = {
     imageScreenElement: string,
     plainNetworkImageScreenElement: string,
-    checkPlainNetworkImageIsDisplayed: () => Promise<string>,
+    checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
   };
 
-export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenType = {
+export const ImageComponentScreen: ImageComponentScreenType = {
     // reference in the Components list
     imageScreenElement: Utils.platformSelect({
       ios: iOSLabel('Image'),
-      android: androidWidget('ViewGroup', 'text', 'Image'),
+      android: androidWidget('ViewGroup', 'resource-id', 'Image'),
     }),
     // References to elements within the Activity Indicator Component screen
-    defaultActivityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSLabel('plain_network_image'),
-      android: androidWidget('ProgressBar', 'resource-id', 'plain_network_image'),
+    plainNetworkImageScreenElement: Utils.platformSelect({
+      ios: iOSName('plain_network_image'),
+      android: androidWidget('ImageView', 'resource-id', 'plain_network_image'),
     }),
     // Methods to interact with the elements
     checkPlainNetworkImageIsDisplayed: async function (
       this: ImageComponentScreenType,
-    ): Promise<string> {
-      return await Utils.getElementText(this.plainNetworkImageScreenElement);
+    ): Promise<boolean> {
+      return await Utils.checkElementExistence(this.plainNetworkImageScreenElement);
     },
 };

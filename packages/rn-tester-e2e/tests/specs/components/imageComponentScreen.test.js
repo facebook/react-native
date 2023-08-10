@@ -8,20 +8,18 @@
  * @format
  */
 
-const {ComponentsScreen} = require('../../screens/components.screen.js');
-const { ActivityIndicatorComponentScreen } = require('../../screens/components/activityIndicatorComponent.screen.js');
-const {
-  ButtonComponentScreen,
-} = require('../../screens/components/buttonComponent.screen.js');
+const { ComponentsScreen} = require('../../screens/components.screen.js');
+const {ActivityIndicatorComponentScreen} = require('../../screens/components/activityIndicatorComponent.screen.js');
+const {ImageComponentScreen } = require('../../screens/components/imageComponent.screen.js');
 
-describe('Test is checking default activity indicator component', () => {
-    test('Should view properly submit alert text', async () => {
-      expect(
-        await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
-      ).toBeTruthy();
-      await ComponentsScreen.clickActivityIndicatorComponent();
-      expect(
-        await ActivityIndicatorComponentScreen.checkDefaultActivityIndicatorIsDisplayed(),
-      ).toBeTruthy();
-    });
+describe('Test is checking plain image', () => {
+  test('Should view properly image', async () => {
+    expect(
+      await ComponentsScreen.checkImageComponentIsDisplayed(),
+    ).toBeTruthy();
+    await ComponentsScreen.clickImageComponent();
+    expect(
+      await ImageComponentScreen.checkPlainNetworkImageIsDisplayed(),
+    ).toBeTruthy();
   });
+});

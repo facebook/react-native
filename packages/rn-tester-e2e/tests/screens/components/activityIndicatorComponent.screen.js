@@ -18,24 +18,24 @@ import {
 type ActivityIndicatorComponentScreenType = {
     activityIndicatorScreenElement: string,
     defaultActivityIndicatorScreenElement: string,
-    checkDefaultActivityIndicatorIsDisplayed: () => Promise<string>,
+    checkDefaultActivityIndicatorIsDisplayed: () => Promise<boolean>,
   };
 
 export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenType = {
     // reference in the Components list
     activityIndicatorScreenElement: Utils.platformSelect({
       ios: iOSLabel('ActivityIndicator'),
-      android: androidWidget('ViewGroup', 'text', 'ActivityIndicator'),
+      android: androidWidget('ViewGroup', 'resource-id', 'ActivityIndicator'),
     }),
     // References to elements within the Activity Indicator Component screen
     defaultActivityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSLabel('default_activity_indicator'),
-      android: androidWidget('ProgressBar', 'accessibility-id', 'default_activity_indicator'),
+      ios: iOSLabel('Wait for content to load!'),
+      android: androidWidget('FrameLayout', 'content-desc', 'Wait for content to load!'),
     }),
     // Methods to interact with the elements
     checkDefaultActivityIndicatorIsDisplayed: async function (
       this: ActivityIndicatorComponentScreenType,
-    ): Promise<string> {
-      return await Utils.getElementText(this.defaultActivityIndicatorScreenElement);
+    ): Promise<boolean> {
+      return await Utils.checkElementExistence(this.defaultActivityIndicatorScreenElement);
     },
 };

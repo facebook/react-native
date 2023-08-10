@@ -41,6 +41,11 @@ export const iOSLabel = (label: string): string => {
   return `[label="${label}"]`;
 };
 
+export const iOSName = (name: string): string => {
+  return `[name="${name}"]`;
+};
+
+
 export const androidWidget = (
   type: string,
   selector: string,

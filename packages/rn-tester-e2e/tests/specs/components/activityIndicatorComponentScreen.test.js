@@ -9,19 +9,16 @@
  */
 
 const {ComponentsScreen} = require('../../screens/components.screen.js');
-const { ActivityIndicatorComponentScreen } = require('../../screens/components/activityIndicatorComponent.screen.js');
-const {
-  ButtonComponentScreen,
-} = require('../../screens/components/buttonComponent.screen.js');
+const {ActivityIndicatorComponentScreen} = require('../../screens/components/activityIndicatorComponent.screen.js');
 
 describe('Test is checking default activity indicator component', () => {
-    test('Should view properly default indicator component', async () => {
-      expect(
-        await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
-      ).toBeTruthy();
-      await ComponentsScreen.clickActivityIndicatorComponent();
-      expect(
-        await ActivityIndicatorComponentScreen.checkDefaultActivityIndicatorIsDisplayed(),
-      ).toBeTruthy();
-    });
+  test('Should view properly default progress bar', async () => {
+    expect(
+      await ComponentsScreen.checkActivityIndicatorComponentIsDisplayed(),
+    ).toBeTruthy();
+    await ComponentsScreen.clickActivityIndicatorComponent();
+    expect(
+      await ActivityIndicatorComponentScreen.checkDefaultActivityIndicatorIsDisplayed(),
+    ).toBeTruthy();
   });
+});
