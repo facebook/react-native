@@ -26,6 +26,7 @@ const TARGET_NODE_VERSION = '18';
 const buildConfig /*: BuildConfig */ = {
   // The packages to include for build and their build options
   packages: {
+    'community-cli-plugin': {target: 'node'},
     'dev-middleware': {target: 'node'},
   },
 };
