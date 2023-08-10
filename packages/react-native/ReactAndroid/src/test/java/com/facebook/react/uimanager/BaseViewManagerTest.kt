@@ -33,7 +33,7 @@ class BaseViewManagerTest {
   private lateinit var viewManager: BaseViewManager<ReactViewGroup, *>
   private lateinit var view: ReactViewGroup
 
-  @get:Rule var rule = PowerMockRule()
+  @get:Rule val rule = PowerMockRule()
 
   @Before
   fun setUp() {
