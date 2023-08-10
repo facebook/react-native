@@ -57,7 +57,7 @@ public class RNTesterReactHostDelegate implements ReactHostDelegate {
   }
 
   @Override
-  public String getJSMainModulePath() {
+  public String getJsMainModulePath() {
     return "js/RNTesterApp.android";
   }
 

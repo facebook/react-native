@@ -27,7 +27,7 @@ interface ReactHostDelegate {
    * paths are relative to the root folder the packager is serving files from. Examples:
    * `index.android` or `subdirectory/index.android`
    */
-  val jSMainModulePath: String
+  val jsMainModulePath: String
 
   /**
    * Object that holds a native C++ references that allow host applications to install C++ objects
@@ -64,7 +64,7 @@ interface ReactHostDelegate {
 
   @UnstableReactNativeAPI
   class ReactHostDelegateBase(
-      override val jSMainModulePath: String,
+      override val jsMainModulePath: String,
       override val jSBundleLoader: JSBundleLoader,
       override val jSEngineInstance: JSEngineInstance,
       override val turboModuleManagerDelegateBuilder:
