@@ -23,13 +23,13 @@ import com.facebook.react.turbomodule.core.TurboModuleManager
  * A utility class that allows you to simplify the initialization of React Native by setting up a
  * [ReactHostDelegate] that uses recommended dependencies.
  *
- * @param jSMainModulePath Path to your app's main module on Metro. This is used when reloading JS
+ * @param jsMainModulePath Path to your app's main module on Metro. This is used when reloading JS
  *   during development. All paths are relative to the root folder the packager is serving files
  *   from. Examples: `index.android` or `subdirectory/index.android`
- * @param jSBundleLoader Bundle loader to use when setting up JS environment. <p>Example:
+ * @param jsBundleLoader Bundle loader to use when setting up JS environment. <p>Example:
  *   [JSBundleLoader.createFileLoader(application, bundleFile)]
  * @param reactPackages list of reactPackages to expose Native Modules and View Components to JS
- * @param jSEngineInstance Object that holds a native reference to the javascript engine
+ * @param jsEngineInstance Object that holds a native reference to the javascript engine
  * @param bindingsInstaller Object that holds a native C++ references that allow host applications
  *   to install C++ objects into jsi::Runtime during the initialization of React Native
  * @param reactNativeConfig ReactNative Configuration that allows to customize the behavior of
@@ -41,7 +41,7 @@ import com.facebook.react.turbomodule.core.TurboModuleManager
 @UnstableReactNativeAPI
 class DefaultReactHostDelegate(
     override val jsMainModulePath: String,
-    override val jSBundleLoader: JSBundleLoader,
+    override val jsBundleLoader: JSBundleLoader,
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jsEngineInstance: JSEngineInstance = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller = DefaultBindingsInstaller(),

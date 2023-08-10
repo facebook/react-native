@@ -95,7 +95,7 @@ public class ReactHostTest {
     whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
     whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
 
-    doReturn(mJSBundleLoader).when(mReactHostDelegate).getJSBundleLoader();
+    doReturn(mJSBundleLoader).when(mReactHostDelegate).getJsBundleLoader();
 
     mReactHost =
         new ReactHost(
