@@ -59,7 +59,7 @@ void Instance::initializeBridge(
      */
     jsCallInvoker_->setNativeToJsBridgeAndFlushCalls(nativeToJsBridge_);
 
-    std::lock_guard<std::mutex> lock(m_syncMutex);
+    std::scoped_lock lock(m_syncMutex);
     m_syncReady = true;
     m_syncCV.notify_all();
   });
@@ -248,7 +248,7 @@ Instance::getDecoratedNativeMethodCallInvoker(
 
 void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
     std::weak_ptr<NativeToJsBridge> nativeToJsBridge) {
-  std::lock_guard<std::mutex> guard(m_mutex);
+  std::scoped_lock guard(m_mutex);
 
   m_shouldBuffer = false;
   m_nativeToJsBridge = nativeToJsBridge;
@@ -265,7 +265,7 @@ void Instance::JSCallInvoker::invokeSync(std::function<void()> &&work) {
 }
 
 void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
-  std::lock_guard<std::mutex> guard(m_mutex);
+  std::scoped_lock guard(m_mutex);
 
   /**
    * Why is is necessary to queue up async work?

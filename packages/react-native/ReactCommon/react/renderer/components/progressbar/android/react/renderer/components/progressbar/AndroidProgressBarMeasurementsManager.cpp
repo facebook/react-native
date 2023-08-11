@@ -20,7 +20,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
     AndroidProgressBarProps const &props,
     LayoutConstraints layoutConstraints) const {
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
     if (hasBeenMeasured_) {
       return cachedMeasurement_;
     }
@@ -65,7 +65,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
       minimumSize.height,
       maximumSize.height));
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   cachedMeasurement_ = measurement;
   return measurement;
 }
