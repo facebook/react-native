@@ -61,6 +61,15 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
 
+// Native versions which are defined inside the version catalog (libs.versions.toml)
+def BOOST_VERSION = libs.versions.boost.get()
+def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+def FMT_VERSION = libs.versions.fmt.get()
+def FOLLY_VERSION = libs.versions.folly.get()
+def GLOG_VERSION = libs.versions.glog.get()
+def LIBEVENT_VERSION = libs.versions.libevent.get()
+def GTEST_VERSION = libs.versions.gtest.get()
+
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
     dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
     dependsOn("generateCodegenArtifactsFromSchema")
