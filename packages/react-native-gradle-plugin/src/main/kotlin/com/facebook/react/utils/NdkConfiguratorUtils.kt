@@ -41,7 +41,7 @@ internal object NdkConfiguratorUtils {
         // the user provided, but allow for sensible defaults).
         val cmakeArgs = ext.defaultConfig.externalNativeBuild.cmake.arguments
         if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
-          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.buildDir}")
+          cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
         }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
