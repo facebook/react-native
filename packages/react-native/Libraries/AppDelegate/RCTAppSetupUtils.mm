@@ -56,7 +56,7 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
   RCTEnableTurboModule(turboModuleEnabled);
 #endif
 
-#if RCT_TRACE_PROMISE_REJECTION_ENABLED
+#if RCT_TRACE_PROMISE_REJECTION_ENABLED || DEBUG
   RCTEnableTraceTurboModulePromiseRejection(YES);
 #endif
 
