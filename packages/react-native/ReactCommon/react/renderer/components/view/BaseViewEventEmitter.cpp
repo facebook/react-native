@@ -55,7 +55,7 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
   //  - Ordering is preserved.
 
   {
-    std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+    std::scoped_lock guard(layoutEventState->mutex);
 
     // If a *particular* `frame` was already dispatched to the JavaScript side,
     // no other work is required.
@@ -85,7 +85,7 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
         auto frame = Rect{};
 
         {
-          std::lock_guard<std::mutex> guard(layoutEventState->mutex);
+          std::scoped_lock guard(layoutEventState->mutex);
 
           layoutEventState->isDispatching = false;
 

@@ -23,7 +23,7 @@ void EventQueueProcessor::flushEvents(
     jsi::Runtime &runtime,
     std::vector<RawEvent> &&events) const {
   {
-    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
+    std::scoped_lock lock(EventEmitter::DispatchMutex());
 
     for (const auto &event : events) {
       if (event.eventTarget) {

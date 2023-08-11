@@ -115,7 +115,7 @@ void SyncConnection::waitForNotification(
 void SyncConnection::onReply(const std::string &message) {
   LOG(INFO) << "SyncConnection::onReply got message: " << prettify(message);
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   folly::dynamic obj = folly::parseJson(message);
   if (obj.count("id")) {
