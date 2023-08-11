@@ -384,7 +384,7 @@ CommitStatus ShadowTree::tryCommit(
     auto newRevisionNumber = oldRevision.number + 1;
 
     {
-      std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
+      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
 
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
