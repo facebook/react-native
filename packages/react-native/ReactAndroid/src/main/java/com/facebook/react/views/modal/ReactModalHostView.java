@@ -13,6 +13,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -197,18 +198,21 @@ public class ReactModalHostView extends ViewGroup
   }
 
   protected void setStatusBarTranslucent(boolean statusBarTranslucent) {
+    mPropertyRequiresNewDialog =
+        mPropertyRequiresNewDialog || (statusBarTranslucent != mStatusBarTranslucent);
     mStatusBarTranslucent = statusBarTranslucent;
-    mPropertyRequiresNewDialog = true;
   }
 
   protected void setAnimationType(String animationType) {
+    mPropertyRequiresNewDialog =
+        mPropertyRequiresNewDialog || !TextUtils.equals(animationType, mAnimationType);
     mAnimationType = animationType;
-    mPropertyRequiresNewDialog = true;
   }
 
   protected void setHardwareAccelerated(boolean hardwareAccelerated) {
+    mPropertyRequiresNewDialog =
+        mPropertyRequiresNewDialog || (hardwareAccelerated != mHardwareAccelerated);
     mHardwareAccelerated = hardwareAccelerated;
-    mPropertyRequiresNewDialog = true;
   }
 
   void setEventDispatcher(EventDispatcher eventDispatcher) {
