@@ -1211,33 +1211,6 @@ jobs:
   # -------------------------
   #    JOBS: Test iOS RNTester
   # -------------------------
-  # This job builds configures Xcode so that Hermes is built from source
-  # (but only the iphonesimulator slice) and integrated with the Xcode
-  # build toolchain. The `test_ios_rntester` job, instead, takes the
-  # same prebuilt for Hermes that we are going to use in the Release.
-  test_ios_rntester_hermes_xcode_integration:
-    executor: reactnativeios
-    steps:
-      - checkout_code_with_cache
-      - run_yarn
-      - brew_install:
-          package: cmake
-      - with_xcodebuild_cache:
-          steps:
-            - run:
-                name: Pod install
-                command: |
-                  cd packages/rn-tester
-                  bundle install
-                  RCT_NEW_ARCH_ENABLED=1 bundle exec pod install
-            - run:
-                name: Build RNTester
-                command: |
-                  xcodebuild build \
-                    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-                    -scheme RNTester \
-                    -sdk iphonesimulator
-
   test_ios_rntester:
     executor: reactnativeios
     parameters:
@@ -2057,7 +2030,6 @@ workflows:
           latest : false
           dryrun: true
       - prepare_hermes_workspace
-      - test_ios_rntester_hermes_xcode_integration
       - build_android:
           release_type: "dry-run"
       - build_hermesc_linux:
