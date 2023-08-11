@@ -161,8 +161,8 @@ repositories {
 }
 
 android {
-    compileSdk 33
-    buildToolsVersion = "33.0.1"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.hermes"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -175,7 +175,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = libs.versions.minSdk.get().toInteger()
 
         externalNativeBuild {
             cmake {
