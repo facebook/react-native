@@ -966,7 +966,6 @@ jobs:
         default: "dry-run"
     steps:
       - checkout
-      - setup_artifacts
       - run_yarn
       - run:
           name: Set React Native Version
