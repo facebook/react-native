@@ -45,11 +45,7 @@ let consoleError;
 
 describe('publish-npm', () => {
   beforeAll(() => {
-    jest.useFakeTimers({legacyFakeTimers: false});
     jest.setSystemTime(date);
-  });
-  afterAll(() => {
-    jest.useRealTimers();
   });
   beforeEach(() => {
     consoleError = console.error;
