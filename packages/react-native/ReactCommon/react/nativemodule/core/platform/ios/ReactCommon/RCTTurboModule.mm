@@ -250,7 +250,7 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const st
 /**
  * Creates JSErrorValue with given stack trace.
  */
-static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::optional<std::string> jsInvocationStack)
+static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, const std::optional<std::string> &jsInvocationStack)
 {
   jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
   jsi::Value error;
@@ -390,7 +390,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             }
 
             jsi::Runtime &rt = strongRejectWrapper2->runtime();
-            strongRejectWrapper2->callback().call(rt, createRejectJSErrorValue(rt, reason, std::move(jsInvocationStack)));
+            strongRejectWrapper2->callback().call(rt, createRejectJSErrorValue(rt, reason, jsInvocationStack));
 
             strongResolveWrapper2->destroy();
             strongRejectWrapper2->destroy();
