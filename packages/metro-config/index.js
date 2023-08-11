@@ -82,7 +82,7 @@ function getDefaultConfig(
     watchFolders: [],
   };
 
-  // Set global hook so that the CLI can detect when this config has been loaded
+  // Set global hook, so that the CLI can detect when this config has been loaded
   global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
 
   return mergeConfig(
