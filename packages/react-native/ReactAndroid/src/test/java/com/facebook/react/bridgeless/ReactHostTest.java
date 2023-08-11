@@ -48,7 +48,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
-/** Tests {@linkcom.facebook.react.bridgeless.ReactHost} */
+/** Tests {@linkcom.facebook.react.bridgeless.ReactHostImpl} */
 @Ignore("Ignore for now as these tests fail in OSS only")
 @SuppressStaticInitializationFor("com.facebook.react.fabric.ComponentFactory")
 @RunWith(RobolectricTestRunner.class)
@@ -61,7 +61,7 @@ import org.robolectric.annotation.LooperMode;
 })
 @Config(shadows = ShadowSoLoader.class)
 @LooperMode(LooperMode.Mode.PAUSED)
-@PrepareForTest({ReactHost.class, ComponentFactory.class})
+@PrepareForTest({ReactHostImpl.class, ComponentFactory.class})
 public class ReactHostTest {
 
   private ReactHostDelegate mReactHostDelegate;
@@ -69,7 +69,7 @@ public class ReactHostTest {
   private MemoryPressureRouter mMemoryPressureRouter;
   private BridgelessDevSupportManager mDevSupportManager;
   private JSBundleLoader mJSBundleLoader;
-  private ReactHost mReactHost;
+  private ReactHostImpl mReactHost;
   private ActivityController<Activity> mActivityController;
   private ComponentFactory mComponentFactory;
   private BridgelessReactContext mBridgelessReactContext;
@@ -98,7 +98,7 @@ public class ReactHostTest {
     doReturn(mJSBundleLoader).when(mReactHostDelegate).getJsBundleLoader();
 
     mReactHost =
-        new ReactHost(
+        new ReactHostImpl(
             mActivityController.get().getApplication(),
             mReactHostDelegate,
             mComponentFactory,

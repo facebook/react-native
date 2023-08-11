@@ -17,7 +17,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridgeless.ReactHost;
+import com.facebook.react.bridgeless.ReactHostImpl;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.assets.ReactFontManager;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
@@ -27,7 +27,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.flipper.ReactNativeFlipper;
-import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
@@ -45,7 +45,7 @@ import java.util.Map;
 
 public class RNTesterApplication extends Application implements ReactApplication {
 
-  private ReactHost mReactHost;
+  private ReactHostImpl mReactHost;
 
   private final ReactNativeHost mReactNativeHost =
       new DefaultReactNativeHost(this) {
@@ -163,7 +163,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   @UnstableReactNativeAPI
-  public ReactHostInterface getReactHostInterface() {
+  public ReactHost getReactHostInterface() {
     if (mReactHost == null) {
       // Create an instance of ReactHost to manager the instance of ReactInstance,
       // which is similar to how we use ReactNativeHost to manager instance of ReactInstanceManager
@@ -175,7 +175,7 @@ public class RNTesterApplication extends Application implements ReactApplication
       ComponentFactory componentFactory = new ComponentFactory();
       DefaultComponentsRegistry.register(componentFactory);
       mReactHost =
-          new ReactHost(
+          new ReactHostImpl(
               this.getApplicationContext(),
               reactHostDelegate,
               componentFactory,

@@ -26,7 +26,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
  * The implementation of this interface should be Thread Safe
  */
 @UnstableReactNativeAPI
-interface ReactHostInterface {
+interface ReactHost {
 
   /** The current [LifecycleState] for React Host */
   val lifecycleState: LifecycleState
