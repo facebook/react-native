@@ -40,14 +40,15 @@ class MyNativeView(context: Context) : View(context) {
 
   private fun emitNativeEvent(color: Int) {
     val event = Arguments.createMap()
-    val backgroundColor = Arguments.createMap()
     val hsv = FloatArray(3)
+    val backgroundColor = Arguments.createMap().apply {
+      putDouble("hue", hsv[0].toDouble())
+      putDouble("saturation", hsv[1].toDouble())
+      putDouble("brightness", hsv[2].toDouble())
+      putDouble("alpha", Color.alpha(color).toDouble())
+    }
 
     Color.colorToHSV(color, hsv)
-    backgroundColor.putDouble("hue", hsv[0].toDouble())
-    backgroundColor.putDouble("saturation", hsv[1].toDouble())
-    backgroundColor.putDouble("brightness", hsv[2].toDouble())
-    backgroundColor.putDouble("alpha", Color.alpha(color).toDouble())
     event.putMap("backgroundColor", backgroundColor)
 
     val reactContext = context as ReactContext
@@ -55,7 +56,6 @@ class MyNativeView(context: Context) : View(context) {
   }
 
   fun emitOnArrayChangedEvent(ints: List<Int>) {
-    val payload = Arguments.createMap()
     val newIntArray = Arguments.createArray()
     val newBoolArray = Arguments.createArray()
     val newFloatArray = Arguments.createArray()
@@ -85,14 +85,16 @@ class MyNativeView(context: Context) : View(context) {
       newArrayArray.pushArray(innerArray)
     }
 
-    payload.putArray("values", newIntArray)
-    payload.putArray("boolValues", newBoolArray)
-    payload.putArray("floats", newFloatArray)
-    payload.putArray("doubles", newDoubleArray)
-    payload.putArray("yesNos", newYesNoArray)
-    payload.putArray("strings", newStringArray)
-    payload.putArray("latLons", newObjectArray)
-    payload.putArray("multiArrays", newArrayArray)
+    val payload = Arguments.createMap().apply {
+      putArray("values", newIntArray)
+      putArray("boolValues", newBoolArray)
+      putArray("floats", newFloatArray)
+      putArray("doubles", newDoubleArray)
+      putArray("yesNos", newYesNoArray)
+      putArray("strings", newStringArray)
+      putArray("latLons", newObjectArray)
+      putArray("multiArrays", newArrayArray)
+    }
 
     val reactContext = context as ReactContext
     val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
