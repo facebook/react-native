@@ -38,7 +38,7 @@ public class ReactSurfaceTest {
   @Mock ReactHostDelegate mReactHostDelegate;
   @Mock EventDispatcher mEventDispatcher;
 
-  private ReactHost mReactHost;
+  private ReactHostImpl mReactHost;
   private Context mContext;
   private ReactSurfaceImpl mReactSurface;
   private TestSurfaceHandler mSurfaceHandler;
@@ -49,7 +49,7 @@ public class ReactSurfaceTest {
 
     mContext = Robolectric.buildActivity(Activity.class).create().get();
 
-    mReactHost = spy(new ReactHost(mContext, mReactHostDelegate, null, false, null, false));
+    mReactHost = spy(new ReactHostImpl(mContext, mReactHostDelegate, null, false, null, false));
     doAnswer(mockedStartSurface()).when(mReactHost).startSurface(any(ReactSurfaceImpl.class));
     doAnswer(mockedStartSurface()).when(mReactHost).prerenderSurface(any(ReactSurfaceImpl.class));
     doAnswer(mockedStopSurface()).when(mReactHost).stopSurface(any(ReactSurfaceImpl.class));

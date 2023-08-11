@@ -50,7 +50,7 @@ import com.facebook.react.devsupport.DisabledDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
 import com.facebook.react.interfaces.fabric.ReactSurface;
@@ -83,7 +83,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @ThreadSafe
 @Nullsafe(Nullsafe.Mode.LOCAL)
-public class ReactHost implements ReactHostInterface {
+public class ReactHostImpl implements ReactHost {
 
   // TODO T61403233 Make this configurable by product code
   private static final boolean DEV = ReactBuildConfig.DEBUG;
@@ -125,7 +125,7 @@ public class ReactHost implements ReactHostInterface {
   private MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
 
-  public ReactHost(
+  public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
@@ -143,7 +143,7 @@ public class ReactHost implements ReactHostInterface {
         useDevSupport);
   }
 
-  public ReactHost(
+  public ReactHostImpl(
       Context context,
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
@@ -158,7 +158,7 @@ public class ReactHost implements ReactHostInterface {
     mBGExecutor = bgExecutor;
     mUIExecutor = uiExecutor;
     mReactJsExceptionHandler = reactJsExceptionHandler;
-    mQueueThreadExceptionHandler = ReactHost.this::handleHostException;
+    mQueueThreadExceptionHandler = ReactHostImpl.this::handleHostException;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mMemoryPressureListener =
         level ->
@@ -169,7 +169,7 @@ public class ReactHost implements ReactHostInterface {
     if (DEV) {
       mDevSupportManager =
           new BridgelessDevSupportManager(
-              ReactHost.this, mContext, mReactHostDelegate.getJsMainModulePath());
+              ReactHostImpl.this, mContext, mReactHostDelegate.getJsMainModulePath());
     } else {
       mDevSupportManager = new DisabledDevSupportManager();
     }
@@ -799,7 +799,7 @@ public class ReactHost implements ReactHostInterface {
     return mBridgelessReactContextRef.getOrCreate(
         () -> {
           log(method, "Creating BridgelessReactContext");
-          return new BridgelessReactContext(mContext, ReactHost.this);
+          return new BridgelessReactContext(mContext, ReactHostImpl.this);
         });
   }
 
