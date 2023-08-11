@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
-import com.facebook.react.interfaces.ReactHostInterface;
+import com.facebook.react.interfaces.ReactHost;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
@@ -36,7 +36,9 @@ public class ReactDelegate {
   @Nullable private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
 
   @Nullable private ReactNativeHost mReactNativeHost;
-  @Nullable private ReactHostInterface mReactHost;
+
+  @Nullable private ReactHost mReactHost;
+
   @Nullable private ReactSurface mReactSurface;
 
   private boolean mFabricEnabled = false;
@@ -55,7 +57,7 @@ public class ReactDelegate {
 
   public ReactDelegate(
       Activity activity,
-      ReactHostInterface reactHost,
+      ReactHost reactHost,
       @Nullable String appKey,
       @Nullable Bundle launchOptions) {
     mActivity = activity;
