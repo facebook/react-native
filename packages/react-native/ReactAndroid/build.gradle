@@ -468,8 +468,8 @@ repositories {
 }
 
 android {
-    compileSdk 33
-    buildToolsVersion = "33.0.1"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -494,8 +494,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode(1)
         versionName("1.0")
 
