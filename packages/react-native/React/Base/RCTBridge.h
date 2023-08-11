@@ -65,8 +65,8 @@ RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
 // Trace Rejected Promises of Turbo Modules (store callers' js stack)
-RCT_EXTERN BOOL RCTTraceTurboModulePromiseRejectionEnabled(void);
-RCT_EXTERN void RCTEnableTraceTurboModulePromiseRejection(BOOL enabled);
+RCT_EXTERN BOOL RCTTraceTurboModulePromiseRejections(void);
+RCT_EXTERN void RCTTraceTurboModulePromiseRejections(BOOL enabled);
 
 typedef enum {
   kRCTGlobalScope,

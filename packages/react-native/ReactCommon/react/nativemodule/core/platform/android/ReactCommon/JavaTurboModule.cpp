@@ -69,7 +69,7 @@ static bool isSavePromiseJSInvocationStackEnabled() {
 #if DEBUG
   return true;
 #else
-  static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejectionEnabled");
+  static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
   return savePromiseJSInvocationStack;
 #endif
 }

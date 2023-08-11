@@ -280,7 +280,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
   // JS Stack at the time when the promise is created.
   std::optional<std::string> jsInvocationStack;
-  if (RCTTraceTurboModulePromiseRejectionEnabled()) {
+  if (RCTTraceTurboModulePromiseRejections()) {
    jsInvocationStack = createJSRuntimeError(runtime, "")
     .asObject(runtime)
     .getProperty(runtime, "stack")

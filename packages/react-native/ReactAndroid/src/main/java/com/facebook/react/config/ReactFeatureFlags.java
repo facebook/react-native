@@ -165,5 +165,5 @@ public class ReactFeatureFlags {
    * Enables storing js caller stack when creating promise in native module.
    * This is useful in case of Promise rejection and tracing the cause.
    */
-  public static boolean traceTurboModulePromiseRejectionEnabled = false;
+  public static boolean traceTurboModulePromiseRejections = false;
 }
