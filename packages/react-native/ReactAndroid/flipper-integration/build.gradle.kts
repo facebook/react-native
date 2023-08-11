@@ -8,10 +8,10 @@
 import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 plugins {
-  id("com.android.library")
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.android)
   id("maven-publish")
   id("signing")
-  id("org.jetbrains.kotlin.android")
 }
 
 group = "com.facebook.react"

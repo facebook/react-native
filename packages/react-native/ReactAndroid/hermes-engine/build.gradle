@@ -9,9 +9,9 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id("de.undercouch.download")
-    id("com.android.library")
     id("maven-publish")
     id("signing")
+    alias(libs.plugins.android.library)
 }
 
 group = "com.facebook.react"
