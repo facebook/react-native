@@ -891,6 +891,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               throw std::invalid_argument("Promise fn arg count must be 2");
             }
 
+            // JS Stack at the time when the promise is created.
             std::optional<std::string> jsInvocationStack;
             if (isSavePromiseJSInvocationStackEnabled()) {
                 jsInvocationStack = createJSRuntimeError(runtime, "")
