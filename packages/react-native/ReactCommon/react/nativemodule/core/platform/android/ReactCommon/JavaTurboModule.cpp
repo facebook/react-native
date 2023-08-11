@@ -27,16 +27,6 @@
 
 namespace facebook::react {
 
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-        "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagBoolValue(const char *name) {
-    static const auto reactFeatureFlagsClass =
-            jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-    const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-    return reactFeatureFlagsClass->getStaticFieldValue(field);
-}
-
 namespace TMPL = TurboModulePerfLogger;
 
 JavaTurboModule::JavaTurboModule(const InitParams &params)
@@ -66,6 +56,23 @@ JavaTurboModule::~JavaTurboModule() {
 }
 
 namespace {
+
+constexpr static auto kReactFeatureFlagsJavaDescriptor = "com/facebook/react/config/ReactFeatureFlags";
+
+static bool getFeatureFlagBoolValue(const char *name) {
+    static const auto reactFeatureFlagsClass = facebook::jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
+    const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
+    return reactFeatureFlagsClass->getStaticFieldValue(field);
+}
+
+static bool isSavePromiseJSInvocationStackEnabled() {
+#if DEBUG
+  return true;
+#else
+  static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejectionEnabled");
+  return savePromiseJSInvocationStack;
+#endif
+}
 
 struct JNIArgs {
   JNIArgs(size_t count) : args_(count) {}
@@ -151,8 +158,8 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
     jsi::Function &&function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
-    std::shared_ptr<std::string> jsStack) {
-  auto executor = [jsStack = std::move(jsStack)](
+    std::optional<std::string> jsInvocationStack) {
+  auto executor = [jsInvocationStack = std::move(jsInvocationStack)](
           const std::shared_ptr<CallbackWrapper>& reject,
           const std::vector<jsi::Value>& args) {
       std::string message;
@@ -166,7 +173,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
 
       jsi::Value error = createJSRuntimeError(rt2, "Exception in HostFunction: " + message);
       error.asObject(rt2).setProperty(rt2, "cause", *cause);
-      error.asObject(rt2).setProperty(rt2, "stack", *jsStack);
+      error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack);
       reject->callback().call(rt2, error);
   };
   return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
@@ -499,20 +506,22 @@ jsi::JSError convertThrowableToJSError(
 void rejectWithException(
     std::weak_ptr<CallbackWrapper> &rejectWeak,
     std::exception_ptr &exception,
-    std::string &jsStack) {
+    std::optional<std::string> jsInvocationStack) {
   auto reject = rejectWeak.lock();
   if (reject) {
     reject->jsInvoker().invokeAsync([
       rejectWeak = std::move(rejectWeak),
-      jsStack,
+      jsInvocationStack = std::move(jsInvocationStack),
       exception
     ]() {
       auto reject2 = rejectWeak.lock();
       if (reject2) {
         jsi::Runtime &runtime = reject2->runtime();
-  auto throwable = jni::getJavaExceptionForCppException(exception);
-  auto jsError = convertThrowableToJSError(runtime, throwable);
-  jsError.value().asObject(runtime).setProperty(runtime, "stack", jsStack);
+        auto throwable = jni::getJavaExceptionForCppException(exception);
+        auto jsError = convertThrowableToJSError(runtime, throwable);
+        if (jsInvocationStack.has_value()) {
+          jsError.value().asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
+        }
         reject2->callback().call(
           runtime,
           jsError.value());
@@ -882,13 +891,13 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
               throw std::invalid_argument("Promise fn arg count must be 2");
             }
 
-            bool traceTurboModulePromiseRejectionEnabled = getFeatureFlagBoolValue("traceTurboModulePromiseRejectionEnabled");
-            std::shared_ptr<std::string> jsStack;
-            if (traceTurboModulePromiseRejectionEnabled) {
-                jsStack = std::make_shared<std::string>(createJSRuntimeError(runtime, "")
-                .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime));
-            } else {
-                jsStack = std::make_shared<std::string>("");
+            std::optional<std::string> jsInvocationStack;
+            if (isSavePromiseJSInvocationStackEnabled()) {
+                jsInvocationStack = createJSRuntimeError(runtime, "")
+                  .asObject(runtime)
+                  .getProperty(runtime, "stack")
+                  .asString(runtime)
+                  .utf8(runtime);
             }
 
             jsi::Function resolveJSIFn =
@@ -907,7 +916,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                                 std::move(resolveJSIFn), runtime, jsInvoker_)
                                 .release();
             auto reject = createPromiseRejectJavaCallbackFromJSIFunction(
-                              std::move(rejectJSIFn), runtime, jsInvoker_, jsStack)
+                              std::move(rejectJSIFn), runtime, jsInvoker_, jsInvocationStack)
                               .release();
 
             jclass jPromiseImpl =
@@ -936,7 +945,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                 methodName,
                 [jargs,
                  rejectInternalWeakWrapper = rejectInternalWeakWrapper,
-                 jsStack = std::move(jsStack),
+                 jsInvocationStack = std::move(jsInvocationStack),
                  globalRefs,
                  methodID,
                  instance_ = jni::make_weak(instance_),
@@ -966,7 +975,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
                       auto exception = std::current_exception();
-                    rejectWithException(rejectInternalWeakWrapper, exception, *jsStack);
+                    rejectWithException(rejectInternalWeakWrapper, exception, jsInvocationStack);
                   }
 
                   for (auto globalRef : globalRefs) {

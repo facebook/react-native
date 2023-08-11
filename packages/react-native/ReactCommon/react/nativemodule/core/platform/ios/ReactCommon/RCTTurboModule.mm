@@ -250,7 +250,7 @@ static jsi::JSError convertNSDictionaryToJSError(jsi::Runtime &runtime, const st
 /**
  * Creates JSErrorValue with given stack trace.
  */
-static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::string jsStack)
+static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *reason, std::optional<std::string> jsInvocationStack)
 {
   jsi::Object cause = convertNSDictionaryToJSIObject(runtime, reason);
   jsi::Value error;
@@ -260,7 +260,11 @@ static jsi::Value createRejectJSErrorValue(jsi::Runtime &runtime, NSDictionary *
   } else {
     error = createJSRuntimeError(runtime, "Exception in HostFunction: <unknown>");
   }
-  error.asObject(runtime).setProperty(runtime, "stack", jsStack);
+
+  if (jsInvocationStack.has_value()) {
+    error.asObject(runtime).setProperty(runtime, "stack", *jsInvocationStack);
+  }
+
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return error;
 }
@@ -274,12 +278,13 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
   }
 
   jsi::Function Promise = runtime.global().getPropertyAsFunction(runtime, "Promise");
-  std::string jsStack;
+  std::optional<std::string> jsInvocationStack;
   if (RCTTraceTurboModulePromiseRejectionEnabled()) {
-   jsStack = createJSRuntimeError(runtime, "")
-      .asObject(runtime).getProperty(runtime, "stack").asString(runtime).utf8(runtime);
-  } else {
-    jsStack = "";
+   jsInvocationStack = createJSRuntimeError(runtime, "")
+    .asObject(runtime)
+    .getProperty(runtime, "stack")
+    .asString(runtime)
+    .utf8(runtime);
   }
 
 
@@ -292,7 +297,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
       runtime,
       jsi::PropNameID::forAscii(runtime, "fn"),
       2,
-      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, jsStack = std::move(jsStack)](
+      [invokeCopy, jsInvoker = jsInvoker_, moduleName, methodName, jsInvocationStack = std::move(jsInvocationStack)](
           jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         std::string moduleMethod = moduleName + "." + methodName + "()";
 
@@ -376,7 +381,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             return;
           }
 
-          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, blockGuard, reason, jsStack = std::move(jsStack)]() {
+          strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, blockGuard, reason, jsInvocationStack = std::move(jsInvocationStack)]() {
             auto strongResolveWrapper2 = weakResolveWrapper.lock();
             auto strongRejectWrapper2 = weakRejectWrapper.lock();
             if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -384,7 +389,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
             }
 
             jsi::Runtime &rt = strongRejectWrapper2->runtime();
-            strongRejectWrapper2->callback().call(rt, createRejectJSErrorValue(rt, reason, jsStack));
+            strongRejectWrapper2->callback().call(rt, createRejectJSErrorValue(rt, reason, std::move(jsInvocationStack)));
 
             strongResolveWrapper2->destroy();
             strongRejectWrapper2->destroy();
