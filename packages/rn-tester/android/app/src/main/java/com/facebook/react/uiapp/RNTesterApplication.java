@@ -140,7 +140,9 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    ReactFeatureFlags.traceTurboModulePromiseRejections = true;
+    if (BuildConfig.DEBUG) {
+      ReactFeatureFlags.traceTurboModulePromiseRejections = true;
+    }
     ReactFontManager.getInstance().addCustomFont(this, "Rubik", R.font.rubik);
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);

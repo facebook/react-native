@@ -66,12 +66,8 @@ static bool getFeatureFlagBoolValue(const char *name) {
 }
 
 static bool isSavePromiseJSInvocationStackEnabled() {
-#if DEBUG
-  return true;
-#else
   static bool savePromiseJSInvocationStack = getFeatureFlagBoolValue("traceTurboModulePromiseRejections");
   return savePromiseJSInvocationStack;
-#endif
 }
 
 struct JNIArgs {
