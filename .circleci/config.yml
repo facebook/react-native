@@ -1022,7 +1022,7 @@ jobs:
           steps:
             - run:
                 name: Build & Test React Native using Gradle
-                command: ./gradlew build
+                command: ./gradlew build -PenableWarningsAsErrors=true
 
       - report_bundle_size:
           platform: android
