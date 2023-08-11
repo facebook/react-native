@@ -62,6 +62,10 @@ struct ViewEvents {
     ClickCapture = 31,
     GotPointerCapture = 32,
     LostPointerCapture = 33,
+    PointerDown = 34,
+    PointerDownCapture = 35,
+    PointerUp = 36,
+    PointerUpCapture = 37,
   };
 
   constexpr bool operator[](const Offset offset) const {
