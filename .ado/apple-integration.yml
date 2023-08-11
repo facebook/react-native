@@ -74,6 +74,17 @@ jobs:
           cat package.json | jq .devDependencies
         displayName: Modify example app dependencies
         workingDirectory: react-native-test-app/example
+      - template: templates/verdaccio-init.yml
+      - bash: |
+          npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public
+        displayName: Publish beachball packages to verdaccio
+      - bash: |
+          cat .yarnrc.yml | sed 's_^npmRegistryServer: ".*"$_npmRegistryServer: "http://localhost:4873"_' > .yarnrc.yml.copy
+          rm .yarnrc.yml
+          mv .yarnrc.yml.copy .yarnrc.yml
+          echo -e '\nunsafeHttpWhitelist: ["localhost"]' >> .yarnrc.yml
+        displayName: Point react-native-test-app registry to verdaccio server
+        workingDirectory: react-native-test-app
       - bash: |
           yarn --no-immutable
         displayName: Install npm dependencies
