@@ -40,6 +40,8 @@ class HostPlatformViewProps : public BaseViewProps {
 
 #pragma mark - Props
 
+  Float elevation{};
+
   std::optional<NativeDrawable> nativeBackground{};
   std::optional<NativeDrawable> nativeForeground{};
 
