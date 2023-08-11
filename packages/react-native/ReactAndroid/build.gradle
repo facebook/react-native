@@ -6,11 +6,11 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("com.facebook.react")
-    id("de.undercouch.download")
     id("maven-publish")
-    id("org.jetbrains.kotlin.android")
+    id("com.facebook.react")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.download)
+    alias(libs.plugins.kotlin.android)
 }
 
 import com.facebook.react.tasks.internal.*

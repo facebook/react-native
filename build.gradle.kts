@@ -6,11 +6,11 @@
  */
 
 plugins {
-  id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
-  id("com.android.library") version "8.1.0" apply false
-  id("com.android.application") version "8.1.0" apply false
-  id("de.undercouch.download") version "5.4.0" apply false
-  kotlin("android") version "1.8.0" apply false
+  alias(libs.plugins.nexus.publish)
+  alias(libs.plugins.android.library) apply false
+  alias(libs.plugins.android.application) apply false
+  alias(libs.plugins.download) apply false
+  alias(libs.plugins.kotlin.android) apply false
 }
 
 val reactAndroidProperties = java.util.Properties()
