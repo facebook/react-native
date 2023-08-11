@@ -155,7 +155,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
 jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message);
 
 jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJSIFunction(
-    jsi::Function &&function,
+    const std::weak_ptr<CallbackWrapper> &function,
     jsi::Runtime &rt,
     const std::shared_ptr<CallInvoker> &jsInvoker,
     std::optional<std::string> jsInvocationStack) {
@@ -176,7 +176,40 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createPromiseRejectJavaCallbackFromJS
       error.asObject(rt2).setProperty(rt2, "stack", *jsInvocationStack);
       reject->callback().call(rt2, error);
   };
-  return createJavaCallbackFromJSIFunction(std::move(function), rt, jsInvoker, std::move(executor));
+  return JCxxCallbackImpl::newObjectCxxArgs(
+          [function,
+                  wrapperWasCalled = false,
+                  executor = std::move(executor)](folly::dynamic responses) mutable {
+              if (wrapperWasCalled) {
+                  LOG(FATAL) << "callback arg cannot be called more than once";
+              }
+
+              auto strongWrapper = function.lock();
+              if (!strongWrapper) {
+                  return;
+              }
+
+              strongWrapper->jsInvoker().invokeAsync(
+                      [function,
+                              responses = std::move(responses),
+                              executor = std::move(executor)]() {
+                          auto strongWrapper2 = function.lock();
+                          if (!strongWrapper2) {
+                              return;
+                          }
+
+                          std::vector<jsi::Value> args;
+                          args.reserve(responses.size());
+                          for (const auto &val : responses) {
+                              args.emplace_back(
+                                      jsi::valueFromDynamic(strongWrapper2->runtime(), val));
+                          }
+
+                          executor(strongWrapper2, args);
+                      });
+
+              wrapperWasCalled = true;
+          });
 }
 
 // This is used for generating short exception strings.
@@ -907,17 +940,14 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             jsi::Function rejectJSIFn =
                 promiseConstructorArgs[1].getObject(runtime).getFunction(
                     runtime);
-            jsi::Function rejectInternalJSIFn =
-                promiseConstructorArgs[1].getObject(runtime).getFunction(
-                    runtime);
-            auto rejectInternalWeakWrapper =
-                CallbackWrapper::createWeak(std::move(rejectInternalJSIFn), runtime, jsInvoker_);
+            auto rejectJSIFunctionWeakWrapper =
+                CallbackWrapper::createWeak(std::move(rejectJSIFn), runtime, jsInvoker_);
 
             auto resolve = createJavaCallbackFromJSIFunction(
                                 std::move(resolveJSIFn), runtime, jsInvoker_)
                                 .release();
             auto reject = createPromiseRejectJavaCallbackFromJSIFunction(
-                              std::move(rejectJSIFn), runtime, jsInvoker_, jsInvocationStack)
+                              rejectJSIFunctionWeakWrapper, runtime, jsInvoker_, jsInvocationStack)
                               .release();
 
             jclass jPromiseImpl =
@@ -945,7 +975,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             nativeMethodCallInvoker_->invokeAsync(
                 methodName,
                 [jargs,
-                 rejectInternalWeakWrapper = rejectInternalWeakWrapper,
+                 rejectJSIFunctionWeakWrapper,
                  jsInvocationStack = std::move(jsInvocationStack),
                  globalRefs,
                  methodID,
@@ -976,7 +1006,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
                     TMPL::asyncMethodCallExecutionFail(
                         moduleName, methodName, id);
                       auto exception = std::current_exception();
-                    rejectWithException(rejectInternalWeakWrapper, exception, jsInvocationStack);
+                    rejectWithException(rejectJSIFunctionWeakWrapper, exception, jsInvocationStack);
                   }
 
                   for (auto globalRef : globalRefs) {
