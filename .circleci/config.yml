@@ -2170,6 +2170,15 @@ workflows:
               architecture: ["NewArch", "OldArch"]
               jsengine: ["Hermes", "JSC"]
               use_frameworks: ["StaticLibraries", "DynamicFrameworks"]
+            exclude:
+              # Tested by test_ios-Hermes
+              - architecture: "OldArch"
+                jsengine: "Hermes"
+                use_frameworks: "StaticLibraries"
+              # Tested by test_ios-JSC
+              - architecture: "OldArch"
+                jsengine: "JSC"
+                use_frameworks: "StaticLibraries"
       - test_ios:
           name: "Test iOS with Ruby 3.2.0"
           run_unit_tests: true
