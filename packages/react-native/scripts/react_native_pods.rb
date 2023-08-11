@@ -24,6 +24,8 @@ $FOLLY_VERSION = '2021.07.22.00'
 
 $START_TIME = Time.now.to_i
 
+# do not commit
+
 # `@react-native-community/cli-platform-ios/native_modules` defines
 # use_native_modules. We use node to resolve its path to allow for
 # different packager and workspace setups. This is reliant on
