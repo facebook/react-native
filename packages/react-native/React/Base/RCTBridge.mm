@@ -109,7 +109,7 @@ BOOL RCTTraceTurboModulePromiseRejections(void)
   return traceTurboModulePromiseRejections;
 }
 
-void RCTTraceTurboModulePromiseRejections(BOOL enabled)
+void RCTEnableTraceTurboModulePromiseRejections(BOOL enabled)
 {
   traceTurboModulePromiseRejections = enabled;
 }

@@ -57,7 +57,7 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 #endif
 
 #if RCT_TRACE_PROMISE_REJECTION_ENABLED || DEBUG
-  RCTTraceTurboModulePromiseRejections(YES);
+  RCTEnableTraceTurboModulePromiseRejections(YES);
 #endif
 
 #if DEBUG
