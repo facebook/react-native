@@ -10,9 +10,9 @@
 
 'use strict';
 
-import VirtualizedList from '../VirtualizedList';
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
+import VirtualizedList from '../VirtualizedList';
 
 describe('VirtualizedList', () => {
   it('renders simple list', () => {
