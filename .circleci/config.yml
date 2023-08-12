@@ -1955,6 +1955,19 @@ jobs:
                     -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${CIRCLE_TAG:1}\" }}"
       # END: Stable releases
 
+  poll_maven:
+    docker:
+      - image: cimg/node:current
+    resource_class: small
+    steps:
+      - checkout_code_with_cache
+      - run_yarn
+      - run:
+          name: Poll Maven for Artifacts
+          command: |
+            node scripts/circleci/poll-maven.js
+
+
   # -------------------------
   #    JOBS: Nightly
   # -------------------------
@@ -2221,10 +2234,13 @@ workflows:
           filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
-      - build_apple_slices_hermes:
+      - build_hermesc_apple:
           filters: *only_release_tags
           requires:
             - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          requires:
+            - build_hermesc_apple
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
@@ -2249,6 +2265,9 @@ workflows:
             - build_hermesc_linux
             - build_hermes_macos
             - build_hermesc_windows
+      - poll_maven:
+          requires:
+            -  build_and_publish_npm_package
 
   analysis:
     when:
@@ -2272,9 +2291,12 @@ workflows:
       - build_hermesc_linux:
           requires:
             - prepare_hermes_workspace
-      - build_apple_slices_hermes:
+      - build_hermesc_apple:
           requires:
             - prepare_hermes_workspace
+      - build_apple_slices_hermes:
+          requires:
+            - build_hermesc_apple
           matrix:
             parameters:
               flavor: ["Debug", "Release"]
