@@ -18,8 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridgeless.BindingsInstaller
 import com.facebook.react.bridgeless.JSCInstance
 import com.facebook.react.bridgeless.JSEngineInstance
-import com.facebook.react.bridgeless.ReactHostDelegate
 import com.facebook.react.bridgeless.ReactHostImpl
+import com.facebook.react.bridgeless.ReactHostDelegate
 import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
