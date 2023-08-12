@@ -616,32 +616,18 @@ static inline ViewEvents convertRawProp(
       "onClickCapture",
       sourceValue[Offset::ClickCapture],
       defaultValue[Offset::ClickCapture]);
-  result[Offset::PointerDown] = convertRawProp(
+  result[Offset::GotPointerCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerDown",
-      sourceValue[Offset::PointerDown],
-      defaultValue[Offset::PointerDown]);
-  result[Offset::PointerDownCapture] = convertRawProp(
+      "onGotPointerCapture",
+      sourceValue[Offset::GotPointerCapture],
+      defaultValue[Offset::GotPointerCapture]);
+  result[Offset::LostPointerCapture] = convertRawProp(
       context,
       rawProps,
-      "onPointerDownCapture",
-      sourceValue[Offset::PointerDownCapture],
-      defaultValue[Offset::PointerDownCapture]);
-  result[Offset::PointerUp] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerUp",
-      sourceValue[Offset::PointerUp],
-      defaultValue[Offset::PointerUp]);
-  result[Offset::PointerUpCapture] = convertRawProp(
-      context,
-      rawProps,
-      "onPointerUpCapture",
-      sourceValue[Offset::PointerUpCapture],
-      defaultValue[Offset::PointerUpCapture]);
-  // TODO: gotPointerCapture & lostPointerCapture (causes issues with
-  // RawPropsKey for some reason)
+      "onLostPointerCapture",
+      sourceValue[Offset::LostPointerCapture],
+      defaultValue[Offset::LostPointerCapture]);
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(
