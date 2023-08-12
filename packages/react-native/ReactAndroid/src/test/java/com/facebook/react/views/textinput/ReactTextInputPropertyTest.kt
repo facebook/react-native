@@ -44,10 +44,10 @@ class ReactTextInputPropertyTest {
   @get:Rule
   val rule = PowerMockRule()
 
-  private lateinit var mContext: ReactApplicationContext
-  private lateinit var mCatalystInstanceMock: CatalystInstance
-  private lateinit var mThemedContext: ThemedReactContext
-  private lateinit var mManager: ReactTextInputManager
+  private lateinit var context: ReactApplicationContext
+  private lateinit var catalystInstanceMock: CatalystInstance
+  private lateinit var themedContext: ThemedReactContext
+  private lateinit var manager: ReactTextInputManager
   private lateinit var view: ReactEditText
 
   private val generalKeyboardTypeFlags: Int = (InputType.TYPE_CLASS_NUMBER
@@ -61,42 +61,42 @@ class ReactTextInputPropertyTest {
 
   @Before
   fun setup() {
-    mContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
-    mCatalystInstanceMock = createMockCatalystInstance()
-    mContext.initializeWithInstance(mCatalystInstanceMock)
-    mThemedContext = ThemedReactContext(mContext, mContext, null, ID_NULL)
-    mManager = ReactTextInputManager()
+    context = ReactApplicationContext(RuntimeEnvironment.getApplication())
+    catalystInstanceMock = createMockCatalystInstance()
+    context.initializeWithInstance(catalystInstanceMock)
+    themedContext = ThemedReactContext(context, context, null, ID_NULL)
+    manager = ReactTextInputManager()
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
-    view = mManager.createViewInstance(mThemedContext)
+    view = manager.createViewInstance(themedContext)
   }
 
   @Test
   fun testAutoCorrect() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isZero
 
-    mManager.updateProperties(view, buildStyles("autoCorrect", true))
+    manager.updateProperties(view, buildStyles("autoCorrect", true))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isZero
 
-    mManager.updateProperties(view, buildStyles("autoCorrect", false))
+    manager.updateProperties(view, buildStyles("autoCorrect", false))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isNotZero
 
-    mManager.updateProperties(view, buildStyles("autoCorrect", null))
+    manager.updateProperties(view, buildStyles("autoCorrect", null))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isZero
   }
 
   @Test
   fun testAutoCapitalize() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
     )
@@ -104,7 +104,7 @@ class ReactTextInputPropertyTest {
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_WORDS)
     )
@@ -112,7 +112,7 @@ class ReactTextInputPropertyTest {
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS)
     )
@@ -120,7 +120,7 @@ class ReactTextInputPropertyTest {
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isNotZero
 
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("autoCapitalize", InputType.TYPE_CLASS_TEXT)
     )
@@ -131,31 +131,31 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testPlaceholder() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.hint).isNull()
 
-    mManager.updateProperties(view, buildStyles("placeholder", "sometext"))
+    manager.updateProperties(view, buildStyles("placeholder", "sometext"))
     assertThat(view.hint).isEqualTo("sometext")
 
-    mManager.updateProperties(view, buildStyles("placeholder", null))
+    manager.updateProperties(view, buildStyles("placeholder", null))
     assertThat(view.hint).isNull()
   }
 
   @Test
   fun testEditable() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.isEnabled).isTrue
 
-    mManager.updateProperties(view, buildStyles("editable", false))
+    manager.updateProperties(view, buildStyles("editable", false))
     assertThat(view.isEnabled).isFalse
 
-    mManager.updateProperties(view, buildStyles("editable", null))
+    manager.updateProperties(view, buildStyles("editable", null))
     assertThat(view.isEnabled).isTrue
 
-    mManager.updateProperties(view, buildStyles("editable", false))
+    manager.updateProperties(view, buildStyles("editable", false))
     assertThat(view.isEnabled).isFalse
 
-    mManager.updateProperties(view, buildStyles("editable", true))
+    manager.updateProperties(view, buildStyles("editable", true))
     assertThat(view.isEnabled).isTrue
   }
 
@@ -165,31 +165,31 @@ class ReactTextInputPropertyTest {
     var colors = view.hintTextColors
     assertThat(colors).isEqualTo(defaultPlaceholderColorStateList)
 
-    mManager.updateProperties(view, buildStyles("placeholderTextColor", null))
+    manager.updateProperties(view, buildStyles("placeholderTextColor", null))
     colors = view.hintTextColors
     assertThat(colors).isEqualTo(defaultPlaceholderColorStateList)
 
-    mManager.updateProperties(view, buildStyles("placeholderTextColor", Color.RED))
+    manager.updateProperties(view, buildStyles("placeholderTextColor", Color.RED))
     colors = view.hintTextColors
     assertThat(colors.defaultColor).isEqualTo(Color.RED)
 
-    mManager.updateProperties(view, buildStyles("placeholderTextColor", null))
+    manager.updateProperties(view, buildStyles("placeholderTextColor", null))
     colors = view.hintTextColors
     assertThat(colors).isEqualTo(defaultPlaceholderColorStateList)
   }
 
   @Test
   fun testMultiline() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero
 
-    mManager.updateProperties(view, buildStyles("multiline", false))
+    manager.updateProperties(view, buildStyles("multiline", false))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero
 
-    mManager.updateProperties(view, buildStyles("multiline", true))
+    manager.updateProperties(view, buildStyles("multiline", true))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isNotZero
 
-    mManager.updateProperties(view, buildStyles("multiline", null))
+    manager.updateProperties(view, buildStyles("multiline", null))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero
   }
 
@@ -198,33 +198,33 @@ class ReactTextInputPropertyTest {
     val editorInfo = EditorInfo().apply {
       imeOptions = EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_ENTER_ACTION
     }
-    mManager.updateProperties(view, buildStyles("multiline", true))
-    mManager.updateProperties(view, buildStyles("submitBehavior", "blurAndSubmit"))
+    manager.updateProperties(view, buildStyles("multiline", true))
+    manager.updateProperties(view, buildStyles("submitBehavior", "blurAndSubmit"))
     view.onCreateInputConnection(editorInfo)
     assertThat(editorInfo.imeOptions).isEqualTo(EditorInfo.IME_ACTION_DONE)
   }
 
   @Test
   fun testNumLines() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.minLines).isEqualTo(1)
 
-    mManager.updateProperties(view, buildStyles("numberOfLines", 5))
+    manager.updateProperties(view, buildStyles("numberOfLines", 5))
     assertThat(view.minLines).isEqualTo(5)
 
-    mManager.updateProperties(view, buildStyles("numberOfLines", 4))
+    manager.updateProperties(view, buildStyles("numberOfLines", 4))
     assertThat(view.minLines).isEqualTo(4)
   }
 
   @Test
   fun testKeyboardTypeClassText() {
-    mManager.updateProperties(view, buildStyles("keyboardType", null))
+    manager.updateProperties(view, buildStyles("keyboardType", null))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT)
 
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT)
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "text"))
+    manager.updateProperties(view, buildStyles("keyboardType", "text"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT)
   }
 
@@ -233,13 +233,13 @@ class ReactTextInputPropertyTest {
     val numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER
     val decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "phone-pad"))
+    manager.updateProperties(view, buildStyles("keyboardType", "phone-pad"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_PHONE)
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"))
+    manager.updateProperties(view, buildStyles("keyboardType", "number-pad"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags)
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"))
+    manager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags)
   }
 
@@ -249,7 +249,7 @@ class ReactTextInputPropertyTest {
       or InputType.TYPE_NUMBER_FLAG_DECIMAL
       or InputType.TYPE_NUMBER_FLAG_SIGNED)
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "numeric"))
+    manager.updateProperties(view, buildStyles("keyboardType", "numeric"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(numericTypeFlags)
   }
 
@@ -257,13 +257,13 @@ class ReactTextInputPropertyTest {
   fun testKeyboardTypeEmail() {
     val emailTypeFlags = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS or InputType.TYPE_CLASS_TEXT
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "email-address"))
+    manager.updateProperties(view, buildStyles("keyboardType", "email-address"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(emailTypeFlags)
   }
 
   @Test
   fun testKeyboardTypeUrl() {
-    mManager.updateProperties(view, buildStyles("keyboardType", "url"))
+    manager.updateProperties(view, buildStyles("keyboardType", "url"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_TEXT_VARIATION_URI)
   }
 
@@ -272,52 +272,52 @@ class ReactTextInputPropertyTest {
     val passwordVisibilityFlag =
       InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and InputType.TYPE_TEXT_VARIATION_PASSWORD.inv()
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "visible-password"))
+    manager.updateProperties(view, buildStyles("keyboardType", "visible-password"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag)
   }
 
   @Test
   fun testPasswordInput() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero
 
-    mManager.updateProperties(view, buildStyles("secureTextEntry", false))
+    manager.updateProperties(view, buildStyles("secureTextEntry", false))
     assertThat(view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero
 
-    mManager.updateProperties(view, buildStyles("secureTextEntry", true))
+    manager.updateProperties(view, buildStyles("secureTextEntry", true))
     assertThat(view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD).isNotZero
 
-    mManager.updateProperties(view, buildStyles("secureTextEntry", null))
+    manager.updateProperties(view, buildStyles("secureTextEntry", null))
     assertThat(view.inputType and InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero
   }
 
   @Test
   fun testIncrementalInputTypeUpdates() {
-    mManager.updateProperties(view, buildStyles())
+    manager.updateProperties(view, buildStyles())
     assertThat(view.inputType and InputType.TYPE_CLASS_NUMBER).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isZero
 
-    mManager.updateProperties(view, buildStyles("multiline", true))
+    manager.updateProperties(view, buildStyles("multiline", true))
     assertThat(view.inputType and InputType.TYPE_CLASS_NUMBER).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isZero
 
-    mManager.updateProperties(view, buildStyles("autoCorrect", false))
+    manager.updateProperties(view, buildStyles("autoCorrect", false))
     assertThat(view.inputType and InputType.TYPE_CLASS_NUMBER).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isNotZero
 
-    mManager.updateProperties(view, buildStyles("keyboardType", "NUMERIC"))
+    manager.updateProperties(view, buildStyles("keyboardType", "NUMERIC"))
     assertThat(view.inputType and InputType.TYPE_CLASS_NUMBER).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS).isNotZero
 
-    mManager.updateProperties(view, buildStyles("multiline", null))
+    manager.updateProperties(view, buildStyles("multiline", null))
     assertThat(view.inputType and InputType.TYPE_CLASS_NUMBER).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_AUTO_CORRECT).isZero
@@ -326,7 +326,7 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testTextAlign() {
-    val view = mManager.createViewInstance(mThemedContext)
+    val view = manager.createViewInstance(themedContext)
     val defaultGravity = view.gravity
     val defaultHorizontalGravity = defaultGravity and Gravity.HORIZONTAL_GRAVITY_MASK
     val defaultVerticalGravity = defaultGravity and Gravity.VERTICAL_GRAVITY_MASK
@@ -334,52 +334,52 @@ class ReactTextInputPropertyTest {
     assertThat(view.gravity).isNotEqualTo(Gravity.NO_GRAVITY)
 
     // region TextAlign
-    mManager.updateProperties(view, buildStyles("textAlign", "left"))
+    manager.updateProperties(view, buildStyles("textAlign", "left"))
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.LEFT)
 
-    mManager.updateProperties(view, buildStyles("textAlign", "right"))
+    manager.updateProperties(view, buildStyles("textAlign", "right"))
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT)
 
-    mManager.updateProperties(view, buildStyles("textAlign", "center"))
+    manager.updateProperties(view, buildStyles("textAlign", "center"))
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL)
 
-    mManager.updateProperties(view, buildStyles("textAlign", null))
+    manager.updateProperties(view, buildStyles("textAlign", null))
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mManager.updateProperties(view, buildStyles("textAlign", "justify"))
+      manager.updateProperties(view, buildStyles("textAlign", "justify"))
       assertThat(view.justificationMode).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD)
     }
     // endregion
 
     // region TextAlignVertical
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "top"))
+    manager.updateProperties(view, buildStyles("textAlignVertical", "top"))
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.TOP)
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"))
+    manager.updateProperties(view, buildStyles("textAlignVertical", "bottom"))
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM)
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "center"))
+    manager.updateProperties(view, buildStyles("textAlignVertical", "center"))
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL)
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", null))
+    manager.updateProperties(view, buildStyles("textAlignVertical", null))
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity)
     // endregion
 
     // region TextAlign + TextAlignVertical
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("textAlign", "center", "textAlignVertical", "center")
     )
     assertThat(view.gravity).isEqualTo(Gravity.CENTER)
 
-    mManager.updateProperties(
+    manager.updateProperties(
       view,
       buildStyles("textAlign", "right", "textAlignVertical", "bottom")
     )
     assertThat(view.gravity).isEqualTo(Gravity.RIGHT or Gravity.BOTTOM)
 
-    mManager.updateProperties(view, buildStyles("textAlign", null, "textAlignVertical", null))
+    manager.updateProperties(view, buildStyles("textAlign", null, "textAlignVertical", null))
     assertThat(view.gravity).isEqualTo(defaultGravity)
     // endregion
   }
@@ -388,7 +388,7 @@ class ReactTextInputPropertyTest {
   fun testMaxLength() {
     val filters = arrayOf<InputFilter>(AllCaps())
     view.filters = filters
-    mManager.setMaxLength(view, null)
+    manager.setMaxLength(view, null)
     assertThat(view.filters).isEqualTo(filters)
   }
 
