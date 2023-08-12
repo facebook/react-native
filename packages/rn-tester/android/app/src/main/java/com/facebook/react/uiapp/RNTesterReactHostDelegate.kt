@@ -18,8 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridgeless.BindingsInstaller
 import com.facebook.react.bridgeless.JSCInstance
 import com.facebook.react.bridgeless.JSEngineInstance
-import com.facebook.react.bridgeless.ReactHost
 import com.facebook.react.bridgeless.ReactHostDelegate
+import com.facebook.react.bridgeless.ReactHostImpl
 import com.facebook.react.bridgeless.hermes.HermesInstance
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
@@ -34,22 +34,21 @@ import com.facebook.react.uiapp.component.MyNativeViewManager
 import com.facebook.react.uimanager.ViewManager
 
 @UnstableReactNativeAPI
-internal class RNTesterReactHostDelegate(private val context: Context) : ReactHostDelegate {
-  var reactHost: ReactHost? = null
+class RNTesterReactHostDelegate internal constructor(context: Context) : ReactHostDelegate {
+  var reactHost: ReactHostImpl? = null
   private var mReactPackages: List<ReactPackage> = emptyList()
 
-  override val jSMainModulePath: String = "js/RNTesterApp.android"
+  override val jsMainModulePath: String = "js/RNTesterApp.android"
 
-  override val jSBundleLoader: JSBundleLoader =
+  override val jsBundleLoader: JSBundleLoader =
     JSBundleLoader.createAssetLoader(context, "assets://RNTesterApp.android.bundle", true)
 
-  @get:Synchronized
-  override val bindingsInstaller: BindingsInstaller? = null
+  @get:Synchronized override val bindingsInstaller: BindingsInstaller? = null
 
   override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
     DefaultTurboModuleManagerDelegate.Builder()
 
-  override val jSEngineInstance: JSEngineInstance =
+  override val jsEngineInstance: JSEngineInstance =
     if (reactHost?.jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.JSC) {
       JSCInstance()
     } else {
