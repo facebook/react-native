@@ -6,11 +6,11 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("com.facebook.react")
-    id("de.undercouch.download")
     id("maven-publish")
-    id("org.jetbrains.kotlin.android")
+    id("com.facebook.react")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.download)
+    alias(libs.plugins.kotlin.android)
 }
 
 import com.facebook.react.tasks.internal.*
@@ -60,6 +60,15 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // reduce the size of the React Native published .AAR.
 def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
+
+// Native versions which are defined inside the version catalog (libs.versions.toml)
+def BOOST_VERSION = libs.versions.boost.get()
+def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+def FMT_VERSION = libs.versions.fmt.get()
+def FOLLY_VERSION = libs.versions.folly.get()
+def GLOG_VERSION = libs.versions.glog.get()
+def LIBEVENT_VERSION = libs.versions.libevent.get()
+def GTEST_VERSION = libs.versions.gtest.get()
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
     dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
@@ -468,8 +477,8 @@ repositories {
 }
 
 android {
-    compileSdk 33
-    buildToolsVersion = "33.0.1"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -494,8 +503,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode(1)
         versionName("1.0")
 

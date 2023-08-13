@@ -71,30 +71,19 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
-static BOOL RCTIsIPhoneX()
+static BOOL RCTIsIPhoneNotched()
 {
-  static BOOL isIPhoneX = NO;
+  static BOOL isIPhoneNotched = NO;
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
 
-    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
-    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
-    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
-    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
-    CGSize iPhone12ScreenSize = CGSizeMake(1170, 2532);
-    CGSize iPhone12MiniScreenSize = CGSizeMake(1080, 2340);
-    CGSize iPhone12ProMaxScreenSize = CGSizeMake(1284, 2778);
-
-    isIPhoneX = CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) || CGSizeEqualToSize(screenSize, iPhoneXRScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhone12ScreenSize) || CGSizeEqualToSize(screenSize, iPhone12MiniScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhone12ProMaxScreenSize);
-    ;
+    // 20pt is the top safeArea value in non-notched devices
+    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
   });
 
-  return isIPhoneX;
+  return isIPhoneNotched;
 }
 
 static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RCTBridge *bridge)
@@ -142,7 +131,7 @@ static NSDictionary *RCTExportedDimensions(RCTModuleRegistry *moduleRegistry, RC
       // This prop is deprecated and will be removed in a future release.
       // Please use this only for a quick and temporary solution.
       // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneX()),
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
     };
   });
 

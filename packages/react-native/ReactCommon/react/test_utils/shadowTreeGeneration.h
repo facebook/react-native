@@ -164,9 +164,11 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
                                                  : Transform::Perspective(42);
   }
 
+#ifdef ANDROID
   if (entropy.random<bool>(0.1)) {
     viewProps.elevation = entropy.random<bool>() ? 1 : 0;
   }
+#endif
 
   return shadowNode.clone({newProps});
 }
@@ -195,7 +197,9 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
     viewProps.zIndex = {};
     viewProps.pointerEvents = PointerEventsMode::Auto;
     viewProps.transform = Transform::Identity();
+#ifdef ANDROID
     viewProps.elevation = 0;
+#endif
   } else {
     viewProps.nativeId = "42";
     viewProps.backgroundColor = whiteColor();
@@ -204,7 +208,9 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
     viewProps.zIndex = {entropy.random<int>()};
     viewProps.pointerEvents = PointerEventsMode::None;
     viewProps.transform = Transform::Perspective(entropy.random<int>());
+#ifdef ANDROID
     viewProps.elevation = entropy.random<int>();
+#endif
   }
 
   return shadowNode.clone({newProps});
