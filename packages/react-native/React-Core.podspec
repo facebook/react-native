@@ -99,7 +99,7 @@ Pod::Spec.new do |s|
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files
-    ss.private_header_files   = "React/CxxLogUtils/*.h"
+    ss.private_header_files   = "React/Cxx*/*.h"
   end
 
   s.subspec "DevSupport" do |ss|
