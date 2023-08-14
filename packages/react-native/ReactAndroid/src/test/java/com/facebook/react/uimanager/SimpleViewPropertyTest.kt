@@ -18,20 +18,14 @@ import com.facebook.react.touch.JSResponderHandler
 import com.facebook.react.uimanager.annotations.ReactProp
 import org.assertj.core.api.Assertions
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** Verify [View] view property being applied properly by [SimpleViewManager] */
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class SimpleViewPropertyTest {
-
-  @get:Rule var rule = PowerMockRule()
 
   private class ConcreteViewManager : SimpleViewManager<View?>() {
     @Suppress("UNUSED_PARAMETER") @ReactProp(name = "foo") fun setFoo(view: View, foo: Boolean) {}

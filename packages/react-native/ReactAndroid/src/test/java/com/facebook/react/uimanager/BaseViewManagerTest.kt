@@ -9,38 +9,39 @@ package com.facebook.react.uimanager
 
 import com.facebook.react.R
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
+import com.facebook.react.bridge.WritableArray
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import java.util.Locale
 import org.assertj.core.api.Assertions
+import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.api.mockito.PowerMockito.`when` as whenever
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.rule.PowerMockRule
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-@PrepareForTest(Arguments::class)
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class BaseViewManagerTest {
   private lateinit var viewManager: BaseViewManager<ReactViewGroup, *>
   private lateinit var view: ReactViewGroup
-
-  @get:Rule val rule = PowerMockRule()
+  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
     viewManager = ReactViewManager()
     view = ReactViewGroup(RuntimeEnvironment.getApplication())
-    mockStatic(Arguments::class.java)
-    whenever(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
+    arguments = Mockito.mockStatic(Arguments::class.java)
+    arguments.`when`<WritableArray> { Arguments.createMap() }.thenAnswer { JavaOnlyArray() }
+  }
+
+  @After
+  fun tearDown() {
+    arguments.close()
   }
 
   @Test
@@ -60,7 +61,7 @@ class BaseViewManagerTest {
 
   @Test
   fun testAccessibilityStateSelected() {
-    val accessibilityState = Arguments.createMap()
+    val accessibilityState = JavaOnlyMap()
     accessibilityState.putBoolean("selected", true)
     viewManager.setViewState(view, accessibilityState)
     Assertions.assertThat(view.getTag(R.id.accessibility_state)).isEqualTo(accessibilityState)

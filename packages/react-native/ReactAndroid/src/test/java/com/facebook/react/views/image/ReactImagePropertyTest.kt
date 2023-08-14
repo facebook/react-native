@@ -10,12 +10,15 @@ package com.facebook.react.views.image
 import android.graphics.Color
 import android.util.DisplayMetrics
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
+import com.facebook.react.bridge.WritableArray
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -25,36 +28,34 @@ import com.facebook.soloader.SoLoader
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.rule.PowerMockRule
+import org.mockito.MockedStatic
+import org.mockito.Mockito.any
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Verify that [ScalingUtils] properties are being applied correctly by [ ]. */
-@PrepareForTest(Arguments::class, RNLog::class)
+/** Verify that [ScalingUtils] properties are being applied correctly by [ReactImageManager]. */
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactImagePropertyTest {
-
-  @get:Rule var rule = PowerMockRule()
 
   private var context: ReactApplicationContext? = null
   private var catalystInstanceMock: CatalystInstance? = null
   private var themeContext: ThemedReactContext? = null
+  private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var rnLog: MockedStatic<RNLog>
 
   @Before
   fun setup() {
-    PowerMockito.mockStatic(Arguments::class.java)
-    PowerMockito.`when`(Arguments.createArray()).thenAnswer { JavaOnlyArray() }
-    PowerMockito.`when`(Arguments.createMap()).thenAnswer { JavaOnlyMap() }
+    arguments = mockStatic(Arguments::class.java)
+    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
+    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
 
-    // RNLog is stubbed out and the whole class need to be mocked
-    PowerMockito.mockStatic(RNLog::class.java)
+    rnLog = mockStatic(RNLog::class.java)
+    rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
+
     SoLoader.setInTestMode()
     context = ReactApplicationContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
@@ -67,6 +68,8 @@ class ReactImagePropertyTest {
   @After
   fun teardown() {
     DisplayMetricsHolder.setWindowDisplayMetrics(null)
+    arguments.close()
+    rnLog.close()
   }
 
   private fun buildStyles(vararg keysAndValues: Any?): ReactStylesDiffMap {
