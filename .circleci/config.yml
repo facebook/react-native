@@ -470,15 +470,15 @@ commands:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
           steps:
-            - store_artifacts:
+            - store_artifacts_if_needed:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-debug.tar.gz
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Release"]
           steps:
-            - store_artifacts:
+            - store_artifacts_if_needed:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-release.tar.gz
-      - store_artifacts:
+      - store_artifacts_if_needed:
           path: /tmp/hermes/osx-bin/<< parameters.flavor >>/hermesc
 
   stop_job_if_apple_artifacts_are_there:
@@ -605,6 +605,31 @@ commands:
           paths:
             - << parameters.pods_build_folder >>
 
+  store_artifacts_if_needed:
+    description: "This step stores the artifacts only if we are on main or on a stable branch"
+    parameters:
+      path:
+        type: string
+      destination:
+        type: string
+        default: << parameters.path >>
+      when:
+        type: enum
+        enum: ['always', 'on_fail', 'on_success']
+        default: 'always'
+    steps:
+      - when:
+          condition:
+            or:
+              - equal: [ main, << pipeline.git.branch >> ]
+              - matches:
+                  pattern: /0\.[0-9]+[\.[0-9]+]?-stable/
+                  value: << pipeline.git.branch >>
+          steps:
+            - store_artifacts:
+                when: << parameters.when >>
+                path: << parameters.path >>
+                destination: << parameters.destination >>
 
 
 # -------------------------
@@ -813,7 +838,7 @@ jobs:
                   cd /Users/distiller/Library/Developer/Xcode
                   XCRESULT_PATH=$(find . -name '*.xcresult')
                   tar -zcvf xcresults.tar.gz $XCRESULT_PATH
-            - store_artifacts:
+            - store_artifacts_if_needed:
                 path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
       # -------------------------
       # Collect Results
@@ -1519,7 +1544,7 @@ jobs:
           paths:
             - /tmp/hermes/linux64-bin/
             - /tmp/hermes/hermes/destroot/
-      - store_artifacts:
+      - store_artifacts_if_needed:
           path: /tmp/hermes/linux64-bin/
       - persist_to_workspace:
           root: /tmp/hermes/
@@ -1794,7 +1819,7 @@ jobs:
             - C:\tmp\hermes\hermes\icu\
             - C:\tmp\hermes\hermes\deps\
             - C:\tmp\hermes\hermes\build_release\
-      - store_artifacts:
+      - store_artifacts_if_needed:
           path: C:\tmp\hermes\win64-bin\
       - persist_to_workspace:
           root: C:\tmp\hermes\
@@ -1910,7 +1935,6 @@ jobs:
       - store_artifacts:
           path: /tmp/maven-local.zip
       - store_artifacts:
-          when: on_fail
           path: /root/.npm/_logs
       - persist_to_workspace:
           root: /tmp
