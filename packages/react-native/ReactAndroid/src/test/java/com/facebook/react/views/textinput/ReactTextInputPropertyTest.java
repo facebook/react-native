@@ -29,21 +29,15 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 /** Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager} */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T110934492
 public class ReactTextInputPropertyTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private ReactApplicationContext mContext;
   private CatalystInstance mCatalystInstanceMock;

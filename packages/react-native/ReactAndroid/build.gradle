@@ -491,8 +491,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
@@ -776,9 +776,6 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.assertj)
     testImplementation(libs.mockito)
-    testImplementation(libs.powermock.api.mockito2)
-    testImplementation(libs.powermock.classloading.xstream)
-    testImplementation(libs.powermock.module.junit4.rule)
     testImplementation(libs.robolectric)
     testImplementation(libs.thoughtworks)
 
@@ -795,28 +792,7 @@ react {
 }
 
 kotlin {
-    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
-    // not running well on JDK 17.
-    jvmToolchain(11)
-}
-
-tasks.withType(Test).all {
-    // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-        jvmArgs += [
-            "--illegal-access=permit",
-            "--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",
-            "--add-opens=java.base/java.util=ALL-UNNAMED",
-            "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
-            "--add-opens=java.base/java.net=ALL-UNNAMED",
-            "--add-opens=java.base/java.security=ALL-UNNAMED",
-            "--add-opens=java.base/java.io=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
-            "--add-opens=java.base/jdk.xml.internal=ALL-UNNAMED",
-        ]
-    }
+    jvmToolchain(17)
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

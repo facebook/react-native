@@ -9,17 +9,12 @@ package com.facebook.react.views.image
 
 import com.facebook.drawee.drawable.ScalingUtils
 import org.assertj.core.api.Assertions
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ImageResizeModeTest {
-  @get:Rule var rule = PowerMockRule()
 
   @Test
   fun testImageResizeMode() {
