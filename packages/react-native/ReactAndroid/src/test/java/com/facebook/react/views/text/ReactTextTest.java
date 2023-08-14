@@ -33,15 +33,21 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.ReactYogaConfigProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.testutils.shadows.ShadowSoLoader;
+import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaNative;
+import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
@@ -49,24 +55,37 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 /** Tests for {@link UIManagerModule} specifically for React Text/RawText. */
+@Config(shadows = {ShadowSoLoader.class})
 @RunWith(RobolectricTestRunner.class)
-@Ignore // TODO T110934492
 public class ReactTextTest {
 
   private MockedStatic<Arguments> arguments;
   private MockedStatic<ReactChoreographer> reactCoreographer;
+  private MockedStatic<ReactYogaConfigProvider> reactYogaConfigProvider;
+  private MockedStatic<YogaNodeFactory> yogaNodeFactory;
   private ArrayList<ChoreographerCompat.FrameCallback> mPendingFrameCallbacks;
 
   @Before
   public void setUp() {
     ReactChoreographer uiDriverMock = mock(ReactChoreographer.class);
+    YogaConfig yogaConfigMock = mock(YogaConfig.class);
+    YogaNode yogaNodeMock = mock(YogaNode.class);
     arguments = mockStatic(Arguments.class);
     arguments.when(Arguments::createMap).thenAnswer(invocation -> new JavaOnlyMap());
 
     reactCoreographer = mockStatic(ReactChoreographer.class);
     reactCoreographer.when(ReactChoreographer::getInstance).thenAnswer(invocation -> uiDriverMock);
+
+    reactYogaConfigProvider = mockStatic(ReactYogaConfigProvider.class);
+    reactYogaConfigProvider.when(ReactYogaConfigProvider::get).thenAnswer(invocation -> yogaConfigMock);
+
+    yogaNodeFactory = mockStatic(YogaNodeFactory.class);
+    yogaNodeFactory.when(() -> YogaNodeFactory.create(any(YogaConfig.class))).thenAnswer(invocation -> yogaNodeMock);
+
+    mockStatic(YogaNative.class);
 
     mPendingFrameCallbacks = new ArrayList<>();
     doAnswer(
