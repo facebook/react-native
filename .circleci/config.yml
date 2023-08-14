@@ -1087,7 +1087,7 @@ jobs:
                   else
                     export ORG_GRADLE_PROJECT_hermesEnabled=false
                   fi
-                  ./gradlew assemble<< parameters.flavor >> -PREACT_NATIVE_MAVEN_LOCAL_REPO=/root/react-native/maven-local
+                  ./gradlew assemble<< parameters.flavor >> -Preact.internal.mavenLocalRepo=/root/react-native/maven-local
 
       - store_artifacts:
           path: /tmp/AndroidTemplateProject/android/app/build/outputs/apk/

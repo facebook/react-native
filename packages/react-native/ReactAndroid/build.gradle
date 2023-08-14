@@ -396,7 +396,7 @@ task downloadNdkBuildDependencies {
 // This is not the case for users of React Native, as we ship a compiled version of the codegen.
 final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
     it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
-    it.bashWindowsHome.set(project.findProperty("REACT_WINDOWS_BASH"))
+    it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
 }
 
 /**
