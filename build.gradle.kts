@@ -112,3 +112,28 @@ tasks.register("publishAllToSonatype") {
   dependsOn(":packages:react-native:ReactAndroid:flipper-integration:publishToSonatype")
   dependsOn(":packages:react-native:ReactAndroid:hermes-engine:publishToSonatype")
 }
+
+if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoolean() == true) {
+  logger.warn(
+      """
+      ********************************************************************************
+      INFO: You're using Hermes from nightly as you set
+      
+      react.internal.useHermesNightly=true
+      
+      in the ./gradle.properties file.
+      
+      That's fine for local development, but you should not commit this change.
+      ********************************************************************************
+  """
+          .trimIndent())
+  allprojects {
+    configurations.all {
+      resolutionStrategy.dependencySubstitution {
+        substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
+            .using(module("com.facebook.react:hermes-android:0.0.0-+"))
+            .because("Users opted to use hermes from nightly")
+      }
+    }
+  }
+}

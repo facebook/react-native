@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
+import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
 import java.io.File
 import java.net.URI
@@ -70,9 +71,13 @@ internal object DependencyUtils {
         }
         configuration.resolutionStrategy.force(
             "${groupString}:react-android:${versionString}",
-            "${groupString}:hermes-android:${versionString}",
             "${groupString}:flipper-integration:${versionString}",
         )
+        if (!(eachProject.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()) {
+          // Contributors only: The hermes-engine version is forced only if the user has
+          // not opted into using nightlies for local development.
+          configuration.resolutionStrategy.force("${groupString}:hermes-android:${versionString}")
+        }
       }
     }
   }
