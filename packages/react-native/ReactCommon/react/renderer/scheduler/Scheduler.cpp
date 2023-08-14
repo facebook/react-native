@@ -134,6 +134,10 @@ Scheduler::Scheduler(
   CoreFeatures::cacheLastTextMeasurement =
       reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");
 
+  CoreFeatures::enableGranularShadowTreeStateReconciliation =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_granular_shadow_tree_state_reconciliation");
+
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
         componentDescriptorRegistry_);

@@ -60,6 +60,10 @@ class CoreFeatures {
   // Fire `onScroll` events continuously on iOS without a `scrollEventThrottle`
   // props, and provide continuous `onScroll` upates like other platforms.
   static bool disableScrollEventThrottleRequirement;
+
+  // When enabled, the renderer would only fail commits when they propagate
+  // state and the last commit that updated state changed before committing.
+  static bool enableGranularShadowTreeStateReconciliation;
 };
 
 } // namespace facebook::react
