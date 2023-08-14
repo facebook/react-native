@@ -12,14 +12,22 @@
 const babel = require('@babel/core');
 const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
+const translate = require('flow-api-translator');
 const glob = require('glob');
 const micromatch = require('micromatch');
-const fs = require('fs');
+const {promises: fs} = require('fs');
 const path = require('path');
 const prettier = require('prettier');
-const {buildConfig, getBabelConfig} = require('./config');
+const ts = require('typescript');
+const {
+  buildConfig,
+  getBabelConfig,
+  getBuildOptions,
+  getTypeScriptCompilerOptions,
+} = require('./config');
 
-const PACKAGES_DIR /*: string */ = path.resolve(__dirname, '../../packages');
+const REPO_ROOT = path.resolve(__dirname, '../..');
+const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
 const JS_FILES_PATTERN = '**/*.js';
@@ -32,7 +40,7 @@ const config = {
   },
 };
 
-function build() {
+async function build() {
   const {
     positionals: packageNames,
     values: {help},
@@ -53,35 +61,48 @@ function build() {
 
   console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
 
-  if (packageNames.length) {
-    packageNames
-      .filter(packageName => packageName in buildConfig.packages)
-      .forEach(buildPackage);
-  } else {
-    Object.keys(buildConfig.packages).forEach(buildPackage);
+  const packagesToBuild = packageNames.length
+    ? packageNames.filter(packageName => packageName in buildConfig.packages)
+    : Object.keys(buildConfig.packages);
+
+  for (const packageName of packagesToBuild) {
+    await buildPackage(packageName);
   }
 
   process.exitCode = 0;
 }
 
-function buildPackage(packageName /*: string */) {
+async function buildPackage(packageName /*: string */) {
+  const {emitTypeScriptDefs} = getBuildOptions(packageName);
   const files = glob.sync(
     path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'),
     {nodir: true},
   );
-  const packageJsonPath = path.join(PACKAGES_DIR, packageName, 'package.json');
 
   process.stdout.write(
     `${packageName} ${chalk.dim('.').repeat(72 - packageName.length)} `,
   );
-  files.forEach(file => buildFile(path.normalize(file), true));
-  rewritePackageExports(packageJsonPath);
+
+  // Build all files matched for package
+  for (const file of files) {
+    await buildFile(path.normalize(file), true);
+  }
+
+  // Validate program for emitted .d.ts files
+  if (emitTypeScriptDefs) {
+    validateTypeScriptDefs(packageName);
+  }
+
+  // Rewrite package.json "exports" field (src -> dist)
+  await rewritePackageExports(packageName);
+
   process.stdout.write(chalk.reset.inverse.bold.green(' DONE ') + '\n');
 }
 
-function buildFile(file /*: string */, silent /*: boolean */ = false) {
+async function buildFile(file /*: string */, silent /*: boolean */ = false) {
   const packageName = getPackageName(file);
   const buildPath = getBuildPath(file);
+  const {emitFlowDefs, emitTypeScriptDefs} = getBuildOptions(packageName);
 
   const logResult = ({copied, desc} /*: {copied: boolean, desc?: string} */) =>
     silent ||
@@ -97,24 +118,43 @@ function buildFile(file /*: string */, silent /*: boolean */ = false) {
     return;
   }
 
-  fs.mkdirSync(path.dirname(buildPath), {recursive: true});
+  await fs.mkdir(path.dirname(buildPath), {recursive: true});
 
   if (!micromatch.isMatch(file, JS_FILES_PATTERN)) {
-    fs.copyFileSync(file, buildPath);
+    await fs.copyFile(file, buildPath);
     logResult({copied: true, desc: 'copy'});
-  } else {
-    const transformed = prettier.format(
-      babel.transformFileSync(file, getBabelConfig(packageName)).code,
-      {parser: 'babel'},
-    );
-    fs.writeFileSync(buildPath, transformed);
-
-    if (/@flow/.test(fs.readFileSync(file, 'utf-8'))) {
-      fs.copyFileSync(file, buildPath + '.flow');
-    }
-
-    logResult({copied: true});
+    return;
   }
+
+  const source = await fs.readFile(file, 'utf-8');
+  const prettierConfig = {parser: 'babel'};
+
+  // Transform source file using Babel
+  const transformed = prettier.format(
+    (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
+    prettierConfig,
+  );
+  await fs.writeFile(buildPath, transformed);
+
+  // Translate source Flow types for each type definition target
+  if (/@flow/.test(source)) {
+    await Promise.all([
+      emitFlowDefs
+        ? fs.writeFile(
+            buildPath + '.flow',
+            await translate.translateFlowToFlowDef(source, prettierConfig),
+          )
+        : null,
+      emitTypeScriptDefs
+        ? fs.writeFile(
+            buildPath.replace(/\.js$/, '') + '.d.ts',
+            await translate.translateFlowToTSDef(source, prettierConfig),
+          )
+        : null,
+    ]);
+  }
+
+  logResult({copied: true});
 }
 
 function getPackageName(file /*: string */) /*: string */ {
@@ -130,16 +170,22 @@ function getBuildPath(file /*: string */) /*: string */ {
   );
 }
 
-function rewritePackageExports(packageJsonPath /*: string */) {
-  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, {encoding: 'utf8'}));
+async function rewritePackageExports(packageName /*: string */) {
+  const packageJsonPath = path.join(PACKAGES_DIR, packageName, 'package.json');
+  const pkg = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
 
   if (pkg.exports == null) {
-    return;
+    throw new Error(
+      packageName +
+        ' does not define an "exports" field in its package.json. As part ' +
+        'of the build setup, this field must be used in order to rewrite ' +
+        'paths to built files in production.',
+    );
   }
 
   pkg.exports = rewriteExportsField(pkg.exports);
 
-  fs.writeFileSync(
+  await fs.writeFile(
     packageJsonPath,
     prettier.format(JSON.stringify(pkg), {parser: 'json'}),
   );
@@ -173,6 +219,49 @@ function rewriteExportsTarget(target /*: string */) /*: string */ {
   return target.replace('./' + SRC_DIR + '/', './' + BUILD_DIR + '/');
 }
 
+function validateTypeScriptDefs(packageName /*: string */) {
+  const files = glob.sync(
+    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
+  );
+  const compilerOptions = {
+    ...getTypeScriptCompilerOptions(packageName),
+    noEmit: true,
+    skipLibCheck: false,
+  };
+  const program = ts.createProgram(files, compilerOptions);
+  const emitResult = program.emit();
+
+  if (emitResult.diagnostics.length) {
+    for (const diagnostic of emitResult.diagnostics) {
+      if (diagnostic.file != null) {
+        let {line, character} = ts.getLineAndCharacterOfPosition(
+          diagnostic.file,
+          diagnostic.start,
+        );
+        let message = ts.flattenDiagnosticMessageText(
+          diagnostic.messageText,
+          '\n',
+        );
+        console.log(
+          // $FlowIssue[incompatible-use] Type refined above
+          `${diagnostic.file.fileName} (${line + 1},${
+            character + 1
+          }): ${message}`,
+        );
+      } else {
+        console.log(
+          ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
+        );
+      }
+    }
+
+    throw new Error(
+      'Failing build because TypeScript errors were encountered for ' +
+        'generated type definitions.',
+    );
+  }
+}
+
 module.exports = {
   buildFile,
   getBuildPath,
@@ -182,5 +271,6 @@ module.exports = {
 };
 
 if (require.main === module) {
-  build();
+  // eslint-disable-next-line no-void
+  void build();
 }
