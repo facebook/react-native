@@ -393,6 +393,10 @@ import java.util.Map;
    */
   /*package*/ static Map<String, PropSetter> getNativePropSettersForShadowNodeClass(
       Class<? extends ReactShadowNode> cls) {
+    if(cls == null) {
+      return new HashMap<>();
+    };
+
     for (Class iface : cls.getInterfaces()) {
       if (iface == ReactShadowNode.class) {
         return EMPTY_PROPS_MAP;
