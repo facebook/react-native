@@ -23,6 +23,14 @@ HostPlatformViewProps::HostPlatformViewProps(
     RawProps const &rawProps,
     bool shouldSetRawProps)
     : BaseViewProps(context, sourceProps, rawProps, shouldSetRawProps),
+      elevation(
+          CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
+                                                 : convertRawProp(
+                                                       context,
+                                                       rawProps,
+                                                       "elevation",
+                                                       sourceProps.elevation,
+                                                       {})),
       nativeBackground(
           CoreFeatures::enablePropIteratorSetter
               ? sourceProps.nativeBackground

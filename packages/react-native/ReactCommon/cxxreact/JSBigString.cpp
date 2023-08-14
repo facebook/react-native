@@ -10,7 +10,6 @@
 #include <glog/logging.h>
 
 #include <folly/Memory.h>
-#include <folly/ScopeGuard.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/SysStat.h>
@@ -22,7 +21,14 @@ namespace facebook::react {
 
 JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
     : m_fd{-1}, m_data{nullptr} {
-  folly::checkUnixError(m_fd = dup(fd), "Could not duplicate file descriptor");
+  m_fd = dup(fd);
+
+  if (m_fd == -1) {
+    const char *message =
+        "JSBigFileString::JSBigFileString - Could not duplicate file descriptor";
+    LOG(ERROR) << message;
+    throw std::runtime_error(message);
+  }
 
   // Offsets given to mmap must be page aligned. We abstract away that
   // restriction by sending a page aligned offset to mmap, and keeping track
@@ -83,15 +89,29 @@ int JSBigFileString::fd() const {
 std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
     const std::string &sourceURL) {
   int fd = ::open(sourceURL.c_str(), O_RDONLY);
-  folly::checkUnixError(fd, "Could not open file", sourceURL);
-  SCOPE_EXIT {
-    CHECK(::close(fd) == 0);
-  };
 
-  struct stat fileInfo;
-  folly::checkUnixError(::fstat(fd, &fileInfo), "fstat on bundle failed.");
+  if (fd == -1) {
+    const std::string message =
+        std::string("JSBigFileString::fromPath - Could not open file: ") +
+        sourceURL;
+    LOG(ERROR) << message;
+    throw std::runtime_error(message.c_str());
+  }
 
-  return std::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
+  struct stat fileInfo {};
+  int res = ::fstat(fd, &fileInfo);
+
+  if (res == -1) {
+    const std::string message =
+        "JSBigFileString::fromPath - fstat on bundle failed: " + sourceURL;
+    LOG(ERROR) << message;
+    ::close(fd);
+    throw std::runtime_error(message.c_str());
+  }
+
+  auto ptr = std::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
+  CHECK(::close(fd) == 0);
+  return ptr;
 }
 
 } // namespace facebook::react

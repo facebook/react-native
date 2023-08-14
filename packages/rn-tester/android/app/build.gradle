@@ -6,9 +6,9 @@
  */
 
 plugins {
-    id("com.android.application")
     id("com.facebook.react")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 /**
@@ -90,8 +90,8 @@ repositories {
 }
 
 android {
-    compileSdk 33
-    buildToolsVersion = "33.0.1"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react.uiapp"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -117,8 +117,8 @@ android {
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
@@ -164,7 +164,7 @@ dependencies {
 
     jscImplementation jscFlavor
 
-    androidTestImplementation 'junit:junit:4.12'
+    testImplementation(libs.junit)
 }
 
 android {
@@ -180,9 +180,11 @@ android {
 }
 
 afterEvaluate {
-    // As we're consuming Hermes from source, we want to make sure
-    // `hermesc` is built before we actually invoke the `emit*HermesResource` task
-    createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+    if (project.findProperty("react.internal.useHermesNightly") == null || project.findProperty("react.internal.useHermesNightly").toString() == "false") {
+        // As we're consuming Hermes from source, we want to make sure
+        // `hermesc` is built before we actually invoke the `emit*HermesResource` task
+        createBundleHermesReleaseJsAndAssets.dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+    }
 
     // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
     // `.cxx/Release` folder where the CMake intermediates are stored.
@@ -193,4 +195,8 @@ afterEvaluate {
         mergeJscDebugNativeLibs.mustRunAfter(externalNativeBuildHermesDebug)
         mergeJscReleaseNativeLibs.mustRunAfter(externalNativeBuildHermesRelease)
     }
+
+    // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
+    // we can actually invoke it. It's built by the ReactAndroid:buildCodegenCLI task.
+    generateCodegenSchemaFromJavaScript.dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

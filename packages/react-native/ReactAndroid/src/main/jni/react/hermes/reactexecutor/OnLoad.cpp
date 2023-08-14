@@ -46,7 +46,6 @@ static void installBindings(jsi::Runtime &runtime) {
       static_cast<void (*)(const std::string &, unsigned int)>(
           &reactAndroidLoggingHook);
   react::bindNativeLogger(runtime, androidLogger);
-  react::bindNativePerformanceNow(runtime);
 }
 
 class HermesExecutorHolder

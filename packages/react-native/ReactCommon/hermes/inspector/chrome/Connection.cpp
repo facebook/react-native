@@ -222,7 +222,7 @@ std::string Connection::Impl::getTitle() const {
 
 bool Connection::Impl::connect(std::unique_ptr<IRemoteConnection> remoteConn) {
   assert(remoteConn);
-  std::lock_guard<std::mutex> lock(connectionMutex_);
+  std::scoped_lock lock(connectionMutex_);
 
   if (connected_) {
     return false;
@@ -237,7 +237,7 @@ bool Connection::Impl::connect(std::unique_ptr<IRemoteConnection> remoteConn) {
 }
 
 bool Connection::Impl::disconnect() {
-  std::lock_guard<std::mutex> lock(connectionMutex_);
+  std::scoped_lock lock(connectionMutex_);
 
   if (!connected_) {
     return false;
@@ -350,7 +350,7 @@ void Connection::Impl::onPause(
       note.reason = "other";
       note.hitBreakpoints = std::vector<m::debugger::BreakpointId>();
 
-      std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+      std::scoped_lock lock(virtualBreakpointMutex_);
       for (auto &bp :
            virtualBreakpoints_[kBeforeScriptWithSourceMapExecution]) {
         note.hitBreakpoints->emplace_back(bp);
@@ -398,7 +398,7 @@ void Connection::Impl::onScriptParsed(
   if (!info.sourceMappingUrl.empty()) {
     note.sourceMapURL = info.sourceMappingUrl;
 
-    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    std::scoped_lock lock(virtualBreakpointMutex_);
     if (hasVirtualBreakpoint(kBeforeScriptWithSourceMapExecution)) {
       // We are precariously relying on the fact that onScriptParsed
       // is invoked immediately before the pause load mode is checked.
@@ -409,7 +409,7 @@ void Connection::Impl::onScriptParsed(
   }
 
   {
-    std::lock_guard<std::mutex> lock(parsedScriptsMutex_);
+    std::scoped_lock lock(parsedScriptsMutex_);
     parsedScripts_.push_back(info.fileName);
   }
 
@@ -1182,7 +1182,7 @@ void Connection::Impl::handle(const m::debugger::PauseRequest &req) {
 
 void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
   if (isVirtualBreakpointId(req.breakpointId)) {
-    std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+    std::scoped_lock lock(virtualBreakpointMutex_);
     if (!removeVirtualBreakpoint(req.breakpointId)) {
       sendErrorToClientViaExecutor(
           req.id, "Unknown breakpoint ID: " + req.breakpointId);
@@ -1238,7 +1238,7 @@ void Connection::Impl::handle(
   debugger::SourceLocation loc;
 
   {
-    std::lock_guard<std::mutex> lock(parsedScriptsMutex_);
+    std::scoped_lock lock(parsedScriptsMutex_);
     setHermesLocation(loc, req, parsedScripts_);
   }
 
@@ -1307,7 +1307,7 @@ void Connection::Impl::handle(
 
   // The act of creating and registering the breakpoint ID is enough
   // to "set" it. We merely check for the existence of them later.
-  std::lock_guard<std::mutex> lock(virtualBreakpointMutex_);
+  std::scoped_lock lock(virtualBreakpointMutex_);
   m::debugger::SetInstrumentationBreakpointResponse resp;
   resp.id = req.id;
   resp.breakpointId = createVirtualBreakpoint(req.instrumentation);
