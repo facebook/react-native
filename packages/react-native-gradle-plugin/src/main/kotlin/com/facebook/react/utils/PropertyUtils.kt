@@ -40,6 +40,12 @@ object PropertyUtils {
    */
   const val INTERNAL_REACT_WINDOWS_BASH = "react.internal.windowsBashPath"
 
+  /**
+   * Internal property to force the build to use Hermes from the latest nightly. This speeds up the
+   * build at the cost of not testing the latest integration against Hermes.
+   */
+  const val INTERNAL_USE_HERMES_NIGHTLY = "react.internal.useHermesNightly"
+
   /** Internal property used to override the publishing group for the React Native artifacts. */
   const val INTERNAL_PUBLISHING_GROUP = "react.internal.publishingGroup"
   const val DEFAULT_INTERNAL_PUBLISHING_GROUP = "com.facebook.react"
