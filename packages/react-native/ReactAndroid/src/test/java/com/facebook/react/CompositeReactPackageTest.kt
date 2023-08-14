@@ -13,34 +13,27 @@ import com.facebook.react.uimanager.ViewManager
 import java.util.*
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when` as whenever
-import org.mockito.MockitoAnnotations
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class CompositeReactPackageTest {
-  @get:Rule val rule = PowerMockRule()
-
-  @Mock lateinit var packageNo1: ReactPackage
-
-  @Mock lateinit var packageNo2: ReactPackage
-
-  @Mock lateinit var packageNo3: ReactPackage
-
-  @Mock lateinit var reactContext: ReactApplicationContext
+  private lateinit var packageNo1: ReactPackage
+  private lateinit var packageNo2: ReactPackage
+  private lateinit var packageNo3: ReactPackage
+  private lateinit var reactContext: ReactApplicationContext
 
   @Before
-  fun initMocks() {
-    MockitoAnnotations.initMocks(this)
+  fun setUp() {
+    packageNo1 = mock(ReactPackage::class.java)
+    packageNo2 = mock(ReactPackage::class.java)
+    packageNo3 = mock(ReactPackage::class.java)
+    reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
   }
 
   @Test

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -35,13 +34,8 @@ import com.facebook.testutils.shadows.ShadowSoLoader;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
@@ -50,18 +44,9 @@ import org.robolectric.annotation.LooperMode;
 
 /** Tests {@linkcom.facebook.react.bridgeless.ReactHostImpl} */
 @Ignore("Ignore for now as these tests fail in OSS only")
-@SuppressStaticInitializationFor("com.facebook.react.fabric.ComponentFactory")
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({
-  "org.mockito.*",
-  "org.robolectric.*",
-  "android.*",
-  "androidx.*",
-  "javax.net.ssl.*"
-})
 @Config(shadows = ShadowSoLoader.class)
 @LooperMode(LooperMode.Mode.PAUSED)
-@PrepareForTest({ReactHostImpl.class, ComponentFactory.class})
 public class ReactHostTest {
 
   private ReactHostDelegate mReactHostDelegate;
@@ -73,8 +58,6 @@ public class ReactHostTest {
   private ActivityController<Activity> mActivityController;
   private ComponentFactory mComponentFactory;
   private BridgelessReactContext mBridgelessReactContext;
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Before
   public void setUp() throws Exception {
@@ -90,10 +73,13 @@ public class ReactHostTest {
     mComponentFactory = mock(ComponentFactory.class);
     mBridgelessReactContext = mock(BridgelessReactContext.class);
 
-    whenNew(ReactInstance.class).withAnyArguments().thenReturn(mReactInstance);
-    whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(mBridgelessReactContext);
-    whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
-    whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
+    // TODO This should be replaced with proper mocking once this test is un-ignored
+    //  whenNew(ReactInstance.class).withAnyArguments().thenReturn(mReactInstance);
+    //
+    // whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(mBridgelessReactContext);
+    //  whenNew(MemoryPressureRouter.class).withAnyArguments().thenReturn(mMemoryPressureRouter);
+    //
+    // whenNew(BridgelessDevSupportManager.class).withAnyArguments().thenReturn(mDevSupportManager);
 
     doReturn(mJSBundleLoader).when(mReactHostDelegate).getJsBundleLoader();
 
@@ -108,7 +94,8 @@ public class ReactHostTest {
 
     TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
     taskCompletionSource.setResult(true);
-    whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
+    // TODO This should be replaced with proper mocking once this test is un-ignored
+    //  whenNew(TaskCompletionSource.class).withAnyArguments().thenReturn(taskCompletionSource);
   }
 
   @Test
@@ -160,7 +147,8 @@ public class ReactHostTest {
     ReactContext oldReactContext = mReactHost.getCurrentReactContext();
     BridgelessReactContext newReactContext = mock(BridgelessReactContext.class);
     assertThat(newReactContext).isNotEqualTo(oldReactContext);
-    whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(newReactContext);
+    // TODO This should be replaced with proper mocking once this test is un-ignored
+    //  whenNew(BridgelessReactContext.class).withAnyArguments().thenReturn(newReactContext);
 
     waitForTaskUIThread(mReactHost.reload("Reload from testing infra"));
 

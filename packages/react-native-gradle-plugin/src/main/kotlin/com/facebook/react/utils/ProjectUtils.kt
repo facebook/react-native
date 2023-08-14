@@ -10,22 +10,36 @@ package com.facebook.react.utils
 import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
+import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
+import com.facebook.react.utils.PropertyUtils.NEW_ARCH_ENABLED
+import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
+import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
+import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
+import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 
 internal object ProjectUtils {
   internal val Project.isNewArchEnabled: Boolean
     get() =
-        project.hasProperty("newArchEnabled") &&
-            project.property("newArchEnabled").toString().toBoolean()
+        (project.hasProperty(NEW_ARCH_ENABLED) &&
+            project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
+                project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
 
   const val HERMES_FALLBACK = true
 
   internal val Project.isHermesEnabled: Boolean
     get() =
-        if (project.hasProperty("hermesEnabled")) {
+        if (project.hasProperty(HERMES_ENABLED) || project.hasProperty(SCOPED_HERMES_ENABLED)) {
+          val propertyString =
+              if (project.hasProperty(HERMES_ENABLED)) {
+                HERMES_ENABLED
+              } else {
+                SCOPED_HERMES_ENABLED
+              }
           project
-              .property("hermesEnabled")
+              .property(propertyString)
               .toString()
               .lowercaseCompat()
               .toBooleanStrictOrNullCompat()
@@ -53,8 +67,11 @@ internal object ProjectUtils {
 
   internal fun Project.getReactNativeArchitectures(): List<String> {
     val architectures = mutableListOf<String>()
-    if (project.hasProperty("reactNativeArchitectures")) {
-      val architecturesString = project.property("reactNativeArchitectures").toString()
+    if (project.hasProperty(REACT_NATIVE_ARCHITECTURES)) {
+      val architecturesString = project.property(REACT_NATIVE_ARCHITECTURES).toString()
+      architectures.addAll(architecturesString.split(",").filter { it.isNotBlank() })
+    } else if (project.hasProperty(SCOPED_REACT_NATIVE_ARCHITECTURES)) {
+      val architecturesString = project.property(SCOPED_REACT_NATIVE_ARCHITECTURES).toString()
       architectures.addAll(architecturesString.split(",").filter { it.isNotBlank() })
     }
     return architectures

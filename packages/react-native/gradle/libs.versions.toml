@@ -22,11 +22,10 @@ javax-inject = "1"
 jsr305 = "3.0.2"
 junit = "4.13.2"
 kotlin = "1.8.0"
-mockito = "2.28.2"
+mockito = "3.12.4"
 nexus-publish = "1.3.0"
 okhttp = "4.9.2"
 okio = "2.9.0"
-powermock = "2.0.9"
 robolectric = "4.9.2"
 soloader = "0.10.5"
 xstream = "1.4.20"
@@ -69,10 +68,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
 junit = {module = "junit:junit", version.ref = "junit" }
 assertj = {module = "org.assertj:assertj-core", version.ref = "assertj" }
-mockito = {module = "org.mockito:mockito-core", version.ref = "mockito" }
-powermock-api-mockito2 = {module = "org.powermock:powermock-api-mockito2", version.ref = "powermock" }
-powermock-classloading-xstream = {module = "org.powermock:powermock-classloading-xstream", version.ref = "powermock" }
-powermock-module-junit4-rule = {module = "org.powermock:powermock-module-junit4-rule", version.ref = "powermock" }
+mockito = {module = "org.mockito:mockito-inline", version.ref = "mockito" }
 robolectric = {module = "org.robolectric:robolectric", version.ref = "robolectric" }
 thoughtworks = {module = "com.thoughtworks.xstream:xstream", version.ref = "xstream" }
 

@@ -19,20 +19,14 @@ import java.util.Map;
 import org.assertj.core.data.MapEntry;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T14964130
 public class UIManagerModuleConstantsTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   private static final String CUSTOM_BUBBLING_EVENT_TYPES = "customBubblingEventTypes";
   private static final String CUSTOM_DIRECT_EVENT_TYPES = "customDirectEventTypes";
