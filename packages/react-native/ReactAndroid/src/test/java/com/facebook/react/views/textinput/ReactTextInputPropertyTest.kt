@@ -27,22 +27,14 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorHint
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 /** Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager} */
-
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class ReactTextInputPropertyTest {
-
-  @get:Rule
-  val rule = PowerMockRule()
 
   private lateinit var context: ReactApplicationContext
   private lateinit var catalystInstanceMock: CatalystInstance
@@ -50,21 +42,22 @@ class ReactTextInputPropertyTest {
   private lateinit var manager: ReactTextInputManager
   private lateinit var view: ReactEditText
 
-  private val generalKeyboardTypeFlags: Int = (InputType.TYPE_CLASS_NUMBER
-    or InputType.TYPE_NUMBER_FLAG_DECIMAL
-    or InputType.TYPE_NUMBER_FLAG_SIGNED
-    or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-    or InputType.TYPE_CLASS_TEXT
-    or InputType.TYPE_CLASS_PHONE
-    or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-    and InputType.TYPE_TEXT_VARIATION_PASSWORD.inv())
+  private val generalKeyboardTypeFlags: Int =
+    (InputType.TYPE_CLASS_NUMBER or
+      InputType.TYPE_NUMBER_FLAG_DECIMAL or
+      InputType.TYPE_NUMBER_FLAG_SIGNED or
+      InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS or
+      InputType.TYPE_CLASS_TEXT or
+      InputType.TYPE_CLASS_PHONE or
+      InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and
+      InputType.TYPE_TEXT_VARIATION_PASSWORD.inv())
 
   @Before
   fun setup() {
     context = ReactApplicationContext(RuntimeEnvironment.getApplication())
     catalystInstanceMock = createMockCatalystInstance()
     context.initializeWithInstance(catalystInstanceMock)
-    themedContext = ThemedReactContext(context, context, null, ID_NULL)
+    themedContext = ThemedReactContext(context, context.baseContext, null, ID_NULL)
     manager = ReactTextInputManager()
     DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
     view = manager.createViewInstance(themedContext)
@@ -120,10 +113,7 @@ class ReactTextInputPropertyTest {
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isNotZero
 
-    manager.updateProperties(
-      view,
-      buildStyles("autoCapitalize", InputType.TYPE_CLASS_TEXT)
-    )
+    manager.updateProperties(view, buildStyles("autoCapitalize", InputType.TYPE_CLASS_TEXT))
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
@@ -195,9 +185,10 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testBlurMultiline() {
-    val editorInfo = EditorInfo().apply {
-      imeOptions = EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_ENTER_ACTION
-    }
+    val editorInfo =
+      EditorInfo().apply {
+        imeOptions = EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_ENTER_ACTION
+      }
     manager.updateProperties(view, buildStyles("multiline", true))
     manager.updateProperties(view, buildStyles("submitBehavior", "blurAndSubmit"))
     view.onCreateInputConnection(editorInfo)
@@ -234,7 +225,8 @@ class ReactTextInputPropertyTest {
     val decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
     manager.updateProperties(view, buildStyles("keyboardType", "phone-pad"))
-    assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_PHONE)
+    assertThat(view.inputType and generalKeyboardTypeFlags)
+      .isEqualTo(InputType.TYPE_CLASS_PHONE)
 
     manager.updateProperties(view, buildStyles("keyboardType", "number-pad"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags)
@@ -245,9 +237,10 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testKeyboardTypeNumeric() {
-    val numericTypeFlags = (InputType.TYPE_CLASS_NUMBER
-      or InputType.TYPE_NUMBER_FLAG_DECIMAL
-      or InputType.TYPE_NUMBER_FLAG_SIGNED)
+    val numericTypeFlags =
+      (InputType.TYPE_CLASS_NUMBER or
+        InputType.TYPE_NUMBER_FLAG_DECIMAL or
+        InputType.TYPE_NUMBER_FLAG_SIGNED)
 
     manager.updateProperties(view, buildStyles("keyboardType", "numeric"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(numericTypeFlags)
@@ -255,7 +248,8 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testKeyboardTypeEmail() {
-    val emailTypeFlags = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS or InputType.TYPE_CLASS_TEXT
+    val emailTypeFlags =
+      InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS or InputType.TYPE_CLASS_TEXT
 
     manager.updateProperties(view, buildStyles("keyboardType", "email-address"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(emailTypeFlags)
@@ -264,13 +258,15 @@ class ReactTextInputPropertyTest {
   @Test
   fun testKeyboardTypeUrl() {
     manager.updateProperties(view, buildStyles("keyboardType", "url"))
-    assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_TEXT_VARIATION_URI)
+    assertThat(view.inputType and generalKeyboardTypeFlags)
+      .isEqualTo(InputType.TYPE_TEXT_VARIATION_URI)
   }
 
   @Test
   fun testKeyboardTypeVisiblePassword() {
     val passwordVisibilityFlag =
-      InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and InputType.TYPE_TEXT_VARIATION_PASSWORD.inv()
+      InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD and
+        InputType.TYPE_TEXT_VARIATION_PASSWORD.inv()
 
     manager.updateProperties(view, buildStyles("keyboardType", "visible-password"))
     assertThat(view.inputType and generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag)
@@ -326,7 +322,6 @@ class ReactTextInputPropertyTest {
 
   @Test
   fun testTextAlign() {
-    val view = manager.createViewInstance(themedContext)
     val defaultGravity = view.gravity
     val defaultHorizontalGravity = defaultGravity and Gravity.HORIZONTAL_GRAVITY_MASK
     val defaultVerticalGravity = defaultGravity and Gravity.VERTICAL_GRAVITY_MASK
@@ -341,10 +336,12 @@ class ReactTextInputPropertyTest {
     assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT)
 
     manager.updateProperties(view, buildStyles("textAlign", "center"))
-    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL)
+    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
+      .isEqualTo(Gravity.CENTER_HORIZONTAL)
 
     manager.updateProperties(view, buildStyles("textAlign", null))
-    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity)
+    assertThat(view.gravity and Gravity.HORIZONTAL_GRAVITY_MASK)
+      .isEqualTo(defaultHorizontalGravity)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       manager.updateProperties(view, buildStyles("textAlign", "justify"))
@@ -360,7 +357,8 @@ class ReactTextInputPropertyTest {
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM)
 
     manager.updateProperties(view, buildStyles("textAlignVertical", "center"))
-    assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL)
+    assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK)
+      .isEqualTo(Gravity.CENTER_VERTICAL)
 
     manager.updateProperties(view, buildStyles("textAlignVertical", null))
     assertThat(view.gravity and Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity)
