@@ -158,7 +158,7 @@ public class UIImplementation {
               mShadowNodeRegistry.addRootNode(rootCSSNode);
             }
           });
-
+      mShadowNodeRegistry.addRootNode(rootCSSNode);
       // register it within NativeViewHierarchyManager
       mOperationsQueue.addRootView(tag, rootView);
     }
