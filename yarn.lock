@@ -2817,6 +2817,11 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node14/-/node14-1.0.3.tgz#e4386316284f00b98435bf40f72f75a09dabf6c1"
   integrity sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==
 
+"@tsconfig/node18@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@tsconfig/node18/-/node18-1.0.1.tgz#ea5b375a9ead6b09ccbd70c3894ea069829ea1bb"
+  integrity sha512-sNFeK6X2ATlhlvzyH4kKYQlfHXE2f2/wxtB9ClvYXevWpmwkUT7VaSrjIN9E76Qebz8qP5JOJJ9jD3QoD/Z9TA==
+
 "@types/archiver@5.3.2":
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/@types/archiver/-/archiver-5.3.2.tgz#a9f0bcb0f0b991400e7766d35f6e19d163bdadcc"
@@ -3328,6 +3333,11 @@
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.59.5.tgz#e63c5952532306d97c6ea432cee0981f6d2258c7"
   integrity sha512-xkfRPHbqSH4Ggx4eHRIO/eGL8XL4Ysb4woL8c87YuAo8Md7AUjyWKa9YMwTL519SyDPrfEgKdewjkxNCVeJW7w==
 
+"@typescript-eslint/types@5.62.0":
+  version "5.62.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-5.62.0.tgz#258607e60effa309f067608931c3df6fed41fd2f"
+  integrity sha512-87NVngcbVXUahrRTqIK27gD2t5Cu1yuCXxbLcFtCzZGlfyVWWh8mLHkoxzjsB6DDNnvdL+fW8MiwPEJyGJQDgQ==
+
 "@typescript-eslint/typescript-estree@5.59.5":
   version "5.59.5"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-5.59.5.tgz#9b252ce55dd765e972a7a2f99233c439c5101e42"
@@ -3361,6 +3371,14 @@
   integrity sha512-qL+Oz+dbeBRTeyJTIy0eniD3uvqU7x+y1QceBismZ41hd4aBSRh8UAw4pZP0+XzLuPZmx4raNMq/I+59W2lXKA==
   dependencies:
     "@typescript-eslint/types" "5.59.5"
+    eslint-visitor-keys "^3.3.0"
+
+"@typescript-eslint/visitor-keys@^5.42.0":
+  version "5.62.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-5.62.0.tgz#2174011917ce582875954ffe2f6912d5931e353e"
+  integrity sha512-07ny+LHRzQXepkGg6w0mFY41fVUNBrL2Roj/++7V1txKugfjm/Ci/qSND03r2RhlJhJYMcTn9AhhSSqQp0Ysyw==
+  dependencies:
+    "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
 "@wdio/config@7.31.1":
@@ -5689,7 +5707,7 @@ esprima@^4.0.0, esprima@~4.0.0:
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
   integrity sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A==
 
-esquery@^1.4.2:
+esquery@^1.4.0, esquery@^1.4.2:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.5.0.tgz#6ce17738de8577694edd7361c57182ac8cb0db0b"
   integrity sha512-YQLXUplAwJgCydQ78IMJywZCceoqk1oH01OERdSAJc/7U2AylwjhSCLDEtqwg811idIS/9fIU5GjG73IgjKMVg==
@@ -6071,6 +6089,19 @@ flatted@^3.1.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.2.tgz#64bfed5cb68fe3ca78b3eb214ad97b63bedce561"
   integrity sha512-JaTY/wtrcSyvXJl4IMFHPKyFur1sE9AUqc0QnhOaJ0CxHtAoIV8pYDzeEfAaNEtGkOfq4gr3LBFmdXW5mOQFnA==
+
+flow-api-translator@0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/flow-api-translator/-/flow-api-translator-0.15.0.tgz#3df5af2d45630251f12782679271dc2533bcf094"
+  integrity sha512-cH5Fo08kQO0vucJfcQqMAPc2De8ooVX/9AhBUiRDhe+Ob98HOSBJamaiFLgTmC9UVnSyIFRKgpG+RRopHWtjwg==
+  dependencies:
+    "@babel/code-frame" "^7.16.0"
+    "@typescript-eslint/visitor-keys" "^5.42.0"
+    flow-enums-runtime "^0.0.6"
+    hermes-eslint "0.15.0"
+    hermes-estree "0.15.0"
+    hermes-parser "0.15.0"
+    hermes-transform "0.15.0"
 
 flow-bin@^0.214.0:
   version "0.214.0"
@@ -6578,6 +6609,18 @@ hermes-profile-transformer@^0.0.6:
   integrity sha512-cnN7bQUm65UWOy6cbGcCcZ3rpwW8Q/j4OP5aWRhEry4Z2t2aR1cjrbp0BS+KiBN0smvP1caBgAuxutvyvJILzQ==
   dependencies:
     source-map "^0.7.3"
+
+hermes-transform@0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/hermes-transform/-/hermes-transform-0.15.0.tgz#5509cf6993abafbdc32528098d287f5c91eef52c"
+  integrity sha512-ACGdssuE2mcu/qSwSfie1yWQs5IBRYy7yokPbdCkHd4M0jPqCiQbwrlRzQP0+XgyZPooINXWHxkhsI5Iffhppw==
+  dependencies:
+    "@babel/code-frame" "^7.16.0"
+    esquery "^1.4.0"
+    flow-enums-runtime "^0.0.6"
+    hermes-eslint "0.15.0"
+    hermes-estree "0.15.0"
+    hermes-parser "0.15.0"
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"
