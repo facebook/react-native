@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -132,7 +132,7 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     server: Server,
   ) => {
     if (customEnhanceMiddleware) {
-      metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
+      return middleware.use(customEnhanceMiddleware(metroMiddleware, server));
     }
     return middleware.use(metroMiddleware);
   };
