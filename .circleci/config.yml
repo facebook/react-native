@@ -25,7 +25,7 @@ references:
   android-defaults: &android-defaults
     working_directory: ~/react-native
     docker:
-      - image: reactnativecommunity/react-native-android:v10.0
+      - image: reactnativecommunity/react-native-android:v11.0
     environment:
       - TERM: "dumb"
       - GRADLE_OPTS: '-Dorg.gradle.daemon=false'
@@ -929,7 +929,7 @@ jobs:
       - run_yarn
       - android/create-avd:
           avd-name: e2e_emulator
-          system-image: system-images;android-33;google_apis;x86_64
+          system-image: system-images;android-34;google_apis;x86_64
           install: true
       - android/start-emulator:
           avd-name: e2e_emulator
@@ -1311,15 +1311,7 @@ jobs:
   test_windows:
     executor:
       name: win/default
-    parameters:
-      run_disabled_tests:
-        type: boolean
-        default: false
     environment:
-      - ANDROID_HOME: "C:\\Android\\android-sdk"
-      - ANDROID_NDK: "C:\\Android\\android-sdk\\ndk\\20.1.5948944"
-      - ANDROID_BUILD_VERSION: 33
-      - ANDROID_TOOLS_VERSION: 33.0.1
       - CHOCO_CACHE_DIR: "C:\\ChocoCache"
     steps:
       - checkout_code_with_cache
@@ -1374,24 +1366,10 @@ jobs:
           paths:
             - C:\Users\circleci\AppData\Local\Yarn
 
-      - run:
-          name: Install Android SDK Tools
-          command: choco install android-sdk;
-
       - save_cache:
           key: *windows_choco_cache_key
           paths:
             - $env:CHOCO_CACHE_DIR
-
-      - run:
-          name: Setup Android SDKs
-          command: |
-            sdkmanager --licenses
-            sdkmanager "system-images;android-21;google_apis;armeabi-v7a"
-            sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-            sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
-            sdkmanager "add-ons;addon-google_apis-google-23"
-            sdkmanager "extras;android;m2repository"
 
       # -------------------------
       # Run Tests
@@ -1404,15 +1382,6 @@ jobs:
       - run:
           name: "Run Tests: JavaScript Tests"
           command: yarn test
-
-      # Optionally, run disabled tests
-      - when:
-          condition: << parameters.run_disabled_tests >>
-          steps:
-            - run: echo "Failing tests may be moved here temporarily."
-            - run:
-                name: Android Build
-                command: ./gradlew.bat packages:rn-tester:android:app:assembleRelease
 
   # -------------------------
   #      JOBS: Build Hermes
@@ -2219,8 +2188,7 @@ workflows:
       - test_js:
           name: test_js_prev_lts
           executor: nodeprevlts
-      - test_windows:
-          run_disabled_tests: false
+      - test_windows
 
   # This workflow should only be triggered by release script
   package_release:

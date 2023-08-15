@@ -2,8 +2,8 @@
 # Android versions
 minSdk = "21"
 targetSdk = "33"
-compileSdk = "33"
-buildTools = "33.0.1"
+compileSdk = "34"
+buildTools = "34.0.0"
 # Dependencies versions
 agp = "8.1.0"
 androidx-annotation = "1.6.0"
