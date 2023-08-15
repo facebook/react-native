@@ -33,7 +33,7 @@ import {
 } from '@react-native-community/cli-tools';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
-import enableWatchMode from './watchMode';
+import attachKeyHandlers from './attachKeyHandlers';
 
 export type Args = {
   assetPlugins?: string[],
@@ -91,21 +91,6 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     sourceExts: args.sourceExts,
   });
 
-  let reportEvent: (event: TerminalReportableEvent) => void;
-  const terminal = new Terminal(process.stdout);
-  const ReporterImpl = getReporterImpl(args.customLogReporterPath);
-  const terminalReporter = new ReporterImpl(terminal);
-  const reporter: Reporter = {
-    update(event: TerminalReportableEvent) {
-      terminalReporter.update(event);
-      if (reportEvent) {
-        reportEvent(event);
-      }
-    },
-  };
-  // $FlowIgnore[cannot-write] Assigning to readonly property
-  metroConfig.reporter = reporter;
-
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
     metroConfig.transformer.assetPlugins = args.assetPlugins.map(plugin =>
@@ -137,6 +122,24 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     return middleware.use(metroMiddleware);
   };
 
+  let reportEvent: (event: TerminalReportableEvent) => void;
+  const terminal = new Terminal(process.stdout);
+  const ReporterImpl = getReporterImpl(args.customLogReporterPath);
+  const terminalReporter = new ReporterImpl(terminal);
+  const reporter: Reporter = {
+    update(event: TerminalReportableEvent) {
+      terminalReporter.update(event);
+      if (reportEvent) {
+        reportEvent(event);
+      }
+      if (args.interactive && event.type === 'dep_graph_loaded') {
+        attachKeyHandlers(ctx, messageSocketEndpoint);
+      }
+    },
+  };
+  // $FlowIgnore[cannot-write] Assigning to readonly property
+  metroConfig.reporter = reporter;
+
   const serverInstance = await Metro.runServer(metroConfig, {
     host: args.host,
     secure: args.https,
@@ -147,10 +150,6 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
   });
 
   reportEvent = eventsSocketEndpoint.reportEvent;
-
-  if (args.interactive) {
-    enableWatchMode(messageSocketEndpoint, ctx);
-  }
 
   // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
   // early versions of Node 8, this was implemented in a buggy way which caused
