@@ -220,6 +220,9 @@ void ReactInstance::loadScript(
           if (hasLogger) {
             ReactMarker::logTaggedMarkerBridgeless(
                 ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+            ReactMarker::logMarkerBridgeless(
+                ReactMarker::INIT_REACT_RUNTIME_STOP);
+            ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
           }
           if (auto strongBufferedRuntimeExecuter =
                   weakBufferedRuntimeExecuter.lock()) {

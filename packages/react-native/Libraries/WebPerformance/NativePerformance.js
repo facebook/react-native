@@ -17,6 +17,8 @@ export type NativeMemoryInfo = {[key: string]: number};
 export type ReactNativeStartupTiming = {|
   startTime: number,
   endTime: number,
+  initializeRuntimeStart: number,
+  initializeRuntimeEnd: number,
   executeJavaScriptBundleEntryPointStart: number,
   executeJavaScriptBundleEntryPointEnd: number,
 |};
