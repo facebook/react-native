@@ -87,7 +87,8 @@ references:
     hermes_tarball_release_cache_key: &hermes_tarball_release_cache_key v3-hermes-tarball-release-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_release_cache_key: &hermes_macosx_bin_release_cache_key v1-hermes-release-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     hermes_macosx_bin_debug_cache_key: &hermes_macosx_bin_debug_cache_key v1-hermes-debug-macosx-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
-
+    hermes_dsym_debug_cache_key: &hermes_dsym_debug_cache_key v1-hermes-debug-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
+    hermes_dsym_release_cache_key: &hermes_dsym_release_cache_key v1-hermes-release-dsym-{{ checksum "/tmp/hermes/hermesversion" }}-{{ checksum "/tmp/react-native-version" }}
     # Cocoapods - RNTester
     pods_cache_key: &pods_cache_key v10-pods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock.bak" }}-{{ checksum "packages/rn-tester/Podfile" }}
     cocoapods_cache_key: &cocoapods_cache_key v7-cocoapods-{{ .Environment.CIRCLE_JOB }}-{{ checksum "packages/rn-tester/Podfile.lock" }}-{{ checksum "packages/rn-tester/Podfile" }}
@@ -480,6 +481,8 @@ commands:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-release.tar.gz
       - store_artifacts_if_needed:
           path: /tmp/hermes/osx-bin/<< parameters.flavor >>/hermesc
+      - store_artifacts:
+          path: /tmp/hermes/dSYM/<< parameters.flavor >>/hermes.framework.dSYM
 
   stop_job_if_apple_artifacts_are_there:
     description: Stops the current job if there are already the required artifacts
@@ -495,29 +498,47 @@ commands:
             equal: [ << parameters.flavor >>, "All"]
           steps:
             - run:
-                name: "Stop if tarballs are present"
+                name: "Export files to be checked"
                 command: |
-                  if [[ -f /tmp/hermes/Release_tarball_present && -f /tmp/hermes/Debug_tarball_present && -f /tmp/hermes/Release_osx_bin && -f /tmp/hermes/Debug_osx_bin ]]; then
-                    echo "Tarball and osx-bin present. Halting this job"
-                    circleci-agent step halt
-                  fi
+                  echo "/tmp/hermes/Release_tarball_present" > /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_tarball_present" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Release_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Release_dSYM" >> /tmp/hermes_files
+                  echo "/tmp/hermes/Debug_dSYM" >> /tmp/hermes_files
       - when:
           condition:
             not:
               equal: [ << parameters.flavor >>, "All"]
           steps:
             - run:
-                name: "Stop if tarballs are present"
+                name: "Export files to be checked"
                 command: |
-                  TARBALL_PATH=/tmp/hermes/<< parameters.flavor >>_tarball_present
-                  OSX_BIN_PATH=/tmp/hermes/<< parameters.flavor >>_osx_bin
+                  echo "/tmp/hermes/<< parameters.flavor >>_tarball_present" > /tmp/hermes_files
+                  echo "/tmp/hermes/<< parameters.flavor >>_osx_bin" >> /tmp/hermes_files
+                  echo "/tmp/hermes/<< parameters.flavor >>_dSYM" >> /tmp/hermes_files
+      - run:
+          name: Stop if files are present
+          command: |
+            files=($(cat /tmp/hermes_files))
+            # Initialize a flag indicating all files exist
 
-                  if [[ -f "$OSX_BIN_PATH" &&  -f "$TARBALL_PATH" ]]; then
-                      echo "[HERMES] Tarball and hermesc binary present. Halting this job"
-                      circleci-agent step halt
-                  else
-                      echo "[HERMES] Tarball not found. Building."
-                  fi
+            all_files_exist=true
+
+            for file in "${files[@]}"; do
+                if [[ ! -f "$file" ]]; then
+                    all_files_exist=false
+                    echo "$file does not exist."
+                else
+                    echo "$file exist."
+                fi
+            done
+
+            if [[  "$all_files_exist" == true ]]; then
+              echo "Tarball, osx-bin and dSYM are present. Halting this job"
+              circleci-agent step halt
+            fi
+
   check_if_tarball_is_present:
     description: "Checks if the tarball of a specific Flavor is present and adds a marker file"
     parameters:
@@ -539,6 +560,7 @@ commands:
               echo "[HERMES TARBALL] Found the << parameters.flavor >> tarball"
               touch /tmp/hermes/<< parameters.flavor >>_tarball_present
             fi
+
   check_if_osx_bin_is_present:
     description: "Checks if the osx bin of a specific Flavor is present and adds a marker file"
     parameters:
@@ -555,6 +577,24 @@ commands:
               echo "[HERMES MACOSX BIN] Found the osx bin << parameters.flavor >>"
               touch /tmp/hermes/<< parameters.flavor >>_osx_bin
             fi
+
+  check_if_dsym_are_present:
+    description: "Checks if the dSYM a specific Flavor are present and adds a marker file"
+    parameters:
+      flavor:
+        default: "Debug"
+        description: The flavor of artifacts to check. Must be one of "Debug" or "Release"
+        type: enum
+        enum: ["Debug", "Release"]
+    steps:
+      - run:
+          name: Check if dSYM are there
+          command: |
+            if [[ -d /tmp/hermes/dSYM/<< parameters.flavor >> ]]; then
+              echo "[HERMES dSYM] Found the dSYM << parameters.flavor >>"
+              touch /tmp/hermes/<< parameters.flavor >>_dSYM
+            fi
+
   setup_hermes_workspace:
     description: "Setup Hermes Workspace"
     steps:
@@ -564,8 +604,6 @@ commands:
             mkdir -p $HERMES_OSXBIN_ARTIFACTS_DIR ./packages/react-native/sdks/hermes
             cp -r $HERMES_WS_DIR/hermes/* ./packages/react-native/sdks/hermes/.
             cp -r ./packages/react-native/sdks/hermes-engine/utils ./packages/react-native/sdks/hermes/.
-
-
 
   with_xcodebuild_cache:
     description: "Add caching to iOS jobs to speed up builds"
@@ -1458,6 +1496,16 @@ jobs:
             - *hermes_macosx_bin_debug_cache_key
       - check_if_osx_bin_is_present:
           flavor: Debug
+      - restore_cache:
+          keys:
+            - *hermes_dsym_debug_cache_key
+      - check_if_dsym_are_present:
+          flavor: Debug
+      - restore_cache:
+          keys:
+            - *hermes_dsym_release_cache_key
+      - check_if_dsym_are_present:
+          flavor: Release
       - persist_to_workspace:
           root: *hermes_workspace_root
           paths:
@@ -1465,11 +1513,14 @@ jobs:
             - hermes
             - hermes-runtime-darwin
             - osx-bin
+            - dSYM
             - hermesversion
             - Release_tarball_present
             - Debug_tarball_present
             - Release_osx_bin
             - Debug_osx_bin
+            - Release_dSYM
+            - Debug_dSYM
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -1692,6 +1743,31 @@ jobs:
 
             mkdir -p /tmp/hermes/osx-bin/<< parameters.flavor >>
             cp ./packages/react-native/sdks/hermes/build_macosx/bin/* /tmp/hermes/osx-bin/<< parameters.flavor >>
+      - run:
+          name: Create dSYM archive
+          command: |
+            FLAVOR=<< parameters.flavor >>
+            WORKING_DIR="/tmp/hermes_tmp/dSYM/$FLAVOR"
+
+            mkdir -p "$WORKING_DIR/macosx"
+            mkdir -p "$WORKING_DIR/catalyst"
+            mkdir -p "$WORKING_DIR/iphoneos"
+            mkdir -p "$WORKING_DIR/iphonesimulator"
+
+            cd ./packages/react-native/sdks/hermes || exit 1
+
+            DSYM_FILE_PATH=API/hermes/hermes.framework.dSYM
+            cp -r build_macosx/$DSYM_FILE_PATH "$WORKING_DIR/macosx/"
+            cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
+            cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
+            cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
+
+            DEST_DIR="/tmp/hermes/dSYM/$FLAVOR"
+            tar -C "$WORKING_DIR" -czvf "hermes.framework.dSYM" .
+
+            mkdir -p "$DEST_DIR"
+            mv "hermes.framework.dSYM" "$DEST_DIR"
+
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
@@ -1702,6 +1778,9 @@ jobs:
             - save_cache:
                 key: *hermes_macosx_bin_debug_cache_key
                 paths: /tmp/hermes/osx-bin/Debug
+            - save_cache:
+                key: *hermes_dsym_debug_cache_key
+                paths: /tmp/hermes/dSYM/Debug
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Release"]
@@ -1712,6 +1791,9 @@ jobs:
             - save_cache:
                 key: *hermes_macosx_bin_release_cache_key
                 paths: /tmp/hermes/osx-bin/Release
+            - save_cache:
+                key: *hermes_dsym_release_cache_key
+                paths: /tmp/hermes/dSYM/Release
       - store_hermes_apple_artifacts:
           flavor: << parameters.flavor >>
       - persist_to_workspace:
@@ -1719,6 +1801,7 @@ jobs:
           paths:
             - hermes-runtime-darwin
             - osx-bin
+            - dSYM
 
   build_hermesc_windows:
     executor:
