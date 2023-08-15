@@ -894,4 +894,148 @@ describe('ListMetricsAggregator', () => {
       isMounted: false,
     });
   });
+
+  it('resolves integral offset of already measured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(1, props)).toEqual(10);
+  });
+
+  it('estimates integral offset of unmeasured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(2, props)).toEqual(30);
+  });
+
+  it('resolves fractional offset of already measured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(1.5, props)).toEqual(20);
+  });
+
+  it('estimates fractional offset of unmeasured cell', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 1,
+      cellKey: '1',
+      orientation,
+      layout: {
+        height: 20,
+        width: 5,
+        x: 0,
+        y: 10,
+      },
+    });
+
+    expect(listMetrics.getCellOffsetApprox(2.5, props)).toEqual(37.5);
+  });
 });
