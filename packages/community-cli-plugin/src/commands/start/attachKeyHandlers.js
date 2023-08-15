@@ -11,62 +11,32 @@
 
 import type {Config} from '@react-native-community/cli-types';
 
-import readline from 'readline';
 import {
   addInteractionListener,
   logger,
-  hookStdout,
 } from '@react-native-community/cli-tools';
-import execa from 'execa';
 import chalk from 'chalk';
+import execa from 'execa';
+import readline from 'readline';
 import {KeyPressHandler} from '../../utils/KeyPressHandler';
 
 const CTRL_C = '\u0003';
 const CTRL_Z = '\u0026';
 
-function printWatchModeInstructions() {
-  logger.log(
-    `${chalk.bold('r')} - reload the app\n${chalk.bold(
-      'd',
-    )} - open developer menu\n${chalk.bold('i')} - run on iOS\n${chalk.bold(
-      'a',
-    )} - run on Android`,
-  );
-}
-
-function enableWatchMode(
+export default function attachKeyHandlers(
+  cliConfig: Config,
   messageSocket: $ReadOnly<{
     broadcast: (type: string, params?: Record<string, mixed> | null) => void,
     ...
   }>,
-  ctx: Config,
 ) {
-  // We need to set this to true to catch key presses individually.
-  // As a result we have to implement our own method for exiting
-  // and other commands (e.g. ctrl+c & ctrl+z)
-  // $FlowIgnore[method-unbinding]
-  // $FlowFixMe[sketchy-null-mixed]
-  if (!process.stdin.setRawMode) {
-    logger.debug('Watch mode is not supported in this environment');
-    return;
+  if (process.stdin.isTTY !== true) {
+    logger.debug('Interactive mode is not supported in this environment');
   }
 
   readline.emitKeypressEvents(process.stdin);
-
   // $FlowIgnore[prop-missing]
   process.stdin.setRawMode(true);
-
-  // We have no way of knowing when the dependency graph is done loading
-  // except by hooking into stdout itself. We want to print instructions
-  // right after its done loading.
-  const restore: () => void = hookStdout((output: string) => {
-    // TODO(T160391951) Replace this string check with a suitable integration point
-    // in Metro
-    if (output.includes('Fast - Scalable - Integrated')) {
-      printWatchModeInstructions();
-      restore();
-    }
-  });
 
   const onPressAsync = async (key: string) => {
     switch (key) {
@@ -83,7 +53,7 @@ function enableWatchMode(
         execa('npx', [
           'react-native',
           'run-ios',
-          ...(ctx.project.ios?.watchModeCommandParams ?? []),
+          ...(cliConfig.project.ios?.watchModeCommandParams ?? []),
         ]).stdout?.pipe(process.stdout);
         break;
       case 'a':
@@ -91,7 +61,7 @@ function enableWatchMode(
         execa('npx', [
           'react-native',
           'run-android',
-          ...(ctx.project.android?.watchModeCommandParams ?? []),
+          ...(cliConfig.project.android?.watchModeCommandParams ?? []),
         ]).stdout?.pipe(process.stdout);
         break;
       case CTRL_Z:
@@ -106,6 +76,13 @@ function enableWatchMode(
   const listener = keyPressHandler.createInteractionListener();
   addInteractionListener(listener);
   keyPressHandler.startInterceptingKeyStrokes();
-}
 
-export default enableWatchMode;
+  logger.log(
+    [
+      `${chalk.bold('r')} - reload app`,
+      `${chalk.bold('d')} - open Dev Menu`,
+      `${chalk.bold('r')} - run on iOS`,
+      `${chalk.bold('a')} - run on Android`,
+    ].join('\n'),
+  );
+}
