@@ -330,7 +330,7 @@ export default class ListMetricsAggregator {
 
     if (orientation.horizontal !== this._orientation.horizontal) {
       this._averageCellLength = 0;
-      this._contentLength = 0;
+      this._contentLength = null;
       this._highestMeasuredCellIndex = 0;
       this._measuredCellsLength = 0;
       this._measuredCellsCount = 0;
