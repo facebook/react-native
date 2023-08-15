@@ -12,9 +12,17 @@
 import type {Config} from '@react-native-community/cli-types';
 
 import readline from 'readline';
-import {logger, hookStdout} from '@react-native-community/cli-tools';
+import {
+  addInteractionListener,
+  logger,
+  hookStdout,
+} from '@react-native-community/cli-tools';
 import execa from 'execa';
 import chalk from 'chalk';
+import {KeyPressHandler} from '../../utils/KeyPressHandler';
+
+const CTRL_C = '\u0003';
+const CTRL_Z = '\u0026';
 
 function printWatchModeInstructions() {
   logger.log(
@@ -59,43 +67,44 @@ function enableWatchMode(
     }
   });
 
-  process.stdin.on(
-    'keypress',
-    (_key: string, data: {ctrl: boolean, name: string}) => {
-      const {ctrl, name} = data;
-      if (ctrl === true) {
-        switch (name) {
-          case 'c':
-            process.exit();
-            break;
-          case 'z':
-            process.emit('SIGTSTP', 'SIGTSTP');
-            break;
-        }
-      } else if (name === 'r') {
+  const onPressAsync = async (key: string) => {
+    switch (key) {
+      case 'r':
         messageSocket.broadcast('reload', null);
         logger.info('Reloading app...');
-      } else if (name === 'd') {
+        break;
+      case 'd':
         messageSocket.broadcast('devMenu', null);
-        logger.info('Opening developer menu...');
-      } else if (name === 'i' || name === 'a') {
-        logger.info(
-          `Opening the app on ${name === 'i' ? 'iOS' : 'Android'}...`,
-        );
-        const params =
-          name === 'i'
-            ? ctx.project.ios?.watchModeCommandParams
-            : ctx.project.android?.watchModeCommandParams;
+        logger.info('Opening Dev Menu...');
+        break;
+      case 'i':
+        logger.info('Opening app on iOS...');
         execa('npx', [
           'react-native',
-          name === 'i' ? 'run-ios' : 'run-android',
-          ...(params ?? []),
+          'run-ios',
+          ...(ctx.project.ios?.watchModeCommandParams ?? []),
         ]).stdout?.pipe(process.stdout);
-      } else {
-        console.log(_key);
-      }
-    },
-  );
+        break;
+      case 'a':
+        logger.info('Opening app on Android...');
+        execa('npx', [
+          'react-native',
+          'run-android',
+          ...(ctx.project.android?.watchModeCommandParams ?? []),
+        ]).stdout?.pipe(process.stdout);
+        break;
+      case CTRL_Z:
+        process.emit('SIGTSTP', 'SIGTSTP');
+        break;
+      case CTRL_C:
+        process.exit();
+    }
+  };
+
+  const keyPressHandler = new KeyPressHandler(onPressAsync);
+  const listener = keyPressHandler.createInteractionListener();
+  addInteractionListener(listener);
+  keyPressHandler.startInterceptingKeyStrokes();
 }
 
 export default enableWatchMode;

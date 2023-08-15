@@ -93,5 +93,3 @@ export default {
     },
   ],
 };
-
-export {startServerInNewWindow} from './startServerInNewWindow';

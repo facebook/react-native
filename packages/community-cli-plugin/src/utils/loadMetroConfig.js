@@ -10,7 +10,7 @@
  */
 
 import type {Config} from '@react-native-community/cli-types';
-import type {ConfigT, InputConfigT} from 'metro-config';
+import type {ConfigT, InputConfigT, YargArguments} from 'metro-config';
 
 import path from 'path';
 import {loadConfig, mergeConfig, resolveConfig} from 'metro-config';
@@ -69,17 +69,6 @@ function getOverrideConfig(ctx: ConfigLoadingContext): InputConfigT {
   };
 }
 
-export type ConfigOptionsT = $ReadOnly<{
-  maxWorkers?: number,
-  port?: number,
-  projectRoot?: string,
-  resetCache?: boolean,
-  watchFolders?: string[],
-  sourceExts?: string[],
-  reporter?: any,
-  config?: string,
-}>;
-
 /**
  * Load Metro config.
  *
@@ -88,17 +77,15 @@ export type ConfigOptionsT = $ReadOnly<{
  */
 export default async function loadMetroConfig(
   ctx: ConfigLoadingContext,
-  options: ConfigOptionsT = {},
+  options: YargArguments = {},
 ): Promise<ConfigT> {
   const overrideConfig = getOverrideConfig(ctx);
-  if (options.reporter) {
-    overrideConfig.reporter = options.reporter;
-  }
 
-  const projectConfig = await resolveConfig(undefined, ctx.root);
+  const cwd = ctx.root;
+  const projectConfig = await resolveConfig(options.config, cwd);
 
   if (projectConfig.isEmpty) {
-    throw new CLIError(`No metro config found in ${ctx.root}`);
+    throw new CLIError(`No Metro config found in ${cwd}`);
   }
 
   logger.debug(`Reading Metro config from ${projectConfig.filepath}`);
@@ -119,7 +106,10 @@ This warning will be removed in future (https://github.com/facebook/metro/issues
   }
 
   return mergeConfig(
-    await loadConfig({cwd: ctx.root, ...options}),
+    await loadConfig({
+      cwd,
+      ...options,
+    }),
     overrideConfig,
   );
 }

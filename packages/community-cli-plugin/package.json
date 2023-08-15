@@ -19,9 +19,7 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
-    "launchPackager.bat",
-    "launchPackager.command"
+    "dist"
   ],
   "dependencies": {
     "@react-native-community/cli-server-api": "12.0.0-alpha.9",

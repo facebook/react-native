@@ -10,11 +10,37 @@
  */
 
 declare module '@react-native-community/cli-tools' {
+  declare export function addInteractionListener(
+    callback: (options: {pause: boolean, canEscape?: boolean}) => void,
+  ): void;
+
   declare export class CLIError extends Error {
     constructor(msg: string, originalError?: Error | mixed | string): this;
   }
 
+  declare export function getPidFromPort(port: number): number | null;
+
+  declare export function handlePortUnavailable(
+    initialPort: number,
+    projectRoot: string,
+    initialPackager?: boolean,
+  ): Promise<{
+    port: number,
+    packager: boolean,
+  }>;
+
   declare export function hookStdout(callback: Function): () => void;
+
+  declare export function isPackagerRunning(
+    packagerPort: string | number | void,
+  ): Promise<
+    | {
+        status: 'running',
+        root: string,
+      }
+    | 'not_running'
+    | 'unrecognized',
+  >;
 
   declare export const logger: $ReadOnly<{
     success: (...message: Array<string>) => void,
@@ -28,6 +54,8 @@ declare module '@react-native-community/cli-tools' {
     disable: () => void,
     enable: () => void,
   }>;
+
+  declare export function logAlreadyRunningBundler(port: number): void;
 
   declare export function resolveNodeModuleDir(
     root: string,
