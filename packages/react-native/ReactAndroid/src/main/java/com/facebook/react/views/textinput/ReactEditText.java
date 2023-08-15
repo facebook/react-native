@@ -8,7 +8,6 @@
 package com.facebook.react.views.textinput;
 
 import static com.facebook.react.uimanager.UIManagerHelper.getReactContext;
-import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -50,8 +49,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
@@ -84,8 +83,7 @@ import java.util.Objects;
  * called this explicitly. This is the default behavior on other platforms as well.
  * VisibleForTesting from {@link TextInputEventsTestCase}.
  */
-public class ReactEditText extends AppCompatEditText
-    implements FabricViewStateManager.HasFabricViewStateManager {
+public class ReactEditText extends AppCompatEditText {
   private final InputMethodManager mInputMethodManager;
   private final String TAG = ReactEditText.class.getSimpleName();
   public static final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -126,7 +124,7 @@ public class ReactEditText extends AppCompatEditText
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private StateWrapper mStateWrapper = null;
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
@@ -926,9 +924,7 @@ public class ReactEditText extends AppCompatEditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (mFabricViewStateManager != null
-        && !mFabricViewStateManager.hasStateWrapper()
-        && !reactContext.isBridgeless()) {
+    if (mStateWrapper != null && !reactContext.isBridgeless()) {
 
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
@@ -1157,9 +1153,13 @@ public class ReactEditText extends AppCompatEditText
     }
   }
 
-  @Override
-  public FabricViewStateManager getFabricViewStateManager() {
-    return mFabricViewStateManager;
+  @Nullable
+  public StateWrapper getStateWrapper() {
+    return mStateWrapper;
+  }
+
+  public void setStateWrapper(StateWrapper stateWrapper) {
+    mStateWrapper = stateWrapper;
   }
 
   /**
@@ -1170,7 +1170,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable() {
     // Noops in non-Fabric
-    if (mFabricViewStateManager == null || !mFabricViewStateManager.hasStateWrapper()) {
+    if (mStateWrapper == null) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
