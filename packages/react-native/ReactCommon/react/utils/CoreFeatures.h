@@ -64,6 +64,9 @@ class CoreFeatures {
   // When enabled, the renderer would only fail commits when they propagate
   // state and the last commit that updated state changed before committing.
   static bool enableGranularShadowTreeStateReconciliation;
+
+  // Default state updates and events to async batched priority.
+  static bool enableDefaultAsyncBatchedPriority;
 };
 
 } // namespace facebook::react

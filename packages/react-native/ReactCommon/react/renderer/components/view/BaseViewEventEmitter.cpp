@@ -6,6 +6,7 @@
  */
 
 #include "BaseViewEventEmitter.h"
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -112,7 +113,9 @@ void BaseViewEventEmitter::onLayout(const LayoutMetrics &layoutMetrics) const {
         payload.setProperty(runtime, "layout", std::move(layout));
         return jsi::Value(std::move(payload));
       },
-      EventPriority::AsynchronousUnbatched);
+      CoreFeatures::enableDefaultAsyncBatchedPriority
+          ? EventPriority::AsynchronousBatched
+          : EventPriority::AsynchronousUnbatched);
 }
 
 } // namespace facebook::react
