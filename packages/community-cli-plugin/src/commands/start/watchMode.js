@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -45,6 +45,7 @@ function enableWatchMode(
   // As a result we have to implement our own method for exiting
   // and other commands (e.g. ctrl+c & ctrl+z)
   // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[sketchy-null-mixed]
   if (!process.stdin.setRawMode) {
     logger.debug('Watch mode is not supported in this environment');
     return;

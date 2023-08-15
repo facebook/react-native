@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
@@ -64,7 +64,7 @@ async function buildBundleWithConfig(
   process.env.NODE_ENV = args.dev ? 'development' : 'production';
 
   let sourceMapUrl = args.sourcemapOutput;
-  if (sourceMapUrl && !args.sourcemapUseAbsolutePath) {
+  if (sourceMapUrl != null && !args.sourcemapUseAbsolutePath) {
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
