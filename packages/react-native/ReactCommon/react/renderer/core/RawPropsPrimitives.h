@@ -16,11 +16,11 @@ namespace react {
 /*
  * Type used to represent an index of some stored values in small arrays.
  */
-using RawPropsValueIndex = uint8_t;
+using RawPropsValueIndex = uint16_t;
 static_assert(
-    sizeof(RawPropsValueIndex) == 1,
-    "RawPropsValueIndex must be one byte size.");
-using RawPropsPropNameLength = uint8_t;
+    sizeof(RawPropsValueIndex) == 2,
+    "RawPropsValueIndex must be two byte size.");
+using RawPropsPropNameLength = uint16_t;
 using RawPropsPropNameHash = uint32_t;
 
 /*
