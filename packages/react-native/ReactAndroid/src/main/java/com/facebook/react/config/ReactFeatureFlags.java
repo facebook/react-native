@@ -160,4 +160,7 @@ public class ReactFeatureFlags {
 
   /** Clean yoga node when <Text /> does not change. */
   public static boolean enableCleanParagraphYogaNode = false;
+
+  /** Default state updates and events to async batched priority. */
+  public static boolean enableDefaultAsyncBatchedPriority = false;
 }
