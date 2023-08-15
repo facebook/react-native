@@ -22,10 +22,10 @@ import kotlin.collections.mapOf
 
 /** Legacy View manager (non Fabric compatible) for {@link MyNativeView} components. */
 @ReactModule(name = MyLegacyViewManager.REACT_CLASS)
-public class MyLegacyViewManager: SimpleViewManager<MyNativeView> {
+public class MyLegacyViewManager : SimpleViewManager<MyNativeView> {
 
   companion object {
-   const val REACT_CLASS = "RNTMyLegacyNativeView"
+    const val REACT_CLASS = "RNTMyLegacyNativeView"
   }
 
   companion object {
@@ -41,7 +41,7 @@ public class MyLegacyViewManager: SimpleViewManager<MyNativeView> {
   override fun getName(): String {
     return REACT_CLASS
   }
-  
+
   override fun createViewInstance(@NonNull reactContext: ThemedReactContext): MyNativeView {
     val view = MyNativeView(reactContext)
     view.setBackgroundColor(Color.RED)
@@ -64,29 +64,30 @@ public class MyLegacyViewManager: SimpleViewManager<MyNativeView> {
     view.setCornerRadius(cornerRadius)
   }
 
-  override fun getExportedViewConstants(): Map<String, Any>  {
+  override fun getExportedViewConstants(): Map<String, Any> {
     return mapOf("PI" to 3.14)
   }
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     return MapBuilder.builder<String, Any>()
-            .put(
-                "onColorChanged",
-                MapBuilder.of(
-                    "phasedRegistrationNames",
-                    MapBuilder.of(
-                        "bubbled",
-                        "onColorChanged",
-                        "captured",
-                        "onColorChangedCapture"
-                    )
-                )
-            )
-            .build()
+      .put(
+        "onColorChanged",
+        MapBuilder.of(
+          "phasedRegistrationNames",
+          MapBuilder.of(
+            "bubbled",
+            "onColorChanged",
+            "captured",
+            "onColorChangedCapture"
+          )
+        )
+      )
+      .build()
   }
 
   override fun receiveCommand(
-      @NonNull view: MyNativeView, commandId: String, @Nullable args: ReadableArray?) {
+    @NonNull view: MyNativeView, commandId: String, @Nullable args: ReadableArray?
+  ) {
     if (commandId.contentEquals("changeBackgroundColor")) {
       val sentColor: Int = Color.parseColor(args.getString(0));
       view.setBackgroundColor(sentColor);
@@ -95,7 +96,8 @@ public class MyLegacyViewManager: SimpleViewManager<MyNativeView> {
 
   @SuppressWarnings("deprecation") // We intentionally want to test against the legacy API here.
   override fun receiveCommand(
-      @NonNull view: MyNativeView, commandId: Int, @Nullable args: ReadableArray?) {
+    @NonNull view: MyNativeView, commandId: Int, @Nullable args: ReadableArray?
+  ) {
     when (commandId) {
       COMMAND_CHANGE_BACKGROUND_COLOR -> {
         val sentColor: Int = Color.parseColor(args.getString(0))
