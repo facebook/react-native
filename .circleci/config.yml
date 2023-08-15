@@ -1950,7 +1950,8 @@ jobs:
             mkdir -p ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
             cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-debug.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-debug.tar.gz
             cp $HERMES_WS_DIR/hermes-runtime-darwin/hermes-ios-release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
-
+            cp $HERMES_WS_DIR/dSYM/Debug/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
+            cp $HERMES_WS_DIR/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
       - run_yarn
       - build_packages
       - attach_workspace:
