@@ -12,55 +12,37 @@ import com.facebook.react.common.MapBuilder
 import org.assertj.core.api.Assertions
 import org.assertj.core.data.MapEntry
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.powermock.core.classloader.annotations.PowerMockIgnore
-import org.powermock.modules.junit4.rule.PowerMockRule
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
-@PowerMockIgnore("org.mockito.*", "org.robolectric.*", "androidx.*", "android.*")
 class UIManagerModuleConstantsTest {
 
-  @get:Rule var rule = PowerMockRule()
+  private class ConcreteViewManager(val viewName: String) : SimpleViewManager<View>() {
 
-  private class ConcreteViewManager(val viewName: String) : SimpleViewManager<View?>() {
+    private var customDirectEventTypeConstants: Map<String, Map<String, Any>> = emptyMap()
 
-    private var customDirectEventTypeConstants: MutableMap<String, Map<String, Any>?> =
-      mutableMapOf()
-
-    fun setExportedCustomDirectEventTypeConstants(
-      constants: MutableMap<String, Map<String, Any>?>
-    ) {
+    fun setExportedCustomDirectEventTypeConstants(constants: Map<String, Map<String, Any>>) {
       customDirectEventTypeConstants = constants
     }
 
-    override fun createViewInstance(reactContext: ThemedReactContext): View {
-      return View(reactContext)
-    }
+    override fun createViewInstance(reactContext: ThemedReactContext): View = View(reactContext)
 
-    override fun getName(): String {
-      return viewName
-    }
+    override fun getName(): String = viewName
 
-    override fun getExportedCustomDirectEventTypeConstants():
-      MutableMap<String, Map<String, Any>?> {
-      return customDirectEventTypeConstants
-    }
+    override fun getExportedCustomDirectEventTypeConstants(): Map<String, Map<String, Any>> =
+      customDirectEventTypeConstants
 
-    override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, Any>? {
-      return MapBuilder.of("onTwirl", TWIRL_BUBBLING_EVENT_MAP)
-    }
+    override fun getExportedCustomBubblingEventTypeConstants(): MutableMap<String, Any>? =
+      MapBuilder.of("onTwirl", TWIRL_BUBBLING_EVENT_MAP)
 
-    override fun getExportedViewConstants(): MutableMap<String, Any>? {
-      return MapBuilder.of("PhotoSizeType", MapBuilder.of("Small", 1, "Large", 2))
-    }
+    override fun getExportedViewConstants(): MutableMap<String, Any>? =
+      MapBuilder.of("PhotoSizeType", MapBuilder.of("Small", 1, "Large", 2))
 
-    override fun getNativeProps(): MutableMap<String, String> {
-      return MapBuilder.of("fooProp", "number")
-    }
+    override fun getNativeProps(): MutableMap<String, String> =
+      MapBuilder.of("fooProp", "number")
   }
 
   private lateinit var reactContext: ReactApplicationContext
@@ -99,11 +81,10 @@ class UIManagerModuleConstantsTest {
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val viewManagerConstants =
-      uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>?
+      uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>
 
     Assertions.assertThat(viewManagerConstants).containsKey(BUBBLING_EVENTS_TYPES_KEY)
-    val bubblingEventTypes =
-      viewManagerConstants!![BUBBLING_EVENTS_TYPES_KEY] as Map<String, Any>?
+    val bubblingEventTypes = viewManagerConstants[BUBBLING_EVENTS_TYPES_KEY] as Map<String, Any>
     Assertions.assertThat(bubblingEventTypes).containsEntry("onTwirl", TWIRL_BUBBLING_EVENT_MAP)
   }
 
@@ -118,10 +99,10 @@ class UIManagerModuleConstantsTest {
 
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val viewManagerConstants =
-      uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>?
+      uiManagerModule.constants?.get(VIEW_MANAGER_NAME) as Map<String, Any>
 
     Assertions.assertThat(viewManagerConstants).containsKey(DIRECT_EVENTS_TYPES_KEY)
-    val directEventTypes = viewManagerConstants!![DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>?
+    val directEventTypes = viewManagerConstants[DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>
     Assertions.assertThat(directEventTypes).containsEntry("onTwirl", TWIRL_DIRECT_EVENT_MAP)
   }
 
@@ -138,7 +119,7 @@ class UIManagerModuleConstantsTest {
     val constants = uiManagerModule.constants
     Assertions.assertThat(constants).containsKey(VIEW_MANAGER_NAME)
 
-    Assertions.assertThat(constants!![VIEW_MANAGER_NAME] as Map<String, Any>?)
+    Assertions.assertThat(constants!![VIEW_MANAGER_NAME] as Map<String, Any>)
       .containsKey("Constants")
     Assertions.assertThat(
       valueAtPath(constants, VIEW_MANAGER_NAME, "Constants") as Map<String, Any>?
@@ -154,7 +135,7 @@ class UIManagerModuleConstantsTest {
 
     val viewManagers = listOf(manager)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val constants = uiManagerModule.constants
+    val constants = uiManagerModule.constants.orEmpty()
     Assertions.assertThat(
       valueAtPath(constants, VIEW_MANAGER_NAME, "NativeProps", "fooProp") as String?
     )
@@ -195,12 +176,12 @@ class UIManagerModuleConstantsTest {
     val viewManagers = listOf(managerX, managerY)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val constants = uiManagerModule.constants
-    val viewManagerConstants = constants!!["ManagerX"] as Map<String, Any>?
-    Assertions.assertThat(viewManagerConstants!![DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>?)
+    val viewManagerConstants = constants!!["ManagerX"] as Map<String, Any>
+    Assertions.assertThat(viewManagerConstants[DIRECT_EVENTS_TYPES_KEY] as Map<String, Any>)
       .containsKey("onTwirl")
     val twirlMap =
       valueAtPath(viewManagerConstants, DIRECT_EVENTS_TYPES_KEY, "onTwirl")
-        as Map<String, Any>?
+        as Map<String, Any>
 
     Assertions.assertThat(twirlMap)
       .contains(MapEntry.entry("registrationName", "onTwirl"))
@@ -208,7 +189,7 @@ class UIManagerModuleConstantsTest {
       .contains(MapEntry.entry("extraKey", "extraValue"))
       .containsKey("mapToMerge")
 
-    val mapToMerge = valueAtPath(twirlMap, "mapToMerge") as Map<String, Any>?
+    val mapToMerge = valueAtPath(twirlMap, "mapToMerge") as Map<String, Any>
     Assertions.assertThat(mapToMerge)
       .contains(MapEntry.entry("keyToOverride", "innerValueY"))
       .contains(MapEntry.entry("anotherKey", "valueX"))
@@ -223,7 +204,7 @@ class UIManagerModuleConstantsTest {
         MapBuilder.of("bubbled", "onTwirl", "captured", "onTwirlCaptured")
       )
 
-    private val TWIRL_DIRECT_EVENT_MAP: Map<String, Any>? =
+    private val TWIRL_DIRECT_EVENT_MAP: Map<String, Any> =
       MapBuilder.of("registrationName", "onTwirl")
 
     private const val VIEW_MANAGER_NAME = "viewManagerName"
@@ -231,15 +212,16 @@ class UIManagerModuleConstantsTest {
     private const val DIRECT_EVENTS_TYPES_KEY = "directEventTypes"
 
     @Suppress("UNCHECKED_CAST")
-    private fun valueAtPath(nestedMap: Map<String, Any>?, vararg keyPath: String): Any? {
-      var nestedMap = nestedMap
+    private fun valueAtPath(nestedMap: Map<String, Any>, vararg keyPath: String): Any? {
       Assertions.assertThat(keyPath).isNotEmpty
       var value: Any? = nestedMap
       for (key in keyPath) {
         Assertions.assertThat(value).isInstanceOf(MutableMap::class.java)
-        nestedMap = value as Map<String, Any>?
-        Assertions.assertThat(nestedMap).containsKey(key)
-        value = nestedMap!![key]
+
+        val currentNestedMap = value as Map<String, Any>
+        Assertions.assertThat(key in currentNestedMap).isTrue
+
+        value = currentNestedMap[key]
       }
       return value
     }
