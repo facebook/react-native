@@ -16,6 +16,7 @@ import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
 import type Server from 'metro/src/Server';
 import type {Middleware} from 'metro-config';
 
+import chalk from 'chalk';
 import Metro from 'metro';
 import {Terminal} from 'metro-core';
 import path from 'path';
@@ -23,9 +24,15 @@ import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
+import {
+  isPackagerRunning,
+  logger,
+  version,
+  logAlreadyRunningBundler,
+  handlePortUnavailable,
+} from '@react-native-community/cli-tools';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
-import {version} from '@react-native-community/cli-tools';
 import enableWatchMode from './watchMode';
 
 export type Args = {
@@ -48,7 +55,43 @@ export type Args = {
 };
 
 async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
-  let reportEvent: (event: any) => void;
+  let port = args.port ?? 8081;
+  let packager = true;
+  const packagerStatus = await isPackagerRunning(port);
+
+  if (
+    typeof packagerStatus === 'object' &&
+    packagerStatus.status === 'running'
+  ) {
+    if (packagerStatus.root === ctx.root) {
+      packager = false;
+      logAlreadyRunningBundler(port);
+    } else {
+      const result = await handlePortUnavailable(port, ctx.root, packager);
+      [port, packager] = [result.port, result.packager];
+    }
+  } else if (packagerStatus === 'unrecognized') {
+    const result = await handlePortUnavailable(port, ctx.root, packager);
+    [port, packager] = [result.port, result.packager];
+  }
+
+  if (packager === false) {
+    process.exit();
+  }
+
+  logger.info(`Starting dev server on port ${chalk.bold(String(port))}`);
+
+  const metroConfig = await loadMetroConfig(ctx, {
+    config: args.config,
+    maxWorkers: args.maxWorkers,
+    port: port,
+    resetCache: args.resetCache,
+    watchFolders: args.watchFolders,
+    projectRoot: args.projectRoot,
+    sourceExts: args.sourceExts,
+  });
+
+  let reportEvent: (event: TerminalReportableEvent) => void;
   const terminal = new Terminal(process.stdout);
   const ReporterImpl = getReporterImpl(args.customLogReporterPath);
   const terminalReporter = new ReporterImpl(terminal);
@@ -60,17 +103,8 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
       }
     },
   };
-
-  const metroConfig = await loadMetroConfig(ctx, {
-    config: args.config,
-    maxWorkers: args.maxWorkers,
-    port: args.port,
-    resetCache: args.resetCache,
-    watchFolders: args.watchFolders,
-    projectRoot: args.projectRoot,
-    sourceExts: args.sourceExts,
-    reporter,
-  });
+  // $FlowIgnore[cannot-write] Assigning to readonly property
+  metroConfig.reporter = reporter;
 
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
