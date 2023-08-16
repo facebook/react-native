@@ -56,17 +56,21 @@ std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
 
 ReactNativeStartupTiming NativePerformance::getReactNativeStartupTiming(
     jsi::Runtime &rt) {
-  ReactNativeStartupTiming result = {0, 0, 0, 0};
+  ReactNativeStartupTiming result = {0, 0, 0, 0, 0, 0};
 
   ReactMarker::StartupLogger &startupLogger =
       ReactMarker::StartupLogger::getInstance();
   result.startTime = startupLogger.getAppStartupStartTime();
+  if (result.startTime == 0) {
+    result.startTime = startupLogger.getInitReactRuntimeStartTime();
+  }
+  result.initializeRuntimeStart = startupLogger.getInitReactRuntimeStartTime();
   result.executeJavaScriptBundleEntryPointStart =
       startupLogger.getRunJSBundleStartTime();
   result.executeJavaScriptBundleEntryPointEnd =
       startupLogger.getRunJSBundleEndTime();
+  result.initializeRuntimeEnd = startupLogger.getInitReactRuntimeEndTime();
   result.endTime = startupLogger.getAppStartupEndTime();
-
   return result;
 }
 
