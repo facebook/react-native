@@ -1,6 +1,6 @@
 [ignore]
-; We fork some components by platform
-.*/*[.]ios.js
+; Ignore other platform suffixes
+.*\.ios\.js$
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
