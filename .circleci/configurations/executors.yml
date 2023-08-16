@@ -1,0 +1,33 @@
+# -------------------------
+#        EXECUTORS
+# -------------------------
+executors:
+  nodelts:
+    <<: *defaults
+    docker:
+      - image: *nodelts_image
+    resource_class: "large"
+  nodeprevlts:
+    <<: *defaults
+    docker:
+      - image: *nodeprevlts_image
+    resource_class: "large"
+  # Executor with Node & Java used to inspect and lint
+  node-browsers-small:
+    <<: *defaults
+    docker:
+      - image: *nodelts_browser_image
+    resource_class: "small"
+  reactnativeandroid-xlarge:
+    <<: *android-defaults
+    resource_class: "xlarge"
+  reactnativeandroid-large:
+    <<: *android-defaults
+    resource_class: "large"
+  reactnativeios:
+    <<: *defaults
+    macos:
+      xcode: *xcode_version
+    resource_class: macos.x86.medium.gen2
+    environment:
+      - BUILD_FROM_SOURCE: true
