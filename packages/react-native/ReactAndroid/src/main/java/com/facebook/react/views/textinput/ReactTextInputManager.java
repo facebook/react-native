@@ -49,6 +49,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
+import com.facebook.react.uimanager.FabricViewStateManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
@@ -1052,13 +1053,23 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         return;
       }
 
-      StateWrapper stateWrapper = mEditText.getStateWrapper();
-
-      if (stateWrapper != null) {
-        WritableMap newStateData = new WritableNativeMap();
-        newStateData.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
-        newStateData.putInt("opaqueCacheId", mEditText.getId());
-        stateWrapper.updateState(newStateData);
+      FabricViewStateManager stateManager = mEditText.getFabricViewStateManager();
+      if (stateManager.hasStateWrapper()) {
+        // Fabric: communicate to C++ layer that text has changed
+        // We need to call `incrementAndGetEventCounter` here explicitly because this
+        // update may race with other updates.
+        // We simply pass in the cache ID, which never changes, but UpdateState will still be called
+        // on the native side, triggering a measure.
+        stateManager.setState(
+            new FabricViewStateManager.StateUpdateCallback() {
+              @Override
+              public WritableMap getStateUpdate() {
+                WritableMap map = new WritableNativeMap();
+                map.putInt("mostRecentEventCount", mEditText.incrementAndGetEventCounter());
+                map.putInt("opaqueCacheId", mEditText.getId());
+                return map;
+              }
+            });
       }
 
       // The event that contains the event counter and updates it must be sent first.
@@ -1306,8 +1317,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       FLog.e(TAG, "updateState: [" + view.getId() + "]");
     }
 
-    StateWrapper stateManager = view.getStateWrapper();
-    if (stateManager == null) {
+    FabricViewStateManager stateManager = view.getFabricViewStateManager();
+    if (!stateManager.hasStateWrapper()) {
       // HACK: In Fabric, we assume all components start off with zero padding, which is
       // not true for TextInput components. We expose the theme's default padding via
       // AndroidTextInputComponentDescriptor, which will be applied later though setPadding.
@@ -1315,7 +1326,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       view.setPadding(0, 0, 0, 0);
     }
 
-    view.setStateWrapper(stateWrapper);
+    stateManager.setStateWrapper(stateWrapper);
 
     MapBuffer stateMapBuffer = stateWrapper.getStateDataMapBuffer();
     if (stateMapBuffer != null) {

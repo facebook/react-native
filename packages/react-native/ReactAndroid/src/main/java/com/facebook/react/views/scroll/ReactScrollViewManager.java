@@ -337,7 +337,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @Override
   public Object updateState(
       ReactScrollView view, ReactStylesDiffMap props, StateWrapper stateWrapper) {
-    view.setStateWrapper(stateWrapper);
+    view.getFabricViewStateManager().setStateWrapper(stateWrapper);
     return null;
   }
 
