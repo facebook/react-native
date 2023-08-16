@@ -20,7 +20,8 @@
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #endif
@@ -68,9 +69,10 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 {
 #if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
-    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                             moduleName:moduleName
-                                                      initialProperties:initialProperties];
+    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                   moduleName:moduleName
+                                                            initialProperties:initialProperties];
+    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
 #endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];

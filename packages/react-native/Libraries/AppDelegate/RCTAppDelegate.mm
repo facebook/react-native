@@ -17,7 +17,6 @@
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
 #import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>

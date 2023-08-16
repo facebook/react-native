@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                 sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface;
+
 - (void)cancelTouches;
 
 @end
