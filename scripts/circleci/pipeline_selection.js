@@ -91,11 +91,6 @@ const createConfigsOption = {
 };
 
 const filterJobsOptions = {
-  github_token: {
-    alias: 't',
-    describe: 'The token to perform query to github',
-    demandOption: true,
-  },
   pr_number: {
     alias: 'n',
     describe: 'The PR number',
@@ -125,12 +120,9 @@ yargs
     'Filters the jobs based on the list of chaged files in the PR',
     filterJobsOptions,
     argv =>
-      filterJobs(
-        argv.github_token,
-        argv.pr_number,
-        argv.username,
-        argv.output_path,
-      ).then(() => console.info('Filtering done!')),
+      filterJobs(argv.pr_number, argv.username, argv.output_path).then(() =>
+        console.info('Filtering done!'),
+      ),
   )
   .demandCommand()
   .strict()
@@ -140,18 +132,17 @@ yargs
 //  GITHUB UTILS  //
 // ============== //
 
-function _githubHeaders(githubToken, username) {
+function _githubHeaders(username) {
   return {
-    Authorization: `token ${githubToken}`,
     Accept: 'application/vnd.github.v3+json',
     'User-Agent': `${username}`,
   };
 }
 
-function _queryOptions(githubToken, username) {
+function _queryOptions(username) {
   return {
     method: 'GET',
-    headers: _githubHeaders(githubToken, username),
+    headers: _githubHeaders(username),
   };
 }
 
@@ -165,17 +156,17 @@ async function _performRequest(url, options) {
   return await response.json();
 }
 
-async function _getNumberOfFiles(githubToken, prNumber, username) {
+async function _getNumberOfFiles(prNumber, username) {
   const url = `https://api.github.com/repos/facebook/react-native/pulls/${prNumber}`;
-  const options = _queryOptions(githubToken, username);
+  const options = _queryOptions(username);
   const body = await _performRequest(url, options);
 
   return body.changed_files;
 }
 
-async function _getFilesFromPR(githubToken, prNumber, username, numberOfFiles) {
+async function _getFilesFromPR(prNumber, username, numberOfFiles) {
   const url = `https://api.github.com/repos/facebook/react-native/pulls/${prNumber}/files?page=`;
-  const options = _queryOptions(githubToken, username);
+  const options = _queryOptions(username);
   const numberOfPages = numberOfFiles / 30 + 1;
   let allFiles = [];
   for (let page = 1; page <= numberOfPages; page++) {
@@ -263,18 +254,9 @@ function createConfigs(inputPath, outputPath, configFile) {
   );
 }
 
-async function filterJobs(githubToken, prNumber, username, outputPath) {
-  const numberOfFiles = await _getNumberOfFiles(
-    githubToken,
-    prNumber,
-    username,
-  );
-  const fileList = await _getFilesFromPR(
-    githubToken,
-    prNumber,
-    username,
-    numberOfFiles,
-  );
+async function filterJobs(prNumber, username, outputPath) {
+  const numberOfFiles = await _getNumberOfFiles(prNumber, username);
+  const fileList = await _getFilesFromPR(prNumber, username, numberOfFiles);
 
   if (fileList.length === 0) {
     await _computeAndSavePipelineParameters('SKIP', outputPath);

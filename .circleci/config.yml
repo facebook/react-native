@@ -75,7 +75,6 @@ jobs:
                   else
                     PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}"
                     node ./scripts/circleci/pipeline_selection.js filter-jobs \
-                      -t $REACT_NATIVE_BOT_GITHUB_TOKEN \
                       -n $PR_NUMBER \
                       -u $CIRCLE_USERNAME
                   fi
