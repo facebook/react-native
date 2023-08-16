@@ -124,6 +124,7 @@ public class ReactSurfaceImpl implements ReactSurface {
   }
 
   /** Detach the ReactSurface from its ReactHost. */
+  @Override
   public void detach() {
     mReactHost.set(null);
   }
