@@ -16,7 +16,6 @@ import org.robolectric.RobolectricTestRunner;
 
 /** Test for {@link MatrixMathHelper} */
 @RunWith(RobolectricTestRunner.class)
-@Ignore // TODO T14964130
 public class MatrixMathHelperTest {
 
   private void verifyZRotatedMatrix(double degrees, double rotX, double rotY, double rotZ) {
