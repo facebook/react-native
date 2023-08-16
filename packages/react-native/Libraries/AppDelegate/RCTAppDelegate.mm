@@ -87,10 +87,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
     RCTFabricSurface *surface = [_reactHost createSurfaceWithModuleName:self.moduleName
                                                       initialProperties:launchOptions];
 
-    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView = [[RCTSurfaceHostingProxyRootView alloc]
-        initWithSurface:surface
-        sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact
-         moduleRegistry:[_reactHost getModuleRegistry]];
+    RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
+        [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface moduleRegistry:[_reactHost getModuleRegistry]];
 
     rootView = (RCTRootView *)surfaceHostingProxyRootView;
 #endif
