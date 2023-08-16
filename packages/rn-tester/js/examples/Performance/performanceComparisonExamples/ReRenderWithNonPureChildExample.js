@@ -57,7 +57,7 @@ function ReRenderWithNonPureChildGoodExample(): React.Node {
 export default {
   title: 'List re-render due to not pure or memoized',
   description:
-    'The List component is not pure in the bad example. Even though all props are not changed, it will still re-render when parent re-renders.',
+    'Get horizontal scroll offset.\nThe List component is not pure in the bad example. Even though all props are not changed, it will still re-render when parent re-renders.',
   Bad: ReRenderWithNonPureChildBadExample,
   Good: ReRenderWithNonPureChildGoodExample,
 };

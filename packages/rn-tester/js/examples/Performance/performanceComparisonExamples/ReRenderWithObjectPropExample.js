@@ -55,7 +55,7 @@ function ReRenderWithObjectPropGoodExample(): React.Node {
 export default {
   title: 'Re-render from new object reference in prop',
   description:
-    'Even with pure or memoized child component, if a new object reference is passed down as prop, the child component will still re-render unnecessarily. The onScroll callback is passed without useCallback hook in the bad example and caused performance issues.',
+    'Get horizontal scroll offset.\nEven with pure or memoized child component, if a new object reference is passed down as prop, the child component will still re-render unnecessarily. The onScroll callback is passed without useCallback hook in the bad example and caused performance issues.',
   Bad: ReRenderWithObjectPropBadExample,
   Good: ReRenderWithObjectPropGoodExample,
 };
