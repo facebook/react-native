@@ -309,15 +309,15 @@ commands:
           condition:
             equal: [ << parameters.flavor >>, "Debug"]
           steps:
-            - store_artifacts_if_needed:
+            - store_artifacts:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-debug.tar.gz
       - when:
           condition:
             equal: [ << parameters.flavor >>, "Release"]
           steps:
-            - store_artifacts_if_needed:
+            - store_artifacts:
                 path: /tmp/hermes/hermes-runtime-darwin/hermes-ios-release.tar.gz
-      - store_artifacts_if_needed:
+      - store_artifacts:
           path: /tmp/hermes/osx-bin/<< parameters.flavor >>/hermesc
       - store_artifacts:
           path: /tmp/hermes/dSYM/<< parameters.flavor >>/hermes.framework.dSYM

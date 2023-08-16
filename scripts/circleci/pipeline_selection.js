@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const yargs = require('yargs');
-const fetch = require('node-fetch');
+const {execSync} = require('child_process');
 
 /**
  * Check whether the filename is a JS/TS file and not in the script folder
@@ -91,16 +91,6 @@ const createConfigsOption = {
 };
 
 const filterJobsOptions = {
-  pr_number: {
-    alias: 'n',
-    describe: 'The PR number',
-    demandOption: true,
-  },
-  username: {
-    alias: 'u',
-    describe: 'The username of the person creating the PR',
-    demandOption: true,
-  },
   output_path: {
     alias: 'o',
     ddescribe: 'The output path for the configurations',
@@ -120,9 +110,7 @@ yargs
     'Filters the jobs based on the list of chaged files in the PR',
     filterJobsOptions,
     argv =>
-      filterJobs(argv.pr_number, argv.username, argv.output_path).then(() =>
-        console.info('Filtering done!'),
-      ),
+      filterJobs(argv.output_path).then(() => console.info('Filtering done!')),
   )
   .demandCommand()
   .strict()
@@ -132,50 +120,19 @@ yargs
 //  GITHUB UTILS  //
 // ============== //
 
-function _githubHeaders(username) {
-  return {
-    Accept: 'application/vnd.github.v3+json',
-    'User-Agent': `${username}`,
-  };
-}
-
-function _queryOptions(username) {
-  return {
-    method: 'GET',
-    headers: _githubHeaders(username),
-  };
-}
-
-async function _performRequest(url, options) {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    throw new Error(
-      `Request failed with status ${response.status}\n${response.statusText}`,
-    );
+function _getFilesFromGit() {
+  try {
+    execSync('git fetch');
+    const commonCommit = String(
+      execSync('git merge-base HEAD origin/HEAD '),
+    ).trim();
+    return String(execSync(`git diff --name-only HEAD ${commonCommit}`))
+      .trim()
+      .split('\n');
+  } catch (error) {
+    console.error(error);
+    return [];
   }
-  return await response.json();
-}
-
-async function _getNumberOfFiles(prNumber, username) {
-  const url = `https://api.github.com/repos/facebook/react-native/pulls/${prNumber}`;
-  const options = _queryOptions(username);
-  const body = await _performRequest(url, options);
-
-  return body.changed_files;
-}
-
-async function _getFilesFromPR(prNumber, username, numberOfFiles) {
-  const url = `https://api.github.com/repos/facebook/react-native/pulls/${prNumber}/files?page=`;
-  const options = _queryOptions(username);
-  const numberOfPages = numberOfFiles / 30 + 1;
-  let allFiles = [];
-  for (let page = 1; page <= numberOfPages; page++) {
-    const body = await _performRequest(`${url}${page}`, options);
-    files = body.map(f => f.filename);
-    allFiles = allFiles.concat(files);
-  }
-
-  return allFiles;
 }
 
 async function _computeAndSavePipelineParameters(pipelineType, outputPath) {
@@ -254,9 +211,8 @@ function createConfigs(inputPath, outputPath, configFile) {
   );
 }
 
-async function filterJobs(prNumber, username, outputPath) {
-  const numberOfFiles = await _getNumberOfFiles(prNumber, username);
-  const fileList = await _getFilesFromPR(prNumber, username, numberOfFiles);
+async function filterJobs(outputPath) {
+  const fileList = _getFilesFromGit();
 
   if (fileList.length === 0) {
     await _computeAndSavePipelineParameters('SKIP', outputPath);

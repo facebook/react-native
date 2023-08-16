@@ -74,9 +74,7 @@ jobs:
                     echo '{}' > /tmp/circleci/pipeline_config.json
                   else
                     PR_NUMBER="${CIRCLE_PULL_REQUEST##*/}"
-                    node ./scripts/circleci/pipeline_selection.js filter-jobs \
-                      -n $PR_NUMBER \
-                      -u $CIRCLE_USERNAME
+                    node ./scripts/circleci/pipeline_selection.js filter-jobs
                   fi
       - run:
           name: Create config
