@@ -1227,20 +1227,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               public void run() {
                 mMountNotificationScheduled.set(false);
 
-                if (mountItems == null) {
+                final @Nullable Binding binding = mBinding;
+                if (mountItems == null || binding == null) {
                   return;
                 }
 
                 // Collect surface IDs for all the mount items
                 List<Integer> surfaceIds = new ArrayList();
                 for (MountItem mountItem : mountItems) {
-                  if (!surfaceIds.contains(mountItem.getSurfaceId())) {
+                  if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
                     surfaceIds.add(mountItem.getSurfaceId());
                   }
                 }
 
                 for (int surfaceId : surfaceIds) {
-                  mBinding.reportMount(surfaceId);
+                  binding.reportMount(surfaceId);
                 }
               }
             });
