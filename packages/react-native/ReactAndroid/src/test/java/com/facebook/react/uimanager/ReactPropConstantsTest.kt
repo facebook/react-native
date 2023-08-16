@@ -19,10 +19,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
-/** Verifies that prop constants are generated properly based on `ReactProp` annotation.  */
+/** Verifies that prop constants are generated properly based on `ReactProp` annotation. */
 @RunWith(RobolectricTestRunner::class)
-
 class ReactPropConstantsTest {
+  @Suppress("UNUSED_PARAMETER")
   private inner class ViewManagerUnderTest : ViewManager<View?, ReactShadowNode<*>?>() {
     override fun getName(): String {
       return "SomeView"
@@ -46,64 +46,40 @@ class ReactPropConstantsTest {
       Assertions.fail<Any>("This method should not be executed as a part of this test")
     }
 
-    @ReactProp(name = "boolProp")
-    fun setBoolProp(v: View?, value: Boolean) {
-    }
+    @ReactProp(name = "boolProp") fun setBoolProp(v: View?, value: Boolean) {}
 
-    @ReactProp(name = "intProp")
-    fun setIntProp(v: View?, value: Int) {
-    }
+    @ReactProp(name = "intProp") fun setIntProp(v: View?, value: Int) {}
 
-    @ReactProp(name = "floatProp")
-    fun setFloatProp(v: View?, value: Float) {
-    }
+    @ReactProp(name = "floatProp") fun setFloatProp(v: View?, value: Float) {}
 
-    @ReactProp(name = "doubleProp")
-    fun setDoubleProp(v: View?, value: Double) {
-    }
+    @ReactProp(name = "doubleProp") fun setDoubleProp(v: View?, value: Double) {}
 
-    @ReactProp(name = "stringProp")
-    fun setStringProp(v: View?, value: String?) {
-    }
+    @ReactProp(name = "stringProp") fun setStringProp(v: View?, value: String?) {}
 
-    @ReactProp(name = "boxedBoolProp")
-    fun setBoxedBoolProp(v: View?, value: Boolean?) {
-    }
+    @ReactProp(name = "boxedBoolProp") fun setBoxedBoolProp(v: View?, value: Boolean?) {}
 
-    @ReactProp(name = "boxedIntProp")
-    fun setBoxedIntProp(v: View?, value: Int?) {
-    }
+    @ReactProp(name = "boxedIntProp") fun setBoxedIntProp(v: View?, value: Int?) {}
 
-    @ReactProp(name = "arrayProp")
-    fun setArrayProp(v: View?, value: ReadableArray?) {
-    }
+    @ReactProp(name = "arrayProp") fun setArrayProp(v: View?, value: ReadableArray?) {}
 
-    @ReactProp(name = "mapProp")
-    fun setMapProp(v: View?, value: ReadableMap?) {
-    }
+    @ReactProp(name = "mapProp") fun setMapProp(v: View?, value: ReadableMap?) {}
 
     @ReactPropGroup(names = ["floatGroupPropFirst", "floatGroupPropSecond"])
-    fun setFloatGroupProp(v: View?, index: Int, value: Float) {
-    }
+    fun setFloatGroupProp(v: View?, index: Int, value: Float) {}
 
     @ReactPropGroup(names = ["intGroupPropFirst", "intGroupPropSecond"])
-    fun setIntGroupProp(v: View?, index: Int, value: Int) {
-    }
+    fun setIntGroupProp(v: View?, index: Int, value: Int) {}
 
     @ReactPropGroup(names = ["boxedIntGroupPropFirst", "boxedIntGroupPropSecond"])
-    fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) {
-    }
+    fun setBoxedIntGroupProp(v: View?, index: Int, value: Int?) {}
 
     @ReactProp(name = "customIntProp", customType = "date")
-    fun customIntProp(v: View?, value: Int) {
-    }
+    fun customIntProp(v: View?, value: Int) {}
 
     @ReactPropGroup(
-      names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
-      customType = "color"
-    )
-    fun customIntGroupProp(v: View?, index: Int, value: Int?) {
-    }
+        names = ["customBoxedIntGroupPropFirst", "customBoxedIntGroupPropSecond"],
+        customType = "color")
+    fun customIntGroupProp(v: View?, index: Int, value: Int?) {}
   }
 
   @Test
@@ -111,41 +87,41 @@ class ReactPropConstantsTest {
     val viewManagers = listOf<ViewManager<*, *>>(ViewManagerUnderTest())
     val reactContext = ReactApplicationContext(RuntimeEnvironment.getApplication())
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
-    val constants: Map<*, *>? = valueAtPath(uiManagerModule.constants, "SomeView", "NativeProps")
+    val constants: Map<*, *> =
+        valueAtPath(uiManagerModule.constants as Map<*, *>, "SomeView", "NativeProps")
 
     Assertions.assertThat(constants)
-      .isEqualTo(
-        MapBuilder.builder<String, String>()
-          .put("boolProp", "boolean")
-          .put("intProp", "number")
-          .put("doubleProp", "number")
-          .put("floatProp", "number")
-          .put("stringProp", "String")
-          .put("boxedBoolProp", "boolean")
-          .put("boxedIntProp", "number")
-          .put("arrayProp", "Array")
-          .put("mapProp", "Map")
-          .put("floatGroupPropFirst", "number")
-          .put("floatGroupPropSecond", "number")
-          .put("intGroupPropFirst", "number")
-          .put("intGroupPropSecond", "number")
-          .put("boxedIntGroupPropFirst", "number")
-          .put("boxedIntGroupPropSecond", "number")
-          .put("customIntProp", "date")
-          .put("customBoxedIntGroupPropFirst", "color")
-          .put("customBoxedIntGroupPropSecond", "color")
-          .build()
-      )
+        .isEqualTo(
+            MapBuilder.builder<String, String>()
+                .put("boolProp", "boolean")
+                .put("intProp", "number")
+                .put("doubleProp", "number")
+                .put("floatProp", "number")
+                .put("stringProp", "String")
+                .put("boxedBoolProp", "boolean")
+                .put("boxedIntProp", "number")
+                .put("arrayProp", "Array")
+                .put("mapProp", "Map")
+                .put("floatGroupPropFirst", "number")
+                .put("floatGroupPropSecond", "number")
+                .put("intGroupPropFirst", "number")
+                .put("intGroupPropSecond", "number")
+                .put("boxedIntGroupPropFirst", "number")
+                .put("boxedIntGroupPropSecond", "number")
+                .put("customIntProp", "date")
+                .put("customBoxedIntGroupPropFirst", "color")
+                .put("customBoxedIntGroupPropSecond", "color")
+                .build())
   }
 
   companion object {
-    private fun valueAtPath(nestedMap: Map<String, *>?, vararg keyPath: String): Map<*, *>? {
-      Assertions.assertThat(keyPath).isNotEmpty
-      var value = nestedMap
+    private fun valueAtPath(nestedMap: Map<*, *>, vararg keyPath: String): Map<*, *> {
+      require(keyPath.isNotEmpty()) { "keyPath must not be empty" }
+      var value: Map<*, *> = nestedMap
       for (key in keyPath) {
-        Assertions.assertThat(value).isInstanceOf(Map::class.java)
-        Assertions.assertThat(value).containsKey(key)
-        value = (value?.get(key) as? Map<String, *> ?: error("Value not found for key: $key"))
+        require(key in value) { "Key '$key' not found in the map" }
+        require(value[key] is Map<*, *>) { "Key '$key' must be a map itself" }
+        value = value[key] as Map<*, *>
       }
       return value
     }
