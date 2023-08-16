@@ -1735,15 +1735,15 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _offsetFromScrollEvent(e: ScrollEvent): number {
     const {contentOffset, contentSize, layoutMeasurement} = e.nativeEvent;
     const {horizontal, rtl} = this._orientation();
-    if (Platform.OS === 'ios' || !(horizontal && rtl)) {
+    if (horizontal && rtl) {
+      return (
+        this._selectLength(contentSize) -
+        (this._selectOffset(contentOffset) +
+          this._selectLength(layoutMeasurement))
+      );
+    } else {
       return this._selectOffset(contentOffset);
     }
-
-    return (
-      this._selectLength(contentSize) -
-      (this._selectOffset(contentOffset) +
-        this._selectLength(layoutMeasurement))
-    );
   }
 
   _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
