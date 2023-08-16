@@ -7,25 +7,17 @@
  * @format
  */
 
-const {spawnSync} = require('child_process');
+const {retry} = require('./retry');
 
-function retryCommand(maxRetries, command) {
-  for (let i = 1; i <= maxRetries; i++) {
-    console.log(`Attempt ${i}: ${command}`);
-    const result = spawnSync(command, {shell: true, stdio: 'inherit'});
-
-    if (result.status === 0) {
-      console.log(`Command succeeded on attempt ${i}`);
-      process.exit(0);
-    } else {
-      console.log(`Command failed on attempt ${i}`);
-      if (i < maxRetries) {
-        console.log('Retrying...');
-      } else {
-        console.log('Maximum retries reached. Exiting.');
-        process.exit(1);
-      }
-    }
+async function retryCommand(maxRetries, command) {
+  const success = await retry(
+    command,
+    {shell: true, stdio: 'inherit'},
+    maxRetries,
+    0,
+  );
+  if (!success) {
+    process.exit(1);
   }
 }
 
