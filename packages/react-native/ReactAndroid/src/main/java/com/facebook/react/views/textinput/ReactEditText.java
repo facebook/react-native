@@ -924,7 +924,7 @@ public class ReactEditText extends AppCompatEditText {
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
     ReactContext reactContext = getReactContext(this);
 
-    if (mStateWrapper != null && !reactContext.isBridgeless()) {
+    if (mStateWrapper == null && !reactContext.isBridgeless()) {
 
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
