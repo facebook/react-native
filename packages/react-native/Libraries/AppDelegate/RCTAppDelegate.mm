@@ -111,6 +111,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
   self.window.rootViewController = rootViewController;
+
+  if (@available(iOS 13.0, *)) {
+    self.window.windowScene.delegate = self;
+  }
+
   [self.window makeKeyAndVisible];
 
   return YES;
@@ -169,6 +174,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 - (BOOL)runtimeSchedulerEnabled
 {
   return YES;
+}
+
+#pragma mark - UISceneDelegate
+- (void)windowScene:(UIWindowScene *)windowScene didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
+                                                     interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
+                                                          traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0)) {
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
 }
 
 #if RCT_NEW_ARCH_ENABLED
