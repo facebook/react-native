@@ -23,12 +23,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
  */
 @ReactModule(name = MyLegacyViewManager.REACT_CLASS)
 internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
-  SimpleViewManager<MyNativeView> {
+  SimpleViewManager<MyNativeView>() {
   companion object {
     const val REACT_CLASS = "RNTMyLegacyNativeView"
-  }
-
-  companion object {
     const val COMMAND_CHANGE_BACKGROUND_COLOR = 42
   }
 
@@ -56,7 +53,9 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
 
   @ReactProp(name = "cornerRadius")
   fun setCornerRadius(view: MyNativeView, cornerRadius: Float?) {
-    view.setCornerRadius(cornerRadius)
+    if (cornerRadius !== null) {
+      view.setCornerRadius(cornerRadius)
+    }
   }
 
   override fun getExportedViewConstants(): Map<String, Any> {
@@ -82,7 +81,7 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
 
   override fun receiveCommand(view: MyNativeView, commandId: String, args: ReadableArray?) {
     if (commandId.contentEquals("changeBackgroundColor")) {
-      val sentColor: Int = Color.parseColor(args.getString(0))
+      val sentColor: Int = Color.parseColor(args?.getString(0))
       view.setBackgroundColor(sentColor)
     }
   }
@@ -91,7 +90,7 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   override fun receiveCommand(view: MyNativeView, commandId: Int, args: ReadableArray?) {
     when (commandId) {
       COMMAND_CHANGE_BACKGROUND_COLOR -> {
-        val sentColor: Int = Color.parseColor(args.getString(0))
+        val sentColor: Int = Color.parseColor(args?.getString(0))
         view.setBackgroundColor(sentColor)
       }
     }
