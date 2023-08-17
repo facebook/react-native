@@ -93,11 +93,9 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return [self initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
-- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
-                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
-                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface moduleRegistry:(RCTModuleRegistry *)moduleRegistry
 {
-  if (self = [super initWithSurface:surface sizeMeasureMode:sizeMeasureMode]) {
+  if (self = [self initWithSurface:surface]) {
     _moduleRegistry = moduleRegistry;
   }
 
