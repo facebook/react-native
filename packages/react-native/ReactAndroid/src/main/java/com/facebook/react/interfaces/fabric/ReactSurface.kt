@@ -46,4 +46,7 @@ interface ReactSurface {
 
   // Clear surface
   fun clear()
+
+  // Detach surface from Host
+  fun detach()
 }
