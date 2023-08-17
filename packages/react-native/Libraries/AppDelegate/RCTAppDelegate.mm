@@ -111,11 +111,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
   self.window.rootViewController = rootViewController;
-
-  if (@available(iOS 13.0, *)) {
-    self.window.windowScene.delegate = self;
-  }
-
+  self.window.windowScene.delegate = self;
   [self.window makeKeyAndVisible];
 
   return YES;
