@@ -47,12 +47,12 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   }
 
   @ReactProp(name = ViewProps.COLOR)
-  fun setColor(view: MyNativeView, color: String?) {
+  fun setColor(view: MyNativeView, color: String) {
     view.setBackgroundColor(Color.parseColor(color))
   }
 
   @ReactProp(name = "cornerRadius")
-  fun setCornerRadius(view: MyNativeView, cornerRadius: Float?) {
+  fun setCornerRadius(view: MyNativeView, cornerRadius: Float) {
     if (cornerRadius !== null) {
       view.setCornerRadius(cornerRadius)
     }
