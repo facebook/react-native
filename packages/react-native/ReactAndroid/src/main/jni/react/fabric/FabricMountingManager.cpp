@@ -274,10 +274,16 @@ void FabricMountingManager::executeMount(
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
-    auto const &allocatedViewTags =
+    auto defaultAllocatedViews = butter::set<Tag>{};
+    // Do not remove `defaultAllocatedViews` or initialize `butter::set<Tag>{}`
+    // inline in below ternary expression -
+    // if falsy operand is a value type, the compiler will decide the expression
+    // to be a value type, an unnecessary (sometimes expensive) copy will happen
+    // as a result.
+    const auto &allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
-        : butter::set<Tag>{};
+        : defaultAllocatedViews;
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
