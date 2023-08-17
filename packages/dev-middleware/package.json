@@ -24,6 +24,7 @@
   "dependencies": {
     "chrome-launcher": "^0.15.2",
     "connect": "^3.6.5",
+    "debug": "^2.2.0",
     "node-fetch": "^2.2.0",
     "temp-dir": "^2.0.0"
   },
