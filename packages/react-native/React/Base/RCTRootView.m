@@ -174,13 +174,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _loadingView.center = (CGPoint){CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)};
 }
 
-- (void)setFrame:(CGRect)frame
-{
-  [super setFrame:frame];
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
-}
-
 - (void)setMinimumSize:(CGSize)minimumSize
 {
   if (CGSizeEqualToSize(_minimumSize, minimumSize)) {
