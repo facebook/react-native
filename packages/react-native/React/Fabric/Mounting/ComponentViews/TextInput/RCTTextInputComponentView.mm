@@ -602,14 +602,14 @@ using namespace facebook::react;
       NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(offsetStart - 1, 1)];
       NSInteger offsetFromEnd = oldTextLength - offsetStart;
       if (offsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
-        _backedTextInputView.scrollEnabled = false;
+        _backedTextInputView.scrollEnabled = NO;
       }
     }
   }
 
   _backedTextInputView.attributedText = attributedString;
-  if (_backedTextInputView.scrollEnabled == false) {
-    _backedTextInputView.scrollEnabled = true;
+  if (_backedTextInputView.scrollEnabled == NO) {
+    _backedTextInputView.scrollEnabled = YES;
   }
 
   _backedTextInputView.attributedText = attributedString;
