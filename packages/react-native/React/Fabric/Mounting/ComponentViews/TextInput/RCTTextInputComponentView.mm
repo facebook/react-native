@@ -594,6 +594,24 @@ using namespace facebook::react;
   }
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
+
+  if (selectedRange.empty) {
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    if (attributedString.string.length > offsetStart - 1) {
+      NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(offsetStart - 1, 1)];
+      NSInteger offsetFromEnd = oldTextLength - offsetStart;
+      if (offsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
+        _backedTextInputView.scrollEnabled = false;
+      }
+    }
+  }
+
+  _backedTextInputView.attributedText = attributedString;
+  if (_backedTextInputView.scrollEnabled == false) {
+    _backedTextInputView.scrollEnabled = true;
+  }
+
   _backedTextInputView.attributedText = attributedString;
   if (selectedRange.empty) {
     // Maintaining a cursor position relative to the end of the old text.
