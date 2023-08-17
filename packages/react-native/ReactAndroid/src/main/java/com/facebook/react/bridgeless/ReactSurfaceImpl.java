@@ -129,8 +129,8 @@ public class ReactSurfaceImpl implements ReactSurface {
     mReactHost.set(null);
   }
 
-  @Override
-  public SurfaceHandler getSurfaceHandler() {
+  /** package */
+  SurfaceHandler getSurfaceHandler() {
     return mSurfaceHandler;
   }
 

@@ -99,7 +99,8 @@ public class ReactHostImpl implements ReactHost {
   private final Executor mBGExecutor;
   private final Executor mUIExecutor;
   private final QueueThreadExceptionHandler mQueueThreadExceptionHandler;
-  private final Set<ReactSurface> mAttachedSurfaces = Collections.synchronizedSet(new HashSet<>());
+  private final Set<ReactSurfaceImpl> mAttachedSurfaces =
+      Collections.synchronizedSet(new HashSet<>());
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
   private final boolean mUseDevSupport;
@@ -201,7 +202,7 @@ public class ReactHostImpl implements ReactHost {
 
   /** Initialize and run a React Native surface in a background without mounting real views. */
   /* package */
-  TaskInterface<Void> prerenderSurface(final ReactSurface surface) {
+  TaskInterface<Void> prerenderSurface(final ReactSurfaceImpl surface) {
     final String method = "prerenderSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -221,7 +222,7 @@ public class ReactHostImpl implements ReactHost {
    * @return A Task that will complete when startSurface has been called.
    */
   /** package */
-  TaskInterface<Void> startSurface(final ReactSurface surface) {
+  TaskInterface<Void> startSurface(final ReactSurfaceImpl surface) {
     final String method = "startSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -241,7 +242,7 @@ public class ReactHostImpl implements ReactHost {
    * @return A Task that will complete when stopSurface has been called.
    */
   /** package */
-  TaskInterface<Void> stopSurface(final ReactSurface surface) {
+  TaskInterface<Void> stopSurface(final ReactSurfaceImpl surface) {
     final String method = "stopSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method, "Schedule");
 
@@ -623,7 +624,7 @@ public class ReactHostImpl implements ReactHost {
         });
   }
 
-  /* package */ void attachSurface(ReactSurface surface) {
+  /* package */ void attachSurface(ReactSurfaceImpl surface) {
     final String method = "attachSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method);
 
@@ -632,7 +633,7 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  /* package */ void detachSurface(ReactSurface surface) {
+  /* package */ void detachSurface(ReactSurfaceImpl surface) {
     final String method = "detachSurface(surfaceId = " + surface.getSurfaceID() + ")";
     log(method);
 
@@ -641,7 +642,7 @@ public class ReactHostImpl implements ReactHost {
     }
   }
 
-  /* package */ boolean isSurfaceAttached(ReactSurface surface) {
+  /* package */ boolean isSurfaceAttached(ReactSurfaceImpl surface) {
     synchronized (mAttachedSurfaces) {
       return mAttachedSurfaces.contains(surface);
     }
@@ -649,7 +650,7 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */ boolean isSurfaceWithModuleNameAttached(String moduleName) {
     synchronized (mAttachedSurfaces) {
-      for (ReactSurface surface : mAttachedSurfaces) {
+      for (ReactSurfaceImpl surface : mAttachedSurfaces) {
         if (surface.getModuleName().equals(moduleName)) {
           return true;
         }
@@ -1181,7 +1182,7 @@ public class ReactHostImpl implements ReactHost {
 
                     log(method, "Stopping all React Native surfaces");
                     synchronized (mAttachedSurfaces) {
-                      for (ReactSurface surface : mAttachedSurfaces) {
+                      for (ReactSurfaceImpl surface : mAttachedSurfaces) {
                         if (reactInstance != null) {
                           reactInstance.stopSurface(surface);
                         }
@@ -1243,7 +1244,7 @@ public class ReactHostImpl implements ReactHost {
                       log(method, "Restarting previously running React Native Surfaces");
 
                       synchronized (mAttachedSurfaces) {
-                        for (ReactSurface surface : mAttachedSurfaces) {
+                        for (ReactSurfaceImpl surface : mAttachedSurfaces) {
                           reactInstance.startSurface(surface);
                         }
                       }
@@ -1405,7 +1406,7 @@ public class ReactHostImpl implements ReactHost {
             // Restart any attached surfaces
             log(method, "Restarting Surfaces");
             synchronized (mAttachedSurfaces) {
-              for (ReactSurface surface : mAttachedSurfaces) {
+              for (ReactSurfaceImpl surface : mAttachedSurfaces) {
                 reactInstance.startSurface(surface);
               }
             }
@@ -1476,7 +1477,7 @@ public class ReactHostImpl implements ReactHost {
          */
         log(method, "Stopping surfaces");
         synchronized (mAttachedSurfaces) {
-          for (ReactSurface surface : mAttachedSurfaces) {
+          for (ReactSurfaceImpl surface : mAttachedSurfaces) {
             instance.stopSurface(surface);
             surface.clear();
           }

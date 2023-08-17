@@ -44,7 +44,6 @@ import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.events.EventBeatManager;
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler;
-import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.JavaTimerManager;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -361,7 +360,7 @@ final class ReactInstance {
     }
   }
 
-  /* package */ void prerenderSurface(ReactSurface surface) {
+  /* package */ void prerenderSurface(ReactSurfaceImpl surface) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.prerenderSurface");
     FLog.d(TAG, "call prerenderSurface with surface: " + surface.getModuleName());
     mFabricUIManager.startSurface(surface.getSurfaceHandler(), surface.getContext(), null);
@@ -374,7 +373,7 @@ final class ReactInstance {
    * @param surface The {@link ReactSurface} to render.
    */
   @ThreadConfined("ReactHost")
-  /* package */ void startSurface(ReactSurface surface) {
+  /* package */ void startSurface(ReactSurfaceImpl surface) {
     FLog.d(TAG, "startSurface() is called with surface: " + surface.getSurfaceID());
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.startSurface");
 
@@ -405,7 +404,7 @@ final class ReactInstance {
   }
 
   @ThreadConfined("ReactHost")
-  /* package */ void stopSurface(ReactSurface surface) {
+  /* package */ void stopSurface(ReactSurfaceImpl surface) {
     FLog.d(TAG, "stopSurface() is called with surface: " + surface.getSurfaceID());
     mFabricUIManager.stopSurface(surface.getSurfaceHandler());
   }
