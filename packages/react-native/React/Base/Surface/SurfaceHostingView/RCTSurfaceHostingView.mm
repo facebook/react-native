@@ -88,6 +88,13 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   [_surface setMinimumSize:minimumSize maximumSize:maximumSize viewportOffset:windowFrame.origin];
 }
 
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewDidChangeFrameNotification object:self];
+}
+
 - (CGSize)intrinsicContentSize
 {
   if (RCTSurfaceStageIsPreparing(_stage)) {
