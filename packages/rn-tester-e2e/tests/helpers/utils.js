@@ -35,6 +35,45 @@ class Utils {
     // if something goes wrong, we fallback to ios. But it should never happent, the process will fail way earlier.
     return platforms[process?.env?.E2E_DEVICE || 'ios'];
   }
+  async scrollToElement(locator: string): Promise<string> {
+    const {width, height} = await driver.getWindowSize();
+    const startPercentage = 70;
+    const endPercentage = 50;
+    const anchorPercentage = 50;
+
+    const anchor = (width / 2) * anchorPercentage / 100;
+    const startPoint = height * startPercentage / 100;
+    const endPoint = (height / 2) * endPercentage / 100;
+    do {
+      driver.touchPerform([
+        {
+          action: 'press',
+          options: {
+            x: anchor,
+            y: startPoint,
+          },
+        },
+        {
+          action: 'wait',
+          options: {
+            ms: 1000,
+          },
+        },
+        {
+          action: 'moveTo',
+          options: {
+            x: anchor,
+            y: endPoint,
+          },
+        },
+        {
+          action: 'release',
+          options: {},
+        },
+      ]);
+    }
+    while (driver.$(locator) == 0);
+  }
 }
 
 export const iOSLabel = (label: string): string => {

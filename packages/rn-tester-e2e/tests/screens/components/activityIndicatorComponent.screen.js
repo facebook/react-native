@@ -12,14 +12,14 @@ import {
     UtilsSingleton as Utils,
     iOSLabel,
     androidWidget,
-  } from '../../helpers/utils';
+} from '../../helpers/utils';
 
 
 type ActivityIndicatorComponentScreenType = {
     activityIndicatorScreenElement: string,
     defaultActivityIndicatorScreenElement: string,
     checkDefaultActivityIndicatorIsDisplayed: () => Promise<boolean>,
-  };
+};
 
 export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenType = {
     // reference in the Components list

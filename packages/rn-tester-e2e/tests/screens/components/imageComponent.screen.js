@@ -13,14 +13,14 @@ import {
     iOSLabel,
     androidWidget,
     iOSName,
-  } from '../../helpers/utils';
+} from '../../helpers/utils';
 
 
 type ImageComponentScreenType = {
     imageScreenElement: string,
     plainNetworkImageScreenElement: string,
     checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
-  };
+};
 
 export const ImageComponentScreen: ImageComponentScreenType = {
     // reference in the Components list

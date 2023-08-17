@@ -16,20 +16,36 @@ const buttonComponentLabel = 'Button Simple React Native button component.';
 const activityIndicatorComponentLabel = 'ActivityIndicator Animated loading indicators.';
 const imageComponentLabel = 'Image Base component for displaying different types of images.';
 const flatListComponentLabel = 'FlatList Performant, scrollable list of data.';
+const jsResponderHandlerComponentLabel = 'JSResponderHandler Simple example to test JSResponderHandler.';
+const modalComponentLabel = 'Modal Component for presenting modal views.';
+const newAppScreenComponentLabel = 'New App Screen Displays the content of the new app screen';
+const pressableComponentLabel = 'Pressable Component for making views pressable.';
 
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
   activityIndicatorComponentLabelElement: string,
   imageComponentLabelElement: string,
   flatListComponentLabelElement: string,
+  jsResponderHandlerComponentLabelElement: string,
+  modalComponentElement: string,
+  newAppScreenComponentElement: string,
+  pressableComponentElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
   checkImageComponentIsDisplayed: () => Promise<boolean>,
   checkFlatListComponentIsDisplayed: () => Promise<boolean>,
+  checkJSResponderHandlerComponentIsDisplayed: () => Promise<boolean>,
+  checkModalComponentIsDisplayed: () => Promise<boolean>,
+  checkNewAppScreenComponentIsDisplayed: () => Promise<boolean>,
+  checkPressableComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
   clickImageComponent: () => Promise<void>,
   clickFlatListComponent: () => Promise<void>,
+  clickJSResponderHandlerComponent: () => Promise<void>,
+  clickModalComponent: () => Promise<void>,
+  clickNewAppScreenComponent: () => Promise<void>,
+  clickPressableComponent: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -49,6 +65,22 @@ export const ComponentsScreen: ComponentsScreenType = {
   flatListComponentLabelElement: Utils.platformSelect({
     ios: iOSLabel(flatListComponentLabel),
     android: `~${flatListComponentLabel}`,
+  }),
+  jsResponderHandlerComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(jsResponderHandlerComponentLabel),
+    android: `~${jsResponderHandlerComponentLabel}`,
+  }),
+  modalComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(modalComponentLabel),
+    android: `~${modalComponentLabel}`,
+  }),
+  newAppScreenComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(newAppScreenComponentLabel),
+    android: `~${newAppScreenComponentLabel}`,
+  }),
+  pressableComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(pressableComponentLabel),
+    android: `~${pressableComponentLabel}`,
   }),
   // Methods to interact with top level elements in the list
   checkButtonComponentIsDisplayed: async function (
@@ -71,6 +103,26 @@ export const ComponentsScreen: ComponentsScreenType = {
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.flatListComponentLabelElement);
   },
+  checkJSResponderHandlerComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.jsResponderHandlerComponentLabelElement);
+  },
+  checkModalComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.modalComponentLabelElement);
+  },
+  checkNewAppScreenComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.newAppScreenComponentLabelElement);
+  },
+  checkPressableComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(this.pressableComponentLabelElement);
+  },
   clickButtonComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
@@ -90,5 +142,25 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<void> {
     await Utils.clickElement(this.flatListComponentLabelElement);
+  },
+  clickJSResponderHandlerComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.jsResponderHandlerComponentLabelElement);
+  },
+  clickModalComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.modalComponentLabelElement);
+  },
+  clickNewAppScreenComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.newAppScreenComponentLabelElement);
+  },
+  clickPressableComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.pressableComponentLabelElement);
   },
 };
