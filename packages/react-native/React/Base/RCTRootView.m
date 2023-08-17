@@ -178,7 +178,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 {
   [super setFrame:frame];
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewDidChangeFrameNotification object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTRootViewFrameDidChangeNotification object:self];
 }
 
 - (void)setMinimumSize:(CGSize)minimumSize
