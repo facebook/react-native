@@ -1,0 +1,20 @@
+# Initializes a verdaccio server.
+
+steps:
+  - task: CmdLine@2
+    displayName: Launch test npm server (verdaccio)
+    inputs:
+      script: |
+        npx verdaccio --config ./.ado/verdaccio/config.yaml &
+
+  - script: |
+      npm set registry http://localhost:4873
+    displayName: Modify default npm config to point to local verdaccio server
+
+  - script: |
+      node .ado/waitForVerdaccio.js
+    displayName: Wait for verdaccio server to boot
+
+  - script: |
+      node .ado/npmAddUser.js user pass mail@nomail.com http://localhost:4873
+    displayName: Add npm user to verdaccio
