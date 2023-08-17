@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #ifdef __APPLE__
 #include <functional>
 #endif
@@ -84,12 +86,12 @@ class RN_EXPORT StartupLogger {
   StartupLogger(const StartupLogger &) = delete;
   StartupLogger &operator=(const StartupLogger &) = delete;
 
-  double appStartupStartTime;
-  double appStartupEndTime;
-  double initReactRuntimeStartTime;
-  double initReactRuntimeEndTime;
-  double runJSBundleStartTime;
-  double runJSBundleEndTime;
+  double appStartupStartTime = std::nan("");
+  double appStartupEndTime = std::nan("");
+  double initReactRuntimeStartTime = std::nan("");
+  double initReactRuntimeEndTime = std::nan("");
+  double runJSBundleStartTime = std::nan("");
+  double runJSBundleEndTime = std::nan("");
 };
 
 // When the marker got logged from the platform, it will notify here. This is
