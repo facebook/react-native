@@ -5,7 +5,7 @@ rn_android_library(
     name = "okhttp3",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":okhttp3-binary",
         react_native_dep("third-party/java/okio:okio"),
@@ -18,7 +18,7 @@ rn_android_library(
     name = "okhttp3-urlconnection",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":okhttp3",
         ":okhttp3-urlconnection-binary",

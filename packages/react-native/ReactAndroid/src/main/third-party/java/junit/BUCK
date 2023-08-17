@@ -5,7 +5,7 @@ rn_android_library(
     name = "junit",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":hamcrest",
         ":junit-core",
@@ -15,7 +15,7 @@ rn_android_library(
 rn_prebuilt_jar(
     name = "junit-core",
     binary_jar = ":download-junit.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -27,7 +27,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "hamcrest",
     binary_jar = ":download-hamcrest.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

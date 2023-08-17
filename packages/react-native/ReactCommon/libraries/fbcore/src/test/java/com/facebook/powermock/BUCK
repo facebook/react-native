@@ -35,7 +35,7 @@ rn_android_library(
 rn_prebuilt_jar(
     name = "byte-buddy",
     binary_jar = ":byte-buddy-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -47,7 +47,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "byte-buddy-agent",
     binary_jar = ":byte-buddy-agent-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -59,7 +59,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "objenesis",
     binary_jar = ":objenesis-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

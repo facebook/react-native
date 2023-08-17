@@ -73,10 +73,10 @@ module.exports = {
   reactNativePath: '.',
   project: {
     ios: {
-      sourceDir: './packages/rn-tester',
+      sourceDir: '../packages/rn-tester',
     },
     android: {
-      sourceDir: './packages/rn-tester',
+      sourceDir: '../packages/rn-tester',
     },
   },
 };

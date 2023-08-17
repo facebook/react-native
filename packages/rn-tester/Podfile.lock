@@ -377,47 +377,47 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - boost (from `../../third-party-podspecs/boost.podspec`)
-  - DoubleConversion (from `../../third-party-podspecs/DoubleConversion.podspec`)
-  - FBLazyVector (from `../../Libraries/FBLazyVector`)
-  - FBReactNativeSpec (from `../../React/FBReactNativeSpec`)
-  - glog (from `../../third-party-podspecs/glog.podspec`)
+  - boost (from `../react-native/third-party-podspecs/boost.podspec`)
+  - DoubleConversion (from `../react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - FBLazyVector (from `../react-native/Libraries/FBLazyVector`)
+  - FBReactNativeSpec (from `../react-native/React/FBReactNativeSpec`)
+  - glog (from `../react-native/third-party-podspecs/glog.podspec`)
   - OCMock (~> 3.9.1)
-  - RCT-Folly (from `../../third-party-podspecs/RCT-Folly.podspec`)
-  - RCTRequired (from `../../Libraries/RCTRequired`)
-  - RCTTypeSafety (from `../../Libraries/TypeSafety`)
-  - React (from `../../`)
-  - React-callinvoker (from `../../ReactCommon/callinvoker`)
+  - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
+  - RCTRequired (from `../react-native/Libraries/RCTRequired`)
+  - RCTTypeSafety (from `../react-native/Libraries/TypeSafety`)
+  - React (from `../react-native/`)
+  - React-callinvoker (from `../react-native/ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
-  - React-Core (from `../../`)
-  - React-Core/RCTWebSocket (from `../../`)
-  - React-CoreModules (from `../../React/CoreModules`)
-  - React-cxxreact (from `../../ReactCommon/cxxreact`)
-  - React-jsc (from `../../ReactCommon/jsc`)
-  - React-jsi (from `../../ReactCommon/jsi`)
-  - React-jsiexecutor (from `../../ReactCommon/jsiexecutor`)
-  - React-jsinspector (from `../../ReactCommon/jsinspector`)
-  - React-logger (from `../../ReactCommon/logger`)
-  - React-NativeModulesApple (from `../../ReactCommon/react/nativemodule/core/platform/ios`)
-  - React-perflogger (from `../../ReactCommon/reactperflogger`)
-  - React-RCTActionSheet (from `../../Libraries/ActionSheetIOS`)
-  - React-RCTAnimation (from `../../Libraries/NativeAnimation`)
-  - React-RCTAppDelegate (from `../../Libraries/AppDelegate`)
-  - React-RCTBlob (from `../../Libraries/Blob`)
-  - React-RCTImage (from `../../Libraries/Image`)
-  - React-RCTLinking (from `../../Libraries/LinkingIOS`)
-  - React-RCTNetwork (from `../../Libraries/Network`)
-  - React-RCTPushNotification (from `../../Libraries/PushNotificationIOS`)
-  - React-RCTSettings (from `../../Libraries/Settings`)
+  - React-Core (from `../react-native/`)
+  - React-Core/RCTWebSocket (from `../react-native/`)
+  - React-CoreModules (from `../react-native/React/CoreModules`)
+  - React-cxxreact (from `../react-native/ReactCommon/cxxreact`)
+  - React-jsc (from `../react-native/ReactCommon/jsc`)
+  - React-jsi (from `../react-native/ReactCommon/jsi`)
+  - React-jsiexecutor (from `../react-native/ReactCommon/jsiexecutor`)
+  - React-jsinspector (from `../react-native/ReactCommon/jsinspector`)
+  - React-logger (from `../react-native/ReactCommon/logger`)
+  - React-NativeModulesApple (from `../react-native/ReactCommon/react/nativemodule/core/platform/ios`)
+  - React-perflogger (from `../react-native/ReactCommon/reactperflogger`)
+  - React-RCTActionSheet (from `../react-native/Libraries/ActionSheetIOS`)
+  - React-RCTAnimation (from `../react-native/Libraries/NativeAnimation`)
+  - React-RCTAppDelegate (from `../react-native/Libraries/AppDelegate`)
+  - React-RCTBlob (from `../react-native/Libraries/Blob`)
+  - React-RCTImage (from `../react-native/Libraries/Image`)
+  - React-RCTLinking (from `../react-native/Libraries/LinkingIOS`)
+  - React-RCTNetwork (from `../react-native/Libraries/Network`)
+  - React-RCTPushNotification (from `../react-native/Libraries/PushNotificationIOS`)
+  - React-RCTSettings (from `../react-native/Libraries/Settings`)
   - React-RCTTest (from `./RCTTest`)
-  - React-RCTText (from `../../Libraries/Text`)
-  - React-RCTVibration (from `../../Libraries/Vibration`)
-  - React-rncore (from `../../ReactCommon`)
-  - React-runtimeexecutor (from `../../ReactCommon/runtimeexecutor`)
-  - ReactCommon-Samples (from `../../ReactCommon/react/nativemodule/samples`)
-  - ReactCommon/turbomodule/core (from `../../ReactCommon`)
+  - React-RCTText (from `../react-native/Libraries/Text`)
+  - React-RCTVibration (from `../react-native/Libraries/Vibration`)
+  - React-rncore (from `../react-native/ReactCommon`)
+  - React-runtimeexecutor (from `../react-native/ReactCommon/runtimeexecutor`)
+  - ReactCommon-Samples (from `../react-native/ReactCommon/react/nativemodule/samples`)
+  - ReactCommon/turbomodule/core (from `../react-native/ReactCommon`)
   - ScreenshotManager (from `NativeModuleExample`)
-  - Yoga (from `../../ReactCommon/yoga`)
+  - Yoga (from `../react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   trunk:
@@ -427,128 +427,128 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   boost:
-    :podspec: "../../third-party-podspecs/boost.podspec"
+    :podspec: "../react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
-    :podspec: "../../third-party-podspecs/DoubleConversion.podspec"
+    :podspec: "../react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
-    :path: "../../Libraries/FBLazyVector"
+    :path: "../react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
-    :path: "../../React/FBReactNativeSpec"
+    :path: "../react-native/React/FBReactNativeSpec"
   glog:
-    :podspec: "../../third-party-podspecs/glog.podspec"
+    :podspec: "../react-native/third-party-podspecs/glog.podspec"
   RCT-Folly:
-    :podspec: "../../third-party-podspecs/RCT-Folly.podspec"
+    :podspec: "../react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
-    :path: "../../Libraries/RCTRequired"
+    :path: "../react-native/Libraries/RCTRequired"
   RCTTypeSafety:
-    :path: "../../Libraries/TypeSafety"
+    :path: "../react-native/Libraries/TypeSafety"
   React:
-    :path: "../../"
+    :path: "../react-native/"
   React-callinvoker:
-    :path: "../../ReactCommon/callinvoker"
+    :path: "../react-native/ReactCommon/callinvoker"
   React-Codegen:
     :path: build/generated/ios
   React-Core:
-    :path: "../../"
+    :path: "../react-native/"
   React-CoreModules:
-    :path: "../../React/CoreModules"
+    :path: "../react-native/React/CoreModules"
   React-cxxreact:
-    :path: "../../ReactCommon/cxxreact"
+    :path: "../react-native/ReactCommon/cxxreact"
   React-jsc:
-    :path: "../../ReactCommon/jsc"
+    :path: "../react-native/ReactCommon/jsc"
   React-jsi:
-    :path: "../../ReactCommon/jsi"
+    :path: "../react-native/ReactCommon/jsi"
   React-jsiexecutor:
-    :path: "../../ReactCommon/jsiexecutor"
+    :path: "../react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
-    :path: "../../ReactCommon/jsinspector"
+    :path: "../react-native/ReactCommon/jsinspector"
   React-logger:
-    :path: "../../ReactCommon/logger"
+    :path: "../react-native/ReactCommon/logger"
   React-NativeModulesApple:
-    :path: "../../ReactCommon/react/nativemodule/core/platform/ios"
+    :path: "../react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
-    :path: "../../ReactCommon/reactperflogger"
+    :path: "../react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
-    :path: "../../Libraries/ActionSheetIOS"
+    :path: "../react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
-    :path: "../../Libraries/NativeAnimation"
+    :path: "../react-native/Libraries/NativeAnimation"
   React-RCTAppDelegate:
-    :path: "../../Libraries/AppDelegate"
+    :path: "../react-native/Libraries/AppDelegate"
   React-RCTBlob:
-    :path: "../../Libraries/Blob"
+    :path: "../react-native/Libraries/Blob"
   React-RCTImage:
-    :path: "../../Libraries/Image"
+    :path: "../react-native/Libraries/Image"
   React-RCTLinking:
-    :path: "../../Libraries/LinkingIOS"
+    :path: "../react-native/Libraries/LinkingIOS"
   React-RCTNetwork:
-    :path: "../../Libraries/Network"
+    :path: "../react-native/Libraries/Network"
   React-RCTPushNotification:
-    :path: "../../Libraries/PushNotificationIOS"
+    :path: "../react-native/Libraries/PushNotificationIOS"
   React-RCTSettings:
-    :path: "../../Libraries/Settings"
+    :path: "../react-native/Libraries/Settings"
   React-RCTTest:
     :path: "./RCTTest"
   React-RCTText:
-    :path: "../../Libraries/Text"
+    :path: "../react-native/Libraries/Text"
   React-RCTVibration:
-    :path: "../../Libraries/Vibration"
+    :path: "../react-native/Libraries/Vibration"
   React-rncore:
-    :path: "../../ReactCommon"
+    :path: "../react-native/ReactCommon"
   React-runtimeexecutor:
-    :path: "../../ReactCommon/runtimeexecutor"
+    :path: "../react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
-    :path: "../../ReactCommon"
+    :path: "../react-native/ReactCommon"
   ReactCommon-Samples:
-    :path: "../../ReactCommon/react/nativemodule/samples"
+    :path: "../react-native/ReactCommon/react/nativemodule/samples"
   ScreenshotManager:
     :path: NativeModuleExample
   Yoga:
-    :path: "../../ReactCommon/yoga"
+    :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost: 8fa3cd00fa17ef6c3221e5fd283fa93e81d23017
   DoubleConversion: acaf5db79676d2e9119015819153f0f99191de12
-  FBLazyVector: d849d431541a1165afb131d9bd9e7f3c0263fa9f
-  FBReactNativeSpec: a6e083e8ec9a0f055fc922e37e764728f96988e9
+  FBLazyVector: f675a717737d719a18dffde140c984896bc103ca
+  FBReactNativeSpec: 3d185c72e95d7d08af8f30e2928565acc4675c50
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 6df0a3d6e2750a50609471fd1a01fd2948d405b5
   OCMock: 9491e4bec59e0b267d52a9184ff5605995e74be8
   RCT-Folly: bf7b4921a91932051ebf1c5c2d297154b1fa3c8c
-  RCTRequired: 1ca822d69d9a3228b626f34dab6d9b14a702c6d5
-  RCTTypeSafety: fa95d13235ce9e7531c2dc590cb55eb18900ce3f
-  React: a1466618edd369c408cb1bb30330e33d12933dee
-  React-callinvoker: c2fc5f9edb44ab7a99036587a3c1829e27407b7a
+  RCTRequired: 23818f8d69af159020a96677b959bb4bc42c5597
+  RCTTypeSafety: 0cd48401b30208bf9424f75b843f81b6fa834599
+  React: 4899eeb992e17d0efdc75757688adc372233ee03
+  React-callinvoker: 974f861054f2802e20909a358232e6d4eaa89e8d
   React-Codegen: 9e4433cdb48a2cda2a1407715abcc6ef43ab097e
-  React-Core: d1a289228ceae398d2e6cc016595c4f3da4283c9
-  React-CoreModules: f1ec5493d8ff5b54d653863da3d3fec70ada723c
-  React-cxxreact: 1d0aa53b31139ac57a7b99d597a84cda6df495ef
-  React-jsc: 63d33c74387052646f1a813bf65fe1d601ef2ea9
-  React-jsi: cb407c8e594cd339282d20f720dc5a1905bcb06a
-  React-jsiexecutor: 6d0a4bbd03455009181ddbf1bb1f589c0b4fbb89
-  React-jsinspector: 55e217c01fb48c45de6930561c023b13b035ade7
-  React-logger: 1c6af8f39d7014d8d4bca1b6032e0ea8e06ca192
-  React-NativeModulesApple: c2dced4c55b5d8fea76394d0821e08a9d7427b65
-  React-perflogger: 584ba90f0f5fbd978be755d50261f86961e0acae
-  React-RCTActionSheet: d3405d580159e0fc1937b3851a843d1212a230cc
-  React-RCTAnimation: c40c45a00b20deba6d7231c693992006a4a9b4ff
-  React-RCTAppDelegate: 16dec9de566e0377f8ddce573e62b158f306ec34
-  React-RCTBlob: 0815793b7773643bf992d9219b49463089b5446f
-  React-RCTImage: a2f204a8f9c2de47501370f0792115e7cd1df9a1
-  React-RCTLinking: a5bf48951852939bd87e6084d0c91bacc307d1c8
-  React-RCTNetwork: e12fe722d021001b72e8535f113276d8f3d71eec
-  React-RCTPushNotification: ac47768df4b0a064509d5bb9e094cb55d5d39743
-  React-RCTSettings: 3820d89dd8fd5e9231071aebef21220c1fa4f760
-  React-RCTTest: df0f8a0b3c00be85a9e1f0e5638cd4a2abbf5856
-  React-RCTText: 8a390bc5288943dbd92939c012d380c5df74bc31
-  React-RCTVibration: 794a2fd064c17b1aa11abd33319abe8fd4f6969d
-  React-rncore: a348583f9e672f934fc982b0d6d186958b8fc4b6
-  React-runtimeexecutor: 8236eed296b661d588134852178aad1fd25bc929
-  ReactCommon: 1d999bbcd8dfd9a19724c4283981602e779d5a0e
-  ReactCommon-Samples: c119f5529b32a89c0cdc53c923d273cc330af10a
-  ScreenshotManager: d4780d90752624adad377bfc017fc033bae61878
+  React-Core: 75ccd5ea1dfba94396fe7f42d742b5fad316833f
+  React-CoreModules: c0dae5bd3bfc71d4b9a1a396995e0a96aaea8c38
+  React-cxxreact: f80b96e7ede70dc713f278f801870941df15e482
+  React-jsc: fe34e7cb127ee24c524c0ae0fc4f50f59b815c3c
+  React-jsi: 3c8e8e5571b4616ef87e1741d300340ae3c2bf92
+  React-jsiexecutor: 1a26e4c29fa910dce2383029c746db6ec333665d
+  React-jsinspector: 49ece915ffdb72b97bf7e734ba5dd8d8f1f52cd4
+  React-logger: bd582ff5f4803ed308b57b897b86f48c9ee0c082
+  React-NativeModulesApple: 127aed47c8018865681694fd5cf0857953ae34c7
+  React-perflogger: 73bfde53a5ad9f25c87b12c0f189f5e8501e027d
+  React-RCTActionSheet: 5a5189b2896f1ddd6a0dbaa80ecc09470ba9066a
+  React-RCTAnimation: 61bc6807c9ed65a18384c47b9cf4cccd26ead593
+  React-RCTAppDelegate: 7f97426e3f42629bf58ca4dae9f8495b0fa2f165
+  React-RCTBlob: b678eb7c0e4c24aa496bc9d6ad5d33862c2524e7
+  React-RCTImage: 6b8a3679ff1b8a0a9cbe95373b6b55b705fedd1b
+  React-RCTLinking: 838cfa436d2baf8a92d5ca65d86483a973170f53
+  React-RCTNetwork: 4ba93f65f99209fec7881178b96399722df153fd
+  React-RCTPushNotification: c5ca40c92fc69c61b3d4eb12565426688095c493
+  React-RCTSettings: ebf15e8fea9e2b900145fba0370a06ffd71662b6
+  React-RCTTest: f80d4874ac6926abf0f69cccffad9c932e8c8b2f
+  React-RCTText: e3bb643877f6da844c60186176153548bdfcd259
+  React-RCTVibration: fffcc22fb9eaa8e37a4c92468324aa31d2c9df9d
+  React-rncore: 7afbb7d475c177a67c597613d39d4ba2d47d50b1
+  React-runtimeexecutor: 88a93791d15040cef31b87c025715b006ac7970f
+  ReactCommon: ede267cba0b9b4414fd4b8143912240ed5bf8e35
+  ReactCommon-Samples: 96daa3326279837fc934ac35a57c0a7bb8322bfa
+  ScreenshotManager: 84f13d11f296b960bbafd9897ba52588a42dd5ca
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: c67737107ca40e0442cd0ca89a3cdc42db9ddd16
+  Yoga: d322d4a205e5fbc90fc64e7b9af8ef316e2a5338
 
-PODFILE CHECKSUM: 7472ee5fbfe18097fa01c40334178907d15a203e
+PODFILE CHECKSUM: 23258155130fc3ae417bc5bb12e76438f3b9a394
 
 COCOAPODS: 1.12.1

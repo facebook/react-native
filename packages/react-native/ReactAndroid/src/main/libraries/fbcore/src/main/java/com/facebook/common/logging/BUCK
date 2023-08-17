@@ -4,7 +4,7 @@ rn_android_library(
     name = "logging",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         react_native_dep("libraries/fresco/fresco-react-native:fbcore"),
     ],

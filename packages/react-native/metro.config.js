@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  * @format
  */
 
 'use strict';
 
+const path = require('path');
 const getPolyfills = require('./rn-get-polyfills');
 
 /**
@@ -18,6 +18,13 @@ const getPolyfills = require('./rn-get-polyfills');
  */
 const config = {
   // [macOS] Move object to variable so we can modify it below
+  watchFolders: [
+    path.resolve(__dirname, '../../node_modules'),
+    path.resolve(__dirname, '../assets'),
+    path.resolve(__dirname, '../normalize-color'),
+    path.resolve(__dirname, '../polyfills'),
+    path.resolve(__dirname, '../virtualized-lists'),
+  ],
   resolver: {
     // $FlowFixMe[signature-verification-failure] Can't infer RegExp type.
     blockList: [/buck-out/, /sdks\/hermes/],

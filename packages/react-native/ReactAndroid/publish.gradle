@@ -12,7 +12,7 @@ def isNightly = findProperty("isNightly")?.toBoolean()
 def signingKey = findProperty("SIGNING_KEY")
 def signingPwd = findProperty("SIGNING_PWD")
 
-def reactAndroidProjectDir = project(':ReactAndroid').projectDir
+def reactAndroidProjectDir = project(':packages:react-native:ReactAndroid').projectDir
 def androidOutputUrl = "file://${reactAndroidProjectDir}/../android"
 def mavenTempLocalUrl = "file:///tmp/maven-local"
 

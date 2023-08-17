@@ -17,7 +17,7 @@ source "${THIS_DIR}/node-binary.sh"
 # When running react-native tests, react-native doesn't live in node_modules but in the PROJECT_ROOT
 if [ ! -d "$THIS_DIR/../../../node_modules/react-native-macos" ];
 then
-  PROJECT_ROOT="$THIS_DIR/.."
+  PROJECT_ROOT="$THIS_DIR/../../.."
 fi
 # Start packager from PROJECT_ROOT
 cd "$PROJECT_ROOT" || exit

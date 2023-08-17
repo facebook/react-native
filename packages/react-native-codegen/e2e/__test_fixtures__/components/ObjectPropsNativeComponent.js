@@ -8,17 +8,17 @@
  * @flow strict-local
  */
 
-import type {ViewProps} from '../../../../../Libraries/Components/View/ViewPropTypes';
-import type {ImageSource} from '../../../../../Libraries/Image/ImageSource';
-import type {PointValue} from '../../../../../Libraries/StyleSheet/StyleSheetTypes';
-import type {ColorValue} from '../../../../../Libraries/StyleSheet/StyleSheet';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
+import type {PointValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   Int32,
   Float,
   WithDefault,
-} from '../../../../../Libraries/Types/CodegenTypes';
-import codegenNativeComponent from '../../../../../Libraries/Utilities/codegenNativeComponent';
-import type {HostComponent} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+} from 'react-native/Libraries/Types/CodegenTypes';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 type ObjectArrayPropType = $ReadOnly<{|
   array: $ReadOnlyArray<string>,

@@ -28,7 +28,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "byte-buddy",
     binary_jar = ":byte-buddy-binary-with-module-info-stripped",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 # Strip module-info.class because some Android tooling cannot parse the file. Matches configuration in fbandroid.
@@ -47,7 +47,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "byte-buddy-agent",
     binary_jar = ":byte-buddy-agent-with-module-info-stripped",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 # Strip module-info.class because some Android tooling cannot parse the file. Matches configuration in fbandroid.
@@ -66,7 +66,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "objenesis",
     binary_jar = ":objenesis-binary.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

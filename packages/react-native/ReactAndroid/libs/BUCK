@@ -4,7 +4,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar")
 rn_android_prebuilt_aar(
     name = "appcompat",
     aar = ":appcompat-binary-aar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(

@@ -5,7 +5,7 @@ rn_android_library(
     name = "asm",
     autoglob = False,
     language = "JAVA",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
     exported_deps = [
         ":asm-analysis",
         ":asm-commons",
@@ -18,7 +18,7 @@ rn_android_library(
 rn_prebuilt_jar(
     name = "asm-core",
     binary_jar = ":download-asm.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -30,7 +30,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "asm-commons",
     binary_jar = ":download-asm-commons.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -42,7 +42,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "asm-tree",
     binary_jar = ":download-asm-tree.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -54,7 +54,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "asm-util",
     binary_jar = ":download-asm-util.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
@@ -66,7 +66,7 @@ fb_native.remote_file(
 rn_prebuilt_jar(
     name = "asm-analysis",
     binary_jar = ":download-asm-analysis.jar",
-    visibility = ["//ReactAndroid/..."],
+    visibility = ["//packages/react-native/ReactAndroid/..."],
 )
 
 fb_native.remote_file(
