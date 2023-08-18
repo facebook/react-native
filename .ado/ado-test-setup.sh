@@ -57,7 +57,7 @@ open "$COMMAND"
 waitForPackager
 
 COMMAND="$TMPDIR/launchWebSocketServer.command"
-echo "cd ${THIS_DIR}; export SERVERS_NO_WAIT=1; ./IntegrationTests/launchWebSocketServer.command" > "$COMMAND"
+echo "cd ${THIS_DIR}; export SERVERS_NO_WAIT=1; ./packages/react-native/IntegrationTests/launchWebSocketServer.command" > "$COMMAND"
 chmod +x "$COMMAND"
 open "$COMMAND"
 waitForWebSocketServer
