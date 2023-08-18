@@ -28,5 +28,5 @@ export default function getDevServerUrl(req: IncomingMessage): string {
       ? `[${localAddress}]`
       : localAddress;
 
-  return `${scheme}:${address}:${localPort}`;
+  return `${scheme}://${address}:${localPort}`;
 }
