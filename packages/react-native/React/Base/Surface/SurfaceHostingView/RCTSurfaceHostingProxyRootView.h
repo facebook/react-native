@@ -45,7 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Bridgeless mode initializer
  */
-- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface;
 
