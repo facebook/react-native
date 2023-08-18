@@ -94,19 +94,6 @@ RCT_EXTERN_C_END
     RCTRegisterModule([objc_name class]);                                       \
   }
 
-/**
- * To improve startup performance users may want to generate their module lists
- * at build time and hook the delegate to merge with the runtime list. This
- * macro takes the place of the above for those cases by omitting the +load
- * generation.
- *
- */
-#define RCT_EXPORT_PRE_REGISTERED_MODULE(js_name) \
-  +(NSString *)moduleName                         \
-  {                                               \
-    return @ #js_name;                            \
-  }
-
 // Implemented by RCT_EXPORT_MODULE
 + (NSString *)moduleName;
 

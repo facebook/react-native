@@ -249,7 +249,7 @@ async function testRNTestProject(circleCIArtifacts) {
 
   // need to do this here so that Android will be properly setup either way
   exec(
-    `echo "REACT_NATIVE_MAVEN_LOCAL_REPO=${mavenLocalPath}" >> android/gradle.properties`,
+    `echo "react.internal.mavenLocalRepo=${mavenLocalPath}" >> android/gradle.properties`,
   );
 
   // doing the pod install here so that it's easier to play around RNTestProject

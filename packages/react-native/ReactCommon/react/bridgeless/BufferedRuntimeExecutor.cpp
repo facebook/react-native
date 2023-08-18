@@ -30,7 +30,7 @@ void BufferedRuntimeExecutor::execute(Work &&callback) {
    * track the last known work index.
    */
   uint64_t newIndex = lastIndex_++;
-  std::lock_guard<std::mutex> guard(lock_);
+  std::scoped_lock guard(lock_);
   if (isBufferingEnabled_) {
     queue_.push({.index_ = newIndex, .work_ = std::move(callback)});
     return;
@@ -43,7 +43,7 @@ void BufferedRuntimeExecutor::execute(Work &&callback) {
 }
 
 void BufferedRuntimeExecutor::flush() {
-  std::lock_guard<std::mutex> guard(lock_);
+  std::scoped_lock guard(lock_);
   unsafeFlush();
   isBufferingEnabled_ = false;
 }

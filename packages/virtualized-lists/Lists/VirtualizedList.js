@@ -62,7 +62,6 @@ import {
   maxToRenderPerBatchOrDefault,
   onStartReachedThresholdOrDefault,
   onEndReachedThresholdOrDefault,
-  scrollEventThrottleOrDefault,
   windowSizeOrDefault,
 } from './VirtualizedListProps';
 
@@ -277,8 +276,21 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
     scrollRef.scrollTo({
       animated,
-      ...this._cartesianScrollOffset(offset),
+      ...this._scrollToParamsFromOffset(offset),
     });
+  }
+
+  _scrollToParamsFromOffset(offset: number): {x?: number, y?: number} {
+    const {horizontal, rtl} = this._orientation();
+    if (horizontal && rtl) {
+      // Add the visible length of the scrollview so that the offset is right-aligned
+      const cartOffset = this._listMetrics.cartesianOffset(
+        offset + this._scrollMetrics.visibleLength,
+      );
+      return horizontal ? {x: cartOffset} : {y: cartOffset};
+    } else {
+      return horizontal ? {x: offset} : {y: offset};
+    }
   }
 
   recordInteraction() {
@@ -1073,9 +1085,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
-      scrollEventThrottle: scrollEventThrottleOrDefault(
-        this.props.scrollEventThrottle,
-      ), // TODO: Android support
+      // iOS/macOS requires a non-zero scrollEventThrottle to fire more than a
+      // single notification while scrolling. This will otherwise no-op.
+      scrollEventThrottle: this.props.scrollEventThrottle ?? 0.0001,
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
           ? this.props.invertStickyHeaders
@@ -1481,39 +1493,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       : metrics.width;
   }
 
-  _flowRelativeScrollOffset(
-    metrics: $ReadOnly<{
-      x: number,
-      y: number,
-      ...
-    }>,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-      ...
-    }>,
-  ): number {
-    let offset = this._selectOffset(metrics);
-
-    const {horizontal, rtl} = this._orientation();
-    if (horizontal && rtl && Platform.OS !== 'ios') {
-      offset = this._selectLength(contentSize) - offset;
-    }
-
-    return offset;
-  }
-
-  _cartesianScrollOffset(offset: number): {x?: number, y?: number} {
-    const {horizontal, rtl} = this._orientation();
-    const normalizedOffset =
-      horizontal && rtl && Platform.OS !== 'ios'
-        ? this._listMetrics.getContentLength() - offset
-        : offset;
-
-    const cartOffset = this._listMetrics.cartesianOffset(normalizedOffset);
-    return horizontal ? {x: cartOffset} : {y: cartOffset};
-  }
-
   _selectOffset({x, y}: $ReadOnly<{x: number, y: number, ...}>): number {
     return this._orientation().horizontal ? x : y;
   }
@@ -1609,9 +1588,32 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    this._listMetrics.notifyListContentLayout({
+      layout: {width, height},
+      orientation: this._orientation(),
+    });
+
+    this._maybeScrollToInitialScrollIndex(width, height);
+
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEdgeReached();
+  };
+
+  /**
+   * Scroll to a specified `initialScrollIndex` prop after the ScrollView
+   * content has been laid out, if it is still valid. Only a single scroll is
+   * triggered throughout the lifetime of the list.
+   */
+  _maybeScrollToInitialScrollIndex(
+    contentWidth: number,
+    contentHeight: number,
+  ) {
     if (
-      width > 0 &&
-      height > 0 &&
+      contentWidth > 0 &&
+      contentHeight > 0 &&
       this.props.initialScrollIndex != null &&
       this.props.initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
@@ -1631,16 +1633,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       }
       this._hasTriggeredInitialScrollToIndex = true;
     }
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
-    }
-    this._listMetrics.notifyListContentLayout({
-      layout: {width, height},
-      orientation: this._orientation(),
-    });
-    this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEdgeReached();
-  };
+  }
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
    * coordinates relative to the child list.
@@ -1675,10 +1668,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     const timestamp = e.timeStamp;
     let visibleLength = this._selectLength(e.nativeEvent.layoutMeasurement);
     let contentLength = this._selectLength(e.nativeEvent.contentSize);
-    let offset = this._flowRelativeScrollOffset(
-      e.nativeEvent.contentOffset,
-      e.nativeEvent.contentSize,
-    );
+    let offset = this._offsetFromScrollEvent(e);
     let dOffset = offset - this._scrollMetrics.offset;
 
     if (this._isNestedWithSameOrientation()) {
@@ -1741,6 +1731,20 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._computeBlankness();
     this._scheduleCellsToRenderUpdate();
   };
+
+  _offsetFromScrollEvent(e: ScrollEvent): number {
+    const {contentOffset, contentSize, layoutMeasurement} = e.nativeEvent;
+    const {horizontal, rtl} = this._orientation();
+    if (Platform.OS === 'ios' || !(horizontal && rtl)) {
+      return this._selectOffset(contentOffset);
+    }
+
+    return (
+      this._selectLength(contentSize) -
+      (this._selectOffset(contentOffset) +
+        this._selectLength(layoutMeasurement))
+    );
+  }
 
   _scheduleCellsToRenderUpdate(opts?: {allowImmediateExecution?: boolean}) {
     const allowImmediateExecution = opts?.allowImmediateExecution ?? true;

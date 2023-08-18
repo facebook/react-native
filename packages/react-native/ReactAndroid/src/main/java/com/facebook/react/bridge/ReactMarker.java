@@ -193,8 +193,8 @@ public class ReactMarker {
       nativeLogMarker(name.name(), now);
 
       // Then send all cached native ReactMarkers
-      while (!sNativeReactMarkerQueue.isEmpty()) {
-        ReactMarkerRecord record = sNativeReactMarkerQueue.poll();
+      ReactMarkerRecord record;
+      while ((record = sNativeReactMarkerQueue.poll()) != null) {
         nativeLogMarker(record.getMarkerName(), record.getMarkerTime());
       }
     } else {

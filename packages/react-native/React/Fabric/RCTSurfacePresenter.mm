@@ -280,6 +280,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::enableMountHooks = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:disable_scroll_event_throttle_requirement")) {
+    CoreFeatures::disableScrollEventThrottleRequirement = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

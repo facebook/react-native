@@ -9,11 +9,11 @@
 
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
-#include <react/renderer/graphics/ColorComponents.h>
+#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 
-inline ColorComponents parsePlatformColor(
+inline SharedColor parsePlatformColor(
     const PropsParserContext &context,
     const RawValue &value) {
   float alpha = 0;
@@ -21,7 +21,7 @@ inline ColorComponents parsePlatformColor(
   float green = 0;
   float blue = 0;
 
-  return {red, green, blue, alpha};
+  return {colorFromComponents({red, green, blue, alpha})};
 }
 
 } // namespace facebook::react

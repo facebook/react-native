@@ -2,6 +2,33 @@
 
 This file contains all changelogs for latest releases, from 0.70.0 onward. Please check out the other `CHANGELOG-*.md` files for previous versions.
 
+## v0.72.4
+
+### Added
+
+#### Android specific
+
+- Native part of fixing ANR when having an inverted FlatList on android API 33+ ([6d206a3f54](https://github.com/facebook/react-native/commit/6d206a3f54725f7f53692222293a9d1e58b11ca4) by [@hannojg](https://github.com/hannojg))
+- For targeting SDK 34 - Added RECEIVER_EXPORTED/RECEIVER_NOT_EXPORTED flag support in DevSupportManagerBase ([177d97d8ea](https://github.com/facebook/react-native/commit/177d97d8ea962bdd4dad8fcf0efb04a307f25000) by [@apuruni](https://github.com/apuruni))
+
+### Changed
+
+- Bump cli and metro ([40ea8ffcc7](https://github.com/facebook/react-native/commit/40ea8ffcc7ba3ed0969405e9a48b75d188487d92) by [@lunaleaps](https://github.com/lunaleaps))
+- Hermes bump for hermes-2023-08-07-RNv0.72.4-813b2def12bc9df026 ([e9ea926ba3](https://github.com/facebook/react-native/commit/e9ea926ba3462a8d771cfcc5663c0d6fb50e2172) by Luna Wei)
+- Bump CLI to 11.3.6 ([a3cfdf0a08](https://github.com/facebook/react-native/commit/a3cfdf0a08237a63736b9d576641a4ab3cf720ba) by [@szymonrybczak](https://github.com/szymonrybczak))
+
+### Fixed
+
+- Allow string `transform` style in TypeScript ([2558c3d4f5](https://github.com/facebook/react-native/commit/2558c3d4f56776699602b116aff8c22b8bfa176a) by [@NickGerleman](https://github.com/NickGerleman))
+- Fix missing Platform in VirtualizedList ([7aa8cd55be](https://github.com/facebook/react-native/commit/7aa8cd55be97a0f26fe01aa9f50d774ac52114aa) by Luna Wei)
+- Mount react devtools overlay only when devtools are attached ([03187b68e5](https://github.com/facebook/react-native/commit/03187b68e589c94dc10ed4f763b54923b7487f23) by [@hoxyq](https://github.com/hoxyq))
+
+#### Android specific
+
+- Remove option to paste rich text from Android EditText context menu ([b1ceea456d](https://github.com/facebook/react-native/commit/b1ceea456d1cdc00c723582d00e5ae585f066b55) by [@fabriziobertoglio1987](https://github.com/fabriziobertoglio1987))
+- Fixed ScrollView not responding to Keyboard events when nested inside a KeyboardAvoidingView ([c616148a05](https://github.com/facebook/react-native/commit/c616148a05c00728b80d2fd9dcbd6f15d08a2dfa) by [@andreacassani](https://github.com/andreacassani))
+- ANR when having an inverted FlatList on android API 33+ ([3dd816c6b7](https://github.com/facebook/react-native/commit/3dd816c6b7bcd9cc4c21199f0b645755fb97f50f) by [@hannojg](https://github.com/hannojg))
+
 ## v0.72.3
 
 ### Fixed

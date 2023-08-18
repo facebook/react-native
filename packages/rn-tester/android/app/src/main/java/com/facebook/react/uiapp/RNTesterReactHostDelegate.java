@@ -21,8 +21,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridgeless.BindingsInstaller;
 import com.facebook.react.bridgeless.JSCInstance;
 import com.facebook.react.bridgeless.JSEngineInstance;
-import com.facebook.react.bridgeless.ReactHost;
 import com.facebook.react.bridgeless.ReactHostDelegate;
+import com.facebook.react.bridgeless.ReactHostImpl;
 import com.facebook.react.bridgeless.hermes.HermesInstance;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.config.ReactFeatureFlags;
@@ -45,24 +45,24 @@ import java.util.Map;
 @UnstableReactNativeAPI
 public class RNTesterReactHostDelegate implements ReactHostDelegate {
   private final Context mContext;
-  private @Nullable ReactHost mReactHost;
+  private @Nullable ReactHostImpl mReactHost;
   private @Nullable List<ReactPackage> mReactPackages;
 
   RNTesterReactHostDelegate(Context context) {
     this.mContext = context;
   }
 
-  public void setReactHost(ReactHost reactHost) {
+  public void setReactHost(ReactHostImpl reactHost) {
     mReactHost = reactHost;
   }
 
   @Override
-  public String getJSMainModulePath() {
+  public String getJsMainModulePath() {
     return "js/RNTesterApp.android";
   }
 
   @Override
-  public JSBundleLoader getJSBundleLoader() {
+  public JSBundleLoader getJsBundleLoader() {
     return JSBundleLoader.createAssetLoader(mContext, "assets://RNTesterApp.android.bundle", true);
   }
 
@@ -78,7 +78,7 @@ public class RNTesterReactHostDelegate implements ReactHostDelegate {
   }
 
   @Override
-  public JSEngineInstance getJSEngineInstance() {
+  public JSEngineInstance getJsEngineInstance() {
     if (mReactHost.getJSEngineResolutionAlgorithm() == JSEngineResolutionAlgorithm.JSC) {
       return new JSCInstance();
     } else {

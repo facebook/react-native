@@ -148,7 +148,7 @@ static void testShadowNodeTreeLifeCycle(
 
         // There are some issues getting `getDebugDescription` to compile
         // under test on Android for now.
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
         LOG(ERROR) << "Shadow Tree before: \n"
                    << currentRootNode->getDebugDescription();
         LOG(ERROR) << "Shadow Tree after: \n"
@@ -300,7 +300,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
         // There are some issues getting `getDebugDescription` to compile
         // under test on Android for now.
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
         LOG(ERROR) << "Shadow Tree before: \n"
                    << currentRootNode->getDebugDescription();
         LOG(ERROR) << "Shadow Tree after: \n"

@@ -442,7 +442,8 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 
   NSTimeInterval now = CACurrentMediaTime();
-  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+  if (CoreFeatures::disableScrollEventThrottleRequirement || (_lastScrollEventDispatchTime == 0) ||
+      (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
     _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
       static_cast<ScrollViewEventEmitter const &>(*_eventEmitter).onScroll([self _scrollViewMetrics]);
@@ -674,16 +675,16 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    // Adjusting offset.x in right to left layout direction.
+    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
   if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     return;
   }
 
   [self _forceDispatchNextScrollEvent];
-
-  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
-    // Adjusting offset.x in right to left layout direction.
-    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
-  }
 
   [_scrollView setContentOffset:offset animated:animated];
 

@@ -6,11 +6,11 @@
  */
 
 plugins {
-    id("com.android.library")
-    id("com.facebook.react")
-    id("de.undercouch.download")
     id("maven-publish")
-    id("org.jetbrains.kotlin.android")
+    id("com.facebook.react")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.download)
+    alias(libs.plugins.kotlin.android)
 }
 
 import com.facebook.react.tasks.internal.*
@@ -60,6 +60,15 @@ def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
 // reduce the size of the React Native published .AAR.
 def skipPrefabPublishing = System.getenv("REACT_NATIVE_SKIP_PREFAB") != null
 def prefabHeadersDir = project.file("$buildDir/prefab-headers")
+
+// Native versions which are defined inside the version catalog (libs.versions.toml)
+def BOOST_VERSION = libs.versions.boost.get()
+def DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+def FMT_VERSION = libs.versions.fmt.get()
+def FOLLY_VERSION = libs.versions.folly.get()
+def GLOG_VERSION = libs.versions.glog.get()
+def LIBEVENT_VERSION = libs.versions.libevent.get()
+def GTEST_VERSION = libs.versions.gtest.get()
 
 final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTask) {
     dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
@@ -118,7 +127,10 @@ final def preparePrefab = tasks.register("preparePrefab", PreparePrefabHeadersTa
             ),
             new PrefabPreprocessingEntry(
                 "rrc_view",
-                new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/")
+                [
+                    new Pair("../ReactCommon/react/renderer/components/view/", "react/renderer/components/view/"),
+                    new Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
+                ]
             ),
             new PrefabPreprocessingEntry(
                 "rrc_legacyviewmanagerinterop",
@@ -380,6 +392,13 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadGtest)
 }
 
+// As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
+// This is not the case for users of React Native, as we ship a compiled version of the codegen.
+final def buildCodegenCLITask = tasks.register('buildCodegenCLI', BuildCodegenCLITask) {
+    it.codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
+    it.bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath"))
+}
+
 /**
  * Finds the path of the installed npm package with the given name using Node's
  * module resolution algorithm, which searches "node_modules" directories up to
@@ -431,6 +450,11 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def enableWarningsAsErrors() {
+    def value = project.getProperties().get("enableWarningsAsErrors")
+    return value != null ? value : false
+}
+
 task packageReactNdkLibsForBuck(type: Copy) {
     dependsOn("mergeDebugNativeLibs")
     // Shared libraries (.so) are copied from the merged_native_libs folder instead
@@ -453,8 +477,8 @@ repositories {
 }
 
 android {
-    compileSdk 33
-    buildToolsVersion = "33.0.1"
+    compileSdk libs.versions.compileSdk.get().toInteger()
+    buildToolsVersion = libs.versions.buildTools.get()
     namespace "com.facebook.react"
 
     // Used to override the NDK path/version on internal CI or by allowing
@@ -467,18 +491,20 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
         // Using '-Xjvm-default=all' to generate default java methods for interfaces
         freeCompilerArgs = ['-Xjvm-default=all']
+        // Using -PenableWarningsAsErrors=true prop to enable allWarningsAsErrors
+        kotlinOptions.allWarningsAsErrors = enableWarningsAsErrors()
     }
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 33
+        minSdk = libs.versions.minSdk.get().toInteger()
+        targetSdk = libs.versions.targetSdk.get().toInteger()
         versionCode(1)
         versionName("1.0")
 
@@ -569,9 +595,20 @@ android {
         }
     }
 
-    preBuild.dependsOn(prepareJSC, prepareBoost, prepareDoubleConversion, prepareFmt, prepareFolly, prepareGlog, prepareLibevent, prepareGtest)
-    preBuild.dependsOn("generateCodegenArtifactsFromSchema")
-    preBuild.dependsOn(preparePrefab)
+    preBuild.dependsOn(
+            buildCodegenCLITask,
+            generateCodegenArtifactsFromSchema,
+            prepareBoost,
+            prepareDoubleConversion,
+            prepareFmt,
+            prepareFolly,
+            prepareGlog,
+            prepareGtest,
+            prepareJSC,
+            prepareLibevent,
+            preparePrefab
+    )
+    generateCodegenSchemaFromJavaScript.dependsOn(buildCodegenCLITask)
 
     sourceSets.main {
         res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
@@ -711,44 +748,40 @@ android {
 }
 
 dependencies {
-    api("androidx.appcompat:appcompat-resources:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
-    api("androidx.autofill:autofill:${ANDROIDX_AUTOFILL_VERSION}")
-    api("androidx.swiperefreshlayout:swiperefreshlayout:${SWIPEREFRESH_LAYOUT_VERSION}")
-    api("androidx.tracing:tracing:${ANDROIDX_TRACING_VERSION}")
+    api(libs.androidx.appcompat)
+    api(libs.androidx.appcompat.resources)
+    api(libs.androidx.autofill)
+    api(libs.androidx.swiperefreshlayout)
+    api(libs.androidx.tracing)
 
-    api("com.facebook.fbjni:fbjni:${FBJNI_VERSION}")
-    api("com.facebook.fresco:fresco:${FRESCO_VERSION}")
-    api("com.facebook.fresco:middleware:${FRESCO_VERSION}")
-    api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
-    api("com.facebook.fresco:ui-common:${FRESCO_VERSION}")
-    api("com.facebook.infer.annotation:infer-annotation:${INFER_ANNOTATIONS_VERSION}")
-    api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
-    api("com.facebook.yoga:proguard-annotations:${PROGUARD_ANNOTATIONS_VERSION}")
+    api(libs.fbjni)
+    api(libs.fresco)
+    api(libs.fresco.middleware)
+    api(libs.fresco.imagepipeline.okhttp3)
+    api(libs.fresco.ui.common)
+    api(libs.infer.annotation)
+    api(libs.soloader)
+    api(libs.yoga.proguard.annotations)
 
-    api("com.google.code.findbugs:jsr305:${JSR305_VERSION}")
-    api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
-    api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
-    api("com.squareup.okio:okio:${OKIO_VERSION}")
-    api("javax.inject:javax.inject:${JAVAX_INJECT_VERSION}")
+    api(libs.jsr305)
+    api(libs.okhttp3.urlconnection)
+    api(libs.okhttp3)
+    api(libs.okio)
+    api(libs.javax.inject)
 
     // It's up to the consumer to decide if hermes should be included or not.
     // Therefore hermes-engine is a compileOnly dependency.
     compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
-    testImplementation("junit:junit:${JUNIT_VERSION}")
-    testImplementation("org.assertj:assertj-core:${ASSERTJ_VERSION}")
-    testImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
-    testImplementation("org.powermock:powermock-api-mockito2:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-classloading-xstream:${POWERMOCK_VERSION}")
-    testImplementation("org.powermock:powermock-module-junit4-rule:${POWERMOCK_VERSION}")
-    testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
-    testImplementation("com.thoughtworks.xstream:xstream:1.4.20")
+    testImplementation(libs.junit)
+    testImplementation(libs.assertj)
+    testImplementation(libs.mockito)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.thoughtworks)
 
-    androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation("androidx.test:runner:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("androidx.test:rules:${ANDROIDX_TEST_VERSION}")
-    androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.mockito)
 }
 
 react {
@@ -759,28 +792,7 @@ react {
 }
 
 kotlin {
-    // We intentionally don't build on JDK 17 as our tests are broken due to Mockito/PowerMock
-    // not running well on JDK 17.
-    jvmToolchain(11)
-}
-
-tasks.withType(Test).all {
-    // We add --add-opens flags to make sure we can run PowerMock tests on JDK >= 17
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-        jvmArgs += [
-            "--illegal-access=permit",
-            "--add-opens=java.base/java.lang=ALL-UNNAMED",
-            "--add-opens=java.base/java.xml.internal=ALL-UNNAMED",
-            "--add-opens=java.base/java.util=ALL-UNNAMED",
-            "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
-            "--add-opens=java.base/java.net=ALL-UNNAMED",
-            "--add-opens=java.base/java.security=ALL-UNNAMED",
-            "--add-opens=java.base/java.io=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio=ALL-UNNAMED",
-            "--add-opens=java.base/java.nio.charset=ALL-UNNAMED",
-            "--add-opens=java.base/jdk.xml.internal=ALL-UNNAMED",
-        ]
-    }
+    jvmToolchain(17)
 }
 
 apply plugin: "org.jetbrains.kotlin.android"

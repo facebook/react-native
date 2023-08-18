@@ -398,6 +398,13 @@ RCT_CUSTOM_VIEW_PROPERTY(collapsable, BOOL, RCTView)
   // filtered by view configs.
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
+{
+  // Property is only to be used in the new renderer.
+  // It is necessary to add it here, otherwise it gets
+  // filtered by view configs.
+}
+
 #define RCT_VIEW_BORDER_PROPERTY(SIDE)                                                               \
   RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Width, float, RCTView)                                      \
   {                                                                                                  \

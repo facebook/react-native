@@ -660,6 +660,28 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
+inline void fromRawValue(
+    const PropsParserContext & /*context*/,
+    const RawValue &value,
+    LayoutConformance &result) {
+  result = LayoutConformance::Classic;
+  react_native_expect(value.hasType<std::string>());
+  if (!value.hasType<std::string>()) {
+    return;
+  }
+  auto stringValue = (std::string)value;
+  if (stringValue == "classic") {
+    result = LayoutConformance::Classic;
+    return;
+  }
+  if (stringValue == "strict") {
+    result = LayoutConformance::Strict;
+    return;
+  }
+  LOG(ERROR) << "Could not parse LayoutConformance:" << stringValue;
+  react_native_expect(false);
+}
+
 inline std::string toString(
     const std::array<float, yoga::enums::count<YGDimension>()> &dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " +
@@ -836,6 +858,17 @@ inline std::string toString(const YGStyle::Edges &value) {
   }
 
   return "{" + result + "}";
+}
+
+inline std::string toString(const LayoutConformance &value) {
+  switch (value) {
+    case LayoutConformance::Undefined:
+      return "undefined";
+    case LayoutConformance::Classic:
+      return "classic";
+    case LayoutConformance::Strict:
+      return "strict";
+  }
 }
 
 } // namespace facebook::react

@@ -112,7 +112,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes prior invocations of
-   * {@link setJSBundleFile} and {@link setBundleAssetName}.
+   * {@link #setJSBundleFile} and {@link #setBundleAssetName}.
    *
    * <p>Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
    */

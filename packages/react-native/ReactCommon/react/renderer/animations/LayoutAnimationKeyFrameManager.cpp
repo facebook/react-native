@@ -122,7 +122,7 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
       parseLayoutAnimationConfig((folly::dynamic)config);
 
   if (layoutAnimationConfig) {
-    std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+    std::scoped_lock lock(currentAnimationMutex_);
 
     uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
         -1,
@@ -151,12 +151,12 @@ void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
 }
 
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
-  std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+  std::scoped_lock lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
 }
 
 void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
-  std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+  std::scoped_lock lock(surfaceIdsToStopMutex_);
   surfaceIdsToStop_.insert(surfaceId);
 }
 
@@ -245,7 +245,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     // Are we animating this list of mutations?
     std::optional<LayoutAnimation> currentAnimation{};
     {
-      std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+      std::scoped_lock lock(currentAnimationMutex_);
       if (currentAnimation_) {
         currentAnimation = std::move(currentAnimation_);
         currentAnimation_.reset();
@@ -1072,13 +1072,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   // Signal to delegate if all animations are complete, or if we were not
   // animating anything and now some animation exists.
   if (inflightAnimationsExistInitially && inflightAnimations_.empty()) {
-    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
     if (layoutAnimationStatusDelegate_ != nullptr) {
       layoutAnimationStatusDelegate_->onAllAnimationsComplete();
     }
   } else if (
       !inflightAnimationsExistInitially && !inflightAnimations_.empty()) {
-    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
     if (layoutAnimationStatusDelegate_ != nullptr) {
       layoutAnimationStatusDelegate_->onAnimationStarted();
     }
@@ -1095,7 +1095,7 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
     LayoutAnimationStatusDelegate *delegate) const {
-  std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+  std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
   layoutAnimationStatusDelegate_ = delegate;
 }
 
@@ -1634,7 +1634,7 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
   if (inflightAnimationsExistInitially) {
     butter::set<SurfaceId> surfaceIdsToStop{};
     {
-      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+      std::scoped_lock lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;
       surfaceIdsToStop_.clear();
     }
