@@ -80,6 +80,8 @@ RCT_EXPORT_MODULE()
       self->_presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
       UIViewController* presentingViewController;
+      // pageSheet and formSheet presentation style animate the presented view so we need to use the last presented view controller
+      // For other presentation styles we use the new window
       if (modalHostView.presentationStyle == UIModalPresentationPageSheet || modalHostView.presentationStyle == UIModalPresentationFormSheet) {
         UIViewController *lastPresentedViewController = RCTKeyWindow().rootViewController;
         UIViewController *presentedViewController = nil;
@@ -118,6 +120,8 @@ RCT_EXPORT_MODULE()
     if (self->_dismissalBlock) {
       self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
+      // Will be true for pageSheet and formSheet presentation styles
+      // We dismiss the nested modal and then dismiss the current modal
       if (viewController.presentedViewController != nil && [viewController.presentedViewController isKindOfClass:[RCTModalHostViewController class]]) {
         RCTModalHostViewController* presentedModalViewController = (RCTModalHostViewController *)viewController.presentedViewController;
         dispatch_block_t childModalCompletionBlock = ^{
