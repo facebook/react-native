@@ -1014,7 +1014,7 @@ jobs:
           name: Run E2E tests
           command: |
             cd packages/rn-tester-e2e
-            yarn test-e2e android
+            node ../../scripts/circleci/run_with_retry.js 3 "yarn test-e2e android"
 
   # -------------------------
   #    JOBS: Build Android
