@@ -17,9 +17,9 @@ const TARGET_NODE_VERSION = '18';
 
 const config /*: BabelCoreOptions */ = {
   presets: [
-    '@babel/preset-flow',
+    require.resolve('@babel/preset-flow'),
     [
-      '@babel/preset-env',
+      require.resolve('@babel/preset-env'),
       {
         targets: {
           node: TARGET_NODE_VERSION,
@@ -29,13 +29,13 @@ const config /*: BabelCoreOptions */ = {
   ],
   plugins: [
     [
-      'transform-define',
+      require.resolve('babel-plugin-transform-define'),
       {
         'process.env.BUILD_EXCLUDE_BABEL_REGISTER': true,
       },
     ],
     [
-      'minify-dead-code-elimination',
+      require.resolve('babel-plugin-minify-dead-code-elimination'),
       {keepFnName: true, keepFnArgs: true, keepClassName: true},
     ],
   ],
