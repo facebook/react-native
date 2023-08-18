@@ -1038,4 +1038,69 @@ describe('ListMetricsAggregator', () => {
 
     expect(listMetrics.getCellOffsetApprox(2.5, props)).toEqual(37.5);
   });
+
+  it('remembers most recent content length', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: false, rtl: false};
+
+    expect(listMetrics.hasContentLength()).toBe(false);
+    expect(listMetrics.getContentLength()).toBe(0);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 10, width: 20},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(10);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 15, width: 25},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(15);
+  });
+
+  it('remembers most recent horizontal content length', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: false};
+
+    expect(listMetrics.hasContentLength()).toBe(false);
+    expect(listMetrics.getContentLength()).toBe(0);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 10, width: 20},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(20);
+
+    listMetrics.notifyListContentLayout({
+      layout: {height: 15, width: 25},
+      orientation,
+    });
+    expect(listMetrics.getContentLength()).toBe(25);
+  });
+
+  it('requires contentLength to resolve RTL metrics', () => {
+    const listMetrics = new ListMetricsAggregator();
+    const orientation = {horizontal: true, rtl: true};
+
+    const props: CellMetricProps = {
+      data: [1, 2, 3, 4, 5],
+      getItemCount: () => nullthrows(props.data).length,
+      getItem: (i: number) => nullthrows(props.data)[i],
+    };
+
+    listMetrics.notifyCellLayout({
+      cellIndex: 0,
+      cellKey: '0',
+      orientation,
+      layout: {
+        height: 10,
+        width: 5,
+        x: 0,
+        y: 0,
+      },
+    });
+
+    expect(() => listMetrics.getCellMetrics(0, props)).toThrow();
+  });
 });
