@@ -163,10 +163,13 @@ def use_react_native! (
 
   pod 'React-Codegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
 
-  if fabric_enabled
-    checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
-    setup_fabric!(:react_native_path => prefix, new_arch_enabled: new_arch_enabled)
-  else
+  # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
+  # If the New Arch is turned off, we will use the Old Renderer, though.
+  # RNTester always installed Fabric, this change is required to make the template work.
+  setup_fabric!(:react_native_path => prefix)
+  checkAndGenerateEmptyThirdPartyProvider!(prefix, new_arch_enabled)
+
+  if !fabric_enabled
     relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
     build_codegen!(prefix, relative_installation_root)
   end
