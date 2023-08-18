@@ -40,7 +40,8 @@
     "update-lock": "npx yarn-deduplicate"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "tools/*"
   ],
   "peerDependencies": {
     "react": "18.2.0"
