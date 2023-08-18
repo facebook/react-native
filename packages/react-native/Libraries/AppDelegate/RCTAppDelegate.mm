@@ -8,7 +8,7 @@
 #import "RCTAppDelegate.h"
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTRootView.h>
-#import <React/RCTSurfacePresenterBridgeAdapter.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTLegacyInteropComponents.h"
@@ -22,6 +22,7 @@
 #import <React/RCTLegacyViewManagerInteropComponentView.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTContextContainerHandling.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>

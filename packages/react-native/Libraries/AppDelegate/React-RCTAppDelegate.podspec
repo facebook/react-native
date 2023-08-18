@@ -93,7 +93,6 @@ Pod::Spec.new do |s|
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
   s.dependency "React-runtimescheduler"
-  s.dependency "React-RCTFabric"
 
   if is_new_arch_enabled
     s.dependency "React-BridgelessCore"
@@ -111,6 +110,7 @@ Pod::Spec.new do |s|
 
   if is_new_arch_enabled
     s.dependency "React-Fabric"
+    s.dependency "React-RCTFabric"
     s.dependency "React-graphics"
     s.dependency "React-utils"
     s.dependency "React-debug"

@@ -15,6 +15,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTImageLoaderWithAttributionProtocol.h>
+#import <React/RCTRuntimeExecutorFromBridge.h>
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTSurfacePresenterStub.h>
 
@@ -40,43 +41,6 @@ static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
   contextContainer->insert("Bridge", wrapManagedObjectWeakly(bridge));
   contextContainer->insert("RCTImageLoader", wrapManagedObject((id<RCTImageLoaderWithAttributionProtocol>)imageLoader));
   return contextContainer;
-}
-
-RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
-{
-  RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil.");
-
-  auto bridgeWeakWrapper = wrapManagedObjectWeakly([bridge batchedBridge] ?: bridge);
-
-  RuntimeExecutor runtimeExecutor = [bridgeWeakWrapper](
-                                        std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
-    RCTBridge *bridge = unwrapManagedObjectWeakly(bridgeWeakWrapper);
-
-    RCTAssert(bridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of scheduling a call.");
-
-    [bridge invokeAsync:[bridgeWeakWrapper, callback = std::move(callback)]() {
-      RCTCxxBridge *batchedBridge = (RCTCxxBridge *)unwrapManagedObjectWeakly(bridgeWeakWrapper);
-
-      RCTAssert(batchedBridge, @"RCTRuntimeExecutorFromBridge: Bridge must not be nil at the moment of invocation.");
-
-      if (!batchedBridge) {
-        return;
-      }
-
-      auto runtime = (facebook::jsi::Runtime *)(batchedBridge.runtime);
-
-      RCTAssert(
-          runtime, @"RCTRuntimeExecutorFromBridge: Bridge must have a valid jsi::Runtime at the moment of invocation.");
-
-      if (!runtime) {
-        return;
-      }
-
-      callback(*runtime);
-    }];
-  };
-
-  return runtimeExecutor;
 }
 
 @implementation RCTSurfacePresenterBridgeAdapter {
