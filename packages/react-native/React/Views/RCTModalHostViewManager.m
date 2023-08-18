@@ -101,22 +101,42 @@ RCT_EXPORT_MODULE()
   });
 }
 
-- (void)dismissModalHostView:(RCTModalHostView *)modalHostView
+- (void)dismissModalHostViewWithCompletion:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
-                    animated:(BOOL)animated
+                    animated:(BOOL)animated completion:(void (^)(void))completion
 {
   dispatch_block_t completionBlock = ^{
     if (modalHostView.identifier) {
       [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
+    if (completion) {
+      completion();
+    }
+    modalHostView.modalWindow = nil;
   };
   dispatch_async(dispatch_get_main_queue(), ^{
     if (self->_dismissalBlock) {
       self->_dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
-      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+      if (viewController.presentedViewController != nil && [viewController.presentedViewController isKindOfClass:[RCTModalHostViewController class]]) {
+        RCTModalHostViewController* presentedModalViewController = (RCTModalHostViewController *)viewController.presentedViewController;
+        dispatch_block_t childModalCompletionBlock = ^{
+          [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+        };
+
+        [presentedModalViewController.modalHostView dismissModalViewControllerWithCompletion: childModalCompletionBlock];
+      } else {
+        [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+      }
     }
   });
+}
+
+- (void)dismissModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated
+{
+  [self dismissModalHostViewWithCompletion:modalHostView withViewController:viewController animated:animated completion:nil];
 }
 
 - (RCTShadowView *)shadowView

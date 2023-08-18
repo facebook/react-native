@@ -6,10 +6,13 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "RCTModalHostView.h"
 
 @interface RCTModalHostViewController : UIViewController
 
 @property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds);
+
+@property RCTModalHostView* modalHostView;
 
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
 

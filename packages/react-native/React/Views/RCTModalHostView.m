@@ -40,6 +40,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
     _modalViewController.view = containerView;
     _touchHandler = [[RCTTouchHandler alloc] initWithBridge:bridge];
     _isPresented = NO;
+    _modalViewController.modalHostView = self;
 
     __weak typeof(self) weakSelf = self;
     _modalViewController.boundsDidChangeBlock = ^(CGRect newBounds) {
@@ -116,8 +117,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : coder)
 
 - (void)dismissModalViewController
 {
+  [self dismissModalViewControllerWithCompletion: nil];
+}
+
+- (void)dismissModalViewControllerWithCompletion:(void (^)(void))completion
+{
   if (_isPresented) {
-    [_delegate dismissModalHostView:self withViewController:_modalViewController animated:[self hasAnimationType]];
+    [_delegate dismissModalHostViewWithCompletion:self withViewController:_modalViewController animated:[self hasAnimationType] completion: completion];
     _isPresented = NO;
   }
 }
