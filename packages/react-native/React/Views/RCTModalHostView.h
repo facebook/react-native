@@ -36,6 +36,7 @@
 
 @property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
 @property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
+@property (nonatomic, strong) UIWindow *modalWindow;
 
 // Fabric only
 @property (nonatomic, copy) RCTDirectEventBlock onDismiss;

@@ -79,9 +79,24 @@ RCT_EXPORT_MODULE()
     if (self->_presentationBlock) {
       self->_presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
     } else {
-      [[modalHostView reactViewController] presentViewController:viewController
-                                                        animated:animated
-                                                      completion:completionBlock];
+      UIViewController* presentingViewController;
+      if (modalHostView.presentationStyle == UIModalPresentationPageSheet || modalHostView.presentationStyle == UIModalPresentationFormSheet) {
+        UIViewController *lastPresentedViewController = RCTKeyWindow().rootViewController;
+        UIViewController *presentedViewController = nil;
+        while (lastPresentedViewController != nil) {
+          presentedViewController = lastPresentedViewController;
+          lastPresentedViewController = lastPresentedViewController.presentedViewController;
+        }
+        presentingViewController = presentedViewController;
+      } else {
+        modalHostView.modalWindow = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+        modalHostView.modalWindow.windowLevel = UIWindowLevelAlert;
+        UIViewController *newViewController = [[UIViewController alloc] init];
+        modalHostView.modalWindow.rootViewController = newViewController;
+        [modalHostView.modalWindow makeKeyAndVisible];
+        presentingViewController = newViewController;
+      }
+      [presentingViewController presentViewController:viewController animated:animated completion:completionBlock];
     }
   });
 }
