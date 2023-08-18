@@ -139,7 +139,9 @@ static int YGJNILogFunc(
     void* /*layoutContext*/,
     const char* format,
     va_list args) {
-  int result = vsnprintf(NULL, 0, format, args);
+  va_list argsCopy;
+  va_copy(argsCopy, args);
+  int result = vsnprintf(nullptr, 0, format, argsCopy);
   std::vector<char> buffer(1 + result);
   vsnprintf(buffer.data(), buffer.size(), format, args);
 
