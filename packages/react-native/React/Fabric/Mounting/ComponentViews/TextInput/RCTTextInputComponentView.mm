@@ -594,21 +594,19 @@ using namespace facebook::react;
   }
   UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
   NSInteger oldTextLength = _backedTextInputView.attributedText.string.length;
-
-  if (selectedRange.empty) {
-    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                          toPosition:selectedRange.start];
-    if (attributedString.string.length > offsetStart - 1) {
-      NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(offsetStart - 1, 1)];
-      NSInteger offsetFromEnd = oldTextLength - offsetStart;
-      if (offsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
-        _backedTextInputView.scrollEnabled = NO;
-      }
+  bool previousScrollEnabled = _backedTextInputView.scrollEnabled;
+  NSInteger previousOffsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                        toPosition:selectedRange.start];
+  if (previousScrollEnabled == YES && attributedString.string.length >= previousOffsetStart) {
+    NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(previousOffsetStart - 1, 1)];
+    NSInteger previousOffsetFromEnd = oldTextLength - previousOffsetStart;
+    if (previousOffsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
+      _backedTextInputView.scrollEnabled = NO;
     }
   }
 
   _backedTextInputView.attributedText = attributedString;
-  if (_backedTextInputView.scrollEnabled == NO) {
+  if (_backedTextInputView.scrollEnabled == NO && previousScrollEnabled) {
     _backedTextInputView.scrollEnabled = YES;
   }
 
