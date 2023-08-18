@@ -300,6 +300,9 @@ class JSCRuntime : public jsi::Runtime {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0
 #define _JSC_NO_ARRAY_BUFFERS
 #endif
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 160400
+#define _JSC_HAS_INSPECTABLE
+#endif
 #endif
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_11
@@ -397,7 +400,7 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 #endif
 {
 #ifndef NDEBUG
-#ifdef TARGET_OS_MAC
+#ifdef _JSC_HAS_INSPECTABLE
   if (__builtin_available(macOS 13.3, iOS 16.4, tvOS 16.4, *)) {
     JSGlobalContextSetInspectable(ctx_, true);
   }
