@@ -9,6 +9,7 @@
 #include <ReactCommon/SchedulerPriority.h>
 #include "SchedulerPriorityUtils.h"
 #include "primitives.h"
+#include "RuntimeScheduler.h"
 
 #include <chrono>
 #include <memory>
