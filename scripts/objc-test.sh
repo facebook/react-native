@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -55,11 +55,29 @@ waitForPackager() {
   echo "Packager is ready!"
 }
 
+waitForWebSocketServer() {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  until curl -s http://localhost:5555 | grep "Upgrade Required" -q; do
+    if (( attempt_num == max_attempts )); then
+      echo "WebSocket Server did not respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "WebSocket Server did not respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+
+  echo "WebSocket Server is ready!"
+}
+
 runTests() {
   # shellcheck disable=SC1091
-  source "./scripts/.tests.env"
+  source "$ROOT/scripts/.tests.env"
   xcodebuild build test \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
@@ -68,59 +86,66 @@ runTests() {
 
 buildProject() {
   xcodebuild build \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator
 }
 
-xcprettyFormat() {
+xcbeautifyFormat() {
   if [ "$CI" ]; then
     # Circle CI expects JUnit reports to be available here
     REPORTS_DIR="$HOME/react-native/reports/junit"
   else
-    THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+    THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 
     # Write reports to the react-native root dir
     REPORTS_DIR="$THIS_DIR/../build/reports"
   fi
 
-  xcpretty --report junit --output "$REPORTS_DIR/ios/results.xml"
+  xcbeautify --report junit --report-path "$REPORTS_DIR/ios/results.xml"
 }
 
-preloadBundles() {
-  # Preload the RNTesterApp bundle for better performance in integration tests
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+preloadBundlesRNIntegrationTests() {
+  # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
+preloadBundlesRNTester() {
+  # Preload RNTesterApp bundles (packages/rn-tester/)
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+}
+
 main() {
-  cd "$ROOT" || exit
+  cd "$ROOT/packages/rn-tester" || exit
 
   # If first argument is "test", actually start the packager and run tests.
   # Otherwise, just build RNTester and exit
   if [ "$1" = "test" ]; then
 
+    # Start the WebSocket test server
+    echo "Launch WebSocket Server"
+    sh "./IntegrationTests/launchWebSocketServer.sh" &
+    waitForWebSocketServer
+
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
-    # Start the WebSocket test server
-    open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
-
     waitForPackager
-    preloadBundles
+    preloadBundlesRNTester
+    preloadBundlesRNIntegrationTests
 
     # Build and run tests.
-    if [ -x "$(command -v xcpretty)" ]; then
-      runTests | xcprettyFormat && exit "${PIPESTATUS[0]}"
+    if [ -x "$(command -v xcbeautify)" ]; then
+      runTests | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
     else
-      echo 'Warning: xcpretty is not installed. Install xcpretty to generate JUnit reports.'
+      echo 'Warning: xcbeautify is not installed. Install xcbeautify to generate JUnit reports.'
       runTests
     fi
   else
     # Build without running tests.
-    if [ -x "$(command -v xcpretty)" ]; then
-      buildProject | xcprettyFormat && exit "${PIPESTATUS[0]}"
+    if [ -x "$(command -v xcbeautify)" ]; then
+      buildProject | xcbeautifyFormat && exit "${PIPESTATUS[0]}"
     else
       buildProject
     fi

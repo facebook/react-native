@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,7 @@ const nullthrows = require('nullthrows');
 import type {SchemaType} from './CodegenSchema';
 
 function getErrors(schema: SchemaType): $ReadOnlyArray<string> {
-  const errors = new Set();
+  const errors = new Set<string>();
 
   // Map of component name -> Array of module names
   const componentModules: Map<string, Array<string>> = new Map();

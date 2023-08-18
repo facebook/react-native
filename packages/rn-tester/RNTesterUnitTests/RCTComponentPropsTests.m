@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,9 +21,7 @@
            rootTag:(NSNumber *)rootTag
              props:(NSDictionary *)props;
 
-- (void)updateView:(nonnull NSNumber *)reactTag
-          viewName:(NSString *)viewName
-             props:(NSDictionary *)props;
+- (void)updateView:(nonnull NSNumber *)reactTag viewName:(NSString *)viewName props:(NSDictionary *)props;
 
 @property (nonatomic, copy, readonly) NSMutableDictionary<NSNumber *, RCTShadowView *> *shadowViewRegistry;
 
@@ -72,8 +70,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 
 @end
 
-@implementation RCTComponentPropsTests
-{
+@implementation RCTComponentPropsTests {
   RCTBridge *_bridge;
   NSNumber *_rootViewReactTag;
 }
@@ -103,10 +100,8 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 {
   __block RCTPropsTestView *view;
   RCTUIManager *uiManager = _bridge.uiManager;
-  NSDictionary *props = @{@"integerProp": @58,
-                          @"objectProp": @10,
-                          @"structProp": @{@"x": @7, @"y": @8},
-                          @"customProp": @"Goodbye"};
+  NSDictionary *props =
+      @{@"integerProp" : @58, @"objectProp" : @10, @"structProp" : @{@"x" : @7, @"y" : @8}, @"customProp" : @"Goodbye"};
 
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:props];
@@ -127,10 +122,10 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 {
   __block RCTPropsTestView *view;
   RCTUIManager *uiManager = _bridge.uiManager;
-  
+
   XCTestExpectation *initialExpectation = [self expectationWithDescription:@"initial expectation"];
   XCTestExpectation *updateExpectation = [self expectationWithDescription:@"second expectation"];
-  
+
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:@{}];
     [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -138,7 +133,7 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
       XCTAssertEqual(view.layer.allowsGroupOpacity, TRUE);
       [initialExpectation fulfill];
     }];
-    [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:@{@"needsOffscreenAlphaCompositing": @NO}];
+    [uiManager updateView:@2 viewName:@"RCTPropsTestView" props:@{@"needsOffscreenAlphaCompositing" : @NO}];
     [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       view = (RCTPropsTestView *)viewRegistry[@2];
       XCTAssertEqual(view.layer.allowsGroupOpacity, FALSE);
@@ -146,23 +141,23 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
     }];
     [uiManager setNeedsLayout];
   });
-  
-  [self waitForExpectations:@[initialExpectation, updateExpectation] timeout:0.1];
+
+  [self waitForExpectations:@[ initialExpectation, updateExpectation ] timeout:0.1];
 }
 
 - (void)testResetProps
 {
   __block RCTPropsTestView *view;
   RCTUIManager *uiManager = _bridge.uiManager;
-  NSDictionary *props = @{@"integerProp": @58,
-                          @"objectProp": @10,
-                          @"structProp": @{@"x": @7, @"y": @8},
-                          @"customProp": @"Goodbye"};
+  NSDictionary *props =
+      @{@"integerProp" : @58, @"objectProp" : @10, @"structProp" : @{@"x" : @7, @"y" : @8}, @"customProp" : @"Goodbye"};
 
-  NSDictionary *resetProps = @{@"integerProp": [NSNull null],
-                               @"objectProp": [NSNull null],
-                               @"structProp": [NSNull null],
-                               @"customProp": [NSNull null]};
+  NSDictionary *resetProps = @{
+    @"integerProp" : [NSNull null],
+    @"objectProp" : [NSNull null],
+    @"structProp" : [NSNull null],
+    @"customProp" : [NSNull null]
+  };
 
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTPropsTestView" rootTag:self->_rootViewReactTag props:props];
@@ -184,8 +179,8 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
 {
   __block RCTView *view;
   RCTUIManager *uiManager = _bridge.uiManager;
-  NSDictionary *props = @{@"backgroundColor": @0xffffffff};
-  NSDictionary *resetProps = @{@"backgroundColor": [NSNull null]};
+  NSDictionary *props = @{@"backgroundColor" : @0xffffffff};
+  NSDictionary *resetProps = @{@"backgroundColor" : [NSNull null]};
 
   dispatch_async(uiManager.methodQueue, ^{
     [uiManager createView:@2 viewName:@"RCTView" rootTag:self->_rootViewReactTag props:props];
@@ -194,10 +189,11 @@ RCT_CUSTOM_VIEW_PROPERTY(customProp, NSString, RCTPropsTestView)
       XCTAssertEqualObjects(view.backgroundColor, [RCTConvert UIColor:@0xffffffff]);
     }];
     [uiManager updateView:@2 viewName:@"RCTView" props:resetProps];
-    [uiManager addUIBlock:^(__unused RCTUIManager *_uiManager, __unused NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-      view = (RCTView *)viewRegistry[@2];
-      XCTAssertNil(view.backgroundColor);
-    }];
+    [uiManager
+        addUIBlock:^(__unused RCTUIManager *_uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+          view = (RCTView *)viewRegistry[@2];
+          XCTAssertNil(view.backgroundColor);
+        }];
     [uiManager setNeedsLayout];
   });
 

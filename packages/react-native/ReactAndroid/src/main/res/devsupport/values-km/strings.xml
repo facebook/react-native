@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: km_KH -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">ប្រតិកម្ម​ម៉ឺនុយ​​អភិវឌ្ឍដើម (%1$s)</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">ដំណើរការ %1$s</string>
+</resources>

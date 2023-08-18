@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,15 +8,15 @@
  * @flow
  */
 
-import {AsyncStorage} from 'react-native';
+import type {
+  ComponentList,
+  ExamplesList,
+  RNTesterModuleInfo,
+  RNTesterNavigationState,
+  SectionData,
+} from '../types/RNTesterTypes';
 
 import RNTesterList from './RNTesterList';
-
-import type {
-  ExamplesList,
-  RNTesterState,
-  ComponentList,
-} from '../types/RNTesterTypes';
 
 export const Screens = {
   COMPONENTS: 'components',
@@ -24,15 +24,21 @@ export const Screens = {
   BOOKMARKS: 'bookmarks',
 };
 
-export const initialState: RNTesterState = {
-  openExample: null,
-  screen: null,
-  bookmarks: null,
-  recentlyUsed: null,
+export const initialNavigationState: RNTesterNavigationState = {
+  activeModuleKey: null,
+  activeModuleTitle: null,
+  activeModuleExampleKey: null,
+  screen: Screens.COMPONENTS,
+  bookmarks: {components: [], apis: []},
+  recentlyUsed: {components: [], apis: []},
 };
 
 const filterEmptySections = (examplesList: ExamplesList): any => {
-  const filteredSections = {};
+  const filteredSections: {
+    ['apis' | 'bookmarks' | 'components']: Array<
+      SectionData<RNTesterModuleInfo>,
+    >,
+  } = {};
   const sectionKeys = Object.keys(examplesList);
 
   sectionKeys.forEach(key => {
@@ -56,11 +62,13 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     return null;
   }
 
-  const components = RNTesterList.ComponentExamples.map(componentExample => ({
-    ...componentExample,
-    isBookmarked: bookmarks.components.includes(componentExample.key),
-    exampleType: Screens.COMPONENTS,
-  }));
+  const components = RNTesterList.Components.map(
+    (componentExample): RNTesterModuleInfo => ({
+      ...componentExample,
+      isBookmarked: bookmarks.components.includes(componentExample.key),
+      exampleType: Screens.COMPONENTS,
+    }),
+  );
 
   const recentlyUsedComponents = recentlyUsed.components
     .map(recentComponentKey =>
@@ -72,17 +80,19 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
     component => component.isBookmarked,
   );
 
-  const apis = RNTesterList.APIExamples.map(apiExample => ({
+  const apis = RNTesterList.APIs.map((apiExample): RNTesterModuleInfo => ({
     ...apiExample,
     isBookmarked: bookmarks.apis.includes(apiExample.key),
     exampleType: Screens.APIS,
   }));
 
   const recentlyUsedAPIs = recentlyUsed.apis
-    .map(recentAPIKey => apis.find(apiEample => apiEample.key === recentAPIKey))
+    .map(recentAPIKey =>
+      apis.find(apiExample => apiExample.key === recentAPIKey),
+    )
     .filter(Boolean);
 
-  const bookmarkedAPIs = apis.filter(apiEample => apiEample.isBookmarked);
+  const bookmarkedAPIs = apis.filter(apiExample => apiExample.isBookmarked);
 
   const examplesList: ExamplesList = {
     [Screens.COMPONENTS]: [
@@ -124,21 +134,4 @@ export const getExamplesListWithBookmarksAndRecentlyUsed = ({
   };
 
   return filterEmptySections(examplesList);
-};
-
-export const getInitialStateFromAsyncStorage = async (
-  storageKey: string,
-): Promise<RNTesterState> => {
-  const initialStateString = await AsyncStorage.getItem(storageKey);
-
-  if (!initialStateString) {
-    return {
-      openExample: null,
-      screen: Screens.COMPONENTS,
-      bookmarks: {components: [], apis: []},
-      recentlyUsed: {components: [], apis: []},
-    };
-  } else {
-    return JSON.parse(initialStateString);
-  }
 };

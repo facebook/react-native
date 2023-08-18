@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,13 +13,11 @@
 const React = require('react');
 const {Text, View, Alert} = require('react-native');
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-
 type Props = $ReadOnly<{||}>;
 class AccessibilityIOSExample extends React.Component<Props> {
-  render() {
+  render(): React.Node {
     return (
-      <RNTesterBlock title="Accessibility iOS APIs">
+      <>
         <View
           onAccessibilityAction={event => {
             if (event.nativeEvent.actionName === 'activate') {
@@ -55,7 +53,10 @@ class AccessibilityIOSExample extends React.Component<Props> {
             This view's children are hidden from the accessibility tree
           </Text>
         </View>
-      </RNTesterBlock>
+        <View accessible={true} accessibilityLanguage="it-IT">
+          <Text>This view's language should be `it-IT`</Text>
+        </View>
+      </>
     );
   }
 }

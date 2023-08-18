@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+package com.facebook.react.utils
+
+import com.facebook.react.model.ModelPackageJson
+import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
+import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
+import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+
+internal object ProjectUtils {
+  internal val Project.isNewArchEnabled: Boolean
+    get() =
+        project.hasProperty("newArchEnabled") &&
+            project.property("newArchEnabled").toString().toBoolean()
+
+  const val HERMES_FALLBACK = true
+
+  internal val Project.isHermesEnabled: Boolean
+    get() =
+        if (project.hasProperty("hermesEnabled")) {
+          project
+              .property("hermesEnabled")
+              .toString()
+              .lowercaseCompat()
+              .toBooleanStrictOrNullCompat()
+              ?: true
+        } else if (project.extensions.extraProperties.has("react")) {
+          @Suppress("UNCHECKED_CAST")
+          val reactMap = project.extensions.extraProperties.get("react") as? Map<String, Any?>
+          when (val enableHermesKey = reactMap?.get("enableHermes")) {
+            is Boolean -> enableHermesKey
+            is String -> enableHermesKey.lowercaseCompat().toBooleanStrictOrNullCompat() ?: true
+            else -> HERMES_FALLBACK
+          }
+        } else {
+          HERMES_FALLBACK
+        }
+
+  internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
+    val parsedPackageJson = readPackageJsonFile(this, rootProperty)
+    return needsCodegenFromPackageJson(parsedPackageJson)
+  }
+
+  internal fun Project.needsCodegenFromPackageJson(model: ModelPackageJson?): Boolean {
+    return model?.codegenConfig != null
+  }
+
+  internal fun Project.getReactNativeArchitectures(): List<String> {
+    val architectures = mutableListOf<String>()
+    if (project.hasProperty("reactNativeArchitectures")) {
+      val architecturesString = project.property("reactNativeArchitectures").toString()
+      architectures.addAll(architecturesString.split(",").filter { it.isNotBlank() })
+    }
+    return architectures
+  }
+}

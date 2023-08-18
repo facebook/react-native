@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,22 +25,22 @@
     return NO;
   }
 
-  CGContextRef referenceImageContext = CGBitmapContextCreate(referenceImagePixels,
-                                                             CGImageGetWidth(self.CGImage),
-                                                             CGImageGetHeight(self.CGImage),
-                                                             CGImageGetBitsPerComponent(self.CGImage),
-                                                             minBytesPerRow,
-                                                             CGImageGetColorSpace(self.CGImage),
-                                                             (CGBitmapInfo)kCGImageAlphaPremultipliedLast
-                                                             );
-  CGContextRef imageContext = CGBitmapContextCreate(imagePixels,
-                                                    CGImageGetWidth(image.CGImage),
-                                                    CGImageGetHeight(image.CGImage),
-                                                    CGImageGetBitsPerComponent(image.CGImage),
-                                                    minBytesPerRow,
-                                                    CGImageGetColorSpace(image.CGImage),
-                                                    (CGBitmapInfo)kCGImageAlphaPremultipliedLast
-                                                    );
+  CGContextRef referenceImageContext = CGBitmapContextCreate(
+      referenceImagePixels,
+      CGImageGetWidth(self.CGImage),
+      CGImageGetHeight(self.CGImage),
+      CGImageGetBitsPerComponent(self.CGImage),
+      minBytesPerRow,
+      CGImageGetColorSpace(self.CGImage),
+      (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+  CGContextRef imageContext = CGBitmapContextCreate(
+      imagePixels,
+      CGImageGetWidth(image.CGImage),
+      CGImageGetHeight(image.CGImage),
+      CGImageGetBitsPerComponent(image.CGImage),
+      minBytesPerRow,
+      CGImageGetColorSpace(image.CGImage),
+      (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
 
   CGFloat scaleFactor = [UIScreen mainScreen].scale;
   CGContextScaleCTM(referenceImageContext, scaleFactor, scaleFactor);

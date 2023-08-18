@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ const http = require('http');
 
 const app = connect();
 
-app.use(function(req, res) {
+app.use(function (req, res) {
   console.log('received request');
   res.setHeader('Set-Cookie', ['wstest=OK; Path=/']);
   res.end('Cookie has been set!\n');

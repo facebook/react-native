@@ -1,0 +1,46 @@
+name: ⬆️ Upgrade - Build Regression
+description: If you are upgrading to a new React Native version (stable or pre-release) and encounter a build regression.
+labels: ["Needs: Triage :mag:", "Type: Upgrade Issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please use this form to file an issue if you have upgraded or are upgrading to [latest stable release](https://github.com/facebook/react-native/releases/latest) and have experienced a regression (something that used to work in previous version).
+  - type: input
+    id: new-version
+    attributes:
+      label: New Version
+      description: This is the version you are attempting to upgrade to.
+      placeholder: ex. 0.66.1
+    validations:
+      required: true
+  - type: input
+    id: old-version
+    attributes:
+      label: Old Version
+      description: This is the version you were on where the behavior was working.
+      placeholder: ex. 0.65.1
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Build Target(s)
+      description: What target(s) are encountering this issue?
+      placeholder: iOS simulator in release flavor
+    validations:
+      required: true
+  - type: textarea
+    id: react-native-info
+    attributes:
+      label: Output of `react-native info`
+      description: Run `react-native info` in your terminal, copy and paste the results here.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Issue and Reproduction Steps
+      description: Please describe the issue and list out commands run to reproduce.
+    validations:
+      required: true

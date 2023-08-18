@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,8 +13,7 @@
 
 @end
 
-@implementation RCTBlobManagerTests
-{
+@implementation RCTBlobManagerTests {
   RCTBlobManager *_module;
   NSMutableData *_data;
   NSString *_blobId;
@@ -47,9 +46,9 @@
 - (void)testResolveMap
 {
   NSDictionary<NSString *, id> *map = @{
-    @"blobId": _blobId,
-    @"size": @(_data.length),
-    @"offset": @0,
+    @"blobId" : _blobId,
+    @"size" : @(_data.length),
+    @"offset" : @0,
   };
   XCTAssertTrue([_data isEqualToData:[_module resolve:map]]);
 }
@@ -72,21 +71,21 @@
 - (void)testCreateFromParts
 {
   NSDictionary<NSString *, id> *blobData = @{
-    @"blobId": _blobId,
-    @"offset": @0,
-    @"size": @(_data.length),
+    @"blobId" : _blobId,
+    @"offset" : @0,
+    @"size" : @(_data.length),
   };
   NSDictionary<NSString *, id> *blob = @{
-   @"data": blobData,
-   @"type": @"blob",
+    @"data" : blobData,
+    @"type" : @"blob",
   };
   NSString *stringData = @"i \u2665 dogs";
   NSDictionary<NSString *, id> *string = @{
-    @"data": stringData,
-    @"type": @"string",
+    @"data" : stringData,
+    @"type" : @"string",
   };
   NSString *resultId = [NSUUID UUID].UUIDString;
-  NSArray<id> *parts = @[blob, string];
+  NSArray<id> *parts = @[ blob, string ];
 
   [_module createFromParts:parts withId:resultId];
 

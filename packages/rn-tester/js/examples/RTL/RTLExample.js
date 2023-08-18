@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@ const IMAGE_SIZE = [IMAGE_DIMENSION, IMAGE_DIMENSION];
 
 const IS_RTL = I18nManager.isRTL;
 
-function ListItem(props) {
+function ListItem(props: {imageSource: number}) {
   return (
     <View style={styles.row}>
       <View style={styles.column1}>
@@ -127,7 +127,10 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-function AnimationBlock(props) {
+function AnimationBlock(props: {
+  imgStyle: {transform: Array<{scaleX: number} | {translateX: any}>},
+  onPress: (e: any) => void,
+}) {
   return (
     <View style={styles.block}>
       <TouchableWithoutFeedback onPress={props.onPress}>
@@ -144,8 +147,19 @@ type RTLSwitcherComponentState = {|
   isRTL: boolean,
 |};
 
-function withRTLState(Component) {
-  return class extends React.Component<*, RTLSwitcherComponentState> {
+function withRTLState(
+  Component: ({
+    isRTL: boolean,
+    setRTL: (isRTL: boolean) => void,
+    style?: any,
+  }) => React.Node,
+) {
+  return class extends React.Component<
+    {style?: any},
+    RTLSwitcherComponentState,
+  > {
+    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
+     * Flow's LTI update could not be added via codemod */
     constructor(...args) {
       super(...args);
       this.state = {
@@ -153,8 +167,9 @@ function withRTLState(Component) {
       };
     }
 
+    // $FlowFixMe[missing-local-annot]
     render() {
-      const setRTL = isRTL => this.setState({isRTL: isRTL});
+      const setRTL = (isRTL: boolean) => this.setState({isRTL: isRTL});
       return (
         <Component isRTL={this.state.isRTL} setRTL={setRTL} {...this.props} />
       );
@@ -162,7 +177,12 @@ function withRTLState(Component) {
   };
 }
 
-const RTLToggler = ({isRTL, setRTL}) => {
+const RTLToggler = ({
+  isRTL,
+  setRTL,
+}:
+  | {isRTL: any, setRTL: any}
+  | {isRTL: boolean, setRTL: (isRTL: boolean) => void}) => {
   if (Platform.OS === 'android') {
     return <Text style={styles.rtlToggler}>{isRTL ? 'RTL' : 'LTR'}</Text>;
   }
@@ -187,7 +207,7 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={styles.directionBox}>
@@ -248,7 +268,7 @@ class AnimationExample extends React.Component<any, AnimationState> {
     };
   }
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <RTLToggler setRTL={this.props.setRTL} isRTL={this.props.isRTL} />
@@ -489,6 +509,35 @@ const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
+const LogicalBorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
+  return (
+    <View>
+      <Text style={styles.bold}>Styles</Text>
+      <Text>borderStartStartRadius: 10,</Text>
+      <Text>borderStartEndRadius: 20,</Text>
+      <Text>borderEndStartRadius: 30,</Text>
+      <Text>borderEndEndRadius: 40</Text>
+      <Text />
+      <Text style={styles.bold}>Demo: </Text>
+      <View style={directionStyle(isRTL)}>
+        <View
+          style={{
+            borderWidth: 10,
+            borderStartStartRadius: 10,
+            borderStartEndRadius: 20,
+            borderEndStartRadius: 30,
+            borderEndEndRadius: 40,
+            padding: 10,
+          }}>
+          <View>
+            <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+});
+
 const BorderExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
@@ -525,7 +574,7 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-const directionStyle = isRTL =>
+const directionStyle = (isRTL: boolean) =>
   Platform.OS !== 'android' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({
@@ -653,13 +702,13 @@ exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
     title: 'Current Layout Direction',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <RTLToggleExample />;
     },
   },
   {
     title: 'A Simple List Item Layout',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <SimpleListItemExample />;
     },
   },
@@ -667,7 +716,7 @@ exports.examples = [
     title: 'Default Text Alignment',
     description: ('In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -675,7 +724,7 @@ exports.examples = [
     title: "Using textAlign: 'left'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
@@ -687,7 +736,7 @@ exports.examples = [
     title: "Using textAlign: 'right'",
     description: ('In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
@@ -698,62 +747,68 @@ exports.examples = [
   {
     title: "Using textAlign: 'right' for TextInput",
     description: ('Flip TextInput direction to RTL': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextInputExample style={[styles.textAlignRight]} />;
     },
   },
   {
     title: 'Working With Icons',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <IconsExample />;
     },
   },
   {
     title: 'Controlling Animation',
     description: 'Animation direction according to layout',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <AnimationContainer />;
     },
   },
   {
     title: 'Padding Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <PaddingExample />;
     },
   },
   {
     title: 'Margin Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <MarginExample />;
     },
   },
   {
     title: 'Position Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <PositionExample />;
     },
   },
   {
     title: 'Border Width Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BorderWidthExample />;
     },
   },
   {
     title: 'Border Color Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BorderColorExample />;
     },
   },
   {
     title: 'Border Radii Start/End',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BorderRadiiExample />;
     },
   },
   {
+    title: 'Logical Border Radii Start/End',
+    render: function (): React.Element<any> {
+      return <LogicalBorderRadiiExample />;
+    },
+  },
+  {
     title: 'Border',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <BorderExample />;
     },
   },

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,38 +8,16 @@
  * @flow strict-local
  */
 
-'use strict';
+import * as React from 'react';
+import {StyleSheet, Switch, Text, View} from 'react-native';
 
-const RNTesterStatePersister = require('../utils/RNTesterStatePersister');
-const React = require('react');
+type Props = {
+  label: string,
+  onEnable: () => void,
+  onDisable: () => void,
+  active: boolean,
+};
 
-const {StyleSheet, Switch, Text, View} = require('react-native');
-
-class RNTesterSettingSwitchRow extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  UNSAFE_componentWillReceiveProps(newProps: $FlowFixMeProps) {
-    const {onEnable, onDisable, persister} = this.props;
-    if (newProps.persister.state !== persister.state) {
-      newProps.persister.state ? onEnable() : onDisable();
-    }
-  }
-  render(): React.Node {
-    const {label, persister} = this.props;
-    return (
-      <View style={styles.row}>
-        <Text>{label}</Text>
-        <Switch
-          value={persister.state}
-          onValueChange={value => {
-            persister.setState(() => value);
-          }}
-        />
-      </View>
-    );
-  }
-}
 const styles = StyleSheet.create({
   row: {
     padding: 10,
@@ -47,14 +25,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-/* $FlowFixMe[cannot-reassign-export] (>=0.85.0 site=react_native_fb) This
- * comment suppresses an error found when Flow v0.85 was deployed. To see the
- * error, delete this comment and run Flow. */
-RNTesterSettingSwitchRow = RNTesterStatePersister.createContainer(
-  RNTesterSettingSwitchRow,
-  {
-    cacheKeySuffix: ({label}) => 'Switch:' + label,
-    getInitialState: ({initialValue}) => initialValue,
-  },
-);
-module.exports = RNTesterSettingSwitchRow;
+
+const RNTesterSettingSwitchRow = ({
+  label,
+  onEnable,
+  onDisable,
+  active,
+}: Props): React.Node => {
+  return (
+    <View style={styles.row}>
+      <Text>{label}</Text>
+      <Switch value={active} onValueChange={active ? onDisable : onEnable} />
+    </View>
+  );
+};
+
+export default RNTesterSettingSwitchRow;

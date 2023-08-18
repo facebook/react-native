@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,13 +21,29 @@ type Props = $ReadOnly<{|
 const RNTesterBlock = ({description, title, children}: Props): React.Node => {
   const theme = React.useContext(RNTesterThemeContext);
   return (
-    <View style={[[styles.container], {borderColor: theme.SeparatorColor}]}>
+    <View
+      style={[
+        [styles.container],
+        {
+          borderColor: theme.SeparatorColor,
+          backgroundColor: theme.SecondaryGroupedBackgroundColor,
+        },
+      ]}>
       <View style={[styles.titleContainer]}>
-        <Text style={[styles.titleText]}>{title}</Text>
-        <Text
-          style={[styles.descriptionText, {marginTop: description ? 10 : 0}]}>
-          {description}
-        </Text>
+        {title && (
+          <Text style={[styles.titleText, {color: theme.LabelColor}]}>
+            {title}
+          </Text>
+        )}
+        {description && (
+          <Text
+            style={[
+              styles.descriptionText,
+              {color: theme.LabelColor, marginTop: description ? 10 : 0},
+            ]}>
+            {description}
+          </Text>
+        )}
       </View>
       <View style={styles.children}>{children}</View>
     </View>
@@ -38,9 +54,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 0,
     borderWidth: 1,
-    marginTop: 30,
     marginHorizontal: 20,
-    backgroundColor: 'white',
   },
   titleText: {
     fontSize: 18,
@@ -53,12 +67,10 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 12,
     opacity: 0.5,
-    color: 'black',
   },
   children: {
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    margin: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 

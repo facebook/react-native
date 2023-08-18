@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when mocked (please verify output manually) 1`] = `
+<AndroidDrawerLayout
+  drawerBackgroundColor="white"
+  drawerPosition="left"
+  drawerWidth={300}
+  onDrawerClose={[Function]}
+  onDrawerOpen={[Function]}
+  onDrawerSlide={[Function]}
+  onDrawerStateChanged={[Function]}
+  style={
+    Array [
+      Object {
+        "elevation": 16,
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      Array [
+        Object {
+          "bottom": 0,
+          "position": "absolute",
+          "top": 0,
+        },
+        Object {
+          "backgroundColor": "white",
+          "width": 300,
+        },
+      ]
+    }
+  >
+    <View />
+  </View>
+</AndroidDrawerLayout>
+`;
+
+exports[`<DrawerLayoutAndroid /> should render as expected: should deep render when not mocked (please verify output manually) 1`] = `
+<AndroidDrawerLayout
+  drawerBackgroundColor="white"
+  drawerPosition="left"
+  drawerWidth={300}
+  onDrawerClose={[Function]}
+  onDrawerOpen={[Function]}
+  onDrawerSlide={[Function]}
+  onDrawerStateChanged={[Function]}
+  style={
+    Array [
+      Object {
+        "elevation": 16,
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      Array [
+        Object {
+          "bottom": 0,
+          "position": "absolute",
+          "top": 0,
+        },
+        Object {
+          "backgroundColor": "white",
+          "width": 300,
+        },
+      ]
+    }
+  >
+    <View />
+  </View>
+</AndroidDrawerLayout>
+`;
+
+exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when mocked 1`] = `
+<DrawerLayoutAndroid
+  drawerPosition="left"
+  drawerWidth={300}
+  renderNavigationView={[Function]}
+/>
+`;
+
+exports[`<DrawerLayoutAndroid /> should render as expected: should shallow render as <DrawerLayoutAndroid /> when not mocked 1`] = `
+<DrawerLayoutAndroid
+  drawerPosition="left"
+  drawerWidth={300}
+  renderNavigationView={[Function]}
+/>
+`;

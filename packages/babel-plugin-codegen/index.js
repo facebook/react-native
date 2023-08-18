@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,49 @@
 
 'use strict';
 
-const {parseString} = require('react-native-codegen/src/parsers/flow');
-const RNCodegen = require('react-native-codegen/src/generators/RNCodegen');
+let FlowParser, TypeScriptParser, RNCodegen;
+
 const {basename} = require('path');
 
-function generateViewConfig(filename, code) {
-  const schema = parseString(code);
+try {
+  FlowParser =
+    require('@react-native/codegen/src/parsers/flow/parser').FlowParser;
+  TypeScriptParser =
+    require('@react-native/codegen/src/parsers/typescript/parser').TypeScriptParser;
+  RNCodegen = require('@react-native/codegen/src/generators/RNCodegen');
+} catch (e) {
+  // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
+  FlowParser =
+    require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
+  TypeScriptParser =
+    require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
+  RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
+}
 
-  const libraryName = basename(filename).replace(/NativeComponent\.js$/, '');
+const flowParser = new FlowParser();
+const typeScriptParser = new TypeScriptParser();
+
+function parseFile(filename, code) {
+  if (filename.endsWith('js')) {
+    return flowParser.parseString(code);
+  }
+
+  if (filename.endsWith('ts')) {
+    return typeScriptParser.parseString(code);
+  }
+
+  throw new Error(
+    `Unable to parse file '${filename}'. Unsupported filename extension.`,
+  );
+}
+
+function generateViewConfig(filename, code) {
+  const schema = parseFile(filename, code);
+
+  const libraryName = basename(filename).replace(
+    /NativeComponent\.(js|ts)$/,
+    '',
+  );
   return RNCodegen.generateViewConfig({
     schema,
     libraryName,
@@ -53,7 +88,7 @@ function isCodegenDeclaration(declaration) {
   return false;
 }
 
-module.exports = function({parse, types: t}) {
+module.exports = function ({parse, types: t}) {
   return {
     pre(state) {
       this.code = state.code;
@@ -77,6 +112,7 @@ module.exports = function({parse, types: t}) {
 
           if (firstDeclaration.type === 'VariableDeclarator') {
             if (
+              firstDeclaration.init &&
               firstDeclaration.init.type === 'CallExpression' &&
               firstDeclaration.init.callee.type === 'Identifier' &&
               firstDeclaration.init.callee.name === 'codegenNativeCommands'
@@ -127,6 +163,7 @@ module.exports = function({parse, types: t}) {
               parse(viewConfig, {
                 babelrc: false,
                 browserslistConfigFile: false,
+                configFile: false,
               }).program.body,
             );
             if (this.commandsExport != null) {

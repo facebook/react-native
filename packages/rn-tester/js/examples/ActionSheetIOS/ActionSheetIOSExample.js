@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+
 const React = require('react');
 const {
   ActionSheetIOS,
@@ -17,10 +19,9 @@ const {
   Text,
   View,
   Alert,
-  NativeModules,
   findNodeHandle,
 } = require('react-native');
-const ScreenshotManager = NativeModules.ScreenshotManager;
+const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
@@ -30,11 +31,11 @@ const DISABLED_BUTTON_INDICES = [1, 2];
 type Props = $ReadOnly<{||}>;
 type State = {|clicked: string|};
 class ActionSheetExample extends React.Component<Props, State> {
-  state = {
+  state: State = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -63,11 +64,11 @@ class ActionSheetTintExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {clicked: string} = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -93,17 +94,52 @@ class ActionSheetTintExample extends React.Component<
   };
 }
 
+class ActionSheetCancelButtonTintExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state: any | {clicked: string} = {
+    clicked: 'none',
+  };
+
+  render(): React.Node {
+    return (
+      <View>
+        <Text onPress={this.showActionSheet} style={style.button}>
+          Click to show the ActionSheet
+        </Text>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        tintColor: 'green',
+        cancelButtonTintColor: 'brown',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
 class ActionSheetAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {clicked: string} = {
     clicked: 'none',
   };
 
-  anchorRef = React.createRef();
+  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={style.anchorRow}>
@@ -140,11 +176,11 @@ class ActionSheetAnchorExample extends React.Component<
 }
 
 class ActionSheetDisabledExample extends React.Component<Props, State> {
-  state = {
+  state: State = {
     clicked: 'none',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showActionSheet} style={style.button}>
@@ -170,15 +206,43 @@ class ActionSheetDisabledExample extends React.Component<Props, State> {
   };
 }
 
+class ActionSheetDismissExample extends React.Component<{...}> {
+  render(): React.Node {
+    return (
+      <View>
+        <Text onPress={this.showAndDismissActionSheet} style={style.button}>
+          Click to show and automatically dismiss the ActionSheet after 3
+          seconds
+        </Text>
+      </View>
+    );
+  }
+
+  showAndDismissActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      },
+      () => {},
+    );
+
+    setTimeout(() => {
+      ActionSheetIOS.dismissActionSheet();
+    }, 3000);
+  };
+}
+
 class ShareActionSheetExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showShareActionSheet} style={style.button}>
@@ -215,11 +279,11 @@ class ShareScreenshotExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Text onPress={this.showShareActionSheet} style={style.button}>
@@ -260,13 +324,13 @@ class ShareScreenshotAnchorExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {text: string} = {
     text: '',
   };
 
-  anchorRef = React.createRef();
+  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <View style={style.anchorRow}>
@@ -343,6 +407,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Show Action Sheet with cancel tinted button',
+    render(): React.Element<any> {
+      return <ActionSheetCancelButtonTintExample />;
+    },
+  },
+  {
     title: 'Show Action Sheet with anchor',
     render(): React.Element<any> {
       return <ActionSheetAnchorExample />;
@@ -352,6 +422,12 @@ exports.examples = [
     title: 'Show Action Sheet with disabled buttons',
     render(): React.Element<any> {
       return <ActionSheetDisabledExample />;
+    },
+  },
+  {
+    title: 'Show Action Sheet and automatically dismiss it',
+    render(): React.Element<any> {
+      return <ActionSheetDismissExample />;
     },
   },
   {

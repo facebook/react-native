@@ -13,9 +13,8 @@ indent_size = 2
 [*.gradle]
 indent_size = 4
 
-[BUCK]
+[*.kts]
 indent_size = 4
 
-# Windows files
-[*.bat]
-end_of_line = crlf
+[BUCK]
+indent_size = 4

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,7 +29,7 @@ const forceTouchAvailable =
   (Platform.OS === 'ios' && Platform.constants.forceTouchAvailable) || false;
 
 class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -39,7 +39,7 @@ class TouchableHighlightBox extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableHighlight onPress';
@@ -79,7 +79,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
   {...},
   $FlowFixMeState,
 > {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -89,7 +89,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
@@ -115,7 +115,7 @@ class TouchableWithoutFeedbackBox extends React.Component<
 }
 
 class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -125,7 +125,7 @@ class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
@@ -150,11 +150,11 @@ class TextOnPressBox extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {eventLog: Array<string>} = {
     eventLog: [],
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_feedback_events">
         <View style={[styles.row, styles.centered]}>
@@ -181,7 +181,7 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName: string) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
@@ -190,11 +190,11 @@ class TouchableFeedbackEvents extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {eventLog: Array<string>} = {
     eventLog: [],
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_delay_events">
         <View style={[styles.row, styles.centered]}>
@@ -222,7 +222,7 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
     );
   }
 
-  _appendEvent = eventName => {
+  _appendEvent = (eventName: string) => {
     const limit = 6;
     const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
@@ -231,17 +231,17 @@ class TouchableDelayEvents extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {force: number} = {
     force: 0,
   };
 
-  _renderConsoleText = () => {
+  _renderConsoleText = (): string => {
     return forceTouchAvailable
       ? 'Force: ' + this.state.force.toFixed(3)
       : '3D Touch is not available on this device';
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View testID="touchable_3dtouch_event">
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
@@ -265,7 +265,7 @@ class ForceTouchExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {timesPressed: number} = {
     timesPressed: 0,
   };
 
@@ -275,7 +275,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
     });
   };
 
-  render() {
+  render(): React.Node {
     let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
@@ -345,7 +345,7 @@ function TouchableNativeMethods() {
 }
 
 class TouchableDisabled extends React.Component<{...}> {
-  render() {
+  render(): React.Node {
     return (
       <View>
         <TouchableOpacity disabled={true} style={[styles.row, styles.block]}>
@@ -540,9 +540,10 @@ const TouchableTouchSoundDisabled = () => {
   );
 };
 
+// $FlowFixMe[missing-local-annot]
 function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
   const ref = useRef<?React.ElementRef<T> | {focus: Function}>(null);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
   );
@@ -661,13 +662,13 @@ exports.examples = [
       'child view is fully opaque, although it can be made to work as a simple ' +
       'background color change as well with the activeOpacity and ' +
       'underlayColor props.': string),
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableHighlightBox />;
     },
   },
   {
     title: '<TouchableWithoutFeedback>',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableWithoutFeedbackBox />;
     },
   },
@@ -676,7 +677,7 @@ exports.examples = [
     description: ('TouchableNativeFeedback can have an AnimatedComponent as a' +
       'direct child.': string),
     platform: 'android',
-    render: function(): React.Node {
+    render: function (): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -702,25 +703,25 @@ exports.examples = [
   },
   {
     title: 'TouchableHighlight Underlay Visibility',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableHighlightUnderlayMethods />;
     },
   },
   {
     title: 'Touchable Touch Sound',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableTouchSoundDisabled />;
     },
   },
   {
     title: 'Touchable onFocus',
-    render: function(): React.Node {
+    render: function (): React.Node {
       return <TouchableOnFocus />;
     },
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TextOnPressBox />;
     },
   },
@@ -728,7 +729,7 @@ exports.examples = [
     title: 'Touchable feedback events',
     description: ('<Touchable*> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableFeedbackEvents />;
     },
   },
@@ -737,7 +738,7 @@ exports.examples = [
     description: ('<Touchable*> components also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <TouchableDelayEvents />;
     },
   },
@@ -745,38 +746,42 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function(): React.Element<any> {
+    render: function (): React.Element<any> {
       return <ForceTouchExample />;
     },
     platform: 'ios',
   },
   {
     title: 'Touchable Hit Slop',
-    description: ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
-      'without changing the view bounds.': string),
-    render: function(): React.Element<any> {
+    description:
+      ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
+        'without changing the view bounds.': string),
+    render: function (): React.Element<any> {
       return <TouchableHitSlop />;
     },
   },
   {
     title: 'Touchable Native Methods',
-    description: ('Some <Touchable*> components expose native methods like `measure`.': string),
-    render: function(): React.Element<any> {
+    description:
+      ('Some <Touchable*> components expose native methods like `measure`.': string),
+    render: function (): React.Element<any> {
       return <TouchableNativeMethods />;
     },
   },
   {
     title: 'Custom Ripple Radius (Android-only)',
-    description: ('Ripple radius on TouchableNativeFeedback can be controlled': string),
-    render: function(): React.Element<any> {
+    description:
+      ('Ripple radius on TouchableNativeFeedback can be controlled': string),
+    render: function (): React.Element<any> {
       return <CustomRippleRadius />;
     },
   },
   {
     title: 'Disabled Touchable*',
-    description: ('<Touchable*> components accept disabled prop which prevents ' +
-      'any interaction with component': string),
-    render: function(): React.Element<any> {
+    description:
+      ('<Touchable*> components accept disabled prop which prevents ' +
+        'any interaction with component': string),
+    render: function (): React.Element<any> {
       return <TouchableDisabled />;
     },
   },

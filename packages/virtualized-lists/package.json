@@ -1,0 +1,27 @@
+{
+  "name": "@react-native/virtualized-lists",
+  "version": "0.73.0",
+  "description": "Virtualized lists for React Native.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/virtualized-lists"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
+  "keywords": ["lists", "virtualized-lists", "section-lists", "react-native"],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "nullthrows": "^1.1.1"
+  },
+  "devDependencies": {
+    "react-test-renderer": "18.2.0"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  }
+}

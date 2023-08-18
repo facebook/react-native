@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,20 +12,23 @@
 
 #import <React/RCTImageUtils.h>
 
-#define RCTAssertEqualPoints(a, b) { \
-XCTAssertEqual(a.x, b.x); \
-XCTAssertEqual(a.y, b.y); \
-}
+#define RCTAssertEqualPoints(a, b) \
+  {                                \
+    XCTAssertEqual(a.x, b.x);      \
+    XCTAssertEqual(a.y, b.y);      \
+  }
 
-#define RCTAssertEqualSizes(a, b) { \
-XCTAssertEqual(a.width, b.width); \
-XCTAssertEqual(a.height, b.height); \
-}
+#define RCTAssertEqualSizes(a, b)       \
+  {                                     \
+    XCTAssertEqual(a.width, b.width);   \
+    XCTAssertEqual(a.height, b.height); \
+  }
 
-#define RCTAssertEqualRects(a, b) { \
-RCTAssertEqualPoints(a.origin, b.origin); \
-RCTAssertEqualSizes(a.size, b.size); \
-}
+#define RCTAssertEqualRects(a, b)             \
+  {                                           \
+    RCTAssertEqualPoints(a.origin, b.origin); \
+    RCTAssertEqualSizes(a.size, b.size);      \
+  }
 
 @interface RCTImageUtilTests : XCTestCase
 
@@ -93,7 +96,7 @@ RCTAssertEqualSizes(a.size, b.size); \
   }
 
   {
-    CGRect expected = {{7,0}, {5, 50}};
+    CGRect expected = {{7, 0}, {5, 50}};
     CGRect result = RCTTargetRect(content, target, 1, RCTResizeModeContain);
     RCTAssertEqualRects(expected, result);
   }

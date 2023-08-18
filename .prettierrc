@@ -1,8 +1,19 @@
 {
+  "arrowParens": "avoid",
+  "bracketSameLine": true,
+  "bracketSpacing": false,
   "requirePragma": true,
   "singleQuote": true,
   "trailingComma": "all",
-  "bracketSpacing": false,
-  "jsxBracketSameLine": true,
-  "arrowParens": "avoid"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [
+        "*.js"
+      ],
+      "options": {
+        "parser": "hermes"
+      }
+    }
+  ]
 }

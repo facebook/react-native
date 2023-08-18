@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,30 +7,22 @@
 
 package com.facebook.react.uiapp;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactInstanceManager;
-import com.facebook.react.ReactRootView;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 public class RNTesterActivity extends ReactActivity {
-  public static class RNTesterActivityDelegate extends ReactActivityDelegate {
+  public static class RNTesterActivityDelegate extends DefaultReactActivityDelegate {
     private static final String PARAM_ROUTE = "route";
     private Bundle mInitialProps = null;
     private final @Nullable ReactActivity mActivity;
 
     public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
-      super(activity, mainComponentName);
+      super(activity, mainComponentName, DefaultNewArchitectureEntryPoint.getFabricEnabled());
       this.mActivity = activity;
-    }
-
-    @Override
-    protected ReactRootView createRootView() {
-      ReactRootView reactRootView = new ReactRootView(getContext());
-      reactRootView.setIsFabric(BuildConfig.ENABLE_FABRIC);
-      return reactRootView;
     }
 
     @Override
@@ -63,15 +55,5 @@ public class RNTesterActivity extends ReactActivity {
   @Override
   protected String getMainComponentName() {
     return "RNTesterApp";
-  }
-
-  @Override
-  public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    ReactInstanceManager instanceManager = getReactInstanceManager();
-
-    if (instanceManager != null) {
-      instanceManager.onConfigurationChanged(this, newConfig);
-    }
   }
 }

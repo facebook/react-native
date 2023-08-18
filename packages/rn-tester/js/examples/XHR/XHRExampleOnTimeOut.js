@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -69,6 +69,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
     ) : (
       <TouchableHighlight
         style={styles.wrapper}
+        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onPress={this.loadTimeOutRequest.bind(this)}>
         <View style={styles.button}>
           <Text>Make Time Out Request</Text>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,17 @@
  */
 
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
+import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import {
-  StyleSheet,
   Text,
   View,
   FlatList,
-  Platform,
   TouchableOpacity,
   RootTagContext,
 } from 'react-native';
+
+import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
 
 type State = {|
@@ -28,7 +29,7 @@ type State = {|
       value: mixed,
       ...
     },
-    ...,
+    ...
   },
 |};
 
@@ -40,6 +41,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   };
 
   // Add calls to methods in TurboModule here
+  // $FlowFixMe[missing-local-annot]
   _tests = {
     callback: () =>
       NativeSampleTurboModule.getValueWithCallback(callbackValue =>
@@ -56,6 +58,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getConstants: () => NativeSampleTurboModule.getConstants(),
     voidFunc: () => NativeSampleTurboModule.voidFunc(),
     getBool: () => NativeSampleTurboModule.getBool(true),
+    getEnum: () =>
+      NativeSampleTurboModule.getEnum
+        ? NativeSampleTurboModule.getEnum(EnumInt.A)
+        : null,
     getNumber: () => NativeSampleTurboModule.getNumber(99.95),
     getString: () => NativeSampleTurboModule.getString('Hello'),
     getArray: () =>
@@ -71,9 +77,86 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+    voidFuncThrows: () => {
+      try {
+        NativeSampleTurboModule.voidFuncThrows?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectThrows: () => {
+      try {
+        NativeSampleTurboModule.getObjectThrows?.({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseThrows: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeSampleTurboModule.promiseThrows?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    voidFuncAssert: () => {
+      try {
+        NativeSampleTurboModule.voidFuncAssert?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectAssert: () => {
+      try {
+        NativeSampleTurboModule.getObjectAssert?.({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseAssert: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeSampleTurboModule.promiseAssert?.();
+      } catch (e) {
+        return e.message;
+      }
+    },
   };
 
-  _setResult(name, result) {
+  _setResult(
+    name:
+      | string
+      | 'callback'
+      | 'getArray'
+      | 'getBool'
+      | 'getEnum'
+      | 'getConstants'
+      | 'getNumber'
+      | 'getObject'
+      | 'getRootTag'
+      | 'getString'
+      | 'getUnsafeObject'
+      | 'getValue'
+      | 'promise'
+      | 'rejectPromise'
+      | 'voidFunc'
+      | 'voidFuncThrows'
+      | 'getObjectThrows'
+      | 'promiseThrows'
+      | 'voidFuncAssert'
+      | 'getObjectAssert'
+      | 'promiseAssert',
+    result:
+      | $FlowFixMe
+      | void
+      | RootTag
+      | Promise<mixed>
+      | number
+      | string
+      | boolean
+      | {const1: boolean, const2: number, const3: string}
+      | Array<$FlowFixMe>,
+  ) {
     this.setState(({testResults}) => ({
       /* $FlowFixMe[cannot-spread-indexer] (>=0.122.0 site=react_native_fb)
        * This comment suppresses an error found when Flow v0.122.0 was
@@ -88,7 +171,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     }));
   }
 
-  _renderResult(name) {
+  _renderResult(name: string): React.Node {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
@@ -98,16 +181,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     );
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     if (global.__turboModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
-      );
-    }
-    if (Platform.OS === 'ios') {
-      // iOS is fully implemented, so show all results immediately.
-      Object.keys(this._tests).forEach(item =>
-        this._setResult(item, this._tests[item]()),
       );
     }
   }
@@ -149,47 +226,5 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    flexDirection: 'row',
-    margin: 6,
-  },
-  column: {
-    flex: 2,
-    justifyContent: 'center',
-    padding: 3,
-  },
-  result: {
-    alignItems: 'stretch',
-    justifyContent: 'space-between',
-  },
-  value: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 12,
-  },
-  type: {
-    color: '#333',
-    fontSize: 10,
-  },
-  button: {
-    borderColor: '#444',
-    padding: 3,
-    flex: 1,
-  },
-  buttonTextLarge: {
-    textAlign: 'center',
-    color: 'rgb(0,122,255)',
-    fontSize: 16,
-    padding: 6,
-  },
-  buttonText: {
-    color: 'rgb(0,122,255)',
-    textAlign: 'center',
-  },
-});
 
 module.exports = SampleTurboModuleExample;

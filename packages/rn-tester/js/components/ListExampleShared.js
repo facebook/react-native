@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@
 const React = require('react');
 
 const {
+  ActivityIndicator,
   Animated,
   Image,
   Platform,
@@ -33,16 +34,28 @@ export type Item = {
   ...
 };
 
-function genItemData(count: number, start: number = 0): Array<Item> {
+function genItemData(i: number): Item {
+  const itemHash = Math.abs(hashCode('Item ' + i));
+  return {
+    title: 'Item ' + i,
+    text: LOREM_IPSUM.slice(0, (itemHash % 301) + 20),
+    key: String(i),
+    pressed: false,
+  };
+}
+
+function genNewerItems(count: number, start: number = 0): Array<Item> {
   const dataBlob = [];
-  for (let ii = start; ii < count + start; ii++) {
-    const itemHash = Math.abs(hashCode('Item ' + ii));
-    dataBlob.push({
-      title: 'Item ' + ii,
-      text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
-      key: String(ii),
-      pressed: false,
-    });
+  for (let i = start; i < count + start; i++) {
+    dataBlob.push(genItemData(i));
+  }
+  return dataBlob;
+}
+
+function genOlderItems(count: number, start: number = 0): Array<Item> {
+  const dataBlob = [];
+  for (let i = count; i > 0; i--) {
+    dataBlob.push(genItemData(start - i));
   }
   return dataBlob;
 }
@@ -57,13 +70,14 @@ class ItemComponent extends React.PureComponent<{
   onPress: (key: string) => void,
   onShowUnderlay?: () => void,
   onHideUnderlay?: () => void,
+  textSelectable?: ?boolean,
   ...
 }> {
   _onPress = () => {
     this.props.onPress(this.props.item.key);
   };
   render(): React.Node {
-    const {fixedHeight, horizontal, item} = this.props;
+    const {fixedHeight, horizontal, item, textSelectable} = this.props;
     const itemHash = Math.abs(hashCode(item.title));
     const imgSource = THUMB_URLS[itemHash % THUMB_URLS.length];
     return (
@@ -81,6 +95,7 @@ class ItemComponent extends React.PureComponent<{
           {!item.noImage && <Image style={styles.thumb} source={imgSource} />}
           <Text
             style={styles.text}
+            selectable={textSelectable}
             numberOfLines={horizontal || fixedHeight ? 3 : undefined}>
             {item.title} - {item.text}
           </Text>
@@ -144,6 +159,12 @@ class SeparatorComponent extends React.PureComponent<{...}> {
     return <View style={styles.separator} />;
   }
 }
+
+const LoadingComponent: React.ComponentType<{}> = React.memo(() => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator />
+  </View>
+));
 
 class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
   render(): React.Node {
@@ -350,6 +371,13 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
   },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 100,
+    borderTopWidth: 1,
+    borderTopColor: 'rgb(200, 199, 204)',
+  },
 });
 
 module.exports = {
@@ -360,8 +388,10 @@ module.exports = {
   ItemSeparatorComponent,
   PlainInput,
   SeparatorComponent,
+  LoadingComponent,
   Spindicator,
-  genItemData,
+  genNewerItems,
+  genOlderItems,
   getItemLayout,
   pressItem,
   renderSmallSwitchOption,

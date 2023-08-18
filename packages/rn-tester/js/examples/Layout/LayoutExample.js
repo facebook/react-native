@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,7 +17,7 @@ const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
 
 class Circle extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const size = this.props.size || 20;
     const backgroundColor = this.props.bgColor || '#527fe4';
     return (
@@ -35,7 +35,7 @@ class Circle extends React.Component<$FlowFixMeProps> {
 }
 
 class CircleBlock extends React.Component<$FlowFixMeProps> {
-  render() {
+  render(): React.Node {
     const circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
@@ -200,7 +200,7 @@ exports.displayName = 'LayoutExample';
 exports.examples = [
   {
     title: 'Simple layout using flexbox',
-    render: function(): React.Element<typeof LayoutExample> {
+    render: function (): React.Element<typeof LayoutExample> {
       return <LayoutExample />;
     },
   },

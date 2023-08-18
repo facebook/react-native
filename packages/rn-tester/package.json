@@ -1,25 +1,42 @@
 {
   "name": "@react-native/tester",
   "version": "0.0.1",
-  "license": "MIT",
+  "private": true,
   "description": "React Native tester app.",
-  "homepage": "https://github.com/facebook/react-native/tree/master/packages/rn-tester",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git",
+    "url": "https://github.com/facebook/react-native.git",
     "directory": "packages/rn-tester"
   },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android --mode HermesDebug --appId 'com.facebook.react.uiapp' --main-activity 'com.facebook.react.uiapp.RNTesterActivity'",
+    "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
+    "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
+    "clean-android": "rm -rf android/app/build",
+    "setup-ios-jsc": "bundle install && USE_HERMES=0 bundle exec pod install",
+    "setup-ios-hermes": "bundle install && USE_HERMES=1 bundle exec pod install",
+    "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
+  },
   "dependencies": {
+    "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "17.0.2",
+    "react": "18.2.0",
     "react-native": "*"
   },
-  "devDependencies": {
-    "connect": "^3.6.5",
-    "detox": "16.7.2",
-    "ws": "^6.1.4"
+  "codegenConfig": {
+    "name": "AppSpecs",
+    "type": "all",
+    "jsSrcsDir": ".",
+    "android": {
+      "javaPackageName": "com.facebook.fbreact.specs"
+    }
   }
 }

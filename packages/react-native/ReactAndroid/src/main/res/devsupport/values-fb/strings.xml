@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: fb_HA -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="catalyst_dev_menu_header" gender="unknown">[React Native Dev Menu (%1$s)#f560753940a8856cdc2de8717c0295df:1]</string>
+    <string name="catalyst_dev_menu_sub_header" gender="unknown">[Running %1$s#c566f94d6bbe163799a3235b4b55f9d1:1]</string>
+</resources>

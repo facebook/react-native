@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`elementsThatOverlapOffsets errors on non-increasing offsets 1`] = `"bad offsets input, should be in increasing order: [150,50]"`;

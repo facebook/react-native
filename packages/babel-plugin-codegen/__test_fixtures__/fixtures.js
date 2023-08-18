@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 const NOT_A_NATIVE_COMPONENT = `
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent').default;
 
 export default 'Not a view config'
 `;

@@ -1,3 +1,0 @@
-# Make sure we never publish ReactAndroid/build (Gradle output) to npm.
-# The folder is huge (> 100MB)!
-build/

@@ -1,0 +1,33 @@
+{
+  "name": "@react-native/eslint-plugin-specs",
+  "version": "0.73.0",
+  "description": "ESLint rules to validate NativeModule and Component Specs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/react-native.git",
+    "directory": "packages/eslint-plugin-specs"
+  },
+  "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/eslint-plugin-specs#readme",
+  "keywords": ["eslint", "rules", "react-native", "native-modules", "components", "specs"],
+  "bugs": "https://github.com/facebook/react-native/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "index.js",
+  "scripts": {
+    "prepack": "node prepack.js",
+    "postpack": "node postpack.js"
+  },
+  "dependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/eslint-parser": "^7.20.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.20.0",
+    "@babel/preset-flow": "^7.20.0",
+    "@react-native/codegen": "*",
+    "flow-parser": "^0.206.0",
+    "make-dir": "^2.1.0",
+    "pirates": "^4.0.1",
+    "source-map-support": "0.5.0"
+  }
+}

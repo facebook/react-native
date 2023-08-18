@@ -1,0 +1,36 @@
+storage: ./storage
+auth:
+  htpasswd:
+    file: ./htpasswd
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    max_fails: 40
+    maxage: 30m
+    timeout: 60s
+    fail_timeout: 10m
+    cache: false
+    agent_options:
+      keepAlive: true
+      maxSockets: 40
+      maxFreeSockets: 10
+packages:
+  # Get @react-native/normalize-color from npm registry, since its used in deprecated-react-native-prop-types package
+  '@react-native/normalize-color':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  # Group and isolate all local packages, avoid being proxy from outside
+  '@react-native/*':
+    access: $all
+    publish: $all
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $all
+    proxy: npmjs
+logs:
+  - {type: file, path: verdaccio.log, format: json, level: warn}

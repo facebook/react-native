@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,9 @@
  * @flow strict-local
  */
 
-import type {Node} from 'React';
-import {NativeModules, Button} from 'react-native';
+import type {Node} from 'react';
+import {Button} from 'react-native';
 import React from 'react';
-
-const {CrashyCrash} = NativeModules;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -29,21 +27,10 @@ exports.examples = [
           title="JS crash"
           onPress={() => {
             const a = {};
+            // $FlowIgnore[prop-missing]
+            // $FlowIgnore[incompatible-use]
             const b = a.w.q; // js crash here
             console.log(b);
-          }}
-        />
-      );
-    },
-  },
-  {
-    title: 'Native crash',
-    render(): Node {
-      return (
-        <Button
-          title="Native crash"
-          onPress={() => {
-            CrashyCrash.letsCrash();
           }}
         />
       );

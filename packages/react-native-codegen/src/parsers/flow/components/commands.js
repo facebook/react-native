@@ -1,10 +1,10 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -14,13 +14,14 @@ import type {
   NamedShape,
   CommandTypeAnnotation,
 } from '../../../CodegenSchema.js';
-import type {TypeDeclarationMap} from '../utils.js';
+import type {TypeDeclarationMap} from '../../utils';
 
 const {getValueFromTypes} = require('../utils.js');
 
+// $FlowFixMe[unclear-type] there's no flowtype for ASTs
 type EventTypeAST = Object;
 
-function buildCommandSchema(property, types: TypeDeclarationMap) {
+function buildCommandSchema(property: EventTypeAST, types: TypeDeclarationMap) {
   const name = property.key.name;
   const optional = property.optional;
   const value = getValueFromTypes(property.value, types);
@@ -76,6 +77,11 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
           type: 'FloatTypeAnnotation',
         };
         break;
+      case 'StringTypeAnnotation':
+        returnType = {
+          type: 'StringTypeAnnotation',
+        };
+        break;
       default:
         (type: empty);
         throw new Error(
@@ -85,6 +91,7 @@ function buildCommandSchema(property, types: TypeDeclarationMap) {
 
     return {
       name: paramName,
+      optional: false,
       typeAnnotation: returnType,
     };
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,13 +15,15 @@
 static BOOL RCTLogsError(void (^block)(void))
 {
   __block BOOL loggedError = NO;
-  RCTPerformBlockWithLogFunction(block, ^(RCTLogLevel level,
-                                          __unused RCTLogSource source,
-                                          __unused NSString *fileName,
-                                          __unused NSNumber *lineNumber,
-                                          __unused NSString *message) {
-    loggedError = (level == RCTLogLevelError);
-  });
+  RCTPerformBlockWithLogFunction(
+      block,
+      ^(RCTLogLevel level,
+        __unused RCTLogSource source,
+        __unused NSString *fileName,
+        __unused NSNumber *lineNumber,
+        __unused NSString *message) {
+        loggedError = (level == RCTLogLevelError);
+      });
   return loggedError;
 }
 
@@ -29,56 +31,87 @@ static BOOL RCTLogsError(void (^block)(void))
 
 @end
 
-@implementation RCTModuleMethodTests
-{
+@implementation RCTModuleMethodTests {
   CGRect _s;
 }
 
 static RCTModuleMethod *buildDefaultMethodWithMethodSignature(const char *methodSignature)
 {
   // This leaks a RCTMethodInfo, but it's a test, so...
-  RCTMethodInfo *methodInfo = new RCTMethodInfo {.objcName = methodSignature, .isSync = NO};
+  RCTMethodInfo *methodInfo = new RCTMethodInfo{.objcName = methodSignature, .isSync = NO};
   return [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo moduleClass:[RCTModuleMethodTests class]];
 }
 
 static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSignature)
 {
   // This leaks a RCTMethodInfo, but it's a test, so...
-  RCTMethodInfo *methodInfo = new RCTMethodInfo {.objcName = methodSignature, .isSync = YES};
+  RCTMethodInfo *methodInfo = new RCTMethodInfo{.objcName = methodSignature, .isSync = YES};
   return [[RCTModuleMethod alloc] initWithExportedMethod:methodInfo moduleClass:[RCTModuleMethodTests class]];
 }
 
-+ (NSString *)moduleName { return nil; }
++ (NSString *)moduleName
+{
+  return nil;
+}
 
-- (void)doFoo { }
+- (void)doFoo
+{
+}
 
-- (void)doFooWithBar:(__unused NSString *)bar { }
+- (void)doFooWithBar:(__unused NSString *)bar
+{
+}
 
-- (id)echoString:(NSString *)input { return input; }
-- (id)methodThatReturnsNil { return nil; }
-- (void)openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {}
-- (void)openURL:(NSURL *)URL callback:(RCTResponseSenderBlock)callback {}
-- (id)methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback { callback(@[input]); return nil; }
+- (id)echoString:(NSString *)input
+{
+  return input;
+}
+- (id)methodThatReturnsNil
+{
+  return nil;
+}
+- (void)openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+}
+- (void)openURL:(NSURL *)URL callback:(RCTResponseSenderBlock)callback
+{
+}
+- (id)methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback
+{
+  callback(@[ input ]);
+  return nil;
+}
 
 - (void)testNonnull
 {
   const char *methodSignature = "doFooWithBar:(nonnull NSString *)bar";
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
   XCTAssertFalse(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[@"Hello World"]];
+    [method invokeWithBridge:nil module:self arguments:@[ @"Hello World" ]];
   }));
 
   XCTAssertTrue(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+    [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
   }));
 }
 
-- (void)doFooWithNumber:(__unused NSNumber *)n { }
-- (void)doFooWithDouble:(__unused double)n { }
-- (void)doFooWithInteger:(__unused NSInteger)n { }
-- (void)doFooWithCGRect:(CGRect)s { _s = s; }
+- (void)doFooWithNumber:(__unused NSNumber *)n
+{
+}
+- (void)doFooWithDouble:(__unused double)n
+{
+}
+- (void)doFooWithInteger:(__unused NSInteger)n
+{
+}
+- (void)doFooWithCGRect:(CGRect)s
+{
+  _s = s;
+}
 
-- (void)doFoo : (__unused NSString *)foo { }
+- (void)doFoo:(__unused NSString *)foo
+{
+}
 
 - (void)testNumbersNonnull
 {
@@ -88,7 +121,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
       const char *methodSignature = "doFooWithNumber:(NSNumber *)n";
       RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
       // Invoke method to trigger parsing
-      [method invokeWithBridge:nil module:self arguments:@[@1]];
+      [method invokeWithBridge:nil module:self arguments:@[ @1 ]];
     }));
   }
 
@@ -96,7 +129,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithNumber:(nonnull NSNumber *)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
     }));
   }
 
@@ -104,7 +137,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithDouble:(double)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
     }));
   }
 
@@ -112,7 +145,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFooWithInteger:(NSInteger)n";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(RCTLogsError(^{
-      [method invokeWithBridge:nil module:self arguments:@[[NSNull null]]];
+      [method invokeWithBridge:nil module:self arguments:@[ [NSNull null] ]];
     }));
   }
 }
@@ -123,7 +156,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
 
   CGRect r = CGRectMake(10, 20, 30, 40);
-  [method invokeWithBridge:nil module:self arguments:@[@[@10, @20, @30, @40]]];
+  [method invokeWithBridge:nil module:self arguments:@[ @[ @10, @20, @30, @40 ] ]];
   XCTAssertTrue(CGRectEqualToRect(r, _s));
 }
 
@@ -139,7 +172,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   XCTAssertEqualObjects(@(method.JSMethodName), @"doFoo");
 
   XCTAssertFalse(RCTLogsError(^{
-    [method invokeWithBridge:nil module:self arguments:@[@"bar"]];
+    [method invokeWithBridge:nil module:self arguments:@[ @"bar" ]];
   }));
 }
 
@@ -149,50 +182,62 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
     const char *methodSignature = "doFoo";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing normal function");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing normal function");
   }
 
   {
     const char *methodSignature = "openURL:(NSURL *)URL callback:(RCTResponseSenderBlock)callBack";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeNormal);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing normal function with callback");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing normal function with callback");
   }
 
   {
-    const char *methodSignature = "openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
+    const char *methodSignature =
+        "openURL:(NSURL *)URL resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject";
     RCTModuleMethod *method = buildDefaultMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypePromise);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing promise function");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing promise function");
   }
-  
+
   {
     const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing sync function");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing sync function");
   }
 
   {
-    const char *methodSignature = "methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback";
+    const char *methodSignature =
+        "methodThatCallsCallbackWithArg:(NSString *)input callback:(RCTResponseSenderBlock)callback";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
     XCTAssertTrue(method.functionType == RCTFunctionTypeSync);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing sync function with callback");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing sync function with callback");
   }
 }
 
@@ -201,7 +246,7 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   {
     const char *methodSignature = "echoString:(NSString *)input";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
-    id result = [method invokeWithBridge:nil module:self arguments:@[@"Test String Value"]];
+    id result = [method invokeWithBridge:nil module:self arguments:@[ @"Test String Value" ]];
     XCTAssertEqualObjects(result, @"Test String Value");
   }
 
@@ -226,19 +271,23 @@ static RCTModuleMethod *buildSyncMethodWithMethodSignature(const char *methodSig
   {
     const char *methodSignature = "methodThatReturnsNil";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
-    XCTAssertFalse(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Unexpected error when parsing sync function with (id) return type");
+    XCTAssertFalse(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Unexpected error when parsing sync function with (id) return type");
   }
 
   {
     const char *methodSignature = "doFoo";
     RCTModuleMethod *method = buildSyncMethodWithMethodSignature(methodSignature);
-    XCTAssertTrue(RCTLogsError(^{
-      // Invoke method to trigger parsing
-      __unused SEL selector = method.selector;
-    }), @"Failed to trigger an error when parsing sync function with non-(id) return type");
+    XCTAssertTrue(
+        RCTLogsError(^{
+          // Invoke method to trigger parsing
+          __unused SEL selector = method.selector;
+        }),
+        @"Failed to trigger an error when parsing sync function with non-(id) return type");
   }
 }
 

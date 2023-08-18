@@ -2,14 +2,14 @@
 
 exports[`Babel plugin inline view configs can inline config for FullNativeComponent.js 1`] = `
 "// @flow
+
 const codegenNativeCommands = require('codegenNativeCommands');
-
 const codegenNativeComponent = require('codegenNativeComponent');
-
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { NativeComponentType } from 'codegenNativeComponent';
 import type { ViewProps } from 'ViewPropTypes';
-type ModuleProps = $ReadOnly<{| ...ViewProps,
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
   // Events
@@ -21,15 +21,15 @@ interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
-
-const NativeComponentRegistry = require('NativeComponentRegistry');
-
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 const {
   dispatchCommand
-} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
-
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -46,32 +46,33 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
   },
   validAttributes: {
     boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
-
   scrollTo(ref, y, animated) {
     dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
   }
-
 };"
 `;
 
 exports[`Babel plugin inline view configs can inline config for FullTypedNativeComponent.js 1`] = `
 "// @flow
+
 const codegenNativeCommands = require('codegenNativeCommands');
-
 const codegenNativeComponent = require('codegenNativeComponent');
-
 import type { NativeComponentType } from 'codegenNativeComponent';
 import type { Int32, BubblingEventHandler, DirectEventHandler, WithDefault } from 'CodegenFlowtypes';
 import type { ViewProps } from 'ViewPropTypes';
-type ModuleProps = $ReadOnly<{| ...ViewProps,
+type ModuleProps = $ReadOnly<{|
+  ...ViewProps,
   // Props
   boolean_default_true_optional_both?: WithDefault<boolean, true>,
   // Events
@@ -83,15 +84,15 @@ interface NativeCommands {
   +hotspotUpdate: (viewRef: React.ElementRef<NativeType>, x: Int32, y: Int32) => void,
   +scrollTo: (viewRef: React.ElementRef<NativeType>, y: Int32, animated: boolean) => void,
 }
-
-const NativeComponentRegistry = require('NativeComponentRegistry');
-
+const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
+const {
+  ConditionallyIgnoredEventHandlers
+} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 const {
   dispatchCommand
-} = require(\\"react-native/Libraries/Renderer/shims/ReactNative\\");
-
+} = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
-export default NativeComponentRegistry.get(nativeComponentName, () => ({
+export const __INTERNAL_VIEW_CONFIG = {
   uiViewClassName: 'RCTModule',
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
@@ -108,25 +109,25 @@ export default NativeComponentRegistry.get(nativeComponentName, () => ({
   },
   validAttributes: {
     boolean_default_true_optional_both: true,
-    onDirectEventDefinedInlineNull: true,
-    onBubblingEventDefinedInlineNull: true
+    ...ConditionallyIgnoredEventHandlers({
+      onDirectEventDefinedInlineNull: true,
+      onBubblingEventDefinedInlineNull: true
+    })
   }
-}));
+};
+export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   hotspotUpdate(ref, x, y) {
     dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
-
   scrollTo(ref, y, animated) {
     dispatchCommand(ref, \\"scrollTo\\", [y, animated]);
   }
-
 };"
 `;
 
 exports[`Babel plugin inline view configs can inline config for NotANativeComponent.js 1`] = `
-"const requireNativeComponent = require('requireNativeComponent');
-
+"const requireNativeComponent = require('requireNativeComponent').default;
 export default 'Not a view config';"
 `;
 

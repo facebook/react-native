@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
+
 const React = require('react');
 
 import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
@@ -19,7 +21,12 @@ class AppStateSubscription extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  state = {
+  state: {
+    appState: ?string,
+    eventsDetected: Array<string>,
+    memoryWarnings: number,
+    previousAppStates: Array<?(any | string)>,
+  } = {
     appState: AppState.currentState,
     previousAppStates: [],
     memoryWarnings: 0,
@@ -65,7 +72,7 @@ class AppStateSubscription extends React.Component<
     this.setState({eventsDetected});
   };
 
-  _handleAppStateChange = appState => {
+  _handleAppStateChange = (appState: AppStateValues) => {
     const previousAppStates = this.state.previousAppStates.slice();
     previousAppStates.push(this.state.appState);
     this.setState({
@@ -74,7 +81,7 @@ class AppStateSubscription extends React.Component<
     });
   };
 
-  render() {
+  render(): React.Node {
     if (this.props.showMemoryWarnings) {
       return (
         <View>

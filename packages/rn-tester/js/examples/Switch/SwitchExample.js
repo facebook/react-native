@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const {Switch, Text, View} = require('react-native');
+const {Switch, Text, View, Platform} = require('react-native');
 
 type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
@@ -42,12 +42,12 @@ class BasicSwitchExample extends React.Component<
   {||},
   SimpleSwitchExampleState,
 > {
-  state = {
+  state: SimpleSwitchExampleState = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ExampleRow>
@@ -85,12 +85,12 @@ class DisabledSwitchExample extends React.Component<
   {||},
   SimpleSwitchExampleState,
 > {
-  state = {
+  state: SimpleSwitchExampleState = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <ExampleRow>
@@ -126,12 +126,12 @@ class DisabledSwitchExample extends React.Component<
 }
 
 class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
+  state: any | {colorFalseSwitchIsOn: boolean, colorTrueSwitchIsOn: boolean} = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
   };
 
-  render() {
+  render(): React.Node {
     return (
       <View>
         <Switch
@@ -161,12 +161,13 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
 }
 
 class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
-  state = {
-    eventSwitchIsOn: false,
-    eventSwitchRegressionIsOn: true,
-  };
+  state: any | {eventSwitchIsOn: boolean, eventSwitchRegressionIsOn: boolean} =
+    {
+      eventSwitchIsOn: false,
+      eventSwitchRegressionIsOn: true,
+    };
 
-  render() {
+  render(): React.Node {
     return (
       <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <View>
@@ -207,6 +208,60 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
           </Text>
         </View>
+      </View>
+    );
+  }
+}
+
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+  state: any | {iosBackgroundColor: string} = {
+    iosBackgroundColor: '#ffa500',
+  };
+
+  render(): React.Node {
+    return (
+      <View>
+        <Switch
+          disabled
+          ios_backgroundColor={this.state.iosBackgroundColor}
+          style={{marginBottom: 20}}
+        />
+        <Text>
+          The background color can be seen either when the switch value is false
+          or when the switch is disabled (and the switch is translucent).{' '}
+        </Text>
+      </View>
+    );
+  }
+}
+
+class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+  render(): React.Node {
+    return (
+      <View>
+        <Switch
+          onChange={() => {
+            // eslint-disable-next-line no-alert
+            alert('OnChange Called');
+          }}
+        />
+      </View>
+    );
+  }
+}
+
+class ContainerBackgroundColorStyleExample extends React.Component<
+  {...},
+  $FlowFixMeState,
+> {
+  render(): React.Node {
+    return (
+      <View>
+        <Switch
+          style={{backgroundColor: 'blue'}}
+          thumbColor="white"
+          value={true}
+        />
       </View>
     );
   }
@@ -253,4 +308,25 @@ exports.examples = [
       return <ColorSwitchExample />;
     },
   },
+  {
+    title: 'OnChange receives the change event as an argument',
+    render(): React.Element<any> {
+      return <OnChangeExample />;
+    },
+  },
+  {
+    title: "The container's background color can be set",
+    render(): React.Element<any> {
+      return <ContainerBackgroundColorStyleExample />;
+    },
+  },
 ];
+
+if (Platform.OS === 'ios') {
+  exports.examples.push({
+    title: '[iOS Only] Custom background colors can be set',
+    render(): React.Element<any> {
+      return <IOSBackgroundColEx />;
+    },
+  });
+}
