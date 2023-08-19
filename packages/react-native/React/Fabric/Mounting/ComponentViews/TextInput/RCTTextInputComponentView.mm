@@ -597,7 +597,7 @@ using namespace facebook::react;
   bool previousScrollEnabled = _backedTextInputView.scrollEnabled;
   NSInteger previousOffsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                         toPosition:selectedRange.start];
-  if (previousScrollEnabled == YES && attributedString.string.length >= previousOffsetStart) {
+  if (previousScrollEnabled && previousOffsetStart > 0 && attributedString.string.length >= previousOffsetStart) {
     NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(previousOffsetStart - 1, 1)];
     NSInteger previousOffsetFromEnd = oldTextLength - previousOffsetStart;
     if (previousOffsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
