@@ -259,6 +259,52 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(pods_projects_mock.save_invocation_count, 1)
     end
 
+    def test_excludeArchitectures_whenHermesEngineIsNotIncluded_preserveExistingValue
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new()
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
+    def test_excludeArchitectures_whenHermesEngineIsIncluded_appendI386
+        # Arrange
+        user_project_mock = prepare_empty_user_project_mock()
+        user_project_mock.build_configurations.each do |config|
+            config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"], "arm64 i386")
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+    end
+
     # ================= #
     # Test - Fix Config #
     # ================= #
