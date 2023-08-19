@@ -600,7 +600,7 @@ using namespace facebook::react;
   if (previousScrollEnabled && previousOffsetStart > 0 && attributedString.string.length >= previousOffsetStart) {
     NSString *lastChar = [attributedString.string substringWithRange:NSMakeRange(previousOffsetStart - 1, 1)];
     NSInteger previousOffsetFromEnd = oldTextLength - previousOffsetStart;
-    if (previousOffsetFromEnd != 0 && [lastChar isEqual:@"\n"]) {
+    if (previousOffsetFromEnd > 0 && [lastChar isEqual:@"\n"]) {
       _backedTextInputView.scrollEnabled = NO;
     }
   }
