@@ -606,7 +606,7 @@ using namespace facebook::react;
   }
 
   _backedTextInputView.attributedText = attributedString;
-  if (_backedTextInputView.scrollEnabled == NO && previousScrollEnabled) {
+  if (!_backedTextInputView.scrollEnabled && previousScrollEnabled) {
     _backedTextInputView.scrollEnabled = YES;
   }
 
