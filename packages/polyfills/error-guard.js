@@ -118,6 +118,6 @@ const ErrorUtils = {
   },
 };
 
-global.ErrorUtils = ErrorUtils;
+// global.ErrorUtils = ErrorUtils;
 
 export type ErrorUtilsT = typeof ErrorUtils;
