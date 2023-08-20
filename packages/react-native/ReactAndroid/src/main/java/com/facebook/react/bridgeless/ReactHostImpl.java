@@ -1176,6 +1176,61 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined("ReactHost")
   private @Nullable Task<ReactInstance> mReloadTask = null;
 
+  private interface ReactInstanceTaskUnwrapper {
+    @Nullable
+    ReactInstance unwrap(Task<ReactInstance> task, String stage);
+  }
+
+  private ReactInstanceTaskUnwrapper createReactInstanceUnwraper(
+      String tag, String method, String reason) {
+
+    return (task, stage) -> {
+      final ReactInstance reactInstance = task.getResult();
+      final ReactInstance currentReactInstance = mReactInstanceTaskRef.get().getResult();
+
+      final String stageLabel = "Stage: " + stage;
+      final String reasonLabel = tag + " reason: " + reason;
+      if (task.isFaulted()) {
+        final Exception ex = task.getError();
+        final String faultLabel = "Fault reason: " + ex.getMessage();
+        raiseSoftException(
+            method,
+            tag
+                + ": ReactInstance task faulted. "
+                + stageLabel
+                + ". "
+                + faultLabel
+                + ". "
+                + reasonLabel);
+        return currentReactInstance;
+      }
+
+      if (task.isCancelled()) {
+        raiseSoftException(
+            method, tag + ": ReactInstance task cancelled. " + stageLabel + ". " + reasonLabel);
+        return currentReactInstance;
+      }
+
+      if (reactInstance == null) {
+        raiseSoftException(
+            method, tag + ": ReactInstance task returned null. " + stageLabel + ". " + reasonLabel);
+        return currentReactInstance;
+      }
+
+      if (currentReactInstance != null && reactInstance != currentReactInstance) {
+        raiseSoftException(
+            method,
+            tag
+                + ": Detected two different ReactInstances. Returning old. "
+                + stageLabel
+                + ". "
+                + reasonLabel);
+      }
+
+      return reactInstance;
+    };
+  }
+
   /**
    * The ReactInstance is loaded. Tear it down, and re-create it.
    *
@@ -1193,30 +1248,18 @@ public class ReactHostImpl implements ReactHost {
     // TODO(T136397487): Remove after Venice is shipped to 100%
     raiseSoftException(method, reason);
 
+    ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
+        createReactInstanceUnwraper("Reload", method, reason);
+
     if (mReloadTask == null) {
       mReloadTask =
           mReactInstanceTaskRef
               .get()
               .continueWithTask(
                   (task) -> {
-                    log(method, "Starting on UI thread");
-
-                    if (task.isFaulted()) {
-                      raiseSoftException(
-                          method,
-                          "ReactInstance task faulted. Reload reason: " + reason,
-                          task.getError());
-                    }
-
-                    if (task.isCancelled()) {
-                      raiseSoftException(
-                          method, "ReactInstance task cancelled. Reload reason: " + reason);
-                    }
-
-                    final ReactInstance reactInstance = task.getResult();
-                    if (reactInstance == null) {
-                      raiseSoftException(method, "ReactInstance is null. Reload reason: " + reason);
-                    }
+                    log(method, "Starting React Native reload");
+                    final @Nullable ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "1: Starting reload");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
                     if (reactContext == null) {
@@ -1230,13 +1273,16 @@ public class ReactHostImpl implements ReactHost {
                       reactContext.onHostPause();
                     }
 
-                    return task;
+                    return Task.forResult(reactInstance);
                   },
                   mUIExecutor)
               .continueWithTask(
                   task -> {
-                    final ReactInstance reactInstance = task.getResult();
+                    final ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "2: Surface shutdown");
+
                     if (reactInstance == null) {
+                      raiseSoftException(method, "Skipping surface shutdown: ReactInstance null");
                       return task;
                     }
 
@@ -1246,6 +1292,8 @@ public class ReactHostImpl implements ReactHost {
                   mBGExecutor)
               .continueWithTask(
                   task -> {
+                    reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactContext");
+
                     log(method, "Removing memory pressure listener");
                     mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
 
@@ -1267,10 +1315,14 @@ public class ReactHostImpl implements ReactHost {
                   mUIExecutor)
               .continueWithTask(
                   task -> {
-                    final ReactInstance reactInstance = task.getResult();
+                    final ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactInstance");
 
-                    log(method, "Destroying ReactInstance");
-                    if (reactInstance != null) {
+                    if (reactInstance == null) {
+                      raiseSoftException(
+                          method, "Skipping ReactInstance.destroy(): ReactInstance null");
+                    } else {
+                      log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
 
@@ -1287,23 +1339,30 @@ public class ReactHostImpl implements ReactHost {
                     return newGetOrCreateReactInstanceTask();
                   },
                   mBGExecutor)
-              .onSuccess(
+              .continueWithTask(
                   task -> {
-                    final ReactInstance reactInstance = task.getResult();
+                    final ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "5: Restarting surfaces");
+
                     if (reactInstance == null) {
-                      return null;
+                      raiseSoftException(method, "Skipping surface restart: ReactInstance null");
+                      return task;
                     }
 
                     startAttachedSurfaces(method, reactInstance);
-                    return reactInstance;
+
+                    return task;
                   },
                   mBGExecutor)
               .continueWithTask(
                   task -> {
                     if (task.isFaulted()) {
+                      Exception fault = task.getError();
                       raiseSoftException(
                           method,
-                          "Failed to re-created ReactInstance. Task faulted. Reload reason: "
+                          "Error during reload. ReactInstance task faulted. Fault reason: "
+                              + fault.getMessage()
+                              + ". Reload reason: "
                               + reason,
                           task.getError());
                     }
@@ -1311,7 +1370,7 @@ public class ReactHostImpl implements ReactHost {
                     if (task.isCancelled()) {
                       raiseSoftException(
                           method,
-                          "Failed to re-created ReactInstance. Task cancelled. Reload reason: "
+                          "Error during reload. ReactInstance task cancelled. Reload reason: "
                               + reason);
                     }
 
@@ -1345,31 +1404,19 @@ public class ReactHostImpl implements ReactHost {
     // TODO(T136397487): Remove after Venice is shipped to 100%
     raiseSoftException(method, reason, ex);
 
+    ReactInstanceTaskUnwrapper reactInstanceTaskUnwrapper =
+        createReactInstanceUnwraper("Destroy", method, reason);
+
     if (mDestroyTask == null) {
       mDestroyTask =
           mReactInstanceTaskRef
               .get()
               .continueWithTask(
                   task -> {
-                    log(method, "Destroying ReactInstance on UI Thread");
+                    log(method, "Starting React Native destruction");
 
-                    if (task.isFaulted()) {
-                      raiseSoftException(
-                          method,
-                          "ReactInstance task faulted. Destroy reason: " + reason,
-                          task.getError());
-                    }
-
-                    if (task.isCancelled()) {
-                      raiseSoftException(
-                          method, "ReactInstance task cancelled. Destroy reason: " + reason);
-                    }
-
-                    final ReactInstance reactInstance = task.getResult();
-                    if (reactInstance == null) {
-                      raiseSoftException(
-                          method, "ReactInstance is null. Destroy reason: " + reason);
-                    }
+                    final @Nullable ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "1: Starting destroy");
 
                     // Step 1: Destroy DevSupportManager
                     if (mUseDevSupport) {
@@ -1388,13 +1435,16 @@ public class ReactHostImpl implements ReactHost {
                     log(method, "Move ReactHost to onHostDestroy()");
                     mReactLifecycleStateManager.moveToOnHostDestroy(reactContext);
 
-                    return task;
+                    return Task.forResult(reactInstance);
                   },
                   mUIExecutor)
               .continueWithTask(
                   task -> {
-                    final ReactInstance reactInstance = task.getResult();
+                    final ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "2: Stopping surfaces");
+
                     if (reactInstance == null) {
+                      raiseSoftException(method, "Skipping surface shutdown: ReactInstance null");
                       return task;
                     }
 
@@ -1409,6 +1459,8 @@ public class ReactHostImpl implements ReactHost {
                   mBGExecutor)
               .continueWithTask(
                   task -> {
+                    reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactContext");
+
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
 
                     if (reactContext == null) {
@@ -1433,10 +1485,15 @@ public class ReactHostImpl implements ReactHost {
                     return task;
                   },
                   mUIExecutor)
-              .continueWith(
+              .continueWithTask(
                   task -> {
-                    final ReactInstance reactInstance = task.getResult();
-                    if (reactInstance != null) {
+                    final ReactInstance reactInstance =
+                        reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactInstance");
+
+                    if (reactInstance == null) {
+                      raiseSoftException(
+                          method, "Skipping ReactInstance.destroy(): ReactInstance null");
+                    } else {
                       log(method, "Destroying ReactInstance");
                       reactInstance.destroy();
                     }
@@ -1452,9 +1509,30 @@ public class ReactHostImpl implements ReactHost {
 
                     log(method, "Resetting destroy task ref");
                     mDestroyTask = null;
-                    return null;
+                    return task;
                   },
-                  mBGExecutor);
+                  mBGExecutor)
+              .continueWith(
+                  task -> {
+                    if (task.isFaulted()) {
+                      Exception fault = task.getError();
+                      raiseSoftException(
+                          method,
+                          "React destruction failed. ReactInstance task faulted. Fault reason: "
+                              + fault.getMessage()
+                              + ". Destroy reason: "
+                              + reason,
+                          task.getError());
+                    }
+
+                    if (task.isCancelled()) {
+                      raiseSoftException(
+                          method,
+                          "React destruction failed. ReactInstance task cancelled. Destroy reason: "
+                              + reason);
+                    }
+                    return null;
+                  });
     }
 
     return mDestroyTask;
