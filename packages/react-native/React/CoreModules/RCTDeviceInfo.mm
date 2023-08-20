@@ -13,6 +13,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
+#import <React/RCTInvalidating.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
 
@@ -20,13 +21,14 @@
 
 using namespace facebook::react;
 
-@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing>
+@interface RCTDeviceInfo () <NativeDeviceInfoSpec, RCTInitializing, RCTInvalidating>
 @end
 
 @implementation RCTDeviceInfo {
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
+  BOOL _invalidated;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
@@ -70,6 +72,11 @@ RCT_EXPORT_MODULE()
                                              object:nil];
 }
 
+- (void)invalidate
+{
+  _invalidated = YES;
+}
+
 static BOOL RCTIsIPhoneNotched()
 {
   static BOOL isIPhoneNotched = NO;
@@ -108,9 +115,11 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary *)_exportedDimensions
 {
-  RCTAssert(_moduleRegistry, @"ModuleRegistry must be set to properly init dimensions");
+  RCTAssert(!_invalidated, @"Failed to get exported dimensions: RCTDeviceInfo has been invalidated");
+  RCTAssert(_moduleRegistry, @"Failed to get exported dimensions: RCTModuleRegistry is nil");
   RCTAccessibilityManager *accessibilityManager =
       (RCTAccessibilityManager *)[_moduleRegistry moduleForName:"AccessibilityManager"];
+  RCTAssert(accessibilityManager, @"Failed to get exported dimensions: AccessibilityManager is nil");
   CGFloat fontScale = accessibilityManager ? accessibilityManager.multiplier : 1.0;
   return RCTExportedDimensions(fontScale);
 }
