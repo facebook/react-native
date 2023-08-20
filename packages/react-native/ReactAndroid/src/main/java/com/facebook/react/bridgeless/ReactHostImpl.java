@@ -117,6 +117,8 @@ public class ReactHostImpl implements ReactHost {
       new BridgelessAtomicRef<>();
 
   private final AtomicReference<Activity> mActivity = new AtomicReference<>();
+  private final AtomicReference<WeakReference<Activity>> mLastUsedActivity =
+      new AtomicReference<>(new WeakReference<>(null));
   private final BridgelessReactStateTracker mBridgelessReactStateTracker =
       new BridgelessReactStateTracker(DEV);
   private final ReactLifecycleStateManager mReactLifecycleStateManager =
@@ -504,8 +506,16 @@ public class ReactHostImpl implements ReactHost {
     return mActivity.get();
   }
 
+  @Nullable
+  /* package */ Activity getLastUsedActivity() {
+    return mLastUsedActivity.get().get();
+  }
+
   private void setCurrentActivity(@Nullable Activity activity) {
     mActivity.set(activity);
+    if (activity != null) {
+      mLastUsedActivity.set(new WeakReference<>(activity));
+    }
   }
 
   /**
