@@ -216,7 +216,10 @@ void ReactInstance::loadScript(
                 ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
           }
 
+          LOG(WARNING) << "BridgelessReact2: Starting to evaluate bundle";
           runtime.evaluateJavaScript(buffer, sourceURL);
+          LOG(WARNING) << "BridgelessReact2: Finished evaluating bundle";
+
           if (hasLogger) {
             ReactMarker::logTaggedMarkerBridgeless(
                 ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
@@ -230,6 +233,9 @@ void ReactInstance::loadScript(
           }
         } catch (jsi::JSError &error) {
           // Handle uncaught JS errors during loading JS bundle
+          LOG(WARNING)
+              << "BridgelessReact2: JavaScript error while executing bundle: "
+              << error.getMessage();
           *hasFatalJsError_ = true;
           this->jsErrorHandler_.handleJsError(error, true);
         }
