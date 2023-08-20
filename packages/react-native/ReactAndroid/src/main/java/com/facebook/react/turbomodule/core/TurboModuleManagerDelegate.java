@@ -57,5 +57,18 @@ public abstract class TurboModuleManagerDelegate {
     return new ArrayList<>();
   }
 
+  /** Can the TurboModule system create legacy modules? */
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return false;
+  }
+
+  /**
+   * Should the TurboModule system treat all turbo native modules as though they were legacy
+   * modules? This method is for testing purposes only.
+   */
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return false;
+  }
+
   protected synchronized void maybeLoadOtherSoLibraries() {}
 }
