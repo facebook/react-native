@@ -909,29 +909,52 @@ public class ReactHostImpl implements ReactHost {
                         });
 
                     class Result {
-                      final ReactInstance mInstance;
-                      final ReactContext mContext;
-
-                      Result(ReactInstance instance, ReactContext context) {
-                        mInstance = instance;
-                        mContext = context;
-                      }
+                      final ReactInstance mInstance = instance;
+                      final ReactContext mContext = reactContext;
+                      final boolean mIsReloading = mReloadTask != null;
                     }
 
-                    return new Result(instance, reactContext);
+                    return new Result();
                   },
                   mBGExecutor)
               .onSuccess(
                   task -> {
-                    ReactInstance reactInstance = task.getResult().mInstance;
-                    ReactContext reactContext = task.getResult().mContext;
+                    final ReactInstance reactInstance = task.getResult().mInstance;
+                    final ReactContext reactContext = task.getResult().mContext;
+                    final boolean isReloading = task.getResult().mIsReloading;
+                    final boolean isManagerResumed =
+                        mReactLifecycleStateManager.getLifecycleState() == LifecycleState.RESUMED;
 
                     /**
-                     * Call ReactContext.onHostResume() only when already in the resumed state which
-                     * aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
+                     * ReactContext.onHostResume() should only be called when the user navigates to
+                     * the first React Native screen.
+                     *
+                     * <p>During init: The application puts the React manager in a resumed state,
+                     * when the user navigates to a React Native screen. Two types of init: (1) If
+                     * React Native init happens when the user navigates to a React Native screen,
+                     * the React manager will get resumed on init start, so
+                     * ReactContext.onHostResume() will be executed here. (2) If React Native init
+                     * happens before the user navigates to a React Native screen (i.e: React Native
+                     * is preloaded), the React manager won't be in a resumed state here. So
+                     * ReactContext.onHostResume() won't be executed here. But, when the user
+                     * navigates to their first React Native screen, the application will call
+                     * ReactHost.onHostResume(). That will call ReactContext.onHostResume().
+                     *
+                     * <p>During reloads, if the manager isn't resumed, call
+                     * ReactContext.onHostResume(). If React Native is reloading, it seems
+                     * reasonable to assume that: (1) We must have navigated to a React Native
+                     * screen in the past, or (2) We must be on a React Native screen.
                      */
-                    mReactLifecycleStateManager.resumeReactContextIfHostResumed(
-                        reactContext, mActivity.get());
+                    if (isReloading && !isManagerResumed) {
+                      mReactLifecycleStateManager.moveToOnHostResume(reactContext, mActivity.get());
+                    } else {
+                      /**
+                       * Call ReactContext.onHostResume() only when already in the resumed state
+                       * which aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
+                       */
+                      mReactLifecycleStateManager.resumeReactContextIfHostResumed(
+                          reactContext, mActivity.get());
+                    }
 
                     ReactInstanceEventListener[] listeners =
                         new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
