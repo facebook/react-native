@@ -667,7 +667,7 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable Task<Void> mStartTask = null;
 
   private Task<Void> oldStart() {
-    final String method = "oldPreload()";
+    final String method = "oldStart()";
     return Task.call(
             () -> {
               if (mStartTask == null) {
@@ -678,7 +678,7 @@ public class ReactHostImpl implements ReactHost {
                             task -> {
                               if (task.isFaulted()) {
                                 destroy(
-                                    "oldPreload() failure: " + task.getError().getMessage(),
+                                    "oldStart() failure: " + task.getError().getMessage(),
                                     task.getError());
                                 mReactHostDelegate.handleInstanceException(task.getError());
                               }
@@ -695,7 +695,7 @@ public class ReactHostImpl implements ReactHost {
   }
 
   private Task<Void> newStart() {
-    final String method = "newPreload()";
+    final String method = "newStart()";
     return Task.call(
             () -> {
               if (mStartTask == null) {
@@ -708,7 +708,7 @@ public class ReactHostImpl implements ReactHost {
                                 mReactHostDelegate.handleInstanceException(task.getError());
                                 // Wait for destroy to finish
                                 return newGetOrCreateDestroyTask(
-                                        "newPreload() failure: " + task.getError().getMessage(),
+                                        "newStart() failure: " + task.getError().getMessage(),
                                         task.getError())
                                     .continueWithTask(destroyTask -> Task.forError(task.getError()))
                                     .makeVoid();
