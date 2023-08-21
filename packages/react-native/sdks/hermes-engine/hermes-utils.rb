@@ -48,7 +48,7 @@ def compute_hermes_source(build_from_source, hermestag_file, git, version, react
         download_stable_hermes(react_native_path, version, :debug)
         download_stable_hermes(react_native_path, version, :release)
     elsif hermes_artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
-        use_nightly_tarball(source, react_native_path, version)
+        use_nightly_tarball(source, version)
     else
         build_hermes_from_source(source, git)
     end
@@ -80,11 +80,9 @@ def release_tarball_url(version, build_type)
     return "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
 end
 
-def use_nightly_tarball(source, react_native_path, version)
+def use_nightly_tarball(source, version)
     putsIfPodPresent('[Hermes] Nightly version, download pre-built for Hermes')
-    destination_path = download_nightly_hermes(react_native_path, version)
-    # set tarball as hermes engine
-    source[:http] = "file://#{destination_path}"
+    source[:http] = nightly_tarball_url(version)
 end
 
 def putsIfPodPresent(message, level = 'warning')
@@ -121,22 +119,9 @@ def download_hermes_tarball(react_native_path, tarball_url, version, configurati
     return destination_path
 end
 
-# This function downloads the nightly prebuilt version of Hermes based on the passed version
-# and save it in the node_module/react_native/sdks/downloads folder
-# It then returns the path to the hermes tarball
-#
-# Parameters
-# - react_native_path: the path to the React Native folder in node modules. It is used as root path to store the Hermes tarball
-# - version: the version of React Native that requires the Hermes tarball
-# Returns: the path to the downloaded Hermes tarball
-def download_nightly_hermes(react_native_path, version)
-    tarball_url = nightly_tarball_url(version)
-    return download_hermes_tarball(react_native_path, tarball_url, version, nil)
-end
-
 def nightly_tarball_url(version)
     params = "r=snapshots\&g=com.facebook.react\&a=react-native-artifacts\&c=hermes-ios-debug\&e=tar.gz\&v=#{version}-SNAPSHOT"
-    return "http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}"
+    return resolve_url_redirects("http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}")
 end
 
 def build_hermes_from_source(source, git)
@@ -149,6 +134,10 @@ def build_hermes_from_commit(source, git, commit)
     putsIfPodPresent("[Hermes] Installing hermes-engine from commit #{commit}. It may take a while.")
     source[:git] = git
     source[:commit] = commit
+end
+
+def resolve_url_redirects(url)
+    return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
 end
 
 # This function checks that Hermes artifact exists.
