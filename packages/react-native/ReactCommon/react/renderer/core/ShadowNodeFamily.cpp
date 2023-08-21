@@ -17,6 +17,7 @@
 namespace facebook::react {
 
 using AncestorList = ShadowNode::AncestorList;
+using AncestorListOfShared = ShadowNode::AncestorListOfShared;
 
 ShadowNodeFamily::ShadowNodeFamily(
     ShadowNodeFamilyFragment const &fragment,
@@ -87,6 +88,46 @@ AncestorList ShadowNodeFamily::getAncestors(
       if (childNode->family_.get() == childFamily) {
         ancestors.emplace_back(*parentNode, childIndex);
         parentNode = childNode.get();
+        found = true;
+        break;
+      }
+      childIndex++;
+    }
+
+    if (!found) {
+      ancestors.clear();
+      return ancestors;
+    }
+  }
+
+  return ancestors;
+}
+
+AncestorListOfShared ShadowNodeFamily::getSharedAncestors(
+    std::shared_ptr<const ShadowNode> ancestorShadowNode) const {
+  auto families = butter::small_vector<ShadowNodeFamily const *, 64>{};
+  auto ancestorFamily = ancestorShadowNode->family_.get();
+
+  auto family = this;
+  while ((family != nullptr) && family != ancestorFamily) {
+    families.push_back(family);
+    family = family->parent_.lock().get();
+  }
+
+  if (family != ancestorFamily) {
+    return {};
+  }
+
+  auto ancestors = AncestorListOfShared{};
+  auto parentNode = ancestorShadowNode;
+  for (auto it = families.rbegin(); it != families.rend(); it++) {
+    auto childFamily = *it;
+    auto found = false;
+    auto childIndex = 0;
+    for (const auto &childNode : *parentNode->children_) {
+      if (childNode->family_.get() == childFamily) {
+        ancestors.emplace_back(parentNode, childIndex);
+        parentNode = childNode;
         found = true;
         break;
       }

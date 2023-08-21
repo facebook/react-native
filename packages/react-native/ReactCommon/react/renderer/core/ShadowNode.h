@@ -49,6 +49,9 @@ class ShadowNode : public Sealable,
           std::reference_wrapper<ShadowNode const> /* parentNode */,
           int /* childIndex */>,
       64>;
+  using AncestorListOfShared = butter::small_vector<
+      std::pair<ShadowNode::Shared /* parentNode */, int /* childIndex */>,
+      64>;
 
   static SharedListOfShared emptySharedShadowNodeSharedList();
 

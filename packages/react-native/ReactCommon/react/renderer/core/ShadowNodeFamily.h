@@ -54,6 +54,11 @@ class ShadowNodeFamily final {
           std::reference_wrapper<ShadowNode const> /* parentNode */,
           int /* childIndex */>,
       64>;
+  using AncestorListOfShared = butter::small_vector<
+      std::pair<
+          std::shared_ptr<ShadowNode const> /* parentNode */,
+          int /* childIndex */>,
+      64>;
 
   ShadowNodeFamily(
       ShadowNodeFamilyFragment const &fragment,
@@ -88,6 +93,13 @@ class ShadowNodeFamily final {
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
   AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
+
+  /*
+   * Same method as getAncestors but gives you shared pointers of the ancestors
+   * instead of reference wrappers.
+   */
+  AncestorListOfShared getSharedAncestors(
+      std::shared_ptr<ShadowNode const> ancestorShadowNode) const;
 
   SurfaceId getSurfaceId() const;
 

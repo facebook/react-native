@@ -76,4 +76,14 @@ TEST(ShadowNodeFamilyTest, sealObjectCorrectly) {
   EXPECT_EQ(ancestors2.size(), 2);
   EXPECT_EQ(&ancestors2[0].first.get(), shadowNodeA.get());
   EXPECT_EQ(&ancestors2[1].first.get(), shadowNodeAA.get());
+
+  // Negative shared case:
+  auto ancestors3 = shadowNodeB->getFamily().getSharedAncestors(shadowNodeA);
+  EXPECT_EQ(ancestors3.size(), 0);
+
+  // Positive shared case:
+  auto ancestors4 = shadowNodeAAA->getFamily().getSharedAncestors(shadowNodeA);
+  EXPECT_EQ(ancestors4.size(), 2);
+  EXPECT_EQ(ancestors4[0].first, shadowNodeA);
+  EXPECT_EQ(ancestors4[1].first, shadowNodeAA);
 }
