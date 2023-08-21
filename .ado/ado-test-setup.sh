@@ -51,7 +51,7 @@ THIS_DIR=$PWD
 # osascript -e "tell application \"Terminal\" to do script \"cd ${THIS_DIR}; export SERVERS_NO_WAIT=1; ./IntegrationTests/launchWebSocketServer.command\""
 
 COMMAND="$TMPDIR/launchPackager.command"
-echo "cd ${THIS_DIR}; export SERVERS_NO_WAIT=1; ./packages/react-native/scripts/launchPackager.command" > "$COMMAND"
+echo "cd ${THIS_DIR}; export SERVERS_NO_WAIT=1; PROJECT_ROOT=packages/rn-tester ./packages/react-native/scripts/launchPackager.command" > "$COMMAND"
 chmod +x "$COMMAND"
 open "$COMMAND"
 waitForPackager
