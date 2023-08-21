@@ -15,6 +15,7 @@ import type {
   Page,
   PageDescription,
 } from './types';
+import type {EventReporter} from '../types/EventReporter';
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import Device from './Device';
@@ -49,9 +50,12 @@ export default class InspectorProxy {
   // by debugger to know where to connect.
   _serverBaseUrl: string = '';
 
-  constructor(projectRoot: string) {
+  _eventReporter: ?EventReporter;
+
+  constructor(projectRoot: string, eventReporter: ?EventReporter) {
     this._projectRoot = projectRoot;
     this._devices = new Map();
+    this._eventReporter = eventReporter;
   }
 
   // Process HTTP request sent to server. We only respond to 2 HTTP requests:
@@ -169,6 +173,7 @@ export default class InspectorProxy {
           appName,
           socket,
           this._projectRoot,
+          this._eventReporter,
         );
 
         if (oldDevice) {
@@ -223,6 +228,11 @@ export default class InspectorProxy {
       } catch (e) {
         console.error(e);
         socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+        this._eventReporter?.logEvent({
+          type: 'connect_debugger_frontend',
+          status: 'error',
+          error: e,
+        });
       }
     });
     return wss;
