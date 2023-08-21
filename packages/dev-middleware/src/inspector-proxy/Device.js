@@ -24,6 +24,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import fetch from 'node-fetch';
 import WS from 'ws';
+import type {EventReporter} from '../types/EventReporter';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -89,12 +90,15 @@ export default class Device {
   // Root of the project used for relative to absolute source path conversion.
   _projectRoot: string;
 
+  _eventReporter: ?EventReporter;
+
   constructor(
     id: string,
     name: string,
     app: string,
     socket: WS,
     projectRoot: string,
+    eventReporter: ?EventReporter,
   ) {
     this._id = id;
     this._name = name;
@@ -102,6 +106,7 @@ export default class Device {
     this._pages = [];
     this._deviceSocket = socket;
     this._projectRoot = projectRoot;
+    this._eventReporter = eventReporter;
 
     // $FlowFixMe[incompatible-call]
     this._deviceSocket.on('message', (message: string) => {
@@ -158,6 +163,10 @@ export default class Device {
   // 2. Forwards all messages from the debugger to device as wrappedEvent
   // 3. Sends disconnect event to device when debugger connection socket closes.
   handleDebuggerConnection(socket: WS, pageId: string) {
+    this._eventReporter?.logEvent({
+      type: 'connect_debugger_frontend',
+      status: 'success',
+    });
     // Disconnect current debugger if we already have debugger connected.
     if (this._debuggerConnection) {
       this._debuggerConnection.socket.close();

@@ -10,6 +10,7 @@
  */
 
 import type {NextHandleFunction} from 'connect';
+import type {EventReporter} from './types/EventReporter';
 import type {Logger} from './types/Logger';
 
 import connect from 'connect';
@@ -21,6 +22,7 @@ type Options = $ReadOnly<{
   port: number,
   projectRoot: string,
   logger?: Logger,
+  unstable_eventReporter?: EventReporter,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -33,11 +35,21 @@ export default function createDevMiddleware({
   port,
   projectRoot,
   logger,
+  unstable_eventReporter,
 }: Options): DevMiddlewareAPI {
-  const inspectorProxy = new InspectorProxy(projectRoot);
+  const inspectorProxy = new InspectorProxy(
+    projectRoot,
+    unstable_eventReporter,
+  );
 
   const middleware = connect()
-    .use('/open-debugger', openDebuggerMiddleware({logger}))
+    .use(
+      '/open-debugger',
+      openDebuggerMiddleware({
+        logger,
+        eventReporter: unstable_eventReporter,
+      }),
+    )
     .use((...args) => inspectorProxy.processRequest(...args));
 
   return {
