@@ -443,16 +443,27 @@ public class ReactHostImpl implements ReactHost {
     if (ReactFeatureFlags.enableBridgelessArchitectureNewCreateReloadDestroy) {
       return Task.call(
               () -> {
+                Task<Void> reloadTask = null;
                 if (mDestroyTask != null) {
-                  log(
-                      method,
-                      "Destroying React Native. Waiting for destroy to finish, before reloading React Native.");
-                  return mDestroyTask
-                      .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
-                      .makeVoid();
+                  log(method, "Waiting for destroy to finish, before reloading React Native.");
+                  reloadTask =
+                      mDestroyTask
+                          .continueWithTask(task -> newGetOrCreateReloadTask(reason), mBGExecutor)
+                          .makeVoid();
+                } else {
+                  reloadTask = newGetOrCreateReloadTask(reason).makeVoid();
                 }
 
-                return newGetOrCreateReloadTask(reason).makeVoid();
+                return reloadTask.continueWithTask(
+                    task -> {
+                      if (task.isFaulted()) {
+                        mReactHostDelegate.handleInstanceException(task.getError());
+                        return newGetOrCreateDestroyTask("Reload failed", task.getError());
+                      }
+
+                      return task;
+                    },
+                    mBGExecutor);
               },
               mBGExecutor)
           .continueWithTask(Task::getResult);
