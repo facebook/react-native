@@ -9,34 +9,35 @@
  */
 
 import {
-    UtilsSingleton as Utils,
-    iOSLabel,
-    androidWidget,
-    iOSName,
+  UtilsSingleton as Utils,
+  iOSLabel,
+  androidWidget,
+  iOSName,
 } from '../../helpers/utils';
 
-
 type ImageComponentScreenType = {
-    imageScreenElement: string,
-    plainNetworkImageScreenElement: string,
-    checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
+  imageScreenElement: string,
+  plainNetworkImageScreenElement: string,
+  checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
 };
 
 export const ImageComponentScreen: ImageComponentScreenType = {
-    // reference in the Components list
-    imageScreenElement: Utils.platformSelect({
-      ios: iOSLabel('Image'),
-      android: androidWidget('ViewGroup', 'resource-id', 'Image'),
-    }),
-    // References to elements within the Activity Indicator Component screen
-    plainNetworkImageScreenElement: Utils.platformSelect({
-      ios: iOSName('plain_network_image'),
-      android: androidWidget('ImageView', 'resource-id', 'plain_network_image'),
-    }),
-    // Methods to interact with the elements
-    checkPlainNetworkImageIsDisplayed: async function (
-      this: ImageComponentScreenType,
-    ): Promise<boolean> {
-      return await Utils.checkElementExistence(this.plainNetworkImageScreenElement);
-    },
+  // reference in the Components list
+  imageScreenElement: Utils.platformSelect({
+    ios: iOSLabel('Image'),
+    android: androidWidget('ViewGroup', 'resource-id', 'Image'),
+  }),
+  // References to elements within the Activity Indicator Component screen
+  plainNetworkImageScreenElement: Utils.platformSelect({
+    ios: iOSName('plain_network_image'),
+    android: androidWidget('ImageView', 'resource-id', 'plain_network_image'),
+  }),
+  // Methods to interact with the elements
+  checkPlainNetworkImageIsDisplayed: async function (
+    this: ImageComponentScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(
+      this.plainNetworkImageScreenElement,
+    );
+  },
 };

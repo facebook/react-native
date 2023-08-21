@@ -9,21 +9,21 @@
  */
 
 import {
-    UtilsSingleton as Utils,
-    iOSLabel,
-    androidWidget,
-    iOSName,
+  UtilsSingleton as Utils,
+  iOSLabel,
+  androidWidget,
+  iOSName,
 } from '../../helpers/utils';
 
-
 type JSResponderHandlerComponentScreenType = {
-    jsResponderHandlerScreenElement: string,
-    rowZeroScreenElement: string,
-    checkRowZeroLabelIsDisplayed: () => Promise<boolean>,
-    getRowZeroText: () => Promise<string>,
+  jsResponderHandlerScreenElement: string,
+  rowZeroScreenElement: string,
+  checkRowZeroLabelIsDisplayed: () => Promise<boolean>,
+  getRowZeroText: () => Promise<string>,
 };
 
-export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScreenType = {
+export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScreenType =
+  {
     // reference in the Components list
     jsResponderHandlerScreenElement: Utils.platformSelect({
       ios: iOSLabel('JSResponderHandler'),
@@ -32,7 +32,11 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
     // References to elements within the Activity Indicator Component screen
     rowZeroScreenElement: Utils.platformSelect({
       ios: iOSName('row_js_responder_handler'),
-      android: androidWidget('TextView', 'resource-id', 'row_js_responder_handler'),
+      android: androidWidget(
+        'TextView',
+        'resource-id',
+        'row_js_responder_handler',
+      ),
     }),
     // Methods to interact with the elements
     checkRowZeroLabelIsDisplayed: async function (
@@ -45,4 +49,4 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
     ): Promise<string> {
       return await Utils.getElementText(this.rowZeroScreenElement);
     },
-};
+  };

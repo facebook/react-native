@@ -158,6 +158,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
           <View style={styles.searchRow}>
             <View style={styles.options}>
               <PlainInput
+                testID="search_bar_flat_list"
                 onChangeText={this._onChangeFilterText}
                 placeholder="Search..."
                 value={this.state.filterText}

@@ -93,7 +93,7 @@ function ModalPresentation() {
               styles.modalInnerContainer,
               innerContainerTransparentStyle,
             ]}>
-            <Text>
+            <Text testID='modal_animationType_text'>
               This modal was presented with animationType: '{animationType}'
             </Text>
             {Platform.OS === 'ios' ? (

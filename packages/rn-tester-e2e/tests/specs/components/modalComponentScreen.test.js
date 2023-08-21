@@ -9,7 +9,9 @@
  */
 
 const {ComponentsScreen} = require('../../screens/components.screen.js');
-const {ModalComponentScreen} = require('../../screens/components/modalComponent.screen.js');
+const {
+  ModalComponentScreen,
+} = require('../../screens/components/modalComponent.screen.js');
 import {
   UtilsSingleton as Utils,
   iOSLabel,
@@ -18,21 +20,17 @@ import {
 
 describe('Test is checking modal component', () => {
   test('Should view show mode', async () => {
-    Utils.scrollToElement(ComponentsScreen.modalComponentElement);
+    await ComponentsScreen.scrollUntilElementIsDisplayed();
     expect(
       await ComponentsScreen.checkModalComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickModalComponent();
-    expect(
-      await ModalComponentScreen.checkShowModalIsDisplayed(),
-    ).toBeTruthy();
+    expect(await ModalComponentScreen.checkShowModalIsDisplayed()).toBeTruthy();
     await ModalComponentScreen.clickShowModalButton();
     expect(
-        await ModalComponentScreen.checkModalAnimationTypeIsDisplayed(),
+      await ModalComponentScreen.checkModalAnimationTypeIsDisplayed(),
     ).toBeTruthy();
     await ModalComponentScreen.clickCloseButton();
-    expect(
-        await ModalComponentScreen.checkShowModalIsDisplayed(),
-    ).toBeTruthy();
+    expect(await ModalComponentScreen.checkShowModalIsDisplayed()).toBeTruthy();
   });
 });

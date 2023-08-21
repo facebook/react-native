@@ -27,7 +27,7 @@ type ComponentsScreenType = {
   imageComponentLabelElement: string,
   flatListComponentLabelElement: string,
   jsResponderHandlerComponentLabelElement: string,
-  modalComponentElement: string,
+  modalComponentLabelElement: string,
   newAppScreenComponentElement: string,
   pressableComponentElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
@@ -36,6 +36,7 @@ type ComponentsScreenType = {
   checkFlatListComponentIsDisplayed: () => Promise<boolean>,
   checkJSResponderHandlerComponentIsDisplayed: () => Promise<boolean>,
   checkModalComponentIsDisplayed: () => Promise<boolean>,
+  scrollUntilElementIsDisplayed: () => Promise<boolean>,
   checkNewAppScreenComponentIsDisplayed: () => Promise<boolean>,
   checkPressableComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
@@ -112,6 +113,11 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.modalComponentLabelElement);
+  },
+  scrollUntilElementIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.modalComponentLabelElement);
   },
   checkNewAppScreenComponentIsDisplayed: async function (
     this: ComponentsScreenType,

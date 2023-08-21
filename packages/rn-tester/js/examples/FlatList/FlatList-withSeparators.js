@@ -33,7 +33,7 @@ const Separator =
           styles.separator,
           {backgroundColor: highlighted ? highlightColor : defaultColor},
         ]}>
-        <Text style={styles.separatorText}>{text}</Text>
+        <Text testID="flat-list-separator" style={styles.separatorText}>{text}</Text>
       </View>
     );
   };

@@ -87,7 +87,8 @@ exports.examples = [
         <ActivityIndicator
           style={[styles.centering, styles.gray]}
           color="white"
-          {...testProps('default_activity_indicator')}
+          testID="default_activity_indicator"
+          accessibilityLabel="Wait for content to load!"
         />
       );
     },
@@ -124,7 +125,6 @@ exports.examples = [
           style={[styles.centering, styles.gray]}
           size="large"
           color="white"
-          {...testProps('large_activity_indicator')}
         />
       );
     },
