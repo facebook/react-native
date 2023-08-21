@@ -24,6 +24,7 @@ type ModalComponentScreenType = {
   checkShowModalIsDisplayed: () => Promise<boolean>,
   checkModalAnimationTypeIsDisplayed: () => Promise<boolean>,
   checkModalModeIsDisplayed: () => Promise<boolean>,
+  scrollUntilModalComponentIsDisplayed: () => Promise<void>,
   clickShowModalButton: () => Promise<void>,
   clickCloseButton: () => Promise<void>,
 };
@@ -31,8 +32,8 @@ type ModalComponentScreenType = {
 export const ModalComponentScreen: ModalComponentScreenType = {
   // reference in the Components list
   modalScreenElement: Utils.platformSelect({
-    ios: iOSLabel('Modal'),
-    android: androidWidget('ViewGroup', 'resource-id', 'Modal'),
+    ios: iOSName('Modal'),
+    android: androidWidget('TextView', 'text', 'Modal'),
   }),
   // References to elements within the Modal Component screen
   btnShowModalElement: Utils.platformSelect({
@@ -71,6 +72,11 @@ export const ModalComponentScreen: ModalComponentScreenType = {
     return await Utils.checkElementExistence(
       this.modalAnimationTypeTextElement,
     );
+  },
+  scrollUntilModalComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.modalScreenElement);
   },
   clickShowModalButton: async function (
     this: ModalComponentScreenType,

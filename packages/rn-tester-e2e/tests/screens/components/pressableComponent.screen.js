@@ -22,6 +22,7 @@ type PressableComponentScreenType = {
   onPressText: string,
   checkPressMeHeaderIsDisplayed: () => Promise<boolean>,
   checkOnPressIsDisplayed: () => Promise<boolean>,
+  scrollUntilPressableComponentIsDisplayed: () => Promise<void>,
   clickPressMeButton: () => Promise<void>,
   getOnPressText: () => Promise<string>,
 };
@@ -29,8 +30,8 @@ type PressableComponentScreenType = {
 export const PressableComponentScreen: PressableComponentScreenType = {
   // reference in the Components list
   pressableScreenElement: Utils.platformSelect({
-    ios: iOSLabel('Pressable'),
-    android: androidWidget('ViewGroup', 'resource-id', 'Pressable'),
+    ios: iOSName('Pressable'),
+    android: androidWidget('TextView', 'text', 'Pressable'),
   }),
   // References to elements within the Pressable screen
   pressMeHeaderElement: Utils.platformSelect({
@@ -59,6 +60,11 @@ export const PressableComponentScreen: PressableComponentScreenType = {
     this: PressableComponentScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.onPressText);
+  },
+  scrollUntilPressableComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.pressableScreenElement);
   },
   clickPressMeButton: async function (
     this: PressableComponentScreenType,

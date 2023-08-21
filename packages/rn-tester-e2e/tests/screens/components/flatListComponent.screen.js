@@ -32,8 +32,8 @@ type FlatListComponentScreenType = {
   btnToggleTrueElement: string,
   btnToogleFalseElement: string,
   onStartBtnTestElement: string,
-  onStartPizzaElement: string,
-  onStartIceCreamElement: string,
+  pizzaElement: string,
+  iceCreamElement: string,
   contentInsetMenuElement: string,
   separatorElement: string,
   listHeaderTextElement: string,
@@ -50,14 +50,16 @@ type FlatListComponentScreenType = {
   checkFlatListNestedScreenIsDisplayed: () => Promise<boolean>,
   checkSearchBarIsDisplayed: () => Promise<boolean>,
   checkCollapseButtonIsDisplayed: () => Promise<boolean>,
-  checkOnStartPizzaIsDisplayed: () => Promise<boolean>,
-  checkOnStartIceCreamIsDisplayed: () => Promise<boolean>,
+  checkPizzaIsDisplayed: () => Promise<boolean>,
+  checkIceCreamIsDisplayed: () => Promise<boolean>,
   checkContentInsetMenuIsDisplayed: () => Promise<boolean>,
   checkInvertedToggleFalseButtonIsDisplayed: () => Promise<boolean>,
   checkSeparatorIsDisplayed: () => Promise<boolean>,
   checkListHeaderIsDisplayed: () => Promise<boolean>,
   checkStickyPizzaIsDisplayed: () => Promise<boolean>,
   checkNestedHeaderIsDisplayed: () => Promise<boolean>,
+  scrollUntilOnViewableItemsChangedIsDisplayed: () => Promise<void>,
+  scrollUntilNestedIsDisplayed: () => Promise<void>,
   clickFlatListBasicButton: () => Promise<void>,
   clickFlatListOnStartButton: () => Promise<void>,
   clickFlatListOnStartTestButton: () => Promise<void>,
@@ -74,9 +76,9 @@ type FlatListComponentScreenType = {
 
 export const FlatListComponentScreen: FlatListComponentScreenType = {
   // reference in the Components list
-  flatListComponentScreenElement: Utils.platformSelect({
-    ios: iOSLabel('FlatList'),
-    android: androidWidget('ViewGroup', 'resource-id', 'FlatList'),
+  flatListScreenElement: Utils.platformSelect({
+    ios: iOSName('FlatList'),
+    android: androidWidget('TextView', 'text', 'FlatList'),
   }),
   // References to elements within the FlatList Component screen
   basicScreenElement: Utils.platformSelect({
@@ -139,11 +141,11 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     ios: iOSName('start_test'),
     android: androidWidget('Button', 'resource-id', 'start_test'),
   }),
-  onStartPizzaElement: Utils.platformSelect({
+  pizzaElement: Utils.platformSelect({
     ios: iOSLabel('Pizza'),
     android: androidWidget('TextView', 'text', 'Pizza'),
   }),
-  onStartIceCreamElement: Utils.platformSelect({
+  iceCreamElement: Utils.platformSelect({
     ios: iOSLabel('Ice Cream'),
     android: androidWidget('TextView', 'text', 'Ice Cream'),
   }),
@@ -167,7 +169,7 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     ios: iOSName('Header'),
     android: androidWidget('TextView', 'text', 'Header'),
   }),
-  // Methods to interact with the elements
+  // Methods to interact with the FlatList elements
   checkSearchBarIsDisplayed: async function (
     this: FlatListComponentScreenType,
   ): Promise<boolean> {
@@ -193,15 +195,15 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.onEndReachedScreenElement);
   },
-  checkOnStartPizzaIsDisplayed: async function (
+  checkPizzaIsDisplayed: async function (
     this: FlatListComponentScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.onStartPizzaElement);
+    return await Utils.checkElementExistence(this.pizzaElement);
   },
-  checkOnStartIceCreamIsDisplayed: async function (
+  checkIceCreamIsDisplayed: async function (
     this: FlatListComponentScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.onStartIceCreamElement);
+    return await Utils.checkElementExistence(this.iceCreamElement);
   },
   checkFlatListContentInsetScreenIsDisplayed: async function (
     this: FlatListComponentScreenType,
@@ -276,6 +278,16 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     this: FlatListComponentScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.nestedHeaderTextElement);
+  },
+  scrollUntilOnViewableItemsChangedIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.onViewableItemsChangedScreenElement);
+  },
+  scrollUntilNestedIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.nestedScreenElement);
   },
   clickFlatListBasicButton: async function (
     this: FlatListComponentScreenType,

@@ -18,14 +18,15 @@ import {
 type NewAppComponentScreenType = {
   newAppScreenElement: string,
   newAppHeaderScreenElement: string,
+  scrollUntilNewAppHeaderComponentIsDisplayed: () => Promise<void>,
   checkNewAppHeaderIsDisplayed: () => Promise<boolean>,
 };
 
 export const NewAppComponentScreen: NewAppComponentScreenType = {
   // reference in the Components list
   newAppScreenElement: Utils.platformSelect({
-    ios: iOSLabel('New App Screen'),
-    android: androidWidget('ViewGroup', 'resource-id', 'New App Screen'),
+    ios: iOSName('New App Screen'),
+    android: androidWidget('TextView', 'text', 'New App Screen'),
   }),
   // References to elements within the New App Component screen
   newAppHeaderScreenElement: Utils.platformSelect({
@@ -33,6 +34,11 @@ export const NewAppComponentScreen: NewAppComponentScreenType = {
     android: androidWidget('TextView', 'text', 'New App Screen Header'),
   }),
   // Methods to interact with the elements
+  scrollUntilNewAppHeaderComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.newAppScreenElement);
+  },
   checkNewAppHeaderIsDisplayed: async function (
     this: NewAppComponentScreenType,
   ): Promise<boolean> {

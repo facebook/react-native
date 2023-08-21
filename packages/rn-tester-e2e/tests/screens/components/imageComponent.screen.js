@@ -18,21 +18,27 @@ import {
 type ImageComponentScreenType = {
   imageScreenElement: string,
   plainNetworkImageScreenElement: string,
+  scrollUntilImageComponentIsDisplayed: () => Promise<void>,
   checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
 };
 
 export const ImageComponentScreen: ImageComponentScreenType = {
   // reference in the Components list
   imageScreenElement: Utils.platformSelect({
-    ios: iOSLabel('Image'),
-    android: androidWidget('ViewGroup', 'resource-id', 'Image'),
+    ios: iOSName('Image'),
+    android: androidWidget('TextView', 'text', 'Image'),
   }),
-  // References to elements within the Activity Indicator Component screen
+  // References to elements within the Image Component screen
   plainNetworkImageScreenElement: Utils.platformSelect({
     ios: iOSName('plain_network_image'),
     android: androidWidget('ImageView', 'resource-id', 'plain_network_image'),
   }),
   // Methods to interact with the elements
+  scrollUntilImageComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.imageScreenElement);
+  },
   checkPlainNetworkImageIsDisplayed: async function (
     this: ImageComponentScreenType,
   ): Promise<boolean> {

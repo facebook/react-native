@@ -13,13 +13,20 @@ import {UtilsSingleton as Utils, iOSLabel} from '../helpers/utils';
 // root level screen in RNTester: Components
 
 const buttonComponentLabel = 'Button Simple React Native button component.';
-const activityIndicatorComponentLabel = 'ActivityIndicator Animated loading indicators.';
-const imageComponentLabel = 'Image Base component for displaying different types of images.';
+const activityIndicatorComponentLabel =
+  'ActivityIndicator Animated loading indicators.';
+const imageComponentLabel =
+  'Image Base component for displaying different types of images.';
 const flatListComponentLabel = 'FlatList Performant, scrollable list of data.';
-const jsResponderHandlerComponentLabel = 'JSResponderHandler Simple example to test JSResponderHandler.';
+const jsResponderHandlerComponentLabel =
+  'JSResponderHandler Simple example to test JSResponderHandler.';
 const modalComponentLabel = 'Modal Component for presenting modal views.';
-const newAppScreenComponentLabel = 'New App Screen Displays the content of the new app screen';
-const pressableComponentLabel = 'Pressable Component for making views pressable.';
+const newAppScreenComponentLabel =
+  'New App Screen Displays the content of the new app screen';
+const pressableComponentLabel =
+  'Pressable Component for making views pressable.';
+const refreshControlComponentLabel =
+  'RefreshControl Adds pull-to-refresh support to a scrollview.';
 
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
@@ -30,15 +37,16 @@ type ComponentsScreenType = {
   modalComponentLabelElement: string,
   newAppScreenComponentElement: string,
   pressableComponentElement: string,
+  refreshControlComponentElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
   checkImageComponentIsDisplayed: () => Promise<boolean>,
   checkFlatListComponentIsDisplayed: () => Promise<boolean>,
   checkJSResponderHandlerComponentIsDisplayed: () => Promise<boolean>,
   checkModalComponentIsDisplayed: () => Promise<boolean>,
-  scrollUntilElementIsDisplayed: () => Promise<boolean>,
   checkNewAppScreenComponentIsDisplayed: () => Promise<boolean>,
   checkPressableComponentIsDisplayed: () => Promise<boolean>,
+  checkRefreshControlComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
   clickImageComponent: () => Promise<void>,
@@ -47,6 +55,7 @@ type ComponentsScreenType = {
   clickModalComponent: () => Promise<void>,
   clickNewAppScreenComponent: () => Promise<void>,
   clickPressableComponent: () => Promise<void>,
+  clickRefreshControlComponent: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -83,6 +92,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     ios: iOSLabel(pressableComponentLabel),
     android: `~${pressableComponentLabel}`,
   }),
+ refreshControlComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(refreshControlComponentLabel),
+    android: `~${refreshControlComponentLabel}`,
+  }),
   // Methods to interact with top level elements in the list
   checkButtonComponentIsDisplayed: async function (
     this: ComponentsScreenType,
@@ -92,7 +105,9 @@ export const ComponentsScreen: ComponentsScreenType = {
   checkActivityIndicatorComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.activityIndicatorComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.activityIndicatorComponentLabelElement,
+    );
   },
   checkImageComponentIsDisplayed: async function (
     this: ComponentsScreenType,
@@ -102,32 +117,42 @@ export const ComponentsScreen: ComponentsScreenType = {
   checkFlatListComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.flatListComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.flatListComponentLabelElement,
+    );
   },
   checkJSResponderHandlerComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.jsResponderHandlerComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.jsResponderHandlerComponentLabelElement,
+    );
   },
   checkModalComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.modalComponentLabelElement);
   },
-  scrollUntilElementIsDisplayed: async function (
-    this: ComponentsScreenType,
-  ): Promise<void> {
-    return await Utils.scrollToElement(this.modalComponentLabelElement);
-  },
   checkNewAppScreenComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.newAppScreenComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.newAppScreenComponentLabelElement,
+    );
   },
   checkPressableComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.pressableComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.pressableComponentLabelElement,
+    );
+  },
+  checkRefreshControlComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(
+      this.refreshControlComponentLabelElement,
+    );
   },
   clickButtonComponent: async function (
     this: ComponentsScreenType,
@@ -168,5 +193,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<void> {
     await Utils.clickElement(this.pressableComponentLabelElement);
+  },
+  clickRefreshControlComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.refreshControlComponentLabelElement);
   },
 };

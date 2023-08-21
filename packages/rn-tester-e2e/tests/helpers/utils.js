@@ -39,34 +39,38 @@ class Utils {
   async scrollToElement(locator: string): Promise<void> {
     let {width, height} = await driver.getWindowSize();
     let elementIsFound;
-    do {
-      driver.touchPerform([
-        {
-          action: 'press',
-          options: {
-            x: width / 2,
-            y: height / 3,
+    try {
+      do {
+        driver.touchPerform([
+          {
+            action: 'press',
+            options: {
+              x: width / 2,
+              y: height / 2,
+            },
           },
-        },
-        {
-          action: 'wait',
-          options: {
-            ms: 2000,
+          {
+            action: 'wait',
+            options: {
+              ms: 2000,
+            },
           },
-        },
-        {
-          action: 'moveTo',
-          options: {
-            x: width / 2,
-            y: height / 4,
+          {
+            action: 'moveTo',
+            options: {
+              x: width / 2,
+              y: height / 10,
+            },
           },
-        },
-        {
-          action: 'release',
-        },
-      ]);
-      elementIsFound = await driver.$(locator).isDisplayed();
-    } while (!elementIsFound);
+          {
+            action: 'release',
+          },
+        ]);
+        elementIsFound = await driver.$(locator).isDisplayed();
+      } while (!elementIsFound);
+    } catch (err) {
+      console.log('Element is not found');
+    }
   }
 }
 

@@ -12,22 +12,24 @@ import {
   UtilsSingleton as Utils,
   iOSLabel,
   androidWidget,
+  iOSName,
 } from '../../helpers/utils';
 
-type ActivityIndicatorComponentScreenType = {
-  activityIndicatorScreenElement: string,
+type RefreshControlComponentScreenType = {
+  refreshControlScreenElement: string,
   defaultActivityIndicatorScreenElement: string,
   checkDefaultActivityIndicatorIsDisplayed: () => Promise<boolean>,
+  scrollUntilRefreshControlComponentIsDisplayed: () => Promise<void>,
 };
 
-export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenType =
+export const RefreshControlComponentScreen: RefreshControlComponentScreenType =
   {
     // reference in the Components list
-    activityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSName('ActivityIndicator'),
-      android: androidWidget('TextView', 'text', 'ActivityIndicator'),
+    refreshControlScreenElement: Utils.platformSelect({
+      ios: iOSName('RefreshControl'),
+      android: androidWidget('TextView', 'text', 'RefreshControl'),
     }),
-    // References to elements within the Activity Indicator Component screen
+    // References to elements within the RefreshControl Component screen
     defaultActivityIndicatorScreenElement: Utils.platformSelect({
       ios: iOSLabel('Wait for content to load!'),
       android: androidWidget(
@@ -43,5 +45,10 @@ export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenT
       return await Utils.checkElementExistence(
         this.defaultActivityIndicatorScreenElement,
       );
+    },
+    scrollUntilRefreshControlComponentIsDisplayed: async function (
+      this: ComponentsScreenType,
+    ): Promise<void> {
+      return await Utils.scrollToElement(this.refreshControlScreenElement);
     },
   };

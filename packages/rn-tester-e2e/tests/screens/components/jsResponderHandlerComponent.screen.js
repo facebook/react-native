@@ -18,6 +18,7 @@ import {
 type JSResponderHandlerComponentScreenType = {
   jsResponderHandlerScreenElement: string,
   rowZeroScreenElement: string,
+  scrollUntilJSResponderHandlerComponentIsDisplayed: () => Promise<void>,
   checkRowZeroLabelIsDisplayed: () => Promise<boolean>,
   getRowZeroText: () => Promise<string>,
 };
@@ -26,8 +27,8 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
   {
     // reference in the Components list
     jsResponderHandlerScreenElement: Utils.platformSelect({
-      ios: iOSLabel('JSResponderHandler'),
-      android: androidWidget('ViewGroup', 'resource-id', 'JSResponderHandler'),
+      ios: iOSName('JSResponderHandler'),
+      android: androidWidget('TextView', 'text', 'JSResponderHandler'),
     }),
     // References to elements within the Activity Indicator Component screen
     rowZeroScreenElement: Utils.platformSelect({
@@ -39,6 +40,11 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
       ),
     }),
     // Methods to interact with the elements
+    scrollUntilJSResponderHandlerComponentIsDisplayed: async function (
+      this: ComponentsScreenType,
+    ): Promise<void> {
+      return await Utils.scrollToElement(this.jsResponderHandlerScreenElement);
+    },
     checkRowZeroLabelIsDisplayed: async function (
       this: JSResponderHandlerComponentScreenType,
     ): Promise<boolean> {
