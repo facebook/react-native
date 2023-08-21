@@ -276,11 +276,11 @@ public class ReactHostImpl implements ReactHost {
     final String method = "onHostResume(activity)";
     log(method);
 
-    mActivity.set(activity);
+    setCurrentActivity(activity);
     ReactContext currentContext = getCurrentReactContext();
 
     // TODO(T137233065): Enable DevSupportManager here
-    mReactLifecycleStateManager.moveToOnHostResume(currentContext, mActivity.get());
+    mReactLifecycleStateManager.moveToOnHostResume(currentContext, getCurrentActivity());
   }
 
   @ThreadConfined(UI)
@@ -291,7 +291,7 @@ public class ReactHostImpl implements ReactHost {
 
     ReactContext currentContext = getCurrentReactContext();
 
-    Activity currentActivity = mActivity.get();
+    Activity currentActivity = getCurrentActivity();
     if (currentActivity != null) {
       String currentActivityClass = currentActivity.getClass().getSimpleName();
       String activityClass = activity == null ? "null" : activity.getClass().getSimpleName();
@@ -321,7 +321,7 @@ public class ReactHostImpl implements ReactHost {
 
     // TODO(T137233065): Disable DevSupportManager here
     mDefaultHardwareBackBtnHandler = null;
-    mReactLifecycleStateManager.moveToOnHostPause(currentContext, mActivity.get());
+    mReactLifecycleStateManager.moveToOnHostPause(currentContext, getCurrentActivity());
   }
 
   /** To be called when the host activity is destroyed. */
@@ -341,7 +341,7 @@ public class ReactHostImpl implements ReactHost {
     final String method = "onHostDestroy(activity)";
     log(method);
 
-    Activity currentActivity = mActivity.get();
+    Activity currentActivity = getCurrentActivity();
 
     // TODO(T137233065): Disable DevSupportManager here
     if (currentActivity == activity) {
@@ -502,6 +502,10 @@ public class ReactHostImpl implements ReactHost {
   @Nullable
   /* package */ Activity getCurrentActivity() {
     return mActivity.get();
+  }
+
+  private void setCurrentActivity(@Nullable Activity activity) {
+    mActivity.set(activity);
   }
 
   /**
@@ -726,7 +730,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   private void moveToHostDestroy(@Nullable ReactContext currentContext) {
     mReactLifecycleStateManager.moveToOnHostDestroy(currentContext);
-    mActivity.set(null);
+    setCurrentActivity(null);
   }
 
   private void raiseSoftException(String method, String message) {
@@ -946,14 +950,15 @@ public class ReactHostImpl implements ReactHost {
                      * screen in the past, or (2) We must be on a React Native screen.
                      */
                     if (isReloading && !isManagerResumed) {
-                      mReactLifecycleStateManager.moveToOnHostResume(reactContext, mActivity.get());
+                      mReactLifecycleStateManager.moveToOnHostResume(
+                          reactContext, getCurrentActivity());
                     } else {
                       /**
                        * Call ReactContext.onHostResume() only when already in the resumed state
                        * which aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
                        */
                       mReactLifecycleStateManager.resumeReactContextIfHostResumed(
-                          reactContext, mActivity.get());
+                          reactContext, getCurrentActivity());
                     }
 
                     ReactInstanceEventListener[] listeners =
@@ -1033,7 +1038,7 @@ public class ReactHostImpl implements ReactHost {
                      aligns with the bridge https://fburl.com/diffusion/2qhxmudv.
                     */
                     mReactLifecycleStateManager.resumeReactContextIfHostResumed(
-                        reactContext, mActivity.get());
+                        reactContext, getCurrentActivity());
 
                     ReactInstanceEventListener[] listeners =
                         new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
@@ -1410,7 +1415,7 @@ public class ReactHostImpl implements ReactHost {
                     }
 
                     // Reset current activity
-                    mActivity.set(null);
+                    setCurrentActivity(null);
 
                     // Clear ResourceIdleDrawableIdMap
                     ResourceDrawableIdHelper.getInstance().clear();
