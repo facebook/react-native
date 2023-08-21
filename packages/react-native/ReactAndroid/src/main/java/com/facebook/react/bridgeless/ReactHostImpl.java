@@ -1116,6 +1116,25 @@ public class ReactHostImpl implements ReactHost {
     mBridgelessReactStateTracker.enterState("ReactHost{" + mId + "}." + method);
   }
 
+  private void stopAttachedSurfaces(String method, ReactInstance reactInstance) {
+    log(method, "Stopping all React Native surfaces");
+    synchronized (mAttachedSurfaces) {
+      for (ReactSurfaceImpl surface : mAttachedSurfaces) {
+        reactInstance.stopSurface(surface);
+        surface.clear();
+      }
+    }
+  }
+
+  private void startAttachedSurfaces(String method, ReactInstance reactInstance) {
+    log(method, "Restarting previously running React Native Surfaces");
+    synchronized (mAttachedSurfaces) {
+      for (ReactSurfaceImpl surface : mAttachedSurfaces) {
+        reactInstance.startSurface(surface);
+      }
+    }
+  }
+
   @ThreadConfined("ReactHost")
   private @Nullable Task<ReactInstance> mReloadTask = null;
 
@@ -1179,18 +1198,11 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance = task.getResult();
-
-                    log(method, "Stopping all React Native surfaces");
-                    synchronized (mAttachedSurfaces) {
-                      for (ReactSurfaceImpl surface : mAttachedSurfaces) {
-                        if (reactInstance != null) {
-                          reactInstance.stopSurface(surface);
-                        }
-
-                        surface.clear();
-                      }
+                    if (reactInstance == null) {
+                      return task;
                     }
 
+                    stopAttachedSurfaces(method, reactInstance);
                     return task;
                   },
                   mBGExecutor)
@@ -1240,15 +1252,11 @@ public class ReactHostImpl implements ReactHost {
               .onSuccess(
                   task -> {
                     final ReactInstance reactInstance = task.getResult();
-                    if (reactInstance != null) {
-                      log(method, "Restarting previously running React Native Surfaces");
-
-                      synchronized (mAttachedSurfaces) {
-                        for (ReactSurfaceImpl surface : mAttachedSurfaces) {
-                          reactInstance.startSurface(surface);
-                        }
-                      }
+                    if (reactInstance == null) {
+                      return null;
                     }
+
+                    startAttachedSurfaces(method, reactInstance);
                     return reactInstance;
                   },
                   mBGExecutor)
@@ -1342,7 +1350,34 @@ public class ReactHostImpl implements ReactHost {
                     log(method, "Move ReactHost to onHostDestroy()");
                     mReactLifecycleStateManager.moveToOnHostDestroy(reactContext);
 
-                    // Step 3: De-register the memory pressure listener
+                    return task;
+                  },
+                  mUIExecutor)
+              .continueWithTask(
+                  task -> {
+                    final ReactInstance reactInstance = task.getResult();
+                    if (reactInstance == null) {
+                      return task;
+                    }
+
+                    // Step 3: Stop all React Native surfaces
+                    stopAttachedSurfaces(method, reactInstance);
+
+                    // TODO(T161461674): Should we clear mAttachedSurfaces?
+                    // Not clearing mAttachedSurfaces could lead to a memory leak.
+
+                    return task;
+                  },
+                  mBGExecutor)
+              .continueWithTask(
+                  task -> {
+                    final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
+
+                    if (reactContext == null) {
+                      raiseSoftException(method, "ReactContext is null. Destroy reason: " + reason);
+                    }
+
+                    // Step 4: De-register the memory pressure listener
                     log(method, "Destroying MemoryPressureRouter");
                     mMemoryPressureRouter.destroy(mContext);
 
