@@ -13,20 +13,6 @@ import type {Node} from 'react';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
-export const testProps = (testID: string) => {
-  if (Platform.OS === 'ios') {
-    return {
-      testID,
-      accessible: false,
-    };
-  }
-
-  return {
-    accessible: true,
-    accessibilityLabel: testID,
-  };
-};
-
 function ToggleAnimatingActivityIndicator() {
   const timer = useRef<void | TimeoutID>();
 
