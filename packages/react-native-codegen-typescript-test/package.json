@@ -31,8 +31,8 @@
     "@babel/plugin-transform-destructuring": "^7.20.0",
     "@babel/plugin-transform-flow-strip-types": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
-    "@types/jest": "^29.2.1",
-    "jest": "^29.2.1",
+    "@types/jest": "^29.5.3",
+    "jest": "^29.6.3",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
