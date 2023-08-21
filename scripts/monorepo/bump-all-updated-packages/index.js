@@ -115,9 +115,18 @@ const buildExecutor =
 const buildAllExecutors = () => {
   const executors = [];
 
-  forEachPackage((...params) => {
-    executors.push(buildExecutor(...params));
-  });
+  forEachPackage(
+    (...params) => {
+      executors.push(buildExecutor(...params));
+    },
+    [
+      'assets',
+      'eslint-config-react-native-community',
+      'eslint-plugin-react-native-community',
+      'normalize-color',
+      'polyfills',
+    ],
+  );
 
   return executors;
 };

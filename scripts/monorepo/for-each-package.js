@@ -34,14 +34,16 @@ const getDirectories = source =>
  */
 
 /**
- * Iterate through every package inside /packages (ignoring react-native) and call provided callback for each of them
+ * Iterate through every package inside /packages (ignoring react-native and any additional excluded packages) and call provided callback for each of them
  *
- * @param {forEachPackageCallback} callback The callback which will be called for each package
+ * @param {forEachPackageCallback} callback - The callback which will be called for each package
+ * @param {string[]} [additionalExcludes] - Additional packages to exclude
  */
-const forEachPackage = callback => {
-  // We filter react-native package on purpose, so that no CI's script will be executed for this package in future
+const forEachPackage = (callback, additionalExcludes = []) => {
+  const packagesToExclude = [...PACKAGES_BLOCK_LIST, ...additionalExcludes];
+
   const packagesDirectories = getDirectories(PACKAGES_LOCATION).filter(
-    directoryName => !PACKAGES_BLOCK_LIST.includes(directoryName),
+    directoryName => !packagesToExclude.includes(directoryName),
   );
 
   packagesDirectories.forEach(packageDirectory => {
