@@ -49,7 +49,6 @@ Pod::Spec.new do |spec|
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
       ss.source_files = "destroot/include/**/*.h"
-      ss.exclude_files = ["destroot/include/jsi/jsi/JSIDynamic.{h,cpp}", "destroot/include/jsi/jsi/jsilib-*.{h,cpp}"]
       ss.header_mappings_dir = "destroot/include"
       ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
@@ -79,12 +78,6 @@ Pod::Spec.new do |spec|
       ss.source_files = ''
       ss.public_header_files = 'API/hermes/*.h'
       ss.header_dir = 'hermes'
-    end
-
-    spec.subspec 'JSI' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/jsi/jsi/*.h'
-      ss.header_dir = 'jsi'
     end
 
     spec.subspec 'Public' do |ss|
