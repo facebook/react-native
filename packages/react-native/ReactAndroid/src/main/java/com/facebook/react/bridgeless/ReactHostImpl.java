@@ -16,6 +16,7 @@ import static java.lang.Boolean.TRUE;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -71,6 +72,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 /**
  * A ReactHost is an object that manages a single {@link ReactInstance}. A ReactHost can be
@@ -127,6 +130,9 @@ public class ReactHostImpl implements ReactHost {
   private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
   private MemoryPressureListener mMemoryPressureListener;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
+
+  private final Set<Function0<Unit>> mBeforeDestroyListeners =
+      Collections.synchronizedSet(new HashSet<>());
 
   public ReactHostImpl(
       Context context,
@@ -674,6 +680,20 @@ public class ReactHostImpl implements ReactHost {
         }
       }
       return false;
+    }
+  }
+
+  @Override
+  public void addBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+    synchronized (mBeforeDestroyListeners) {
+      mBeforeDestroyListeners.add(onBeforeDestroy);
+    }
+  }
+
+  @Override
+  public void removeBeforeDestroyListener(@NonNull Function0<Unit> onBeforeDestroy) {
+    synchronized (mBeforeDestroyListeners) {
+      mBeforeDestroyListeners.remove(onBeforeDestroy);
     }
   }
 
@@ -1295,8 +1315,24 @@ public class ReactHostImpl implements ReactHost {
                   },
                   mBGExecutor)
               .continueWithTask(
+                  (task) -> {
+                    reactInstanceTaskUnwrapper.unwrap(
+                        task, "3: Executing Before Destroy Listeners");
+
+                    Set<Function0<Unit>> beforeDestroyListeners;
+                    synchronized (mBeforeDestroyListeners) {
+                      beforeDestroyListeners = new HashSet<>(mBeforeDestroyListeners);
+                    }
+
+                    for (Function0<Unit> destroyListener : beforeDestroyListeners) {
+                      destroyListener.invoke();
+                    }
+                    return task;
+                  },
+                  mUIExecutor)
+              .continueWithTask(
                   task -> {
-                    reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactContext");
+                    reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     log(method, "Removing memory pressure listener");
                     mMemoryPressureRouter.removeMemoryPressureListener(mMemoryPressureListener);
@@ -1320,7 +1356,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactInstance");
+                        reactInstanceTaskUnwrapper.unwrap(task, "5: Destroying ReactInstance");
 
                     if (reactInstance == null) {
                       raiseSoftException(
@@ -1346,7 +1382,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "5: Restarting surfaces");
+                        reactInstanceTaskUnwrapper.unwrap(task, "7: Restarting surfaces");
 
                     if (reactInstance == null) {
                       raiseSoftException(method, "Skipping surface restart: ReactInstance null");
@@ -1463,7 +1499,23 @@ public class ReactHostImpl implements ReactHost {
                   mBGExecutor)
               .continueWithTask(
                   task -> {
-                    reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactContext");
+                    reactInstanceTaskUnwrapper.unwrap(
+                        task, "3: Executing Before Destroy Listeners");
+
+                    Set<Function0<Unit>> beforeDestroyListeners;
+                    synchronized (mBeforeDestroyListeners) {
+                      beforeDestroyListeners = new HashSet<>(mBeforeDestroyListeners);
+                    }
+
+                    for (Function0<Unit> destroyListener : beforeDestroyListeners) {
+                      destroyListener.invoke();
+                    }
+                    return task;
+                  },
+                  mUIExecutor)
+              .continueWithTask(
+                  task -> {
+                    reactInstanceTaskUnwrapper.unwrap(task, "4: Destroying ReactContext");
 
                     final ReactContext reactContext = mBridgelessReactContextRef.getNullable();
 
@@ -1492,7 +1544,7 @@ public class ReactHostImpl implements ReactHost {
               .continueWithTask(
                   task -> {
                     final ReactInstance reactInstance =
-                        reactInstanceTaskUnwrapper.unwrap(task, "3: Destroying ReactInstance");
+                        reactInstanceTaskUnwrapper.unwrap(task, "5: Destroying ReactInstance");
 
                     if (reactInstance == null) {
                       raiseSoftException(
