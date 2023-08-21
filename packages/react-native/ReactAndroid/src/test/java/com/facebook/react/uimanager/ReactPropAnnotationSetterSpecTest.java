@@ -18,7 +18,6 @@ import org.robolectric.RobolectricTestRunner;
 
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
 @RunWith(RobolectricTestRunner.class)
-@Ignore // TODO T14964130
 public class ReactPropAnnotationSetterSpecTest {
 
   private abstract class BaseViewManager extends ViewManager<View, ReactShadowNode> {
