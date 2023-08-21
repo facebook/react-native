@@ -35,7 +35,7 @@ export const NewAppComponentScreen: NewAppComponentScreenType = {
   }),
   // Methods to interact with the elements
   scrollUntilNewAppHeaderComponentIsDisplayed: async function (
-    this: ComponentsScreenType,
+    this: newAppHeaderScreenElement,
   ): Promise<void> {
     return await Utils.scrollToElement(this.newAppScreenElement);
   },

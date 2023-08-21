@@ -17,8 +17,8 @@ import {
 
 type RefreshControlComponentScreenType = {
   refreshControlScreenElement: string,
-  defaultActivityIndicatorScreenElement: string,
-  checkDefaultActivityIndicatorIsDisplayed: () => Promise<boolean>,
+  initialRowScreenElement: string,
+  checkInitialRowIsDisplayed: () => Promise<boolean>,
   scrollUntilRefreshControlComponentIsDisplayed: () => Promise<void>,
 };
 
@@ -30,24 +30,18 @@ export const RefreshControlComponentScreen: RefreshControlComponentScreenType =
       android: androidWidget('TextView', 'text', 'RefreshControl'),
     }),
     // References to elements within the RefreshControl Component screen
-    defaultActivityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSLabel('Wait for content to load!'),
-      android: androidWidget(
-        'FrameLayout',
-        'content-desc',
-        'Wait for content to load!',
-      ),
+    initialRowScreenElement: Utils.platformSelect({
+      ios: iOSName('refresh_control_row'),
+      android: androidWidget('TextView', 'resource-id', 'refresh_control_row'),
     }),
     // Methods to interact with the elements
-    checkDefaultActivityIndicatorIsDisplayed: async function (
-      this: ActivityIndicatorComponentScreenType,
+    checkInitialRowIsDisplayed: async function (
+      this: RefreshControlComponentScreenType,
     ): Promise<boolean> {
-      return await Utils.checkElementExistence(
-        this.defaultActivityIndicatorScreenElement,
-      );
+      return await Utils.checkElementExistence(this.initialRowScreenElement);
     },
     scrollUntilRefreshControlComponentIsDisplayed: async function (
-      this: ComponentsScreenType,
+      this: RefreshControlComponentScreenType,
     ): Promise<void> {
       return await Utils.scrollToElement(this.refreshControlScreenElement);
     },

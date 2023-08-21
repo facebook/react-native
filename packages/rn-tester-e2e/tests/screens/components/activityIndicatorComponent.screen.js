@@ -12,6 +12,7 @@ import {
   UtilsSingleton as Utils,
   iOSLabel,
   androidWidget,
+  iOSName,
 } from '../../helpers/utils';
 
 type ActivityIndicatorComponentScreenType = {

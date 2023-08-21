@@ -27,6 +27,8 @@ const pressableComponentLabel =
   'Pressable Component for making views pressable.';
 const refreshControlComponentLabel =
   'RefreshControl Adds pull-to-refresh support to a scrollview.';
+const scrollViewSimpleExampleComponentLabel =
+  'ScrollViewSimpleExample Component that enables scrolling through child components.';
 
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
@@ -38,6 +40,7 @@ type ComponentsScreenType = {
   newAppScreenComponentElement: string,
   pressableComponentElement: string,
   refreshControlComponentElement: string,
+  scrollViewSimpleExampleComponentElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
   checkImageComponentIsDisplayed: () => Promise<boolean>,
@@ -47,6 +50,7 @@ type ComponentsScreenType = {
   checkNewAppScreenComponentIsDisplayed: () => Promise<boolean>,
   checkPressableComponentIsDisplayed: () => Promise<boolean>,
   checkRefreshControlComponentIsDisplayed: () => Promise<boolean>,
+  checkScrollViewSimpleExampleComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
   clickImageComponent: () => Promise<void>,
@@ -56,6 +60,7 @@ type ComponentsScreenType = {
   clickNewAppScreenComponent: () => Promise<void>,
   clickPressableComponent: () => Promise<void>,
   clickRefreshControlComponent: () => Promise<void>,
+  clickScrollViewSimpleExampleComponent: () => Promise<void>,
 };
 
 export const ComponentsScreen: ComponentsScreenType = {
@@ -92,9 +97,13 @@ export const ComponentsScreen: ComponentsScreenType = {
     ios: iOSLabel(pressableComponentLabel),
     android: `~${pressableComponentLabel}`,
   }),
- refreshControlComponentLabelElement: Utils.platformSelect({
+  refreshControlComponentLabelElement: Utils.platformSelect({
     ios: iOSLabel(refreshControlComponentLabel),
     android: `~${refreshControlComponentLabel}`,
+  }),
+  scrollViewSimpleExampleComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(scrollViewSimpleExampleComponentLabel),
+    android: `~${scrollViewSimpleExampleComponentLabel}`,
   }),
   // Methods to interact with top level elements in the list
   checkButtonComponentIsDisplayed: async function (
@@ -154,6 +163,20 @@ export const ComponentsScreen: ComponentsScreenType = {
       this.refreshControlComponentLabelElement,
     );
   },
+  checkScrollViewSimpleExampleComponentIsDisplayed: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(
+      this.scrollViewSimpleExampleComponentLabelElement,
+    );
+  },
+  scrollViewSimpleExampleComponentElement: async function (
+    this: ComponentsScreenType,
+  ): Promise<boolean> {
+    return await Utils.checkElementExistence(
+      this.scrollViewSimpleExampleComponentLabelElement,
+    );
+  },
   clickButtonComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
@@ -198,5 +221,10 @@ export const ComponentsScreen: ComponentsScreenType = {
     this: ComponentsScreenType,
   ): Promise<void> {
     await Utils.clickElement(this.refreshControlComponentLabelElement);
+  },
+  clickScrollViewSimpleExampleComponent: async function (
+    this: ComponentsScreenType,
+  ): Promise<void> {
+    await Utils.clickElement(this.scrollViewSimpleExampleComponentLabelElement);
   },
 };

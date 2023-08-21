@@ -41,7 +41,7 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
     }),
     // Methods to interact with the elements
     scrollUntilJSResponderHandlerComponentIsDisplayed: async function (
-      this: ComponentsScreenType,
+      this: JSResponderHandlerComponentScreenType,
     ): Promise<void> {
       return await Utils.scrollToElement(this.jsResponderHandlerScreenElement);
     },

@@ -280,12 +280,12 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     return await Utils.checkElementExistence(this.nestedHeaderTextElement);
   },
   scrollUntilOnViewableItemsChangedIsDisplayed: async function (
-    this: ComponentsScreenType,
+    this: FlatListComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.onViewableItemsChangedScreenElement);
   },
   scrollUntilNestedIsDisplayed: async function (
-    this: ComponentsScreenType,
+    this: FlatListComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.nestedScreenElement);
   },

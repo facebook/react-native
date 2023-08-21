@@ -62,7 +62,7 @@ export const PressableComponentScreen: PressableComponentScreenType = {
     return await Utils.checkElementExistence(this.onPressText);
   },
   scrollUntilPressableComponentIsDisplayed: async function (
-    this: ComponentsScreenType,
+    this: PressableComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.pressableScreenElement);
   },

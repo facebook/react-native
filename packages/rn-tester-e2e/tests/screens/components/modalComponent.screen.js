@@ -74,7 +74,7 @@ export const ModalComponentScreen: ModalComponentScreenType = {
     );
   },
   scrollUntilModalComponentIsDisplayed: async function (
-    this: ComponentsScreenType,
+    this: ModalComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.modalScreenElement);
   },
