@@ -9,6 +9,77 @@
 
 namespace facebook::react {
 
+static ShadowNode::Shared getShadowNodeFromEventTarget(
+    jsi::Runtime &runtime,
+    EventTarget const &target) {
+  auto instanceHandle = target.getInstanceHandle(runtime);
+  if (instanceHandle.isObject()) {
+    auto handleObj = instanceHandle.asObject(runtime);
+    if (handleObj.hasProperty(runtime, "stateNode")) {
+      auto stateNode = handleObj.getProperty(runtime, "stateNode");
+      if (stateNode.isObject()) {
+        auto stateNodeObj = stateNode.asObject(runtime);
+        if (stateNodeObj.hasProperty(runtime, "node")) {
+          auto node = stateNodeObj.getProperty(runtime, "node");
+          return shadowNodeFromValue(runtime, node);
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+static bool isViewListeningToEvents(
+    ShadowNode const &shadowNode,
+    std::initializer_list<ViewEvents::Offset> eventTypes) {
+  if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::ViewKind)) {
+    auto props = shadowNode.getProps();
+    auto viewProps = static_cast<ViewProps const &>(*props);
+
+    for (const ViewEvents::Offset eventType : eventTypes) {
+      if (viewProps.events[eventType]) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+static bool isAnyViewInPathToRootListeningToEvents(
+    UIManager const &uiManager,
+    ShadowNode const &shadowNode,
+    std::initializer_list<ViewEvents::Offset> eventTypes) {
+  // Check the target view first
+  if (isViewListeningToEvents(shadowNode, eventTypes)) {
+    return true;
+  }
+
+  // Retrieve the node's root & a list of nodes between the target and the root
+  auto owningRootShadowNode = ShadowNode::Shared{};
+  uiManager.getShadowTreeRegistry().visit(
+      shadowNode.getSurfaceId(),
+      [&owningRootShadowNode](ShadowTree const &shadowTree) {
+        owningRootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+
+  if (owningRootShadowNode == nullptr) {
+    return false;
+  }
+
+  auto &nodeFamily = shadowNode.getFamily();
+  auto ancestors = nodeFamily.getAncestors(*owningRootShadowNode);
+
+  // Check for listeners from the target's parent to the root
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
+    auto &currentNode = it->first.get();
+    if (isViewListeningToEvents(currentNode, eventTypes)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 static PointerEventTarget retargetPointerEvent(
     PointerEvent const &event,
     ShadowNode const &nodeToTarget,
@@ -59,6 +130,72 @@ static ShadowNode::Shared getCaptureTargetOverride(
   return maybeTarget.lock();
 }
 
+/*
+ * Centralized method which determines if an event should be sent to JS by
+ * inspecing the listeners in the target's view path.
+ */
+static bool shouldEmitPointerEvent(
+    ShadowNode const &targetNode,
+    std::string const &type,
+    UIManager const &uiManager) {
+  if (type == "topPointerDown") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::PointerDown,
+         ViewEvents::Offset::PointerDownCapture});
+  } else if (type == "topPointerUp") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::PointerUp, ViewEvents::Offset::PointerUpCapture});
+  } else if (type == "topPointerMove") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::PointerMove,
+         ViewEvents::Offset::PointerMoveCapture});
+  } else if (type == "topPointerEnter") {
+    // This event goes through the capturing phase in full but only bubble
+    // through the target and no futher up the tree
+    return isViewListeningToEvents(
+               targetNode, {ViewEvents::Offset::PointerEnter}) ||
+        isAnyViewInPathToRootListeningToEvents(
+               uiManager,
+               targetNode,
+               {ViewEvents::Offset::PointerEnterCapture});
+  } else if (type == "topPointerLeave") {
+    // This event goes through the capturing phase in full but only bubble
+    // through the target and no futher up the tree
+    return isViewListeningToEvents(
+               targetNode, {ViewEvents::Offset::PointerLeave}) ||
+        isAnyViewInPathToRootListeningToEvents(
+               uiManager,
+               targetNode,
+               {ViewEvents::Offset::PointerLeaveCapture});
+  } else if (type == "topPointerOver") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::PointerOver,
+         ViewEvents::Offset::PointerOverCapture});
+  } else if (type == "topPointerOut") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::PointerOut,
+         ViewEvents::Offset::PointerOutCapture});
+  } else if (type == "topClick") {
+    return isAnyViewInPathToRootListeningToEvents(
+        uiManager,
+        targetNode,
+        {ViewEvents::Offset::Click, ViewEvents::Offset::ClickCapture});
+  }
+  // This is more of an optimization method so if we encounter a type which
+  // has not been specifically addressed above we should just let it through.
+  return true;
+}
+
 void PointerEventsProcessor::interceptPointerEvent(
     jsi::Runtime &runtime,
     EventTarget const *target,
@@ -86,7 +223,11 @@ void PointerEventsProcessor::interceptPointerEvent(
   }
 
   eventTarget->retain(runtime);
-  eventDispatcher(runtime, eventTarget, type, priority, pointerEvent);
+  auto shadowNode = getShadowNodeFromEventTarget(runtime, *eventTarget);
+  if (shadowNode != nullptr &&
+      shouldEmitPointerEvent(*shadowNode, type, uiManager)) {
+    eventDispatcher(runtime, eventTarget, type, priority, pointerEvent);
+  }
   eventTarget->release(runtime);
 
   // Implicit pointer capture release
@@ -159,12 +300,17 @@ void PointerEventsProcessor::processPendingPointerCapture(
     auto retargeted = retargetPointerEvent(event, *activeOverride, uiManager);
 
     retargeted.target->retain(runtime);
-    eventDispatcher(
-        runtime,
-        retargeted.target.get(),
-        "topLostPointerCapture",
-        ReactEventPriority::Discrete,
-        retargeted.event);
+    auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
+    if (shadowNode != nullptr &&
+        shouldEmitPointerEvent(
+            *shadowNode, "topLostPointerCapture", uiManager)) {
+      eventDispatcher(
+          runtime,
+          retargeted.target.get(),
+          "topLostPointerCapture",
+          ReactEventPriority::Discrete,
+          retargeted.event);
+    }
     retargeted.target->release(runtime);
   }
 
@@ -172,12 +318,17 @@ void PointerEventsProcessor::processPendingPointerCapture(
     auto retargeted = retargetPointerEvent(event, *pendingOverride, uiManager);
 
     retargeted.target->retain(runtime);
-    eventDispatcher(
-        runtime,
-        retargeted.target.get(),
-        "topGotPointerCapture",
-        ReactEventPriority::Discrete,
-        retargeted.event);
+    auto shadowNode = getShadowNodeFromEventTarget(runtime, *retargeted.target);
+    if (shadowNode != nullptr &&
+        shouldEmitPointerEvent(
+            *shadowNode, "topGotPointerCapture", uiManager)) {
+      eventDispatcher(
+          runtime,
+          retargeted.target.get(),
+          "topGotPointerCapture",
+          ReactEventPriority::Discrete,
+          retargeted.event);
+    }
     retargeted.target->release(runtime);
   }
 
