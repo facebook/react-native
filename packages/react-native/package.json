@@ -91,7 +91,7 @@
     "react": "18.2.0"
   },
   "dependencies": {
-    "@jest/create-cache-key-function": "^29.2.1",
+    "@jest/create-cache-key-function": "^29.6.3",
     "@react-native-community/cli": "12.0.0-alpha.9",
     "@react-native-community/cli-platform-android": "12.0.0-alpha.9",
     "@react-native-community/cli-platform-ios": "12.0.0-alpha.9",
@@ -109,7 +109,7 @@
     "event-target-shim": "^5.0.1",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
-    "jest-environment-node": "^29.2.1",
+    "jest-environment-node": "^29.6.3",
     "jsc-android": "^250231.0.0",
     "memoize-one": "^5.0.0",
     "metro-runtime": "0.78.0",
