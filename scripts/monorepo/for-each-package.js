@@ -13,7 +13,15 @@ const {readdirSync, readFileSync} = require('fs');
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const PACKAGES_LOCATION = path.join(ROOT_LOCATION, 'packages');
 
-const PACKAGES_BLOCK_LIST = ['react-native'];
+// in 71 some packages don't follow semver so we don't want to release further. (and ofc we want to exclude react-native itself)
+const PACKAGES_BLOCK_LIST = [
+  'react-native',
+  'assets',
+  'eslint-config-react-native-community',
+  'eslint-plugin-react-native-community',
+  'normalize-color',
+  'polyfills',
+];
 
 /**
  * Function, which returns an array of all directories inside specified location
