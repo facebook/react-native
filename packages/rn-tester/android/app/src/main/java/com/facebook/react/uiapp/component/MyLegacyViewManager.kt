@@ -24,22 +24,15 @@ import com.facebook.react.uimanager.annotations.ReactProp
 @ReactModule(name = MyLegacyViewManager.REACT_CLASS)
 internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   SimpleViewManager<MyNativeView>() {
-  companion object {
-    const val REACT_CLASS = "RNTMyLegacyNativeView"
-    const val COMMAND_CHANGE_BACKGROUND_COLOR = 42
-  }
 
-  private val mCallerContext: ReactApplicationContext = reactContext
+  private val callerContext: ReactApplicationContext = reactContext
 
-  override fun getName(): String {
-    return REACT_CLASS
-  }
+  override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView {
-    val view: MyNativeView = MyNativeView(reactContext)
-    view.setBackgroundColor(Color.RED)
-    return view
-  }
+  override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
+    MyNativeView(reactContext).apply {
+      setBackgroundColor(Color.RED)
+    }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
   override fun setOpacity(view: MyNativeView, opacity: Float) {
@@ -58,9 +51,7 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getExportedViewConstants(): Map<String, Any> {
-    return mapOf("PI" to 3.14)
-  }
+  override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
     return MapBuilder.builder<String, Any>()
@@ -96,7 +87,11 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getCommandsMap(): Map<String, Int> {
-    return MapBuilder.of("changeBackgroundColor", COMMAND_CHANGE_BACKGROUND_COLOR)
+  override fun getCommandsMap(): Map<String, Int> =
+    mapOf("changeBackgroundColor" to COMMAND_CHANGE_BACKGROUND_COLOR)
+
+  companion object {
+    const val REACT_CLASS = "RNTMyLegacyNativeView"
+    const val COMMAND_CHANGE_BACKGROUND_COLOR = 42
   }
 }
