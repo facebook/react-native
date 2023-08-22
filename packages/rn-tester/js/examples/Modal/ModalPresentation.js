@@ -229,7 +229,7 @@ function ModalPresentation() {
               {props.animationType}'
             </Text>
             {Platform.OS === 'ios' ? (
-              <Text>
+              <Text testID="modal_animationType_text">
                 It is currently displayed in {currentOrientation} mode.
               </Text>
             ) : null}
