@@ -49,6 +49,8 @@ const {
 
 const {
   throwIfArrayElementTypeAnnotationIsUnsupported,
+  throwIfPartialNotAnnotatingTypeParameter,
+  throwIfPartialWithMoreParameter,
 } = require('./error-utils');
 const {nullGuard} = require('./parsers-utils');
 const {
@@ -473,6 +475,92 @@ function Visitor(infoMap: {isComponent: boolean, isModule: boolean}): {
   };
 }
 
+function emitPartial(
+  hasteModuleName: string,
+  typeAnnotation: $FlowFixMe,
+  types: TypeDeclarationMap,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  parser: Parser,
+): Nullable<NativeModuleTypeAnnotation> {
+  throwIfPartialWithMoreParameter(typeAnnotation);
+
+  throwIfPartialNotAnnotatingTypeParameter(typeAnnotation, types, parser);
+
+  const annotatedElement = parser.extractAnnotatedElement(
+    typeAnnotation,
+    types,
+  );
+  const annotatedElementProperties =
+    parser.getAnnotatedElementProperties(annotatedElement);
+
+  const partialProperties = parser.computePartialProperties(
+    annotatedElementProperties,
+    hasteModuleName,
+    types,
+    aliasMap,
+    enumMap,
+    tryParse,
+    cxxOnly,
+  );
+
+  return emitObject(nullable, partialProperties);
+}
+
+function emitCommonTypes(
+  hasteModuleName: string,
+  types: TypeDeclarationMap,
+  typeAnnotation: $FlowFixMe,
+  aliasMap: {...NativeModuleAliasMap},
+  enumMap: {...NativeModuleEnumMap},
+  tryParse: ParserErrorCapturer,
+  cxxOnly: boolean,
+  nullable: boolean,
+  parser: Parser,
+): $FlowFixMe {
+  const genericTypeAnnotationName =
+    parser.nameForGenericTypeAnnotation(typeAnnotation);
+
+  switch (genericTypeAnnotationName) {
+    case 'Stringish': {
+      return emitStringish(nullable);
+    }
+    case 'Int32': {
+      return emitInt32(nullable);
+    }
+    case 'Double': {
+      return emitDouble(nullable);
+    }
+    case 'Float': {
+      return emitFloat(nullable);
+    }
+    case 'UnsafeObject':
+    case 'Object': {
+      return emitGenericObject(nullable);
+    }
+    case '$Partial':
+    case 'Partial': {
+      return emitPartial(
+        hasteModuleName,
+        typeAnnotation,
+        types,
+        aliasMap,
+        enumMap,
+        tryParse,
+        cxxOnly,
+        nullable,
+        parser,
+      );
+    }
+    default: {
+      return null;
+    }
+  }
+}
+
 module.exports = {
   emitArrayType,
   emitBoolean,
@@ -490,6 +578,8 @@ module.exports = {
   emitStringish,
   emitMixed,
   emitUnion,
+  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
   translateArrayTypeAnnotation,

@@ -127,6 +127,8 @@ function getJavaValueForProp(
     case 'Int32EnumTypeAnnotation':
       addNullable(imports);
       return '@Nullable Integer value';
+    case 'MixedTypeAnnotation':
+      return 'Dynamic value';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

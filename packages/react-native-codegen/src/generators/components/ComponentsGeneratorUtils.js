@@ -122,6 +122,8 @@ function getNativeTypeFromAnnotation(
       return getEnumName(componentName, prop.name);
     case 'Int32EnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
+    case 'MixedTypeAnnotation':
+      return 'folly::dynamic';
     default:
       (typeAnnotation: empty);
       throw new Error(

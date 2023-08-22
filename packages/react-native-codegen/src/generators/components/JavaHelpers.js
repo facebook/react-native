@@ -117,6 +117,14 @@ function getImports(
     if (typeAnnotation.type === 'ObjectTypeAnnotation') {
       imports.add('import com.facebook.react.bridge.ReadableMap;');
     }
+
+    if (typeAnnotation.type === 'MixedTypeAnnotation') {
+      if (type === 'delegate') {
+        imports.add('import com.facebook.react.bridge.DynamicFromObject;');
+      } else {
+        imports.add('import com.facebook.react.bridge.Dynamic;');
+      }
+    }
   });
 
   return imports;

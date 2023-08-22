@@ -57,6 +57,20 @@ export type Spec = {|
   ) => void,
   +sendAccessibilityEvent: (node: Node, eventType: string) => void,
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node,
+  +getBoundingClientRect: (
+    node: Node,
+  ) => [
+    /* x:*/ number,
+    /* y:*/ number,
+    /* width:*/ number,
+    /* height:*/ number,
+  ],
+  +setNativeProps: (node: Node, newProps: NodeProps) => void,
+  +dispatchCommand: (
+    node: Node,
+    commandName: string,
+    args: Array<mixed>,
+  ) => void,
 |};
 
 // This is exposed as a getter because apps using the legacy renderer AND

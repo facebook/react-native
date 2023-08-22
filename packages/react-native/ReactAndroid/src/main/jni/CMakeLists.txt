@@ -78,6 +78,7 @@ add_react_common_subdir(react/renderer/telemetry)
 add_react_common_subdir(react/renderer/templateprocessor)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
+add_react_common_subdir(react/renderer/element)
 add_react_common_subdir(react/renderer/graphics)
 add_react_common_subdir(react/renderer/debug)
 add_react_common_subdir(react/renderer/imagemanager)
@@ -116,3 +117,109 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
+
+# GTest setup
+set(GOOGLETEST_ROOT ${ANDROID_NDK}/sources/third_party/googletest)
+add_library(gtest STATIC ${GOOGLETEST_ROOT}/src/gtest_main.cc ${GOOGLETEST_ROOT}/src/gtest-all.cc)
+target_include_directories(gtest PRIVATE ${GOOGLETEST_ROOT})
+target_include_directories(gtest PUBLIC ${GOOGLETEST_ROOT}/include)
+
+# GTest dependencies
+add_executable(reactnative_unittest
+  ${REACT_COMMON_DIR}/cxxreact/tests/jsarg_helpers.cpp
+  ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
+  ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
+  ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
+  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/MessageTests.cpp
+  ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/RemoteObjectsTableTest.cpp
+  ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/ParagraphAttributesTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/TextAttributesTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/image/tests/ImageTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/root/tests/RootShadowNodeTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/scrollview/tests/ScrollViewTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/ParagraphLocalDataTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/text/tests/TextTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/view/tests/LayoutTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/components/view/tests/ViewTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/DynamicPropsUtilitiesTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/EventQueueProcessorTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/FindNodeAtPointTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/LayoutableShadowNodeTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/core/tests/traitCastTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/graphics/tests/TransformTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/imagemanager/tests/ImageManagerTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/mapbuffer/tests/MapBufferTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/mounting/tests/StackingContextTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/mounting/tests/StateReconciliationTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/SchedulerPriorityTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/telemetry/tests/TransactionTelemetryTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
+  ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
+  
+  ########## (COMPILE BUT FAIL ON ASSERTS) ###########
+  # ${REACT_COMMON_DIR}/react/renderer/animations/tests/LayoutAnimationTest.cpp
+  # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/MountingTest.cpp
+  # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
+  
+  ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
+  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionDemuxTests.cpp
+  # ${REACT_COMMON_DIR}/hermes/inspector/detail/tests/SerialExecutorTests.cpp
+  # ${REACT_COMMON_DIR}/hermes/inspector/tests/InspectorTests.cpp
+  
+  ########## (DO NOT COMPILE) ###########
+  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
+  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
+  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
+  # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionTests.cpp
+  )
+  target_compile_options(reactnative_unittest
+    PRIVATE
+    -Wall
+    -Werror
+    -fexceptions
+    -frtti
+    -std=c++17
+    -DANDROID
+    -DHERMES_ENABLE_DEBUGGER)
+
+  target_link_libraries(reactnative_unittest
+  folly_runtime
+  folly_futures
+  glog  
+  glog_init
+  gtest
+  hermes-engine::libhermes
+  hermes_inspector
+  jsi
+  react_codegen_rncore
+  react_debug
+  react_render_animations
+  react_render_attributedstring
+  react_render_core
+  react_render_debug
+  react_render_element
+  react_render_graphics
+  react_render_mapbuffer
+  react_render_mounting
+  react_render_templateprocessor
+  react_render_textlayoutmanager
+  react_render_uimanager
+  react_utils
+  reactnative
+  rrc_modal
+  rrc_scrollview
+  rrc_text
+  rrc_view
+  yoga
+)

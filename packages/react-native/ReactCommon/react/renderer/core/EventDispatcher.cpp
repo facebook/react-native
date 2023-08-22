@@ -19,7 +19,7 @@ namespace facebook::react {
 EventDispatcher::EventDispatcher(
     EventQueueProcessor const &eventProcessor,
     EventBeat::Factory const &synchonousEventBeatFactory,
-    EventBeat::Factory const &asynchonousEventBeatFactory,
+    EventBeat::Factory const &asynchronousEventBeatFactory,
     EventBeat::SharedOwnerBox const &ownerBox)
     : synchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventProcessor,
@@ -29,10 +29,10 @@ EventDispatcher::EventDispatcher(
           synchonousEventBeatFactory(ownerBox))),
       asynchronousUnbatchedQueue_(std::make_unique<UnbatchedEventQueue>(
           eventProcessor,
-          asynchonousEventBeatFactory(ownerBox))),
+          asynchronousEventBeatFactory(ownerBox))),
       asynchronousBatchedQueue_(std::make_unique<BatchedEventQueue>(
           eventProcessor,
-          asynchonousEventBeatFactory(ownerBox))) {}
+          asynchronousEventBeatFactory(ownerBox))) {}
 
 void EventDispatcher::dispatchEvent(RawEvent &&rawEvent, EventPriority priority)
     const {

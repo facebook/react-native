@@ -387,7 +387,7 @@ public class ReactInstanceManager {
     try {
       handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
     } catch (NoSuchMethodException e) {
-      FLog.e("ReactInstanceHolder", "Failed to set cxx error hanlder function", e);
+      FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
     }
     ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }

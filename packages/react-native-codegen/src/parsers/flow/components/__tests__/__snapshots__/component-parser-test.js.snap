@@ -571,6 +571,20 @@ exports[`RN Codegen Flow Parser can generate fixture ALL_PROP_TYPES_NO_EVENTS 1`
                 'type': 'ReservedPropTypeAnnotation',
                 'name': 'DimensionPrimitive'
               }
+            },
+            {
+              'name': 'mixed_required',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              }
+            },
+            {
+              'name': 'mixed_optional_key',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'MixedTypeAnnotation'
+              }
             }
           ],
           'commands': []

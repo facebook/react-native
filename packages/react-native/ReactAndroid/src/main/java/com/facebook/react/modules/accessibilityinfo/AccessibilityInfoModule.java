@@ -100,10 +100,15 @@ public class AccessibilityInfoModule extends NativeAccessibilityInfoSpec
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private boolean getIsReduceMotionEnabledValue() {
-    String value =
+    // Disabling animations in developer settings will set the animation scale to "0.0"
+    // but setting "reduce motion" / "disable animations" will set the animation scale to "0".
+    String rawValue =
         Settings.Global.getString(mContentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE);
 
-    return value != null && value.equals("0.0");
+    // Parse the value as a float so we can check for a single value.
+    Float parsedValue = rawValue != null ? Float.parseFloat(rawValue) : 1f;
+
+    return parsedValue == 0f;
   }
 
   @Override

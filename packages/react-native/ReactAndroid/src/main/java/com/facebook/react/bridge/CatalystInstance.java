@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an environment allowing
- * the invocation of JavaScript methods and lets a set of Java APIs be invokable from JavaScript as
+ * the invocation of JavaScript methods and lets a set of Java APIs be invocable from JavaScript as
  * well.
  */
 @DoNotStrip

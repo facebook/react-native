@@ -126,11 +126,11 @@ class RN_EXPORT JSBigFileString : public JSBigString {
       const std::string &sourceURL);
 
  private:
-  int m_fd; // The file descriptor being mmaped
-  size_t m_size; // The size of the mmaped region
-  mutable off_t m_pageOff; // The offset in the mmaped region to the data.
-  off_t m_mapOff; // The offset in the file to the mmaped region.
-  mutable const char *m_data; // Pointer to the mmaped region.
+  int m_fd; // The file descriptor being mmapped
+  size_t m_size; // The size of the mmapped region
+  mutable off_t m_pageOff; // The offset in the mmapped region to the data.
+  off_t m_mapOff; // The offset in the file to the mmapped region.
+  mutable const char *m_data; // Pointer to the mmapped region.
 };
 
 } // namespace react

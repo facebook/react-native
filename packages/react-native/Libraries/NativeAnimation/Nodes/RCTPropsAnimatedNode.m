@@ -76,7 +76,7 @@
 {
   if (_managedByFabric) {
     // Restoring to default values causes render of inconsistent state
-    // to the user because it isn't synchonised with Fabric's UIManager.
+    // to the user because it isn't synchronised with Fabric's UIManager.
     return;
   }
   // Restore the default value for all props that were modified by this node.

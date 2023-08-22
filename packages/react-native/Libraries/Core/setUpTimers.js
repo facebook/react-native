@@ -61,7 +61,7 @@ if (global.RN$Bridgeless !== true) {
  * as the Promise.
  */
 if (hasPromiseQueuedToJSVM) {
-  // When promise queues to the JSVM microtasks queue, we shim the immedaite
+  // When promise queues to the JSVM microtasks queue, we shim the immediate
   // APIs via `queueMicrotask` to maintain the backward compatibility.
   polyfillGlobal(
     'setImmediate',
@@ -95,7 +95,7 @@ if (hasHermesPromiseQueuedToJSVM) {
   // Fast path for Hermes.
   polyfillGlobal('queueMicrotask', () => global.HermesInternal?.enqueueJob);
 } else {
-  // Polyfill it with promise (regardless it's polyfiled or native) otherwise.
+  // Polyfill it with promise (regardless it's polyfilled or native) otherwise.
   polyfillGlobal(
     'queueMicrotask',
     () => require('./Timers/queueMicrotask.js').default,

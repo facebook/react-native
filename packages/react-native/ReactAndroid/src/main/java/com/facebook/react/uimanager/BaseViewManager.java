@@ -115,7 +115,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setNextFocusRightId(View.NO_ID);
     view.setNextFocusUpId(View.NO_ID);
 
-    // This is possibly subject to change and overrideable per-platform, but these
+    // This is possibly subject to change and overridable per-platform, but these
     // are the default view flags in View.java:
     // https://android.googlesource.com/platform/frameworks/base/+/a175a5b/core/java/android/view/View.java#2712
     // `mViewFlags = SOUND_EFFECTS_ENABLED | HAPTIC_FEEDBACK_ENABLED | LAYOUT_DIRECTION_INHERIT`

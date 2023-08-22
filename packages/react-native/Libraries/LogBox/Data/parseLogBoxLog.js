@@ -302,7 +302,7 @@ export function parseLogBoxException(
   }
 
   // Most `console.error` calls won't have a componentStack. We parse them like
-  // regular logs which have the component stack burried in the message.
+  // regular logs which have the component stack buried in the message.
   return {
     level: 'error',
     stack: error.stack,

@@ -1468,7 +1468,7 @@ public class SurfaceMountingManager {
               // subtree instead of recursing further.
               if (childrenAreManaged) {
                 try {
-                  // This can happen if the removeAllViews method is overriden to throw,
+                  // This can happen if the removeAllViews method is overridden to throw,
                   // which it is explicitly in some cases (for example embedded Litho views,
                   // but there could be other cases). In those cases, we want to fail silently
                   // and then assume the subtree is /not/ managed by React Native.

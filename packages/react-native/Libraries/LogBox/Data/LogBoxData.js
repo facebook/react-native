@@ -154,7 +154,7 @@ function appendNewLog(newLog: LogBoxLog) {
   if (newLog.level === 'fatal') {
     // If possible, to avoid jank, we don't want to open the error before
     // it's symbolicated. To do that, we optimistically wait for
-    // sybolication for up to a second before adding the log.
+    // symbolication for up to a second before adding the log.
     const OPTIMISTIC_WAIT_TIME = 1000;
 
     let addPendingLog: ?() => void = () => {

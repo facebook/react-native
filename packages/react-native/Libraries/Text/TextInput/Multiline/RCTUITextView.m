@@ -483,7 +483,7 @@ static RCTUIColor *defaultPlaceholderColor() // [macOS]
   CGSize contentSize = super.intrinsicContentSize;
   CGSize placeholderSize = self.placeholderSize;
 #endif // macOS]
-  // When a text input is empty, it actually displays a placehoder.
+  // When a text input is empty, it actually displays a placeholder.
   // So, we have to consider `placeholderSize` as a minimum `contentSize`.
   // Returning size DOES contain `textContainerInset` (aka `padding`).
   return CGSizeMake(MAX(contentSize.width, placeholderSize.width), MAX(contentSize.height, placeholderSize.height));

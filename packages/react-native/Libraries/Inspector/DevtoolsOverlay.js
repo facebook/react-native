@@ -174,7 +174,7 @@ export default function DevtoolsOverlay({
     [findViewForLocation],
   );
 
-  const shouldSetResponser = useCallback(
+  const shouldSetResponder = useCallback(
     (e: PressEvent): boolean => {
       onResponderMove(e);
       return true;
@@ -193,7 +193,7 @@ export default function DevtoolsOverlay({
             onPointerUp: stopInspecting,
           }
         : {
-            onStartShouldSetResponder: shouldSetResponser,
+            onStartShouldSetResponder: shouldSetResponder,
             onResponderMove: onResponderMove,
             onResponderRelease: stopInspecting,
           };

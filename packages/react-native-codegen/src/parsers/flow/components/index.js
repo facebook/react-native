@@ -11,19 +11,20 @@
 'use strict';
 import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
-import type {CommandOptions} from './options';
+import type {CommandOptions} from '../../parsers-commons';
 import type {ComponentSchemaBuilderConfig} from '../../schema.js';
 
 const {getCommands} = require('./commands');
 const {getEvents} = require('./events');
 const {getExtendsProps, removeKnownExtends} = require('./extends');
-const {getCommandOptions, getOptions} = require('./options');
 const {getProps} = require('./props');
 const {getProperties} = require('./componentsUtils.js');
 const {throwIfMoreThanOneCodegenNativecommands} = require('../../error-utils');
 const {
   createComponentConfig,
   findNativeComponentType,
+  getCommandOptions,
+  getOptions,
 } = require('../../parsers-commons');
 
 // $FlowFixMe[signature-verification-failure] there's no flowtype for AST

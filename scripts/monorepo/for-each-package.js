@@ -13,7 +13,7 @@ const {readdirSync, readFileSync} = require('fs');
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const PACKAGES_LOCATION = path.join(ROOT_LOCATION, 'packages');
 
-const PACKAGES_BLOCK_LIST = ['react-native'];
+const DEFAULT_OPTIONS = {includeReactNative: false};
 
 /**
  * Function, which returns an array of all directories inside specified location
@@ -37,11 +37,15 @@ const getDirectories = source =>
  * Iterate through every package inside /packages (ignoring react-native) and call provided callback for each of them
  *
  * @param {forEachPackageCallback} callback The callback which will be called for each package
+ * @param {{includeReactNative: (boolean|undefined)}} [options={}] description
  */
-const forEachPackage = callback => {
+const forEachPackage = (callback, options = DEFAULT_OPTIONS) => {
+  const {includeReactNative} = options;
+
   // We filter react-native package on purpose, so that no CI's script will be executed for this package in future
+  // Unless includeReactNative options is provided
   const packagesDirectories = getDirectories(PACKAGES_LOCATION).filter(
-    directoryName => !PACKAGES_BLOCK_LIST.includes(directoryName),
+    directoryName => directoryName !== 'react-native' || includeReactNative,
   );
 
   packagesDirectories.forEach(packageDirectory => {

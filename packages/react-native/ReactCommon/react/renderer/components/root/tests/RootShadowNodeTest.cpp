@@ -36,11 +36,11 @@ TEST(RootShadowNodeTest, cloneWithLayoutConstraints) {
   EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
   EXPECT_TRUE(rootShadowNode->getIsLayoutClean());
 
-  auto clonedWithDiffentLayoutConstraints = rootShadowNode->clone(
+  auto clonedWithDifferentLayoutConstraints = rootShadowNode->clone(
       parserContext, LayoutConstraints{{0, 0}, {10, 10}}, {});
 
-  EXPECT_FALSE(clonedWithDiffentLayoutConstraints->getIsLayoutClean());
-  EXPECT_TRUE(clonedWithDiffentLayoutConstraints->layoutIfNeeded());
+  EXPECT_FALSE(clonedWithDifferentLayoutConstraints->getIsLayoutClean());
+  EXPECT_TRUE(clonedWithDifferentLayoutConstraints->layoutIfNeeded());
 }
 
 } // namespace facebook::react

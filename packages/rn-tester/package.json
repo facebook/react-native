@@ -28,11 +28,6 @@
     "react": "18.2.0",
     "react-native": "*"
   },
-  "devDependencies": {
-    "babel-plugin-transform-flow-enums":"^0.0.2",
-    "connect": "^3.6.5",
-    "ws": "^6.2.2"
-  },
   "codegenConfig": {
     "name": "AppSpecs",
     "type": "all",

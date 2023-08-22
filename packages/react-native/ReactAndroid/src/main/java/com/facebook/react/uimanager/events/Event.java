@@ -77,7 +77,7 @@ public abstract class Event<T extends Event> {
     //
     // Why does this matter?
     // Events can be sent to Views that are part of the View hierarchy *but not directly managed
-    // by React Native*. For example, embedded custom hierachies, Litho hierachies, etc.
+    // by React Native*. For example, embedded custom hierarchies, Litho hierarchies, etc.
     // In those cases it's important to know that the Event should be sent to the Fabric or
     // non-Fabric UIManager, and we cannot use the ViewTag for inference since it's not controlled
     // by RN and is essentially a random number.

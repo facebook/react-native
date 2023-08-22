@@ -55,7 +55,7 @@ class RawPropsKeyMap final {
       Item const &rhs) noexcept;
   static bool hasSameName(Item const &lhs, Item const &rhs) noexcept;
 
-  butter::small_vector<Item, kNumberOfExplicitlySpecifedPropsSoftCap> items_{};
+  butter::small_vector<Item, kNumberOfExplicitlySpecifiedPropsSoftCap> items_{};
   butter::small_vector<RawPropsPropNameLength, kPropNameLengthHardCap>
       buckets_{};
 };

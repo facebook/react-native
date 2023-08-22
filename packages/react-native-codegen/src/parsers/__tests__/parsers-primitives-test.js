@@ -28,6 +28,8 @@ const {
   emitString,
   emitStringish,
   emitMixed,
+  emitPartial,
+  emitCommonTypes,
   typeAliasResolution,
   typeEnumResolution,
   Visitor,
@@ -1250,6 +1252,246 @@ describe('Visitor', () => {
       visitor.TSInterfaceDeclaration(node);
 
       expect(infoMap.isModule).toBe(false);
+    });
+  });
+});
+
+describe('emitPartial', () => {
+  const hasteModuleName = 'SampleTurboModule';
+  function emitPartialForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
+    return emitPartial(
+      hasteModuleName,
+      typeAnnotation,
+      /* types: TypeDeclarationMap */
+      {},
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
+      {},
+      /* tryParse: ParserErrorCapturer */
+      // $FlowFixMe[missing-local-annot]
+      function <T>(_: () => T) {
+        return null;
+      },
+      /* cxxOnly: boolean */
+      false,
+      nullable,
+      parser,
+    );
+  }
+
+  describe("when 'typeAnnotation' doesn't have exactly 'one' typeParameter", () => {
+    const nullable = false;
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'TypeParameterInstantiation',
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    it('throws an error', () => {
+      expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
+        'Partials only support annotating exactly one parameter.',
+      );
+    });
+  });
+
+  describe('when Partial Not annotating type parameter', () => {
+    const nullable = false;
+    const typeAnnotation = {
+      typeParameters: {
+        params: [
+          {
+            id: {
+              name: 'TypeDeclaration',
+            },
+          },
+        ],
+      },
+      id: {
+        name: 'typeAnnotationName',
+      },
+    };
+
+    it('throws an error', () => {
+      expect(() => emitPartialForUnitTest(typeAnnotation, nullable)).toThrow(
+        'Partials only support annotating a type parameter.',
+      );
+    });
+  });
+});
+
+describe('emitCommonTypes', () => {
+  const hasteModuleName = 'SampleTurboModule';
+
+  function emitCommonTypesForUnitTest(
+    typeAnnotation: $FlowFixMe,
+    nullable: boolean,
+  ): $FlowFixMe {
+    return emitCommonTypes(
+      hasteModuleName,
+      /* types: TypeDeclarationMap */
+      {},
+      typeAnnotation,
+      /* aliasMap: {...NativeModuleAliasMap} */
+      {},
+      /* enumMap: {...NativeModuleEnumMap} */
+      {},
+      /* tryParse: ParserErrorCapturer */
+      // $FlowFixMe[missing-local-annot]
+      function <T>(_: () => T) {
+        return null;
+      },
+      /* cxxOnly: boolean */
+      false,
+      nullable,
+      parser,
+    );
+  }
+
+  describe("when 'typeAnnotation.id.name' is 'Stringish'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'StringTypeAnnotation',
+      },
+      id: {
+        name: 'Stringish',
+      },
+    };
+    const expected = {
+      type: 'StringTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'StringTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Int32'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'Int32TypeAnnotation',
+      },
+      id: {
+        name: 'Int32',
+      },
+    };
+    const expected = {
+      type: 'Int32TypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'Int32TypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Double'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'DoubleTypeAnnotation',
+      },
+      id: {
+        name: 'Double',
+      },
+    };
+    const expected = {
+      type: 'DoubleTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'DoubleTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Float'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'FloatTypeAnnotation',
+      },
+      id: {
+        name: 'Float',
+      },
+    };
+    const expected = {
+      type: 'FloatTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'FloatTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'UnsafeObject'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'UnsafeObject',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is 'Object'", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1, 2],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'Object',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
+    });
+  });
+
+  describe("when 'typeAnnotation.id.name' is '$Partial' i.e. Object", () => {
+    const typeAnnotation = {
+      typeParameters: {
+        params: [1],
+        type: 'GenericObjectTypeAnnotation',
+      },
+      id: {
+        name: 'Object',
+      },
+    };
+    const expected = {
+      type: 'GenericObjectTypeAnnotation',
+    };
+    const result = emitCommonTypesForUnitTest(typeAnnotation, false);
+
+    it("returns 'GenericObjectTypeAnnotation'", () => {
+      expect(result).toEqual(expected);
     });
   });
 });

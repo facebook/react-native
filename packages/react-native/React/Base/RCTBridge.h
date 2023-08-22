@@ -75,7 +75,7 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  *
  * All the interaction with the JavaScript context should be done using the bridge
  * instance of the RCTBridgeModules. Modules will be automatically instantiated
- * using the default contructor, but you can optionally pass in an array of
+ * using the default constructor, but you can optionally pass in an array of
  * pre-initialized module instances if they require additional init parameters
  * or configuration.
  */
@@ -87,7 +87,7 @@ RCT_EXTERN void RCTSetTurboModuleCleanupMode(RCTTurboModuleCleanupMode mode);
  * The designated initializer. This creates a new bridge on top of the specified
  * executor. The bridge should then be used for all subsequent communication
  * with the JavaScript code running in the executor. Modules will be automatically
- * instantiated using the default contructor, but you can optionally pass in an
+ * instantiated using the default constructor, but you can optionally pass in an
  * array of pre-initialized module instances if they require additional init
  * parameters or configuration.
  */

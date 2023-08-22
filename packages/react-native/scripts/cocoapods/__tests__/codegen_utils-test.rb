@@ -248,7 +248,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             CodegenUtils.new().get_react_codegen_script_phases(nil, file_manager: FileMock)
         }
         # Assert
-        assert_equal(Pod::UI.collected_warns, ["[Codegen] error: app_path is requried to use codegen discovery."])
+        assert_equal(Pod::UI.collected_warns, ["[Codegen] error: app_path is required to use codegen discovery."])
     end
 
     def testGetReactCodegenScriptPhases_returnTheScriptObject

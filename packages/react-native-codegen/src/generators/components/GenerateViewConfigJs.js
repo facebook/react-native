@@ -60,6 +60,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
     case 'ObjectTypeAnnotation':
     case 'StringEnumTypeAnnotation':
     case 'Int32EnumTypeAnnotation':
+    case 'MixedTypeAnnotation':
       return j.literal(true);
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {

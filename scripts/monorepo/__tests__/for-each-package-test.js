@@ -38,7 +38,7 @@ describe('forEachPackage', () => {
     );
   });
 
-  it('filters react-native folder', () => {
+  it('filters react-native folder by default', () => {
     const callback = jest.fn();
     readdirSync.mockImplementationOnce(() => [
       {name: 'react-native', isDirectory: () => true},
@@ -47,5 +47,25 @@ describe('forEachPackage', () => {
     forEachPackage(callback);
 
     expect(callback).not.toHaveBeenCalled();
+  });
+
+  it('includes react-native, if such option is provided', () => {
+    const callback = jest.fn();
+    const mockedPackageManifest = '{"name": "react-native"}';
+    const mockedParsedPackageManifest = JSON.parse(mockedPackageManifest);
+    const mockedPackageName = 'react-native';
+
+    readdirSync.mockImplementationOnce(() => [
+      {name: 'react-native', isDirectory: () => true},
+    ]);
+    readFileSync.mockImplementationOnce(() => mockedPackageManifest);
+
+    forEachPackage(callback, {includeReactNative: true});
+
+    expect(callback).toHaveBeenCalledWith(
+      path.join(__dirname, '..', '..', '..', 'packages', mockedPackageName),
+      path.join('packages', mockedPackageName),
+      mockedParsedPackageManifest,
+    );
   });
 });

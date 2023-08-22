@@ -955,7 +955,7 @@ TEST(MessageTests, testSetInstrumentationBreakpointRequest) {
       "id": 1,
       "method": "Debugger.setInstrumentationBreakpoint",
       "params": {
-        "instrumentation": "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM"
+        "instrumentation": "TODO: THIS SHOULD NOT BE ACCEPTED BY ENUM"
       }
     }
   )";
@@ -977,7 +977,8 @@ TEST(MessageTests, testSetInstrumentationBreakpointRequest) {
   EXPECT_EQ(resolvedReq->id, 1);
   EXPECT_EQ(resolvedReq->method, "Debugger.setInstrumentationBreakpoint");
   EXPECT_EQ(
-      resolvedReq->instrumentation, "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM");
+      resolvedReq->instrumentation,
+      "TODO: THIS SHOULD NOT BE ACCEPTED BY ENUM");
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
   EXPECT_EQ(resolvedReq->method, deserializedReq.method);
@@ -990,7 +991,7 @@ TEST(MessageTests, testSetPauseOnExceptionsRequest) {
       "id": 1,
       "method": "Debugger.setPauseOnExceptions",
       "params": {
-        "state": "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM"
+        "state": "TODO: THIS SHOULD NOT BE ACCEPTED BY ENUM"
       }
     }
   )";
@@ -1011,7 +1012,7 @@ TEST(MessageTests, testSetPauseOnExceptionsRequest) {
   // Specifics
   EXPECT_EQ(resolvedReq->id, 1);
   EXPECT_EQ(resolvedReq->method, "Debugger.setPauseOnExceptions");
-  EXPECT_EQ(resolvedReq->state, "TODO: THIS SHOUD NOT BE ACCEPTED BY ENUM");
+  EXPECT_EQ(resolvedReq->state, "TODO: THIS SHOULD NOT BE ACCEPTED BY ENUM");
 
   EXPECT_EQ(resolvedReq->id, deserializedReq.id);
   EXPECT_EQ(resolvedReq->method, deserializedReq.method);

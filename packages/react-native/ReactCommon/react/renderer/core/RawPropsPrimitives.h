@@ -27,7 +27,7 @@ using RawPropsPropNameHash = uint32_t;
  * The number which is *usually* bigger than a number of explicitly specified
  * props for some component.
  */
-constexpr static int kNumberOfExplicitlySpecifedPropsSoftCap = 16;
+constexpr static int kNumberOfExplicitlySpecifiedPropsSoftCap = 16;
 
 /*
  * Special value of `RawPropsValueIndex` which is used to represent `no value`.

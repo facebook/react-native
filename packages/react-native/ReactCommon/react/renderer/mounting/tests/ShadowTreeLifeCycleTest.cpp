@@ -332,7 +332,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 using namespace facebook::react;
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
@@ -342,7 +342,7 @@ TEST(
 }
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     stableBiggerTreeFewerIterationsOptimizedMovesFlattener2) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 1,
@@ -352,7 +352,7 @@ TEST(
 }
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     stableSmallerTreeMoreIterationsOptimizedMovesFlattener) {
   testShadowNodeTreeLifeCycle(
       /* seed */ 0,
@@ -362,7 +362,7 @@ TEST(
 }
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     unstableSmallerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       /* seed */ 1337,
@@ -372,7 +372,7 @@ TEST(
 }
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     unstableBiggerTreeFewerIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       /* seed */ 1337,
@@ -382,7 +382,7 @@ TEST(
 }
 
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       /* seed */ 1337,
@@ -393,7 +393,7 @@ TEST(
 
 // failing test case found 4-25-2021
 TEST(
-    ShadowTreeLifecyleTest,
+    ShadowTreeLifecycleTest,
     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflattening_1167342011) {
   testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
       /* seed */ 1167342011,
@@ -404,7 +404,7 @@ TEST(
 
 // You may uncomment this - locally only! - to generate failing seeds.
 // TEST(
-//     ShadowTreeLifecyleTest,
+//     ShadowTreeLifecycleTest,
 //     unstableSmallerTreeMoreIterationsExtensiveFlatteningUnflatteningManyRandom)
 //     {
 //   std::random_device device;

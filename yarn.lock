@@ -2467,12 +2467,6 @@
     prompts "^2.4.0"
     semver "^6.3.0"
 
-"@react-native-mac/virtualized-lists@^0.0.1":
-  version "0.1.0"
-  dependencies:
-    invariant "^2.2.4"
-    nullthrows "^1.1.1"
-
 "@reactions/component@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@reactions/component/-/component-2.0.2.tgz#40f8c1c2c37baabe57a0c944edb9310dc1ec6642"
@@ -5213,10 +5207,10 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
 
-flow-bin@^0.201.0:
-  version "0.201.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.201.0.tgz#bc8d7c3687526313d7a24dd920873a0273148d81"
-  integrity sha512-fqx6CMOhX9Xm4mN+tq/c7sqcm8aHFV1ipbLz2ZCzoNcPuUNZPoSVYm4p0qZqH0HyzMMEP1OWlU7dIkuSJ02cpg==
+flow-bin@^0.202.0:
+  version "0.202.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.202.0.tgz#1e2eb221252c2ab55c997e5eb921902f3181cc4e"
+  integrity sha512-Yz+yNapJMWWV6Z6pZnBR+naMhFbFJbmMS8ZBQCFUHRqN1TTw7uwitYxRj8DyzLyTpcPReSAjWbWawWPsXJot3w==
 
 flow-enums-runtime@^0.0.5:
   version "0.0.5"
