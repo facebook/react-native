@@ -26,6 +26,7 @@ type DeviceMetadata = $ReadOnly<{
 
 type RequestMetadata = $ReadOnly<{
   pageId: string | null,
+  frontendUserAgent: string | null,
 }>;
 
 class DeviceEventReporter {
@@ -75,6 +76,7 @@ class DeviceEventReporter {
     origin: 'device' | 'proxy',
     metadata: $ReadOnly<{
       pageId: string | null,
+      frontendUserAgent: string | null,
     }>,
   ): void {
     const pendingCommand = this._pendingCommands.get(res.id);
@@ -92,6 +94,7 @@ class DeviceEventReporter {
         deviceId: this._metadata.deviceId,
         deviceName: this._metadata.deviceName,
         pageId: metadata.pageId,
+        frontendUserAgent: metadata.frontendUserAgent,
       });
       return;
     }
@@ -116,6 +119,7 @@ class DeviceEventReporter {
         deviceId: this._metadata.deviceId,
         deviceName: this._metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
+        frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       });
       return;
     }
@@ -131,12 +135,16 @@ class DeviceEventReporter {
       deviceId: this._metadata.deviceId,
       deviceName: this._metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
+      frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
     });
   }
 
   logConnection(
     connectedEntity: 'debugger',
-    metadata: $ReadOnly<{pageId: string}>,
+    metadata: $ReadOnly<{
+      pageId: string,
+      frontendUserAgent: string | null,
+    }>,
   ) {
     this._eventReporter.logEvent({
       type: 'connect_debugger_frontend',
@@ -145,6 +153,7 @@ class DeviceEventReporter {
       deviceName: this._metadata.deviceName,
       deviceId: this._metadata.deviceId,
       pageId: metadata.pageId,
+      frontendUserAgent: metadata.frontendUserAgent,
     });
   }
 
@@ -171,6 +180,7 @@ class DeviceEventReporter {
         deviceId: this._metadata.deviceId,
         deviceName: this._metadata.deviceName,
         pageId: pendingCommand.metadata.pageId,
+        frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
       });
     }
     this._pendingCommands.clear();
@@ -190,6 +200,7 @@ class DeviceEventReporter {
       deviceId: this._metadata.deviceId,
       deviceName: this._metadata.deviceName,
       pageId: pendingCommand.metadata.pageId,
+      frontendUserAgent: pendingCommand.metadata.frontendUserAgent,
     });
   }
 }

@@ -224,7 +224,9 @@ export default class InspectorProxy {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
-        device.handleDebuggerConnection(socket, pageId);
+        device.handleDebuggerConnection(socket, pageId, {
+          userAgent: req.headers['user-agent'] ?? null,
+        });
       } catch (e) {
         console.error(e);
         socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
