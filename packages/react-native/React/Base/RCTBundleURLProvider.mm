@@ -107,13 +107,6 @@ static NSURL *serverRootWithHostPort(NSString *hostPort, NSString *scheme)
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
   NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-  // TODO(huntie): Temporary string match in JSON response. We will revert this
-  // endpoint back to "packager-status:running" in the next CLI alpha.
-  if ([status containsString:@"\"status\":\"running\""]) {
-    return true;
-  }
-
   return [status isEqualToString:@"packager-status:running"];
 }
 
