@@ -170,13 +170,6 @@ export const ComponentsScreen: ComponentsScreenType = {
       this.scrollViewSimpleExampleComponentLabelElement,
     );
   },
-  scrollViewSimpleExampleComponentElement: async function (
-    this: ComponentsScreenType,
-  ): Promise<boolean> {
-    return await Utils.checkElementExistence(
-      this.scrollViewSimpleExampleComponentLabelElement,
-    );
-  },
   clickButtonComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
