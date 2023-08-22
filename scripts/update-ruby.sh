@@ -36,7 +36,7 @@ fi
 rm -f Gemfile.lock
 
 export BUNDLE_APP_CONFIG="$ROOT/.bundle"
-cp "$BUNDLE_APP_CONFIG/"* template/_bundle # sync!
+cp "$BUNDLE_APP_CONFIG/"* packages/react-native/template/_bundle # sync!
 
 bundle lock
 

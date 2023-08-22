@@ -12,10 +12,10 @@
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
-      '<rootDir>/jest/assetFileTransformer.js',
-    '.*': './jest/private/preprocessor.js',
+      '<rootDir>/packages/react-native/jest/assetFileTransformer.js',
+    '.*': './packages/react-native/jest/private/preprocessor.js',
   },
-  setupFiles: ['./jest/local-setup.js'],
+  setupFiles: ['./packages/react-native/jest/local-setup.js'],
   fakeTimers: {
     enableGlobally: true,
     legacyFakeTimers: true,
@@ -27,9 +27,9 @@ module.exports = {
   testRegex: '/__tests__/.*-test\\.js$',
   testPathIgnorePatterns: [
     '/node_modules/',
-    '<rootDir>/template',
-    'Libraries/Renderer',
-    'packages/rn-tester/e2e',
+    '<rootDir>/packages/react-native/template',
+    '<rootDir>/packages/react-native/Libraries/Renderer',
+    '<rootDir>/packages/rn-tester/e2e',
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -38,7 +38,7 @@ module.exports = {
   },
   unmockedModulePathPatterns: [
     'node_modules/react/',
-    'Libraries/Renderer',
+    'packages/react-native/Libraries/Renderer',
     'promise',
     'source-map',
     'fastpath',
@@ -48,12 +48,12 @@ module.exports = {
   moduleNameMapper: {
     'react-native-codegen/(.*)': '<rootDir>/packages/react-native-codegen/$1',
     'eslint/lib/rules/(.*)': '<rootDir>/node_modules/eslint/lib/rules/$1',
-    '^react-native(.*)': '<rootDir>$1',
+    '^react-native(.*)': '<rootDir>/packages/react-native$1',
   },
-  collectCoverageFrom: ['Libraries/**/*.js'],
+  collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
   coveragePathIgnorePatterns: [
     '/__tests__/',
     '/vendor/',
-    '<rootDir>/Libraries/react-native/',
+    '<rootDir>/packages/react-native/Libraries/react-native/',
   ],
 };

@@ -248,7 +248,7 @@ def rn_codegen_modules(
             extension_api_only = True,
             ios_exported_deps = [
                 "//xplat/js/react-native-github:RCTTypeSafety",
-                "//xplat/js/react-native-github/Libraries/RCTRequired:RCTRequired",
+                "//xplat/js/react-native-github/packages/react-native/Libraries/RCTRequired:RCTRequired",
                 react_native_xplat_target_apple("react/nativemodule/core:core"),
             ],
             labels = library_labels + ["codegen_rule"],

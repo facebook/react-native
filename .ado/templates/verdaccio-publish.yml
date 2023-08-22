@@ -4,6 +4,7 @@ steps:
   - script: |
       npm publish --registry http://localhost:4873
     displayName: Publish react-native-macos to verdaccio
+    workingDirectory: packages/react-native
 
   - script: |
       npx beachball publish --branch origin/$(System.PullRequest.TargetBranch) --no-push --registry http://localhost:4873 --yes --access public

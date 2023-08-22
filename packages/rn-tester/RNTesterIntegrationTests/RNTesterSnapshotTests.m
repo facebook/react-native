@@ -21,12 +21,12 @@
 - (void)setUp
 {
 #if !TARGET_OS_OSX // [macOS]
-  _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.ios", nil, nil);
+  _runner = RCTInitRunnerForApp(@"js/RNTesterApp.ios", nil, nil);
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = [NSString stringWithFormat:@"-iOS%d", UIDevice.currentDevice.systemVersion.intValue];
   }
 #else // [macOS
-  _runner = RCTInitRunnerForApp(@"packages/rn-tester/js/RNTesterApp.macos", nil, nil);
+  _runner = RCTInitRunnerForApp(@"js/RNTesterApp.macos", nil, nil);
 #endif // macOS]
 
   // To update snapshots, set recordMode to YES and re-run RNTesterSnapshotTests.

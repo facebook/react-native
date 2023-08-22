@@ -144,7 +144,7 @@ if (argv.target === 'RNTester') {
   // base setup required (specular to publish-npm.js)
 
   // we need to add the unique timestamp to avoid npm/yarn to use some local caches
-  const baseVersion = require('../package.json').version;
+  const baseVersion = require('../packages/react-native/package.json').version;
 
   // in local testing, 1000.0.0 mean we are on main, every other case means we are
   // working on a release version
@@ -175,8 +175,9 @@ if (argv.target === 'RNTester') {
 
   // Setting up generating native iOS (will be done later)
   const repoRoot = pwd();
-  const jsiFolder = `${repoRoot}/ReactCommon/jsi`;
-  const hermesCoreSourceFolder = `${repoRoot}/sdks/hermes`;
+  const reactNativePackagePath = `${repoRoot}/packages/react-native`;
+  const jsiFolder = `${reactNativePackagePath}/ReactCommon/jsi`;
+  const hermesCoreSourceFolder = `${reactNativePackagePath}/sdks/hermes`;
 
   if (!fs.existsSync(hermesCoreSourceFolder)) {
     console.info('The Hermes source folder is missing. Downloading...');
@@ -187,8 +188,8 @@ if (argv.target === 'RNTester') {
   // need to move the scripts inside the local hermes cloned folder
   // cp sdks/hermes-engine/utils/*.sh <your_hermes_checkout>/utils/.
   cp(
-    `${repoRoot}/sdks/hermes-engine/utils/*.sh`,
-    `${repoRoot}/sdks/hermes/utils/.`,
+    `${reactNativePackagePath}/sdks/hermes-engine/utils/*.sh`,
+    `${reactNativePackagePath}/sdks/hermes/utils/.`,
   );
 
   // for this scenario, we only need to create the debug build
@@ -207,15 +208,15 @@ if (argv.target === 'RNTester') {
   );
 
   // create locally the node module
-  exec('npm pack');
+  exec('npm pack', {cwd: reactNativePackagePath});
 
-  const localNodeTGZPath = `${repoRoot}/react-native-${releaseVersion}.tgz`;
+  const localNodeTGZPath = `${reactNativePackagePath}/react-native-${releaseVersion}.tgz`;
   exec(`node scripts/set-rn-template-version.js "file:${localNodeTGZPath}"`);
 
   pushd('/tmp/');
   // need to avoid the pod install step - we'll do it later
   exec(
-    `node ${repoRoot}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
+    `node ${reactNativePackagePath}/cli.js init RNTestProject --template ${repoRoot} --skip-install`,
   );
 
   cd('RNTestProject');

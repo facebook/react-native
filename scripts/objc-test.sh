@@ -105,12 +105,16 @@ xcbeautifyFormat() {
   xcbeautify --report junit --report-path "$REPORTS_DIR/ios/results.xml"
 }
 
-preloadBundles() {
+preloadBundlesRNIntegrationTests() {
+  # Preload IntegrationTests bundles (packages/rn-tester/)
+  curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
+}
+
+preloadBundlesRNTester() {
   # Preload the RNTesterApp bundle for better performance in integration tests
   curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
-  curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
 main() {
@@ -128,7 +132,8 @@ main() {
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
     waitForPackager
-    preloadBundles
+    preloadBundlesRNTester
+    preloadBundlesRNIntegrationTests
 
     # Build and run tests.
     if [ -x "$(command -v xcbeautify)" ]; then

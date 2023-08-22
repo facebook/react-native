@@ -548,6 +548,7 @@
 				ACC52F3A299ECB7A002A2B0B /* Sources */,
 				ACC52F3B299ECB7A002A2B0B /* Frameworks */,
 				ACC52F3C299ECB7A002A2B0B /* Resources */,
+				66F5AB8C2A94331500C16242 /* Build JS Bundle */,
 				63B9AC6D4098D9EDCCD7F242 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
@@ -839,7 +840,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../../scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open -n \"$SRCROOT/../../scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			shellScript = "set -x\n\n# RN-Tester does not have an iOS directory. The PROJECT_ROOT should\n# point to the folder where the `metro.config.js` file lives.\nexport PROJECT_ROOT=$(pwd)\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open -n \"$SRCROOT/../react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		63B9AC6D4098D9EDCCD7F242 /* [CP] Copy Pods Resources */ = {
@@ -858,6 +859,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-RNTester-macOS/Pods-RNTester-macOS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		66F5AB8C2A94331500C16242 /* Build JS Bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build JS Bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT/\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.macos.js\"\nexport SOURCEMAP_FILE=./sourcemap.macos.map\n# export FORCE_BUNDLING=true \n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
 		67D0F81A83A6269C88257DC7 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -912,7 +931,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.ios.js\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true \n\nWITH_ENVIRONMENT=\"../../scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../../scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT/\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.ios.js\"\nexport SOURCEMAP_FILE=./sourcemap.ios.map\n# export FORCE_BUNDLING=true \n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
 		79E8BE2B119D4C5CCD2F04B3 /* [RN] Copy Hermes Framework */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -930,7 +949,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = ". ../../sdks/hermes-engine/utils/copy-hermes-xcode.sh\n";
+			shellScript = ". ../react-native/sdks/hermes-engine/utils/copy-hermes-xcode.sh\n";
 		};
 		87CFFD3B65EC455C43217DE5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1317,22 +1336,18 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
-					" ",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../..";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../react-native";
 				SDKROOT = iphoneos;
 				WARNING_CFLAGS = (
 					"-Wextra",
@@ -1399,22 +1414,18 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
-					" ",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../..";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				WARNING_CFLAGS = (
