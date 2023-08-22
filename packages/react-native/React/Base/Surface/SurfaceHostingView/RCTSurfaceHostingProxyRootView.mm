@@ -113,11 +113,6 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return self;
 }
 
-- (BOOL)hasBridge
-{
-  return _bridge != nil;
-}
-
 - (RCTModuleRegistry *)moduleRegistry
 {
   // In bridgeless mode, RCTSurfaceHostingProxyRootView is created with an RCTModuleRegistry
