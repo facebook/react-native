@@ -28,7 +28,7 @@ export const NewAppComponentScreen: NewAppComponentScreenType = {
     ios: iOSName('New App Screen'),
     android: androidWidget('TextView', 'text', 'New App Screen'),
   }),
-  // References to elements within the New App Component screen
+  // References to elements within the New App Component screenS
   newAppHeaderScreenElement: Utils.platformSelect({
     ios: iOSName('New App Screen Header'),
     android: androidWidget('TextView', 'text', 'New App Screen Header'),

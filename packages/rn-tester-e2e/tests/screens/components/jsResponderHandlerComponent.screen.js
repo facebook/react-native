@@ -30,7 +30,7 @@ export const JSResponderHandlerComponentScreen: JSResponderHandlerComponentScree
       ios: iOSName('JSResponderHandler'),
       android: androidWidget('TextView', 'text', 'JSResponderHandler'),
     }),
-    // References to elements within the Activity Indicator Component screen
+    // References to elements within the js responder handler Component screen
     rowZeroScreenElement: Utils.platformSelect({
       ios: iOSName('row_js_responder_handler'),
       android: androidWidget(
