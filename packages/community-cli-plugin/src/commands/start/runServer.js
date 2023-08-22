@@ -13,13 +13,12 @@ import type {Config} from '@react-native-community/cli-types';
 import type {Reporter} from 'metro/src/lib/reporting';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 import typeof TerminalReporter from 'metro/src/lib/TerminalReporter';
-import type Server from 'metro/src/Server';
-import type {Middleware} from 'metro-config';
 
 import chalk from 'chalk';
 import Metro from 'metro';
 import {Terminal} from 'metro-core';
 import path from 'path';
+import {createDevMiddleware} from '@react-native/dev-middleware';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
@@ -99,8 +98,8 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
   }
 
   const {
-    middleware,
-    websocketEndpoints,
+    middleware: communityMiddleware,
+    websocketEndpoints: communityWebsocketEndpoints,
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
@@ -108,19 +107,12 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     port: metroConfig.server.port,
     watchFolders: metroConfig.watchFolders,
   });
-  middleware.use(indexPageMiddleware);
-
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // $FlowIgnore[cannot-write] Assigning to readonly property
-  metroConfig.server.enhanceMiddleware = (
-    metroMiddleware: Middleware,
-    server: Server,
-  ) => {
-    if (customEnhanceMiddleware) {
-      return middleware.use(customEnhanceMiddleware(metroMiddleware, server));
-    }
-    return middleware.use(metroMiddleware);
-  };
+  const {middleware, websocketEndpoints} = createDevMiddleware({
+    host: args.host?.length ? args.host : 'localhost',
+    port: metroConfig.server.port,
+    projectRoot: metroConfig.projectRoot,
+    logger,
+  });
 
   let reportEvent: (event: TerminalReportableEvent) => void;
   const terminal = new Terminal(process.stdout);
@@ -145,8 +137,15 @@ async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,
-    // $FlowFixMe[incompatible-call] Incompatibly defined WebSocketServer type
-    websocketEndpoints,
+    unstable_extraMiddleware: [
+      communityMiddleware,
+      indexPageMiddleware,
+      middleware,
+    ],
+    websocketEndpoints: {
+      ...communityWebsocketEndpoints,
+      ...websocketEndpoints,
+    },
   });
 
   reportEvent = eventsSocketEndpoint.reportEvent;

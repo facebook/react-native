@@ -32,6 +32,7 @@ export default function attachKeyHandlers(
 ) {
   if (process.stdin.isTTY !== true) {
     logger.debug('Interactive mode is not supported in this environment');
+    return;
   }
 
   readline.emitKeypressEvents(process.stdin);
