@@ -23,14 +23,9 @@ import {
   createDevServerMiddleware,
   indexPageMiddleware,
 } from '@react-native-community/cli-server-api';
-import {
-  isPackagerRunning,
-  logger,
-  version,
-  logAlreadyRunningBundler,
-  handlePortUnavailable,
-} from '@react-native-community/cli-tools';
+import {logger, version} from '@react-native-community/cli-tools';
 
+import isDevServerRunning from '../../utils/isDevServerRunning';
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import attachKeyHandlers from './attachKeyHandlers';
 
@@ -58,41 +53,38 @@ async function runServer(
   ctx: Config,
   args: StartCommandArgs,
 ) {
-  let port = args.port ?? 8081;
-  let packager = true;
-  const packagerStatus = await isPackagerRunning(port);
-
-  if (
-    typeof packagerStatus === 'object' &&
-    packagerStatus.status === 'running'
-  ) {
-    if (packagerStatus.root === ctx.root) {
-      packager = false;
-      logAlreadyRunningBundler(port);
-    } else {
-      const result = await handlePortUnavailable(port, ctx.root, packager);
-      [port, packager] = [result.port, result.packager];
-    }
-  } else if (packagerStatus === 'unrecognized') {
-    const result = await handlePortUnavailable(port, ctx.root, packager);
-    [port, packager] = [result.port, result.packager];
-  }
-
-  if (packager === false) {
-    process.exit();
-  }
-
-  logger.info(`Starting dev server on port ${chalk.bold(String(port))}`);
-
   const metroConfig = await loadMetroConfig(ctx, {
     config: args.config,
     maxWorkers: args.maxWorkers,
-    port: port,
+    port: args.port ?? 8081,
     resetCache: args.resetCache,
     watchFolders: args.watchFolders,
     projectRoot: args.projectRoot,
     sourceExts: args.sourceExts,
   });
+  const host = args.host?.length ? args.host : 'localhost';
+  const {
+    projectRoot,
+    server: {port},
+    watchFolders,
+  } = metroConfig;
+
+  const serverStatus = await isDevServerRunning(host, port, projectRoot);
+
+  if (serverStatus === 'matched_server_running') {
+    logger.info(
+      `A dev server is already running for this project on port ${port}. Exiting.`,
+    );
+    return;
+  } else if (serverStatus === 'port_taken') {
+    logger.error(
+      `Another process is running on port ${port}. Please terminate this ` +
+        'process and try again, or use another port with "--port".',
+    );
+    return;
+  }
+
+  logger.info(`Starting dev server on port ${chalk.bold(String(port))}`);
 
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
@@ -107,14 +99,14 @@ async function runServer(
     messageSocketEndpoint,
     eventsSocketEndpoint,
   } = createDevServerMiddleware({
-    host: args.host,
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
+    host,
+    port,
+    watchFolders,
   });
   const {middleware, websocketEndpoints} = createDevMiddleware({
-    host: args.host?.length ? args.host : 'localhost',
-    port: metroConfig.server.port,
-    projectRoot: metroConfig.projectRoot,
+    host,
+    port,
+    projectRoot,
     logger,
   });
 
