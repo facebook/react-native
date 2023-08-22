@@ -15,7 +15,18 @@ type PendingCommand = {
   method: string,
   requestOrigin: 'proxy' | 'debugger',
   requestTime: number,
+  metadata: RequestMetadata,
 };
+
+type DeviceMetadata = $ReadOnly<{
+  appId: string,
+  deviceId: string,
+  deviceName: string,
+}>;
+
+type RequestMetadata = $ReadOnly<{
+  pageId: string | null,
+}>;
 
 class DeviceEventReporter {
   _eventReporter: EventReporter;
@@ -35,18 +46,23 @@ class DeviceEventReporter {
     },
   });
 
-  constructor(eventReporter: EventReporter) {
+  _metadata: DeviceMetadata;
+
+  constructor(eventReporter: EventReporter, metadata: DeviceMetadata) {
     this._eventReporter = eventReporter;
+    this._metadata = metadata;
   }
 
   logRequest(
     req: $ReadOnly<{id: number, method: string, ...}>,
     origin: 'debugger' | 'proxy',
+    metadata: RequestMetadata,
   ): void {
     this._pendingCommands.set(req.id, {
       method: req.method,
       requestOrigin: origin,
       requestTime: Date.now(),
+      metadata,
     });
   }
 
@@ -57,6 +73,9 @@ class DeviceEventReporter {
       ...
     }>,
     origin: 'device' | 'proxy',
+    metadata: $ReadOnly<{
+      pageId: string | null,
+    }>,
   ): void {
     const pendingCommand = this._pendingCommands.get(res.id);
     if (!pendingCommand) {
@@ -69,6 +88,10 @@ class DeviceEventReporter {
         errorCode: 'UNMATCHED_REQUEST_ID',
         responseOrigin: 'proxy',
         timeSinceStart: null,
+        appId: this._metadata.appId,
+        deviceId: this._metadata.deviceId,
+        deviceName: this._metadata.deviceName,
+        pageId: metadata.pageId,
       });
       return;
     }
@@ -89,6 +112,10 @@ class DeviceEventReporter {
         errorDetails: message,
         responseOrigin: origin,
         timeSinceStart,
+        appId: this._metadata.appId,
+        deviceId: this._metadata.deviceId,
+        deviceName: this._metadata.deviceName,
+        pageId: pendingCommand.metadata.pageId,
       });
       return;
     }
@@ -100,17 +127,32 @@ class DeviceEventReporter {
       status: 'success',
       responseOrigin: origin,
       timeSinceStart,
+      appId: this._metadata.appId,
+      deviceId: this._metadata.deviceId,
+      deviceName: this._metadata.deviceName,
+      pageId: pendingCommand.metadata.pageId,
     });
   }
 
-  logConnection(connectedEntity: 'debugger') {
-    this._eventReporter?.logEvent({
+  logConnection(
+    connectedEntity: 'debugger',
+    metadata: $ReadOnly<{pageId: string}>,
+  ) {
+    this._eventReporter.logEvent({
       type: 'connect_debugger_frontend',
       status: 'success',
+      appId: this._metadata.appId,
+      deviceName: this._metadata.deviceName,
+      deviceId: this._metadata.deviceId,
+      pageId: metadata.pageId,
     });
   }
 
   logDisconnection(disconnectedEntity: 'device' | 'debugger') {
+    const eventReporter = this._eventReporter;
+    if (!eventReporter) {
+      return;
+    }
     const errorCode =
       disconnectedEntity === 'device'
         ? 'DEVICE_DISCONNECTED'
@@ -125,6 +167,10 @@ class DeviceEventReporter {
         errorCode,
         responseOrigin: 'proxy',
         timeSinceStart: Date.now() - pendingCommand.requestTime,
+        appId: this._metadata.appId,
+        deviceId: this._metadata.deviceId,
+        deviceName: this._metadata.deviceName,
+        pageId: pendingCommand.metadata.pageId,
       });
     }
     this._pendingCommands.clear();
@@ -140,6 +186,10 @@ class DeviceEventReporter {
       errorCode: 'TIMED_OUT',
       responseOrigin: 'proxy',
       timeSinceStart: Date.now() - pendingCommand.requestTime,
+      appId: this._metadata.appId,
+      deviceId: this._metadata.deviceId,
+      deviceName: this._metadata.deviceName,
+      pageId: pendingCommand.metadata.pageId,
     });
   }
 }
