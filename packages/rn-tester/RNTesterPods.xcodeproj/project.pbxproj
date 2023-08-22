@@ -646,7 +646,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT/../../\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.ios.js\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true \n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
+			shellScript = "set -e\n\nexport PROJECT_ROOT=\"$SRCROOT\"\nexport ENTRY_FILE=\"$SRCROOT/js/RNTesterApp.ios.js\"\nexport SOURCEMAP_FILE=../sourcemap.ios.map\n# export FORCE_BUNDLING=true \n\nWITH_ENVIRONMENT=\"../react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
 		69760E095072DBD949449A0E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
