@@ -9,6 +9,7 @@ package com.facebook.react.uiapp;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
+import com.facebook.fbreact.specs.SampleLegacyModule;
 import com.facebook.fbreact.specs.SampleTurboModule;
 import com.facebook.react.JSEngineResolutionAlgorithm;
 import com.facebook.react.ReactApplication;
@@ -79,6 +80,10 @@ public class RNTesterApplication extends Application implements ReactApplication
                     return new SampleTurboModule(reactContext);
                   }
 
+                  if (SampleLegacyModule.NAME.equals(name)) {
+                    return new SampleLegacyModule(reactContext);
+                  }
+
                   return null;
                 }
 
@@ -100,6 +105,18 @@ public class RNTesterApplication extends Application implements ReactApplication
                                 true, // hasConstants
                                 false, // isCxxModule
                                 true // isTurboModule
+                                ));
+
+                        moduleInfos.put(
+                            SampleLegacyModule.NAME,
+                            new ReactModuleInfo(
+                                SampleLegacyModule.NAME,
+                                "SampleLegacyModule",
+                                false, // canOverrideExistingModule
+                                false, // needsEagerInit
+                                true, // hasConstants
+                                false, // isCxxModule
+                                false // isTurboModule
                                 ));
                       }
                       return moduleInfos;
