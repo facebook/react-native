@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-export {default as bundleCommand} from './commands/bundle/bundle';
-export {default as ramBundleCommand} from './commands/bundle/ramBundle';
+export {default as bundleCommand} from './commands/bundle';
+export {default as ramBundleCommand} from './commands/ram-bundle';
 export {default as startCommand} from './commands/start';
 
 export {unstable_buildBundleWithConfig} from './commands/bundle/buildBundle';
