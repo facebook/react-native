@@ -3,7 +3,7 @@
    LastUpgradeVersion = "0830"
    version = "1.3">
    <BuildAction
-      parallelizeBuildables = "NO"
+      parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
@@ -101,7 +101,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9F15345A233AB2C4006DFE44"
+            BlueprintIdentifier = "ACC52F3D299ECB7A002A2B0B"
             BuildableName = "RNTester-macOS.app"
             BlueprintName = "RNTester-macOS"
             ReferencedContainer = "container:RNTesterPods.xcodeproj">
