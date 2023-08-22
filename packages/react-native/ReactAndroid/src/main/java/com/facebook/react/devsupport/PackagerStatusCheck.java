@@ -81,15 +81,6 @@ public class PackagerStatusCheck {
                 String bodyString =
                     body.string(); // cannot call body.string() twice, stored it into variable.
                 // https://github.com/square/okhttp/issues/1240#issuecomment-68142603
-
-                // TODO(huntie): Temporary string match in JSON response. We
-                // will revert this endpoint back to "packager-status:running"
-                // in the next CLI alpha.
-                if (bodyString.contains("\"status\":\"running\"")) {
-                  callback.onPackagerStatusFetched(true);
-                  return;
-                }
-
                 if (!PACKAGER_OK_STATUS.equals(bodyString)) {
                   FLog.e(
                       ReactConstants.TAG,
