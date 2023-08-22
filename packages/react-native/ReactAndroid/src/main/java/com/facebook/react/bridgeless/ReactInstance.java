@@ -16,7 +16,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.BridgelessReactPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
 import com.facebook.react.bridge.Arguments;
@@ -165,7 +164,7 @@ final class ReactInstance {
           }
         });
 
-    JSEngineInstance jsEngineInstance = mDelegate.getJSEngineInstance();
+    JSEngineInstance jsEngineInstance = mDelegate.getJsEngineInstance();
     BindingsInstaller bindingsInstaller = mDelegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
@@ -204,7 +203,7 @@ final class ReactInstance {
 
     mReactPackages = new ArrayList<>(mDelegate.getReactPackages());
     mReactPackages.add(
-        new BridgelessReactPackage(
+        new CoreReactPackage(
             bridgelessReactContext.getDevSupportManager(),
             bridgelessReactContext.getDefaultHardwareBackBtnHandler()));
 
@@ -361,7 +360,7 @@ final class ReactInstance {
     }
   }
 
-  /* package */ void prerenderSurface(ReactSurface surface) {
+  /* package */ void prerenderSurface(ReactSurfaceImpl surface) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.prerenderSurface");
     FLog.d(TAG, "call prerenderSurface with surface: " + surface.getModuleName());
     mFabricUIManager.startSurface(surface.getSurfaceHandler(), surface.getContext(), null);
@@ -374,7 +373,7 @@ final class ReactInstance {
    * @param surface The {@link ReactSurface} to render.
    */
   @ThreadConfined("ReactHost")
-  /* package */ void startSurface(ReactSurface surface) {
+  /* package */ void startSurface(ReactSurfaceImpl surface) {
     FLog.d(TAG, "startSurface() is called with surface: " + surface.getSurfaceID());
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstance.startSurface");
 
@@ -405,7 +404,7 @@ final class ReactInstance {
   }
 
   @ThreadConfined("ReactHost")
-  /* package */ void stopSurface(ReactSurface surface) {
+  /* package */ void stopSurface(ReactSurfaceImpl surface) {
     FLog.d(TAG, "stopSurface() is called with surface: " + surface.getSurfaceID());
     mFabricUIManager.stopSurface(surface.getSurfaceHandler());
   }
@@ -476,12 +475,12 @@ final class ReactInstance {
   /**
    * @return The {@link EventDispatcher} used by {@link FabricUIManager} to emit UI events to JS.
    */
-  /* protected */ EventDispatcher getEventDispatcher() {
+  /* package */ EventDispatcher getEventDispatcher() {
     return mFabricUIManager.getEventDispatcher();
   }
 
   /** @return The {@link FabricUIManager} if it's been initialized. */
-  /* protected */ FabricUIManager getUIManager() {
+  /* package */ FabricUIManager getUIManager() {
     return mFabricUIManager;
   }
 

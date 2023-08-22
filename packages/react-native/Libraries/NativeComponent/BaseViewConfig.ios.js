@@ -335,6 +335,8 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
+
+  experimental_layoutConformance: true,
 };
 
 // Props for bubbling and direct events

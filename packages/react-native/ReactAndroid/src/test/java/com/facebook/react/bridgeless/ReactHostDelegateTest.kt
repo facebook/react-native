@@ -38,11 +38,11 @@ class ReactHostDelegateTest {
     val jsMainModulePathMocked = "mockedJSMainModulePath"
     val delegate =
         DefaultReactHostDelegate(
-            jSMainModulePath = jsMainModulePathMocked,
-            jSBundleLoader = jsBundleLoader,
-            jSEngineInstance = hermesInstance,
+            jsMainModulePath = jsMainModulePathMocked,
+            jsBundleLoader = jsBundleLoader,
+            jsEngineInstance = hermesInstance,
             turboModuleManagerDelegateBuilder = turboModuleManagerDelegateBuilderMock)
 
-    assertThat(delegate.jSMainModulePath).isEqualTo(jsMainModulePathMocked)
+    assertThat(delegate.jsMainModulePath).isEqualTo(jsMainModulePathMocked)
   }
 }

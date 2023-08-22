@@ -73,6 +73,26 @@ waitForWebSocketServer() {
   echo "WebSocket Server is ready!"
 }
 
+waitForPackagerAlt() {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  # TODO(huntie): Temporary string match in JSON response. We will revert
+  # this endpoint back to "packager-status:running" in the next CLI alpha.
+  until curl -s http://localhost:8081/status | grep "\"status\":\"running\"" -q; do
+    if (( attempt_num == max_attempts )); then
+      echo "Packager did not respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "Packager did not respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+
+  echo "Packager is ready!"
+}
+
 runTests() {
   # shellcheck disable=SC1091
   source "$ROOT/scripts/.tests.env"
@@ -131,7 +151,7 @@ main() {
 
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
-    waitForPackager
+    waitForPackagerAlt
     preloadBundlesRNTester
     preloadBundlesRNIntegrationTests
 

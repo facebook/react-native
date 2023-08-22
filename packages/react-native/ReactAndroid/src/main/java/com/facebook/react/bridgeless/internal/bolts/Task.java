@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridgeless.internal.bolts;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.interfaces.TaskInterface;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +188,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
 
   /** Creates a completed task with the given value. */
   @SuppressWarnings("unchecked")
-  public static <TResult> Task<TResult> forResult(TResult value) {
+  public static <TResult> Task<TResult> forResult(@Nullable TResult value) {
     if (value == null) {
       return (Task<TResult>) TASK_NULL;
     }

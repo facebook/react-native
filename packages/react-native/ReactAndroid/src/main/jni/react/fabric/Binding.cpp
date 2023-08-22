@@ -431,6 +431,12 @@ void Binding::installFabricUIManager(
       getFeatureFlagValue("enableCppPropsIteratorSetter");
   CoreFeatures::useNativeState = getFeatureFlagValue("useNativeState");
   CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
+  CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR =
+      getFeatureFlagValue("doNotSwapLeftAndRightOnAndroidInLTR");
+  CoreFeatures::enableCleanParagraphYogaNode =
+      getFeatureFlagValue("enableCleanParagraphYogaNode");
+  CoreFeatures::enableDefaultAsyncBatchedPriority =
+      getFeatureFlagValue("enableDefaultAsyncBatchedPriority");
 
   // RemoveDelete mega-op
   ShadowViewMutation::PlatformSupportsRemoveDeleteTreeInstruction =

@@ -342,6 +342,51 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
   }
 }
 
+function LayoutConformanceExample(): React.Node {
+  return (
+    <View style={{flexDirection: 'row', gap: 10}}>
+      <View>
+        <Text>Unset</Text>
+        <LayoutConformanceBox />
+      </View>
+      <View experimental_layoutConformance="classic">
+        <Text>Classic</Text>
+        <LayoutConformanceBox />
+      </View>
+      <View experimental_layoutConformance="strict">
+        <Text>Strict</Text>
+        <LayoutConformanceBox />
+      </View>
+    </View>
+  );
+}
+
+function LayoutConformanceBox(): React.Node {
+  return (
+    <View
+      style={{
+        backgroundColor: 'blue',
+        width: 100,
+        height: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <View
+          style={{
+            height: 50,
+            backgroundColor: 'red',
+            flexGrow: 1,
+          }}
+        />
+      </View>
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -846,6 +891,11 @@ export default ({
           </View>
         );
       },
+    },
+    {
+      title: 'Layout conformance',
+      name: 'layout-conformance',
+      render: LayoutConformanceExample,
     },
   ],
 }: RNTesterModule);

@@ -25,4 +25,6 @@ using EventPipe = std::function<void(
     ReactEventPriority priority,
     const EventPayload &payload)>;
 
+using EventPipeConclusion = std::function<void(jsi::Runtime &runtime)>;
+
 } // namespace facebook::react

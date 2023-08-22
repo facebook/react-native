@@ -10,13 +10,7 @@
 'use strict';
 
 const {echo, exit} = require('shelljs');
-const {parseVersion} = require('./version-utils');
-const {getPackageVersionStrByTag, publishPackage} = require('./npm-utils');
-const {
-  exitIfNotOnGit,
-  getCurrentCommit,
-  isTaggedLatest,
-} = require('./scm-utils');
+const {publishPackage, getNpmInfo} = require('./npm-utils');
 const getAndUpdateNightlies = require('./monorepo/get-and-update-nightlies');
 const setReactNativeVersion = require('./set-rn-version');
 const {
@@ -75,61 +69,6 @@ if (require.main === module) {
     : 'dry-run';
 
   publishNpm(buildType);
-}
-
-// Get `next` version from npm and +1 on the minor for `main` version
-function getMainVersion() {
-  const versionStr = getPackageVersionStrByTag('react-native', 'next');
-  const {major, minor} = parseVersion(versionStr, 'release');
-  return `${major}.${parseInt(minor, 10) + 1}.0`;
-}
-
-function getNpmInfo(buildType) {
-  const currentCommit = getCurrentCommit();
-  const shortCommit = currentCommit.slice(0, 9);
-
-  if (buildType === 'dry-run') {
-    return {
-      version: `1000.0.0-${shortCommit}`,
-      tag: null, // We never end up publishing this
-    };
-  }
-
-  if (buildType === 'nightly') {
-    const mainVersion = getMainVersion();
-    const dateIdentifier = new Date()
-      .toISOString()
-      .slice(0, -14)
-      .replace(/[-]/g, '');
-    return {
-      version: `${mainVersion}-nightly-${dateIdentifier}-${shortCommit}`,
-      tag: 'nightly',
-    };
-  }
-
-  const {version, major, minor, prerelease} = parseVersion(
-    process.env.CIRCLE_TAG,
-    buildType,
-  );
-
-  // See if releaser indicated that this version should be tagged "latest"
-  // Set in `bump-oss-version`
-  const isLatest = exitIfNotOnGit(
-    () => isTaggedLatest(currentCommit),
-    'Not in git. We do not want to publish anything',
-  );
-
-  const releaseBranchTag = `${major}.${minor}-stable`;
-
-  // npm will automatically tag the version as `latest` if no tag is set when we publish
-  // To prevent this, use `releaseBranchTag` when we don't want that (ex. releasing a patch on older release)
-  const tag =
-    prerelease != null ? 'next' : isLatest ? 'latest' : releaseBranchTag;
-
-  return {
-    version,
-    tag,
-  };
 }
 
 function publishNpm(buildType) {

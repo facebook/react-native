@@ -26,16 +26,8 @@ async function initialize(circleCIToken, baseTempPath, branchName) {
   baseTemporaryPath = baseTempPath;
   exec(`mkdir -p ${baseTemporaryPath}`);
   const pipeline = await _getLastCircleCIPipelineID(branchName);
-  const packageAndReleaseWorkflow = await _getPackageAndReleaseWorkflow(
-    pipeline.id,
-  );
   const testsWorkflow = await _getTestsWorkflow(pipeline.id);
-  const jobsPromises = [
-    _getCircleCIJobs(packageAndReleaseWorkflow.id),
-    _getCircleCIJobs(testsWorkflow.id),
-  ];
-
-  const jobsResults = await Promise.all(jobsPromises);
+  const jobsResults = await _getCircleCIJobs(testsWorkflow.id);
 
   jobs = jobsResults.flatMap(j => j);
 }
@@ -94,10 +86,6 @@ function _throwIfWorkflowNotFound(workflow, name) {
       `Can't find a workflow named ${name}. Please check whether that workflow has started.`,
     );
   }
-}
-
-async function _getPackageAndReleaseWorkflow(pipelineId) {
-  return _getSpecificWorkflow(pipelineId, 'package_and_publish_release_dryrun');
 }
 
 async function _getTestsWorkflow(pipelineId) {
@@ -165,7 +153,7 @@ async function artifactURLHermesDebug() {
 }
 
 async function artifactURLForMavenLocal() {
-  return _findUrlForJob('build_and_publish_npm_package-2', 'maven-local.zip');
+  return _findUrlForJob('build_npm_package', 'maven-local.zip');
 }
 
 async function artifactURLForHermesRNTesterAPK(emulatorArch) {

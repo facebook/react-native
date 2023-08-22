@@ -105,6 +105,7 @@ Pod::Spec.new do |s|
         "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-rendererdebug/React_rendererdebug.framework/Headers/\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/textlayoutmanager/platform/ios\"",
         "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/textinput/iostextinput\"",
+        "\"$(PODS_TARGET_SRCROOT)/react/renderer/components/view/platform/cxx\"",
       ]
     end
 
@@ -224,7 +225,7 @@ Pod::Spec.new do |s|
       sss.dependency             "Yoga"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/view/tests"
+      sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android"
       sss.header_dir           = "react/renderer/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
     end

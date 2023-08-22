@@ -117,6 +117,12 @@ function isPackagerRunning(
       silent: true,
     }).stdout;
 
+    // TODO(huntie): Temporary string match in JSON response. We will revert
+    // this endpoint back to "packager-status:running" in the next CLI alpha.
+    if (status.includes('"status":"running"')) {
+      return 'running';
+    }
+
     return status === 'packager-status:running' ? 'running' : 'unrecognized';
   } catch (_error) {
     return 'not_running';

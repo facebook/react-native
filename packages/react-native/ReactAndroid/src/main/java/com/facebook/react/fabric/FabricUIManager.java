@@ -57,7 +57,6 @@ import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
-import com.facebook.react.fabric.interfaces.SurfaceHandler;
 import com.facebook.react.fabric.interop.InteropEventEmitter;
 import com.facebook.react.fabric.mounting.MountItemDispatcher;
 import com.facebook.react.fabric.mounting.MountingManager;
@@ -67,6 +66,7 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
+import com.facebook.react.interfaces.fabric.SurfaceHandler;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.IllegalViewOperationException;
@@ -1227,20 +1227,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               public void run() {
                 mMountNotificationScheduled.set(false);
 
-                if (mountItems == null) {
+                final @Nullable Binding binding = mBinding;
+                if (mountItems == null || binding == null) {
                   return;
                 }
 
                 // Collect surface IDs for all the mount items
                 List<Integer> surfaceIds = new ArrayList();
                 for (MountItem mountItem : mountItems) {
-                  if (!surfaceIds.contains(mountItem.getSurfaceId())) {
+                  if (mountItem != null && !surfaceIds.contains(mountItem.getSurfaceId())) {
                     surfaceIds.add(mountItem.getSurfaceId());
                   }
                 }
 
                 for (int surfaceId : surfaceIds) {
-                  mBinding.reportMount(surfaceId);
+                  binding.reportMount(surfaceId);
                 }
               }
             });

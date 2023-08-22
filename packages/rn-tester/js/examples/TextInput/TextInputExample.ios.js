@@ -26,7 +26,10 @@ import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/Tex
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {
+  RNTesterModule,
+  RNTesterModuleExample,
+} from '../../types/RNTesterTypes';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -322,12 +325,7 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.displayName = (undefined: ?string);
-exports.title = 'TextInput';
-exports.documentationURL = 'https://reactnative.dev/docs/textinput';
-exports.category = 'Basic';
-exports.description = 'Single and multi-line text inputs.';
-exports.examples = ([
+const examples: Array<RNTesterModuleExample> = [
   ...TextInputSharedExamples,
   {
     title: 'Live Re-Write (ひ -> 日)',
@@ -940,4 +938,13 @@ exports.examples = ([
       );
     },
   },
-]: Array<RNTesterModuleExample>);
+];
+
+module.exports = ({
+  displayName: (undefined: ?string),
+  title: 'TextInput',
+  documentationURL: 'https://reactnative.dev/docs/textinput',
+  category: 'Basic',
+  description: 'Single and multi-line text inputs.',
+  examples,
+}: RNTesterModule);

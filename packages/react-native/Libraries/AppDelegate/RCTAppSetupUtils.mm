@@ -20,7 +20,8 @@
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #endif
@@ -68,9 +69,10 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 {
 #if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
-    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                             moduleName:moduleName
-                                                      initialProperties:initialProperties];
+    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                   moduleName:moduleName
+                                                            initialProperties:initialProperties];
+    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
 #endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
@@ -111,15 +113,13 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
-  if (!RCTTurboModuleEagerInitEnabled()) {
-    /**
-     * Instantiating DevMenu has the side-effect of registering
-     * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
-     * Therefore, when TurboModules are enabled, we must manually create this
-     * NativeModule.
-     */
-    [turboModuleManager moduleForName:"RCTDevMenu"];
-  }
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif
 
 #if RCT_USE_HERMES

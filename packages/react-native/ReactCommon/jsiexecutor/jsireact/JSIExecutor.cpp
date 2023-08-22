@@ -81,6 +81,9 @@ JSIExecutor::JSIExecutor(
 
 void JSIExecutor::initializeRuntime() {
   SystraceSection s("JSIExecutor::initializeRuntime");
+
+  bindNativePerformanceNow(*runtime_);
+
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
@@ -136,6 +139,7 @@ void JSIExecutor::initializeRuntime() {
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
   }
+
   bool hasLogger(ReactMarker::logTaggedMarkerImpl);
   if (hasLogger) {
     ReactMarker::logMarker(ReactMarker::CREATE_REACT_CONTEXT_STOP);
@@ -159,6 +163,8 @@ void JSIExecutor::loadBundle(
   if (hasLogger) {
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+    ReactMarker::logMarker(ReactMarker::INIT_REACT_RUNTIME_STOP);
+    ReactMarker::logMarker(ReactMarker::APP_STARTUP_STOP);
   }
 }
 

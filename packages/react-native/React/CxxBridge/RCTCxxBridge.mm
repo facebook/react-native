@@ -126,6 +126,12 @@ static void mapReactMarkerToPerformanceLogger(
     case ReactMarker::APP_STARTUP_STOP:
       [performanceLogger markStopForTag:RCTPLAppStartup];
       break;
+    case ReactMarker::INIT_REACT_RUNTIME_START:
+      [performanceLogger markStartForTag:RCTPLInitReactRuntime];
+      break;
+    case ReactMarker::INIT_REACT_RUNTIME_STOP:
+      [performanceLogger markStopForTag:RCTPLInitReactRuntime];
+      break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       [performanceLogger markStartForTag:RCTPLScriptExecution];
       break;
@@ -430,27 +436,6 @@ struct RCTInstanceCallback : public InstanceCallback {
         [weakSelf handleError:error];
       }
     }));
-  }
-
-  /**
-   * id<RCTCxxBridgeDelegate> jsExecutorFactory may create and assign an id<RCTTurboModuleRegistry> object to
-   * RCTCxxBridge If id<RCTTurboModuleRegistry> is assigned by this time, eagerly initialize all TurboModules
-   */
-  if (_turboModuleRegistry && RCTTurboModuleEagerInitEnabled()) {
-    for (NSString *moduleName in [_parentBridge eagerInitModuleNames_DO_NOT_USE]) {
-      [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
-    }
-
-    for (NSString *moduleName in [_parentBridge eagerInitMainQueueModuleNames_DO_NOT_USE]) {
-      if (RCTIsMainQueue()) {
-        [_turboModuleRegistry moduleForName:[moduleName UTF8String]];
-      } else {
-        id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
-        dispatch_group_async(prepareBridge, dispatch_get_main_queue(), ^{
-          [turboModuleRegistry moduleForName:[moduleName UTF8String]];
-        });
-      }
-    }
   }
 
   // Dispatch the instance initialization as soon as the initial module metadata has

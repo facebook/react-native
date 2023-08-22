@@ -754,7 +754,7 @@ TEST_P(JSITest, HostFunctionTest) {
           .utf8(rt),
       "A cat was called with std::function::target");
   EXPECT_TRUE(callable.isHostFunction(rt));
-  EXPECT_NE(callable.getHostFunction(rt).target<Callable>(), nullptr);
+  EXPECT_TRUE(callable.getHostFunction(rt).target<Callable>() != nullptr);
 
   std::string strval = "strval1";
   auto getter = Object(rt);
@@ -1245,7 +1245,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
       0,
       [](Runtime& rt, const Value& thisVal, const Value* args, size_t count) {
         MultiRuntime* funcmrt = dynamic_cast<MultiRuntime*>(&rt);
-        EXPECT_NE(funcmrt, nullptr);
+        EXPECT_TRUE(funcmrt != nullptr);
         EXPECT_EQ(funcmrt->count(), 3);
         EXPECT_EQ(funcmrt->nest(), 1);
         return Value::undefined();
@@ -1439,7 +1439,7 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(1, RD2::numGets);
 }
 
-INSTANTIATE_TEST_SUITE_P(
+INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
     ::testing::ValuesIn(runtimeGenerators()));
