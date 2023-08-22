@@ -29,7 +29,7 @@ exports.examples = [
     render(): React.Element<any> {
       return (
         <View style={{overflow: 'hidden'}}>
-          <Header/>
+          <Header />
         </View>
       );
     },
