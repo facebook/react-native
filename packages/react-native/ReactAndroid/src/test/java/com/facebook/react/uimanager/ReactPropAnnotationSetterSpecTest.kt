@@ -17,13 +17,13 @@ import org.robolectric.RobolectricTestRunner
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
 @RunWith(RobolectricTestRunner::class)
 class ReactPropAnnotationSetterSpecTest {
-  private abstract inner class BaseViewManager : ViewManager<View?, ReactShadowNode<*>?>() {
+  private abstract inner class BaseViewManager : ViewManager<View, ReactShadowNode<*>>() {
     override fun getName(): String {
       return "IgnoredName"
     }
 
     override fun createShadowNodeInstance(): ReactShadowNode<*> {
-      return null
+      return createShadowNodeInstance()
     }
 
     override fun getShadowNodeClass(): Class<out ReactShadowNode<*>> {
@@ -31,14 +31,14 @@ class ReactPropAnnotationSetterSpecTest {
     }
 
     override fun createViewInstance(reactContext: ThemedReactContext): View {
-      return null
+      return createViewInstance(reactContext)
     }
 
     override fun updateExtraData(root: View, extraData: Any) {}
   }
 
   @Test(expected = RuntimeException::class)
-  fun testMethodWithWongNumberOfParams() {
+  fun testMethodWithWrongNumberOfParams() {
     object : BaseViewManager() {
           @ReactProp(name = "prop")
           fun setterWithIncorrectNumberOfArgs(v: View?, value: Boolean, otherValue: Boolean) {}
@@ -63,7 +63,7 @@ class ReactPropAnnotationSetterSpecTest {
   }
 
   @Test(expected = RuntimeException::class)
-  fun testSetterWIthNonViewParam() {
+  fun testSetterWithNonViewParam() {
     object : BaseViewManager() {
           @ReactProp(name = "prop") fun setterWithNonViewParam(v: Any?, value: Boolean) {}
         }
@@ -74,7 +74,7 @@ class ReactPropAnnotationSetterSpecTest {
   fun testGroupInvalidNumberOfParams() {
     object : BaseViewManager() {
           @ReactPropGroup(names = ["prop1", "prop2"])
-          fun setterWIthInvalidNumberOfParams(v: View?, index: Int, value: Float, other: Float) {}
+          fun setterWithInvalidNumberOfParams(v: View?, index: Int, value: Float, other: Float) {}
         }
         .nativeProps
   }
@@ -83,7 +83,7 @@ class ReactPropAnnotationSetterSpecTest {
   fun testGroupTooFewParams() {
     object : BaseViewManager() {
           @ReactPropGroup(names = ["prop1", "prop2"])
-          fun setterWIthTooFewParams(v: View?, index: Int) {}
+          fun setterWithTooFewParams(v: View?, index: Int) {}
         }
         .nativeProps
   }
