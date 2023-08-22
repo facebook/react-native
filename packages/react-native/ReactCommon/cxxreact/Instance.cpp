@@ -21,6 +21,7 @@
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
+#include <react/debug/react_native_assert.h>
 
 #include <glog/logging.h>
 
@@ -30,8 +31,7 @@
 #include <mutex>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 Instance::~Instance() {
   if (nativeToJsBridge_) {
@@ -59,7 +59,7 @@ void Instance::initializeBridge(
      */
     jsCallInvoker_->setNativeToJsBridgeAndFlushCalls(nativeToJsBridge_);
 
-    std::lock_guard<std::mutex> lock(m_syncMutex);
+    std::scoped_lock lock(m_syncMutex);
     m_syncReady = true;
     m_syncCV.notify_all();
   });
@@ -212,36 +212,43 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
 }
 
 RuntimeExecutor Instance::getRuntimeExecutor() {
-  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+  // HACK: RuntimeExecutor is not compatible with non-JSIExecutor, we return
+  // a null callback, which the caller should handle.
+  if (!getJavaScriptContext()) {
+    return nullptr;
+  }
 
-  auto runtimeExecutor =
-      [weakNativeToJsBridge](
-          std::function<void(jsi::Runtime & runtime)> &&callback) {
-        if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
-          strongNativeToJsBridge->runOnExecutorQueue(
-              [callback = std::move(callback)](JSExecutor *executor) {
-                jsi::Runtime *runtime =
-                    (jsi::Runtime *)executor->getJavaScriptContext();
-                try {
-                  callback(*runtime);
-                  executor->flush();
-                } catch (jsi::JSError &originalError) {
-                  handleJSError(*runtime, originalError, true);
-                }
-              });
-        }
-      };
-  return runtimeExecutor;
+  std::weak_ptr<NativeToJsBridge> weakNativeToJsBridge = nativeToJsBridge_;
+  return [weakNativeToJsBridge](
+             std::function<void(jsi::Runtime & runtime)> &&callback) {
+    if (auto strongNativeToJsBridge = weakNativeToJsBridge.lock()) {
+      strongNativeToJsBridge->runOnExecutorQueue(
+          [callback = std::move(callback)](JSExecutor *executor) {
+            // Assumes the underlying executor is a JSIExecutor
+            jsi::Runtime *runtime =
+                (jsi::Runtime *)executor->getJavaScriptContext();
+            try {
+              react_native_assert(runtime != nullptr);
+              callback(*runtime);
+              executor->flush();
+            } catch (jsi::JSError &originalError) {
+              handleJSError(*runtime, originalError, true);
+            }
+          });
+    }
+  };
 }
 
-std::shared_ptr<CallInvoker> Instance::getDecoratedNativeCallInvoker(
-    std::shared_ptr<CallInvoker> nativeInvoker) {
-  return nativeToJsBridge_->getDecoratedNativeCallInvoker(nativeInvoker);
+std::shared_ptr<NativeMethodCallInvoker>
+Instance::getDecoratedNativeMethodCallInvoker(
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) {
+  return nativeToJsBridge_->getDecoratedNativeMethodCallInvoker(
+      nativeMethodCallInvoker);
 }
 
 void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
     std::weak_ptr<NativeToJsBridge> nativeToJsBridge) {
-  std::lock_guard<std::mutex> guard(m_mutex);
+  std::scoped_lock guard(m_mutex);
 
   m_shouldBuffer = false;
   m_nativeToJsBridge = nativeToJsBridge;
@@ -258,7 +265,7 @@ void Instance::JSCallInvoker::invokeSync(std::function<void()> &&work) {
 }
 
 void Instance::JSCallInvoker::invokeAsync(std::function<void()> &&work) {
-  std::lock_guard<std::mutex> guard(m_mutex);
+  std::scoped_lock guard(m_mutex);
 
   /**
    * Why is is necessary to queue up async work?
@@ -292,5 +299,4 @@ void Instance::JSCallInvoker::scheduleAsync(std::function<void()> &&work) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

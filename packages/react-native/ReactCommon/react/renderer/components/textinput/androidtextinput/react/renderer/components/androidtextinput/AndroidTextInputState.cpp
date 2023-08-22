@@ -24,8 +24,6 @@ AndroidTextInputState::AndroidTextInputState(
     AttributedString attributedString,
     AttributedString reactTreeAttributedString,
     ParagraphAttributes paragraphAttributes,
-    TextAttributes defaultTextAttributes,
-    ShadowView defaultParentShadowView,
     float defaultThemePaddingStart,
     float defaultThemePaddingEnd,
     float defaultThemePaddingTop,
@@ -34,8 +32,6 @@ AndroidTextInputState::AndroidTextInputState(
       attributedString(std::move(attributedString)),
       reactTreeAttributedString(std::move(reactTreeAttributedString)),
       paragraphAttributes(std::move(paragraphAttributes)),
-      defaultTextAttributes(std::move(defaultTextAttributes)),
-      defaultParentShadowView(std::move(defaultParentShadowView)),
       defaultThemePaddingStart(defaultThemePaddingStart),
       defaultThemePaddingEnd(defaultThemePaddingEnd),
       defaultThemePaddingTop(defaultThemePaddingTop),
@@ -55,8 +51,6 @@ AndroidTextInputState::AndroidTextInputState(
       attributedString(previousState.attributedString),
       reactTreeAttributedString(previousState.reactTreeAttributedString),
       paragraphAttributes(previousState.paragraphAttributes),
-      defaultTextAttributes(previousState.defaultTextAttributes),
-      defaultParentShadowView(previousState.defaultParentShadowView),
       defaultThemePaddingStart(data.getDefault(
                                        "themePaddingStart",
                                        previousState.defaultThemePaddingStart)

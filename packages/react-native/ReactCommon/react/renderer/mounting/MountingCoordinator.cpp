@@ -15,6 +15,7 @@
 #include <condition_variable>
 
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/debug/SystraceSection.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
@@ -35,7 +36,7 @@ SurfaceId MountingCoordinator::getSurfaceId() const {
 
 void MountingCoordinator::push(ShadowTreeRevision revision) const {
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
 
     react_native_assert(
         !lastRevision_.has_value() || revision.number != lastRevision_->number);
@@ -49,7 +50,7 @@ void MountingCoordinator::push(ShadowTreeRevision revision) const {
 }
 
 void MountingCoordinator::revoke() const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   // We have two goals here.
   // 1. We need to stop retaining `ShadowNode`s to not prolong their lifetime
   // to prevent them from overliving `ComponentDescriptor`s.
@@ -76,7 +77,9 @@ void MountingCoordinator::resetLatestRevision() const {
 
 std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  SystraceSection section("MountingCoordinator::pullTransaction");
+
+  std::scoped_lock lock(mutex_);
 
   auto transaction = std::optional<MountingTransaction>{};
 
@@ -175,13 +178,21 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   return transaction;
 }
 
+bool MountingCoordinator::hasPendingTransactions() const {
+  return lastRevision_.has_value();
+}
+
 TelemetryController const &MountingCoordinator::getTelemetryController() const {
   return telemetryController_;
 }
 
+ShadowTreeRevision const &MountingCoordinator::getBaseRevision() const {
+  return baseRevision_;
+}
+
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<MountingOverrideDelegate const> delegate) const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   mountingOverrideDelegate_ = std::move(delegate);
 }
 

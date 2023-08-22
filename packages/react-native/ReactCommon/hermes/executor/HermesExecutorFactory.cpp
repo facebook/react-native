@@ -22,8 +22,7 @@
 using namespace facebook::hermes;
 using namespace facebook::jsi;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -235,5 +234,4 @@ HermesExecutor::HermesExecutor(
   jsi::addNativeTracingHooks(*runtime);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

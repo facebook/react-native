@@ -16,8 +16,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawPropsParser;
 
@@ -54,7 +53,7 @@ class RawValue {
   /*
    * Constructors.
    */
-  RawValue() noexcept : dynamic_(nullptr){};
+  RawValue() noexcept : dynamic_(nullptr) {}
 
   RawValue(RawValue &&other) noexcept : dynamic_(std::move(other.dynamic_)) {}
 
@@ -73,9 +72,9 @@ class RawValue {
   /*
    * Arbitrary constructors are private only for RawProps and internal usage.
    */
-  RawValue(const folly::dynamic &dynamic) noexcept : dynamic_(dynamic){};
+  RawValue(const folly::dynamic &dynamic) noexcept : dynamic_(dynamic) {}
 
-  RawValue(folly::dynamic &&dynamic) noexcept : dynamic_(std::move(dynamic)){};
+  RawValue(folly::dynamic &&dynamic) noexcept : dynamic_(std::move(dynamic)) {}
 
   /*
    * Copy constructor and copy assignment operator would be private and only for
@@ -110,7 +109,7 @@ class RawValue {
   template <typename T>
   bool hasType() const noexcept {
     return checkValueType(dynamic_, (T *)nullptr);
-  };
+  }
 
   /*
    * Checks if the stored value is *not* `null`.
@@ -278,5 +277,4 @@ class RawValue {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

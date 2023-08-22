@@ -84,6 +84,57 @@ const EVENT_DEFINITION = `
   object_readonly_optional_both?: ?$ReadOnly<{
     int32_optional_both?: ?Int32,
   }>,
+
+  boolean_array_required: $ReadOnlyArray<boolean>,
+  boolean_array_optional_key?: boolean[],
+  boolean_array_optional_value: ?$ReadOnlyArray<boolean>,
+  boolean_array_optional_both?: ?boolean[],
+
+  string_array_required: $ReadOnlyArray<string>,
+  string_array_optional_key?: string[],
+  string_array_optional_value: ?$ReadOnlyArray<string>,
+  string_array_optional_both?: ?string[],
+
+  double_array_required: $ReadOnlyArray<Double>,
+  double_array_optional_key?: Double[],
+  double_array_optional_value: ?$ReadOnlyArray<Double>,
+  double_array_optional_both?: ?Double[],
+
+  float_array_required: $ReadOnlyArray<Float>,
+  float_array_optional_key?: Float[],
+  float_array_optional_value: ?$ReadOnlyArray<Float>,
+  float_array_optional_both?: ?Float[],
+
+  int32_array_required: $ReadOnlyArray<Int32>,
+  int32_array_optional_key?: Int32[],
+  int32_array_optional_value: ?$ReadOnlyArray<Int32>,
+  int32_array_optional_both?: ?Int32[],
+
+  enum_array_required: $ReadOnlyArray<('small' | 'large')>,
+  enum_array_optional_key?: ('small' | 'large')[],
+  enum_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
+  enum_array_optional_both?: ?('small' | 'large')[],
+
+  object_array_required: $ReadOnlyArray<{
+    boolean_required: boolean,
+  }>,
+
+  object_array_optional_key?: {
+    string_optional_key?: string,
+  }[],
+
+  object_array_optional_value: ?$ReadOnlyArray<{
+    float_optional_value: ?Float,
+  }>,
+
+  object_array_optional_both?: ?{
+    int32_optional_both?: ?Int32,
+  }[],
+
+  int32_array_array_required: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
+  int32_array_array_optional_key?: Int32[][],
+  int32_array_array_optional_value: ?$ReadOnlyArray<$ReadOnlyArray<Int32>>,
+  int32_array_array_optional_both?: ?Int32[][],
 `;
 
 const ONE_OF_EACH_PROP_EVENT_DEFAULT_AND_OPTIONS = `

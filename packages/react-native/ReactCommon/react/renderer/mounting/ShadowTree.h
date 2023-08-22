@@ -20,8 +20,7 @@
 #include <react/utils/ContextContainer.h>
 #include "MountingOverrideDelegate.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ShadowTreeCommitTransaction = std::function<RootShadowNode::Unshared(
     RootShadowNode const &oldRootShadowNode)>;
@@ -56,6 +55,9 @@ class ShadowTree final {
   };
 
   struct CommitOptions {
+    // When set to true, Shadow Node state from current revision will be applied
+    // to the new revision. For more details see
+    // https://reactnative.dev/architecture/render-pipeline#react-native-renderer-state-updates
     bool enableStateReconciliation{false};
 
     // Indicates if mounting will be triggered synchronously and React will
@@ -145,8 +147,9 @@ class ShadowTree final {
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision::Number
+      lastRevisionNumberWithNewState_; // Protected by `commitMutex_`.
   MountingCoordinator::Shared mountingCoordinator_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

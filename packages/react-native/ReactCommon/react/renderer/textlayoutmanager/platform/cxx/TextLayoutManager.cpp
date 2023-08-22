@@ -7,8 +7,7 @@
 
 #include "TextLayoutManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return (void *)this;
@@ -43,5 +42,4 @@ std::shared_ptr<void> TextLayoutManager::getHostTextStorage(
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

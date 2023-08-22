@@ -13,8 +13,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DefaultComponentsRegistry
     : public facebook::jni::HybridClass<DefaultComponentsRegistry> {
@@ -43,5 +42,4 @@ class DefaultComponentsRegistry
       ComponentFactory *delegate);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

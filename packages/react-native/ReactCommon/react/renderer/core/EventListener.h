@@ -12,8 +12,7 @@
 
 #include <react/renderer/core/RawEvent.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Listener for events dispatched to JS runtime.
@@ -39,5 +38,4 @@ class EventListenerContainer {
   std::vector<std::shared_ptr<EventListener const>> eventListeners_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

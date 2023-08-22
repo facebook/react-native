@@ -14,7 +14,6 @@ Object {
 #pragma once
 
 #include <cinttypes>
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -141,7 +140,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
   }
 }
 
-class JSI_EXPORT ArrayPropsNativeComponentViewProps final : public ViewProps {
+class ArrayPropsNativeComponentViewProps final : public ViewProps {
  public:
   ArrayPropsNativeComponentViewProps() = default;
   ArrayPropsNativeComponentViewProps(const PropsParserContext& context, const ArrayPropsNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -181,14 +180,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT BooleanPropNativeComponentViewProps final : public ViewProps {
+class BooleanPropNativeComponentViewProps final : public ViewProps {
  public:
   BooleanPropNativeComponentViewProps() = default;
   BooleanPropNativeComponentViewProps(const PropsParserContext& context, const BooleanPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -218,7 +216,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
@@ -226,7 +223,7 @@ Object {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT ColorPropNativeComponentViewProps final : public ViewProps {
+class ColorPropNativeComponentViewProps final : public ViewProps {
  public:
   ColorPropNativeComponentViewProps() = default;
   ColorPropNativeComponentViewProps(const PropsParserContext& context, const ColorPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -255,7 +252,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <yoga/Yoga.h>
@@ -263,7 +259,7 @@ Object {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT DimensionPropNativeComponentViewProps final : public ViewProps {
+class DimensionPropNativeComponentViewProps final : public ViewProps {
  public:
   DimensionPropNativeComponentViewProps() = default;
   DimensionPropNativeComponentViewProps(const PropsParserContext& context, const DimensionPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -292,14 +288,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT EdgeInsetsPropNativeComponentViewProps final : public ViewProps {
+class EdgeInsetsPropNativeComponentViewProps final : public ViewProps {
  public:
   EdgeInsetsPropNativeComponentViewProps() = default;
   EdgeInsetsPropNativeComponentViewProps(const PropsParserContext& context, const EdgeInsetsPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -328,7 +323,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
@@ -383,7 +377,7 @@ static inline std::string toString(const EnumPropNativeComponentViewIntervals &v
   }
 }
 
-class JSI_EXPORT EnumPropNativeComponentViewProps final : public ViewProps {
+class EnumPropNativeComponentViewProps final : public ViewProps {
  public:
   EnumPropNativeComponentViewProps() = default;
   EnumPropNativeComponentViewProps(const PropsParserContext& context, const EnumPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -413,14 +407,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT EventNestedObjectPropsNativeComponentViewProps final : public ViewProps {
+class EventNestedObjectPropsNativeComponentViewProps final : public ViewProps {
  public:
   EventNestedObjectPropsNativeComponentViewProps() = default;
   EventNestedObjectPropsNativeComponentViewProps(const PropsParserContext& context, const EventNestedObjectPropsNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -449,14 +442,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT EventPropsNativeComponentViewProps final : public ViewProps {
+class EventPropsNativeComponentViewProps final : public ViewProps {
  public:
   EventPropsNativeComponentViewProps() = default;
   EventPropsNativeComponentViewProps(const PropsParserContext& context, const EventPropsNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -485,14 +477,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT FloatPropsNativeComponentViewProps final : public ViewProps {
+class FloatPropsNativeComponentViewProps final : public ViewProps {
  public:
   FloatPropsNativeComponentViewProps() = default;
   FloatPropsNativeComponentViewProps(const PropsParserContext& context, const FloatPropsNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -527,7 +518,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -535,7 +525,7 @@ Object {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT ImagePropNativeComponentViewProps final : public ViewProps {
+class ImagePropNativeComponentViewProps final : public ViewProps {
  public:
   ImagePropNativeComponentViewProps() = default;
   ImagePropNativeComponentViewProps(const PropsParserContext& context, const ImagePropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -564,14 +554,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT IntegerPropNativeComponentViewProps final : public ViewProps {
+class IntegerPropNativeComponentViewProps final : public ViewProps {
  public:
   IntegerPropNativeComponentViewProps() = default;
   IntegerPropNativeComponentViewProps(const PropsParserContext& context, const IntegerPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -602,14 +591,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT InterfaceOnlyNativeComponentViewProps final : public ViewProps {
+class InterfaceOnlyNativeComponentViewProps final : public ViewProps {
  public:
   InterfaceOnlyNativeComponentViewProps() = default;
   InterfaceOnlyNativeComponentViewProps(const PropsParserContext& context, const InterfaceOnlyNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -638,14 +626,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT MixedPropNativeComponentViewProps final : public ViewProps {
+class MixedPropNativeComponentViewProps final : public ViewProps {
  public:
   MixedPropNativeComponentViewProps() = default;
   MixedPropNativeComponentViewProps(const PropsParserContext& context, const MixedPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -674,7 +661,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
@@ -684,7 +670,7 @@ Object {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT MultiNativePropNativeComponentViewProps final : public ViewProps {
+class MultiNativePropNativeComponentViewProps final : public ViewProps {
  public:
   MultiNativePropNativeComponentViewProps() = default;
   MultiNativePropNativeComponentViewProps(const PropsParserContext& context, const MultiNativePropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -716,14 +702,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT NoPropsNoEventsNativeComponentViewProps final : public ViewProps {
+class NoPropsNoEventsNativeComponentViewProps final : public ViewProps {
  public:
   NoPropsNoEventsNativeComponentViewProps() = default;
   NoPropsNoEventsNativeComponentViewProps(const PropsParserContext& context, const NoPropsNoEventsNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -752,7 +737,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -887,7 +871,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &value) {
   return \\"[Object ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct]\\";
 }
-class JSI_EXPORT ObjectPropsNativeComponentProps final : public ViewProps {
+class ObjectPropsNativeComponentProps final : public ViewProps {
  public:
   ObjectPropsNativeComponentProps() = default;
   ObjectPropsNativeComponentProps(const PropsParserContext& context, const ObjectPropsNativeComponentProps &sourceProps, const RawProps &rawProps);
@@ -918,7 +902,6 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Point.h>
@@ -926,7 +909,7 @@ Object {
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT PointPropNativeComponentViewProps final : public ViewProps {
+class PointPropNativeComponentViewProps final : public ViewProps {
  public:
   PointPropNativeComponentViewProps() = default;
   PointPropNativeComponentViewProps(const PropsParserContext& context, const PointPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);
@@ -955,14 +938,13 @@ Object {
  */
 #pragma once
 
-#include <jsi/jsi.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 
 namespace facebook {
 namespace react {
 
-class JSI_EXPORT StringPropNativeComponentViewProps final : public ViewProps {
+class StringPropNativeComponentViewProps final : public ViewProps {
  public:
   StringPropNativeComponentViewProps() = default;
   StringPropNativeComponentViewProps(const PropsParserContext& context, const StringPropNativeComponentViewProps &sourceProps, const RawProps &rawProps);

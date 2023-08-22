@@ -12,9 +12,9 @@
 
 #import <React/RCTJavaScriptExecutor.h>
 #import <cxxreact/MessageQueueThread.h>
+#import <atomic>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RCTMessageThread : public MessageQueueThread,
                          public std::enable_shared_from_this<RCTMessageThread> {
@@ -36,5 +36,4 @@ class RCTMessageThread : public MessageQueueThread,
   std::atomic_bool m_shutdown;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,21 +14,37 @@
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Describes results of layout process for particular shadow node.
  */
 struct LayoutMetrics {
+  // Origin: relative to the outer border of its parent.
+  // Size: includes border, padding and content.
   Rect frame;
+  // Width of the border + padding in each direction.
   EdgeInsets contentInsets{0};
+  // Width of the border in each direction.
   EdgeInsets borderWidth{0};
+  // See `DisplayType` for all possible options.
   DisplayType displayType{DisplayType::Flex};
+  // See `LayoutDirection` for all possible options.
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
+  // Whether React Native treated cardinal directions as flow-relative
+  // directions due to being laid out in RTL with `doLeftAndRightSwapInRTL`
+  // enabled.
+  bool wasLeftAndRightSwapped{false};
+  // Pixel density. Number of device pixels per density-independent pixel.
   Float pointScaleFactor{1.0};
+  // How much the children of the node actually overflow in each direction.
+  // Positive values indicate that children are overflowing outside of the node.
+  // Negative values indicate that children are clipped inside the node
+  // (like when using `overflow: clip` on Web).
   EdgeInsets overflowInset{};
 
+  // Origin: the outer border of the node.
+  // Size: includes content only.
   Rect getContentFrame() const {
     return Rect{
         Point{contentInsets.left, contentInsets.top},
@@ -69,7 +85,7 @@ struct LayoutMetrics {
 static LayoutMetrics const EmptyLayoutMetrics = {
     /* .frame = */ {{0, 0}, {-1.0, -1.0}}};
 
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(LayoutMetrics const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
@@ -78,8 +94,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

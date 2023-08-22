@@ -10,6 +10,7 @@ package com.facebook.react.views.switchview;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by a ReactSwitchManager once a switch is fully switched on/off */
@@ -21,7 +22,7 @@ import com.facebook.react.uimanager.events.Event;
 
   @Deprecated
   public ReactSwitchEvent(int viewId, boolean isChecked) {
-    this(-1, viewId, isChecked);
+    this(ViewUtil.NO_SURFACE_ID, viewId, isChecked);
   }
 
   public ReactSwitchEvent(int surfaceId, int viewId, boolean isChecked) {

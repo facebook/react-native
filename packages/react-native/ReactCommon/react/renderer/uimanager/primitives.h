@@ -11,9 +11,11 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/core/CoreFeatures.h>
+#include <react/renderer/components/text/RawTextShadowNode.h>
 #include <react/renderer/core/EventHandler.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/core/TraitCast.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -140,16 +142,16 @@ inline static Tag tagFromValue(jsi::Value const &value) {
   return (Tag)value.getNumber();
 }
 
-inline static SharedEventTarget eventTargetFromValue(
+inline static InstanceHandle::Shared instanceHandleFromValue(
     jsi::Runtime &runtime,
-    jsi::Value const &eventTargetValue,
+    jsi::Value const &instanceHandleValue,
     jsi::Value const &tagValue) {
-  react_native_assert(!eventTargetValue.isNull());
-  if (eventTargetValue.isNull()) {
+  react_native_assert(!instanceHandleValue.isNull());
+  if (instanceHandleValue.isNull()) {
     return nullptr;
   }
-  return std::make_shared<EventTarget>(
-      runtime, eventTargetValue, tagFromValue(tagValue));
+  return std::make_shared<InstanceHandle>(
+      runtime, instanceHandleValue, tagFromValue(tagValue));
 }
 
 inline static SurfaceId surfaceIdFromValue(
@@ -183,4 +185,38 @@ inline static folly::dynamic commandArgsFromValue(
   return jsi::dynamicFromValue(runtime, value);
 }
 
+inline static jsi::Value getArrayOfInstanceHandlesFromShadowNodes(
+    ShadowNode::ListOfShared const &nodes,
+    jsi::Runtime &runtime) {
+  // JSI doesn't support adding elements to an array after creation,
+  // so we need to accumulate the values in a vector and then create
+  // the array when we know the size.
+  std::vector<jsi::Value> nonNullInstanceHandles;
+  nonNullInstanceHandles.reserve(nodes.size());
+  for (auto const &shadowNode : nodes) {
+    auto instanceHandle = (*shadowNode).getInstanceHandle(runtime);
+    if (!instanceHandle.isNull()) {
+      nonNullInstanceHandles.push_back(std::move(instanceHandle));
+    }
+  }
+
+  auto result = jsi::Array(runtime, nonNullInstanceHandles.size());
+  for (size_t i = 0; i < nonNullInstanceHandles.size(); i++) {
+    result.setValueAtIndex(runtime, i, nonNullInstanceHandles[i]);
+  }
+  return result;
+}
+
+inline static void getTextContentInShadowNode(
+    ShadowNode const &shadowNode,
+    std::string &result) {
+  auto rawTextShadowNode = traitCast<RawTextShadowNode const *>(&shadowNode);
+  if (rawTextShadowNode != nullptr) {
+    result.append(rawTextShadowNode->getConcreteProps().text);
+  }
+
+  for (auto const &childNode : shadowNode.getChildren()) {
+    getTextContentInShadowNode(*childNode.get(), result);
+  }
+}
 } // namespace facebook::react

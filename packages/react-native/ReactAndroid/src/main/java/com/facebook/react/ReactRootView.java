@@ -194,20 +194,14 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
-  public void onChildStartedNativeGesture(MotionEvent ev) {
-    onChildStartedNativeGesture(null, ev);
-  }
-
-  @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
@@ -220,11 +214,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     if (!isDispatcherReady()) {
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, eventDispatcher);
       if (mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildEndedNativeGesture();
@@ -347,11 +340,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch pointer events to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSPointerDispatcher.handleMotionEvent(event, eventDispatcher, isCapture);
     }
   }
@@ -365,11 +357,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to dispatch touch to JS before the dispatcher is available");
       return;
     }
-    ReactContext reactContext = getCurrentReactContext();
-    UIManager uiManager = UIManagerHelper.getUIManager(reactContext, getUIManagerType());
 
-    if (uiManager != null) {
-      EventDispatcher eventDispatcher = uiManager.getEventDispatcher();
+    EventDispatcher eventDispatcher =
+        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+    if (eventDispatcher != null) {
       mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
     }
   }
@@ -611,41 +602,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @ThreadConfined(UI)
   public void unmountReactApplication() {
     UiThreadUtil.assertOnUiThread();
-    // Stop surface in Fabric.
-    // Calling FabricUIManager.stopSurface causes the C++ Binding.stopSurface
-    // to be called synchronously over the JNI, which causes an empty tree
-    // to be committed via the Scheduler, which will cause mounting instructions
-    // to be queued up and synchronously executed to delete and remove
-    // all the views in the hierarchy.
-    if (hasActiveReactInstance()) {
-      final ReactContext reactApplicationContext = getCurrentReactContext();
-      if (reactApplicationContext != null && isFabric()) {
-        @Nullable
-        UIManager uiManager =
-            UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType());
-        if (uiManager != null) {
-          final int surfaceId = this.getId();
-
-          // In case of "retry" or error dialogues being shown, this ReactRootView could be
-          // reused (with the same surfaceId, or a different one). Ensure the ReactRootView
-          // is marked as unused in case of that.
-          setId(NO_ID);
-
-          // Remove all children from ReactRootView
-          removeAllViews();
-
-          if (surfaceId == NO_ID) {
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new RuntimeException(
-                    "unmountReactApplication called on ReactRootView with invalid id"));
-          } else {
-            uiManager.stopSurface(surfaceId);
-          }
-        }
-      }
-    }
-
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
       mIsAttachedToInstance = false;
@@ -1068,8 +1024,11 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     }
 
     private void emitUpdateDimensionsEvent() {
-      DeviceInfoModule deviceInfo =
-          getCurrentReactContext().getNativeModule(DeviceInfoModule.class);
+      ReactContext reactContext = getCurrentReactContext();
+      if (reactContext == null) {
+        return;
+      }
+      DeviceInfoModule deviceInfo = reactContext.getNativeModule(DeviceInfoModule.class);
 
       if (deviceInfo != null) {
         deviceInfo.emitUpdateDimensionsEvent();

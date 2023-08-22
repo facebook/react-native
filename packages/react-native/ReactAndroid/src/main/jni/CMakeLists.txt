@@ -19,9 +19,6 @@ endif(CCACHE_FOUND)
 add_link_options(-Wl,--build-id)
 add_compile_options(-Wall -Werror -std=c++17)
 
-# This exposes the check_for_circular_dependencies macro to all the submodules
-include(CircularDepsValidator.cmake)
-
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()
@@ -51,6 +48,7 @@ add_react_third_party_ndk_subdir(fmt)
 add_react_third_party_ndk_subdir(libevent)
 add_react_third_party_ndk_subdir(folly)
 add_react_third_party_ndk_subdir(jsc)
+add_react_third_party_ndk_subdir(googletest)
 
 # Common targets
 add_react_common_subdir(yoga)
@@ -100,6 +98,10 @@ add_react_common_subdir(react/utils)
 add_react_common_subdir(react/bridging)
 add_react_common_subdir(react/renderer/mapbuffer)
 add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(jserrorhandler)
+add_react_common_subdir(react/bridgeless)
+add_react_common_subdir(react/bridgeless/hermes)
+add_react_common_subdir(react/bridgeless/nativeviewconfig)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
@@ -117,12 +119,9 @@ add_react_android_subdir(src/main/jni/react/fabric)
 add_react_android_subdir(src/main/jni/react/newarchdefaults)
 add_react_android_subdir(src/main/jni/react/hermes/reactexecutor)
 add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
-
-# GTest setup
-set(GOOGLETEST_ROOT ${ANDROID_NDK}/sources/third_party/googletest)
-add_library(gtest STATIC ${GOOGLETEST_ROOT}/src/gtest_main.cc ${GOOGLETEST_ROOT}/src/gtest-all.cc)
-target_include_directories(gtest PRIVATE ${GOOGLETEST_ROOT})
-target_include_directories(gtest PUBLIC ${GOOGLETEST_ROOT}/include)
+add_react_android_subdir(src/main/jni/react/bridgeless/jni)
+add_react_android_subdir(src/main/jni/react/bridgeless/hermes/jni)
+add_react_android_subdir(src/main/jni/react/bridgeless/jsc/jni)
 
 # GTest dependencies
 add_executable(reactnative_unittest
@@ -166,17 +165,17 @@ add_executable(reactnative_unittest
   ${REACT_COMMON_DIR}/react/renderer/templateprocessor/tests/UITemplateProcessorTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
   ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
-  
+
   ########## (COMPILE BUT FAIL ON ASSERTS) ###########
   # ${REACT_COMMON_DIR}/react/renderer/animations/tests/LayoutAnimationTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/MountingTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
-  
+
   ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
   # ${REACT_COMMON_DIR}/hermes/inspector/chrome/tests/ConnectionDemuxTests.cpp
   # ${REACT_COMMON_DIR}/hermes/inspector/detail/tests/SerialExecutorTests.cpp
   # ${REACT_COMMON_DIR}/hermes/inspector/tests/InspectorTests.cpp
-  
+
   ########## (DO NOT COMPILE) ###########
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
@@ -190,15 +189,14 @@ add_executable(reactnative_unittest
     -fexceptions
     -frtti
     -std=c++17
-    -DANDROID
     -DHERMES_ENABLE_DEBUGGER)
 
   target_link_libraries(reactnative_unittest
   folly_runtime
   folly_futures
-  glog  
+  glog
   glog_init
-  gtest
+  gtest_main
   hermes-engine::libhermes
   hermes_inspector
   jsi

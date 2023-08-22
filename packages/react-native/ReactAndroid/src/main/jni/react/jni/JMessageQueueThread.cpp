@@ -15,8 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using namespace jni;
 
@@ -89,7 +88,7 @@ void JMessageQueueThread::runOnQueueSync(std::function<void()> &&runnable) {
     bool runnableComplete = false;
 
     runOnQueue([&]() mutable {
-      std::lock_guard<std::mutex> lock(signalMutex);
+      std::scoped_lock lock(signalMutex);
 
       runnable();
       runnableComplete = true;
@@ -109,5 +108,4 @@ void JMessageQueueThread::quitSynchronous() {
   method(m_jobj);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,8 +10,7 @@
 #include <react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LegacyViewManagerInteropComponentDescriptor final
     : public ConcreteComponentDescriptor<LegacyViewManagerInteropShadowNode> {
@@ -34,5 +33,4 @@ class LegacyViewManagerInteropComponentDescriptor final
   std::shared_ptr<void> const _coordinator;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

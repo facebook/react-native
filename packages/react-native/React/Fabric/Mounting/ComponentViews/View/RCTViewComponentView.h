@@ -49,12 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *nativeId;
 
 /**
- * Provides access to `foregroundColor` prop of the component.
- * Must be used by subclasses only.
- */
-@property (nonatomic, strong, nullable) UIColor *foregroundColor;
-
-/**
  * Returns the object - usually (sub)view - which represents this
  * component view in terms of accessibility.
  * All accessibility properties will be applied to this object.

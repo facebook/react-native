@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<8397f2428e68a26e014f91fdb77c1eb3>>
+// @generated SignedSource<<499c1dc13c66e60377fd3e29460a2321>>
 
 #include "MessageTypes.h"
 
@@ -106,6 +106,72 @@ dynamic debugger::Location::toDynamic() const {
   return obj;
 }
 
+runtime::PropertyPreview::PropertyPreview(const dynamic &obj) {
+  assign(name, obj, "name");
+  assign(type, obj, "type");
+  assign(value, obj, "value");
+  assign(valuePreview, obj, "valuePreview");
+  assign(subtype, obj, "subtype");
+}
+
+dynamic runtime::PropertyPreview::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "name", name);
+  put(obj, "type", type);
+  put(obj, "value", value);
+  put(obj, "valuePreview", valuePreview);
+  put(obj, "subtype", subtype);
+  return obj;
+}
+
+runtime::EntryPreview::EntryPreview(const dynamic &obj) {
+  assign(key, obj, "key");
+  assign(value, obj, "value");
+}
+
+dynamic runtime::EntryPreview::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "key", key);
+  put(obj, "value", value);
+  return obj;
+}
+
+runtime::ObjectPreview::ObjectPreview(const dynamic &obj) {
+  assign(type, obj, "type");
+  assign(subtype, obj, "subtype");
+  assign(description, obj, "description");
+  assign(overflow, obj, "overflow");
+  assign(properties, obj, "properties");
+  assign(entries, obj, "entries");
+}
+
+dynamic runtime::ObjectPreview::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "type", type);
+  put(obj, "subtype", subtype);
+  put(obj, "description", description);
+  put(obj, "overflow", overflow);
+  put(obj, "properties", properties);
+  put(obj, "entries", entries);
+  return obj;
+}
+
+runtime::CustomPreview::CustomPreview(const dynamic &obj) {
+  assign(header, obj, "header");
+  assign(bodyGetterId, obj, "bodyGetterId");
+}
+
+dynamic runtime::CustomPreview::toDynamic() const {
+  dynamic obj = dynamic::object;
+
+  put(obj, "header", header);
+  put(obj, "bodyGetterId", bodyGetterId);
+  return obj;
+}
+
 runtime::RemoteObject::RemoteObject(const dynamic &obj) {
   assign(type, obj, "type");
   assign(subtype, obj, "subtype");
@@ -114,6 +180,8 @@ runtime::RemoteObject::RemoteObject(const dynamic &obj) {
   assign(unserializableValue, obj, "unserializableValue");
   assign(description, obj, "description");
   assign(objectId, obj, "objectId");
+  assign(preview, obj, "preview");
+  assign(customPreview, obj, "customPreview");
 }
 
 dynamic runtime::RemoteObject::toDynamic() const {
@@ -126,6 +194,8 @@ dynamic runtime::RemoteObject::toDynamic() const {
   put(obj, "unserializableValue", unserializableValue);
   put(obj, "description", description);
   put(obj, "objectId", objectId);
+  put(obj, "preview", preview);
+  put(obj, "customPreview", customPreview);
   return obj;
 }
 
@@ -485,6 +555,7 @@ debugger::EvaluateOnCallFrameRequest::EvaluateOnCallFrameRequest(
   assign(includeCommandLineAPI, params, "includeCommandLineAPI");
   assign(silent, params, "silent");
   assign(returnByValue, params, "returnByValue");
+  assign(generatePreview, params, "generatePreview");
   assign(throwOnSideEffect, params, "throwOnSideEffect");
 }
 
@@ -496,6 +567,7 @@ dynamic debugger::EvaluateOnCallFrameRequest::toDynamic() const {
   put(params, "includeCommandLineAPI", includeCommandLineAPI);
   put(params, "silent", silent);
   put(params, "returnByValue", returnByValue);
+  put(params, "generatePreview", generatePreview);
   put(params, "throwOnSideEffect", throwOnSideEffect);
 
   dynamic obj = dynamic::object;
@@ -890,12 +962,26 @@ heapProfiler::StartSamplingRequest::StartSamplingRequest(const dynamic &obj)
   if (it != obj.items().end()) {
     dynamic params = it->second;
     assign(samplingInterval, params, "samplingInterval");
+    assign(
+        includeObjectsCollectedByMajorGC,
+        params,
+        "includeObjectsCollectedByMajorGC");
+    assign(
+        includeObjectsCollectedByMinorGC,
+        params,
+        "includeObjectsCollectedByMinorGC");
   }
 }
 
 dynamic heapProfiler::StartSamplingRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "samplingInterval", samplingInterval);
+  put(params,
+      "includeObjectsCollectedByMajorGC",
+      includeObjectsCollectedByMajorGC);
+  put(params,
+      "includeObjectsCollectedByMinorGC",
+      includeObjectsCollectedByMinorGC);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);
@@ -1084,6 +1170,7 @@ runtime::CallFunctionOnRequest::CallFunctionOnRequest(const dynamic &obj)
   assign(arguments, params, "arguments");
   assign(silent, params, "silent");
   assign(returnByValue, params, "returnByValue");
+  assign(generatePreview, params, "generatePreview");
   assign(userGesture, params, "userGesture");
   assign(awaitPromise, params, "awaitPromise");
   assign(executionContextId, params, "executionContextId");
@@ -1097,6 +1184,7 @@ dynamic runtime::CallFunctionOnRequest::toDynamic() const {
   put(params, "arguments", arguments);
   put(params, "silent", silent);
   put(params, "returnByValue", returnByValue);
+  put(params, "generatePreview", generatePreview);
   put(params, "userGesture", userGesture);
   put(params, "awaitPromise", awaitPromise);
   put(params, "executionContextId", executionContextId);
@@ -1160,6 +1248,7 @@ runtime::EvaluateRequest::EvaluateRequest(const dynamic &obj)
   assign(silent, params, "silent");
   assign(contextId, params, "contextId");
   assign(returnByValue, params, "returnByValue");
+  assign(generatePreview, params, "generatePreview");
   assign(userGesture, params, "userGesture");
   assign(awaitPromise, params, "awaitPromise");
 }
@@ -1172,6 +1261,7 @@ dynamic runtime::EvaluateRequest::toDynamic() const {
   put(params, "silent", silent);
   put(params, "contextId", contextId);
   put(params, "returnByValue", returnByValue);
+  put(params, "generatePreview", generatePreview);
   put(params, "userGesture", userGesture);
   put(params, "awaitPromise", awaitPromise);
 
@@ -1217,12 +1307,14 @@ runtime::GetPropertiesRequest::GetPropertiesRequest(const dynamic &obj)
   dynamic params = obj.at("params");
   assign(objectId, params, "objectId");
   assign(ownProperties, params, "ownProperties");
+  assign(generatePreview, params, "generatePreview");
 }
 
 dynamic runtime::GetPropertiesRequest::toDynamic() const {
   dynamic params = dynamic::object;
   put(params, "objectId", objectId);
   put(params, "ownProperties", ownProperties);
+  put(params, "generatePreview", generatePreview);
 
   dynamic obj = dynamic::object;
   put(obj, "id", id);

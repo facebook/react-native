@@ -10,9 +10,9 @@
 
 import type {ViewProps} from './ViewPropTypes';
 
+import ReactNativeFeatureFlags from '../../ReactNative/ReactNativeFeatureFlags';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import TextAncestor from '../../Text/TextAncestor';
-import {getAccessibilityRoleFromRole} from '../../Utilities/AcessibilityMapping';
 import ViewNativeComponent from './ViewNativeComponent';
 import * as React from 'react';
 
@@ -35,7 +35,6 @@ const View: React.AbstractComponent<
       accessibilityLabel,
       accessibilityLabelledBy,
       accessibilityLiveRegion,
-      accessibilityRole,
       accessibilityState,
       accessibilityValue,
       'aria-busy': ariaBusy,
@@ -56,12 +55,12 @@ const View: React.AbstractComponent<
       importantForAccessibility,
       nativeID,
       pointerEvents,
-      role,
       tabIndex,
       ...otherProps
     }: ViewProps,
     forwardedRef,
   ) => {
+    const hasTextAncestor = React.useContext(TextAncestor);
     const _accessibilityLabelledBy =
       ariaLabelledBy?.split(/\s*,\s*/g) ?? accessibilityLabelledBy;
 
@@ -102,37 +101,50 @@ const View: React.AbstractComponent<
     let style = flattenStyle(otherProps.style);
 
     const newPointerEvents = style?.pointerEvents || pointerEvents;
+    const collapsableOverride =
+      ReactNativeFeatureFlags.shouldForceUnflattenForElevation()
+        ? {
+            collapsable:
+              style != null && style.elevation != null && style.elevation !== 0
+                ? false
+                : otherProps.collapsable,
+          }
+        : {};
 
-    return (
-      <TextAncestor.Provider value={false}>
-        <ViewNativeComponent
-          {...otherProps}
-          accessibilityLiveRegion={
-            ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
-          }
-          accessibilityLabel={ariaLabel ?? accessibilityLabel}
-          focusable={tabIndex !== undefined ? !tabIndex : focusable}
-          accessibilityState={_accessibilityState}
-          accessibilityRole={
-            role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-          }
-          accessibilityElementsHidden={
-            ariaHidden ?? accessibilityElementsHidden
-          }
-          accessibilityLabelledBy={_accessibilityLabelledBy}
-          accessibilityValue={_accessibilityValue}
-          importantForAccessibility={
-            ariaHidden === true
-              ? 'no-hide-descendants'
-              : importantForAccessibility
-          }
-          nativeID={id ?? nativeID}
-          style={style}
-          pointerEvents={newPointerEvents}
-          ref={forwardedRef}
-        />
-      </TextAncestor.Provider>
+    const actualView = (
+      <ViewNativeComponent
+        {...otherProps}
+        {...collapsableOverride}
+        accessibilityLiveRegion={
+          ariaLive === 'off' ? 'none' : ariaLive ?? accessibilityLiveRegion
+        }
+        accessibilityLabel={ariaLabel ?? accessibilityLabel}
+        focusable={tabIndex !== undefined ? !tabIndex : focusable}
+        accessibilityState={_accessibilityState}
+        accessibilityElementsHidden={ariaHidden ?? accessibilityElementsHidden}
+        accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessibilityValue={_accessibilityValue}
+        importantForAccessibility={
+          ariaHidden === true
+            ? 'no-hide-descendants'
+            : importantForAccessibility
+        }
+        nativeID={id ?? nativeID}
+        style={style}
+        pointerEvents={newPointerEvents}
+        ref={forwardedRef}
+      />
     );
+
+    if (hasTextAncestor) {
+      return (
+        <TextAncestor.Provider value={false}>
+          {actualView}
+        </TextAncestor.Provider>
+      );
+    }
+
+    return actualView;
   },
 );
 

@@ -1463,10 +1463,12 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
-static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
+NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
     NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
-    RCTComponentData *componentData)
+    Class managerClass,
+    NSString *name,
+    NSDictionary<NSString *, id> *viewConfig)
 {
   NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
 
@@ -1476,14 +1478,20 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
   NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
 
   // Add manager class
-  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(managerClass);
 
   // Add native props
-  NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
   moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
   moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
   moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
   moduleConstants[@"directEventTypes"] = directEventTypes;
+  // In the Old Architecture the "Commands" and "Constants" properties of view manager config are populated by
+  // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
+  // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
+  // native.
+  moduleConstants[@"Commands"] = viewConfig[@"Commands"];
+  // In the Old Architecture "Constants" are empty.
+  moduleConstants[@"Constants"] = [NSDictionary new];
 
   // Add direct events
   for (NSString *eventName in viewConfig[@"directEvents"]) {
@@ -1497,7 +1505,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
       RCTLogError(
           @"Component '%@' re-registered bubbling event '%@' as a "
            "direct event",
-          componentData.name,
+          name,
           eventName);
     }
   }
@@ -1518,7 +1526,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
       RCTLogError(
           @"Component '%@' re-registered direct event '%@' as a "
            "bubbling event",
-          componentData.name,
+          name,
           eventName);
     }
   }
@@ -1540,12 +1548,21 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
       RCTLogError(
           @"Component '%@' re-registered direct event '%@' as a "
            "bubbling event",
-          componentData.name,
+          name,
           eventName);
     }
   }
 
   return moduleConstants;
+}
+
+static NSMutableDictionary<NSString *, id> *moduleConstantsForComponentData(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    RCTComponentData *componentData)
+{
+  return RCTModuleConstantsForDestructuredComponent(
+      directEvents, bubblingEvents, componentData.managerClass, componentData.name, componentData.viewConfig);
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -1563,7 +1580,7 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
       enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
         RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
         NSMutableDictionary<NSString *, id> *moduleConstants =
-            moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+            moduleConstantsForComponentData(directEvents, bubblingEvents, componentData);
         constants[name] = moduleConstants;
       }];
 
@@ -1611,7 +1628,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView : (NSString *)name)
   NSMutableDictionary *directEvents = [NSMutableDictionary new];
   NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, id> *moduleConstants =
-      moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+      moduleConstantsForComponentData(directEvents, bubblingEvents, componentData);
   return @{
     @"viewConfig" : moduleConstants,
   };

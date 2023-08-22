@@ -18,8 +18,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * General purpose dependency injection container.
@@ -83,7 +82,7 @@ class ContextContainer final {
     react_native_assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
-    return *std::static_pointer_cast<T>(instances_.at(key));
+    return *static_cast<T *>(instances_.at(key).get());
   }
 
   /*
@@ -100,7 +99,7 @@ class ContextContainer final {
       return {};
     }
 
-    return *std::static_pointer_cast<T>(iterator->second);
+    return *static_cast<T *>(iterator->second.get());
   }
 
  private:
@@ -109,5 +108,4 @@ class ContextContainer final {
   mutable butter::map<std::string, std::shared_ptr<void>> instances_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

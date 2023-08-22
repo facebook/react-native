@@ -10,17 +10,18 @@
 #if RCT_NEW_ARCH_ENABLED
 // Turbo Module
 #import <React/CoreModulesPlugins.h>
+#import <React/RCTBundleAssetImageLoader.h>
 #import <React/RCTDataRequestHandler.h>
 #import <React/RCTFileRequestHandler.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
-#import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #endif
@@ -55,6 +56,12 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 #if RCT_NEW_ARCH_ENABLED
   RCTEnableTurboModule(turboModuleEnabled);
 #endif
+
+#if DEBUG
+  // Disable idle timer in dev builds to avoid putting application in background and complicating
+  // Metro reconnection logic. Users only need this when running the application using our CLI tooling.
+  application.idleTimerDisabled = YES;
+#endif
 }
 
 UIView *
@@ -62,9 +69,10 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 {
 #if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
-    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                             moduleName:moduleName
-                                                      initialProperties:initialProperties];
+    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                   moduleName:moduleName
+                                                            initialProperties:initialProperties];
+    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
 #endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
@@ -77,7 +85,7 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass)
   if (moduleClass == RCTImageLoader.class) {
     return [[moduleClass alloc] initWithRedirectDelegate:nil
         loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *moduleRegistry) {
-          return @[ [RCTLocalAssetImageLoader new] ];
+          return @[ [RCTBundleAssetImageLoader new] ];
         }
         decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *moduleRegistry) {
           return @[ [RCTGIFImageDecoder new] ];
@@ -105,15 +113,13 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [bridge setRCTTurboModuleRegistry:turboModuleManager];
 
 #if RCT_DEV
-  if (!RCTTurboModuleEagerInitEnabled()) {
-    /**
-     * Instantiating DevMenu has the side-effect of registering
-     * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
-     * Therefore, when TurboModules are enabled, we must manually create this
-     * NativeModule.
-     */
-    [turboModuleManager moduleForName:"RCTDevMenu"];
-  }
+  /**
+   * Instantiating DevMenu has the side-effect of registering
+   * shortcuts for CMD + d, CMD + i,  and CMD + n via RCTDevMenu.
+   * Therefore, when TurboModules are enabled, we must manually create this
+   * NativeModule.
+   */
+  [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif
 
 #if RCT_USE_HERMES
@@ -129,9 +135,7 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
             if (runtimeScheduler) {
               facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
             }
-            facebook::react::RuntimeExecutor syncRuntimeExecutor =
-                [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
-            [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+            [turboModuleManager installJSBindings:runtime];
           }));
 }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: tl_PH -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="combobox_description" gender="unknown">Combox Box</string>
+    <string name="menuitem_description" gender="unknown">Item sa Menu</string>
+    <string name="radiogroup_description" gender="unknown">Grupo ng Radio</string>
+    <string name="state_expanded_description" gender="unknown">naka-expand</string>
+    <string name="state_collapsed_description" gender="unknown">naka-collapse</string>
+    <string name="state_unselected_description" gender="unknown">na-unselect</string>
+    <string name="state_on_description" gender="unknown">naka-ON</string>
+    <string name="state_off_description" gender="unknown">naka-OFF</string>
+</resources>

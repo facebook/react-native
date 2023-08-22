@@ -21,8 +21,7 @@
 #include <react/renderer/core/RawValue.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RawPropsParser;
 
@@ -142,5 +141,4 @@ class RawProps final {
           values_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

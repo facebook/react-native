@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
 
+@class RCTBridge;
+@protocol RCTBridgeDelegate;
+@protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
-@class RCTTurboModuleManager;
 
 /**
  * The RCTAppDelegate is an utility class that implements some base configurations for all the React Native apps.
@@ -36,6 +36,7 @@
  *   - (UIView *)createRootViewWithBridge:(RCTBridge *)bridge moduleName:(NSString*)moduleName initProps:(NSDictionary
  *)initProps;
  *   - (UIViewController *)createRootViewController;
+ *   - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
  * New Architecture:
  *   - (BOOL)concurrentRootEnabled
  *   - (BOOL)turboModuleEnabled;
@@ -94,11 +95,31 @@
  */
 - (UIViewController *)createRootViewController;
 
-#if RCT_NEW_ARCH_ENABLED
+/**
+ * It assigns the rootView to the rootViewController
+ * By default, it assigns the rootView to the view property of the rootViewController
+ * If you are not using a simple UIViewController, then there could be other methods to use to setup the rootView.
+ * For example: UISplitViewController requires `setViewController(_:for:)`
+ *
+ * @return: void
+ */
+- (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController;
 
-/// The TurboModule manager
-@property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
+/// This method controls whether the App will use RuntimeScheduler. Only applicable in the legacy architecture.
+///
+/// @return: `YES` to use RuntimeScheduler, `NO` to use JavaScript scheduler. The default value is `YES`.
+- (BOOL)runtimeSchedulerEnabled;
+
+#if RCT_NEW_ARCH_ENABLED
 @property (nonatomic, strong) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+
+/// This method returns a map of Component Descriptors and Components classes that needs to be registered in the
+/// new renderer. The Component Descriptor is a string which represent the name used in JS to refer to the native
+/// component. The default implementation returns an empty dictionary. Subclasses can override this method to register
+/// the required components.
+///
+/// @return a dictionary that associate a component for the new renderer with his descriptor.
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents;
 
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
 ///
@@ -110,6 +131,14 @@
 ///
 /// @return: `true` if the Fabric Renderer is enabled. Otherwise, it returns `false`.
 - (BOOL)fabricEnabled;
+
+/// This method controls whether React Native's new initialization layer is enabled.
+///
+/// @return: `true` if the new initialization layer is enabled. Otherwise returns `false`.
+- (BOOL)bridgelessEnabled;
+
+/// Return the bundle URL for the main bundle.
+- (NSURL *)getBundleURL;
 
 #endif
 

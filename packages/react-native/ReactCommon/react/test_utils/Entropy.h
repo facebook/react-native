@@ -10,8 +10,7 @@
 #include <algorithm>
 #include <random>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * The source of pseudo-random numbers and some problem-oriented tools built on
@@ -131,5 +130,4 @@ class Entropy final {
   uint_fast32_t seed_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

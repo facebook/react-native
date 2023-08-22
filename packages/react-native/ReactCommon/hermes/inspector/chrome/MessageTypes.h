@@ -1,5 +1,5 @@
 // Copyright (c) Meta Platforms, Inc. and affiliates. All Rights Reserved.
-// @generated SignedSource<<521cb6eba7e5df060b4836f0f60126b9>>
+// @generated SignedSource<<0c28a6bdf52b46bbad601080f35e98ee>>
 
 #pragma once
 
@@ -14,6 +14,8 @@ namespace inspector {
 namespace chrome {
 namespace message {
 
+template <typename T>
+void deleter(T *p);
 struct UnknownRequest;
 
 namespace debugger {
@@ -54,6 +56,8 @@ struct CallFunctionOnResponse;
 struct CompileScriptRequest;
 struct CompileScriptResponse;
 struct ConsoleAPICalledNotification;
+struct CustomPreview;
+struct EntryPreview;
 struct EvaluateRequest;
 struct EvaluateResponse;
 struct ExceptionDetails;
@@ -67,7 +71,9 @@ struct GetPropertiesResponse;
 struct GlobalLexicalScopeNamesRequest;
 struct GlobalLexicalScopeNamesResponse;
 struct InternalPropertyDescriptor;
+struct ObjectPreview;
 struct PropertyDescriptor;
+struct PropertyPreview;
 struct RemoteObject;
 using RemoteObjectId = std::string;
 struct RunIfWaitingForDebuggerRequest;
@@ -193,18 +199,94 @@ struct NoopRequestHandler : public RequestHandler {
 /// Types
 struct debugger::Location : public Serializable {
   Location() = default;
+  Location(Location &&) = default;
+  Location(const Location &) = delete;
   explicit Location(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  Location &operator=(const Location &) = delete;
+  Location &operator=(Location &&) = default;
 
   runtime::ScriptId scriptId{};
   int lineNumber{};
   std::optional<int> columnNumber;
 };
 
+struct runtime::PropertyPreview : public Serializable {
+  PropertyPreview() = default;
+  PropertyPreview(PropertyPreview &&) = default;
+  PropertyPreview(const PropertyPreview &) = delete;
+  explicit PropertyPreview(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+  PropertyPreview &operator=(const PropertyPreview &) = delete;
+  PropertyPreview &operator=(PropertyPreview &&) = default;
+
+  std::string name;
+  std::string type;
+  std::optional<std::string> value;
+  std::unique_ptr<
+      runtime::ObjectPreview,
+      std::function<void(runtime::ObjectPreview *)>>
+      valuePreview{nullptr, deleter<runtime::ObjectPreview>};
+  std::optional<std::string> subtype;
+};
+
+struct runtime::EntryPreview : public Serializable {
+  EntryPreview() = default;
+  EntryPreview(EntryPreview &&) = default;
+  EntryPreview(const EntryPreview &) = delete;
+  explicit EntryPreview(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+  EntryPreview &operator=(const EntryPreview &) = delete;
+  EntryPreview &operator=(EntryPreview &&) = default;
+
+  std::unique_ptr<
+      runtime::ObjectPreview,
+      std::function<void(runtime::ObjectPreview *)>>
+      key{nullptr, deleter<runtime::ObjectPreview>};
+  std::unique_ptr<
+      runtime::ObjectPreview,
+      std::function<void(runtime::ObjectPreview *)>>
+      value{nullptr, deleter<runtime::ObjectPreview>};
+};
+
+struct runtime::ObjectPreview : public Serializable {
+  ObjectPreview() = default;
+  ObjectPreview(ObjectPreview &&) = default;
+  ObjectPreview(const ObjectPreview &) = delete;
+  explicit ObjectPreview(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+  ObjectPreview &operator=(const ObjectPreview &) = delete;
+  ObjectPreview &operator=(ObjectPreview &&) = default;
+
+  std::string type;
+  std::optional<std::string> subtype;
+  std::optional<std::string> description;
+  bool overflow{};
+  std::vector<runtime::PropertyPreview> properties;
+  std::optional<std::vector<runtime::EntryPreview>> entries;
+};
+
+struct runtime::CustomPreview : public Serializable {
+  CustomPreview() = default;
+  CustomPreview(CustomPreview &&) = default;
+  CustomPreview(const CustomPreview &) = delete;
+  explicit CustomPreview(const folly::dynamic &obj);
+  folly::dynamic toDynamic() const override;
+  CustomPreview &operator=(const CustomPreview &) = delete;
+  CustomPreview &operator=(CustomPreview &&) = default;
+
+  std::string header;
+  std::optional<runtime::RemoteObjectId> bodyGetterId;
+};
+
 struct runtime::RemoteObject : public Serializable {
   RemoteObject() = default;
+  RemoteObject(RemoteObject &&) = default;
+  RemoteObject(const RemoteObject &) = delete;
   explicit RemoteObject(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  RemoteObject &operator=(const RemoteObject &) = delete;
+  RemoteObject &operator=(RemoteObject &&) = default;
 
   std::string type;
   std::optional<std::string> subtype;
@@ -213,12 +295,18 @@ struct runtime::RemoteObject : public Serializable {
   std::optional<runtime::UnserializableValue> unserializableValue;
   std::optional<std::string> description;
   std::optional<runtime::RemoteObjectId> objectId;
+  std::optional<runtime::ObjectPreview> preview;
+  std::optional<runtime::CustomPreview> customPreview;
 };
 
 struct runtime::CallFrame : public Serializable {
   CallFrame() = default;
+  CallFrame(CallFrame &&) = default;
+  CallFrame(const CallFrame &) = delete;
   explicit CallFrame(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  CallFrame &operator=(const CallFrame &) = delete;
+  CallFrame &operator=(CallFrame &&) = default;
 
   std::string functionName;
   runtime::ScriptId scriptId{};
@@ -229,8 +317,12 @@ struct runtime::CallFrame : public Serializable {
 
 struct runtime::StackTrace : public Serializable {
   StackTrace() = default;
+  StackTrace(StackTrace &&) = default;
+  StackTrace(const StackTrace &) = delete;
   explicit StackTrace(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  StackTrace &operator=(const StackTrace &) = delete;
+  StackTrace &operator=(StackTrace &&) = default;
 
   std::optional<std::string> description;
   std::vector<runtime::CallFrame> callFrames;
@@ -239,8 +331,12 @@ struct runtime::StackTrace : public Serializable {
 
 struct runtime::ExceptionDetails : public Serializable {
   ExceptionDetails() = default;
+  ExceptionDetails(ExceptionDetails &&) = default;
+  ExceptionDetails(const ExceptionDetails &) = delete;
   explicit ExceptionDetails(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  ExceptionDetails &operator=(const ExceptionDetails &) = delete;
+  ExceptionDetails &operator=(ExceptionDetails &&) = default;
 
   int exceptionId{};
   std::string text;
@@ -255,8 +351,12 @@ struct runtime::ExceptionDetails : public Serializable {
 
 struct debugger::Scope : public Serializable {
   Scope() = default;
+  Scope(Scope &&) = default;
+  Scope(const Scope &) = delete;
   explicit Scope(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  Scope &operator=(const Scope &) = delete;
+  Scope &operator=(Scope &&) = default;
 
   std::string type;
   runtime::RemoteObject object{};
@@ -267,8 +367,12 @@ struct debugger::Scope : public Serializable {
 
 struct debugger::CallFrame : public Serializable {
   CallFrame() = default;
+  CallFrame(CallFrame &&) = default;
+  CallFrame(const CallFrame &) = delete;
   explicit CallFrame(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  CallFrame &operator=(const CallFrame &) = delete;
+  CallFrame &operator=(CallFrame &&) = default;
 
   debugger::CallFrameId callFrameId{};
   std::string functionName;
@@ -282,8 +386,12 @@ struct debugger::CallFrame : public Serializable {
 
 struct heapProfiler::SamplingHeapProfileNode : public Serializable {
   SamplingHeapProfileNode() = default;
+  SamplingHeapProfileNode(SamplingHeapProfileNode &&) = default;
+  SamplingHeapProfileNode(const SamplingHeapProfileNode &) = delete;
   explicit SamplingHeapProfileNode(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  SamplingHeapProfileNode &operator=(const SamplingHeapProfileNode &) = delete;
+  SamplingHeapProfileNode &operator=(SamplingHeapProfileNode &&) = default;
 
   runtime::CallFrame callFrame{};
   double selfSize{};
@@ -293,8 +401,13 @@ struct heapProfiler::SamplingHeapProfileNode : public Serializable {
 
 struct heapProfiler::SamplingHeapProfileSample : public Serializable {
   SamplingHeapProfileSample() = default;
+  SamplingHeapProfileSample(SamplingHeapProfileSample &&) = default;
+  SamplingHeapProfileSample(const SamplingHeapProfileSample &) = delete;
   explicit SamplingHeapProfileSample(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  SamplingHeapProfileSample &operator=(const SamplingHeapProfileSample &) =
+      delete;
+  SamplingHeapProfileSample &operator=(SamplingHeapProfileSample &&) = default;
 
   double size{};
   int nodeId{};
@@ -303,8 +416,12 @@ struct heapProfiler::SamplingHeapProfileSample : public Serializable {
 
 struct heapProfiler::SamplingHeapProfile : public Serializable {
   SamplingHeapProfile() = default;
+  SamplingHeapProfile(SamplingHeapProfile &&) = default;
+  SamplingHeapProfile(const SamplingHeapProfile &) = delete;
   explicit SamplingHeapProfile(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  SamplingHeapProfile &operator=(const SamplingHeapProfile &) = delete;
+  SamplingHeapProfile &operator=(SamplingHeapProfile &&) = default;
 
   heapProfiler::SamplingHeapProfileNode head{};
   std::vector<heapProfiler::SamplingHeapProfileSample> samples;
@@ -312,8 +429,12 @@ struct heapProfiler::SamplingHeapProfile : public Serializable {
 
 struct profiler::PositionTickInfo : public Serializable {
   PositionTickInfo() = default;
+  PositionTickInfo(PositionTickInfo &&) = default;
+  PositionTickInfo(const PositionTickInfo &) = delete;
   explicit PositionTickInfo(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  PositionTickInfo &operator=(const PositionTickInfo &) = delete;
+  PositionTickInfo &operator=(PositionTickInfo &&) = default;
 
   int line{};
   int ticks{};
@@ -321,8 +442,12 @@ struct profiler::PositionTickInfo : public Serializable {
 
 struct profiler::ProfileNode : public Serializable {
   ProfileNode() = default;
+  ProfileNode(ProfileNode &&) = default;
+  ProfileNode(const ProfileNode &) = delete;
   explicit ProfileNode(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  ProfileNode &operator=(const ProfileNode &) = delete;
+  ProfileNode &operator=(ProfileNode &&) = default;
 
   int id{};
   runtime::CallFrame callFrame{};
@@ -334,8 +459,12 @@ struct profiler::ProfileNode : public Serializable {
 
 struct profiler::Profile : public Serializable {
   Profile() = default;
+  Profile(Profile &&) = default;
+  Profile(const Profile &) = delete;
   explicit Profile(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  Profile &operator=(const Profile &) = delete;
+  Profile &operator=(Profile &&) = default;
 
   std::vector<profiler::ProfileNode> nodes;
   double startTime{};
@@ -346,8 +475,12 @@ struct profiler::Profile : public Serializable {
 
 struct runtime::CallArgument : public Serializable {
   CallArgument() = default;
+  CallArgument(CallArgument &&) = default;
+  CallArgument(const CallArgument &) = delete;
   explicit CallArgument(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  CallArgument &operator=(const CallArgument &) = delete;
+  CallArgument &operator=(CallArgument &&) = default;
 
   std::optional<folly::dynamic> value;
   std::optional<runtime::UnserializableValue> unserializableValue;
@@ -356,8 +489,14 @@ struct runtime::CallArgument : public Serializable {
 
 struct runtime::ExecutionContextDescription : public Serializable {
   ExecutionContextDescription() = default;
+  ExecutionContextDescription(ExecutionContextDescription &&) = default;
+  ExecutionContextDescription(const ExecutionContextDescription &) = delete;
   explicit ExecutionContextDescription(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  ExecutionContextDescription &operator=(const ExecutionContextDescription &) =
+      delete;
+  ExecutionContextDescription &operator=(ExecutionContextDescription &&) =
+      default;
 
   runtime::ExecutionContextId id{};
   std::string origin;
@@ -367,8 +506,12 @@ struct runtime::ExecutionContextDescription : public Serializable {
 
 struct runtime::PropertyDescriptor : public Serializable {
   PropertyDescriptor() = default;
+  PropertyDescriptor(PropertyDescriptor &&) = default;
+  PropertyDescriptor(const PropertyDescriptor &) = delete;
   explicit PropertyDescriptor(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  PropertyDescriptor &operator=(const PropertyDescriptor &) = delete;
+  PropertyDescriptor &operator=(PropertyDescriptor &&) = default;
 
   std::string name;
   std::optional<runtime::RemoteObject> value;
@@ -384,8 +527,14 @@ struct runtime::PropertyDescriptor : public Serializable {
 
 struct runtime::InternalPropertyDescriptor : public Serializable {
   InternalPropertyDescriptor() = default;
+  InternalPropertyDescriptor(InternalPropertyDescriptor &&) = default;
+  InternalPropertyDescriptor(const InternalPropertyDescriptor &) = delete;
   explicit InternalPropertyDescriptor(const folly::dynamic &obj);
   folly::dynamic toDynamic() const override;
+  InternalPropertyDescriptor &operator=(const InternalPropertyDescriptor &) =
+      delete;
+  InternalPropertyDescriptor &operator=(InternalPropertyDescriptor &&) =
+      default;
 
   std::string name;
   std::optional<runtime::RemoteObject> value;
@@ -431,6 +580,7 @@ struct debugger::EvaluateOnCallFrameRequest : public Request {
   std::optional<bool> includeCommandLineAPI;
   std::optional<bool> silent;
   std::optional<bool> returnByValue;
+  std::optional<bool> generatePreview;
   std::optional<bool> throwOnSideEffect;
 };
 
@@ -579,6 +729,8 @@ struct heapProfiler::StartSamplingRequest : public Request {
   void accept(RequestHandler &handler) const override;
 
   std::optional<double> samplingInterval;
+  std::optional<bool> includeObjectsCollectedByMajorGC;
+  std::optional<bool> includeObjectsCollectedByMinorGC;
 };
 
 struct heapProfiler::StartTrackingHeapObjectsRequest : public Request {
@@ -651,6 +803,7 @@ struct runtime::CallFunctionOnRequest : public Request {
   std::optional<std::vector<runtime::CallArgument>> arguments;
   std::optional<bool> silent;
   std::optional<bool> returnByValue;
+  std::optional<bool> generatePreview;
   std::optional<bool> userGesture;
   std::optional<bool> awaitPromise;
   std::optional<runtime::ExecutionContextId> executionContextId;
@@ -683,6 +836,7 @@ struct runtime::EvaluateRequest : public Request {
   std::optional<bool> silent;
   std::optional<runtime::ExecutionContextId> contextId;
   std::optional<bool> returnByValue;
+  std::optional<bool> generatePreview;
   std::optional<bool> userGesture;
   std::optional<bool> awaitPromise;
 };
@@ -704,6 +858,7 @@ struct runtime::GetPropertiesRequest : public Request {
 
   runtime::RemoteObjectId objectId{};
   std::optional<bool> ownProperties;
+  std::optional<bool> generatePreview;
 };
 
 struct runtime::GlobalLexicalScopeNamesRequest : public Request {

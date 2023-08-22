@@ -9,11 +9,11 @@
  */
 
 export function toCppNamespace(domain: string): string {
-  return domain.substr(0, 1).toLowerCase() + domain.substr(1);
+  return domain.slice(0, 1).toLowerCase() + domain.slice(1);
 }
 
 export function toCppType(type: string): string {
-  return type.substr(0, 1).toUpperCase() + type.substr(1);
+  return type.slice(0, 1).toUpperCase() + type.slice(1);
 }
 
 export type JsTypeString =

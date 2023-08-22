@@ -10,8 +10,7 @@
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ViewComponentDescriptor
     : public ConcreteComponentDescriptor<ViewShadowNode> {
@@ -20,5 +19,4 @@ class ViewComponentDescriptor
       : ConcreteComponentDescriptor<ViewShadowNode>(parameters) {}
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

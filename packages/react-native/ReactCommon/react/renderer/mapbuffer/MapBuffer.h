@@ -17,8 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JReadableMapBuffer;
 
@@ -151,5 +150,4 @@ class MapBuffer {
   friend JReadableMapBuffer;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

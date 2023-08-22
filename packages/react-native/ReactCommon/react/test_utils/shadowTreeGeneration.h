@@ -14,6 +14,7 @@
 #include <memory>
 #include <random>
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs.h>
@@ -23,8 +24,7 @@
 
 #include "Entropy.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static Tag generateReactTag() {
   static Tag tag = 1000;
@@ -142,11 +142,6 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
   }
 
   if (entropy.random<bool>(0.1)) {
-    viewProps.foregroundColor =
-        entropy.random<bool>() ? SharedColor() : blackColor();
-  }
-
-  if (entropy.random<bool>(0.1)) {
     viewProps.shadowColor =
         entropy.random<bool>() ? SharedColor() : blackColor();
   }
@@ -169,9 +164,11 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
                                                  : Transform::Perspective(42);
   }
 
+#ifdef ANDROID
   if (entropy.random<bool>(0.1)) {
     viewProps.elevation = entropy.random<bool>() ? 1 : 0;
   }
+#endif
 
   return shadowNode.clone({newProps});
 }
@@ -195,23 +192,25 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
     viewProps.nativeId = "";
     viewProps.collapsable = true;
     viewProps.backgroundColor = SharedColor();
-    viewProps.foregroundColor = SharedColor();
     viewProps.shadowColor = SharedColor();
     viewProps.accessible = false;
     viewProps.zIndex = {};
     viewProps.pointerEvents = PointerEventsMode::Auto;
     viewProps.transform = Transform::Identity();
+#ifdef ANDROID
     viewProps.elevation = 0;
+#endif
   } else {
     viewProps.nativeId = "42";
     viewProps.backgroundColor = whiteColor();
-    viewProps.foregroundColor = blackColor();
     viewProps.shadowColor = blackColor();
     viewProps.accessible = true;
     viewProps.zIndex = {entropy.random<int>()};
     viewProps.pointerEvents = PointerEventsMode::None;
     viewProps.transform = Transform::Perspective(entropy.random<int>());
+#ifdef ANDROID
     viewProps.elevation = entropy.random<int>();
+#endif
   }
 
   return shadowNode.clone({newProps});
@@ -245,7 +244,10 @@ static inline ShadowNode::Unshared messWithYogaStyles(
     }
   }
 
-  ContextContainer contextContainer{};
+  ContextContainer contextContainer;
+  contextContainer.insert(
+      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
+
   PropsParserContext parserContext{-1, contextContainer};
 
   auto oldProps = shadowNode.getProps();
@@ -294,7 +296,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
     int deviation = 3) {
   if (size <= 1) {
     auto family = componentDescriptor.createFamily(
-        {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
+        {generateReactTag(), SurfaceId(1), nullptr});
     return componentDescriptor.createShadowNode(
         ShadowNodeFragment{generateDefaultProps(componentDescriptor)}, family);
   }
@@ -310,7 +312,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   }
 
   auto family = componentDescriptor.createFamily(
-      {generateReactTag(), SurfaceId(1), nullptr}, nullptr);
+      {generateReactTag(), SurfaceId(1), nullptr});
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           generateDefaultProps(componentDescriptor),
@@ -318,5 +320,4 @@ static inline ShadowNode::Shared generateShadowNodeTree(
       family);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

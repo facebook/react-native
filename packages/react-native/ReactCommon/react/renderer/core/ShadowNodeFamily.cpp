@@ -25,7 +25,9 @@ ShadowNodeFamily::ShadowNodeFamily(
     : eventDispatcher_(std::move(eventDispatcher)),
       tag_(fragment.tag),
       surfaceId_(fragment.surfaceId),
-      eventEmitter_(fragment.eventEmitter),
+      instanceHandle_(fragment.instanceHandle),
+      eventEmitter_(
+          componentDescriptor.createEventEmitter(fragment.instanceHandle)),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),
       componentName_(componentDescriptor.getComponentName()) {}
@@ -46,6 +48,10 @@ ComponentHandle ShadowNodeFamily::getComponentHandle() const {
 
 SurfaceId ShadowNodeFamily::getSurfaceId() const {
   return surfaceId_;
+}
+
+SharedEventEmitter ShadowNodeFamily::getEventEmitter() const {
+  return eventEmitter_;
 }
 
 ComponentName ShadowNodeFamily::getComponentName() const {

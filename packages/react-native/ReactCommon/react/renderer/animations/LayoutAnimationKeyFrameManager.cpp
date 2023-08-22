@@ -19,6 +19,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/view/ViewProps.h>
+#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
@@ -121,7 +122,7 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
       parseLayoutAnimationConfig((folly::dynamic)config);
 
   if (layoutAnimationConfig) {
-    std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+    std::scoped_lock lock(currentAnimationMutex_);
 
     uiManagerDidConfigureNextLayoutAnimation(LayoutAnimation{
         -1,
@@ -150,12 +151,12 @@ void LayoutAnimationKeyFrameManager::setReduceDeleteCreateMutation(
 }
 
 bool LayoutAnimationKeyFrameManager::shouldAnimateFrame() const {
-  std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+  std::scoped_lock lock(currentAnimationMutex_);
   return currentAnimation_ || !inflightAnimations_.empty();
 }
 
 void LayoutAnimationKeyFrameManager::stopSurface(SurfaceId surfaceId) {
-  std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+  std::scoped_lock lock(surfaceIdsToStopMutex_);
   surfaceIdsToStop_.insert(surfaceId);
 }
 
@@ -244,7 +245,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
     // Are we animating this list of mutations?
     std::optional<LayoutAnimation> currentAnimation{};
     {
-      std::lock_guard<std::mutex> lock(currentAnimationMutex_);
+      std::scoped_lock lock(currentAnimationMutex_);
       if (currentAnimation_) {
         currentAnimation = std::move(currentAnimation_);
         currentAnimation_.reset();
@@ -467,8 +468,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
               if (baselineShadowView.traits.check(
                       ShadowNodeTraits::Trait::ViewKind)) {
-                auto const &viewProps =
-                    *std::static_pointer_cast<ViewProps const>(props);
+                const auto &viewProps = static_cast<ViewProps const &>(*props);
                 const_cast<ViewProps &>(viewProps).opacity = 0;
               }
 
@@ -489,8 +489,7 @@ LayoutAnimationKeyFrameManager::pullTransaction(
                       .cloneProps(propsParserContext, viewStart.props, {});
               if (baselineShadowView.traits.check(
                       ShadowNodeTraits::Trait::ViewKind)) {
-                auto const &viewProps =
-                    *std::static_pointer_cast<ViewProps const>(props);
+                const auto &viewProps = static_cast<ViewProps const &>(*props);
                 const_cast<ViewProps &>(viewProps).transform =
                     Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
               }
@@ -590,8 +589,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
                 if (baselineShadowView.traits.check(
                         ShadowNodeTraits::Trait::ViewKind)) {
-                  auto const &viewProps =
-                      *std::static_pointer_cast<ViewProps const>(props);
+                  const auto &viewProps =
+                      static_cast<ViewProps const &>(*props);
                   const_cast<ViewProps &>(viewProps).opacity = 0;
                 }
 
@@ -615,8 +614,8 @@ LayoutAnimationKeyFrameManager::pullTransaction(
 
                 if (baselineShadowView.traits.check(
                         ShadowNodeTraits::Trait::ViewKind)) {
-                  auto const &viewProps =
-                      *std::static_pointer_cast<ViewProps const>(props);
+                  const auto &viewProps =
+                      static_cast<ViewProps const &>(*props);
                   const_cast<ViewProps &>(viewProps).transform =
                       Transform::Scale(isScaleX ? 0 : 1, isScaleY ? 0 : 1, 1);
                 }
@@ -1073,13 +1072,13 @@ LayoutAnimationKeyFrameManager::pullTransaction(
   // Signal to delegate if all animations are complete, or if we were not
   // animating anything and now some animation exists.
   if (inflightAnimationsExistInitially && inflightAnimations_.empty()) {
-    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
     if (layoutAnimationStatusDelegate_ != nullptr) {
       layoutAnimationStatusDelegate_->onAllAnimationsComplete();
     }
   } else if (
       !inflightAnimationsExistInitially && !inflightAnimations_.empty()) {
-    std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+    std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
     if (layoutAnimationStatusDelegate_ != nullptr) {
       layoutAnimationStatusDelegate_->onAnimationStarted();
     }
@@ -1096,7 +1095,7 @@ void LayoutAnimationKeyFrameManager::uiManagerDidConfigureNextLayoutAnimation(
 
 void LayoutAnimationKeyFrameManager::setLayoutAnimationStatusDelegate(
     LayoutAnimationStatusDelegate *delegate) const {
-  std::lock_guard<std::mutex> lock(layoutAnimationStatusDelegateMutex_);
+  std::scoped_lock lock(layoutAnimationStatusDelegateMutex_);
   layoutAnimationStatusDelegate_ = delegate;
 }
 
@@ -1154,8 +1153,13 @@ ShadowView LayoutAnimationKeyFrameManager::createInterpolatedShadowView(
   // Animate opacity or scale/transform
   PropsParserContext propsParserContext{
       finalView.surfaceId, *contextContainer_};
-  mutatedShadowView.props = componentDescriptor.interpolateProps(
-      propsParserContext, progress, startingView.props, finalView.props);
+  mutatedShadowView.props = interpolateProps(
+      componentDescriptor,
+      propsParserContext,
+      progress,
+      startingView.props,
+      finalView.props);
+
   react_native_assert(mutatedShadowView.props != nullptr);
   if (mutatedShadowView.props == nullptr) {
     return finalView;
@@ -1630,7 +1634,7 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
   if (inflightAnimationsExistInitially) {
     butter::set<SurfaceId> surfaceIdsToStop{};
     {
-      std::lock_guard<std::mutex> lock(surfaceIdsToStopMutex_);
+      std::scoped_lock lock(surfaceIdsToStopMutex_);
       surfaceIdsToStop = surfaceIdsToStop_;
       surfaceIdsToStop_.clear();
     }
@@ -1657,5 +1661,33 @@ void LayoutAnimationKeyFrameManager::deleteAnimationsForStoppedSurfaces()
     }
   }
 }
+
+Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
+    const ComponentDescriptor &componentDescriptor,
+    const PropsParserContext &context,
+    Float animationProgress,
+    const Props::Shared &props,
+    const Props::Shared &newProps) const {
+#ifdef ANDROID
+  // On Android only, the merged props should have the same RawProps as the
+  // final props struct
+  Props::Shared interpolatedPropsShared =
+      (newProps != nullptr
+           ? componentDescriptor.cloneProps(
+                 context, newProps, newProps->rawProps)
+           : componentDescriptor.cloneProps(context, newProps, {}));
+#else
+  Props::Shared interpolatedPropsShared =
+      componentDescriptor.cloneProps(context, newProps, {});
+#endif
+
+  if (componentDescriptor.getTraits().check(
+          ShadowNodeTraits::Trait::ViewKind)) {
+    interpolateViewProps(
+        animationProgress, props, newProps, interpolatedPropsShared);
+  }
+
+  return interpolatedPropsShared;
+};
 
 } // namespace facebook::react

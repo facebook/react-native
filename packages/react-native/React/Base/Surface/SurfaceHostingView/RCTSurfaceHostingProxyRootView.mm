@@ -104,6 +104,15 @@ static RCTRootViewSizeFlexibility convertToRootViewSizeFlexibility(RCTSurfaceSiz
   return self;
 }
 
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+{
+  if (self = [super initWithSurface:surface
+                    sizeMeasureMode:RCTSurfaceSizeMeasureModeWidthExact | RCTSurfaceSizeMeasureModeHeightExact]) {
+    [surface start];
+  }
+  return self;
+}
+
 - (BOOL)hasBridge
 {
   return _bridge != nil;
@@ -132,6 +141,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 - (NSString *)moduleName
 {
   return super.surface.moduleName;
+}
+
+- (UIView *)view
+{
+  return (UIView *)super.surface.view;
 }
 
 - (UIView *)contentView

@@ -60,17 +60,29 @@ Scheduler::Scheduler(
                        const EventTarget *eventTarget,
                        const std::string &type,
                        ReactEventPriority priority,
-                       const ValueFactory &payloadFactory) {
+                       const EventPayload &payload) {
     uiManager->visitBinding(
         [&](UIManagerBinding const &uiManagerBinding) {
           uiManagerBinding.dispatchEvent(
-              runtime, eventTarget, type, priority, payloadFactory);
+              runtime, eventTarget, type, priority, payload);
         },
         runtime);
-    if (runtimeScheduler != nullptr) {
-      runtimeScheduler->callExpiredTasks(runtime);
+
+    // We only want to run this per-event if we are not batching by default
+    if (!CoreFeatures::enableDefaultAsyncBatchedPriority) {
+      if (runtimeScheduler != nullptr) {
+        runtimeScheduler->callExpiredTasks(runtime);
+      }
     }
   };
+
+  auto eventPipeConclusion =
+      [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime &runtime) {
+        if (CoreFeatures::enableDefaultAsyncBatchedPriority &&
+            runtimeScheduler != nullptr) {
+          runtimeScheduler->callExpiredTasks(runtime);
+        }
+      };
 
   auto statePipe = [uiManager](StateUpdate const &stateUpdate) {
     uiManager->updateState(stateUpdate);
@@ -79,7 +91,7 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      EventQueueProcessor(eventPipe, statePipe),
+      EventQueueProcessor(eventPipe, eventPipeConclusion, statePipe),
       schedulerToolbox.synchronousEventBeatFactory,
       schedulerToolbox.asynchronousEventBeatFactory,
       eventOwnerBox);
@@ -114,7 +126,7 @@ Scheduler::Scheduler(
   commitHooks_ = schedulerToolbox.commitHooks;
   uiManager_ = uiManager;
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager->registerCommitHook(*commitHook);
   }
 
@@ -131,6 +143,13 @@ Scheduler::Scheduler(
   CoreFeatures::blockPaintForUseLayoutEffect = reactNativeConfig_->getBool(
       "react_fabric:block_paint_for_use_layout_effect");
 
+  CoreFeatures::cacheLastTextMeasurement =
+      reactNativeConfig_->getBool("react_fabric:enable_text_measure_cache");
+
+  CoreFeatures::enableGranularShadowTreeStateReconciliation =
+      reactNativeConfig_->getBool(
+          "react_fabric:enable_granular_shadow_tree_state_reconciliation");
+
   if (animationDelegate != nullptr) {
     animationDelegate->setComponentDescriptorRegistry(
         componentDescriptorRegistry_);
@@ -144,7 +163,7 @@ Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  for (auto const &commitHook : commitHooks_) {
+  for (auto &commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
   }
 
@@ -163,10 +182,9 @@ Scheduler::~Scheduler() {
         surfaceIds.push_back(shadowTree.getSurfaceId());
       });
 
-  // TODO(T88046056): Fix Android memory leak before uncommenting changes
-  //  react_native_assert(
-  //      surfaceIds.empty() &&
-  //      "Scheduler was destroyed with outstanding Surfaces.");
+  react_native_assert(
+      surfaceIds.empty() &&
+      "Scheduler was destroyed with outstanding Surfaces.");
 
   if (surfaceIds.empty()) {
     return;
@@ -320,15 +338,13 @@ void Scheduler::uiManagerDidFinishTransaction(
             [delegate = delegate_,
              mountingCoordinator =
                  std::move(mountingCoordinator)](jsi::Runtime &) {
-              delegate->schedulerDidFinishTransaction(
-                  std::move(mountingCoordinator));
+              delegate->schedulerDidFinishTransaction(mountingCoordinator);
             });
       } else {
-        delegate_->schedulerDidFinishTransaction(
-            std::move(mountingCoordinator));
+        delegate_->schedulerDidFinishTransaction(mountingCoordinator);
       }
     } else {
-      delegate_->schedulerDidFinishTransaction(std::move(mountingCoordinator));
+      delegate_->schedulerDidFinishTransaction(mountingCoordinator);
     }
   }
 }
@@ -375,6 +391,10 @@ void Scheduler::uiManagerDidSetIsJSResponder(
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
   }
+}
+
+void Scheduler::reportMount(SurfaceId surfaceId) const {
+  uiManager_->reportMount(surfaceId);
 }
 
 ContextContainer::Shared Scheduler::getContextContainer() const {

@@ -12,8 +12,7 @@
 #include <functional>
 #include <utility>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class HermesExecutorFactory : public JSExecutorFactory {
  public:
@@ -59,5 +58,4 @@ class HermesExecutor : public JSIExecutor {
   JSIScopedTimeoutInvoker timeoutInvoker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

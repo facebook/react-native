@@ -10,8 +10,7 @@
 #include <react/renderer/components/iostextinput/TextInputShadowNode.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <TextInput> component.
@@ -29,15 +28,12 @@ class TextInputComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto concreteShadowNode =
-        std::static_pointer_cast<TextInputShadowNode>(shadowNode);
-
-    concreteShadowNode->setTextLayoutManager(textLayoutManager_);
+    auto &concreteShadowNode = static_cast<TextInputShadowNode &>(*shadowNode);
+    concreteShadowNode.setTextLayoutManager(textLayoutManager_);
   }
 
  private:
   std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

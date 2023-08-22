@@ -182,6 +182,47 @@ class CodegenTests < Test::Unit::TestCase
         })
     end
 
+    def testCheckAndGenerateEmptyThirdPartyProvider_withAbsoluteReactNativePath_buildCodegen()
+        # Arrange
+        rn_path = '/Users/distiller/react-native/packages/react-native'
+        codegen_cli_path = rn_path + "/../@react-native/codegen"
+        DirMock.mocked_existing_dirs([
+            codegen_cli_path,
+        ])
+
+        # Act
+        checkAndGenerateEmptyThirdPartyProvider!(rn_path, false, dir_manager: DirMock, file_manager: FileMock)
+
+        # Assert
+        assert_equal(Pathname.pwd_invocation_count, 1)
+        assert_equal(Pod::Config.instance.installation_root.relative_path_from_invocation_count, 1)
+        assert_equal(FileMock.exist_invocation_params, [
+            rn_path + "/React/Fabric/" + @third_party_provider_header,
+            rn_path + "/React/Fabric/" + @tmp_schema_list_file
+        ])
+        assert_equal(DirMock.exist_invocation_params, [
+            rn_path + "/../react-native-codegen",
+            codegen_cli_path,
+            codegen_cli_path + "/lib",
+        ])
+        assert_equal(Pod::UI.collected_messages, [
+            "[Codegen] building #{codegen_cli_path}.",
+            "[Codegen] generating an empty RCTThirdPartyFabricComponentsProvider"
+        ])
+        assert_equal($collected_commands, [rn_path + "/../@react-native/codegen/scripts/oss/build.sh"])
+        assert_equal(FileMock.open_files[0].collected_write, ["[]"])
+        assert_equal(FileMock.open_files[0].fsync_invocation_count, 1)
+        assert_equal(Pod::Executable.executed_commands[0], {
+            "command" => "node",
+            "arguments" => [
+                rn_path + "/scripts/generate-provider-cli.js",
+                "--platform", 'ios',
+                "--schemaListPath", rn_path + "/React/Fabric/" + @tmp_schema_list_file,
+                "--outputDir", rn_path + "/React/Fabric"
+            ]
+        })
+    end
+
     # ================= #
     # Test - RunCodegen #
     # ================= #

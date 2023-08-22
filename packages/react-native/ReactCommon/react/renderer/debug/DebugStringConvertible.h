@@ -16,8 +16,7 @@
 
 #include "flags.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
@@ -82,6 +81,7 @@ class DebugStringConvertible {
 
 #else
 
+struct DebugStringConvertibleOptions {};
 class DebugStringConvertible {};
 
 #endif
@@ -384,5 +384,4 @@ inline std::string getDebugValue(DebugStringConvertibleObject const &object) {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

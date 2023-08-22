@@ -8,16 +8,14 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <vector>
-
-#include <butter/mutex.h>
 
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/timeline/TimelineSnapshot.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class UIManager;
 
@@ -59,5 +57,4 @@ class Timeline final {
   mutable bool rewinding_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

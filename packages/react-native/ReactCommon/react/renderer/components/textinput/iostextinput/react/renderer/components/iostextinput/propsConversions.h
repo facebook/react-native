@@ -12,8 +12,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static TextInputTraits convertRawProp(
     const PropsParserContext &context,
@@ -142,6 +141,12 @@ static TextInputTraits convertRawProp(
       "passwordRules",
       sourceTraits.passwordRules,
       defaultTraits.passwordRules);
+  traits.smartInsertDelete = convertRawProp(
+      context,
+      rawProps,
+      "smartInsertDelete",
+      sourceTraits.smartInsertDelete,
+      defaultTraits.smartInsertDelete);
 
   return traits;
 }
@@ -179,5 +184,4 @@ inline void fromRawValue(
     LOG(ERROR) << "Unsupported Selection type";
   }
 }
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

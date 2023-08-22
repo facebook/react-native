@@ -13,8 +13,7 @@
 #include <cxxreact/CxxModule.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct JNativeModule : jni::JavaClass<JNativeModule> {
   constexpr static const char *const kJavaDescriptor =
@@ -43,5 +42,4 @@ class CxxModuleWrapperBase
   virtual std::unique_ptr<xplat::module::CxxModule> getModule() = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

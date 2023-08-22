@@ -12,14 +12,12 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNode.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/ElementFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Build `ShadowNode` trees with a given given `Element` trees.
@@ -55,5 +53,4 @@ class ComponentBuilder final {
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -32,6 +32,7 @@ import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.RootViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerRegistry;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import java.util.Queue;
@@ -280,12 +281,12 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept `-1` SurfaceId? Currently there are calls to UIManager.sendAccessibilityEvent
-   * which is a legacy API and accepts only reactTag. We will have to investigate and migrate away
-   * from those calls over time.
+   * <p>Why accept {@ViewUtils.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
+   * UIManager.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will have
+   * to investigate and migrate away from those calls over time.
    *
-   * @param surfaceId {@link int} that identifies the surface or -1 to temporarily support backward
-   *     compatibility.
+   * @param surfaceId {@link int} that identifies the surface or {@ViewUtils.NO_SURFACE_ID}(-1) to
+   *     temporarily support backward compatibility.
    * @param reactTag {@link int} that identifies the react Tag of the view.
    * @param eventType {@link int} that identifies Android eventType. see {@link
    *     View#sendAccessibilityEvent}
@@ -326,7 +327,9 @@ public class MountingManager {
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
     SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == -1 ? getSurfaceManagerForView(reactTag) : getSurfaceManager(surfaceId));
+        (surfaceId == ViewUtil.NO_SURFACE_ID
+            ? getSurfaceManagerForView(reactTag)
+            : getSurfaceManager(surfaceId));
     if (surfaceMountingManager == null) {
       return null;
     }

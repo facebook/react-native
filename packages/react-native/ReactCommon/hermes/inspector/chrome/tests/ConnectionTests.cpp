@@ -159,7 +159,7 @@ void expectCallFrames(
 
   int i = 0;
   for (const FrameInfo &info : infos) {
-    m::debugger::CallFrame frame = frames[i];
+    const m::debugger::CallFrame &frame = frames[i];
 
     EXPECT_EQ(frame.callFrameId, folly::to<std::string>(i));
     EXPECT_EQ(frame.functionName, info.functionName);
@@ -214,6 +214,7 @@ void sendRuntimeEvalRequest(
   m::runtime::EvaluateRequest req;
   req.id = id;
   req.expression = expression;
+  req.generatePreview = true;
   conn.send(req.toJson());
 }
 
@@ -226,6 +227,7 @@ void sendEvalRequest(
   req.id = id;
   req.callFrameId = folly::to<std::string>(callFrameId);
   req.expression = expression;
+  req.generatePreview = true;
   conn.send(req.toJson());
 }
 
@@ -458,6 +460,9 @@ void expectEvalResponse(
   EXPECT_FALSE(resp.exceptionDetails.has_value());
 
   EXPECT_TRUE(resp.result.objectId.has_value());
+  EXPECT_TRUE(resp.result.preview.has_value());
+  EXPECT_EQ(resp.result.preview->type, "object");
+
   expectProps(conn, id + 1, resp.result.objectId.value(), infos);
 }
 
@@ -1312,17 +1317,23 @@ TEST(ConnectionTests, testRuntimeEvaluateReturnByValue) {
   // We expect this JSON object to be evaluated and return by value, so
   // that JSON encoding the result will give the same string.
   auto object = "{\"key\":[1,\"two\"]}";
+  auto preview =
+      "{\"properties\":[{\"subtype\":\"array\",\"value\":\"Array(2)\",\"type\":\"object\",\"name\":\"key\"}],\"overflow\":false,\"description\":\"Object\",\"type\":\"object\"}";
 
   m::runtime::EvaluateRequest req;
   req.id = msgId;
   req.expression = std::string("(") + object + ")";
   req.returnByValue = true;
+  req.generatePreview = true;
   conn.send(req.toJson());
 
   auto resp =
       expectResponse<m::debugger::EvaluateOnCallFrameResponse>(conn, msgId);
   EXPECT_EQ(resp.result.type, "object");
   ASSERT_TRUE(resp.result.value.has_value());
+  ASSERT_TRUE(resp.result.preview.has_value());
+  EXPECT_EQ(resp.result.preview->type, "object");
+  EXPECT_EQ(folly::toJson(resp.result.preview->toDynamic()), preview);
   EXPECT_EQ(folly::toJson(resp.result.value.value()), object);
 
   // [3] exit run loop
@@ -1570,7 +1581,7 @@ TEST(ConnectionTests, testGetPropertiesOnlyOwnProperties) {
   // scope.
   auto pausedNote =
       expectPaused(conn, "other", {{"foo", 7, 2}, {"global", 9, 1}});
-  auto scopeObject = pausedNote.callFrames.at(0).scopeChain.at(0).object;
+  const auto &scopeObject = pausedNote.callFrames.at(0).scopeChain.at(0).object;
   auto scopeChildren = expectProps(
       conn,
       msgId++,
@@ -1930,12 +1941,12 @@ TEST(ConnectionTests, testScopeVariables) {
   // [1] (line 7) hit debugger statement
   auto pausedNote =
       expectPaused(conn, "other", {{"func", 7, 2}, {"global", 12, 1}});
-  auto scopeChain = pausedNote.callFrames.at(0).scopeChain;
+  const auto &scopeChain = pausedNote.callFrames.at(0).scopeChain;
   EXPECT_EQ(scopeChain.size(), 2);
 
   // [2] inspect local scope
   EXPECT_EQ(scopeChain.at(0).type, "local");
-  auto localScopeObject = scopeChain.at(0).object;
+  const auto &localScopeObject = scopeChain.at(0).object;
   auto localScopeObjectChildren = expectProps(
       conn,
       msgId++,
@@ -1958,7 +1969,7 @@ TEST(ConnectionTests, testScopeVariables) {
   // As a workaround we create a Map of properties and check that
   // those global properties that we have defined are in the map.
   EXPECT_EQ(scopeChain.at(1).type, "global");
-  auto globalScopeObject = scopeChain.at(1).object;
+  const auto &globalScopeObject = scopeChain.at(1).object;
   m::runtime::GetPropertiesRequest req;
   req.id = msgId++;
   req.objectId = globalScopeObject.objectId.value();
@@ -1966,8 +1977,9 @@ TEST(ConnectionTests, testScopeVariables) {
   auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
   std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
       globalProperties;
-  for (auto propertyDescriptor : resp.result) {
-    globalProperties[propertyDescriptor.name] = propertyDescriptor.value;
+  for (auto &propertyDescriptor : resp.result) {
+    globalProperties[propertyDescriptor.name] =
+        std::move(propertyDescriptor.value);
   }
   EXPECT_GE(globalProperties.size(), 3);
 
@@ -2039,17 +2051,8 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnObject) {
   auto addMember = [&](const m::runtime::RemoteObjectId id,
                        const char *type,
                        const char *propName,
-                       const m::runtime::CallArgument &ca,
+                       m::runtime::CallArgument ca,
                        bool allowRedefinition = false) {
-    m::runtime::CallFunctionOnRequest req;
-    req.id = msgId++;
-    req.functionDeclaration =
-        std::string("function(e){const r=\"") + propName + "\"; this[r]=e,r}";
-    req.arguments = std::vector<m::runtime::CallArgument>{ca};
-    req.objectId = thisId;
-    conn.send(req.toJson());
-    expectResponse<m::runtime::CallFunctionOnResponse>(conn, req.id);
-
     auto it = expectedPropInfos.emplace(propName, PropInfo(type));
 
     EXPECT_TRUE(allowRedefinition || it.second)
@@ -2062,6 +2065,16 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnObject) {
     if (ca.unserializableValue) {
       it.first->second.setUnserializableValue(*ca.unserializableValue);
     }
+
+    m::runtime::CallFunctionOnRequest req;
+    req.id = msgId++;
+    req.functionDeclaration =
+        std::string("function(e){const r=\"") + propName + "\"; this[r]=e,r}";
+    req.arguments = std::vector<m::runtime::CallArgument>{};
+    req.arguments->push_back(std::move(ca));
+    req.objectId = thisId;
+    conn.send(req.toJson());
+    expectResponse<m::runtime::CallFunctionOnResponse>(conn, req.id);
   };
 
   addMember(thisId, "boolean", "b", makeValueCallArgument(true));
@@ -2136,8 +2149,8 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnExecutionContext) {
     auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
     std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
         properties;
-    for (auto propertyDescriptor : resp.result) {
-      properties[propertyDescriptor.name] = propertyDescriptor.value;
+    for (auto &propertyDescriptor : resp.result) {
+      properties[propertyDescriptor.name] = std::move(propertyDescriptor.value);
     }
     return properties;
   };
@@ -2159,7 +2172,7 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnExecutionContext) {
   // plus the Runtime.CallArgument to be sent to the inspector.
   struct {
     const char *propName;
-    const m::runtime::CallArgument callArg;
+    m::runtime::CallArgument callArg;
   } tests[] = {
       {"callFunctionOnTestMember1", makeValueCallArgument(10)},
       {"callFunctionOnTestMember2", makeValueCallArgument("string")},
@@ -2176,19 +2189,22 @@ TEST(ConnectionTests, testRuntimeCallFunctionOnExecutionContext) {
   }
 
   auto addMember = [&msgId, &conn](
-                       const char *propName,
-                       const m::runtime::CallArgument &ca) {
+                       const char *propName, m::runtime::CallArgument &ca) {
     m::runtime::CallFunctionOnRequest req;
     req.id = msgId++;
     req.functionDeclaration =
         std::string("function(e){const r=\"") + propName + "\"; this[r]=e,r}";
-    req.arguments = std::vector<m::runtime::CallArgument>{ca};
+    // Don't have an easy way to copy these, so...
+    req.arguments = std::vector<m::runtime::CallArgument>{};
+    req.arguments->push_back(std::move(ca));
     req.executionContextId = 1;
     conn.send(req.toJson());
     expectResponse<m::runtime::CallFunctionOnResponse>(conn, req.id);
+    // n.b. we're only borrowing the CallArgument, so give it back...
+    ca = std::move(req.arguments->at(0));
   };
 
-  for (const auto &test : tests) {
+  for (auto &test : tests) {
     addMember(test.propName, test.callArg);
   }
 
@@ -2334,7 +2350,7 @@ TEST(ConnectionTests, testThisObject) {
       expectPaused(conn, "other", {{"foo", 7, 2}, {"global", 11, 1}});
 
   // [2] inspect first call frame (foo)
-  auto localThisObj = pausedNote.callFrames.at(0).thisObj;
+  const auto &localThisObj = pausedNote.callFrames.at(0).thisObj;
   expectProps(
       conn,
       msgId++,
@@ -2348,7 +2364,7 @@ TEST(ConnectionTests, testThisObject) {
   // in our test code and we can't use expectProps() method here.
   // As a workaround we create a Map of properties and check that
   // those global properties that we have defined are in the map.
-  auto globalThisObj = pausedNote.callFrames.at(1).thisObj;
+  const auto &globalThisObj = pausedNote.callFrames.at(1).thisObj;
   m::runtime::GetPropertiesRequest req;
   req.id = msgId++;
   req.objectId = globalThisObj.objectId.value();
@@ -2356,8 +2372,8 @@ TEST(ConnectionTests, testThisObject) {
   auto resp = expectResponse<m::runtime::GetPropertiesResponse>(conn, req.id);
   std::unordered_map<std::string, std::optional<m::runtime::RemoteObject>>
       properties;
-  for (auto propertyDescriptor : resp.result) {
-    properties[propertyDescriptor.name] = propertyDescriptor.value;
+  for (auto &propertyDescriptor : resp.result) {
+    properties[propertyDescriptor.name] = std::move(propertyDescriptor.value);
   }
 
   // globalString should be of type "string" and have value "global-string".

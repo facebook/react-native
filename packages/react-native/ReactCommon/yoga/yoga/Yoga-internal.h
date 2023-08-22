@@ -7,14 +7,14 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <vector>
+
+#include <yoga/Yoga.h>
+
 #include "CompactValue.h"
-#include "Yoga.h"
 
 using YGVector = std::vector<YGNodeRef>;
 
@@ -27,10 +27,13 @@ void YGNodeCalculateLayoutWithContext(
     YGDirection ownerDirection,
     void* layoutContext);
 
+// Deallocates a Yoga Node. Unlike YGNodeFree, does not remove the node from
+// its parent or children.
+void YGNodeDeallocate(YGNodeRef node);
+
 YG_EXTERN_C_END
 
-namespace facebook {
-namespace yoga {
+namespace facebook::yoga {
 
 inline bool isUndefined(float value) {
   return std::isnan(value);
@@ -42,8 +45,7 @@ inline bool isUndefined(double value) {
 
 void throwLogicalErrorWithMessage(const char* message);
 
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga
 
 extern const std::array<YGEdge, 4> trailing;
 extern const std::array<YGEdge, 4> leading;
@@ -99,9 +101,7 @@ struct YGCachedMeasurement {
 // 98% of analyzed layouts require less than 8 entries.
 #define YG_MAX_CACHED_RESULT_COUNT 8
 
-namespace facebook {
-namespace yoga {
-namespace detail {
+namespace facebook::yoga::detail {
 
 template <size_t Size>
 class Values {
@@ -145,14 +145,11 @@ public:
 
   Values& operator=(const Values& other) = default;
 };
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
+
+} // namespace facebook::yoga::detail
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
-
-#endif

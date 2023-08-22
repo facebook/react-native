@@ -16,8 +16,7 @@
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char TextInputComponentName[];
 
@@ -79,5 +78,4 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
   std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,8 +10,7 @@
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char ViewComponentName[];
 
@@ -54,5 +53,4 @@ class ViewShadowNode final : public ConcreteViewShadowNode<
   void initialize() noexcept;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

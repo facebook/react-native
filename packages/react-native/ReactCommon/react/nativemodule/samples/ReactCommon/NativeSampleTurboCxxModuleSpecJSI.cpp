@@ -9,8 +9,7 @@
 
 // NOTE: This entire file should be codegen'ed.
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static jsi::Value __hostFunction_NativeSampleTurboCxxModuleSpecJSI_voidFunc(
     jsi::Runtime &rt,
@@ -149,5 +148,4 @@ NativeSampleTurboCxxModuleSpecJSI::NativeSampleTurboCxxModuleSpecJSI(
       0, __hostFunction_NativeSampleTurboCxxModuleSpecJSI_getConstants};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

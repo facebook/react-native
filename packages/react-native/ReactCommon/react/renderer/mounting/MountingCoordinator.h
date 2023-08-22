@@ -8,6 +8,7 @@
 #pragma once
 
 #include <chrono>
+#include <condition_variable>
 #include <optional>
 
 #include <react/renderer/debug/flags.h>
@@ -22,8 +23,7 @@
 #include <react/renderer/mounting/stubs.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Stores inside all non-mounted yet revisions of a shadow tree and coordinates
@@ -59,6 +59,14 @@ class MountingCoordinator final {
   std::optional<MountingTransaction> pullTransaction() const;
 
   /*
+   * Indicates if there are transactions waiting to be consumed and mounted on
+   * the host platform. This can be useful to determine if side-effects of
+   * mounting can be expected after some operations (like IntersectionObserver
+   * initial paint notifications).
+   */
+  bool hasPendingTransactions() const;
+
+  /*
    * Blocks the current thread until a new mounting transaction is available or
    * after the specified `timeout` duration.
    * Returns `false` if a timeout occurred before a new transaction available.
@@ -70,6 +78,8 @@ class MountingCoordinator final {
   bool waitForTransaction(std::chrono::duration<double> timeout) const;
 
   TelemetryController const &getTelemetryController() const;
+
+  ShadowTreeRevision const &getBaseRevision() const;
 
   /*
    * Methods from this section are meant to be used by
@@ -117,5 +127,4 @@ class MountingCoordinator final {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

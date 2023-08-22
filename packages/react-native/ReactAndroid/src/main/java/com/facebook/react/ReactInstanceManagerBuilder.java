@@ -69,7 +69,7 @@ public class ReactInstanceManagerBuilder {
   private @Nullable ReactPackageTurboModuleManagerDelegate.Builder mTMMDelegateBuilder;
   private @Nullable SurfaceDelegateFactory mSurfaceDelegateFactory;
   private @Nullable DevLoadingViewManager mDevLoadingViewManager;
-  private JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm = null;
+  private @Nullable JSEngineResolutionAlgorithm mJSEngineResolutionAlgorithm = null;
 
   /* package protected */ ReactInstanceManagerBuilder() {}
 
@@ -112,7 +112,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes prior invocations of
-   * {@link setJSBundleFile} and {@link setBundleAssetName}.
+   * {@link #setJSBundleFile} and {@link #setBundleAssetName}.
    *
    * <p>Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
    */
@@ -126,9 +126,10 @@ public class ReactInstanceManagerBuilder {
    * Sets the JS Engine to load as either Hermes or JSC. If not set, the default is JSC with a
    * Hermes fallback.
    */
-  private void setJSEngineResolutionAlgorithm(
+  public ReactInstanceManagerBuilder setJSEngineResolutionAlgorithm(
       @Nullable JSEngineResolutionAlgorithm jsEngineResolutionAlgorithm) {
-    this.jsEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+    mJSEngineResolutionAlgorithm = jsEngineResolutionAlgorithm;
+    return this;
   }
 
   /**
@@ -362,7 +363,7 @@ public class ReactInstanceManagerBuilder {
 
     // if nothing is specified, use old loading method
     // else load the required engine
-    if (jsEngineResolutionAlgorithm == null) {
+    if (mJSEngineResolutionAlgorithm == null) {
       FLog.w(
           TAG,
           "You're not setting the JS Engine Resolution Algorithm. "
@@ -379,7 +380,7 @@ public class ReactInstanceManagerBuilder {
         HermesExecutor.loadLibrary();
         return new HermesExecutorFactory();
       }
-    } else if (jsEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
+    } else if (mJSEngineResolutionAlgorithm == JSEngineResolutionAlgorithm.HERMES) {
       HermesExecutor.loadLibrary();
       return new HermesExecutorFactory();
     } else {

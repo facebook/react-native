@@ -13,8 +13,7 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static constexpr auto kBlobModuleJavaDescriptor =
     "com/facebook/react/modules/blob/BlobModule";
@@ -63,5 +62,4 @@ void BlobCollector::registerNatives() {
       {makeNativeMethod("nativeInstall", BlobCollector::nativeInstall)});
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

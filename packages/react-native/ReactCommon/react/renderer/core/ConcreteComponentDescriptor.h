@@ -11,9 +11,7 @@
 #include <memory>
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/components/view/ViewPropsInterpolation.h>
 #include <react/renderer/core/ComponentDescriptor.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -21,9 +19,9 @@
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/utils/CoreFeatures.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Default template-based implementation of ComponentDescriptor.
@@ -88,11 +86,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
       const ShadowNode::Shared &childShadowNode) const override {
-    auto concreteParentShadowNode =
-        std::static_pointer_cast<const ShadowNodeT>(parentShadowNode);
-    auto concreteNonConstParentShadowNode =
-        std::const_pointer_cast<ShadowNodeT>(concreteParentShadowNode);
-    concreteNonConstParentShadowNode->appendChild(childShadowNode);
+    auto &concreteParentShadowNode =
+        static_cast<const ShadowNodeT &>(*parentShadowNode);
+    const_cast<ShadowNodeT &>(concreteParentShadowNode)
+        .appendChild(childShadowNode);
   }
 
   virtual Props::Shared cloneProps(
@@ -127,32 +124,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNodeProps;
   };
 
-  Props::Shared interpolateProps(
-      const PropsParserContext &context,
-      Float animationProgress,
-      const Props::Shared &props,
-      const Props::Shared &newProps) const override {
-#ifdef ANDROID
-    // On Android only, the merged props should have the same RawProps as the
-    // final props struct
-    Props::Shared interpolatedPropsShared =
-        (newProps != nullptr ? cloneProps(context, newProps, newProps->rawProps)
-                             : cloneProps(context, newProps, {}));
-#else
-    Props::Shared interpolatedPropsShared = cloneProps(context, newProps, {});
-#endif
-
-    if (ConcreteShadowNode::BaseTraits().check(
-            ShadowNodeTraits::Trait::ViewKind)) {
-      interpolateViewProps(
-          animationProgress, props, newProps, interpolatedPropsShared);
-    }
-
-    return interpolatedPropsShared;
-  };
-
   virtual State::Shared createInitialState(
-      ShadowNodeFragment const &fragment,
+      Props::Shared const &props,
       ShadowNodeFamily::Shared const &family) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
@@ -161,8 +134,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     return std::make_shared<ConcreteState>(
         std::make_shared<ConcreteStateData const>(
-            ConcreteShadowNode::initialStateData(
-                fragment, ShadowNodeFamilyFragment::build(*family), *this)),
+            ConcreteShadowNode::initialStateData(props, family, *this)),
         family);
   }
 
@@ -182,15 +154,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   ShadowNodeFamily::Shared createFamily(
-      ShadowNodeFamilyFragment const &fragment,
-      SharedEventTarget eventTarget) const override {
-    auto eventEmitter = std::make_shared<ConcreteEventEmitter const>(
-        std::move(eventTarget), fragment.tag, eventDispatcher_);
+      ShadowNodeFamilyFragment const &fragment) const override {
     return std::make_shared<ShadowNodeFamily>(
         ShadowNodeFamilyFragment{
-            fragment.tag, fragment.surfaceId, eventEmitter},
+            fragment.tag, fragment.surfaceId, fragment.instanceHandle},
         eventDispatcher_,
         *this);
+  }
+
+  SharedEventEmitter createEventEmitter(
+      InstanceHandle::Shared const &instanceHandle) const override {
+    return std::make_shared<ConcreteEventEmitter const>(
+        std::make_shared<EventTarget>(instanceHandle), eventDispatcher_);
   }
 
  protected:
@@ -213,5 +188,4 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

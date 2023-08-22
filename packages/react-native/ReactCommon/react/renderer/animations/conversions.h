@@ -10,8 +10,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static inline std::optional<AnimationType> parseAnimationType(
     std::string param) {
@@ -208,5 +207,4 @@ static inline std::optional<LayoutAnimationConfig> parseLayoutAnimationConfig(
       duration, *createConfig, *updateConfig, *deleteConfig};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

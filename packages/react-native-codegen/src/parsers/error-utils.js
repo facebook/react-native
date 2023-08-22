@@ -298,6 +298,59 @@ function throwIfMoreThanOneCodegenNativecommands(
   }
 }
 
+function throwIfConfigNotfound(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length === 0) {
+    throw new Error('Could not find component config for native component');
+  }
+}
+
+function throwIfMoreThanOneConfig(foundConfigs: Array<{[string]: string}>) {
+  if (foundConfigs.length > 1) {
+    throw new Error('Only one component is supported per file');
+  }
+}
+
+function throwIfEventHasNoName(typeAnnotation: $FlowFixMe, parser: Parser) {
+  const name =
+    parser.language() === 'Flow' ? typeAnnotation.id : typeAnnotation.typeName;
+
+  if (!name) {
+    throw new Error("typeAnnotation of event doesn't have a name");
+  }
+}
+
+function throwIfBubblingTypeIsNull(
+  bubblingType: ?('direct' | 'bubble'),
+  eventName: string,
+): 'direct' | 'bubble' {
+  if (!bubblingType) {
+    throw new Error(
+      `Unable to determine event bubbling type for "${eventName}"`,
+    );
+  }
+
+  return bubblingType;
+}
+
+function throwIfArgumentPropsAreNull(
+  argumentProps: ?$ReadOnlyArray<$FlowFixMe>,
+  eventName: string,
+): $ReadOnlyArray<$FlowFixMe> {
+  if (!argumentProps) {
+    throw new Error(`Unable to determine event arguments for "${eventName}"`);
+  }
+
+  return argumentProps;
+}
+
+function throwIfTypeAliasIsNotInterface(typeAlias: $FlowFixMe, parser: Parser) {
+  if (typeAlias.type !== parser.interfaceDeclaration) {
+    throw new Error(
+      `The type argument for codegenNativeCommands must be an interface, received ${typeAlias.type}`,
+    );
+  }
+}
+
 module.exports = {
   throwIfModuleInterfaceIsMisnamed,
   throwIfUnsupportedFunctionReturnTypeAnnotationParserError,
@@ -316,4 +369,10 @@ module.exports = {
   throwIfPartialNotAnnotatingTypeParameter,
   throwIfPartialWithMoreParameter,
   throwIfMoreThanOneCodegenNativecommands,
+  throwIfConfigNotfound,
+  throwIfMoreThanOneConfig,
+  throwIfEventHasNoName,
+  throwIfBubblingTypeIsNull,
+  throwIfArgumentPropsAreNull,
+  throwIfTypeAliasIsNotInterface,
 };

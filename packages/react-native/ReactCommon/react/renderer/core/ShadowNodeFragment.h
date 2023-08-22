@@ -13,8 +13,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * An object which supposed to be used as a parameter specifying a shape
@@ -62,5 +61,4 @@ struct ShadowNodeFragment {
   };
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -37,7 +37,7 @@ import java.util.Stack;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
 
-  private static String NAME = ViewManager.class.getSimpleName();
+  private static final String NAME = ViewManager.class.getSimpleName();
 
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
@@ -46,19 +46,11 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    */
   @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
 
-  private int mRecyclableViewsBufferSize = 1024;
-
   /** Call in constructor of concrete ViewManager class to enable. */
   protected void setupViewRecycling() {
     if (ReactFeatureFlags.enableViewRecycling) {
       mRecyclableViews = new HashMap<>();
     }
-  }
-
-  /** Call in constructor of concrete ViewManager class to enable. */
-  protected void setupViewRecycling(int bufferSize) {
-    mRecyclableViewsBufferSize = bufferSize;
-    setupViewRecycling();
   }
 
   private @Nullable Stack<T> getRecyclableViewStack(int surfaceId) {
@@ -75,8 +67,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * For the vast majority of ViewManagers, you will not need to override this. Only override this
    * if you really know what you're doing and have a very unique use-case.
    *
-   * @param viewToUpdate
-   * @param props
+   * @param viewToUpdate {@link T} View instance that will be updated with the props received by
+   *     parameter.
+   * @param props {@link ReactStylesDiffMap} props to update the view with
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
     final ViewManagerDelegate<T> delegate = getDelegate();
@@ -224,11 +217,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     ThemedReactContext themedReactContext = (ThemedReactContext) viewContext;
     int surfaceId = themedReactContext.getSurfaceId();
     @Nullable Stack<T> recyclableViews = getRecyclableViewStack(surfaceId);
-
-    // Any max buffer size <0 results in an infinite buffer size
-    if (recyclableViews != null
-        && (mRecyclableViewsBufferSize < 0
-            || recyclableViews.size() < mRecyclableViewsBufferSize)) {
+    if (recyclableViews != null) {
       recyclableViews.push(prepareToRecycleView(themedReactContext, view));
     }
   }
@@ -296,7 +285,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
+    final ViewManagerDelegate<T> delegate = getDelegate();
+    if (delegate != null) {
+      delegate.receiveCommand(root, commandId, args);
+    }
+  }
 
   /**
    * Subclasses of {@link ViewManager} that expect to receive commands through {@link

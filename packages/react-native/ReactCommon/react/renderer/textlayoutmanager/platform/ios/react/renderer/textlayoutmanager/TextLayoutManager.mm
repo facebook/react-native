@@ -11,8 +11,7 @@
 
 #import "RCTTextLayoutManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TextLayoutManager::TextLayoutManager(ContextContainer::Shared const &contextContainer)
 {
@@ -116,5 +115,4 @@ LinesMeasurements TextLayoutManager::measureLines(
                                                    size:{size.width, size.height}];
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

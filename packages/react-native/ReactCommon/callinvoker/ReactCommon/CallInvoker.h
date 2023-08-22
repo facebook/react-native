@@ -12,8 +12,7 @@
 
 #include "SchedulerPriority.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using CallFunc = std::function<void()>;
 
@@ -33,5 +32,11 @@ class CallInvoker {
   virtual ~CallInvoker() {}
 };
 
-} // namespace react
-} // namespace facebook
+class NativeMethodCallInvoker {
+ public:
+  virtual void invokeAsync(const std::string &methodName, CallFunc &&func) = 0;
+  virtual void invokeSync(const std::string &methodName, CallFunc &&func) = 0;
+  virtual ~NativeMethodCallInvoker() {}
+};
+
+} // namespace facebook::react

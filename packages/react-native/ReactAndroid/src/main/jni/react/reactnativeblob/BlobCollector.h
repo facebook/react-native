@@ -10,8 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class BlobCollector : public jni::HybridClass<BlobCollector>,
                       public jsi::HostObject {
@@ -38,5 +37,4 @@ class BlobCollector : public jni::HybridClass<BlobCollector>,
   const std::string blobId_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,8 +12,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/rncore/ComponentDescriptors.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<void(std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
@@ -45,10 +44,9 @@ DefaultComponentsRegistry::initHybrid(
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
 
-    auto mutableRegistry =
-        std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
-
-    mutableRegistry->setFallbackComponentDescriptor(
+    auto &mutableRegistry =
+        const_cast<ComponentDescriptorRegistry &>(*registry);
+    mutableRegistry.setFallbackComponentDescriptor(
         std::make_shared<UnimplementedNativeViewComponentDescriptor>(
             ComponentDescriptorParameters{
                 eventDispatcher, contextContainer, nullptr}));
@@ -66,5 +64,4 @@ void DefaultComponentsRegistry::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

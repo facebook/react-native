@@ -28,9 +28,8 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
 void NativePerformance::mark(
     jsi::Runtime &rt,
     std::string name,
-    double startTime,
-    double duration) {
-  PerformanceEntryReporter::getInstance().mark(name, startTime, duration);
+    double startTime) {
+  PerformanceEntryReporter::getInstance().mark(name, startTime);
 }
 
 void NativePerformance::measure(
@@ -55,18 +54,40 @@ std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
   return heapInfoToJs;
 }
 
-ReactNativeStartupTiming NativePerformance::getReactNativeStartupTiming(
-    jsi::Runtime &rt) {
-  ReactNativeStartupTiming result = {0, 0, 0, 0};
+std::unordered_map<std::string, double>
+NativePerformance::getReactNativeStartupTiming(jsi::Runtime &rt) {
+  std::unordered_map<std::string, double> result;
 
   ReactMarker::StartupLogger &startupLogger =
       ReactMarker::StartupLogger::getInstance();
-  result.startTime = startupLogger.getAppStartTime();
-  result.executeJavaScriptBundleEntryPointStart =
-      startupLogger.getRunJSBundleStartTime();
-  result.executeJavaScriptBundleEntryPointEnd =
-      startupLogger.getRunJSBundleEndTime();
-  result.endTime = startupLogger.getRunJSBundleEndTime();
+  if (!std::isnan(startupLogger.getAppStartupStartTime())) {
+    result["startTime"] = startupLogger.getAppStartupStartTime();
+  } else if (!std::isnan(startupLogger.getInitReactRuntimeStartTime())) {
+    result["startTime"] = startupLogger.getInitReactRuntimeStartTime();
+  }
+
+  if (!std::isnan(startupLogger.getInitReactRuntimeStartTime())) {
+    result["initializeRuntimeStart"] =
+        startupLogger.getInitReactRuntimeStartTime();
+  }
+
+  if (!std::isnan(startupLogger.getRunJSBundleStartTime())) {
+    result["executeJavaScriptBundleEntryPointStart"] =
+        startupLogger.getRunJSBundleStartTime();
+  }
+
+  if (!std::isnan(startupLogger.getRunJSBundleEndTime())) {
+    result["executeJavaScriptBundleEntryPointEnd"] =
+        startupLogger.getRunJSBundleEndTime();
+  }
+
+  if (!std::isnan(startupLogger.getInitReactRuntimeEndTime())) {
+    result["initializeRuntimeEnd"] = startupLogger.getInitReactRuntimeEndTime();
+  }
+
+  if (!std::isnan(startupLogger.getAppStartupEndTime())) {
+    result["endTime"] = startupLogger.getAppStartupEndTime();
+  }
 
   return result;
 }

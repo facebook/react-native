@@ -23,7 +23,7 @@ EventQueue::EventQueue(
 
 void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
   {
-    std::lock_guard<std::mutex> lock(queueMutex_);
+    std::scoped_lock lock(queueMutex_);
     eventQueue_.push_back(std::move(rawEvent));
   }
 
@@ -32,7 +32,7 @@ void EventQueue::enqueueEvent(RawEvent &&rawEvent) const {
 
 void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
   {
-    std::lock_guard<std::mutex> lock(queueMutex_);
+    std::scoped_lock lock(queueMutex_);
 
     auto repeatedEvent = eventQueue_.rend();
 
@@ -62,7 +62,7 @@ void EventQueue::enqueueUniqueEvent(RawEvent &&rawEvent) const {
 
 void EventQueue::enqueueStateUpdate(StateUpdate &&stateUpdate) const {
   {
-    std::lock_guard<std::mutex> lock(queueMutex_);
+    std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
       auto const position = stateUpdateQueue_.back();
       if (stateUpdate.family == position.family) {
@@ -84,7 +84,7 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
   std::vector<RawEvent> queue;
 
   {
-    std::lock_guard<std::mutex> lock(queueMutex_);
+    std::scoped_lock lock(queueMutex_);
 
     if (eventQueue_.empty()) {
       return;
@@ -101,7 +101,7 @@ void EventQueue::flushStateUpdates() const {
   std::vector<StateUpdate> stateUpdateQueue;
 
   {
-    std::lock_guard<std::mutex> lock(queueMutex_);
+    std::scoped_lock lock(queueMutex_);
 
     if (stateUpdateQueue_.empty()) {
       return;

@@ -8,8 +8,7 @@
 #import <React/RCTModuleData.h>
 #import <cxxreact/NativeModule.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RCTNativeModule : public NativeModule {
  public:
@@ -30,5 +29,4 @@ class RCTNativeModule : public NativeModule {
   RCTModuleData *m_moduleData;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

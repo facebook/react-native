@@ -7,8 +7,7 @@
 
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline static void handleFatalError(
     jsi::Runtime &runtime,
@@ -32,5 +31,4 @@ inline static void handleFatalError(
   func.call(runtime, error.value());
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

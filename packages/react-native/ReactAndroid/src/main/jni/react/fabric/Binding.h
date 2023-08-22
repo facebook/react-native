@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include "FabricMountingManager.h"
-
 #include <memory>
 #include <shared_mutex>
 
@@ -16,27 +14,31 @@
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JRuntimeScheduler.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/renderer/animations/LayoutAnimationDriver.h>
-#include <react/renderer/scheduler/Scheduler.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>
+#include <react/renderer/scheduler/SurfaceHandler.h>
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
+#include <react/renderer/uimanager/primitives.h>
 
-#include "ComponentFactory.h"
-#include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
-#include "SurfaceHandlerBinding.h"
+#include "JFabricUIManager.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
+class ComponentFactory;
+class EventBeatManager;
+class FabricMountingManager;
 class Instance;
+class LayoutAnimationDriver;
+class ReactNativeConfig;
+class Scheduler;
+class SurfaceHandlerBinding;
 
 class Binding : public jni::HybridClass<Binding>,
                 public SchedulerDelegate,
                 public LayoutAnimationStatusDelegate {
  public:
   constexpr static const char *const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/Binding;";
+      "Lcom/facebook/react/fabric/BindingImpl;";
 
   static void registerNatives();
 
@@ -62,7 +64,7 @@ class Binding : public jni::HybridClass<Binding>,
   void installFabricUIManager(
       jni::alias_ref<JRuntimeExecutor::javaobject> runtimeExecutorHolder,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
-      jni::alias_ref<jobject> javaUIManager,
+      jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
       EventBeatManager *eventBeatManager,
       ComponentFactory *componentsRegistry,
       jni::alias_ref<jobject> reactNativeConfig);
@@ -94,7 +96,7 @@ class Binding : public jni::HybridClass<Binding>,
   void unregisterSurface(SurfaceHandlerBinding *surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator) override;
+      const MountingCoordinator::Shared &mountingCoordinator) override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
@@ -114,11 +116,10 @@ class Binding : public jni::HybridClass<Binding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
-  void preallocateView(SurfaceId surfaceId, ShadowNode const &shadowNode);
-
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
+  void reportMount(SurfaceId surfaceId);
 
   void uninstallFabricUIManager();
 
@@ -127,8 +128,8 @@ class Binding : public jni::HybridClass<Binding>,
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<Scheduler> scheduler_;
 
-  std::shared_ptr<FabricMountingManager> verifyMountingManager(
-      std::string const &locationHint);
+  std::shared_ptr<FabricMountingManager> getMountingManager(
+      const char *locationHint);
 
   // LayoutAnimations
   void onAnimationStarted() override;
@@ -148,5 +149,4 @@ class Binding : public jni::HybridClass<Binding>,
   bool enableFabricLogs_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

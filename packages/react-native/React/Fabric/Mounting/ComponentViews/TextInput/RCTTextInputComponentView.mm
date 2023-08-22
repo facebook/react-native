@@ -82,7 +82,7 @@ using namespace facebook::react;
   [super didMoveToWindow];
 
   if (self.window && !_didMoveToWindow) {
-    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    const auto &props = static_cast<TextInputProps const &>(*_props);
     if (props.autoFocus) {
       [_backedTextInputView becomeFirstResponder];
     }
@@ -107,8 +107,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  auto const &oldTextInputProps = *std::static_pointer_cast<TextInputProps const>(_props);
-  auto const &newTextInputProps = *std::static_pointer_cast<TextInputProps const>(props);
+  const auto &oldTextInputProps = static_cast<TextInputProps const &>(*_props);
+  const auto &newTextInputProps = static_cast<TextInputProps const &>(*props);
 
   // Traits:
   if (newTextInputProps.traits.multiline != oldTextInputProps.traits.multiline) {
@@ -178,10 +178,12 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.traits.passwordRules != oldTextInputProps.traits.passwordRules) {
-    if (@available(iOS 12.0, *)) {
-      _backedTextInputView.passwordRules =
-          RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
-    }
+    _backedTextInputView.passwordRules = RCTUITextInputPasswordRulesFromString(newTextInputProps.traits.passwordRules);
+  }
+
+  if (newTextInputProps.traits.smartInsertDelete != oldTextInputProps.traits.smartInsertDelete) {
+    _backedTextInputView.smartInsertDeleteType =
+        RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
@@ -247,8 +249,7 @@ using namespace facebook::react;
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 
   if (_eventEmitter) {
-    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
-    textInputEventEmitter.onContentSizeChange([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onContentSizeChange([self _textInputMetrics]);
   }
 }
 
@@ -274,7 +275,7 @@ using namespace facebook::react;
 
 - (void)textInputDidBeginEditing
 {
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  const auto &props = static_cast<TextInputProps const &>(*_props);
 
   if (props.traits.clearTextOnFocus) {
     _backedTextInputView.attributedText = nil;
@@ -287,7 +288,7 @@ using namespace facebook::react;
   }
 
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onFocus([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onFocus([self _textInputMetrics]);
   }
 }
 
@@ -299,8 +300,8 @@ using namespace facebook::react;
 - (void)textInputDidEndEditing
 {
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onEndEditing([self _textInputMetrics]);
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onBlur([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onEndEditing([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onBlur([self _textInputMetrics]);
   }
 }
 
@@ -315,7 +316,7 @@ using namespace facebook::react;
   // (no connection to any specific "submitting" process).
 
   if (_eventEmitter && shouldSubmit) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSubmitEditing([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onSubmitEditing([self _textInputMetrics]);
   }
   return shouldSubmit;
 }
@@ -332,7 +333,7 @@ using namespace facebook::react;
 
 - (NSString *)textInputShouldChangeText:(NSString *)text inRange:(NSRange)range
 {
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  const auto &props = static_cast<TextInputProps const &>(*_props);
 
   if (!_backedTextInputView.textWasPasted) {
     if (_eventEmitter) {
@@ -340,7 +341,7 @@ using namespace facebook::react;
       keyPressMetrics.text = RCTStringFromNSString(text);
       keyPressMetrics.eventCount = _mostRecentEventCount;
 
-      auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
+      auto const &textInputEventEmitter = static_cast<TextInputEventEmitter const &>(*_eventEmitter);
       if (props.onKeyPressSync) {
         textInputEventEmitter.onKeyPressSync(keyPressMetrics);
       } else {
@@ -390,8 +391,8 @@ using namespace facebook::react;
   [self _updateState];
 
   if (_eventEmitter) {
-    auto const &textInputEventEmitter = *std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter);
-    auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+    auto const &textInputEventEmitter = static_cast<TextInputEventEmitter const &>(*_eventEmitter);
+    const auto &props = static_cast<TextInputProps const &>(*_props);
     if (props.onChangeSync) {
       textInputEventEmitter.onChangeSync([self _textInputMetrics]);
     } else {
@@ -405,14 +406,14 @@ using namespace facebook::react;
   if (_comingFromJS) {
     return;
   }
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  const auto &props = static_cast<TextInputProps const &>(*_props);
   if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
   }
 
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onSelectionChange([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onSelectionChange([self _textInputMetrics]);
   }
 }
 
@@ -421,7 +422,7 @@ using namespace facebook::react;
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
   if (_eventEmitter) {
-    std::static_pointer_cast<TextInputEventEmitter const>(_eventEmitter)->onScroll([self _textInputMetrics]);
+    static_cast<TextInputEventEmitter const &>(*_eventEmitter).onScroll([self _textInputMetrics]);
   }
 }
 
@@ -575,7 +576,7 @@ using namespace facebook::react;
 
 - (void)_restoreTextSelection
 {
-  auto const selection = std::dynamic_pointer_cast<TextInputProps const>(_props)->selection;
+  const auto &selection = static_cast<TextInputProps const &>(*_props).selection;
   if (!selection.has_value()) {
     return;
   }
@@ -655,7 +656,7 @@ using namespace facebook::react;
 
 - (SubmitBehavior)getSubmitBehavior
 {
-  auto const &props = *std::static_pointer_cast<TextInputProps const>(_props);
+  const auto &props = static_cast<TextInputProps const &>(*_props);
   const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
 
   // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.

@@ -50,7 +50,7 @@ typedef void (^ControlBlock)(RCTRootView *);
 
 @end
 
-static SizeFlexibilityTestDelegate *sizeFlexibilityDelegate()
+static SizeFlexibilityTestDelegate *sizeFlexibilityDelegate(void)
 {
   static SizeFlexibilityTestDelegate *delegate;
   if (delegate == nil) {

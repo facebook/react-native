@@ -20,8 +20,7 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #pragma mark - Color
 
@@ -47,7 +46,8 @@ inline void fromRawValue(
     colorComponents.blue = items.at(2);
     colorComponents.alpha = length == 4 ? items.at(3) : 1.0f;
   } else {
-    colorComponents = parsePlatformColor(context, value);
+    result = parsePlatformColor(context, value);
+    return;
   }
 
   result = colorFromComponents(colorComponents);
@@ -256,5 +256,4 @@ inline std::string toString(const CornerInsets &cornerInsets) {
       folly::to<std::string>(cornerInsets.bottomRight) + "}";
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

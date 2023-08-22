@@ -12,8 +12,7 @@
 
 #include <react/utils/RunLoopObserver.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Concrete iOS-specific implementation of `RunLoopObserver` using
@@ -50,5 +49,4 @@ class MainRunLoopObserver final : public PlatformRunLoopObserver {
       : PlatformRunLoopObserver(activities, owner, CFRunLoopGetMain()) {}
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

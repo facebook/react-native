@@ -75,30 +75,26 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
   UIColor *value = [RCTConvert UIColor:json];
   XCTAssertNotNil(value);
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    id savedTraitCollection = [UITraitCollection currentTraitCollection];
+  id savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection
-        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
-    CGFloat rgba[4];
-    RCTGetRGBAColorComponents([value CGColor], rgba);
-    XCTAssertEqual(rgba[0], 0);
-    XCTAssertEqual(rgba[1], 0);
-    XCTAssertEqual(rgba[2], 0);
-    XCTAssertEqual(rgba[3], 0);
+  [UITraitCollection
+      setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
+  CGFloat rgba[4];
+  RCTGetRGBAColorComponents([value CGColor], rgba);
+  XCTAssertEqual(rgba[0], 0);
+  XCTAssertEqual(rgba[1], 0);
+  XCTAssertEqual(rgba[2], 0);
+  XCTAssertEqual(rgba[3], 0);
 
-    [UITraitCollection
-        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
-    RCTGetRGBAColorComponents([value CGColor], rgba);
-    XCTAssertEqual(rgba[0], 1);
-    XCTAssertEqual(rgba[1], 1);
-    XCTAssertEqual(rgba[2], 1);
-    XCTAssertEqual(rgba[3], 0);
+  [UITraitCollection
+      setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
+  RCTGetRGBAColorComponents([value CGColor], rgba);
+  XCTAssertEqual(rgba[0], 1);
+  XCTAssertEqual(rgba[1], 1);
+  XCTAssertEqual(rgba[2], 1);
+  XCTAssertEqual(rgba[3], 0);
 
-    [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
-  }
-#endif
+  [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
 }
 
 - (void)testCompositeDynamicColor
@@ -109,23 +105,19 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
   UIColor *value = [RCTConvert UIColor:json];
   XCTAssertNotNil(value);
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    id savedTraitCollection = [UITraitCollection currentTraitCollection];
+  id savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection
-        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
+  [UITraitCollection
+      setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
 
-    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemRedColor] CGColor]));
+  XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemRedColor] CGColor]));
 
-    [UITraitCollection
-        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
+  [UITraitCollection
+      setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark]];
 
-    XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemBlueColor] CGColor]));
+  XCTAssertTrue(CGColorsAreEqual([value CGColor], [[UIColor systemBlueColor] CGColor]));
 
-    [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
-  }
-#endif
+  [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
 }
 
 - (void)testGenerateFallbacks
@@ -171,15 +163,12 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
     @"clearColor" : @(0x00000000),
   };
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
   id savedTraitCollection = nil;
-  if (@available(iOS 13.0, *)) {
-    savedTraitCollection = [UITraitCollection currentTraitCollection];
 
-    [UITraitCollection
-        setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
-  }
-#endif
+  savedTraitCollection = [UITraitCollection currentTraitCollection];
+
+  [UITraitCollection
+      setCurrentTraitCollection:[UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight]];
 
   for (NSString *semanticColor in semanticColors) {
     id json = RCTJSONParse([NSString stringWithFormat:@"{ \"semantic\": \"%@\" }", semanticColor], nil);
@@ -206,11 +195,7 @@ static BOOL CGColorsAreEqual(CGColorRef color1, CGColorRef color2)
     XCTAssertEqual(alpha1, alpha2);
   }
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  if (@available(iOS 13.0, *)) {
-    [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
-  }
-#endif
+  [UITraitCollection setCurrentTraitCollection:savedTraitCollection];
 }
 
 @end

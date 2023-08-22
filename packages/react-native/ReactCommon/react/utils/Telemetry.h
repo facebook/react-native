@@ -10,8 +10,7 @@
 #include <chrono>
 #include <type_traits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents a monotonic clock suitable for measuring intervals.
@@ -111,5 +110,4 @@ static inline int64_t telemetryDurationToMilliseconds(
       .count();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

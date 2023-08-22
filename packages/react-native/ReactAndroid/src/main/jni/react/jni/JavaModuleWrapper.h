@@ -13,8 +13,7 @@
 
 #include "MethodInvoker.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 class MessageQueueThread;
@@ -85,5 +84,4 @@ class JavaNativeModule : public NativeModule {
   std::vector<std::optional<MethodInvoker>> syncMethods_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

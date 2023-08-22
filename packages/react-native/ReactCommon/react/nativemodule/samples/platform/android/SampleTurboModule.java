@@ -44,8 +44,7 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
   @SuppressWarnings("unused")
   @Override
   public boolean getBool(boolean arg) {
-    log("getBool", arg, arg);
-    return arg;
+    throw new RuntimeException("getBool is not implemented");
   }
 
   @DoNotStrip
@@ -179,6 +178,50 @@ public class SampleTurboModule extends NativeSampleTurboModuleSpec {
       promise.resolve("result");
     }
   }
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public void voidFuncThrows() {
+    throw new RuntimeException("Intentional exception from JVM voidFuncThrows");
+  };
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public WritableMap getObjectThrows(ReadableMap arg) {
+    throw new RuntimeException(
+        "Intentional exception from JVM getObjectThrows with " + arg.toString());
+  };
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public void promiseThrows(Promise promise) {
+    throw new RuntimeException("Intentional exception from JVM promiseThrows");
+  };
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public void voidFuncAssert() {
+    assert false : "Intentional assert from JVM voidFuncAssert";
+  };
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public WritableMap getObjectAssert(ReadableMap arg) {
+    assert false : "Intentional assert from JVM getObjectAssert with " + arg.toString();
+    return null;
+  };
+
+  @Override
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  public void promiseAssert(Promise promise) {
+    assert false : "Intentional assert from JVM promiseAssert";
+  };
 
   private void log(String method, Object input, Object output) {
     if (mToast != null) {

@@ -13,8 +13,7 @@
 #include <react/renderer/components/view/ViewEventEmitter.h>
 #include <react/renderer/core/EventEmitter.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ScrollViewMetrics {
  public:
@@ -42,5 +41,4 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
       EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

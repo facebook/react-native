@@ -7,10 +7,8 @@
 
 #include "SafeAreaViewShadowNode.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern const char SafeAreaViewComponentName[] = "SafeAreaView";
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

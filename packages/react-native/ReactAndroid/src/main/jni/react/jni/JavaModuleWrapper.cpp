@@ -26,8 +26,7 @@
 
 using facebook::xplat::module::CxxModule;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::string JMethodDescriptor::getSignature() const {
   static auto signature = javaClassStatic()->getField<jstring>("signature");
@@ -159,5 +158,4 @@ jni::local_ref<JReflectMethod::javaobject> JMethodDescriptor::getMethod()
   return getFieldValue(method);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

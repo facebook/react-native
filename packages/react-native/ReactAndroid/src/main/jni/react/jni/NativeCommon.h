@@ -14,8 +14,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct ReadableType : public jni::JavaClass<ReadableType> {
   static auto constexpr kJavaDescriptor =
@@ -38,5 +37,4 @@ void throwIfObjectAlreadyConsumed(const T &t, const char *msg) {
 
 } // namespace exceptions
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

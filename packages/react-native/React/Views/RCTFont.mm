@@ -248,6 +248,38 @@ typedef NSDictionary RCTFontVariantDescriptor;
         UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
         UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
       },
+      @"common-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kCommonLigaturesOnSelector),
+      },
+      @"no-common-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kCommonLigaturesOffSelector),
+      },
+      @"discretionary-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kRareLigaturesOnSelector),
+      },
+      @"no-discretionary-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kRareLigaturesOffSelector),
+      },
+      @"historical-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kHistoricalLigaturesOnSelector),
+      },
+      @"no-historical-ligatures" : @{
+        UIFontFeatureTypeIdentifierKey : @(kLigaturesType),
+        UIFontFeatureSelectorIdentifierKey : @(kHistoricalLigaturesOffSelector),
+      },
+      @"contextual" : @{
+        UIFontFeatureTypeIdentifierKey : @(kContextualAlternatesType),
+        UIFontFeatureSelectorIdentifierKey : @(kContextualAlternatesOnSelector),
+      },
+      @"no-contextual" : @{
+        UIFontFeatureTypeIdentifierKey : @(kContextualAlternatesType),
+        UIFontFeatureSelectorIdentifierKey : @(kContextualAlternatesOffSelector),
+      },
       @"stylistic-one" : @{
         UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
         UIFontFeatureSelectorIdentifierKey : @(kStylisticAltOneOnSelector),

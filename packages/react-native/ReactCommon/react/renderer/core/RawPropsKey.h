@@ -11,8 +11,7 @@
 
 #include <react/renderer/core/RawPropsPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represent a prop name stored as three `char const *` fragments.
@@ -38,5 +37,4 @@ class RawPropsKey final {
 bool operator==(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept;
 bool operator!=(RawPropsKey const &lhs, RawPropsKey const &rhs) noexcept;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

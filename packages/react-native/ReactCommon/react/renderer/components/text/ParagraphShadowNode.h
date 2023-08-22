@@ -9,15 +9,14 @@
 
 #include <react/renderer/components/text/BaseTextShadowNode.h>
 #include <react/renderer/components/text/ParagraphEventEmitter.h>
-#include <react/renderer/components/text/ParagraphLayoutManager.h>
 #include <react/renderer/components/text/ParagraphProps.h>
 #include <react/renderer/components/text/ParagraphState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 extern char const ParagraphComponentName[];
 
@@ -34,6 +33,10 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
                                   public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
+  ParagraphShadowNode(
+      ShadowNode const &sourceShadowNode,
+      ShadowNodeFragment const &fragment);
 
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
@@ -101,5 +104,4 @@ class ParagraphShadowNode final : public ConcreteViewShadowNode<
   mutable std::optional<Content> content_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

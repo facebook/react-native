@@ -10,15 +10,9 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-jni::local_ref<EventEmitterWrapper::jhybriddata>
-EventEmitterWrapper::initHybrid(jni::alias_ref<jclass>) {
-  return makeCxxInstance();
-}
-
-void EventEmitterWrapper::invokeEvent(
+void EventEmitterWrapper::dispatchEvent(
     std::string eventName,
     NativeMap *payload,
     int category) {
@@ -34,7 +28,7 @@ void EventEmitterWrapper::invokeEvent(
   }
 }
 
-void EventEmitterWrapper::invokeUniqueEvent(
+void EventEmitterWrapper::dispatchUniqueEvent(
     std::string eventName,
     NativeMap *payload,
     int customCoalesceKey) {
@@ -50,12 +44,10 @@ void EventEmitterWrapper::invokeUniqueEvent(
 
 void EventEmitterWrapper::registerNatives() {
   registerHybrid({
-      makeNativeMethod("initHybrid", EventEmitterWrapper::initHybrid),
-      makeNativeMethod("invokeEvent", EventEmitterWrapper::invokeEvent),
+      makeNativeMethod("dispatchEvent", EventEmitterWrapper::dispatchEvent),
       makeNativeMethod(
-          "invokeUniqueEvent", EventEmitterWrapper::invokeUniqueEvent),
+          "dispatchUniqueEvent", EventEmitterWrapper::dispatchUniqueEvent),
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

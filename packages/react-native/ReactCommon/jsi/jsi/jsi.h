@@ -924,6 +924,7 @@ class JSI_EXPORT Array : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   void setValueAtIndexImpl(Runtime& runtime, size_t i, const Value& value)
       const {
@@ -959,6 +960,7 @@ class JSI_EXPORT ArrayBuffer : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   ArrayBuffer(Runtime::PointerValue* value) : Object(value) {}
 };
@@ -1067,6 +1069,7 @@ class JSI_EXPORT Function : public Object {
  private:
   friend class Object;
   friend class Value;
+  friend class Runtime;
 
   Function(Runtime::PointerValue* value) : Object(value) {}
 };
@@ -1098,14 +1101,14 @@ class JSI_EXPORT Value {
   }
 
   /// Moves a Symbol, String, or Object rvalue into a new JS value.
-  template <typename T>
+  template <
+      typename T,
+      typename = std::enable_if_t<
+          std::is_base_of<Symbol, T>::value ||
+          std::is_base_of<BigInt, T>::value ||
+          std::is_base_of<String, T>::value ||
+          std::is_base_of<Object, T>::value>>
   /* implicit */ Value(T&& other) : Value(kindOf(other)) {
-    static_assert(
-        std::is_base_of<Symbol, T>::value ||
-            std::is_base_of<BigInt, T>::value ||
-            std::is_base_of<String, T>::value ||
-            std::is_base_of<Object, T>::value,
-        "Value cannot be implicitly move-constructed from this type");
     new (&data_.pointer) T(std::move(other));
   }
 
@@ -1389,7 +1392,7 @@ class JSI_EXPORT Scope {
   explicit Scope(Runtime& rt) : rt_(rt), prv_(rt.pushScope()) {}
   ~Scope() {
     rt_.popScope(prv_);
-  };
+  }
 
   Scope(const Scope&) = delete;
   Scope(Scope&&) = delete;
@@ -1411,8 +1414,8 @@ class JSI_EXPORT Scope {
 /// Base class for jsi exceptions
 class JSI_EXPORT JSIException : public std::exception {
  protected:
-  JSIException(){};
-  JSIException(std::string what) : what_(std::move(what)){};
+  JSIException() {}
+  JSIException(std::string what) : what_(std::move(what)) {}
 
  public:
   JSIException(const JSIException&) = default;
@@ -1453,7 +1456,7 @@ class JSI_EXPORT JSError : public JSIException {
   /// Creates a JSError referring to new \c Error instance capturing current
   /// JavaScript stack. The error message property is set to given \c message.
   JSError(Runtime& rt, const char* message)
-      : JSError(rt, std::string(message)){};
+      : JSError(rt, std::string(message)) {}
 
   /// Creates a JSError referring to a JavaScript Object having message and
   /// stack properties set to provided values.

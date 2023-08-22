@@ -13,8 +13,7 @@
 
 #include "ReadableNativeArray.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct ReadableNativeMap;
 
@@ -44,5 +43,4 @@ struct WritableNativeArray
   static void registerNatives();
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

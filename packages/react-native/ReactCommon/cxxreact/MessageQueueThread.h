@@ -11,8 +11,7 @@
 #include <functional>
 #include <mutex>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MessageQueueThread {
  public:
@@ -25,5 +24,4 @@ class MessageQueueThread {
   virtual void quitSynchronous() = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

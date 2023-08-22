@@ -7,9 +7,11 @@
 
 package com.facebook.react.views.text;
 
+import static com.facebook.react.config.ReactFeatureFlags.enableTextSpannableCache;
 import static com.facebook.react.views.text.TextAttributeProps.UNSET;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -29,7 +31,10 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -72,15 +77,19 @@ public class TextLayoutManagerMapBuffer {
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
   // Specifies the amount of spannable that are stored into the {@link sSpannableCache}.
-  private static final short spannableCacheSize = 100;
+  private static final short spannableCacheSize = 10000;
 
   private static final String INLINE_VIEW_PLACEHOLDER = "0";
 
   private static final boolean DEFAULT_INCLUDE_FONT_PADDING = true;
-  private static final LruCache<MapBuffer, Spannable> sSpannableCache =
-      new LruCache<>(spannableCacheSize);
+
+  private static final Object sCacheLock = new Object();
+
   private static final ConcurrentHashMap<Integer, Spannable> sTagToSpannableCache =
       new ConcurrentHashMap<>();
+
+  private static final LruCache<ReadableMapBuffer, Spannable> sSpannableCache =
+      new LruCache<>(spannableCacheSize);
 
   public static void setCachedSpannabledForTag(int reactTag, @NonNull Spannable sp) {
     if (ENABLE_MEASURE_LOGGING) {
@@ -139,7 +148,11 @@ public class TextLayoutManagerMapBuffer {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (textAttributes.mIsAccessibilityLink) {
+        boolean roleIsLink =
+            textAttributes.mRole != null
+                ? textAttributes.mRole == Role.LINK
+                : textAttributes.mAccessibilityRole == AccessibilityRole.LINK;
+        if (roleIsLink) {
           ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
         }
         if (textAttributes.mIsColorSet) {
@@ -179,7 +192,10 @@ public class TextLayoutManagerMapBuffer {
         if (textAttributes.mIsLineThroughTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
         }
-        if (textAttributes.mTextShadowOffsetDx != 0 || textAttributes.mTextShadowOffsetDy != 0) {
+        if ((textAttributes.mTextShadowOffsetDx != 0
+                || textAttributes.mTextShadowOffsetDy != 0
+                || textAttributes.mTextShadowRadius != 0)
+            && Color.alpha(textAttributes.mTextShadowColor) != 0) {
           ops.add(
               new SetSpanOperation(
                   start,
@@ -206,9 +222,30 @@ public class TextLayoutManagerMapBuffer {
       Context context,
       MapBuffer attributedString,
       @Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
+    Spannable text = null;
+    if (attributedString.contains(AS_KEY_CACHE_ID)) {
+      Integer cacheId = attributedString.getInt(AS_KEY_CACHE_ID);
+      text = sTagToSpannableCache.get(cacheId);
+    } else {
+      if (enableTextSpannableCache && attributedString instanceof ReadableMapBuffer) {
+        ReadableMapBuffer mapBuffer = (ReadableMapBuffer) attributedString;
+        synchronized (sCacheLock) {
+          text = sSpannableCache.get(mapBuffer);
+          if (text == null) {
+            text =
+                createSpannableFromAttributedString(
+                    context, attributedString, reactTextViewManagerCallback);
+            sSpannableCache.put(mapBuffer, text);
+          }
+        }
+      } else {
+        text =
+            createSpannableFromAttributedString(
+                context, attributedString, reactTextViewManagerCallback);
+      }
+    }
 
-    return createSpannableFromAttributedString(
-        context, attributedString, reactTextViewManagerCallback);
+    return text;
   }
 
   private static Spannable createSpannableFromAttributedString(
@@ -227,12 +264,12 @@ public class TextLayoutManagerMapBuffer {
 
     // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
-    int priority = 0;
-    for (SetSpanOperation op : ops) {
+    for (int priorityIndex = 0; priorityIndex < ops.size(); ++priorityIndex) {
+      final SetSpanOperation op = ops.get(ops.size() - priorityIndex - 1);
+
       // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priority} DOES matter.
-      op.execute(sb, priority);
-      priority++;
+      // but the {@code priorityIndex} DOES matter.
+      op.execute(sb, priorityIndex);
     }
 
     if (reactTextViewManagerCallback != null) {
@@ -346,26 +383,11 @@ public class TextLayoutManagerMapBuffer {
       @Nullable float[] attachmentsPositions) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
-    TextPaint textPaint = sTextPaintInstance;
-    Spannable text;
-    if (attributedString.contains(AS_KEY_CACHE_ID)) {
-      int cacheId = attributedString.getInt(AS_KEY_CACHE_ID);
-      if (ENABLE_MEASURE_LOGGING) {
-        FLog.e(TAG, "Get cached spannable for cacheId[" + cacheId + "]");
-      }
-      if (sTagToSpannableCache.containsKey(cacheId)) {
-        text = sTagToSpannableCache.get(cacheId);
-        if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "Text for spannable found for cacheId[" + cacheId + "]: " + text);
-        }
-      } else {
-        if (ENABLE_MEASURE_LOGGING) {
-          FLog.e(TAG, "No cached spannable found for cacheId[" + cacheId + "]");
-        }
-        return 0;
-      }
-    } else {
-      text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+    Spannable text =
+        getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback);
+
+    if (text == null) {
+      return 0;
     }
 
     int textBreakStrategy =
@@ -379,11 +401,7 @@ public class TextLayoutManagerMapBuffer {
         TextAttributeProps.getHyphenationFrequency(
             paragraphAttributes.getString(PA_KEY_HYPHENATION_FREQUENCY));
 
-    if (text == null) {
-      throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
-    }
-
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, textPaint);
+    BoringLayout.Metrics boring = BoringLayout.isBoring(text, sTextPaintInstance);
     Layout layout =
         createLayout(
             text,
@@ -411,7 +429,10 @@ public class TextLayoutManagerMapBuffer {
       calculatedWidth = width;
     } else {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
-        float lineWidth = layout.getLineWidth(lineIndex);
+        boolean endsWithNewLine =
+            text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        float lineWidth =
+            endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {
           calculatedWidth = lineWidth;
         }
@@ -466,12 +487,15 @@ public class TextLayoutManagerMapBuffer {
           // the last offset in the layout will result in an endless loop. Work around
           // this bug by avoiding getPrimaryHorizontal in that case.
           if (start == text.length() - 1) {
+            boolean endsWithNewLine =
+                text.length() > 0 && text.charAt(layout.getLineEnd(line) - 1) == '\n';
+            float lineWidth = endsWithNewLine ? layout.getLineMax(line) : layout.getLineWidth(line);
             placeholderLeftPosition =
                 isRtlParagraph
                     // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns
                     // incorrect
                     // values when the paragraph is RTL and `setSingleLine(true)`.
-                    ? calculatedWidth - layout.getLineWidth(line)
+                    ? calculatedWidth - lineWidth
                     : layout.getLineRight(line) - placeholderWidth;
           } else {
             // The direction of the paragraph may not be exactly the direction the string is
@@ -569,31 +593,5 @@ public class TextLayoutManagerMapBuffer {
             textBreakStrategy,
             hyphenationFrequency);
     return FontMetricsUtil.getFontMetrics(text, layout, sTextPaintInstance, context);
-  }
-
-  // TODO T31905686: This class should be private
-  public static class SetSpanOperation {
-    protected int start, end;
-    protected ReactSpan what;
-
-    public SetSpanOperation(int start, int end, ReactSpan what) {
-      this.start = start;
-      this.end = end;
-      this.what = what;
-    }
-
-    public void execute(Spannable sb, int priority) {
-      // All spans will automatically extend to the right of the text, but not the left - except
-      // for spans that start at the beginning of the text.
-      int spanFlags = Spannable.SPAN_EXCLUSIVE_INCLUSIVE;
-      if (start == 0) {
-        spanFlags = Spannable.SPAN_INCLUSIVE_INCLUSIVE;
-      }
-
-      spanFlags &= ~Spannable.SPAN_PRIORITY;
-      spanFlags |= (priority << Spannable.SPAN_PRIORITY_SHIFT) & Spannable.SPAN_PRIORITY;
-
-      sb.setSpan(what, start, end, spanFlags);
-    }
   }
 }

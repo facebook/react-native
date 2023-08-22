@@ -16,8 +16,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 static MapBuffer convertAccessibilityActions(
@@ -219,5 +218,4 @@ MapBuffer convertTransform(Transform const &transform) {
 }
 } // namespace
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

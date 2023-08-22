@@ -31,30 +31,23 @@ Pod::Spec.new do |s|
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
-  s.platforms              = { :ios => "12.4" }
+  s.platforms              = { :ios => min_ios_version_supported }
   s.source                 = source
 
   s.header_dir    = "jsi"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\"",
+                               "DEFINES_MODULE" => "YES" }
 
   s.dependency "boost", "1.76.0"
   s.dependency "DoubleConversion"
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
 
-  if js_engine == :jsc
-    s.source_files  = "**/*.{cpp,h}"
-    s.exclude_files = [
-                        "jsi/jsilib-posix.cpp",
-                        "jsi/jsilib-windows.cpp",
-                        "**/test/*"
-                      ]
-
-  elsif js_engine == :hermes
-    # JSI is provided by hermes-engine when Hermes is enabled
-    # Just need to provide JSIDynamic in this case.
-    s.source_files = "jsi/JSIDynamic.{cpp,h}"
-    s.dependency "hermes-engine"
-  end
+  s.source_files  = "**/*.{cpp,h}"
+  s.exclude_files = [
+                      "jsi/jsilib-posix.cpp",
+                      "jsi/jsilib-windows.cpp",
+                      "**/test/*"
+                    ]
 end

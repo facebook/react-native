@@ -13,15 +13,32 @@
 #include <butter/small_vector.h>
 
 #include <react/renderer/core/EventEmitter.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/ReactPrimitives.h>
-#include <react/renderer/core/ShadowNodeFamilyFragment.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptor;
 class ShadowNode;
 class State;
+
+/*
+ * This is a collection of fields serving as a specification to create new
+ * `ShadowNodeFamily` instances.
+ *
+ * Do not use this class as a general purpose container to share information
+ * about a `ShadowNodeFamily`. Pelase define specific purpose containers in
+ * those cases.
+ *
+ * Note: All of the fields are `const &` references (essentially just raw
+ * pointers) which means that the Fragment does not copy/store them nor
+ * retain ownership of them.
+ */
+struct ShadowNodeFamilyFragment {
+  Tag const tag;
+  SurfaceId const surfaceId;
+  InstanceHandle::Shared const &instanceHandle;
+};
 
 /*
  * Represents all things that shadow nodes from the same family have in common.
@@ -74,6 +91,8 @@ class ShadowNodeFamily final {
 
   SurfaceId getSurfaceId() const;
 
+  SharedEventEmitter getEventEmitter() const;
+
   /*
    * Sets and gets the most recent state.
    */
@@ -95,7 +114,6 @@ class ShadowNodeFamily final {
 
  private:
   friend ShadowNode;
-  friend ShadowNodeFamilyFragment;
   friend State;
 
   /*
@@ -119,6 +137,11 @@ class ShadowNodeFamily final {
    * Identifier of a running Surface instance.
    */
   SurfaceId const surfaceId_;
+
+  /*
+   * Weak reference to the React instance handle
+   */
+  InstanceHandle::Shared const instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.
@@ -151,5 +174,4 @@ class ShadowNodeFamily final {
   mutable bool hasParent_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

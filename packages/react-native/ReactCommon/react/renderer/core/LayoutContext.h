@@ -11,8 +11,7 @@
 
 #include <react/renderer/core/LayoutableShadowNode.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * LayoutContext: Additional contextual information useful for particular
@@ -81,5 +80,4 @@ inline bool operator!=(LayoutContext const &lhs, LayoutContext const &rhs) {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

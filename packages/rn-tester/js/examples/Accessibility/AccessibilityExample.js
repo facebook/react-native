@@ -1528,6 +1528,7 @@ function DisplayOptionStatusExample({
       notification,
       setStatusEnabled,
     );
+    // $FlowFixMe[unused-promise]
     optionChecker().then(isEnabled => {
       setStatusEnabled(isEnabled);
     });

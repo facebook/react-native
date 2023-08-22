@@ -18,8 +18,7 @@
 
 using namespace facebook::jsi;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 JSINativeModules::JSINativeModules(
     std::shared_ptr<ModuleRegistry> moduleRegistry)
@@ -103,5 +102,4 @@ std::optional<Object> JSINativeModules::createModule(
   return module;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

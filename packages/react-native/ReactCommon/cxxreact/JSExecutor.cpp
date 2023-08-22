@@ -13,8 +13,7 @@
 
 #include <chrono>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::string JSExecutor::getSyntheticBundlePath(
     uint32_t bundleId,
@@ -35,5 +34,4 @@ double JSExecutor::performanceNow() {
   return duration / NANOSECONDS_IN_MILLISECOND;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

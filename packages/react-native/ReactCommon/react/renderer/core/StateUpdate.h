@@ -11,8 +11,7 @@
 
 #include <react/renderer/core/StateData.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ShadowNodeFamily;
 using SharedShadowNodeFamily = std::shared_ptr<ShadowNodeFamily const>;
@@ -27,5 +26,4 @@ class StateUpdate {
   Callback callback;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -16,6 +16,7 @@
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/utils/CoreFeatures.h>
 
 using namespace facebook::jni;
 
@@ -146,7 +147,10 @@ Size measureAndroidComponentMapBuffer(
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared &contextContainer)
     : contextContainer_(contextContainer),
-      measureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      measureCache_(
+          CoreFeatures::cacheLastTextMeasurement
+              ? 8096
+              : kSimpleThreadSafeCacheSizeCap) {}
 
 void *TextLayoutManager::getNativeTextLayoutManager() const {
   return self_;

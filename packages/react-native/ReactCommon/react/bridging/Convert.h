@@ -33,6 +33,14 @@ struct is_optional<std::optional<T>> : std::true_type {};
 template <typename T>
 inline constexpr bool is_optional_v = is_optional<T>::value;
 
+template <typename T, typename = void>
+inline constexpr bool is_optional_jsi_v = false;
+
+template <typename T>
+inline constexpr bool
+    is_optional_jsi_v<T, typename std::enable_if_t<is_optional_v<T>>> =
+        is_jsi_v<typename T::value_type>;
+
 template <typename T>
 struct Converter;
 

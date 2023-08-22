@@ -13,8 +13,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using ComponentDescriptorProviderRequest =
     std::function<void(ComponentName componentName)>;
@@ -67,5 +66,4 @@ class ComponentDescriptorProviderRegistry final {
       componentDescriptorProviderRequest_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

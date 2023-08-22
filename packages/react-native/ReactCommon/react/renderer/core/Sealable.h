@@ -11,8 +11,7 @@
 
 #include <react/debug/flags.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents an object which can be *sealed* (imperatively marked as
@@ -91,5 +90,4 @@ class Sealable {
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

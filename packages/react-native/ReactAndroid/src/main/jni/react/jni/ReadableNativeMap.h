@@ -16,8 +16,7 @@
 #include "NativeMap.h"
 #include "ReadableNativeArray.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct WritableNativeMap;
 
@@ -41,7 +40,6 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   std::optional<folly::dynamic> keys_;
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic &&map);
 
-  static void mapException(const std::exception &ex);
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
 
@@ -50,5 +48,4 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   friend struct WritableNativeMap;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

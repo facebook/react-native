@@ -105,13 +105,8 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
                                                                              message:nil
                                                                       preferredStyle:UIAlertControllerStyleAlert];
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-  if (@available(iOS 13.0, *)) {
-    UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
-    alertController.overrideUserInterfaceStyle = userInterfaceStyle;
-  }
-#endif
+  UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:args.userInterfaceStyle()];
+  alertController.overrideUserInterfaceStyle = userInterfaceStyle;
 
   switch (type) {
     case RCTAlertViewStylePlainTextInput: {

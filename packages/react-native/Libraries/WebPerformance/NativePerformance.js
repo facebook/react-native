@@ -12,17 +12,12 @@ import type {TurboModule} from '../TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../TurboModule/TurboModuleRegistry';
 
-export type NativeMemoryInfo = {[key: string]: number};
+export type NativeMemoryInfo = {[key: string]: ?number};
 
-export type ReactNativeStartupTiming = {|
-  startTime: number,
-  endTime: number,
-  executeJavaScriptBundleEntryPointStart: number,
-  executeJavaScriptBundleEntryPointEnd: number,
-|};
+export type ReactNativeStartupTiming = {[key: string]: ?number};
 
 export interface Spec extends TurboModule {
-  +mark: (name: string, startTime: number, duration: number) => void;
+  +mark: (name: string, startTime: number) => void;
   +measure: (
     name: string,
     startTime: number,

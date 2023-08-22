@@ -5,22 +5,31 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow strict-local
  */
 
 // flowlint unsafe-getters-setters:off
 
 import type HTMLCollection from '../OldStyleCollections/HTMLCollection';
 
-import ReadOnlyNode from './ReadOnlyNode';
+import {getFabricUIManager} from '../../ReactNative/FabricUIManager';
+import DOMRect from '../Geometry/DOMRect';
+import {createHTMLCollection} from '../OldStyleCollections/HTMLCollection';
+import ReadOnlyNode, {
+  getChildNodes,
+  getInstanceHandle,
+  getShadowNode,
+} from './ReadOnlyNode';
+import {getElementSibling} from './Utilities/Traversal';
+import nullthrows from 'nullthrows';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {
-    throw new TypeError('Unimplemented');
+    return getChildElements(this).length;
   }
 
   get children(): HTMLCollection<ReadOnlyElement> {
-    throw new TypeError('Unimplemented');
+    return createHTMLCollection(getChildElements(this));
   }
 
   get clientHeight(): number {
@@ -40,50 +49,160 @@ export default class ReadOnlyElement extends ReadOnlyNode {
   }
 
   get firstElementChild(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const childElements = getChildElements(this);
+
+    if (childElements.length === 0) {
+      return null;
+    }
+
+    return childElements[0];
   }
 
   get id(): string {
-    throw new TypeError('Unimplemented');
+    const instanceHandle = getInstanceHandle(this);
+    // TODO: migrate off this private React API
+    // $FlowExpectedError[incompatible-use]
+    const props = instanceHandle?.stateNode?.canonical?.currentProps;
+    return props?.id ?? props?.nativeID ?? '';
   }
 
   get lastElementChild(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    const childElements = getChildElements(this);
+
+    if (childElements.length === 0) {
+      return null;
+    }
+
+    return childElements[childElements.length - 1];
   }
 
   get nextElementSibling(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    return getElementSibling(this, 'next');
   }
 
+  get nodeName(): string {
+    return this.tagName;
+  }
+
+  get nodeType(): number {
+    return ReadOnlyNode.ELEMENT_NODE;
+  }
+
+  get nodeValue(): string | null {
+    return null;
+  }
+
+  set nodeValue(value: string): void {}
+
   get previousElementSibling(): ReadOnlyElement | null {
-    throw new TypeError('Unimplemented');
+    return getElementSibling(this, 'previous');
   }
 
   get scrollHeight(): number {
-    throw new TypeError('Unimplemented');
+    throw new Error('Unimplemented');
   }
 
   get scrollLeft(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[0];
+      }
+    }
+
+    return 0;
   }
 
   get scrollTop(): number {
-    throw new TypeError('Unimplemented');
+    const node = getShadowNode(this);
+
+    if (node != null) {
+      const scrollPosition = nullthrows(getFabricUIManager()).getScrollPosition(
+        node,
+      );
+      if (scrollPosition != null) {
+        return scrollPosition[1];
+      }
+    }
+
+    return 0;
   }
 
   get scrollWidth(): number {
-    throw new TypeError('Unimplemented');
+    throw new Error('Unimplemented');
   }
 
   get tagName(): string {
     throw new TypeError('Unimplemented');
   }
 
+  get textContent(): string | null {
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode != null) {
+      return nullthrows(getFabricUIManager()).getTextContent(shadowNode);
+    }
+
+    return '';
+  }
+
   getBoundingClientRect(): DOMRect {
-    throw new TypeError('Unimplemented');
+    const shadowNode = getShadowNode(this);
+
+    if (shadowNode != null) {
+      const rect = nullthrows(getFabricUIManager()).getBoundingClientRect(
+        shadowNode,
+      );
+
+      if (rect) {
+        return new DOMRect(rect[0], rect[1], rect[2], rect[3]);
+      }
+    }
+
+    // Empty rect if any of the above failed
+    return new DOMRect(0, 0, 0, 0);
   }
 
   getClientRects(): DOMRectList {
     throw new TypeError('Unimplemented');
   }
+
+  /**
+   * Pointer Capture APIs
+   */
+  hasPointerCapture(pointerId: number): boolean {
+    const node = getShadowNode(this);
+    if (node != null) {
+      return nullthrows(getFabricUIManager()).hasPointerCapture(
+        node,
+        pointerId,
+      );
+    }
+    return false;
+  }
+
+  setPointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).setPointerCapture(node, pointerId);
+    }
+  }
+
+  releasePointerCapture(pointerId: number): void {
+    const node = getShadowNode(this);
+    if (node != null) {
+      nullthrows(getFabricUIManager()).releasePointerCapture(node, pointerId);
+    }
+  }
+}
+
+function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
+  // $FlowIssue[incompatible-call]
+  return getChildNodes(node).filter(
+    childNode => childNode instanceof ReadOnlyElement,
+  );
 }

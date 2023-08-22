@@ -8,10 +8,10 @@
 #include "BaseTextProps.h"
 
 #include <react/renderer/attributedstring/conversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -183,6 +183,13 @@ static TextAttributes convertRawProp(
       sourceTextAttributes.accessibilityRole,
       defaultTextAttributes.accessibilityRole);
 
+  textAttributes.role = convertRawProp(
+      context,
+      rawProps,
+      "role",
+      sourceTextAttributes.role,
+      defaultTextAttributes.role);
+
   // Color (accessed in this order by ViewProps)
   textAttributes.opacity = convertRawProp(
       context,
@@ -293,6 +300,7 @@ void BaseTextProps::setProp(
         textAttributes,
         accessibilityRole,
         "accessibilityRole");
+    REBUILD_FIELD_SWITCH_CASE(defaults, value, textAttributes, role, "role");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, opacity, "opacity");
     REBUILD_FIELD_SWITCH_CASE(

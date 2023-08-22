@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -44,21 +45,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
   private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float) Math.sqrt(5);
 
-  private static MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
+  private static final MatrixMathHelper.MatrixDecompositionContext sMatrixDecompositionContext =
       new MatrixMathHelper.MatrixDecompositionContext();
-  private static double[] sTransformDecompositionArray = new double[16];
-
-  public static final Map<String, Integer> sStateDescription = new HashMap<>();
-
-  static {
-    sStateDescription.put("busy", R.string.state_busy_description);
-    sStateDescription.put("expanded", R.string.state_expanded_description);
-    sStateDescription.put("collapsed", R.string.state_collapsed_description);
-  }
-
-  // State definition constants -- must match the definition in
-  // ViewAccessibility.js. These only include states for which there
-  // is no native support in android.
+  private static final double[] sTransformDecompositionArray = new double[16];
 
   private static final String STATE_CHECKED = "checked"; // Special case for mixed state checkboxes
   private static final String STATE_BUSY = "busy";
@@ -246,9 +235,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.ACCESSIBILITY_ROLE)
   public void setAccessibilityRole(@NonNull T view, @Nullable String accessibilityRole) {
     if (accessibilityRole == null) {
-      return;
+      view.setTag(R.id.accessibility_role, null);
+    } else {
+      view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
     }
-    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
   }
 
   @Override
@@ -389,6 +379,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
       ViewCompat.setImportantForAccessibility(
           view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+  }
+
+  @Override
+  @ReactProp(name = ViewProps.ROLE)
+  public void setRole(@NonNull T view, @Nullable String role) {
+    if (role == null) {
+      view.setTag(R.id.role, null);
+    } else {
+      view.setTag(R.id.role, Role.fromValue(role));
     }
   }
 
@@ -588,6 +588,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onPointerOver", "captured", "onPointerOverCapture")))
+            .put(
+                "topClick",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onClick", "captured", "onClickCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -693,6 +698,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = "onPointerMoveCapture")
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
+  }
+
+  @ReactProp(name = "onClick")
+  public void setClick(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK, value);
+  }
+
+  @ReactProp(name = "onClickCapture")
+  public void setClickCapture(@NonNull T view, boolean value) {
+    setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK_CAPTURE, value);
   }
 
   /* Experimental W3C Pointer events end */

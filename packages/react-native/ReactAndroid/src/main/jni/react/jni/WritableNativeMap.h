@@ -14,8 +14,7 @@
 #include "ReadableNativeArray.h"
 #include "ReadableNativeMap.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct WritableMap : jni::JavaClass<WritableMap> {
   static auto constexpr kJavaDescriptor =
@@ -46,5 +45,4 @@ struct WritableNativeMap
   friend HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

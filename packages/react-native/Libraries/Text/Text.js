@@ -15,7 +15,6 @@ import * as PressabilityDebug from '../Pressability/PressabilityDebug';
 import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
-import {getAccessibilityRoleFromRole} from '../Utilities/AcessibilityMapping';
 import Platform from '../Utilities/Platform';
 import TextAncestor from './TextAncestor';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
@@ -34,7 +33,6 @@ const Text: React.AbstractComponent<
   const {
     accessible,
     accessibilityLabel,
-    accessibilityRole,
     accessibilityState,
     allowFontScaling,
     'aria-busy': ariaBusy,
@@ -57,7 +55,6 @@ const Text: React.AbstractComponent<
     onResponderTerminationRequest,
     onStartShouldSetResponder,
     pressRetentionOffset,
-    role,
     suppressHighlighting,
     ...restProps
   } = props;
@@ -108,7 +105,13 @@ const Text: React.AbstractComponent<
             onLongPress,
             onPress,
             onPressIn(event: PressEvent) {
-              setHighlighted(!suppressHighlighting);
+              // Updating isHighlighted causes unnecessary re-renders for platforms that don't use it
+              // in the best case, and cause issues with text selection in the worst case. Forcing
+              // the isHighlighted prop to false on all platforms except iOS.
+              setHighlighted(
+                (suppressHighlighting == null || !suppressHighlighting) &&
+                  Platform.OS === 'ios',
+              );
               onPressIn?.(event);
             },
             onPressOut(event: PressEvent) {
@@ -234,9 +237,6 @@ const Text: React.AbstractComponent<
       {...restProps}
       {...eventHandlersForText}
       accessibilityLabel={ariaLabel ?? accessibilityLabel}
-      accessibilityRole={
-        role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-      }
       accessibilityState={_accessibilityState}
       isHighlighted={isHighlighted}
       isPressable={isPressable}
@@ -253,9 +253,6 @@ const Text: React.AbstractComponent<
         {...restProps}
         {...eventHandlersForText}
         accessibilityLabel={ariaLabel ?? accessibilityLabel}
-        accessibilityRole={
-          role ? getAccessibilityRoleFromRole(role) : accessibilityRole
-        }
         accessibilityState={nativeTextAccessibilityState}
         accessible={
           accessible == null && Platform.OS === 'android'

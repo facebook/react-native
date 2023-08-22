@@ -11,8 +11,7 @@
 #include <functional>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * A cross-platform abstraction for observing a run loop life cycle.
@@ -125,5 +124,4 @@ class RunLoopObserver {
   mutable std::atomic<bool> enabled_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

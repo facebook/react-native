@@ -55,7 +55,14 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
-  | 'emitDeviceEvent';
+  | 'optionalArgs'
+  | 'emitDeviceEvent'
+  | 'voidFuncThrows'
+  | 'getObjectThrows'
+  | 'promiseThrows'
+  | 'voidFuncAssert'
+  | 'getObjectAssert'
+  | 'promiseAssert';
 
 class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
@@ -80,6 +87,10 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
     getBool: () => NativeCxxModuleExample?.getBool(true),
     getConstants: () => NativeCxxModuleExample?.getConstants(),
     getCustomEnum: () => NativeCxxModuleExample?.getCustomEnum(EnumInt.IB),
+    getCustomHostObject: () =>
+      NativeCxxModuleExample?.consumeCustomHostObject(
+        NativeCxxModuleExample?.getCustomHostObject(),
+      ),
     getNumEnum: () => NativeCxxModuleExample?.getNumEnum(EnumInt.IB),
     getStrEnum: () => NativeCxxModuleExample?.getStrEnum(EnumNone.NB),
     getNumber: () => NativeCxxModuleExample?.getNumber(99.95),
@@ -99,6 +110,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    optionalArgs: () => NativeCxxModuleExample?.getWithWithOptionalArgs(),
     emitDeviceEvent: () => {
       const CUSTOM_EVENT_TYPE = 'myCustomDeviceEvent';
       DeviceEventEmitter.removeAllListeners(CUSTOM_EVENT_TYPE);
@@ -109,6 +121,50 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
+    },
+    voidFuncThrows: () => {
+      try {
+        NativeCxxModuleExample?.voidFuncThrows();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectThrows: () => {
+      try {
+        NativeCxxModuleExample?.getObjectThrows({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseThrows: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeCxxModuleExample?.promiseThrows();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    voidFuncAssert: () => {
+      try {
+        NativeCxxModuleExample?.voidFuncAssert();
+      } catch (e) {
+        return e.message;
+      }
+    },
+    getObjectAssert: () => {
+      try {
+        NativeCxxModuleExample?.getObjectAssert({a: 1, b: 'foo', c: null});
+      } catch (e) {
+        return e.message;
+      }
+    },
+    promiseAssert: () => {
+      try {
+        // $FlowFixMe[unused-promise]
+        NativeCxxModuleExample?.promiseAssert();
+      } catch (e) {
+        return e.message;
+      }
     },
   };
 
@@ -153,9 +209,6 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
         'Cannot load this example because TurboModule is not configured.',
       );
     }
-    Object.keys(this._tests).forEach(item =>
-      this._setResult(item, this._tests[item]()),
-    );
   }
 
   render(): React.Node {
@@ -178,7 +231,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type]
+          // $FlowFixMe[incompatible-type-arg]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (

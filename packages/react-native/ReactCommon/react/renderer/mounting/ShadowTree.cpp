@@ -16,6 +16,7 @@
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/utils/CoreFeatures.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -225,9 +226,6 @@ ShadowTree::ShadowTree(
     ShadowTreeDelegate const &delegate,
     ContextContainer const &contextContainer)
     : surfaceId_(surfaceId), delegate_(delegate) {
-  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
-      nullptr, -1, std::shared_ptr<const EventDispatcher>());
-
   static auto globalRootComponentDescriptor =
       std::make_unique<RootComponentDescriptor const>(
           ComponentDescriptorParameters{
@@ -239,9 +237,8 @@ ShadowTree::ShadowTree(
       layoutConstraints,
       layoutContext);
 
-  auto const fragment =
-      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter};
-  auto family = globalRootComponentDescriptor->createFamily(fragment, nullptr);
+  auto const fragment = ShadowNodeFamilyFragment{surfaceId, surfaceId, nullptr};
+  auto family = globalRootComponentDescriptor->createFamily(fragment);
 
   auto rootShadowNode = std::static_pointer_cast<const RootShadowNode>(
       globalRootComponentDescriptor->createShadowNode(
@@ -252,6 +249,8 @@ ShadowTree::ShadowTree(
 
   currentRevision_ = ShadowTreeRevision{
       rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
+
+  lastRevisionNumberWithNewState_ = currentRevision_.number;
 
   mountingCoordinator_ =
       std::make_shared<MountingCoordinator const>(currentRevision_);
@@ -326,12 +325,14 @@ CommitStatus ShadowTree::tryCommit(
   CommitMode commitMode;
   auto oldRevision = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
+  ShadowTreeRevision::Number lastRevisionNumberWithNewState;
 
   {
     // Reading `currentRevision_` in shared manner.
     std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
+    lastRevisionNumberWithNewState = lastRevisionNumberWithNewState_;
   }
 
   auto const &oldRootShadowNode = oldRevision.rootShadowNode;
@@ -355,6 +356,11 @@ CommitStatus ShadowTree::tryCommit(
   newRootShadowNode = delegate_.shadowTreeWillCommit(
       *this, oldRootShadowNode, newRootShadowNode);
 
+  if (!newRootShadowNode ||
+      (commitOptions.shouldYield && commitOptions.shouldYield())) {
+    return CommitStatus::Cancelled;
+  }
+
   // Layout nodes.
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
@@ -372,19 +378,28 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
-    if (currentRevision_.number != oldRevision.number) {
-      return CommitStatus::Failed;
-    }
-
-    auto newRevisionNumber = oldRevision.number + 1;
-
-    if (!newRootShadowNode ||
-        (commitOptions.shouldYield && commitOptions.shouldYield())) {
+    if (commitOptions.shouldYield && commitOptions.shouldYield()) {
       return CommitStatus::Cancelled;
     }
 
+    if (CoreFeatures::enableGranularShadowTreeStateReconciliation) {
+      auto lastRevisionNumberWithNewStateChanged =
+          lastRevisionNumberWithNewState != lastRevisionNumberWithNewState_;
+      // Commit should only fail if we propagated the wrong state.
+      if (commitOptions.enableStateReconciliation &&
+          lastRevisionNumberWithNewStateChanged) {
+        return CommitStatus::Failed;
+      }
+    } else {
+      if (currentRevision_.number != oldRevision.number) {
+        return CommitStatus::Failed;
+      }
+    }
+
+    auto newRevisionNumber = currentRevision_.number + 1;
+
     {
-      std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
+      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
 
       updateMountedFlag(
           currentRevision_.rootShadowNode->getChildren(),
@@ -398,6 +413,9 @@ CommitStatus ShadowTree::tryCommit(
         std::move(newRootShadowNode), newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
+    if (!commitOptions.enableStateReconciliation) {
+      lastRevisionNumberWithNewState_ = newRevisionNumber;
+    }
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
@@ -450,7 +468,7 @@ void ShadowTree::emitLayoutEvents(
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    auto const &viewProps =
+    const auto &viewProps =
         static_cast<ViewProps const &>(*viewShadowNode.getProps());
     if (!viewProps.onLayout) {
       continue;

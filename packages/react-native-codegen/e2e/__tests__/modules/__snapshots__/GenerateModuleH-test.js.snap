@@ -37,9 +37,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -98,9 +100,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -151,9 +155,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -193,7 +199,7 @@ enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
-  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"Active\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Active;
@@ -206,7 +212,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
     if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
       return bridging::toJs(rt, \\"Active\\");
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
@@ -225,7 +231,7 @@ enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
-  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"active\\") {
       return NativeEnumTurboModuleStatusStrEnum::Active;
@@ -238,7 +244,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
     if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
       return bridging::toJs(rt, \\"active\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
@@ -257,7 +263,7 @@ enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 2) {
       return NativeEnumTurboModuleStatusNumEnum::Active;
@@ -270,7 +276,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
     if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
       return bridging::toJs(rt, 2);
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
@@ -289,7 +295,7 @@ enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 0.2f) {
       return NativeEnumTurboModuleStatusFractionEnum::Active;
@@ -302,7 +308,7 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
     if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
       return bridging::toJs(rt, 0.2f);
     } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
@@ -434,9 +440,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"NativeEnumTurboModule\\";
+
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"NativeEnumTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -523,9 +531,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -608,9 +618,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -664,9 +676,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -740,9 +754,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -832,9 +848,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"NativePartialAnnotationTurboModule\\";
+
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"NativePartialAnnotationTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -901,9 +919,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1002,9 +1022,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1191,9 +1213,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleArrays\\";
+
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleArrays\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1380,9 +1404,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleNullable\\";
+
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleNullable\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1571,9 +1597,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleNullableAndOptional\\";
+
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleNullableAndOptional\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1762,9 +1790,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleOptional\\";
+
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleOptional\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1903,9 +1933,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -1980,9 +2012,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeArrayTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeArrayTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2041,9 +2075,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeBooleanTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeBooleanTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2094,9 +2130,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeCallbackTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeCallbackTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2136,7 +2174,7 @@ enum NativeEnumTurboModuleStatusRegularEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
-  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusRegularEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"Active\\") {
       return NativeEnumTurboModuleStatusRegularEnum::Active;
@@ -2149,7 +2187,7 @@ struct Bridging<NativeEnumTurboModuleStatusRegularEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusRegularEnum value) {
     if (value == NativeEnumTurboModuleStatusRegularEnum::Active) {
       return bridging::toJs(rt, \\"Active\\");
     } else if (value == NativeEnumTurboModuleStatusRegularEnum::Paused) {
@@ -2168,7 +2206,7 @@ enum NativeEnumTurboModuleStatusStrEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
-  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusStrEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"active\\") {
       return NativeEnumTurboModuleStatusStrEnum::Active;
@@ -2181,7 +2219,7 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusStrEnum value) {
     if (value == NativeEnumTurboModuleStatusStrEnum::Active) {
       return bridging::toJs(rt, \\"active\\");
     } else if (value == NativeEnumTurboModuleStatusStrEnum::Paused) {
@@ -2200,7 +2238,7 @@ enum NativeEnumTurboModuleStatusNumEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
-  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 2) {
       return NativeEnumTurboModuleStatusNumEnum::Active;
@@ -2213,7 +2251,7 @@ struct Bridging<NativeEnumTurboModuleStatusNumEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusNumEnum value) {
     if (value == NativeEnumTurboModuleStatusNumEnum::Active) {
       return bridging::toJs(rt, 2);
     } else if (value == NativeEnumTurboModuleStatusNumEnum::Paused) {
@@ -2232,7 +2270,7 @@ enum NativeEnumTurboModuleStatusFractionEnum { Active, Paused, Off };
 
 template <>
 struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
-  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static NativeEnumTurboModuleStatusFractionEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 0.2f) {
       return NativeEnumTurboModuleStatusFractionEnum::Active;
@@ -2245,7 +2283,7 @@ struct Bridging<NativeEnumTurboModuleStatusFractionEnum> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value, const std::shared_ptr<CallInvoker> &jsInvoker) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeEnumTurboModuleStatusFractionEnum value) {
     if (value == NativeEnumTurboModuleStatusFractionEnum::Active) {
       return bridging::toJs(rt, 0.2f);
     } else if (value == NativeEnumTurboModuleStatusFractionEnum::Paused) {
@@ -2377,9 +2415,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"NativeEnumTurboModule\\";
+
 protected:
   NativeEnumTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"NativeEnumTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeEnumTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2466,9 +2506,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeNullableTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeNullableTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2551,9 +2593,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeNumberTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeNumberTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2607,9 +2651,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2683,9 +2729,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeOptionalObjectTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeOptionalObjectTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2775,9 +2823,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"NativePartialAnnotationTurboModule\\";
+
 protected:
   NativePartialAnnotationTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"NativePartialAnnotationTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativePartialAnnotationTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2844,9 +2894,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativePromiseTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativePromiseTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -2945,9 +2997,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -3134,9 +3188,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleArrays\\";
+
 protected:
   NativeSampleTurboModuleArraysCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleArrays\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleArraysCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -3323,9 +3379,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleNullable\\";
+
 protected:
   NativeSampleTurboModuleNullableCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleNullable\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleNullableCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -3514,9 +3572,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleNullableAndOptional\\";
+
 protected:
   NativeSampleTurboModuleNullableAndOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleNullableAndOptional\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleNullableAndOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -3705,9 +3765,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModuleOptional\\";
+
 protected:
   NativeSampleTurboModuleOptionalCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModuleOptional\\", jsInvoker),
+    : TurboModule(std::string{NativeSampleTurboModuleOptionalCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:
@@ -3846,9 +3908,11 @@ public:
     return delegate_.get(rt, propName);
   }
 
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
 protected:
   NativeStringTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
-    : TurboModule(\\"SampleTurboModule\\", jsInvoker),
+    : TurboModule(std::string{NativeStringTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(static_cast<T*>(this), jsInvoker) {}
 
 private:

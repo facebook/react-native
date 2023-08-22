@@ -15,8 +15,7 @@
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static const int NO_VIEW_TAG = -1;
 
@@ -59,5 +58,4 @@ std::vector<StubView> getDebugChildren(
 
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

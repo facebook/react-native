@@ -74,9 +74,9 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
   [_surface stop];
 }
 
-- (void)setFrame:(CGRect)frame
+- (void)layoutSubviews
 {
-  [super setFrame:frame];
+  [super layoutSubviews];
 
   CGSize minimumSize;
   CGSize maximumSize;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <ReactCommon/TurboModule.h>
@@ -24,15 +25,14 @@
 
 #include "JavaTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TMPL = TurboModulePerfLogger;
 
 JavaTurboModule::JavaTurboModule(const InitParams &params)
     : TurboModule(params.moduleName, params.jsInvoker),
       instance_(jni::make_global(params.instance)),
-      nativeInvoker_(params.nativeInvoker) {}
+      nativeMethodCallInvoker_(params.nativeMethodCallInvoker) {}
 
 JavaTurboModule::~JavaTurboModule() {
   /**
@@ -43,15 +43,16 @@ JavaTurboModule::~JavaTurboModule() {
     return;
   }
 
-  nativeInvoker_->invokeAsync([instance = std::move(instance_)]() mutable {
-    /**
-     * Reset the global NativeModule ref on the NativeModules thread. Why:
-     *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset the
-     *     global ref in ~JavaTurboModule(), we might access the JVM from a
-     *     non-JVM thread, which will crash the app.
-     */
-    instance.reset();
-  });
+  nativeMethodCallInvoker_->invokeAsync(
+      "~" + name_, [instance = std::move(instance_)]() mutable {
+        /**
+         * Reset the global NativeModule ref on the NativeModules thread. Why:
+         *   - ~JavaTurboModule() can be called on a non-JVM thread. If we reset
+         * the global ref in ~JavaTurboModule(), we might access the JVM from a
+         *     non-JVM thread, which will crash the app.
+         */
+        instance.reset();
+      });
 }
 
 namespace {
@@ -83,8 +84,7 @@ jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
        callbackWrapperOwner = std::move(callbackWrapperOwner),
        wrapperWasCalled = false](folly::dynamic responses) mutable {
         if (wrapperWasCalled) {
-          throw std::runtime_error(
-              "Callback arg cannot be called more than once");
+          LOG(FATAL) << "callback arg cannot be called more than once";
         }
 
         auto strongWrapper = weakWrapper.lock();
@@ -285,6 +285,24 @@ JNIArgs convertJSIArgsToJNIArgs(
       continue;
     }
 
+    if (type == "F") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->f = (float)arg->getNumber();
+      continue;
+    }
+
+    if (type == "I") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->i = (int)arg->getNumber();
+      continue;
+    }
+
     if (type == "Z") {
       if (!arg->isBool()) {
         throw JavaTurboModuleArgumentConversionException(
@@ -303,6 +321,20 @@ JNIArgs convertJSIArgsToJNIArgs(
       }
       jarg->l = makeGlobalIfNecessary(
           jni::JDouble::valueOf(arg->getNumber()).release());
+    } else if (type == "Ljava/lang/Float;") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->l = makeGlobalIfNecessary(
+          jni::JFloat::valueOf(arg->getNumber()).release());
+    } else if (type == "Ljava/lang/Integer;") {
+      if (!arg->isNumber()) {
+        throw JavaTurboModuleArgumentConversionException(
+            "number", argIndex, methodName, arg, &rt);
+      }
+      jarg->l = makeGlobalIfNecessary(
+          jni::JInteger::valueOf(arg->getNumber()).release());
     } else if (type == "Ljava/lang/Boolean;") {
       if (!arg->isBool()) {
         throw JavaTurboModuleArgumentConversionException(
@@ -367,6 +399,47 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
   auto jResult = jni::adopt_local(constants);
   auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
   return jsi::valueFromDynamic(rt, result->cthis()->consume());
+}
+
+jsi::Value createJSRuntimeError(
+    jsi::Runtime &runtime,
+    const std::string &message) {
+  return runtime.global()
+      .getPropertyAsFunction(runtime, "Error")
+      .call(runtime, message);
+}
+
+/**
+ * Creates JSError with current JS runtime stack and Throwable stack trace.
+ */
+jsi::JSError convertThrowableToJSError(
+    jsi::Runtime &runtime,
+    jni::local_ref<jni::JThrowable> throwable) {
+  auto stackTrace = throwable->getStackTrace();
+
+  jsi::Array stackElements(runtime, stackTrace->size());
+  for (int i = 0; i < stackTrace->size(); ++i) {
+    auto frame = stackTrace->getElement(i);
+
+    jsi::Object frameObject(runtime);
+    frameObject.setProperty(runtime, "className", frame->getClassName());
+    frameObject.setProperty(runtime, "fileName", frame->getFileName());
+    frameObject.setProperty(runtime, "lineNumber", frame->getLineNumber());
+    frameObject.setProperty(runtime, "methodName", frame->getMethodName());
+    stackElements.setValueAtIndex(runtime, i, std::move(frameObject));
+  }
+
+  jsi::Object cause(runtime);
+  auto name = throwable->getClass()->getCanonicalName()->toStdString();
+  auto message = throwable->getMessage()->toStdString();
+  cause.setProperty(runtime, "name", name);
+  cause.setProperty(runtime, "message", message);
+  cause.setProperty(runtime, "stackElements", std::move(stackElements));
+
+  jsi::Value error =
+      createJSRuntimeError(runtime, "Exception in HostFunction: " + message);
+  error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
+  return {runtime, std::move(error)};
 }
 
 } // namespace
@@ -436,7 +509,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       } else {
         TMPL::asyncMethodCallFail(moduleName, methodName);
       }
-      throw;
+      auto exception = std::current_exception();
+      auto throwable = jni::getJavaExceptionForCppException(exception);
+      throw convertThrowableToJSError(runtime, throwable);
     }
   };
 
@@ -531,7 +606,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case NumberKind: {
       std::string returnType =
           methodSignature.substr(methodSignature.find_last_of(')') + 1);
-      if (returnType == "Ljava/lang/Double;") {
+      if (returnType == "Ljava/lang/Double;" ||
+          returnType == "Ljava/lang/Float;" ||
+          returnType == "Ljava/lang/Integer;") {
         auto returnObject =
             env->CallObjectMethodA(instance, methodID, jargs.data());
         checkJNIErrorForMethodCall();
@@ -541,23 +618,54 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
         auto returnValue = jsi::Value::null();
         if (returnObject) {
-          auto doubleObj = jni::adopt_local(
-              static_cast<jni::JDouble::javaobject>(returnObject));
-          returnValue = jsi::Value(doubleObj->value());
+          if (returnType == "Ljava/lang/Double;") {
+            auto doubleObj = jni::adopt_local(
+                static_cast<jni::JDouble::javaobject>(returnObject));
+            returnValue = jsi::Value(doubleObj->value());
+          } else if (returnType == "Ljava/lang/Float;") {
+            auto floatObj = jni::adopt_local(
+                static_cast<jni::JFloat::javaobject>(returnObject));
+            returnValue = jsi::Value((double)floatObj->value());
+          } else if (returnType == "Ljava/lang/Integer;") {
+            auto intObj = jni::adopt_local(
+                static_cast<jni::JInteger::javaobject>(returnObject));
+            returnValue = jsi::Value(intObj->value());
+          }
         }
 
         TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
         TMPL::syncMethodCallEnd(moduleName, methodName);
         return returnValue;
-      } else {
-        double returnDouble =
-            (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
-        checkJNIErrorForMethodCall();
+      } else if (returnType == "D" || returnType == "F" || returnType == "I") {
+        jsi::Value returnValue = jsi::Value::undefined();
+        if (returnType == "D") {
+          double returnDouble =
+              (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
 
-        TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
-        TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
 
-        jsi::Value returnValue = jsi::Value(returnDouble);
+          returnValue = jsi::Value(returnDouble);
+        } else if (returnType == "F") {
+          float returnFloat =
+              (float)env->CallFloatMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
+
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+          returnValue = jsi::Value((double)returnFloat);
+        } else if (returnType == "I") {
+          int returnInt =
+              (int)env->CallIntMethodA(instance, methodID, jargs.data());
+          checkJNIErrorForMethodCall();
+
+          TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
+          TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
+
+          returnValue = jsi::Value(returnInt);
+        }
 
         TMPL::syncMethodCallReturnConversionEnd(moduleName, methodName);
         TMPL::syncMethodCallEnd(moduleName, methodName);
@@ -629,7 +737,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
       TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-      nativeInvoker_->invokeAsync(
+      nativeMethodCallInvoker_->invokeAsync(
+          methodName,
           [jargs,
            globalRefs,
            methodID,
@@ -728,7 +837,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
             TMPL::asyncMethodCallArgConversionEnd(moduleName, methodName);
             TMPL::asyncMethodCallDispatch(moduleName, methodName);
 
-            nativeInvoker_->invokeAsync(
+            nativeMethodCallInvoker_->invokeAsync(
+                methodName,
                 [jargs,
                  globalRefs,
                  methodID,
@@ -785,5 +895,4 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -12,14 +12,14 @@ FBSOURCE=$(hg root)
 CLANG_FORMAT="${FBSOURCE}/tools/third-party/clang-format/clang-format"
 SIGNEDSOURCE="${FBSOURCE}/tools/signedsource"
 
-pushd "../../../../packages/hermes-inspector-msggen"
+pushd "../../../../../hermes-inspector-msggen"
 
 yarn install
 yarn build
 
 node bin/index.js \
   --ignore-experimental \
-  --include-experimental=Runtime.getHeapUsage \
+  --include-experimental=Runtime.getProperties.generatePreview,Runtime.evaluate.generatePreview,Runtime.callFunctionOn.generatePreview,Debugger.evaluateOnCallFrame.generatePreview,Runtime.RemoteObject.preview,Runtime.RemoteObject.customPreview,Runtime.CustomPreview,Runtime.EntryPreview,Runtime.ObjectPreview,Runtime.PropertyPreview,Runtime.getHeapUsage \
   --roots "${MSGTYPES_PATH}" \
   "${HEADER_PATH}" "${CPP_PATH}"
 

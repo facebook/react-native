@@ -7,8 +7,7 @@
 
 #include "ReactNativeConfig.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * ReactNative configuration as provided by the hosting app.
@@ -22,9 +21,6 @@ EmptyReactNativeConfig::EmptyReactNativeConfig() {}
 
 bool EmptyReactNativeConfig::getBool(const std::string &param) const {
   if (param == "react_fabric:enabled_layout_animations_ios") {
-    return true;
-  }
-  if (param == "react_fabric:enable_nstextstorage_caching") {
     return true;
   }
   return false;
@@ -42,5 +38,4 @@ double EmptyReactNativeConfig::getDouble(const std::string &param) const {
   return 0.0;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

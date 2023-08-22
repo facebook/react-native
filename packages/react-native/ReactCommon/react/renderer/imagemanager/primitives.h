@@ -13,8 +13,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ImageSource {
  public:
@@ -45,5 +44,4 @@ enum class ImageResizeMode {
   Repeat,
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

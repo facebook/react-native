@@ -9,8 +9,7 @@
 
 #include <rncore.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<std::shared_ptr<TurboModule>(
     const std::string &,
@@ -56,5 +55,4 @@ std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
   return rncore_ModuleProvider(name, params);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

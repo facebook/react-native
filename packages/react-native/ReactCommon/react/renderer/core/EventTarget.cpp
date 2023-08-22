@@ -13,14 +13,9 @@ namespace facebook::react {
 
 using Tag = EventTarget::Tag;
 
-EventTarget::EventTarget(
-    jsi::Runtime &runtime,
-    jsi::Value const &instanceHandle,
-    Tag tag)
-    : weakInstanceHandle_(
-          jsi::WeakObject(runtime, instanceHandle.asObject(runtime))),
-      strongInstanceHandle_(jsi::Value::null()),
-      tag_(tag) {}
+EventTarget::EventTarget(InstanceHandle::Shared instanceHandle)
+    : instanceHandle_(std::move(instanceHandle)),
+      strongInstanceHandle_(jsi::Value::null()) {}
 
 void EventTarget::setEnabled(bool enabled) const {
   enabled_ = enabled;
@@ -31,7 +26,10 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
     return;
   }
 
-  strongInstanceHandle_ = weakInstanceHandle_.lock(runtime);
+  if (retainCount_ == 0) {
+    strongInstanceHandle_ = instanceHandle_->getInstanceHandle(runtime);
+  }
+  retainCount_ += 1;
 
   // Having a `null` or `undefined` object here indicates that
   // `weakInstanceHandle_` was already deallocated. This should *not* happen by
@@ -49,7 +47,12 @@ void EventTarget::release(jsi::Runtime & /*runtime*/) const {
   // The method does not use `jsi::Runtime` reference.
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
-  strongInstanceHandle_ = jsi::Value::null();
+
+  if (--retainCount_ == 0) {
+    strongInstanceHandle_ = jsi::Value::null();
+  }
+
+  react_native_assert(retainCount_ >= 0);
 }
 
 jsi::Value EventTarget::getInstanceHandle(jsi::Runtime &runtime) const {
@@ -62,7 +65,7 @@ jsi::Value EventTarget::getInstanceHandle(jsi::Runtime &runtime) const {
 }
 
 Tag EventTarget::getTag() const {
-  return tag_;
+  return instanceHandle_->getTag();
 }
 
 } // namespace facebook::react

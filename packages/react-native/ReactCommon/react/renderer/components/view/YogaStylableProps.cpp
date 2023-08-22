@@ -9,9 +9,9 @@
 
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
+#include <react/utils/CoreFeatures.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 
@@ -105,6 +105,7 @@ void YogaStylableProps::setProp(
     const char *propName,
     RawValue const &value) {
   static const auto ygDefaults = YGStyle{};
+  static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
 
@@ -132,8 +133,6 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(margin, "margin", "");
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
-
-    static const auto defaults = YogaStylableProps{};
 
     // Aliases
     RAW_SET_PROP_SWITCH_CASE(inset, "inset");

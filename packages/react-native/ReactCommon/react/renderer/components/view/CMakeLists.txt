@@ -15,10 +15,17 @@ add_compile_options(
         -Wno-gnu-zero-variadic-macro-arguments
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB rrc_view_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB rrc_view_SRC CONFIGURE_DEPENDS
+        *.cpp
+        platform/android/react/renderer/components/view/*.cpp)
+
 add_library(rrc_view SHARED ${rrc_view_SRC})
 
-target_include_directories(rrc_view PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(rrc_view
+        PUBLIC
+          ${REACT_COMMON_DIR}
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+)
 
 target_link_libraries(rrc_view
         folly_runtime

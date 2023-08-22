@@ -284,46 +284,8 @@ RCT_EXPORT_MODULE()
                                     withBundleURL:bundleManager.bundleURL
                                  withErrorMessage:@"Failed to open Flipper. Please check that Metro is running."];
                            }]];
-    } else if (devSettings.isRemoteDebuggingAvailable) {
-#else
-    if (devSettings.isRemoteDebuggingAvailable) {
-#endif
-      // For remote debugging, we open up Chrome running the app in a web worker.
-      // Note that this requires async communication, which will not work for Turbo Modules.
-      [items addObject:[RCTDevMenuItem
-                           buttonItemWithTitleBlock:^NSString * {
-                             return devSettings.isDebuggingRemotely ? @"Stop Debugging" : @"Debug with Chrome";
-                           }
-                           handler:^{
-                             devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
-                           }]];
-    } else {
-      // If neither are available, we're defaulting to a message that tells you about remote debugging.
-      [items
-          addObject:[RCTDevMenuItem
-                        buttonItemWithTitle:@"Debugger Unavailable"
-                                    handler:^{
-                                      NSString *message = RCTTurboModuleEnabled()
-                                          ? @"Debugging with Chrome is not supported when TurboModules are enabled."
-                                          : @"Include the RCTWebSocket library to enable JavaScript debugging.";
-                                      UIAlertController *alertController =
-                                          [UIAlertController alertControllerWithTitle:@"Debugger Unavailable"
-                                                                              message:message
-                                                                       preferredStyle:UIAlertControllerStyleAlert];
-                                      __weak __typeof__(alertController) weakAlertController = alertController;
-                                      [alertController
-                                          addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                                             style:UIAlertActionStyleDefault
-                                                                           handler:^(__unused UIAlertAction *action) {
-                                                                             [weakAlertController
-                                                                                 dismissViewControllerAnimated:YES
-                                                                                                    completion:nil];
-                                                                           }]];
-                                      [RCTPresentedViewController() presentViewController:alertController
-                                                                                 animated:YES
-                                                                               completion:NULL];
-                                    }]];
     }
+#endif
   }
 
   [items addObject:[RCTDevMenuItem
@@ -428,10 +390,10 @@ RCT_EXPORT_METHOD(show)
       ? UIAlertControllerStyleActionSheet
       : UIAlertControllerStyleAlert;
 
-  NSString *debugMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
-  NSString *debugMenuTitle = [NSString stringWithFormat:@"React Native Debug Menu (%@)", debugMenuType];
+  NSString *devMenuType = self.bridge ? @"Bridge" : @"Bridgeless";
+  NSString *devMenuTitle = [NSString stringWithFormat:@"React Native Dev Menu (%@)", devMenuType];
 
-  _actionSheet = [UIAlertController alertControllerWithTitle:debugMenuTitle message:description preferredStyle:style];
+  _actionSheet = [UIAlertController alertControllerWithTitle:devMenuTitle message:description preferredStyle:style];
 
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
@@ -589,6 +551,19 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 #endif
 
 @implementation RCTBridge (RCTDevMenu)
+
+- (RCTDevMenu *)devMenu
+{
+#if RCT_DEV_MENU
+  return [self moduleForClass:[RCTDevMenu class]];
+#else
+  return nil;
+#endif
+}
+
+@end
+
+@implementation RCTBridgeProxy (RCTDevMenu)
 
 - (RCTDevMenu *)devMenu
 {

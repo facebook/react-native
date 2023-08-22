@@ -14,8 +14,7 @@
 
 #include "TurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A helper class to convert the legacy CxxModule instance to a TurboModule
@@ -47,5 +46,4 @@ class JSI_EXPORT TurboCxxModule : public TurboModule {
   std::unique_ptr<facebook::xplat::module::CxxModule> cxxModule_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -24,8 +24,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -311,5 +310,4 @@ MethodCallResult MethodInvoker::invoke(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

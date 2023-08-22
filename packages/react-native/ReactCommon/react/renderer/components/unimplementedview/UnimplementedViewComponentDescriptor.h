@@ -11,8 +11,7 @@
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <UnimplementedView> component.
@@ -39,5 +38,4 @@ class UnimplementedViewComponentDescriptor final
       RawProps const &rawProps) const override;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

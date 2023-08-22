@@ -13,8 +13,7 @@
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
  public:
@@ -63,5 +62,4 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
       jni::alias_ref<jstring> moduleName);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

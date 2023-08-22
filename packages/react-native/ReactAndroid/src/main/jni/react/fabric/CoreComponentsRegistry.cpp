@@ -24,8 +24,7 @@
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CoreComponentsRegistry::CoreComponentsRegistry(ComponentFactory *delegate)
     : delegate_(delegate) {}
@@ -89,9 +88,9 @@ CoreComponentsRegistry::initHybrid(
     auto registry = CoreComponentsRegistry::sharedProviderRegistry()
                         ->createComponentDescriptorRegistry(
                             {eventDispatcher, contextContainer});
-    auto mutableRegistry =
-        std::const_pointer_cast<ComponentDescriptorRegistry>(registry);
-    mutableRegistry->setFallbackComponentDescriptor(
+    auto &mutableRegistry =
+        const_cast<ComponentDescriptorRegistry &>(*registry);
+    mutableRegistry.setFallbackComponentDescriptor(
         std::make_shared<UnimplementedNativeViewComponentDescriptor>(
             ComponentDescriptorParameters{
                 eventDispatcher, contextContainer, nullptr}));
@@ -109,5 +108,4 @@ void CoreComponentsRegistry::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

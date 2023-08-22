@@ -9,8 +9,7 @@
 
 #include <bitset>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 template <size_t size>
 class RCTIdentifierPool {
@@ -40,5 +39,4 @@ class RCTIdentifierPool {
   int lastIndex;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

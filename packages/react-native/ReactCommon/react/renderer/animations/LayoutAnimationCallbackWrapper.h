@@ -10,8 +10,7 @@
 #include <jsi/jsi.h>
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class LayoutAnimationCallbackWrapper {
  public:
@@ -30,5 +29,4 @@ class LayoutAnimationCallbackWrapper {
   mutable std::shared_ptr<jsi::Function> callback_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

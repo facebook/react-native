@@ -9,8 +9,7 @@
 
 #include <react/renderer/core/LayoutPrimitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline std::string toString(const LayoutDirection &layoutDirection) {
   switch (layoutDirection) {
@@ -70,5 +69,4 @@ inline Size yogaMeassureToSize(int64_t value) {
   return {*measuredWidth, *measuredHeight};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

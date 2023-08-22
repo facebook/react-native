@@ -12,14 +12,9 @@
 #include <ReactCommon/TurboModule.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-enum class TurboModuleBindingMode : uint8_t {
-  HostObject = 0,
-  Prototype = 1,
-  Eager = 2,
-};
+class BridgelessNativeModuleProxy;
 
 /**
  * Represents the JavaScript binding for the TurboModule system.
@@ -32,14 +27,14 @@ class TurboModuleBinding {
    */
   static void install(
       jsi::Runtime &runtime,
-      TurboModuleBindingMode bindingMode,
-      TurboModuleProviderFunctionType &&moduleProvider);
+      TurboModuleProviderFunctionType &&moduleProvider,
+      TurboModuleProviderFunctionType &&legacyModuleProvider = nullptr);
+
+  TurboModuleBinding(TurboModuleProviderFunctionType &&moduleProvider);
+  virtual ~TurboModuleBinding();
 
  private:
-  TurboModuleBinding(
-      TurboModuleBindingMode bindingMode,
-      TurboModuleProviderFunctionType &&moduleProvider);
-  virtual ~TurboModuleBinding();
+  friend BridgelessNativeModuleProxy;
 
   /**
    * A lookup function exposed to JS to get an instance of a TurboModule
@@ -48,9 +43,7 @@ class TurboModuleBinding {
   jsi::Value getModule(jsi::Runtime &runtime, const std::string &moduleName)
       const;
 
-  TurboModuleBindingMode bindingMode_;
   TurboModuleProviderFunctionType moduleProvider_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

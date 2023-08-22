@@ -13,8 +13,7 @@
 
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO (T28334063): Consider for codegen.
 class ScrollViewProps final : public ViewProps {
@@ -69,6 +68,7 @@ class ScrollViewProps final : public ViewProps {
   ContentInsetAdjustmentBehavior contentInsetAdjustmentBehavior{
       ContentInsetAdjustmentBehavior::Never};
   bool scrollToOverflowEnabled{false};
+  bool isInvertedVirtualizedList{false};
 
 #pragma mark - DebugStringConvertible
 
@@ -77,5 +77,4 @@ class ScrollViewProps final : public ViewProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

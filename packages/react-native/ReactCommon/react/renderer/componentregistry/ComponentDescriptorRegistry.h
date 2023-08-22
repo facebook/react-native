@@ -14,10 +14,10 @@
 
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/InstanceHandle.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class ComponentDescriptorProviderRegistry;
 class ComponentDescriptorRegistry;
@@ -60,7 +60,7 @@ class ComponentDescriptorRegistry {
       std::string const &viewName,
       SurfaceId surfaceId,
       folly::dynamic const &props,
-      SharedEventTarget const &eventTarget) const;
+      InstanceHandle::Shared const &instanceHandle) const;
 
   void setFallbackComponentDescriptor(
       const SharedComponentDescriptor &descriptor);
@@ -91,5 +91,4 @@ class ComponentDescriptorRegistry {
   ContextContainer::Shared contextContainer_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

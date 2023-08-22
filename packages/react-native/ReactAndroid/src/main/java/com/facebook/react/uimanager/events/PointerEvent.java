@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pools;
@@ -91,6 +92,10 @@ public class PointerEvent extends Event<PointerEvent> {
     return mEventName;
   }
 
+  private boolean isClickEvent() {
+    return mEventName.equals(PointerEventHelper.CLICK);
+  }
+
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     if (mMotionEvent == null) {
@@ -112,7 +117,7 @@ public class PointerEvent extends Event<PointerEvent> {
     boolean shouldCopy = mPointersEventData.size() > 1;
     for (WritableMap pointerEventData : mPointersEventData) {
       WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
-      rctEventEmitter.receiveEvent(this.getViewTag(), mEventName, eventData);
+      rctEventEmitter.receiveEvent(getViewTag(), mEventName, eventData);
     }
     return;
   }
@@ -173,10 +178,17 @@ public class PointerEvent extends Event<PointerEvent> {
 
     ArrayList<WritableMap> w3cPointerEvents = new ArrayList<>();
     for (int index = 0; index < mMotionEvent.getPointerCount(); index++) {
-      w3cPointerEvents.add(this.createW3CPointerEvent(index));
+      w3cPointerEvents.add(createW3CPointerEvent(index));
     }
 
     return w3cPointerEvents;
+  }
+
+  private void addModifierKeyData(WritableMap pointerEvent, int modifierKeyMask) {
+    pointerEvent.putBoolean("ctrlKey", (modifierKeyMask & KeyEvent.META_CTRL_ON) != 0);
+    pointerEvent.putBoolean("shiftKey", (modifierKeyMask & KeyEvent.META_SHIFT_ON) != 0);
+    pointerEvent.putBoolean("altKey", (modifierKeyMask & KeyEvent.META_ALT_ON) != 0);
+    pointerEvent.putBoolean("metaKey", (modifierKeyMask & KeyEvent.META_META_ON) != 0);
   }
 
   private WritableMap createW3CPointerEvent(int index) {
@@ -190,7 +202,8 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putString("pointerType", pointerType);
 
     boolean isPrimary =
-        mEventState.supportsHover(pointerId) || pointerId == mEventState.mPrimaryPointerId;
+        !isClickEvent() // compatibility click events should not be considered primary
+            && (mEventState.supportsHover(pointerId) || pointerId == mEventState.mPrimaryPointerId);
     pointerEvent.putBoolean("isPrimary", isPrimary);
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
@@ -201,6 +214,12 @@ public class PointerEvent extends Event<PointerEvent> {
     double clientY = PixelUtil.toDIPFromPixel(eventCoords[1]);
     pointerEvent.putDouble("clientX", clientX);
     pointerEvent.putDouble("clientY", clientY);
+
+    float[] screenCoords = mEventState.getScreenCoordinatesByPointerId().get(pointerId);
+    double screenX = PixelUtil.toDIPFromPixel(screenCoords[0]);
+    double screenY = PixelUtil.toDIPFromPixel(screenCoords[1]);
+    pointerEvent.putDouble("screenX", screenX);
+    pointerEvent.putDouble("screenY", screenY);
 
     // x,y values are aliases of clientX, clientY
     pointerEvent.putDouble("x", clientX);
@@ -215,14 +234,16 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putDouble("offsetX", PixelUtil.toDIPFromPixel(offsetCoords[0]));
     pointerEvent.putDouble("offsetY", PixelUtil.toDIPFromPixel(offsetCoords[1]));
 
-    pointerEvent.putInt("target", this.getViewTag());
-    pointerEvent.putDouble("timestamp", this.getTimestampMs());
+    pointerEvent.putInt("target", getViewTag());
+    pointerEvent.putDouble("timestamp", getTimestampMs());
 
     pointerEvent.putInt("detail", 0);
     pointerEvent.putDouble("tiltX", 0);
     pointerEvent.putDouble("tiltY", 0);
 
-    if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE)) {
+    pointerEvent.putInt("twist", 0);
+    // note: click events should have width = height = 1
+    if (pointerType.equals(PointerEventHelper.POINTER_TYPE_MOUSE) || isClickEvent()) {
       pointerEvent.putDouble("width", 1);
       pointerEvent.putDouble("height", 1);
     } else {
@@ -239,8 +260,15 @@ public class PointerEvent extends Event<PointerEvent> {
     pointerEvent.putInt(
         "buttons", PointerEventHelper.getButtons(mEventName, pointerType, buttonState));
 
-    pointerEvent.putDouble(
-        "pressure", PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName));
+    final double pressure =
+        isClickEvent() // click events need pressure=0
+            ? 0
+            : PointerEventHelper.getPressure(pointerEvent.getInt("buttons"), mEventName);
+
+    pointerEvent.putDouble("pressure", pressure);
+    pointerEvent.putDouble("tangentialPressure", 0.0);
+
+    addModifierKeyData(pointerEvent, mMotionEvent.getMetaState());
 
     return pointerEvent;
   }
@@ -252,7 +280,7 @@ public class PointerEvent extends Event<PointerEvent> {
         // Cases where all pointer info is relevant
       case PointerEventHelper.POINTER_MOVE:
       case PointerEventHelper.POINTER_CANCEL:
-        pointersEventData = this.createW3CPointerEvents();
+        pointersEventData = createW3CPointerEvents();
         break;
         // Cases where only the "active" pointer info is relevant
       case PointerEventHelper.POINTER_ENTER:
@@ -261,6 +289,7 @@ public class PointerEvent extends Event<PointerEvent> {
       case PointerEventHelper.POINTER_LEAVE:
       case PointerEventHelper.POINTER_OUT:
       case PointerEventHelper.POINTER_OVER:
+      case PointerEventHelper.CLICK:
         pointersEventData = Arrays.asList(createW3CPointerEvent(activePointerIndex));
         break;
     }
@@ -296,8 +325,8 @@ public class PointerEvent extends Event<PointerEvent> {
     for (WritableMap pointerEventData : mPointersEventData) {
       WritableMap eventData = shouldCopy ? pointerEventData.copy() : pointerEventData;
       rctEventEmitter.receiveEvent(
-          this.getSurfaceId(),
-          this.getViewTag(),
+          getSurfaceId(),
+          getViewTag(),
           mEventName,
           mCoalescingKey != UNSET_COALESCING_KEY,
           mCoalescingKey,
@@ -315,6 +344,7 @@ public class PointerEvent extends Event<PointerEvent> {
     private Map<Integer, float[]> mOffsetByPointerId;
     private Map<Integer, List<TouchTargetHelper.ViewTarget>> mHitPathByPointerId;
     private Map<Integer, float[]> mEventCoordinatesByPointerId;
+    private Map<Integer, float[]> mScreenCoordinatesByPointerId;
     private Set<Integer> mHoveringPointerIds;
 
     public PointerEventState(
@@ -325,6 +355,7 @@ public class PointerEvent extends Event<PointerEvent> {
         Map<Integer, float[]> offsetByPointerId,
         Map<Integer, List<TouchTargetHelper.ViewTarget>> hitPathByPointerId,
         Map<Integer, float[]> eventCoordinatesByPointerId,
+        Map<Integer, float[]> screenCoordinatesByPointerId,
         Set<Integer> hoveringPointerIds) {
       mPrimaryPointerId = primaryPointerId;
       mActivePointerId = activePointerId;
@@ -333,6 +364,7 @@ public class PointerEvent extends Event<PointerEvent> {
       mOffsetByPointerId = offsetByPointerId;
       mHitPathByPointerId = hitPathByPointerId;
       mEventCoordinatesByPointerId = eventCoordinatesByPointerId;
+      mScreenCoordinatesByPointerId = screenCoordinatesByPointerId;
       mHoveringPointerIds = new HashSet<>(hoveringPointerIds);
     }
 
@@ -356,6 +388,10 @@ public class PointerEvent extends Event<PointerEvent> {
       return mHoveringPointerIds.contains(pointerId);
     }
 
+    public Set<Integer> getHoveringPointerIds() {
+      return mHoveringPointerIds;
+    }
+
     public final Map<Integer, float[]> getOffsetByPointerId() {
       return mOffsetByPointerId;
     }
@@ -366,6 +402,10 @@ public class PointerEvent extends Event<PointerEvent> {
 
     public final Map<Integer, float[]> getEventCoordinatesByPointerId() {
       return mEventCoordinatesByPointerId;
+    }
+
+    public final Map<Integer, float[]> getScreenCoordinatesByPointerId() {
+      return mScreenCoordinatesByPointerId;
     }
 
     public final List<TouchTargetHelper.ViewTarget> getHitPathForActivePointer() {

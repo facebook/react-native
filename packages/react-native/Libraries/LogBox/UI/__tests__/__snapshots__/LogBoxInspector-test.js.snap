@@ -22,6 +22,7 @@ exports[`LogBoxContainer should render fatal with selectedIndex 2 1`] = `
         "codeFrame": undefined,
         "componentStack": Array [],
         "count": 1,
+        "extraData": undefined,
         "isComponentError": false,
         "level": "fatal",
         "message": Object {
@@ -71,6 +72,7 @@ exports[`LogBoxContainer should render warning with selectedIndex 0 1`] = `
         "codeFrame": undefined,
         "componentStack": Array [],
         "count": 1,
+        "extraData": undefined,
         "isComponentError": false,
         "level": "warn",
         "message": Object {

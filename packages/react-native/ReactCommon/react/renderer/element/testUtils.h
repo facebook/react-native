@@ -17,8 +17,7 @@
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/element/ComponentBuilder.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline ComponentBuilder simpleComponentBuilder() {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
@@ -45,5 +44,4 @@ inline ComponentBuilder simpleComponentBuilder() {
   return ComponentBuilder{componentDescriptorRegistry};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

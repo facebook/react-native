@@ -9,9 +9,7 @@
 #include "macros.h"
 #include "YogaJniException.h"
 
-namespace facebook {
-namespace yoga {
-namespace vanillajni {
+namespace facebook::yoga::vanillajni {
 
 namespace {
 JavaVM* globalVm = NULL;
@@ -56,6 +54,7 @@ JNIEXPORT JNIEnv* getCurrentEnv() {
 }
 
 void logErrorMessageAndDie(const char* message) {
+  (void) message;
   VANILLAJNI_LOG_ERROR(
       "VanillaJni",
       "Aborting due to error detected in native code: %s",
@@ -89,6 +88,4 @@ void assertNoPendingJniExceptionIf(JNIEnv* env, bool condition) {
   throw YogaJniException();
 }
 
-} // namespace vanillajni
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga::vanillajni

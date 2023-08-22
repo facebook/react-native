@@ -9,8 +9,7 @@
 #include <react/renderer/components/rncore/Props.h>
 #include <react/renderer/core/propsConversions.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #ifdef ANDROID
 inline folly::dynamic toDynamic(AndroidProgressBarProps const &props) {
@@ -26,5 +25,4 @@ inline folly::dynamic toDynamic(AndroidProgressBarProps const &props) {
 }
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

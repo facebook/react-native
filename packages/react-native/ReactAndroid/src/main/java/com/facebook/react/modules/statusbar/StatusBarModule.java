@@ -79,7 +79,6 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
     UiThreadUtil.runOnUiThread(
         new GuardedRunnable(getReactApplicationContext()) {
-          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           @Override
           public void runGuarded() {
             activity
@@ -118,7 +117,6 @@ public class StatusBarModule extends NativeStatusBarManagerAndroidSpec {
 
     UiThreadUtil.runOnUiThread(
         new GuardedRunnable(getReactApplicationContext()) {
-          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
           @Override
           public void runGuarded() {
             // If the status bar is translucent hook into the window insets calculations

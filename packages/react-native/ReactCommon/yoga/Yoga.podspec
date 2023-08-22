@@ -43,7 +43,7 @@ Pod::Spec.new do |spec|
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "12.4" }
+  spec.platforms = { :ios => min_ios_version_supported }
 
   # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
@@ -51,7 +51,12 @@ Pod::Spec.new do |spec|
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 
-  header_files = 'yoga/*.h'
-  header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
-  spec.public_header_files = header_files
+  public_header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue}.h'
+  public_header_files = File.join('ReactCommon/yoga', public_header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+  spec.public_header_files = public_header_files
+
+  # Fabric must be able to access private headers (which should not be included in the umbrella header)
+  all_header_files = 'yoga/**/*.h'
+  all_header_files = File.join('ReactCommon/yoga', all_header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+  spec.private_header_files = Dir.glob(all_header_files) - Dir.glob(public_header_files)
 end

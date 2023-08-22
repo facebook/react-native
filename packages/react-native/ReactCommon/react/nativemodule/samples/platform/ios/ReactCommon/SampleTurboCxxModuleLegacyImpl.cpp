@@ -11,8 +11,7 @@
 
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SampleTurboCxxModuleLegacyImpl::SampleTurboCxxModuleLegacyImpl() {}
 
@@ -175,5 +174,4 @@ void SampleTurboCxxModuleLegacyImpl::getValueWithPromise(
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

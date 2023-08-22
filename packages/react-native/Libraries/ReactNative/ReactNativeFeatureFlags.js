@@ -45,6 +45,22 @@ export type FeatureFlags = {|
    * Enables access to the host tree in Fabric using DOM-compatible APIs.
    */
   enableAccessToHostTreeInFabric: () => boolean,
+  /**
+   * Enables use of AnimatedObject for animating transform values.
+   */
+  shouldUseAnimatedObjectForTransform: () => boolean,
+  /**
+   * Enables use of setNativeProps in JS driven animations.
+   */
+  shouldUseSetNativePropsInFabric: () => boolean,
+  /**
+   * Enables native view configs in brdgeless mode.
+   */
+  enableNativeViewConfigsInBridgelessMode: () => boolean,
+  /**
+   * Enables a hotfix for forcing materialization of views with elevation set.
+   */
+  shouldForceUnflattenForElevation: () => boolean,
 |};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
@@ -55,6 +71,10 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   animatedShouldUseSingleOp: () => false,
   isGlobalWebPerformanceLoggerEnabled: () => false,
   enableAccessToHostTreeInFabric: () => false,
+  shouldUseAnimatedObjectForTransform: () => false,
+  shouldUseSetNativePropsInFabric: () => false,
+  enableNativeViewConfigsInBridgelessMode: () => false,
+  shouldForceUnflattenForElevation: () => false,
 };
 
 module.exports = ReactNativeFeatureFlags;

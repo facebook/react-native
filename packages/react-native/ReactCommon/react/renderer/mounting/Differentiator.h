@@ -12,8 +12,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <deque>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class ReparentMode { Flatten, Unflatten };
 
@@ -67,5 +66,4 @@ ShadowViewNodePair::NonOwningList sliceChildShadowNodeViewPairsV2(
 ShadowViewNodePair::OwningList sliceChildShadowNodeViewPairsLegacy(
     ShadowNode const &shadowNode);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

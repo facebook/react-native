@@ -12,8 +12,7 @@
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 #include <react/utils/ContextContainer.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Descriptor for <Paragraph> component.
@@ -32,17 +31,15 @@ class ParagraphComponentDescriptor final
   void adopt(ShadowNode::Unshared const &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
-    auto paragraphShadowNode =
-        std::static_pointer_cast<ParagraphShadowNode>(shadowNode);
+    auto &paragraphShadowNode = static_cast<ParagraphShadowNode &>(*shadowNode);
 
     // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
-    paragraphShadowNode->setTextLayoutManager(textLayoutManager_);
+    paragraphShadowNode.setTextLayoutManager(textLayoutManager_);
   }
 
  private:
   std::shared_ptr<TextLayoutManager const> textLayoutManager_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

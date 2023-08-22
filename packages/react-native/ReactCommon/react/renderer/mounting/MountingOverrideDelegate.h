@@ -9,8 +9,7 @@
 
 #pragma once
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MountingCoordinator;
 
@@ -43,5 +42,4 @@ class MountingOverrideDelegate {
       ShadowViewMutationList mutations) const = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

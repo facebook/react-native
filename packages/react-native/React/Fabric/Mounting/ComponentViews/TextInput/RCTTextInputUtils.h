@@ -39,4 +39,6 @@ UITextContentType RCTUITextContentTypeFromString(std::string const &contentType)
 
 UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(std::string const &passwordRules);
 
+UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete);
+
 NS_ASSUME_NONNULL_END

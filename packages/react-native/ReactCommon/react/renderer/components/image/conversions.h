@@ -15,8 +15,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/imagemanager/primitives.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline void fromRawValue(
     const PropsParserContext &context,
@@ -139,5 +138,4 @@ inline std::string toString(const ImageResizeMode &value) {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

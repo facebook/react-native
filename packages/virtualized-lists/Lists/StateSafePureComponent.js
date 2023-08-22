@@ -14,7 +14,7 @@ import * as React from 'react';
 /**
  * `setState` is called asynchronously, and should not rely on the value of
  * `this.props` or `this.state`:
- * https://reactjs.org/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous
+ * https://react.dev/docs/state-and-lifecycle.html#state-updates-may-be-asynchronous
  *
  * SafePureComponent adds runtime enforcement, to catch cases where these
  * variables are read in a state updater function, instead of the ones passed
@@ -32,7 +32,7 @@ export default class StateSafePureComponent<
   }
 
   setState(
-    partialState: ?($Shape<State> | ((State, Props) => ?$Shape<State>)),
+    partialState: ?(Partial<State> | ((State, Props) => ?Partial<State>)),
     callback?: () => mixed,
   ): void {
     if (typeof partialState === 'function') {

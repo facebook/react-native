@@ -11,8 +11,7 @@
 #include <react/renderer/telemetry/SurfaceTelemetry.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Encapsulates all artifacts of `ShadowTree` commit (or a series of them),
@@ -84,5 +83,4 @@ class MountingTransaction final {
   mutable TransactionTelemetry telemetry_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

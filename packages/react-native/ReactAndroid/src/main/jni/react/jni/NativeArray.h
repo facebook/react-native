@@ -12,8 +12,7 @@
 
 #include "NativeCommon.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class NativeArray : public jni::HybridClass<NativeArray> {
  public:
@@ -48,5 +47,4 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   NativeArray &operator=(const NativeArray &) = delete;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

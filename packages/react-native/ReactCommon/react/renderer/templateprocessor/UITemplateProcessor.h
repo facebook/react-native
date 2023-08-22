@@ -16,8 +16,7 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerDelegate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Temporary NativeModuleRegistry definition
 using NativeModuleCallFn =
@@ -62,5 +61,4 @@ class UITemplateProcessor {
       const NativeModuleRegistry &nativeModuleRegistry,
       std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig);
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

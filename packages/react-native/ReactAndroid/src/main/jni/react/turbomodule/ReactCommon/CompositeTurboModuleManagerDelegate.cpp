@@ -7,8 +7,7 @@
 
 #include "CompositeTurboModuleManagerDelegate.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<CompositeTurboModuleManagerDelegate::jhybriddata>
 CompositeTurboModuleManagerDelegate::initHybrid(jni::alias_ref<jhybridobject>) {
@@ -55,5 +54,4 @@ void CompositeTurboModuleManagerDelegate::addTurboModuleManagerDelegate(
   mDelegates_.insert(turboModuleManagerDelegate->cthis());
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

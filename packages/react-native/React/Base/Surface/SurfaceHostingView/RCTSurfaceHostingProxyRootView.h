@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
 @property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
 @property (nonatomic, weak) UIViewController *reactViewController;
+@property (nonatomic, strong, readonly) UIView *view;
 @property (nonatomic, strong, readonly) UIView *contentView;
 @property (nonatomic, strong) UIView *loadingView;
 @property (nonatomic, assign) BOOL passThroughTouches;
@@ -41,21 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
 @property (nonatomic, assign) CGSize minimumSize;
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions;
-
 /**
  * Bridgeless mode initializer
  */
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
                 sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
                  moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
+
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface;
 
 - (void)cancelTouches;
 

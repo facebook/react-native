@@ -11,8 +11,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Instance;
 
@@ -29,5 +28,4 @@ class ComponentFactory : public jni::HybridClass<ComponentFactory> {
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

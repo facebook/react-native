@@ -60,13 +60,20 @@ const links = [
   },
   {
     id: 7,
+    title: 'Debugging',
+    link: 'https://facebook.github.io/react-native/docs/debugging',
+    description:
+      'Learn about the tools available to debug and inspect your app.',
+  },
+  {
+    id: 8,
     title: 'Help',
-    link: 'https://reactnative.dev/help',
+    link: 'https://facebook.github.io/react-native/help',
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
   },
   {
-    id: 8,
+    id: 9,
     title: 'Follow us on Twitter',
     link: 'https://twitter.com/reactnative',
     description:

@@ -13,8 +13,7 @@
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <react/renderer/mounting/StubView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class StubViewTree {
  public:
@@ -46,5 +45,4 @@ class StubViewTree {
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs);
 bool operator!=(StubViewTree const &lhs, StubViewTree const &rhs);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

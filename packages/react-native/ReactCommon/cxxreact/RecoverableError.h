@@ -11,8 +11,7 @@
 #include <functional>
 #include <string>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * RecoverableError
@@ -46,5 +45,4 @@ struct RecoverableError : public std::exception {
   std::string m_what;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

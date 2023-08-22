@@ -7,6 +7,7 @@
 
 #include "UIManager.h"
 
+#include <cxxreact/JSExecutor.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,10 +17,19 @@
 #include <react/renderer/uimanager/SurfaceRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
+#include <react/renderer/uimanager/UIManagerMountHook.h>
 
 #include <glog/logging.h>
 
 #include <utility>
+
+namespace {
+constexpr int DOCUMENT_POSITION_DISCONNECTED = 1;
+constexpr int DOCUMENT_POSITION_PRECEDING = 2;
+constexpr int DOCUMENT_POSITION_FOLLOWING = 4;
+constexpr int DOCUMENT_POSITION_CONTAINS = 8;
+constexpr int DOCUMENT_POSITION_CONTAINED_BY = 16;
+} // namespace
 
 namespace facebook::react {
 
@@ -58,8 +68,8 @@ ShadowNode::Shared UIManager::createNode(
     std::string const &name,
     SurfaceId surfaceId,
     const RawProps &rawProps,
-    SharedEventTarget eventTarget) const {
-  SystraceSection s("UIManager::createNode");
+    const InstanceHandle::Shared &instanceHandle) const {
+  SystraceSection s("UIManager::createNode", "componentName", name);
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
   auto fallbackDescriptor =
@@ -67,13 +77,12 @@ ShadowNode::Shared UIManager::createNode(
 
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
-  auto const fragment = ShadowNodeFamilyFragment{tag, surfaceId, nullptr};
-  auto family =
-      componentDescriptor.createFamily(fragment, std::move(eventTarget));
+  auto const fragment =
+      ShadowNodeFamilyFragment{tag, surfaceId, instanceHandle};
+  auto family = componentDescriptor.createFamily(fragment);
   auto const props =
       componentDescriptor.cloneProps(propsParserContext, nullptr, rawProps);
-  auto const state =
-      componentDescriptor.createInitialState(ShadowNodeFragment{props}, family);
+  auto const state = componentDescriptor.createInitialState(props, family);
 
   auto shadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
@@ -105,7 +114,8 @@ ShadowNode::Shared UIManager::cloneNode(
     ShadowNode const &shadowNode,
     ShadowNode::SharedListOfShared const &children,
     RawProps const *rawProps) const {
-  SystraceSection s("UIManager::cloneNode");
+  SystraceSection s(
+      "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};
@@ -157,7 +167,7 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     ShadowNode::UnsharedListOfShared const &rootChildren,
     ShadowTree::CommitOptions commitOptions) const {
-  SystraceSection s("UIManager::completeSurface");
+  SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
     shadowTree.commit(
@@ -222,19 +232,19 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   // Waiting for all concurrent commits to be finished and unregistering the
   // `ShadowTree`.
   auto shadowTree = getShadowTreeRegistry().remove(surfaceId);
+  if (shadowTree) {
+    // We execute JavaScript/React part of the process at the very end to
+    // minimize any visible side-effects of stopping the Surface. Any possible
+    // commits from the JavaScript side will not be able to reference a
+    // `ShadowTree` and will fail silently.
+    runtimeExecutor_([=](jsi::Runtime &runtime) {
+      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+    });
 
-  // We execute JavaScript/React part of the process at the very end to minimize
-  // any visible side-effects of stopping the Surface. Any possible commits from
-  // the JavaScript side will not be able to reference a `ShadowTree` and will
-  // fail silently.
-  runtimeExecutor_([=](jsi::Runtime &runtime) {
-    SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
-  });
-
-  if (leakChecker_) {
-    leakChecker_->stopSurface(surfaceId);
+    if (leakChecker_) {
+      leakChecker_->stopSurface(surfaceId);
+    }
   }
-
   return shadowTree;
 }
 
@@ -258,6 +268,96 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
 
   auto pair = ancestors.rbegin();
   return pair->first.get().getChildren().at(pair->second);
+}
+
+ShadowNode::Shared UIManager::getNewestParentOfShadowNode(
+    ShadowNode const &shadowNode) const {
+  auto ancestorShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+
+  if (!ancestorShadowNode) {
+    return nullptr;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+
+  if (ancestors.empty()) {
+    return nullptr;
+  }
+
+  if (ancestors.size() == 1) {
+    // The parent is the shadow root
+    return ancestorShadowNode;
+  }
+
+  auto parentOfParentPair = ancestors[ancestors.size() - 2];
+  return parentOfParentPair.first.get().getChildren().at(
+      parentOfParentPair.second);
+}
+
+std::string UIManager::getTextContentInNewestCloneOfShadowNode(
+    ShadowNode const &shadowNode) const {
+  auto newestCloneOfShadowNode = getNewestCloneOfShadowNode(shadowNode);
+  std::string result;
+  getTextContentInShadowNode(*newestCloneOfShadowNode, result);
+  return result;
+}
+
+int UIManager::compareDocumentPosition(
+    ShadowNode const &shadowNode,
+    ShadowNode const &otherShadowNode) const {
+  // Quick check for node vs. itself
+  if (&shadowNode == &otherShadowNode) {
+    return 0;
+  }
+
+  if (shadowNode.getSurfaceId() != otherShadowNode.getSurfaceId()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto ancestorShadowNode = ShadowNode::Shared{};
+  shadowTreeRegistry_.visit(
+      shadowNode.getSurfaceId(), [&](ShadowTree const &shadowTree) {
+        ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
+      });
+  if (!ancestorShadowNode) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto ancestors = shadowNode.getFamily().getAncestors(*ancestorShadowNode);
+  if (ancestors.empty()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  auto otherAncestors =
+      otherShadowNode.getFamily().getAncestors(*ancestorShadowNode);
+  if (ancestors.empty()) {
+    return DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  // Consume all common ancestors
+  size_t i = 0;
+  while (i < ancestors.size() && i < otherAncestors.size() &&
+         ancestors[i].second == otherAncestors[i].second) {
+    i++;
+  }
+
+  if (i == ancestors.size()) {
+    return (DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING);
+  }
+
+  if (i == otherAncestors.size()) {
+    return (DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING);
+  }
+
+  if (ancestors[i].second > otherAncestors[i].second) {
+    return DOCUMENT_POSITION_PRECEDING;
+  }
+
+  return DOCUMENT_POSITION_FOLLOWING;
 }
 
 ShadowNode::Shared UIManager::findNodeAtPoint(
@@ -304,6 +404,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(StateUpdate const &stateUpdate) const {
+  SystraceSection s(
+      "UIManager::updateState",
+      "componentName",
+      stateUpdate.family->getComponentName());
   auto &callback = stateUpdate.callback;
   auto &family = stateUpdate.family;
   auto &componentDescriptor = family->getComponentDescriptor();
@@ -495,8 +599,7 @@ ShadowTreeRegistry const &UIManager::getShadowTreeRegistry() const {
   return shadowTreeRegistry_;
 }
 
-void UIManager::registerCommitHook(
-    UIManagerCommitHook const &commitHook) const {
+void UIManager::registerCommitHook(UIManagerCommitHook &commitHook) {
   std::unique_lock lock(commitHookMutex_);
   react_native_assert(
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook) ==
@@ -505,8 +608,7 @@ void UIManager::registerCommitHook(
   commitHooks_.push_back(&commitHook);
 }
 
-void UIManager::unregisterCommitHook(
-    UIManagerCommitHook const &commitHook) const {
+void UIManager::unregisterCommitHook(UIManagerCommitHook &commitHook) {
   std::unique_lock lock(commitHookMutex_);
   auto iterator =
       std::find(commitHooks_.begin(), commitHooks_.end(), &commitHook);
@@ -515,16 +617,33 @@ void UIManager::unregisterCommitHook(
   commitHook.commitHookWasUnregistered(*this);
 }
 
+void UIManager::registerMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  react_native_assert(
+      std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook) ==
+      mountHooks_.end());
+  mountHooks_.push_back(&mountHook);
+}
+
+void UIManager::unregisterMountHook(UIManagerMountHook &mountHook) {
+  std::unique_lock lock(mountHookMutex_);
+  auto iterator = std::find(mountHooks_.begin(), mountHooks_.end(), &mountHook);
+  react_native_assert(iterator != mountHooks_.end());
+  mountHooks_.erase(iterator);
+}
+
 #pragma mark - ShadowTreeDelegate
 
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     ShadowTree const &shadowTree,
     RootShadowNode::Shared const &oldRootShadowNode,
     RootShadowNode::Unshared const &newRootShadowNode) const {
+  SystraceSection s("UIManager::shadowTreeWillCommit");
+
   std::shared_lock lock(commitHookMutex_);
 
   auto resultRootShadowNode = newRootShadowNode;
-  for (auto const *commitHook : commitHooks_) {
+  for (auto *commitHook : commitHooks_) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
         shadowTree, oldRootShadowNode, resultRootShadowNode);
   }
@@ -540,6 +659,30 @@ void UIManager::shadowTreeDidFinishTransaction(
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
         std::move(mountingCoordinator), mountSynchronously);
+  }
+}
+
+void UIManager::reportMount(SurfaceId surfaceId) const {
+  SystraceSection s("UIManager::reportMount");
+
+  auto time = JSExecutor::performanceNow();
+
+  auto rootShadowNode = RootShadowNode::Shared{};
+  shadowTreeRegistry_.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+    rootShadowNode =
+        shadowTree.getMountingCoordinator()->getBaseRevision().rootShadowNode;
+  });
+
+  if (!rootShadowNode) {
+    return;
+  }
+
+  {
+    std::shared_lock lock(mountHookMutex_);
+
+    for (auto *mountHook : mountHooks_) {
+      mountHook->shadowTreeDidMount(rootShadowNode, time);
+    }
   }
 }
 

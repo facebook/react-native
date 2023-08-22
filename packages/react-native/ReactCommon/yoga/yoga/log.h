@@ -7,17 +7,12 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
-#include "YGEnums.h"
+#include <yoga/YGEnums.h>
 
 struct YGNode;
 struct YGConfig;
 
-namespace facebook {
-namespace yoga {
-
-namespace detail {
+namespace facebook::yoga::detail {
 
 struct Log {
   static void log(
@@ -35,8 +30,4 @@ struct Log {
       ...) noexcept;
 };
 
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
-
-#endif
+} // namespace facebook::yoga::detail

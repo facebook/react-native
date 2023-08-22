@@ -134,6 +134,11 @@ extern
 @property (nonatomic, weak, nullable) UIViewController *reactViewController;
 
 /**
+ * The root view casted as UIView. Used by splash screen libraries.
+ */
+@property (nonatomic, strong, readonly) UIView *view;
+
+/**
  * The React-managed contents view of the root view.
  */
 @property (nonatomic, strong, readonly) UIView *contentView;

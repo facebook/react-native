@@ -21,8 +21,7 @@
 #include <folly/dynamic.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 inline bool isZero(Float n) {
   // We use this ternary expression instead of abs, fabsf, etc, because
@@ -63,7 +62,7 @@ struct Transform {
   /**
    * For debugging only. Prints out the matrix.
    */
-#ifdef RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
   static void print(Transform const &t, std::string prefix);
 #endif
 
@@ -156,6 +155,8 @@ struct Transform {
    */
   Transform operator*(Transform const &rhs) const;
 
+  Rect applyWithCenter(Rect const &rect, Point const &center) const;
+
   /**
    * Convert to folly::dynamic.
    */
@@ -206,8 +207,7 @@ EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
 
 Vector operator*(Transform const &transform, Vector const &vector);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

@@ -14,8 +14,7 @@
 #include "CxxModuleWrapper.h"
 #include "JavaModuleWrapper.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class MessageQueueThread;
 
@@ -36,5 +35,4 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     jni::alias_ref<jni::JCollection<ModuleHolder::javaobject>::javaobject>
         cxxModules,
     std::shared_ptr<MessageQueueThread> moduleMessageQueue);
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

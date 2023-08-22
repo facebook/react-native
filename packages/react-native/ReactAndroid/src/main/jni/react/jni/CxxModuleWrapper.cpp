@@ -16,8 +16,7 @@
 using namespace facebook::jni;
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
     jni::alias_ref<jclass>,
@@ -55,5 +54,4 @@ jni::local_ref<CxxModuleWrapper::javaobject> CxxModuleWrapper::makeDsoNative(
       std::unique_ptr<CxxModule>((*factory)()));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

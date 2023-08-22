@@ -7,7 +7,12 @@
 
 #pragma once
 
-#ifdef __cplusplus
+#include <cmath>
+#include <cstdint>
+#include <limits>
+
+#include <yoga/YGMacros.h>
+#include <yoga/YGValue.h>
 
 #if defined(__has_include) && __has_include(<version>)
 // needed to be able to evaluate defined(__cpp_lib_bit_cast)
@@ -22,11 +27,6 @@
 #else
 #include <cstring>
 #endif
-#include "YGValue.h"
-#include "YGMacros.h"
-#include <cmath>
-#include <cstdint>
-#include <limits>
 
 static_assert(
     std::numeric_limits<float>::is_iec559,
@@ -38,9 +38,7 @@ static_assert(
 #define VISIBLE_FOR_TESTING private:
 #endif
 
-namespace facebook {
-namespace yoga {
-namespace detail {
+namespace facebook::yoga::detail {
 
 // This class stores YGValue in 32 bits.
 // - The value does not matter for Undefined and Auto. NaNs are used for their
@@ -209,8 +207,4 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
   return !(a == b);
 }
 
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
-
-#endif
+} // namespace facebook::yoga::detail

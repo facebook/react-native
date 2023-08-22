@@ -10,8 +10,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/graphics/Transform.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Given animation progress, old props, new props, and an "interpolated" shared
@@ -53,5 +52,4 @@ static inline void interpolateViewProps(
 #endif
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

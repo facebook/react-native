@@ -28,7 +28,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.facebook.react.turbomodule.core.NativeMethodCallInvokerHolderImpl;
 import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.TraceListener;
@@ -112,7 +112,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   public native CallInvokerHolderImpl getJSCallInvokerHolder();
 
-  public native CallInvokerHolderImpl getNativeCallInvokerHolder();
+  public native NativeMethodCallInvokerHolderImpl getNativeMethodCallInvokerHolder();
 
   private CatalystInstanceImpl(
       final ReactQueueConfigurationSpec reactQueueConfigurationSpec,
@@ -483,9 +483,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
   @Nullable
   public NativeModule getNativeModule(String moduleName) {
     if (getTurboModuleRegistry() != null) {
-      TurboModule turboModule = getTurboModuleRegistry().getModule(moduleName);
-      if (turboModule != null) {
-        return (NativeModule) turboModule;
+      NativeModule module = getTurboModuleRegistry().getModule(moduleName);
+      if (module != null) {
+        return module;
       }
     }
 
@@ -510,8 +510,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
     nativeModules.addAll(mNativeModuleRegistry.getAllModules());
 
     if (getTurboModuleRegistry() != null) {
-      for (TurboModule turboModule : getTurboModuleRegistry().getModules()) {
-        nativeModules.add((NativeModule) turboModule);
+      for (NativeModule module : getTurboModuleRegistry().getModules()) {
+        nativeModules.add(module);
       }
     }
 

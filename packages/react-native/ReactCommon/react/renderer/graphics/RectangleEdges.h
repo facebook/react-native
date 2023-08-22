@@ -13,8 +13,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Rect.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Generic data structure describes some values associated with *edges*
@@ -93,8 +92,7 @@ inline Rect outsetBy(Rect const &rect, EdgeInsets const &outsets) noexcept {
        rect.size.height + outsets.top + outsets.bottom}};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

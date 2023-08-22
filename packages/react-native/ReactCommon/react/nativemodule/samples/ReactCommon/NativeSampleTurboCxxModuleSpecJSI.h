@@ -12,8 +12,7 @@
 
 #include <ReactCommon/TurboModule.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // TODO: This definition should be codegen'ed for type-safety purpose.
 class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
@@ -40,5 +39,4 @@ class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
   virtual jsi::Object getConstants(jsi::Runtime &rt) = 0;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

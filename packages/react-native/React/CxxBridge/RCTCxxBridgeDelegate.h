@@ -9,13 +9,11 @@
 
 #import <React/RCTBridgeDelegate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSExecutorFactory;
 
-}
-}
+} // namespace facebook::react
 
 // This is a separate class so non-C++ implementations don't need to
 // take a C++ dependency.

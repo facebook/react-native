@@ -28,7 +28,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -70,7 +70,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View
@@ -136,7 +136,7 @@ exports[`VirtualizedSectionList handles nested lists 1`] = `
         onScrollBeginDrag={[Function]}
         onScrollEndDrag={[Function]}
         renderItem={[Function]}
-        scrollEventThrottle={50}
+        scrollEventThrottle={0.0001}
         stickyHeaderIndices={Array []}
       >
         <View>
@@ -239,7 +239,7 @@ exports[`VirtualizedSectionList handles separators correctly 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -377,7 +377,7 @@ exports[`VirtualizedSectionList handles separators correctly 2`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -515,7 +515,7 @@ exports[`VirtualizedSectionList handles separators correctly 3`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -654,7 +654,7 @@ exports[`VirtualizedSectionList handles separators correctly 4`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -796,6 +796,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   getItemLayout={[Function]}
   invertStickyHeaders={true}
   inverted={true}
+  isInvertedVirtualizedList={true}
   keyExtractor={[Function]}
   onContentSizeChange={[Function]}
   onLayout={[Function]}
@@ -813,7 +814,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   }
   refreshing={false}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
   style={
     Array [
@@ -831,6 +832,7 @@ exports[`VirtualizedSectionList renders all the bells and whistles 1`] = `
   <RCTRefreshControl />
   <View>
     <View
+      collapsable={false}
       onLayout={[Function]}
       style={
         Object {
@@ -1027,7 +1029,7 @@ exports[`VirtualizedSectionList renders empty list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View />
@@ -1051,11 +1053,12 @@ exports[`VirtualizedSectionList renders empty list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
     <View
+      collapsable={false}
       onLayout={[Function]}
     >
       <header />
@@ -1096,7 +1099,7 @@ exports[`VirtualizedSectionList renders list with empty component 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>
@@ -1154,7 +1157,7 @@ exports[`VirtualizedSectionList renders simple list 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   renderItem={[Function]}
-  scrollEventThrottle={50}
+  scrollEventThrottle={0.0001}
   stickyHeaderIndices={Array []}
 >
   <View>

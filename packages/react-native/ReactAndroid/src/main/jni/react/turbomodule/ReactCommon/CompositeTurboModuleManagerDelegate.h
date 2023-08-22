@@ -13,8 +13,7 @@
 #include <string>
 #include <unordered_set>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class CompositeTurboModuleManagerDelegate
     : public jni::HybridClass<
@@ -45,5 +44,4 @@ class CompositeTurboModuleManagerDelegate
           turboModuleManagerDelegate);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

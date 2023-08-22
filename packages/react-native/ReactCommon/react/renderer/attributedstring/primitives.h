@@ -10,8 +10,7 @@
 #include <functional>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class FontStyle { Normal, Italic, Oblique };
 
@@ -106,37 +105,6 @@ enum class TextDecorationLineType {
 
 enum class TextDecorationStyle { Solid, Double, Dotted, Dashed };
 
-enum class AccessibilityRole {
-  None,
-  Button,
-  Link,
-  Search,
-  Image,
-  Imagebutton,
-  Keyboardkey,
-  Text,
-  Adjustable,
-  Summary,
-  Header,
-  Alert,
-  Checkbox,
-  Combobox,
-  Menu,
-  Menubar,
-  Menuitem,
-  Progressbar,
-  Radio,
-  Radiogroup,
-  Scrollbar,
-  Spinbutton,
-  Switch,
-  Tab,
-  TabBar,
-  Tablist,
-  Timer,
-  Toolbar,
-};
-
 enum class TextTransform {
   None,
   Uppercase,
@@ -151,8 +119,7 @@ enum class HyphenationFrequency {
   Full // Standard amount of hyphenation.
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>
@@ -221,13 +188,6 @@ struct hash<facebook::react::EllipsizeMode> {
 template <>
 struct hash<facebook::react::TextBreakStrategy> {
   size_t operator()(const facebook::react::TextBreakStrategy &v) const {
-    return hash<int>()(static_cast<int>(v));
-  }
-};
-
-template <>
-struct hash<facebook::react::AccessibilityRole> {
-  size_t operator()(const facebook::react::AccessibilityRole &v) const {
     return hash<int>()(static_cast<int>(v));
   }
 };

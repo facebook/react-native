@@ -16,8 +16,7 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Props of <Paragraph> component.
@@ -60,5 +59,4 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

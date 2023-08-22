@@ -11,8 +11,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static inline bool shouldFirstComeBeforeSecondRemovesOnly(
     ShadowViewMutation const &lhs,
@@ -77,5 +76,4 @@ std::pair<Float, Float> calculateAnimationProgress(
     LayoutAnimation const &animation,
     AnimationConfig const &mutationConfig);
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

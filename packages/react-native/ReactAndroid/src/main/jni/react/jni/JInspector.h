@@ -15,8 +15,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JPage : public jni::JavaClass<JPage> {
  public:
@@ -75,7 +74,6 @@ class JInspector : public jni::HybridClass<JInspector> {
   IInspector *inspector_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 #endif

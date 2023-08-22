@@ -13,8 +13,7 @@
 
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents telemetry data associated with a particular revision of
@@ -83,5 +82,4 @@ class TransactionTelemetry final {
   std::function<TelemetryTimePoint()> now_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

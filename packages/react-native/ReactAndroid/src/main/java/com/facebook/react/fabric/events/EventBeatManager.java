@@ -19,22 +19,25 @@ import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
  * Class that acts as a proxy between the list of EventBeats registered in C++ and the Android side.
  */
 @SuppressLint("MissingNativeLoadLibrary")
-public class EventBeatManager implements BatchEventDispatchedListener {
+public final class EventBeatManager implements BatchEventDispatchedListener {
 
   static {
     FabricSoLoader.staticInit();
   }
 
   @DoNotStrip private final HybridData mHybridData;
-  private final ReactApplicationContext mReactApplicationContext;
 
   private static native HybridData initHybrid();
 
   private native void tick();
 
+  @Deprecated(forRemoval = true, since = "Deprecated on v0.72.0 Use EventBeatManager() instead")
   public EventBeatManager(@NonNull ReactApplicationContext reactApplicationContext) {
+    this();
+  }
+
+  public EventBeatManager() {
     mHybridData = initHybrid();
-    mReactApplicationContext = reactApplicationContext;
   }
 
   @Override

@@ -13,8 +13,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class YogaStylableProps : public Props {
   using CompactValue = facebook::yoga::detail::CompactValue;
@@ -86,5 +85,4 @@ class YogaStylableProps : public Props {
       RawProps const &rawProps);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

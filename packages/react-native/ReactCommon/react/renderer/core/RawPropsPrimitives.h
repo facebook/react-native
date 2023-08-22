@@ -10,17 +10,16 @@
 #include <folly/Hash.h>
 #include <limits>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Type used to represent an index of some stored values in small arrays.
  */
-using RawPropsValueIndex = uint8_t;
+using RawPropsValueIndex = uint16_t;
 static_assert(
-    sizeof(RawPropsValueIndex) == 1,
-    "RawPropsValueIndex must be one byte size.");
-using RawPropsPropNameLength = uint8_t;
+    sizeof(RawPropsValueIndex) == 2,
+    "RawPropsValueIndex must be two byte size.");
+using RawPropsPropNameLength = uint16_t;
 using RawPropsPropNameHash = uint32_t;
 
 /*
@@ -41,7 +40,7 @@ constexpr static RawPropsValueIndex kRawPropsValueIndexEmpty =
  * about twenty. It's okay if some `*Props` class has more than this amount of
  * props but the majority of those classes should be below this cap.
  */
-constexpr static auto kNumberOfPropsPerComponentSoftCap = 150;
+constexpr static auto kNumberOfPropsPerComponentSoftCap = 250;
 
 /*
  * The maximum length of the prop name.
@@ -51,5 +50,4 @@ constexpr static auto kNumberOfPropsPerComponentSoftCap = 150;
  */
 constexpr static auto kPropNameLengthHardCap = 64;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

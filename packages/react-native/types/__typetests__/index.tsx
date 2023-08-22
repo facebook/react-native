@@ -40,6 +40,8 @@ import {
   DrawerLayoutAndroid,
   DrawerSlideEvent,
   DynamicColorIOS,
+  EmitterSubscription,
+  EventSubscription,
   FlatList,
   FlatListProps,
   GestureResponderEvent,
@@ -82,8 +84,7 @@ import {
   SectionListProps,
   SectionListRenderItemInfo,
   Share,
-  ShareDismissedAction,
-  ShareSharedAction,
+  ShareAction,
   StatusBar,
   StyleProp,
   StyleSheet,
@@ -385,6 +386,7 @@ const testNativeSyntheticEvent = <T extends {}>(
   e.isTrusted;
   e.nativeEvent;
   e.target;
+  e.target.measure(() => {});
   e.timeStamp;
   e.type;
   e.nativeEvent;

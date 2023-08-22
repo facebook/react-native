@@ -15,8 +15,7 @@
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/CallbackWrapper.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 jsi::Object deepCopyJSIObject(jsi::Runtime &rt, const jsi::Object &obj);
 jsi::Array deepCopyJSIArray(jsi::Runtime &rt, const jsi::Array &arr);
@@ -56,5 +55,4 @@ class RAIICallbackWrapperDestroyer {
   std::weak_ptr<CallbackWrapper> callbackWrapper_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

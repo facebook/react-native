@@ -10,8 +10,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/utils/Telemetry.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Represents telemetry data associated with a image request
@@ -33,5 +32,4 @@ class ImageTelemetry final {
   const SurfaceId surfaceId_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

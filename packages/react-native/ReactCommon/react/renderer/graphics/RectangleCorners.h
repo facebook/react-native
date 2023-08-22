@@ -12,8 +12,7 @@
 #include <folly/Hash.h>
 #include <react/renderer/graphics/Float.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Generic data structure describes some values associated with *corners*
@@ -50,8 +49,7 @@ struct RectangleCorners {
  */
 using CornerInsets = RectangleCorners<Float>;
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

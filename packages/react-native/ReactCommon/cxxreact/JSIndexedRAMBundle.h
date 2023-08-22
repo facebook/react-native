@@ -17,8 +17,7 @@
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
  public:
@@ -69,5 +68,4 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
   std::unique_ptr<JSBigBufferString> m_startupCode;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -11,16 +11,7 @@
 
 using namespace facebook::jni;
 
-namespace facebook {
-namespace react {
-
-// TODO T112842309: Remove after fbjni upgraded in OSS
-void ReadableNativeArray::mapException(const std::exception &ex) {
-  if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {
-    throwNewJavaException(
-        exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
-  }
-}
+namespace facebook::react {
 
 void ReadableNativeArray::mapException(std::exception_ptr ex) {
   try {
@@ -56,5 +47,4 @@ void ReadableNativeArray::registerNatives() {
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -10,9 +10,9 @@
 
 'use strict';
 
-import type {NativeColorValue} from '../../StyleSheet/PlatformColorValueTypes';
 import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {NativeColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import normalizeColor from '../../StyleSheet/normalizeColor';

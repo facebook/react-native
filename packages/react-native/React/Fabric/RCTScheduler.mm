@@ -12,7 +12,7 @@
 #import <react/renderer/debug/SystraceSection.h>
 #import <react/renderer/scheduler/Scheduler.h>
 #import <react/renderer/scheduler/SchedulerDelegate.h>
-#include <react/utils/RunLoopObserver.h>
+#import <react/utils/RunLoopObserver.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -24,10 +24,10 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(MountingCoordinator::Shared mountingCoordinator) override
+  void schedulerDidFinishTransaction(const MountingCoordinator::Shared &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidFinishTransaction:std::move(mountingCoordinator)];
+    [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowNode &shadowNode) override
@@ -130,6 +130,11 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (void)animationTick
 {
   _scheduler->animationTick();
+}
+
+- (void)reportMount:(facebook::react::SurfaceId)surfaceId
+{
+  _scheduler->reportMount(surfaceId);
 }
 
 - (void)dealloc

@@ -29,16 +29,42 @@ public class ReactFeatureFlags {
   public static volatile boolean unstable_useTurboModuleInterop = false;
 
   /**
+   * Temporary flag that will be used to validate the staibility of the TurboModule interop layer.
+   * Force all Java NativeModules that are TurboModule-compatible (that would have otherwise gone
+   * through the C++ codegen method dispatch path) instead through the TurboModule interop layer
+   * (i.e: the JavaInteropTurboModule method dispatch path).
+   */
+  public static volatile boolean unstable_useTurboModuleInteropForAllTurboModules = false;
+
+  /**
    * Should this application use the new (Fabric) Renderer? If yes, all rendering in this app will
    * use Fabric instead of the legacy renderer.
    */
   public static volatile boolean enableFabricRenderer = false;
 
   /**
+   * Should this application enable the Fabric Interop Layer for Android? If yes, the application
+   * will behave so that it can accept non-Fabric components and render them on Fabric. This toggle
+   * is controlling extra logic such as custom event dispatching that are needed for the Fabric
+   * Interop Layer to work correctly.
+   */
+  public static volatile boolean unstable_useFabricInterop = false;
+
+  /**
+   * Should this application always use the Native RuntimeScheduler? If yes, we'll be instantiating
+   * it over all the architectures (both Old and New). This is intentionally set to true as we want
+   * to use it more as a kill-switch to turn off this feature to potentially debug issues.
+   */
+  public static volatile boolean unstable_useRuntimeSchedulerAlways = true;
+
+  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable
    * the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   public static boolean enableBridgelessArchitecture = false;
+
+  /** Server-side gating for a hacky fix to an ANR in the bridgeless core, related to Bolts task. */
+  public static boolean unstable_bridgelessArchitectureMemoryPressureHackyBoltsFix = false;
 
   /**
    * Does the bridgeless architecture log soft exceptions. Could be useful for tracking down issues.
@@ -55,9 +81,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
-  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
-  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
@@ -72,19 +95,11 @@ public class ReactFeatureFlags {
 
   public static boolean dispatchPointerEvents = false;
 
+  /** Feature Flag to enable a cache of Spannable objects used by TextLayoutManagerMapBuffer */
+  public static boolean enableTextSpannableCache = false;
+
   /** Feature Flag to enable the pending event queue in fabric before mounting views */
   public static boolean enableFabricPendingEventQueue = false;
-
-  /**
-   * Feature flag that controls how turbo modules are exposed to JS
-   *
-   * <ul>
-   *   <li>0 = as a HostObject
-   *   <li>1 = as a plain object, backed with a HostObject as prototype
-   *   <li>2 = as a plain object, with all methods eagerly configured
-   * </ul>
-   */
-  public static int turboModuleBindingMode = 0;
 
   /**
    * Feature Flag to enable View Recycling. When enabled, individual ViewManagers must still opt-in.
@@ -127,4 +142,25 @@ public class ReactFeatureFlags {
    * HostObject pattern
    */
   public static boolean useNativeState = false;
+
+  /** Report mount operations from the host platform to notify mount hooks. */
+  public static boolean enableMountHooks = false;
+
+  /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
+  public static boolean fixStoppedSurfaceTagSetLeak = true;
+
+  /** Disable the background executor for layout in Fabric */
+  public static boolean enableBackgroundExecutor = false;
+
+  /** Use native view configs in bridgeless mode. */
+  public static boolean useNativeViewConfigsInBridgelessMode = false;
+
+  /** Only swap left and right on Android in RTL scripts. */
+  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
+
+  /** Clean yoga node when <Text /> does not change. */
+  public static boolean enableCleanParagraphYogaNode = false;
+
+  /** Default state updates and events to async batched priority. */
+  public static boolean enableDefaultAsyncBatchedPriority = false;
 }

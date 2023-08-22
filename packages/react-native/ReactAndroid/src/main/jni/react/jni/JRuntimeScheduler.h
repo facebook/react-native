@@ -10,8 +10,7 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JRuntimeScheduler : public jni::HybridClass<JRuntimeScheduler> {
  public:
@@ -26,5 +25,4 @@ class JRuntimeScheduler : public jni::HybridClass<JRuntimeScheduler> {
   std::weak_ptr<RuntimeScheduler> runtimeScheduler_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

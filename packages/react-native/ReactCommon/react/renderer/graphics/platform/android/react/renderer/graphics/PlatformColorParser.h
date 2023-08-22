@@ -10,12 +10,11 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
-#include <react/renderer/graphics/ColorComponents.h>
+#include <react/renderer/graphics/Color.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
-inline ColorComponents parsePlatformColor(
+inline SharedColor parsePlatformColor(
     const PropsParserContext &context,
     const RawValue &value) {
   ColorComponents colorComponents = {0, 0, 0, 0};
@@ -47,8 +46,7 @@ inline ColorComponents parsePlatformColor(
     colorComponents.blue = (argb & 0xFF) / ratio;
   }
 
-  return colorComponents;
+  return {colorFromComponents(colorComponents)};
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

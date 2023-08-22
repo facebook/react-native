@@ -11,8 +11,7 @@
 #include <fbsystrace.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * Allow providing an fbsystrace implementation that can short-circuit out
@@ -57,5 +56,4 @@ struct DummySystraceSection {
 using SystraceSection = DummySystraceSection;
 #endif
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 static void hermesFatalHandler(const std::string &reason) {
   LOG(ERROR) << "Hermes Fatal: " << reason << "\n";
@@ -31,15 +30,7 @@ static std::once_flag flag;
 
 static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
   namespace vm = ::hermes::vm;
-  auto gcConfigBuilder =
-      vm::GCConfig::Builder()
-          .withName("RN")
-          // For the next two arguments: avoid GC before TTI by initializing the
-          // runtime to allocate directly in the old generation, but revert to
-          // normal operation when we reach the (first) TTI point.
-          .withAllocInYoung(false)
-          .withRevertToYGAtTTI(true);
-
+  auto gcConfigBuilder = vm::GCConfig::Builder().withName("RN");
   if (heapSizeMB > 0) {
     gcConfigBuilder.withMaxHeapSize(heapSizeMB << 20);
   }
@@ -55,7 +46,6 @@ static void installBindings(jsi::Runtime &runtime) {
       static_cast<void (*)(const std::string &, unsigned int)>(
           &reactAndroidLoggingHook);
   react::bindNativeLogger(runtime, androidLogger);
-  react::bindNativePerformanceNow(runtime);
 }
 
 class HermesExecutorHolder
@@ -118,8 +108,7 @@ class HermesExecutorHolder
   using HybridBase::HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return facebook::jni::initialize(

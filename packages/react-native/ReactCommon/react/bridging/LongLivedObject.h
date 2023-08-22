@@ -11,8 +11,7 @@
 #include <mutex>
 #include <unordered_set>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A simple wrapper class that can be registered to a collection that keep it
@@ -55,5 +54,4 @@ class LongLivedObjectCollection {
   mutable std::mutex collectionMutex_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

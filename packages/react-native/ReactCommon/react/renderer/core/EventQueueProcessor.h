@@ -15,22 +15,24 @@
 #include <react/renderer/core/StatePipe.h>
 #include <react/renderer/core/StateUpdate.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class EventQueueProcessor {
  public:
-  EventQueueProcessor(EventPipe eventPipe, StatePipe statePipe);
+  EventQueueProcessor(
+      EventPipe eventPipe,
+      EventPipeConclusion eventPipeConclusion,
+      StatePipe statePipe);
 
   void flushEvents(jsi::Runtime &runtime, std::vector<RawEvent> &&events) const;
   void flushStateUpdates(std::vector<StateUpdate> &&states) const;
 
  private:
   EventPipe const eventPipe_;
+  EventPipeConclusion const eventPipeConclusion_;
   StatePipe const statePipe_;
 
   mutable bool hasContinuousEventStarted_{false};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

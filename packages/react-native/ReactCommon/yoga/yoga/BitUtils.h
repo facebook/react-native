@@ -7,16 +7,17 @@
 
 #pragma once
 
-#ifdef __cplusplus
-
+#include <bitset>
 #include <cstdio>
 #include <cstdint>
-#include "YGEnums.h"
 
-namespace facebook {
-namespace yoga {
+#include <yoga/YGEnums.h>
 
-namespace detail {
+namespace facebook::yoga::detail {
+
+// std::bitset with one bit for each option defined in YG_ENUM_SEQ_DECL
+template <typename Enum>
+using EnumBitset = std::bitset<facebook::yoga::enums::count<Enum>()>;
 
 constexpr size_t log2ceilFn(size_t n) {
   return n < 1 ? 0 : (1 + log2ceilFn(n / 2));
@@ -64,8 +65,4 @@ inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
   }
 }
 
-} // namespace detail
-} // namespace yoga
-} // namespace facebook
-
-#endif
+} // namespace facebook::yoga::detail

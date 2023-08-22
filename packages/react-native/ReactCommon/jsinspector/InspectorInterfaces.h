@@ -24,8 +24,7 @@
 #endif // _MSC_VER
 #endif // !defined(JSINSPECTOR_EXPORT)
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class IDestructible {
  public:
@@ -90,5 +89,4 @@ extern IInspector &getInspectorInstance();
 /// should only be used in tests.
 extern std::unique_ptr<IInspector> makeTestInspectorInstance();
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -5,11 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "jni.h"
-#include <yoga/YGValue.h>
-#include <yoga/Yoga.h>
 #include <map>
+#include <vector>
+
+#include <yoga/Yoga.h>
+
 #include "common.h"
+#include "jni.h"
 
 class PtrJNodeMapVanilla {
   std::map<YGNodeRef, size_t> ptrsToIdxs_;

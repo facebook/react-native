@@ -15,8 +15,7 @@
 
 #include "ComponentDescriptorRegistry.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * A factory to provide hosting app specific set of ComponentDescriptor's.
@@ -30,5 +29,4 @@ using ComponentRegistryFactory =
 
 ComponentRegistryFactory getDefaultComponentRegistryFactory();
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

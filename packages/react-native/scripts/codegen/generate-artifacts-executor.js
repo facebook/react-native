@@ -16,7 +16,7 @@
  * in a codegenConfigFilename file.
  */
 
-const {execSync} = require('child_process');
+const {execSync, execFileSync} = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -45,8 +45,8 @@ function isReactNativeCoreLibrary(libraryName) {
   return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
-function executeNodeScript(node, script) {
-  execSync(`${node} ${script}`);
+function executeNodeScript(node, scriptArgs) {
+  execFileSync(node, scriptArgs);
 }
 
 function isAppRootValid(appRootDir) {
@@ -326,48 +326,53 @@ function generateSchema(tmpDir, library, node, codegenCliPath) {
 
   console.log(`\n\n[Codegen] >>>>> Processing ${library.config.name}`);
   // Generate one schema for the entire library...
-  executeNodeScript(
-    node,
+  executeNodeScript(node, [
     `${path.join(
       codegenCliPath,
       'lib',
       'cli',
       'combine',
       'combine-js-to-schema-cli.js',
-    )} --platform ios ${pathToSchema} ${pathToJavaScriptSources}`,
-  );
+    )}`,
+    '--platform',
+    'ios',
+    pathToSchema,
+    pathToJavaScriptSources,
+  ]);
   console.log(`[Codegen] Generated schema: ${pathToSchema}`);
   return pathToSchema;
 }
 
 function generateCode(iosOutputDir, library, tmpDir, node, pathToSchema) {
   // ...then generate native code artifacts.
-  const libraryTypeArg = library.config.type
-    ? `--libraryType ${library.config.type}`
-    : '';
+  const libraryTypeArg = library.config.type ? `${library.config.type}` : '';
 
   const tmpOutputDir = path.join(tmpDir, 'out');
   fs.mkdirSync(tmpOutputDir, {recursive: true});
 
-  executeNodeScript(
-    node,
+  executeNodeScript(node, [
     `${path.join(
       REACT_NATIVE_PACKAGE_ROOT_FOLDER,
       'scripts',
       'generate-specs-cli.js',
-    )} \
-        --platform ios \
-        --schemaPath ${pathToSchema} \
-        --outputDir ${tmpOutputDir} \
-        --libraryName ${library.config.name} \
-        ${libraryTypeArg}`,
-  );
+    )}`,
+    '--platform',
+    'ios',
+    '--schemaPath',
+    pathToSchema,
+    '--outputDir',
+    tmpOutputDir,
+    '--libraryName',
+    library.config.name,
+    '--libraryType',
+    libraryTypeArg,
+  ]);
 
   // Finally, copy artifacts to the final output directory.
   const outputDir =
     CORE_LIBRARIES_WITH_OUTPUT_FOLDER[library.config.name] ?? iosOutputDir;
   fs.mkdirSync(outputDir, {recursive: true});
-  execSync(`cp -R ${tmpOutputDir}/* ${outputDir}`);
+  execSync(`cp -R ${tmpOutputDir}/* "${outputDir}"`);
   console.log(`[Codegen] Generated artifacts: ${iosOutputDir}`);
 }
 
@@ -426,14 +431,19 @@ function createComponentProvider(
 
     // Generate FabricComponentProvider.
     // Only for iOS at this moment.
-    executeNodeScript(
-      node,
+    executeNodeScript(node, [
       `${path.join(
         REACT_NATIVE_PACKAGE_ROOT_FOLDER,
         'scripts',
         'generate-provider-cli.js',
-      )} --platform ios --schemaListPath "${schemaListTmpPath}" --outputDir ${outputDir}`,
-    );
+      )}`,
+      '--platform',
+      'ios',
+      '--schemaListPath',
+      schemaListTmpPath,
+      '--outputDir',
+      outputDir,
+    ]);
     console.log(`Generated provider in: ${outputDir}`);
   }
 }

@@ -7,28 +7,12 @@
 
 #include "TurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 TurboModule::TurboModule(
     std::string name,
     std::shared_ptr<CallInvoker> jsInvoker)
     : name_(std::move(name)), jsInvoker_(std::move(jsInvoker)) {}
-
-jsi::Value TurboModule::createHostFunction(
-    jsi::Runtime &runtime,
-    const jsi::PropNameID &propName,
-    const MethodMetadata &meta) {
-  return jsi::Function::createFromHostFunction(
-      runtime,
-      propName,
-      static_cast<unsigned int>(meta.argCount),
-      [this, meta](
-          jsi::Runtime &rt,
-          const jsi::Value &thisVal,
-          const jsi::Value *args,
-          size_t count) { return meta.invoker(rt, *this, args, count); });
-}
 
 void TurboModule::emitDeviceEvent(
     jsi::Runtime &runtime,
@@ -54,5 +38,4 @@ void TurboModule::emitDeviceEvent(
   });
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

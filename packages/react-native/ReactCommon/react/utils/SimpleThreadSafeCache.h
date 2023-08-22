@@ -12,8 +12,7 @@
 
 #include <folly/container/EvictingCacheMap.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Simple thread-safe LRU cache.
@@ -72,5 +71,4 @@ class SimpleThreadSafeCache {
   mutable std::mutex mutex_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

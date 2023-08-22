@@ -14,8 +14,7 @@
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/PropsParserContext.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RootProps final : public ViewProps {
  public:
@@ -36,5 +35,4 @@ class RootProps final : public ViewProps {
   LayoutContext layoutContext{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

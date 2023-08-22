@@ -33,8 +33,7 @@
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <rncli.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void registerComponents(
     std::shared_ptr<ComponentDescriptorProviderRegistry const> registry) {
@@ -72,8 +71,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
   return rncli_ModuleProvider(name, params);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {

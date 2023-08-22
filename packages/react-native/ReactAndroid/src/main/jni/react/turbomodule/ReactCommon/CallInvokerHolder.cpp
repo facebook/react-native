@@ -7,8 +7,7 @@
 
 #include "CallInvokerHolder.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 CallInvokerHolder::CallInvokerHolder(std::shared_ptr<CallInvoker> callInvoker)
     : _callInvoker(callInvoker) {}
@@ -19,5 +18,4 @@ std::shared_ptr<CallInvoker> CallInvokerHolder::getCallInvoker() {
 
 void CallInvokerHolder::registerNatives() {}
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

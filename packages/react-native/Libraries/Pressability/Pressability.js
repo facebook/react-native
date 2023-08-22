@@ -132,8 +132,16 @@ export type PressabilityConfig = $ReadOnly<{|
   onPressOut?: ?(event: PressEvent) => mixed,
 
   /**
+   * Whether to prevent any other native components from becoming responder
+   * while this pressable is responder.
+   */
+  blockNativeResponder?: ?boolean,
+
+  /**
    * Returns whether a long press gesture should cancel the press gesture.
    * Defaults to true.
+   *
+   * @deprecated
    */
   onLongPressShouldCancelPress_DEPRECATED?: ?() => boolean,
 
@@ -142,6 +150,8 @@ export type PressabilityConfig = $ReadOnly<{|
    *
    * Returns whether to yield to a lock termination request (e.g. if a native
    * scroll gesture attempts to steal the responder lock).
+   *
+   * @deprecated
    */
   onResponderTerminationRequest_DEPRECATED?: ?() => boolean,
 
@@ -163,7 +173,7 @@ export type EventHandlers = $ReadOnly<{|
   onMouseLeave?: (event: MouseEvent) => void,
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
-  onResponderGrant: (event: PressEvent) => void,
+  onResponderGrant: (event: PressEvent) => void | boolean,
   onResponderMove: (event: PressEvent) => void,
   onResponderRelease: (event: PressEvent) => void,
   onResponderTerminate: (event: PressEvent) => void,
@@ -295,7 +305,7 @@ let longPressDeactivationDistance = DEFAULT_LONG_PRESS_DEACTIVATION_DISTANCE;
  *
  * - When a press has activated (e.g. highlight an element)
  * - When a press has deactivated (e.g. un-highlight an element)
- * - When a press sould trigger an action, meaning it activated and deactivated
+ * - When a press should trigger an action, meaning it activated and deactivated
  *   while within the geometry of the element without the lock being stolen.
  *
  * A high quality interaction isn't as simple as you might think. There should
@@ -464,7 +474,7 @@ export default class Pressability {
         return !disabled;
       },
 
-      onResponderGrant: (event: PressEvent): void => {
+      onResponderGrant: (event: PressEvent): void | boolean => {
         event.persist();
 
         this._cancelPressOutDelayTimeout();
@@ -490,6 +500,8 @@ export default class Pressability {
         this._longPressDelayTimeout = setTimeout(() => {
           this._handleLongPress(event);
         }, delayLongPress + delayPressIn);
+
+        return this._config.blockNativeResponder === true;
       },
 
       onResponderMove: (event: PressEvent): void => {
@@ -547,6 +559,19 @@ export default class Pressability {
       },
 
       onClick: (event: PressEvent): void => {
+        // If event has `pointerType`, it was emitted from a PointerEvent and
+        // we should ignore it to avoid triggering `onPress` twice.
+        if (event?.nativeEvent?.hasOwnProperty?.('pointerType')) {
+          return;
+        }
+
+        // for non-pointer click events (e.g. accessibility clicks), we should only dispatch when we're the "real" target
+        // in particular, we shouldn't respond to clicks from nested pressables
+        if (event?.currentTarget !== event?.target) {
+          event?.stopPropagation();
+          return;
+        }
+
         const {onPress, disabled} = this._config;
         if (onPress != null && disabled !== true) {
           onPress(event);

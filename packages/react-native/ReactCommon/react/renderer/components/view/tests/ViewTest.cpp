@@ -114,7 +114,6 @@ TEST_F(YogaDirtyFlagTest, changingNonLayoutSubPropsMustNotDirtyYogaNode) {
         auto &props = *viewProps;
 
         props.nativeId = "some new native Id";
-        props.foregroundColor = whiteColor();
         props.backgroundColor = blackColor();
         props.opacity = props.opacity + 0.042;
         props.zIndex = props.zIndex.value_or(0) + 42;

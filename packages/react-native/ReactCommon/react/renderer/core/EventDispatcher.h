@@ -15,8 +15,7 @@
 #include <react/renderer/core/StateUpdate.h>
 #include <react/renderer/core/UnbatchedEventQueue.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct RawEvent;
 
@@ -76,5 +75,4 @@ class EventDispatcher {
   mutable EventListenerContainer eventListeners_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

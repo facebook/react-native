@@ -10,8 +10,7 @@
 #include <folly/json.h>
 #include <stdexcept>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 #define REQUEST_MODULE_IDS 0
 #define REQUEST_METHOD_IDS 1
@@ -85,5 +84,4 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
   return methodCalls;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

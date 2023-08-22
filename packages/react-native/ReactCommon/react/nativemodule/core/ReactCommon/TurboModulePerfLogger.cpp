@@ -7,8 +7,7 @@
 
 #include "TurboModulePerfLogger.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 namespace TurboModulePerfLogger {
 
 std::unique_ptr<NativeModulePerfLogger> g_perfLogger = nullptr;
@@ -327,5 +326,4 @@ void asyncMethodCallExecutionFail(
 }
 
 } // namespace TurboModulePerfLogger
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

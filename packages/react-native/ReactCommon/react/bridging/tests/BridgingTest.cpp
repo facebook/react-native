@@ -475,11 +475,9 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String>));
   EXPECT_FALSE((bridging::supportsFromJs<std::vector<int>, jsi::String &>));
 
-  // Ensure copying and up/down casting JSI values is also supported.
+  // Ensure copying and down casting JSI values is also supported.
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Value &>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object>));
-  EXPECT_TRUE((bridging::supportsFromJs<jsi::Value, jsi::Object &>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String>));
   EXPECT_TRUE((bridging::supportsFromJs<jsi::String, jsi::String &>));
@@ -530,6 +528,92 @@ TEST_F(BridgingTest, supportTest) {
   EXPECT_FALSE((bridging::supportsToJs<double, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::string, jsi::Object>));
   EXPECT_FALSE((bridging::supportsToJs<std::vector<int>, jsi::Function>));
+}
+
+TEST_F(BridgingTest, dynamicTest) {
+  // Null
+  auto nullFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value::null(), invoker);
+  EXPECT_TRUE(nullFromJsResult.isNull());
+
+  auto nullToJsResult = bridging::toJs<folly::dynamic>(rt, nullptr, invoker);
+  EXPECT_TRUE(nullToJsResult.isNull());
+
+  // Boolean
+  auto booleanFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value(true), invoker);
+  EXPECT_TRUE(booleanFromJsResult.isBool());
+  EXPECT_TRUE(booleanFromJsResult.asBool());
+
+  auto booleanToJsResult = bridging::toJs<folly::dynamic>(rt, true, invoker);
+  EXPECT_TRUE(booleanToJsResult.isBool());
+  EXPECT_TRUE(booleanToJsResult.asBool());
+
+  // Number
+  auto numberFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value(1.2), invoker);
+  EXPECT_TRUE(numberFromJsResult.isNumber());
+  EXPECT_DOUBLE_EQ(1.2, numberFromJsResult.asDouble());
+
+  auto numberToJsResult = bridging::toJs<folly::dynamic>(rt, 1.2, invoker);
+  EXPECT_TRUE(numberToJsResult.isNumber());
+  EXPECT_DOUBLE_EQ(1.2, numberToJsResult.asNumber());
+
+  // String
+  auto stringFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt, jsi::Value(jsi::String::createFromAscii(rt, "hello")), invoker);
+  EXPECT_TRUE(stringFromJsResult.isString());
+  EXPECT_EQ("hello"s, stringFromJsResult.asString());
+
+  auto stringToJsResult = bridging::toJs<folly::dynamic>(rt, "hello", invoker);
+  EXPECT_TRUE(stringToJsResult.isString());
+  EXPECT_EQ("hello"s, stringToJsResult.asString(rt).utf8(rt));
+
+  // Array
+  auto arrayFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt,
+      jsi::Value(jsi::Array::createWithElements(rt, "foo", "bar")),
+      invoker);
+  EXPECT_TRUE(arrayFromJsResult.isArray());
+  EXPECT_EQ(2, arrayFromJsResult.size());
+  EXPECT_EQ("foo"s, arrayFromJsResult[0].asString());
+  EXPECT_EQ("bar"s, arrayFromJsResult[1].asString());
+
+  auto arrayToJsResult = bridging::toJs<folly::dynamic>(
+      rt, folly::dynamic::array("foo", "bar"), invoker);
+  EXPECT_TRUE(arrayToJsResult.isObject());
+  EXPECT_TRUE(arrayToJsResult.asObject(rt).isArray(rt));
+  auto arrayToJsResultArray = arrayToJsResult.asObject(rt).asArray(rt);
+  EXPECT_EQ(2, arrayToJsResultArray.size(rt));
+  EXPECT_EQ(
+      "foo"s,
+      arrayToJsResultArray.getValueAtIndex(rt, 0).asString(rt).utf8(rt));
+  EXPECT_EQ(
+      "bar"s,
+      arrayToJsResultArray.getValueAtIndex(rt, 1).asString(rt).utf8(rt));
+
+  // Object
+  auto jsiObject = jsi::Object(rt);
+  jsiObject.setProperty(rt, "foo", "bar");
+  auto objectFromJsResult = bridging::fromJs<folly::dynamic>(
+      rt, jsi::Value(std::move(jsiObject)), invoker);
+
+  EXPECT_TRUE(objectFromJsResult.isObject());
+  EXPECT_EQ(1, objectFromJsResult.size());
+  EXPECT_EQ("bar"s, objectFromJsResult["foo"].asString());
+
+  auto objectToJsResult = bridging::toJs<folly::dynamic>(
+      rt, folly::dynamic::object("foo", "bar"), invoker);
+  EXPECT_TRUE(objectToJsResult.isObject());
+  auto objectToJsResultObject = objectToJsResult.asObject(rt);
+  EXPECT_EQ(
+      "bar"s,
+      objectToJsResultObject.getProperty(rt, "foo").asString(rt).utf8(rt));
+
+  // Undefined
+  auto undefinedFromJsResult =
+      bridging::fromJs<folly::dynamic>(rt, jsi::Value::undefined(), invoker);
+  EXPECT_TRUE(undefinedFromJsResult.isNull());
 }
 
 } // namespace facebook::react

@@ -11,8 +11,7 @@
 
 using namespace facebook;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 SampleTurboCxxModule::SampleTurboCxxModule(
     std::shared_ptr<CallInvoker> jsInvoker)
@@ -94,5 +93,4 @@ jsi::Object SampleTurboCxxModule::getConstants(jsi::Runtime &rt) {
   return result;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

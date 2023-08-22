@@ -65,6 +65,8 @@ const PERMISSIONS = Object.freeze({
   READ_MEDIA_IMAGES: 'android.permission.READ_MEDIA_IMAGES',
   READ_MEDIA_VIDEO: 'android.permission.READ_MEDIA_VIDEO',
   READ_MEDIA_AUDIO: 'android.permission.READ_MEDIA_AUDIO',
+  READ_MEDIA_VISUAL_USER_SELECTED:
+    'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
   WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
   BLUETOOTH_CONNECT: 'android.permission.BLUETOOTH_CONNECT',
   BLUETOOTH_SCAN: 'android.permission.BLUETOOTH_SCAN',
@@ -75,7 +77,6 @@ const PERMISSIONS = Object.freeze({
   ANSWER_PHONE_CALLS: 'android.permission.ANSWER_PHONE_CALLS',
   READ_PHONE_NUMBERS: 'android.permission.READ_PHONE_NUMBERS',
   UWB_RANGING: 'android.permission.UWB_RANGING',
-  POST_NOTIFICATION: 'android.permission.POST_NOTIFICATIONS', // Remove in 0.72
   POST_NOTIFICATIONS: 'android.permission.POST_NOTIFICATIONS',
   NEARBY_WIFI_DEVICES: 'android.permission.NEARBY_WIFI_DEVICES',
 });
@@ -107,7 +108,6 @@ class PermissionsAndroid {
     CAMERA: string,
     GET_ACCOUNTS: string,
     NEARBY_WIFI_DEVICES: string,
-    POST_NOTIFICATION: string, // Remove in 0.72
     POST_NOTIFICATIONS: string,
     PROCESS_OUTGOING_CALLS: string,
     READ_CALENDAR: string,
@@ -117,6 +117,7 @@ class PermissionsAndroid {
     READ_MEDIA_IMAGES: string,
     READ_MEDIA_VIDEO: string,
     READ_MEDIA_AUDIO: string,
+    READ_MEDIA_VISUAL_USER_SELECTED: string,
     READ_PHONE_NUMBERS: string,
     READ_PHONE_STATE: string,
     READ_SMS: string,
@@ -289,7 +290,6 @@ class PermissionsAndroid {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }

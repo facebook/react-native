@@ -13,8 +13,7 @@
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains width and height values.
@@ -44,8 +43,7 @@ inline bool operator!=(Size const &rhs, Size const &lhs) noexcept {
   return !(lhs == rhs);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

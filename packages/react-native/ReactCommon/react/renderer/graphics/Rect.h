@@ -15,8 +15,7 @@
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/Size.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Contains the location and dimensions of a rectangle.
@@ -70,6 +69,24 @@ struct Rect {
         point.y <= (origin.y + size.height);
   }
 
+  static Rect intersect(Rect const &rect1, Rect const &rect2) {
+    Float x1 = std::max(rect1.origin.x, rect2.origin.x);
+    Float y1 = std::max(rect1.origin.y, rect2.origin.y);
+    Float x2 = std::min(
+        rect1.origin.x + rect1.size.width, rect2.origin.x + rect2.size.width);
+    Float y2 = std::min(
+        rect1.origin.y + rect1.size.height, rect2.origin.y + rect2.size.height);
+
+    Float intersectionWidth = x2 - x1;
+    Float intersectionHeight = y2 - y1;
+
+    if (intersectionWidth < 0 || intersectionHeight < 0) {
+      return {};
+    }
+
+    return {{x1, y1}, {intersectionWidth, intersectionHeight}};
+  }
+
   static Rect boundingRect(
       Point const &a,
       Point const &b,
@@ -101,8 +118,7 @@ struct Rect {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 

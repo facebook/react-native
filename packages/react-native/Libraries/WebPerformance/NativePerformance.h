@@ -18,22 +18,6 @@ class PerformanceEntryReporter;
 
 #pragma mark - Structs
 
-using ReactNativeStartupTiming =
-    NativePerformanceCxxBaseReactNativeStartupTiming<
-        int32_t, // Start time of the RN app startup process
-        int32_t, // End time of the RN app startup process
-        int32_t, // Start time that RN app execute the JS bundle
-        int32_t // End time that RN app execute the JS bundle
-        >;
-
-template <>
-struct Bridging<ReactNativeStartupTiming>
-    : NativePerformanceCxxBaseReactNativeStartupTimingBridging<
-          int32_t,
-          int32_t,
-          int32_t,
-          int32_t> {};
-
 #pragma mark - implementation
 
 class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
@@ -41,8 +25,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
  public:
   NativePerformance(std::shared_ptr<CallInvoker> jsInvoker);
 
-  void
-  mark(jsi::Runtime &rt, std::string name, double startTime, double duration);
+  void mark(jsi::Runtime &rt, std::string name, double startTime);
 
   void measure(
       jsi::Runtime &rt,
@@ -68,7 +51,8 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance>,
 
   // Collect and return the RN app startup timing information for performance
   // tracking.
-  ReactNativeStartupTiming getReactNativeStartupTiming(jsi::Runtime &rt);
+  std::unordered_map<std::string, double> getReactNativeStartupTiming(
+      jsi::Runtime &rt);
 
  private:
 };

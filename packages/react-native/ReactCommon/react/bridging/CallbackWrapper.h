@@ -12,8 +12,7 @@
 
 #include <memory>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // Helper for passing jsi::Function arg to other methods.
 class CallbackWrapper : public LongLivedObject {
@@ -63,5 +62,4 @@ class CallbackWrapper : public LongLivedObject {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

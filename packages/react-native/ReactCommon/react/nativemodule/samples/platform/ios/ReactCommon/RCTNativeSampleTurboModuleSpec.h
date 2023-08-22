@@ -32,13 +32,18 @@
 - (NSDictionary *)getValue:(double)x y:(NSString *)y z:(NSDictionary *)z;
 - (void)getValueWithCallback:(RCTResponseSenderBlock)callback;
 - (void)getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)voidFuncThrows;
+- (NSDictionary *)getObjectThrows:(NSDictionary *)arg;
+- (void)promiseThrows:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)voidFuncAssert;
+- (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
+- (void)promiseAssert:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 
 @end
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /**
  * The iOS TurboModule impl specific to SampleTurboModule.
@@ -48,5 +53,4 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
   NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

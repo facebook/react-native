@@ -118,7 +118,7 @@ TEST(MessageTests, testSerializeResponse) {
   debugger::SetBreakpointByUrlResponse resp;
   resp.id = 1;
   resp.breakpointId = "myBreakpointId";
-  resp.locations = {location};
+  resp.locations.push_back(std::move(location));
 
   dynamic result = resp.toDynamic();
   dynamic expected = folly::parseJson(R"({
@@ -180,8 +180,8 @@ TEST(MessageTests, testSerializeNotification) {
   scope.object.description = "myDesc";
   scope.object.objectId = "id1";
   scope.name = "myScope";
-  scope.startLocation = startLocation;
-  scope.endLocation = endLocation;
+  scope.startLocation = std::move(startLocation);
+  scope.endLocation = std::move(endLocation);
 
   debugger::CallFrame frame;
   frame.callFrameId = "callFrame1";
@@ -190,11 +190,11 @@ TEST(MessageTests, testSerializeNotification) {
   frame.location.lineNumber = 3;
   frame.location.columnNumber = 4;
   frame.url = "foo.js";
-  frame.scopeChain = std::vector<debugger::Scope>{scope};
+  frame.scopeChain.push_back(std::move(scope));
   frame.thisObj.type = "function";
 
   debugger::PausedNotification note;
-  note.callFrames = std::vector<debugger::CallFrame>{frame};
+  note.callFrames.push_back(std::move(frame));
   note.reason = "debugCommand";
   note.data = dynamic::object("foo", "bar");
   note.hitBreakpoints = std::vector<std::string>{"a", "b"};
@@ -550,6 +550,7 @@ TEST(MessageTests, testEvaluateOnCallFrameRequestMinimal) {
   EXPECT_EQ(resolvedReq->callFrameId, deserializedReq.callFrameId);
   EXPECT_EQ(resolvedReq->expression, deserializedReq.expression);
 
+  EXPECT_FALSE(resolvedReq->generatePreview.has_value());
   EXPECT_FALSE(resolvedReq->objectGroup.has_value());
   EXPECT_FALSE(resolvedReq->includeCommandLineAPI.has_value());
   EXPECT_FALSE(resolvedReq->silent.has_value());
@@ -569,7 +570,8 @@ TEST(MessageTests, testEvaluateOnCallFrameRequestFull) {
         "includeCommandLineAPI" : false,
         "silent" : true,
         "returnByValue" : false,
-        "throwOnSideEffect" : true
+        "throwOnSideEffect" : true,
+        "generatePreview": true
       }
     }
   )";
@@ -598,12 +600,14 @@ TEST(MessageTests, testEvaluateOnCallFrameRequestFull) {
   EXPECT_TRUE(resolvedReq->silent.has_value());
   EXPECT_TRUE(resolvedReq->returnByValue.has_value());
   EXPECT_TRUE(resolvedReq->throwOnSideEffect.has_value());
+  EXPECT_TRUE(resolvedReq->generatePreview.has_value());
 
   EXPECT_TRUE(resolvedReq->objectGroup.value() == "FooBarGroup");
   EXPECT_TRUE(resolvedReq->includeCommandLineAPI.value() == false);
   EXPECT_TRUE(resolvedReq->silent.value() == true);
   EXPECT_TRUE(resolvedReq->returnByValue.value() == false);
   EXPECT_TRUE(resolvedReq->throwOnSideEffect.value() == true);
+  EXPECT_TRUE(resolvedReq->generatePreview.value() == true);
 
   // Specifics, resolvedReq and deserialized match
 
@@ -1129,6 +1133,7 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseMinimal) {
   EXPECT_FALSE(deserializedReq.result.unserializableValue.has_value());
   EXPECT_FALSE(deserializedReq.result.description.has_value());
   EXPECT_FALSE(deserializedReq.result.objectId.has_value());
+  EXPECT_FALSE(deserializedReq.result.preview.has_value());
 
   // Specifics
   EXPECT_EQ(deserializedReq.id, 2);
@@ -1146,7 +1151,12 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
             "value": {"foobarkey": "foobarval"},
             "unserializableValue": "unserializableValueVal",
             "description": "A Wonderful desc",
-            "objectId": "AnObjectID"
+            "objectId": "AnObjectID",
+            "preview": {
+              "type": "object",
+              "overflow": false,
+              "properties": []
+            }
           }
         },
       "id":2
@@ -1163,6 +1173,7 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
   EXPECT_TRUE(deserializedReq.result.unserializableValue.has_value());
   EXPECT_TRUE(deserializedReq.result.description.has_value());
   EXPECT_TRUE(deserializedReq.result.objectId.has_value());
+  EXPECT_TRUE(deserializedReq.result.preview.has_value());
 
   EXPECT_EQ(deserializedReq.result.subtype.value(), "SuperString");
   EXPECT_EQ(
@@ -1177,6 +1188,9 @@ TEST(MessageTests, testEvaluateOnCallFrameResponseFull) {
   // Specifics
   EXPECT_EQ(deserializedReq.id, 2);
   EXPECT_EQ(deserializedReq.result.type, "string");
+  EXPECT_EQ(deserializedReq.result.preview->type, "object");
+  EXPECT_EQ(deserializedReq.result.preview->overflow, false);
+  EXPECT_EQ(deserializedReq.result.preview->properties.size(), 0);
 }
 
 TEST(MessageTests, testSetBreakpointByUrlResponse) {

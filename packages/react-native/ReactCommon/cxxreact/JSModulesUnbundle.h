@@ -13,8 +13,7 @@
 
 #include <folly/Conv.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSModulesUnbundle {
   /**
@@ -44,5 +43,4 @@ class JSModulesUnbundle {
   JSModulesUnbundle(const JSModulesUnbundle &) = delete;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

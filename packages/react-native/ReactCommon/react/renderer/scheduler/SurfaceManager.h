@@ -15,8 +15,7 @@
 #include <react/renderer/mounting/MountingCoordinator.h>
 #include <react/renderer/scheduler/SurfaceHandler.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * `SurfaceManager` allows controlling React Native Surfaces via
@@ -64,5 +63,4 @@ class SurfaceManager final {
   mutable butter::map<SurfaceId, SurfaceHandler> registry_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

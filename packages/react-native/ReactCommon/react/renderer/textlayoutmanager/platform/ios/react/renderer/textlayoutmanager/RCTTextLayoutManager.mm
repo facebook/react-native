@@ -52,47 +52,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
     textStorage = [self _textStorageForNSAttributesString:attributedString
                                       paragraphAttributes:paragraphAttributes
                                                      size:maximumSize];
-  } else {
-    textStorage.layoutManagers.firstObject.textContainers.firstObject.size = maximumSize;
   }
 
-  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
-  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
-  [layoutManager ensureLayoutForTextContainer:textContainer];
-
-  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
-
-  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
-
-  __block auto attachments = TextMeasurement::Attachments{};
-
-  [textStorage
-      enumerateAttribute:NSAttachmentAttributeName
-                 inRange:NSMakeRange(0, textStorage.length)
-                 options:0
-              usingBlock:^(NSTextAttachment *attachment, NSRange range, BOOL *stop) {
-                if (!attachment) {
-                  return;
-                }
-
-                CGSize attachmentSize = attachment.bounds.size;
-                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
-
-                UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
-
-                CGRect frame = {
-                    {glyphRect.origin.x,
-                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
-                    attachmentSize};
-
-                auto rect = facebook::react::Rect{
-                    facebook::react::Point{frame.origin.x, frame.origin.y},
-                    facebook::react::Size{frame.size.width, frame.size.height}};
-
-                attachments.push_back(TextMeasurement::Attachment{rect, false});
-              }];
-
-  return TextMeasurement{{size.width, size.height}, attachments};
+  return [self _measureTextStorage:textStorage];
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
@@ -100,10 +62,14 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                          layoutConstraints:(LayoutConstraints)layoutConstraints
                                textStorage:(NSTextStorage *_Nullable)textStorage
 {
-  return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
-                     paragraphAttributes:paragraphAttributes
-                       layoutConstraints:layoutConstraints
-                             textStorage:textStorage];
+  if (textStorage) {
+    return [self _measureTextStorage:textStorage];
+  } else {
+    return [self measureNSAttributedString:[self _nsAttributedStringFromAttributedString:attributedString]
+                       paragraphAttributes:paragraphAttributes
+                         layoutConstraints:layoutConstraints
+                               textStorage:nil];
+  }
 }
 
 - (void)drawAttributedString:(AttributedString)attributedString
@@ -111,13 +77,33 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                        frame:(CGRect)frame
                  textStorage:(NSTextStorage *_Nullable)textStorage
 {
+  BOOL createdStorageForFrame = NO;
+
   if (!textStorage) {
     textStorage = [self textStorageForAttributesString:attributedString
                                    paragraphAttributes:paragraphAttributes
                                                   size:frame.size];
+    createdStorageForFrame = YES;
   }
+
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  CGPoint origin = frame.origin;
+
+  if (!createdStorageForFrame) {
+    CGRect rect = [layoutManager usedRectForTextContainer:textContainer];
+    static auto threshold = 1.0 / RCTScreenScale() + 0.01; // Size of a pixel plus some small threshold.
+
+    // `rect`'s width is stored in double precesion.
+    // `frame`'s width is also in double precesion but was stored as float in Yoga previously, precesion was lost.
+    if (std::abs(RCTCeilPixelValue(rect.size.width) - frame.size.width) < threshold) {
+      // `textStorage` passed to this method was used to calculate size of frame. If that's the case, it's
+      // width is the same as frame's width. Origin must be adjusted, otherwise glyhps will be painted in wrong
+      // place.
+      // We could create new `NSTextStorage` for the specific frame, but that is expensive.
+      origin.x -= RCTCeilPixelValue(rect.origin.x);
+    }
+  }
 
 #if TARGET_OS_MACCATALYST
   CGContextRef context = UIGraphicsGetCurrentContext();
@@ -126,8 +112,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:frame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:frame.origin];
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:origin];
 
 #if TARGET_OS_MACCATALYST
   CGContextRestoreGState(context);
@@ -178,35 +164,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return paragraphLines;
 }
 
-- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
-                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
-                                                size:(CGSize)size
-{
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
-
-  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
-  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
-      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
-      : NSLineBreakByClipping;
-  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
-
-  NSLayoutManager *layoutManager = [NSLayoutManager new];
-  layoutManager.usesFontLeading = NO;
-  [layoutManager addTextContainer:textContainer];
-
-  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
-
-  [textStorage addLayoutManager:layoutManager];
-
-  if (paragraphAttributes.adjustsFontSizeToFit) {
-    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
-    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
-    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
-  }
-
-  return textStorage;
-}
-
 - (NSTextStorage *)textStorageForAttributesString:(AttributedString)attributedString
                               paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                                              size:(CGSize)size
@@ -246,15 +203,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   return nil;
 }
 
-- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
-{
-  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
-    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
-  });
-
-  return unwrapManagedObject(sharedNSAttributedString);
-}
-
 - (void)getRectWithAttributedString:(AttributedString)attributedString
                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
                  enumerateAttribute:(NSString *)enumerateAttribute
@@ -292,6 +240,87 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                          *stop = YES;
                                                        }];
                        }];
+}
+
+#pragma mark - Private
+
+- (NSTextStorage *)_textStorageForNSAttributesString:(NSAttributedString *)attributedString
+                                 paragraphAttributes:(ParagraphAttributes)paragraphAttributes
+                                                size:(CGSize)size
+{
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:size];
+
+  textContainer.lineFragmentPadding = 0.0; // Note, the default value is 5.
+  textContainer.lineBreakMode = paragraphAttributes.maximumNumberOfLines > 0
+      ? RCTNSLineBreakModeFromEllipsizeMode(paragraphAttributes.ellipsizeMode)
+      : NSLineBreakByClipping;
+  textContainer.maximumNumberOfLines = paragraphAttributes.maximumNumberOfLines;
+
+  NSLayoutManager *layoutManager = [NSLayoutManager new];
+  layoutManager.usesFontLeading = NO;
+  [layoutManager addTextContainer:textContainer];
+
+  NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
+
+  [textStorage addLayoutManager:layoutManager];
+
+  if (paragraphAttributes.adjustsFontSizeToFit) {
+    CGFloat minimumFontSize = !isnan(paragraphAttributes.minimumFontSize) ? paragraphAttributes.minimumFontSize : 4.0;
+    CGFloat maximumFontSize = !isnan(paragraphAttributes.maximumFontSize) ? paragraphAttributes.maximumFontSize : 96.0;
+    [textStorage scaleFontSizeToFitSize:size minimumFontSize:minimumFontSize maximumFontSize:maximumFontSize];
+  }
+
+  return textStorage;
+}
+
+- (NSAttributedString *)_nsAttributedStringFromAttributedString:(AttributedString)attributedString
+{
+  auto sharedNSAttributedString = _cache.get(attributedString, [](AttributedString attributedString) {
+    return wrapManagedObject(RCTNSAttributedStringFromAttributedString(attributedString));
+  });
+
+  return unwrapManagedObject(sharedNSAttributedString);
+}
+
+- (TextMeasurement)_measureTextStorage:(NSTextStorage *)textStorage
+{
+  NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
+  NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
+  [layoutManager ensureLayoutForTextContainer:textContainer];
+
+  CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
+
+  __block auto attachments = TextMeasurement::Attachments{};
+
+  [textStorage
+      enumerateAttribute:NSAttachmentAttributeName
+                 inRange:NSMakeRange(0, textStorage.length)
+                 options:0
+              usingBlock:^(NSTextAttachment *attachment, NSRange range, BOOL *stop) {
+                if (!attachment) {
+                  return;
+                }
+
+                CGSize attachmentSize = attachment.bounds.size;
+                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
+
+                UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
+
+                CGRect frame = {
+                    {glyphRect.origin.x,
+                     glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                    attachmentSize};
+
+                auto rect = facebook::react::Rect{
+                    facebook::react::Point{frame.origin.x, frame.origin.y},
+                    facebook::react::Size{frame.size.width, frame.size.height}};
+
+                attachments.push_back(TextMeasurement::Attachment{rect, false});
+              }];
+
+  return TextMeasurement{{size.width, size.height}, attachments};
 }
 
 @end

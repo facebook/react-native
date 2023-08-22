@@ -182,12 +182,12 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (std::shared_ptr<const ModalHostViewEventEmitter>)modalEventEmitter
 {
-  if (!self->_eventEmitter) {
+  if (!_eventEmitter) {
     return nullptr;
   }
 
-  assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter));
-  return std::static_pointer_cast<ModalHostViewEventEmitter const>(self->_eventEmitter);
+  assert(std::dynamic_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter));
+  return std::static_pointer_cast<ModalHostViewEventEmitter const>(_eventEmitter);
 }
 
 #pragma mark - RCTMountingTransactionObserving
@@ -245,7 +245,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-  const auto &newProps = *std::static_pointer_cast<const ModalHostViewProps>(props);
+  const auto &newProps = static_cast<ModalHostViewProps const &>(*props);
 
 #if !TARGET_OS_TV
   self.viewController.supportedInterfaceOrientations = supportedOrientationsMask(newProps.supportedOrientations);

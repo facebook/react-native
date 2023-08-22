@@ -17,8 +17,7 @@
 #endif
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // JSExecutor functions sometimes take large strings, on the order of
 // megabytes.  Copying these can be expensive.  Introducing a
@@ -133,5 +132,4 @@ class RN_EXPORT JSBigFileString : public JSBigString {
   mutable const char *m_data; // Pointer to the mmapped region.
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

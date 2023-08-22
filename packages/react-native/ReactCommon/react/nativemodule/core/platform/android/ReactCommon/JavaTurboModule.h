@@ -17,8 +17,7 @@
 #include <react/bridging/CallbackWrapper.h>
 #include <react/jni/JCallback.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
@@ -32,7 +31,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
     std::string moduleName;
     jni::alias_ref<jobject> instance;
     std::shared_ptr<CallInvoker> jsInvoker;
-    std::shared_ptr<CallInvoker> nativeInvoker;
+    std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker;
   };
 
   JavaTurboModule(const InitParams &params);
@@ -50,8 +49,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
  private:
   // instance_ can be of type JTurboModule, or JNativeModule
   jni::global_ref<jobject> instance_;
-  std::shared_ptr<CallInvoker> nativeInvoker_;
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

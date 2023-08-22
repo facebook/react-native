@@ -73,11 +73,31 @@ waitForWebSocketServer() {
   echo "WebSocket Server is ready!"
 }
 
+waitForPackagerAlt() {
+  local -i max_attempts=60
+  local -i attempt_num=1
+
+  # TODO(huntie): Temporary string match in JSON response. We will revert
+  # this endpoint back to "packager-status:running" in the next CLI alpha.
+  until curl -s http://localhost:8081/status | grep "\"status\":\"running\"" -q; do
+    if (( attempt_num == max_attempts )); then
+      echo "Packager did not respond in time. No more attempts left."
+      exit 1
+    else
+      (( attempt_num++ ))
+      echo "Packager did not respond. Retrying for attempt number $attempt_num..."
+      sleep 1
+    fi
+  done
+
+  echo "Packager is ready!"
+}
+
 runTests() {
   # shellcheck disable=SC1091
-  source "./scripts/.tests.env"
+  source "$ROOT/scripts/.tests.env"
   xcodebuild build test \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator \
     -destination "platform=iOS Simulator,name=$IOS_DEVICE,OS=$IOS_TARGET_OS" \
@@ -86,7 +106,7 @@ runTests() {
 
 buildProject() {
   xcodebuild build \
-    -workspace packages/rn-tester/RNTesterPods.xcworkspace \
+    -workspace RNTesterPods.xcworkspace \
     -scheme RNTester \
     -sdk iphonesimulator
 }
@@ -105,16 +125,20 @@ xcbeautifyFormat() {
   xcbeautify --report junit --report-path "$REPORTS_DIR/ios/results.xml"
 }
 
-preloadBundles() {
-  # Preload the RNTesterApp bundle for better performance in integration tests
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
-  curl -s 'http://localhost:8081/packages/rn-tester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+preloadBundlesRNIntegrationTests() {
+  # Preload IntegrationTests bundles (packages/rn-tester/)
   curl -s 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o /dev/null
   curl -s 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o /dev/null
 }
 
+preloadBundlesRNTester() {
+  # Preload RNTesterApp bundles (packages/rn-tester/)
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o /dev/null
+  curl -s 'http://localhost:8081/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o /dev/null
+}
+
 main() {
-  cd "$ROOT" || exit
+  cd "$ROOT/packages/rn-tester" || exit
 
   # If first argument is "test", actually start the packager and run tests.
   # Otherwise, just build RNTester and exit
@@ -127,8 +151,9 @@ main() {
 
     # Start the packager
     yarn start --max-workers=1 || echo "Can't start packager automatically" &
-    waitForPackager
-    preloadBundles
+    waitForPackagerAlt
+    preloadBundlesRNTester
+    preloadBundlesRNIntegrationTests
 
     # Build and run tests.
     if [ -x "$(command -v xcbeautify)" ]; then

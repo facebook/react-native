@@ -14,8 +14,7 @@
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class TouchEventEmitter;
 
@@ -30,6 +29,7 @@ class TouchEventEmitter : public EventEmitter {
   void onTouchEnd(TouchEvent const &event) const;
   void onTouchCancel(TouchEvent const &event) const;
 
+  void onClick(PointerEvent const &event) const;
   void onPointerCancel(PointerEvent const &event) const;
   void onPointerDown(PointerEvent const &event) const;
   void onPointerMove(PointerEvent const &event) const;
@@ -38,6 +38,8 @@ class TouchEventEmitter : public EventEmitter {
   void onPointerLeave(PointerEvent const &event) const;
   void onPointerOver(PointerEvent const &event) const;
   void onPointerOut(PointerEvent const &event) const;
+  void onGotPointerCapture(PointerEvent const &event) const;
+  void onLostPointerCapture(PointerEvent const &event) const;
 
  private:
   void dispatchTouchEvent(
@@ -52,5 +54,4 @@ class TouchEventEmitter : public EventEmitter {
       RawEvent::Category category) const;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -13,8 +13,7 @@
 #include <ReactCommon/TurboModuleManagerDelegate.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
                                               DefaultTurboModuleManagerDelegate,
@@ -49,5 +48,4 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
   using HybridBase::HybridBase;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

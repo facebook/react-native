@@ -10,13 +10,13 @@
 #include <vector>
 
 #include <ReactCommon/TurboModuleUtils.h>
+#include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
 using namespace facebook;
 using namespace facebook::xplat::module;
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 CxxModule::Callback makeTurboCxxModuleCallback(
@@ -25,7 +25,7 @@ CxxModule::Callback makeTurboCxxModuleCallback(
   return [weakWrapper,
           wrapperWasCalled = false](std::vector<folly::dynamic> args) mutable {
     if (wrapperWasCalled) {
-      throw std::runtime_error("callback arg cannot be called more than once");
+      LOG(FATAL) << "callback arg cannot be called more than once";
     }
 
     auto strongWrapper = weakWrapper.lock();
@@ -225,5 +225,4 @@ jsi::Value TurboCxxModule::invokeMethod(
   return jsi::Value::undefined();
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

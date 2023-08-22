@@ -6,15 +6,19 @@
  */
 
 #include "FabricMountingManager.h"
+
 #include "EventEmitterWrapper.h"
+#include "MountItem.h"
 #include "StateWrapperImpl.h"
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
-#include <react/renderer/core/CoreFeatures.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/debug/SystraceSection.h>
+#include <react/renderer/mounting/MountingTransaction.h>
+#include <react/renderer/mounting/ShadowView.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
+#include <react/utils/CoreFeatures.h>
 
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
@@ -23,27 +27,24 @@
 #include <cmath>
 #include <vector>
 
-using namespace facebook::jni;
+namespace facebook::react {
 
-namespace facebook {
-namespace react {
+constexpr static auto kReactFeatureFlagsJavaDescriptor =
+    "com/facebook/react/config/ReactFeatureFlags";
 
 static bool getFeatureFlagValue(const char *name) {
-  static const auto reactFeatureFlagsJavaDescriptor = jni::findClassStatic(
-      FabricMountingManager::ReactFeatureFlagsJavaDescriptor);
-  const auto field =
-      reactFeatureFlagsJavaDescriptor->getStaticField<jboolean>(name);
-  return reactFeatureFlagsJavaDescriptor->getStaticFieldValue(field);
+  static const auto reactFeatureFlagsClass =
+      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
+  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
+  return reactFeatureFlagsClass->getStaticFieldValue(field);
 }
 
 FabricMountingManager::FabricMountingManager(
     std::shared_ptr<const ReactNativeConfig> &config,
-    global_ref<jobject> &javaUIManager)
+    jni::global_ref<JFabricUIManager::javaobject> &javaUIManager)
     : javaUIManager_(javaUIManager),
       reduceDeleteCreateMutation_(
-          getFeatureFlagValue("reduceDeleteCreateMutation")) {
-  CoreFeatures::enableMapBuffer = getFeatureFlagValue("useMapBufferProps");
-}
+          getFeatureFlagValue("reduceDeleteCreateMutation")) {}
 
 void FabricMountingManager::onSurfaceStart(SurfaceId surfaceId) {
   std::lock_guard lock(allocatedViewsMutex_);
@@ -117,8 +118,7 @@ static inline void computeBufferSizes(
     std::vector<CppMountItem> &cppUpdatePaddingMountItems,
     std::vector<CppMountItem> &cppUpdateLayoutMountItems,
     std::vector<CppMountItem> &cppUpdateOverflowInsetMountItems,
-    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems,
-    ShadowViewMutationList &cppViewMutations) {
+    std::vector<CppMountItem> &cppUpdateEventEmitterMountItems) {
   CppMountItem::Type lastType = CppMountItem::Type::Undefined;
   int numSameType = 0;
   for (auto const &mountItem : cppCommonMountItems) {
@@ -177,11 +177,6 @@ static inline void computeBufferSizes(
       cppDeleteMountItems.size(),
       batchMountItemIntsSize,
       batchMountItemObjectsSize);
-
-  if (cppViewMutations.size() > 0) {
-    batchMountItemIntsSize++;
-    batchMountItemObjectsSize++;
-  }
 }
 
 static inline void writeIntBufferTypePreamble(
@@ -203,28 +198,17 @@ static inline void writeIntBufferTypePreamble(
   }
 }
 
-inline local_ref<ReadableArray::javaobject> castReadableArray(
-    local_ref<ReadableNativeArray::javaobject> const &nativeArray) {
-  return make_local(
-      reinterpret_cast<ReadableArray::javaobject>(nativeArray.get()));
-}
-
 // TODO: this method will be removed when binding for components are code-gen
-local_ref<JString> getPlatformComponentName(ShadowView const &shadowView) {
+jni::local_ref<jstring> getPlatformComponentName(ShadowView const &shadowView) {
   static std::string scrollViewComponentName = std::string("ScrollView");
-
-  local_ref<JString> componentName;
   if (scrollViewComponentName == shadowView.componentName) {
-    auto newViewProps =
-        std::static_pointer_cast<const ScrollViewProps>(shadowView.props);
-    if (newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
-      componentName = make_jstring("AndroidHorizontalScrollView");
-      return componentName;
+    const auto &newViewProps =
+        static_cast<const ScrollViewProps &>(*shadowView.props);
+    if (newViewProps.getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
+      return jni::make_jstring("AndroidHorizontalScrollView");
     }
   }
-
-  componentName = make_jstring(shadowView.componentName);
-  return componentName;
+  return jni::make_jstring(shadowView.componentName);
 }
 
 static inline float scale(Float value, Float pointScaleFactor) {
@@ -243,7 +227,7 @@ static inline float scale(Float value, Float pointScaleFactor) {
   return result;
 }
 
-local_ref<jobject> FabricMountingManager::getProps(
+jni::local_ref<jobject> FabricMountingManager::getProps(
     ShadowView const &oldShadowView,
     ShadowView const &newShadowView) {
   if (CoreFeatures::enableMapBuffer &&
@@ -263,24 +247,17 @@ local_ref<jobject> FabricMountingManager::getProps(
 }
 
 void FabricMountingManager::executeMount(
-    MountingCoordinator::Shared mountingCoordinator) {
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+    const MountingTransaction &transaction) {
+  SystraceSection section("FabricMountingManager::executeMount");
 
-  SystraceSection s(
-      "FabricUIManagerBinding::schedulerDidFinishTransactionIntBuffer");
+  std::scoped_lock lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
 
-  auto mountingTransaction = mountingCoordinator->pullTransaction();
+  auto env = jni::Environment::current();
 
-  if (!mountingTransaction.has_value()) {
-    return;
-  }
-
-  auto env = Environment::current();
-
-  auto telemetry = mountingTransaction->getTelemetry();
-  auto surfaceId = mountingTransaction->getSurfaceId();
-  auto &mutations = mountingTransaction->getMutations();
+  auto telemetry = transaction.getTelemetry();
+  auto surfaceId = transaction.getSurfaceId();
+  auto &mutations = transaction.getMutations();
 
   auto revisionNumber = telemetry.getRevisionNumber();
 
@@ -292,15 +269,21 @@ void FabricMountingManager::executeMount(
   std::vector<CppMountItem> cppUpdateLayoutMountItems;
   std::vector<CppMountItem> cppUpdateOverflowInsetMountItems;
   std::vector<CppMountItem> cppUpdateEventEmitterMountItems;
-  auto cppViewMutations = ShadowViewMutationList();
+
   {
     std::lock_guard allocatedViewsLock(allocatedViewsMutex_);
 
     auto allocatedViewsIterator = allocatedViewRegistry_.find(surfaceId);
-    auto const &allocatedViewTags =
+    auto defaultAllocatedViews = butter::set<Tag>{};
+    // Do not remove `defaultAllocatedViews` or initialize `butter::set<Tag>{}`
+    // inline in below ternary expression -
+    // if falsy operand is a value type, the compiler will decide the expression
+    // to be a value type, an unnecessary (sometimes expensive) copy will happen
+    // as a result.
+    const auto &allocatedViewTags =
         allocatedViewsIterator != allocatedViewRegistry_.end()
         ? allocatedViewsIterator->second
-        : butter::set<Tag>{};
+        : defaultAllocatedViews;
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
       LOG(ERROR) << "Executing commit after surface was stopped!";
     }
@@ -511,16 +494,15 @@ void FabricMountingManager::executeMount(
       cppUpdatePaddingMountItems,
       cppUpdateLayoutMountItems,
       cppUpdateOverflowInsetMountItems,
-      cppUpdateEventEmitterMountItems,
-      cppViewMutations);
+      cppUpdateEventEmitterMountItems);
 
   static auto createMountItemsIntBufferBatchContainer =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(
-              jint, jintArray, jtypeArray<jobject>, jint)>(
+      JFabricUIManager::javaClassStatic()
+          ->getMethod<jni::alias_ref<JMountItem>(
+              jint, jintArray, jni::jtypeArray<jobject>, jint)>(
               "createIntBufferBatchMountItem");
 
-  static auto scheduleMountItem = jni::findClassStatic(UIManagerJavaDescriptor)
+  static auto scheduleMountItem = JFabricUIManager::javaClassStatic()
                                       ->getMethod<void(
                                           JMountItem::javaobject,
                                           jint,
@@ -552,8 +534,8 @@ void FabricMountingManager::executeMount(
   // Allocate the intBuffer and object array, now that we know exact sizes
   // necessary
   jintArray intBufferArray = env->NewIntArray(batchMountItemIntsSize);
-  local_ref<JArrayClass<jobject>> objBufferArray =
-      JArrayClass<jobject>::newArray(batchMountItemObjectsSize);
+  auto objBufferArray =
+      jni::JArrayClass<jobject>::newArray(batchMountItemObjectsSize);
 
   // Fill in arrays
   int intBufferPosition = 0;
@@ -585,19 +567,19 @@ void FabricMountingManager::executeMount(
 
     // TODO: multi-create, multi-insert, etc
     if (mountItemType == CppMountItem::Type::Create) {
-      local_ref<JString> componentName =
+      auto componentName =
           getPlatformComponentName(mountItem.newChildShadowView);
 
       int isLayoutable =
           mountItem.newChildShadowView.layoutMetrics != EmptyLayoutMetrics ? 1
                                                                            : 0;
-      local_ref<JObject> props =
+      jni::local_ref<jobject> props =
           getProps(mountItem.oldChildShadowView, mountItem.newChildShadowView);
 
       // Do not hold onto Java object from C
       // We DO want to hold onto C object from Java, since we don't know the
       // lifetime of the Java object
-      local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+      jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
       if (mountItem.newChildShadowView.state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
@@ -605,11 +587,8 @@ void FabricMountingManager::executeMount(
       }
 
       // Do not hold a reference to javaEventEmitter from the C++ side.
-      SharedEventEmitter eventEmitter =
-          mountItem.newChildShadowView.eventEmitter;
-      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
+      auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
+          mountItem.newChildShadowView.eventEmitter);
       temp[0] = mountItem.newChildShadowView.tag;
       temp[1] = isLayoutable;
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 2, temp);
@@ -675,7 +654,7 @@ void FabricMountingManager::executeMount(
       // Do not hold onto Java object from C
       // We DO want to hold onto C object from Java, since we don't know the
       // lifetime of the Java object
-      local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+      jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
       if (state != nullptr) {
         javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
         StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
@@ -787,14 +766,9 @@ void FabricMountingManager::executeMount(
       env->SetIntArrayRegion(intBufferArray, intBufferPosition, 1, temp);
       intBufferPosition += 1;
 
-      SharedEventEmitter eventEmitter =
-          mountItem.newChildShadowView.eventEmitter;
-
       // Do not hold a reference to javaEventEmitter from the C++ side.
-      auto javaEventEmitter = EventEmitterWrapper::newObjectJavaArgs();
-      EventEmitterWrapper *cEventEmitter = cthis(javaEventEmitter);
-      cEventEmitter->eventEmitter = eventEmitter;
-
+      auto javaEventEmitter = EventEmitterWrapper::newObjectCxxArgs(
+          mountItem.newChildShadowView.eventEmitter);
       (*objBufferArray)[objBufferPosition++] = javaEventEmitter.get();
     }
   }
@@ -864,7 +838,7 @@ void FabricMountingManager::preallocateShadowView(
   bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
 
   static auto preallocateView =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      JFabricUIManager::javaClassStatic()
           ->getMethod<void(
               jint, jint, jstring, jobject, jobject, jobject, jboolean)>(
               "preallocateView");
@@ -872,7 +846,7 @@ void FabricMountingManager::preallocateShadowView(
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
   // lifetime of the Java object
-  local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+  jni::local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
   if (shadowView.state != nullptr) {
     javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
     StateWrapperImpl *cStateWrapper = cthis(javaStateWrapper);
@@ -880,9 +854,9 @@ void FabricMountingManager::preallocateShadowView(
   }
 
   // Do not hold a reference to javaEventEmitter from the C++ side.
-  local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
+  jni::local_ref<EventEmitterWrapper::JavaPart> javaEventEmitter = nullptr;
 
-  local_ref<JObject> props = getProps({}, shadowView);
+  jni::local_ref<jobject> props = getProps({}, shadowView);
 
   auto component = getPlatformComponentName(shadowView);
 
@@ -902,15 +876,12 @@ void FabricMountingManager::dispatchCommand(
     std::string const &commandName,
     folly::dynamic const &args) {
   static auto dispatchCommand =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      JFabricUIManager::javaClassStatic()
           ->getMethod<void(jint, jint, jstring, ReadableArray::javaobject)>(
               "dispatchCommand");
-
-  local_ref<JString> command = make_jstring(commandName);
-
-  local_ref<ReadableArray::javaobject> argsArray =
-      castReadableArray(ReadableNativeArray::newObjectCxxArgs(args));
-
+  auto command = jni::make_jstring(commandName);
+  auto argsArray = jni::adopt_local(reinterpret_cast<ReadableArray::javaobject>(
+      ReadableNativeArray::newObjectCxxArgs(args).release()));
   dispatchCommand(
       javaUIManager_,
       shadowView.surfaceId,
@@ -922,13 +893,11 @@ void FabricMountingManager::dispatchCommand(
 void FabricMountingManager::sendAccessibilityEvent(
     ShadowView const &shadowView,
     std::string const &eventType) {
-  local_ref<JString> eventTypeStr = make_jstring(eventType);
-
   static auto sendAccessibilityEventFromJS =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jint, jstring)>(
-              "sendAccessibilityEventFromJS");
+      JFabricUIManager::javaClassStatic()->getMethod<void(jint, jint, jstring)>(
+          "sendAccessibilityEventFromJS");
 
+  auto eventTypeStr = jni::make_jstring(eventType);
   sendAccessibilityEventFromJS(
       javaUIManager_, shadowView.surfaceId, shadowView.tag, eventTypeStr.get());
 }
@@ -938,11 +907,12 @@ void FabricMountingManager::setIsJSResponder(
     bool isJSResponder,
     bool blockNativeResponder) {
   static auto setJSResponder =
-      jni::findClassStatic(UIManagerJavaDescriptor)
+      JFabricUIManager::javaClassStatic()
           ->getMethod<void(jint, jint, jint, jboolean)>("setJSResponder");
 
-  static auto clearJSResponder = jni::findClassStatic(UIManagerJavaDescriptor)
-                                     ->getMethod<void()>("clearJSResponder");
+  static auto clearJSResponder =
+      JFabricUIManager::javaClassStatic()->getMethod<void()>(
+          "clearJSResponder");
 
   if (isJSResponder) {
     setJSResponder(
@@ -962,19 +932,18 @@ void FabricMountingManager::setIsJSResponder(
 
 void FabricMountingManager::onAnimationStarted() {
   static auto layoutAnimationsStartedJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void()>("onAnimationStarted");
+      JFabricUIManager::javaClassStatic()->getMethod<void()>(
+          "onAnimationStarted");
 
   layoutAnimationsStartedJNI(javaUIManager_);
 }
 
 void FabricMountingManager::onAllAnimationsComplete() {
   static auto allAnimationsCompleteJNI =
-      jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void()>("onAllAnimationsComplete");
+      JFabricUIManager::javaClassStatic()->getMethod<void()>(
+          "onAllAnimationsComplete");
 
   allAnimationsCompleteJNI(javaUIManager_);
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

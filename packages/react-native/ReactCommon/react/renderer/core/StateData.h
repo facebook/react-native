@@ -15,8 +15,7 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Dummy type that is used as a placeholder for state data for nodes that
@@ -27,11 +26,10 @@ struct StateData final {
 
 #ifdef ANDROID
   StateData() = default;
-  StateData(StateData const &previousState, folly::dynamic data){};
+  StateData(StateData const &previousState, folly::dynamic data) {}
   folly::dynamic getDynamic() const;
   MapBuffer getMapBuffer() const;
 #endif
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

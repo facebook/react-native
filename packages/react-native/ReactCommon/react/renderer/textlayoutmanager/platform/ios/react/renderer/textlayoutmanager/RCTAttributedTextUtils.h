@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const RCTAttributedStringIsHighlightedAttributeName = @"IsHighlighted";
 NSString *const RCTAttributedStringEventEmitterKey = @"EventEmitter";
+
+// String representation of either `role` or `accessibilityRole`
 NSString *const RCTTextAttributesAccessibilityRoleAttributeName = @"AccessibilityRole";
 
 /*

@@ -1,6 +1,6 @@
 [ignore]
-; We fork some components by platform
-.*/*[.]ios.js
+; Ignore other platform suffixes
+.*\.ios\.js$
 
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
@@ -25,11 +25,12 @@
 .*/node_modules/.*
 
 [libs]
+flow-typed/
 packages/react-native/interface.js
 packages/react-native/flow/
-packages/react-native/flow-typed/
 
 [options]
+experimental.global_find_ref=true
 enums=true
 
 emoji=true
@@ -63,6 +64,7 @@ nonstrict-import=warn
 deprecated-type=error
 unsafe-getters-setters=warn
 unnecessary-invariant=warn
+unused-promise=error
 
 [strict]
 deprecated-type
@@ -74,4 +76,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.202.0
+^0.215.0

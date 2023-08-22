@@ -305,19 +305,15 @@ RCT_EXPORT_METHOD(announceForAccessibilityWithOptions
                   : (NSString *)announcement options
                   : (JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
 {
-  if (@available(iOS 11.0, *)) {
-    NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
-    if (options.queue()) {
-      attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] = @(*(options.queue()) ? YES : NO);
-    }
+  NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
+  if (options.queue()) {
+    attrsDictionary[UIAccessibilitySpeechAttributeQueueAnnouncement] = @(*(options.queue()) ? YES : NO);
+  }
 
-    if (attrsDictionary.count > 0) {
-      NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:announcement
-                                                                                  attributes:attrsDictionary];
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
-    } else {
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
-    }
+  if (attrsDictionary.count > 0) {
+    NSAttributedString *announcementWithAttrs = [[NSAttributedString alloc] initWithString:announcement
+                                                                                attributes:attrsDictionary];
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcementWithAttrs);
   } else {
     UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
   }
@@ -401,6 +397,15 @@ void RCTAccessibilityManagerSetIsVoiceOverEnabled(
 @end
 
 @implementation RCTBridge (RCTAccessibilityManager)
+
+- (RCTAccessibilityManager *)accessibilityManager
+{
+  return [self moduleForClass:[RCTAccessibilityManager class]];
+}
+
+@end
+
+@implementation RCTBridgeProxy (RCTAccessibilityManager)
 
 - (RCTAccessibilityManager *)accessibilityManager
 {

@@ -10,8 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <fbjni/fbjni.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JRuntimeExecutor : public jni::HybridClass<JRuntimeExecutor> {
  public:
@@ -26,5 +25,4 @@ class JRuntimeExecutor : public jni::HybridClass<JRuntimeExecutor> {
   RuntimeExecutor runtimeExecutor_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

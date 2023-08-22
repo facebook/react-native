@@ -118,68 +118,71 @@ public class TouchesHelper {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
         "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")");
-    TouchEventType type = event.getTouchEventType();
-    MotionEvent motionEvent = event.getMotionEvent();
+    try {
+      TouchEventType type = event.getTouchEventType();
+      MotionEvent motionEvent = event.getMotionEvent();
 
-    if (motionEvent == null) {
-      ReactSoftExceptionLogger.logSoftException(
-          TAG,
-          new IllegalStateException(
-              "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
-      return;
+      if (motionEvent == null) {
+        ReactSoftExceptionLogger.logSoftException(
+            TAG,
+            new IllegalStateException(
+                "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been recycled"));
+        return;
+      }
+
+      WritableMap[] touches = createPointersArray(event);
+      WritableMap[] changedTouches = null;
+
+      switch (type) {
+        case START:
+          int newPointerIndex = motionEvent.getActionIndex();
+
+          changedTouches = new WritableMap[] {touches[newPointerIndex].copy()};
+          break;
+        case END:
+          int finishedPointerIndex = motionEvent.getActionIndex();
+          /*
+           * Clear finished pointer index for compatibility with W3C touch "end" events, where the
+           * active touches don't include the set that has just been "ended".
+           */
+          WritableMap finishedPointer = touches[finishedPointerIndex];
+          touches[finishedPointerIndex] = null;
+
+          changedTouches = new WritableMap[] {finishedPointer};
+          break;
+        case MOVE:
+          changedTouches = new WritableMap[touches.length];
+          for (int i = 0; i < touches.length; i++) {
+            changedTouches[i] = touches[i].copy();
+          }
+          break;
+        case CANCEL:
+          changedTouches = touches;
+          touches = new WritableMap[0];
+          break;
+      }
+
+      for (WritableMap touchData : changedTouches) {
+        WritableMap eventData = touchData.copy();
+        WritableArray changedTouchesArray =
+            getWritableArray(/* copyObjects */ true, changedTouches);
+        WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
+
+        eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
+        eventData.putArray(TOUCHES_KEY, touchesArray);
+
+        eventEmitter.receiveEvent(
+            event.getSurfaceId(),
+            event.getViewTag(),
+            event.getEventName(),
+            event.canCoalesce(),
+            0,
+            eventData,
+            event.getEventCategory());
+      }
+    } finally {
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
-    WritableMap[] touches = createPointersArray(event);
-    WritableMap[] changedTouches = null;
-
-    switch (type) {
-      case START:
-        int newPointerIndex = motionEvent.getActionIndex();
-
-        changedTouches = new WritableMap[] {touches[newPointerIndex].copy()};
-        break;
-      case END:
-        int finishedPointerIndex = motionEvent.getActionIndex();
-        /*
-         * Clear finished pointer index for compatibility with W3C touch "end" events, where the
-         * active touches don't include the set that has just been "ended".
-         */
-        WritableMap finishedPointer = touches[finishedPointerIndex];
-        touches[finishedPointerIndex] = null;
-
-        changedTouches = new WritableMap[] {finishedPointer};
-        break;
-      case MOVE:
-        changedTouches = new WritableMap[touches.length];
-        for (int i = 0; i < touches.length; i++) {
-          changedTouches[i] = touches[i].copy();
-        }
-        break;
-      case CANCEL:
-        changedTouches = touches;
-        touches = new WritableMap[0];
-        break;
-    }
-
-    for (WritableMap touchData : changedTouches) {
-      WritableMap eventData = touchData.copy();
-      WritableArray changedTouchesArray = getWritableArray(/* copyObjects */ true, changedTouches);
-      WritableArray touchesArray = getWritableArray(/* copyObjects */ true, touches);
-
-      eventData.putArray(CHANGED_TOUCHES_KEY, changedTouchesArray);
-      eventData.putArray(TOUCHES_KEY, touchesArray);
-
-      eventEmitter.receiveEvent(
-          event.getSurfaceId(),
-          event.getViewTag(),
-          event.getEventName(),
-          event.canCoalesce(),
-          0,
-          eventData,
-          event.getEventCategory());
-    }
-
-    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private static WritableArray getWritableArray(boolean copyObjects, WritableMap... objects) {

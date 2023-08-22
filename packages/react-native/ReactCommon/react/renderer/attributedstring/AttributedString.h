@@ -17,8 +17,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/mounting/ShadowView.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class AttributedString;
 
@@ -117,8 +116,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   Fragments fragments_;
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 namespace std {
 template <>

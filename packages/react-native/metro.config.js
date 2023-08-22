@@ -9,14 +9,15 @@
 
 'use strict';
 
+const {getDefaultConfig} = require('@react-native/metro-config');
+const {mergeConfig} = require('metro-config');
 const path = require('path');
-const getPolyfills = require('./rn-get-polyfills');
 
 /**
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-module.exports = {
+const config = {
   // Make Metro able to resolve required packages that might be imported from /packages/react-native
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
@@ -31,7 +32,6 @@ module.exports = {
       'react-native': __dirname,
     },
   },
-  serializer: {
-    getPolyfills,
-  },
 };
+
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

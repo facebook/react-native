@@ -246,7 +246,7 @@ NSString *RCTMD5Hash(NSString *string)
                                     result[15]];
 }
 
-BOOL RCTIsMainQueue()
+BOOL RCTIsMainQueue(void)
 {
   static void *mainQueueKey = &mainQueueKey;
   static dispatch_once_t onceToken;
@@ -299,14 +299,14 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
 static dispatch_once_t onceTokenScreenScale;
 static CGFloat screenScale;
 
-void RCTComputeScreenScale()
+void RCTComputeScreenScale(void)
 {
   dispatch_once(&onceTokenScreenScale, ^{
     screenScale = [UIScreen mainScreen].scale;
   });
 }
 
-CGFloat RCTScreenScale()
+CGFloat RCTScreenScale(void)
 {
   RCTUnsafeExecuteOnMainQueueOnceSync(&onceTokenScreenScale, ^{
     screenScale = [UIScreen mainScreen].scale;
@@ -315,7 +315,7 @@ CGFloat RCTScreenScale()
   return screenScale;
 }
 
-CGFloat RCTFontSizeMultiplier()
+CGFloat RCTFontSizeMultiplier(void)
 {
   static NSDictionary<NSString *, NSNumber *> *mapping;
   static dispatch_once_t onceToken;
@@ -339,7 +339,7 @@ CGFloat RCTFontSizeMultiplier()
   return mapping[RCTSharedApplication().preferredContentSizeCategory].floatValue;
 }
 
-CGSize RCTScreenSize()
+CGSize RCTScreenSize(void)
 {
   // FIXME: this caches whatever the bounds were when it was first called, and then
   // doesn't update when the device is rotated. We need to find another thread-
@@ -356,7 +356,7 @@ CGSize RCTScreenSize()
   return size;
 }
 
-CGSize RCTViewportSize()
+CGSize RCTViewportSize(void)
 {
   UIWindow *window = RCTKeyWindow();
   return window ? window.bounds.size : RCTScreenSize();

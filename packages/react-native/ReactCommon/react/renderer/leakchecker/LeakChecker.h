@@ -13,8 +13,7 @@
 #include <react/renderer/leakchecker/WeakFamilyRegistry.h>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using GarbageCollectionTrigger = std::function<void()>;
 
@@ -35,5 +34,4 @@ class LeakChecker final {
   SurfaceId previouslyStoppedSurface_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

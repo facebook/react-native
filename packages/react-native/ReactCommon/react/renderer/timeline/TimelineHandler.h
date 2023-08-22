@@ -11,8 +11,7 @@
 #include <react/renderer/timeline/TimelineFrame.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class Timeline;
 
@@ -76,5 +75,4 @@ class TimelineHandler final {
   Timeline const *timeline_{};
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -9,8 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 /*
  * Implements a moveable-only function that asserts if called more than once
@@ -85,5 +84,4 @@ class CalledOnceMovableOnlyFunction {
   }
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

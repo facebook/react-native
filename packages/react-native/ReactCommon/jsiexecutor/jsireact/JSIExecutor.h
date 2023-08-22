@@ -17,8 +17,7 @@
 #include <mutex>
 #include <optional>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 // A JSIScopedTimeoutInvoker is a trampoline-type function for introducing
 // timeouts. Call the TimeoutInvoker with a function to execute, the invokee.
@@ -140,5 +139,4 @@ void bindNativeLogger(jsi::Runtime &runtime, Logger logger);
 void bindNativePerformanceNow(jsi::Runtime &runtime);
 
 double performanceNow();
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

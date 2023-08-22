@@ -70,6 +70,15 @@ export type ReturnKeyTypeOptions =
   | ReturnKeyTypeAndroid
   | ReturnKeyTypeIOS;
 
+export type EnterKeyHintTypeAndroid = 'previous';
+export type EnterKeyHintTypeIOS = 'enter';
+export type EnterKeyHintType = 'done' | 'go' | 'next' | 'search' | 'send';
+
+export type EnterKeyHintTypeOptions =
+  | EnterKeyHintType
+  | EnterKeyHintTypeAndroid
+  | EnterKeyHintTypeIOS;
+
 type DataDetectorTypes =
   | 'phoneNumber'
   | 'link'
@@ -196,13 +205,6 @@ export interface TextInputIOSProps {
    * Give the keyboard and the system information about the expected
    * semantic meaning for the content that users enter.
    *
-   * For iOS 11+ you can set `textContentType` to `username` or `password` to
-   * enable autofill of login details from the device keychain.
-   *
-   * For iOS 12+ `newPassword` can be used to indicate a new password input the
-   * user may want to save in the keychain, and `oneTimeCode` can be used to indicate
-   * that a field can be autofilled by a code arriving in an SMS.
-   *
    * To disable autofill, set textContentType to `none`.
    *
    * Possible values for `textContentType` are:
@@ -214,6 +216,15 @@ export interface TextInputIOSProps {
    *  - `'addressState'`
    *  - `'countryName'`
    *  - `'creditCardNumber'`
+   *  - `'creditCardExpiration'` (iOS 17+)
+   *  - `'creditCardExpirationMonth'` (iOS 17+)
+   *  - `'creditCardExpirationYear'` (iOS 17+)
+   *  - `'creditCardSecurityCode'` (iOS 17+)
+   *  - `'creditCardType'` (iOS 17+)
+   *  - `'creditCardName'` (iOS 17+)
+   *  - `'creditCardGivenName'` (iOS 17+)
+   *  - `'creditCardMiddleName'` (iOS 17+)
+   *  - `'creditCardFamilyName'` (iOS 17+)
    *  - `'emailAddress'`
    *  - `'familyName'`
    *  - `'fullStreetAddress'`
@@ -235,6 +246,10 @@ export interface TextInputIOSProps {
    *  - `'password'`
    *  - `'newPassword'`
    *  - `'oneTimeCode'`
+   *  - `'birthdate'` (iOS 17+)
+   *  - `'birthdateDay'` (iOS 17+)
+   *  - `'birthdateMonth'` (iOS 17+)
+   *  - `'birthdateYear'` (iOS 17+)
    *
    */
   textContentType?:
@@ -245,6 +260,15 @@ export interface TextInputIOSProps {
     | 'addressState'
     | 'countryName'
     | 'creditCardNumber'
+    | 'creditCardExpiration'
+    | 'creditCardExpirationMonth'
+    | 'creditCardExpirationYear'
+    | 'creditCardSecurityCode'
+    | 'creditCardType'
+    | 'creditCardName'
+    | 'creditCardGivenName'
+    | 'creditCardMiddleName'
+    | 'creditCardFamilyName'
     | 'emailAddress'
     | 'familyName'
     | 'fullStreetAddress'
@@ -266,6 +290,10 @@ export interface TextInputIOSProps {
     | 'password'
     | 'newPassword'
     | 'oneTimeCode'
+    | 'birthdate'
+    | 'birthdateDay'
+    | 'birthdateMonth'
+    | 'birthdateYear'
     | undefined;
 
   /**
@@ -282,6 +310,14 @@ export interface TextInputIOSProps {
     | 'hangul-word'
     | 'push-out'
     | undefined;
+
+  /**
+   * If `false`, the iOS system will not insert an extra space after a paste operation
+   * neither delete one or two spaces after a cut or delete operation.
+   *
+   * The default value is `true`.
+   */
+  smartInsertDelete?: boolean | undefined;
 }
 
 /**
@@ -289,92 +325,6 @@ export interface TextInputIOSProps {
  * @see https://reactnative.dev/docs/textinput#props
  */
 export interface TextInputAndroidProps {
-  /**
-   * Specifies autocomplete hints for the system, so it can provide autofill. On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
-   * To disable autocomplete, set `autoComplete` to `off`.
-   *
-   * *Android Only*
-   *
-   * Possible values for `autoComplete` are:
-   *
-   * - `birthdate-day`
-   * - `birthdate-full`
-   * - `birthdate-month`
-   * - `birthdate-year`
-   * - `cc-csc`
-   * - `cc-exp`
-   * - `cc-exp-day`
-   * - `cc-exp-month`
-   * - `cc-exp-year`
-   * - `cc-number`
-   * - `email`
-   * - `gender`
-   * - `name`
-   * - `name-family`
-   * - `name-given`
-   * - `name-middle`
-   * - `name-middle-initial`
-   * - `name-prefix`
-   * - `name-suffix`
-   * - `password`
-   * - `password-new`
-   * - `postal-address`
-   * - `postal-address-country`
-   * - `postal-address-extended`
-   * - `postal-address-extended-postal-code`
-   * - `postal-address-locality`
-   * - `postal-address-region`
-   * - `postal-code`
-   * - `street-address`
-   * - `sms-otp`
-   * - `tel`
-   * - `tel-country-code`
-   * - `tel-national`
-   * - `tel-device`
-   * - `username`
-   * - `username-new`
-   * - `off`
-   */
-  autoComplete?:
-    | 'birthdate-day'
-    | 'birthdate-full'
-    | 'birthdate-month'
-    | 'birthdate-year'
-    | 'cc-csc'
-    | 'cc-exp'
-    | 'cc-exp-day'
-    | 'cc-exp-month'
-    | 'cc-exp-year'
-    | 'cc-number'
-    | 'email'
-    | 'gender'
-    | 'name'
-    | 'name-family'
-    | 'name-given'
-    | 'name-middle'
-    | 'name-middle-initial'
-    | 'name-prefix'
-    | 'name-suffix'
-    | 'password'
-    | 'password-new'
-    | 'postal-address'
-    | 'postal-address-country'
-    | 'postal-address-extended'
-    | 'postal-address-extended-postal-code'
-    | 'postal-address-locality'
-    | 'postal-address-region'
-    | 'postal-code'
-    | 'street-address'
-    | 'sms-otp'
-    | 'tel'
-    | 'tel-country-code'
-    | 'tel-national'
-    | 'tel-device'
-    | 'username'
-    | 'username-new'
-    | 'off'
-    | undefined;
-
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -557,6 +507,132 @@ export interface TextInputProps
    * https://reactnative.dev/docs/textinput#autocapitalize
    */
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters' | undefined;
+
+  /**
+   * Specifies autocomplete hints for the system, so it can provide autofill.
+   * On Android, the system will always attempt to offer autofill by using heuristics to identify the type of content.
+   * To disable autocomplete, set autoComplete to off.
+   *
+   * The following values work across platforms:
+   *
+   * - `additional-name`
+   * - `address-line1`
+   * - `address-line2`
+   * - `cc-number`
+   * - `country`
+   * - `current-password`
+   * - `email`
+   * - `family-name`
+   * - `given-name`
+   * - `honorific-prefix`
+   * - `honorific-suffix`
+   * - `name`
+   * - `new-password`
+   * - `off`
+   * - `one-time-code`
+   * - `postal-code`
+   * - `street-address`
+   * - `tel`
+   * - `username`
+   *
+   * The following values work on iOS only:
+   *
+   * - `nickname`
+   * - `organization`
+   * - `organization-title`
+   * - `url`
+   *
+   * The following values work on Android only:
+   *
+   * - `birthdate-day`
+   * - `birthdate-full`
+   * - `birthdate-month`
+   * - `birthdate-year`
+   * - `cc-csc`
+   * - `cc-exp`
+   * - `cc-exp-day`
+   * - `cc-exp-month`
+   * - `cc-exp-year`
+   * - `gender`
+   * - `name-family`
+   * - `name-given`
+   * - `name-middle`
+   * - `name-middle-initial`
+   * - `name-prefix`
+   * - `name-suffix`
+   * - `password`
+   * - `password-new`
+   * - `postal-address`
+   * - `postal-address-country`
+   * - `postal-address-extended`
+   * - `postal-address-extended-postal-code`
+   * - `postal-address-locality`
+   * - `postal-address-region`
+   * - `sms-otp`
+   * - `tel-country-code`
+   * - `tel-national`
+   * - `tel-device`
+   * - `username-new`
+   */
+  autoComplete?:
+    | 'additional-name'
+    | 'address-line1'
+    | 'address-line2'
+    | 'birthdate-day'
+    | 'birthdate-full'
+    | 'birthdate-month'
+    | 'birthdate-year'
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-day'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'cc-name'
+    | 'cc-given-name'
+    | 'cc-middle-name'
+    | 'cc-family-name'
+    | 'cc-type'
+    | 'country'
+    | 'current-password'
+    | 'email'
+    | 'family-name'
+    | 'gender'
+    | 'given-name'
+    | 'honorific-prefix'
+    | 'honorific-suffix'
+    | 'name'
+    | 'name-family'
+    | 'name-given'
+    | 'name-middle'
+    | 'name-middle-initial'
+    | 'name-prefix'
+    | 'name-suffix'
+    | 'new-password'
+    | 'nickname'
+    | 'one-time-code'
+    | 'organization'
+    | 'organization-title'
+    | 'password'
+    | 'password-new'
+    | 'postal-address'
+    | 'postal-address-country'
+    | 'postal-address-extended'
+    | 'postal-address-extended-postal-code'
+    | 'postal-address-locality'
+    | 'postal-address-region'
+    | 'postal-code'
+    | 'street-address'
+    | 'sms-otp'
+    | 'tel'
+    | 'tel-country-code'
+    | 'tel-national'
+    | 'tel-device'
+    | 'url'
+    | 'username'
+    | 'username-new'
+    | 'off'
+    | undefined;
 
   /**
    * If false, disables auto-correct.
@@ -743,6 +819,12 @@ export interface TextInputProps
    * Determines how the return key should look.
    */
   returnKeyType?: ReturnKeyTypeOptions | undefined;
+
+  /**
+   * Determines what text should be shown to the return key on virtual keyboards.
+   * Has precedence over the returnKeyType prop.
+   */
+  enterKeyHint?: EnterKeyHintTypeOptions | undefined;
 
   /**
    * If true, the text input obscures the text entered so that sensitive text like passwords stay secure.

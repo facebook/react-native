@@ -27,5 +27,6 @@ declare module 'react-native/Libraries/Core/Devtools/symbolicateStackTrace' {
 
   export default function symbolicateStackTrace(
     stack: ReadonlyArray<StackFrame>,
+    extraData?: any,
   ): Promise<StackFrame[]>;
 }

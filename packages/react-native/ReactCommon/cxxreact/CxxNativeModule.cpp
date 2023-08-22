@@ -19,8 +19,7 @@
 #include <logger/react_native_log.h>
 
 using facebook::xplat::module::CxxModule;
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
@@ -257,5 +256,4 @@ void CxxNativeModule::lazyInit() {
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

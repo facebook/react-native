@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 enum class AccessibilityTraits : uint32_t {
   None = 0,
@@ -137,5 +136,131 @@ enum class AccessibilityLiveRegion : uint8_t {
   Assertive,
 };
 
-} // namespace react
-} // namespace facebook
+enum class AccessibilityRole {
+  None,
+  Button,
+  Dropdownlist,
+  Togglebutton,
+  Link,
+  Search,
+  Image,
+  Keyboardkey,
+  Text,
+  Adjustable,
+  Imagebutton,
+  Header,
+  Summary,
+  Alert,
+  Checkbox,
+  Combobox,
+  Menu,
+  Menubar,
+  Menuitem,
+  Progressbar,
+  Radio,
+  Radiogroup,
+  Scrollbar,
+  Spinbutton,
+  Switch,
+  Tab,
+  Tabbar,
+  Tablist,
+  Timer,
+  List,
+  Toolbar,
+  Grid,
+  Pager,
+  Scrollview,
+  Horizontalscrollview,
+  Viewgroup,
+  Webview,
+  Drawerlayout,
+  Slidingdrawer,
+  Iconmenu,
+};
+
+enum class Role {
+  Alert,
+  Alertdialog,
+  Application,
+  Article,
+  Banner,
+  Button,
+  Cell,
+  Checkbox,
+  Columnheader,
+  Combobox,
+  Complementary,
+  Contentinfo,
+  Definition,
+  Dialog,
+  Directory,
+  Document,
+  Feed,
+  Figure,
+  Form,
+  Grid,
+  Group,
+  Heading,
+  Img,
+  Link,
+  List,
+  Listitem,
+  Log,
+  Main,
+  Marquee,
+  Math,
+  Menu,
+  Menubar,
+  Menuitem,
+  Meter,
+  Navigation,
+  None,
+  Note,
+  Option,
+  Presentation,
+  Progressbar,
+  Radio,
+  Radiogroup,
+  Region,
+  Row,
+  Rowgroup,
+  Rowheader,
+  Scrollbar,
+  Searchbox,
+  Separator,
+  Slider,
+  Spinbutton,
+  Status,
+  Summary,
+  Switch,
+  Tab,
+  Table,
+  Tablist,
+  Tabpanel,
+  Term,
+  Timer,
+  Toolbar,
+  Tooltip,
+  Tree,
+  Treegrid,
+  Treeitem,
+};
+
+} // namespace facebook::react
+
+namespace std {
+template <>
+struct hash<facebook::react::AccessibilityRole> {
+  size_t operator()(const facebook::react::AccessibilityRole &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::Role> {
+  size_t operator()(const facebook::react::Role &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+} // namespace std

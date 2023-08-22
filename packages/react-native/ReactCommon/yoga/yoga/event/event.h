@@ -16,8 +16,7 @@
 struct YGConfig;
 struct YGNode;
 
-namespace facebook {
-namespace yoga {
+namespace facebook::yoga {
 
 enum struct LayoutType : int {
   kLayout = 0,
@@ -80,7 +79,7 @@ struct YOGA_EXPORT Event {
     template <Type E>
     const TypedData<E>& get() const {
       return *static_cast<const TypedData<E>*>(data_);
-    };
+    }
   };
 
   static void reset();
@@ -140,5 +139,4 @@ struct Event::TypedData<Event::NodeLayout> {
   void* layoutContext;
 };
 
-} // namespace yoga
-} // namespace facebook
+} // namespace facebook::yoga

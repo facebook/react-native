@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 using facebook::react::JSErrorHandlerKey;
 
@@ -103,5 +102,4 @@ void JsErrorHandler::handleJsError(const jsi::JSError &error, bool isFatal) {
   _jsErrorHandlingFunc(std::move(errorMap));
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

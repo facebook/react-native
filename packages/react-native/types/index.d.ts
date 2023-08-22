@@ -103,6 +103,7 @@ export * from '../Libraries/Components/View/View';
 export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
+export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -147,6 +148,10 @@ export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
 export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
+export {
+  EmitterSubscription,
+  EventSubscription,
+} from '../Libraries/vendor/emitter/EventEmitter';
 
 export * from './public/DeprecatedPropertiesAlias';
 export * from './public/Insets';

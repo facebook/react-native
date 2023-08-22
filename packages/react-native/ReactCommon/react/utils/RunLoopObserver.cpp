@@ -9,8 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RunLoopObserver::RunLoopObserver(
     Activity activities,
@@ -59,5 +58,4 @@ RunLoopObserver::WeakOwner RunLoopObserver::getOwner() const noexcept {
   return owner_;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
