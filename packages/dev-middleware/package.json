@@ -22,6 +22,7 @@
     "dist"
   ],
   "dependencies": {
+    "@isaacs/ttlcache": "^1.4.1",
     "chrome-launcher": "^0.15.2",
     "connect": "^3.6.5",
     "debug": "^2.2.0",
