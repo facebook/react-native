@@ -24,6 +24,13 @@ type CodedErrorResult<ErrorCode: string> = {
   errorDetails?: string,
 };
 
+type DebuggerSessionIDs = {
+  appId: string,
+  deviceName: string,
+  deviceId: string,
+  pageId: string | null,
+};
+
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
@@ -34,7 +41,7 @@ export type ReportableEvent =
     }
   | {
       type: 'connect_debugger_frontend',
-      ...SuccessResult<void> | ErrorResult<mixed>,
+      ...SuccessResult<DebuggerSessionIDs> | ErrorResult<mixed>,
     }
   | {
       type: 'debugger_command',
@@ -44,6 +51,7 @@ export type ReportableEvent =
       requestOrigin: 'proxy' | 'debugger' | null,
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
+      ...DebuggerSessionIDs,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

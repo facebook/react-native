@@ -108,7 +108,11 @@ export default class Device {
     this._deviceSocket = socket;
     this._projectRoot = projectRoot;
     this._deviceEventReporter = eventReporter
-      ? new DeviceEventReporter(eventReporter)
+      ? new DeviceEventReporter(eventReporter, {
+          deviceId: id,
+          deviceName: name,
+          appId: app,
+        })
       : null;
 
     // $FlowFixMe[incompatible-call]
@@ -167,7 +171,13 @@ export default class Device {
   // 2. Forwards all messages from the debugger to device as wrappedEvent
   // 3. Sends disconnect event to device when debugger connection socket closes.
   handleDebuggerConnection(socket: WS, pageId: string) {
-    this._deviceEventReporter?.logConnection('debugger');
+    // Clear any commands we were waiting on.
+    this._deviceEventReporter?.logDisconnection('debugger');
+
+    this._deviceEventReporter?.logConnection('debugger', {
+      pageId: pageId,
+    });
+
     // Disconnect current debugger if we already have debugger connected.
     if (this._debuggerConnection) {
       this._debuggerConnection.socket.close();
@@ -190,14 +200,13 @@ export default class Device {
       },
     });
 
-    // Clear any commands we were waiting on.
-    this._deviceEventReporter?.logDisconnection('debugger');
-
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
       debug('(Debugger) -> (Proxy)    (Device): ' + message);
       const debuggerRequest = JSON.parse(message);
-      this._deviceEventReporter?.logRequest(debuggerRequest, 'debugger');
+      this._deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+      });
       const handled = this._interceptMessageFromDebugger(
         debuggerRequest,
         debuggerInfo,
@@ -322,7 +331,9 @@ export default class Device {
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
       if ('id' in parsedPayload) {
-        this._deviceEventReporter?.logResponse(parsedPayload, 'device');
+        this._deviceEventReporter?.logResponse(parsedPayload, 'device', {
+          pageId: this._debuggerConnection?.pageId ?? null,
+        });
       }
 
       if (this._debuggerConnection) {
@@ -401,7 +412,9 @@ export default class Device {
     ];
 
     for (const message of toSend) {
-      this._deviceEventReporter?.logRequest(message, 'proxy');
+      this._deviceEventReporter?.logRequest(message, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+      });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
         payload: {
@@ -495,7 +508,9 @@ export default class Device {
       // This is not an issue in VSCode/Nuclide where the IDE knows to resume
       // at its convenience.
       const resumeMessage = {method: 'Debugger.resume', id: 0};
-      this._deviceEventReporter?.logRequest(resumeMessage, 'proxy');
+      this._deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+      });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
         payload: {
@@ -562,7 +577,9 @@ export default class Device {
       const result: GetScriptSourceResponse = {scriptSource};
       const response = {id: req.id, result};
       socket.send(JSON.stringify(response));
-      this._deviceEventReporter?.logResponse(response, 'proxy');
+      this._deviceEventReporter?.logResponse(response, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+      });
     };
     const sendErrorResponse = (error: string) => {
       // Tell the client that the request failed
@@ -572,7 +589,9 @@ export default class Device {
 
       // Send to the console as well, so the user can see it
       this._sendErrorToDebugger(error);
-      this._deviceEventReporter?.logResponse(response, 'proxy');
+      this._deviceEventReporter?.logResponse(response, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+      });
     };
 
     const pathToSource = this._scriptIdToSourcePathMapping.get(
