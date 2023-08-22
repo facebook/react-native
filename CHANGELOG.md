@@ -448,6 +448,27 @@ This file contains all changelogs for latest releases, from 0.70.0 onward. Pleas
 
 - Enable Address and Undefined Behavior Sanitizers on RNTester ([65e61f3c88](https://github.com/facebook/react-native/commit/65e61f3c88388d4a2ed88bcc9a2cb5ba63fd8afa) by [@Saadnajmi](https://github.com/Saadnajmi))
 
+## v0.71.13
+
+### Added
+
+#### Android specific
+
+- For targeting SDK 34 - Added RECEIVER_EXPORTED/RECEIVER_NOT_EXPORTED flag support in DevSupportManagerBase ([177d97d8ea](https://github.com/facebook/react-native/commit/177d97d8ea962bdd4dad8fcf0efb04a307f25000) by [@apuruni](https://github.com/apuruni))
+
+#### iOS specific
+
+- Added support to inline the source map via RCTBundleURLProvider
+ ([f7219ec02d](https://github.com/facebook/react-native/commit/f7219ec02d71d2f0f6c71af4d5c3d4850a898fd8) by [@Saadnajmi](https://github.com/Saadnajmi))
+
+### Fixed
+
+- Fix: mount devtools overlay only if react devtools are connected ([b3c7a5d4cc](https://github.com/facebook/react-native/commit/b3c7a5d4cc12be0fd9ec561daca35edabb896201) by [@hoxyq](https://github.com/hoxyq))
+
+#### iOS specific
+
+- Fix onChangeText not firing when clearing the value of TextInput with multiline=true on iOS ([0c9c57a9f7](https://github.com/facebook/react-native/commit/0c9c57a9f73294414d92428c5d2472dc1e1e5e96) by [@kkoudev](https://github.com/kkoudev))
+
 ## v0.71.12
 
 ### Fixed
