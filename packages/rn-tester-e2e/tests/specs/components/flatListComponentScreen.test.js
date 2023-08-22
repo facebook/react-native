@@ -43,9 +43,7 @@ describe('Test is checking onStartReached flat list', () => {
       await FlatListComponentScreen.checkCollapseButtonIsDisplayed(),
     ).toBeTruthy();
     await FlatListComponentScreen.clickFlatListOnStartTestButton();
-    expect(
-      await FlatListComponentScreen.checkPizzaIsDisplayed(),
-    ).toBeTruthy();
+    expect(await FlatListComponentScreen.checkPizzaIsDisplayed()).toBeTruthy();
   });
 });
 
@@ -98,13 +96,9 @@ describe('Test is checking inverted flat list', () => {
       await FlatListComponentScreen.checkFlatListInvertedScreenIsDisplayed(),
     ).toBeTruthy();
     await FlatListComponentScreen.clickFlatListInvertedButton();
-    expect(
-      await FlatListComponentScreen.checkPizzaIsDisplayed(),
-    ).toBeTruthy();
+    expect(await FlatListComponentScreen.checkPizzaIsDisplayed()).toBeTruthy();
     await FlatListComponentScreen.clickToggleTrueButton();
-    expect(
-      await FlatListComponentScreen.checkPizzaIsDisplayed(),
-    ).toBeTruthy();
+    expect(await FlatListComponentScreen.checkPizzaIsDisplayed()).toBeTruthy();
   });
 });
 
@@ -119,9 +113,7 @@ describe('Test is checking onViewableItemsChanges component', () => {
       await FlatListComponentScreen.checkFlatListOnViewableItemsChangedScreenIsDisplayed(),
     ).toBeTruthy();
     await FlatListComponentScreen.clickFlatListOnViewableItemsChangedButton();
-    expect(
-      await FlatListComponentScreen.checkPizzaIsDisplayed(),
-    ).toBeTruthy();
+    expect(await FlatListComponentScreen.checkPizzaIsDisplayed()).toBeTruthy();
   });
 });
 

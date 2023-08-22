@@ -13,8 +13,8 @@ const {
   ImageComponentScreen,
 } = require('../../screens/components/imageComponent.screen.js');
 const {
-    JSResponderHandlerComponentScreen,
-  } = require('../../screens/components/jsResponderHandlerComponent.screen.js');
+  JSResponderHandlerComponentScreen,
+} = require('../../screens/components/jsResponderHandlerComponent.screen.js');
 
 describe('Test is checking plain image component', () => {
   test('Should view properly image element', async () => {

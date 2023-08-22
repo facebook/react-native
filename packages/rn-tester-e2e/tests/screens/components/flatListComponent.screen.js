@@ -154,8 +154,8 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     android: androidWidget('TextView', 'text', 'Menu'),
   }),
   separatorElement: Utils.platformSelect({
-    ios: iOSName('flat-list-separator'),
-    android: androidWidget('TextView', 'resource-id', 'flat-list-separator'),
+    ios: iOSName('flat_list_separator'),
+    android: androidWidget('TextView', 'resource-id', 'flat_list_separator'),
   }),
   listHeaderTextElement: Utils.platformSelect({
     ios: iOSName('LIST HEADER'),
@@ -254,11 +254,6 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
   ): Promise<boolean> {
     return await Utils.checkElementExistence(this.contentInsetMenuElement);
   },
-  checkFlatListInvertedScreenIsDisplayed: async function (
-    this: FlatListComponentScreenType,
-  ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.invertedScreenElement);
-  },
   checkInvertedToggleFalseButtonIsDisplayed: async function (
     this: FlatListComponentScreenType,
   ): Promise<boolean> {
@@ -282,7 +277,9 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
   scrollUntilOnViewableItemsChangedIsDisplayed: async function (
     this: FlatListComponentScreenType,
   ): Promise<void> {
-    return await Utils.scrollToElement(this.onViewableItemsChangedScreenElement);
+    return await Utils.scrollToElement(
+      this.onViewableItemsChangedScreenElement,
+    );
   },
   scrollUntilNestedIsDisplayed: async function (
     this: FlatListComponentScreenType,

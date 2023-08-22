@@ -10,7 +10,6 @@
 
 import {
   UtilsSingleton as Utils,
-  iOSLabel,
   androidWidget,
   iOSName,
 } from '../../helpers/utils';
@@ -33,7 +32,7 @@ export const PressableComponentScreen: PressableComponentScreenType = {
     ios: iOSName('Pressable'),
     android: androidWidget('TextView', 'text', 'Pressable'),
   }),
-  // References to elements within the Pressable component
+  // References to elements within the Pressable Component screen
   pressMeHeaderElement: Utils.platformSelect({
     ios: iOSName('Change content based on Press'),
     android: androidWidget('TextView', 'text', 'Change content based on Press'),

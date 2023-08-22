@@ -9,41 +9,43 @@
  */
 
 import {
-    UtilsSingleton as Utils,
-    iOSLabel,
-    androidWidget,
-    iOSName,
-  } from '../../helpers/utils';
-  
-  type ScrollViewSimpleExampleComponentScreenType = {
-    scrollVIewSimpleExampleScreenElement: string,
-    scrollViewItemScreenElement: string,
-    checkScrollViewItemsDisplayed: () => Promise<boolean>,
-    scrollUntilScrollViewSimpleExampleComponentIsDisplayed: () => Promise<void>,
+  UtilsSingleton as Utils,
+  androidWidget,
+  iOSName,
+} from '../../helpers/utils';
+
+type ScrollViewSimpleExampleComponentScreenType = {
+  scrollVIewSimpleExampleScreenElement: string,
+  scrollViewItemScreenElement: string,
+  checkScrollViewItemsDisplayed: () => Promise<boolean>,
+  scrollUntilScrollViewSimpleExampleComponentIsDisplayed: () => Promise<void>,
+};
+
+export const ScrollViewSimpleExampleComponentScreen: ScrollViewSimpleExampleComponentScreenType =
+  {
+    // reference in the Components list
+    scrollViewSimpleExampleScreenElement: Utils.platformSelect({
+      ios: iOSName('ScrollViewSimpleExample'),
+      android: androidWidget('TextView', 'text', 'ScrollViewSimpleExample'),
+    }),
+    // References to elements within the ScrollViewSimpleExample Component screen
+    scrollViewItemScreenElement: Utils.platformSelect({
+      ios: iOSName('scroll_view_item'),
+      android: androidWidget('TextView', 'resource-id', 'scroll_view_item'),
+    }),
+    // Methods to interact with the elements
+    checkScrollViewItemsDisplayed: async function (
+      this: ScrollViewSimpleExampleComponentScreenType,
+    ): Promise<boolean> {
+      return await Utils.checkElementExistence(
+        this.scrollViewItemScreenElement,
+      );
+    },
+    scrollUntilScrollViewSimpleExampleComponentIsDisplayed: async function (
+      this: ScrollViewSimpleExampleComponentScreenType,
+    ): Promise<void> {
+      return await Utils.scrollToElement(
+        this.scrollViewSimpleExampleScreenElement,
+      );
+    },
   };
-  
-  export const ScrollViewSimpleExampleComponentScreen: ScrollViewSimpleExampleComponentScreenType =
-    {
-      // reference in the Components list
-      scrollViewSimpleExampleScreenElement: Utils.platformSelect({
-        ios: iOSName('ScrollViewSimpleExample'),
-        android: androidWidget('TextView', 'text', 'ScrollViewSimpleExample'),
-      }),
-      // References to elements within the ScrollViewSimpleExample Component screen
-      scrollViewItemScreenElement: Utils.platformSelect({
-        ios: iOSName('scroll_view_item'),
-        android: androidWidget('TextView', 'resource-id', 'scroll_view_item'),
-      }),
-      // Methods to interact with the elements
-      checkScrollViewItemsDisplayed: async function (
-        this: ScrollViewSimpleExampleComponentScreenType,
-      ): Promise<boolean> {
-        return await Utils.checkElementExistence(this.scrollViewItemScreenElement);
-      },
-      scrollUntilScrollViewSimpleExampleComponentIsDisplayed: async function (
-        this: ScrollViewSimpleExampleComponentScreenType,
-      ): Promise<void> {
-        return await Utils.scrollToElement(this.scrollViewSimpleExampleScreenElement);
-      },
-    };
-  
