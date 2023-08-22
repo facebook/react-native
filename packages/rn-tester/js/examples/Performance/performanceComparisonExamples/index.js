@@ -13,3 +13,4 @@ export {default as ReRenderWithNonPureChildExample} from './ReRenderWithNonPureC
 export {default as ReRenderWithObjectPropExample} from './ReRenderWithObjectPropExample';
 export {default as SetStateInWrongEffectExample} from './SetStateInWrongEffectExample';
 export {default as RenderOffscreenContentExample} from './RenderOffscreenContentExample';
+export {default as NotMemoizeExpensiveTaskExample} from './NotMemoizeExpensiveTaskExample';
