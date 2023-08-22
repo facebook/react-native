@@ -10,16 +10,7 @@
 
 import type {IPerformanceLogger} from './createPerformanceLogger';
 
-import ReactNativeFeatureFlags from '../ReactNative/ReactNativeFeatureFlags';
-import NativePerformance from '../WebPerformance/NativePerformance';
 import createPerformanceLogger from './createPerformanceLogger';
-
-function isLoggingForWebPerformance(): boolean {
-  return (
-    NativePerformance != null &&
-    ReactNativeFeatureFlags.isGlobalWebPerformanceLoggerEnabled()
-  );
-}
 
 /**
  * This is a global shared instance of IPerformanceLogger that is created with
@@ -28,8 +19,7 @@ function isLoggingForWebPerformance(): boolean {
  * that are logged during loading bundle. If you want to log something from your
  * React component you should use PerformanceLoggerContext instead.
  */
-const GlobalPerformanceLogger: IPerformanceLogger = createPerformanceLogger(
-  isLoggingForWebPerformance(),
-);
+const GlobalPerformanceLogger: IPerformanceLogger =
+  createPerformanceLogger(true);
 
 module.exports = GlobalPerformanceLogger;
