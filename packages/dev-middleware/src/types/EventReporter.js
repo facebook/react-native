@@ -41,7 +41,12 @@ export type ReportableEvent =
     }
   | {
       type: 'connect_debugger_frontend',
-      ...SuccessResult<DebuggerSessionIDs> | ErrorResult<mixed>,
+      ...
+        | SuccessResult<{
+            ...DebuggerSessionIDs,
+            frontendUserAgent: string | null,
+          }>
+        | ErrorResult<mixed>,
     }
   | {
       type: 'debugger_command',
@@ -52,6 +57,7 @@ export type ReportableEvent =
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
+      frontendUserAgent: string | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<

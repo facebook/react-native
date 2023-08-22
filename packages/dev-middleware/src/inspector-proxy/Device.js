@@ -46,7 +46,7 @@ type DebuggerInfo = {
   originalSourceURLAddress?: string,
   prependedFilePrefix: boolean,
   pageId: string,
-  ...
+  userAgent: string | null,
 };
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
@@ -170,12 +170,19 @@ export default class Device {
   // 1. Sends connect event to device
   // 2. Forwards all messages from the debugger to device as wrappedEvent
   // 3. Sends disconnect event to device when debugger connection socket closes.
-  handleDebuggerConnection(socket: WS, pageId: string) {
+  handleDebuggerConnection(
+    socket: WS,
+    pageId: string,
+    metadata: $ReadOnly<{
+      userAgent: string | null,
+    }>,
+  ) {
     // Clear any commands we were waiting on.
     this._deviceEventReporter?.logDisconnection('debugger');
 
     this._deviceEventReporter?.logConnection('debugger', {
-      pageId: pageId,
+      pageId,
+      frontendUserAgent: metadata.userAgent,
     });
 
     // Disconnect current debugger if we already have debugger connected.
@@ -188,6 +195,7 @@ export default class Device {
       socket,
       prependedFilePrefix: false,
       pageId,
+      userAgent: metadata.userAgent,
     };
     this._debuggerConnection = debuggerInfo;
 
@@ -206,6 +214,7 @@ export default class Device {
       const debuggerRequest = JSON.parse(message);
       this._deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: metadata.userAgent,
       });
       const handled = this._interceptMessageFromDebugger(
         debuggerRequest,
@@ -271,6 +280,9 @@ export default class Device {
       newDevice.handleDebuggerConnection(
         oldDebugger.socket,
         oldDebugger.pageId,
+        {
+          userAgent: oldDebugger.userAgent,
+        },
       );
     }
   }
@@ -333,6 +345,7 @@ export default class Device {
       if ('id' in parsedPayload) {
         this._deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId: this._debuggerConnection?.pageId ?? null,
+          frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
         });
       }
 
@@ -414,6 +427,7 @@ export default class Device {
     for (const message of toSend) {
       this._deviceEventReporter?.logRequest(message, 'proxy', {
         pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
       });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
@@ -510,6 +524,7 @@ export default class Device {
       const resumeMessage = {method: 'Debugger.resume', id: 0};
       this._deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
         pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
       });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
@@ -579,6 +594,7 @@ export default class Device {
       socket.send(JSON.stringify(response));
       this._deviceEventReporter?.logResponse(response, 'proxy', {
         pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
       });
     };
     const sendErrorResponse = (error: string) => {
@@ -591,6 +607,7 @@ export default class Device {
       this._sendErrorToDebugger(error);
       this._deviceEventReporter?.logResponse(response, 'proxy', {
         pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
       });
     };
 
