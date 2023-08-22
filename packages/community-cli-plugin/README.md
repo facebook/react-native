@@ -15,7 +15,7 @@ Start the React Native development server.
 #### Usage
 
 ```sh
-react-native start [options]
+npx react-native start [options]
 ```
 
 #### Options
@@ -45,7 +45,7 @@ Build the bundle for the provided JavaScript entry file.
 #### Usage
 
 ```sh
-react-native bundle --entry-file <path> [options]
+npx react-native bundle --entry-file <path> [options]
 ```
 
 #### Options
@@ -75,7 +75,7 @@ Build the [RAM bundle](https://reactnative.dev/docs/ram-bundles-inline-requires)
 #### Usage
 
 ```sh
-react-native ram-bundle --entry-file <path> [options]
+npx react-native ram-bundle --entry-file <path> [options]
 ```
 
 #### Options

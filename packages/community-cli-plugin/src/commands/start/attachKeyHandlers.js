@@ -39,7 +39,11 @@ export default function attachKeyHandlers(
   // $FlowIgnore[prop-missing]
   process.stdin.setRawMode(true);
 
-  const onPressAsync = async (key: string) => {
+  const execaOptions = {
+    env: {FORCE_COLOR: chalk.supportsColor ? 'true' : 'false'},
+  };
+
+  const onPress = async (key: string) => {
     switch (key) {
       case 'r':
         messageSocket.broadcast('reload', null);
@@ -51,19 +55,27 @@ export default function attachKeyHandlers(
         break;
       case 'i':
         logger.info('Opening app on iOS...');
-        execa('npx', [
-          'react-native',
-          'run-ios',
-          ...(cliConfig.project.ios?.watchModeCommandParams ?? []),
-        ]).stdout?.pipe(process.stdout);
+        execa(
+          'npx',
+          [
+            'react-native',
+            'run-ios',
+            ...(cliConfig.project.ios?.watchModeCommandParams ?? []),
+          ],
+          execaOptions,
+        ).stdout?.pipe(process.stdout);
         break;
       case 'a':
         logger.info('Opening app on Android...');
-        execa('npx', [
-          'react-native',
-          'run-android',
-          ...(cliConfig.project.android?.watchModeCommandParams ?? []),
-        ]).stdout?.pipe(process.stdout);
+        execa(
+          'npx',
+          [
+            'react-native',
+            'run-android',
+            ...(cliConfig.project.android?.watchModeCommandParams ?? []),
+          ],
+          execaOptions,
+        ).stdout?.pipe(process.stdout);
         break;
       case CTRL_Z:
         process.emit('SIGTSTP', 'SIGTSTP');
@@ -73,7 +85,7 @@ export default function attachKeyHandlers(
     }
   };
 
-  const keyPressHandler = new KeyPressHandler(onPressAsync);
+  const keyPressHandler = new KeyPressHandler(onPress);
   const listener = keyPressHandler.createInteractionListener();
   addInteractionListener(listener);
   keyPressHandler.startInterceptingKeyStrokes();
