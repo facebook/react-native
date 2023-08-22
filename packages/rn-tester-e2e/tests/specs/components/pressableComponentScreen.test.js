@@ -13,6 +13,9 @@ const {
   PressableComponentScreen,
 } = require('../../screens/components/pressableComponent.screen.js');
 
+// fixed variables
+const onPressText = 'onPress';
+
 describe('Test is checking pressable component', () => {
   test('Should view onPress text', async () => {
     await PressableComponentScreen.scrollUntilPressableComponentIsDisplayed();

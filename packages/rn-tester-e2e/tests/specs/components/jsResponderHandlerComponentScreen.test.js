@@ -16,8 +16,8 @@ const {
 // fixed variables
 const roweZeroText = 'I am row 0';
 
-describe('Test is checking row zero js responder handler', () => {
-  test('Should view properly row zero', async () => {
+describe('Test is checking row zero JSResponderHandler component', () => {
+  test('Should view properly row zero element', async () => {
     await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkJSResponderHandlerComponentIsDisplayed(),

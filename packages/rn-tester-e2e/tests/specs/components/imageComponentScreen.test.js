@@ -16,8 +16,8 @@ const {
     JSResponderHandlerComponentScreen,
   } = require('../../screens/components/jsResponderHandlerComponent.screen.js');
 
-describe('Test is checking plain image', () => {
-  test('Should view properly image', async () => {
+describe('Test is checking plain image component', () => {
+  test('Should view properly image element', async () => {
     await JSResponderHandlerComponentScreen.scrollUntilJSResponderHandlerComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkImageComponentIsDisplayed(),

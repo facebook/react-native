@@ -14,7 +14,7 @@ const {
 } = require('../../screens/components/modalComponent.screen.js');
 
 describe('Test is checking modal component', () => {
-  test('Should view show mode', async () => {
+  test('Should view show modal element', async () => {
     await ModalComponentScreen.scrollUntilModalComponentIsDisplayed();
     expect(
       await ComponentsScreen.checkModalComponentIsDisplayed(),

@@ -177,7 +177,7 @@ describe('Test is checking sticky headers component', () => {
 });
 
 describe('Test is checking nested component', () => {
-  test('Should view properly the sticky pizza element', async () => {
+  test('Should view properly the nested header element', async () => {
     expect(
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
