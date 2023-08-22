@@ -35,6 +35,24 @@ export type ReportableEvent =
   | {
       type: 'connect_debugger_frontend',
       ...SuccessResult<void> | ErrorResult<mixed>,
+    }
+  | {
+      type: 'debugger_command',
+      protocol: 'CDP',
+      // With some errors, the method might not be known
+      method: string | null,
+      requestOrigin: 'proxy' | 'debugger' | null,
+      responseOrigin: 'proxy' | 'device',
+      timeSinceStart: number | null,
+      ...
+        | SuccessResult<void>
+        | CodedErrorResult<
+            | 'TIMED_OUT'
+            | 'DEVICE_DISCONNECTED'
+            | 'DEBUGGER_DISCONNECTED'
+            | 'UNMATCHED_REQUEST_ID'
+            | 'PROTOCOL_ERROR',
+          >,
     };
 
 /**
