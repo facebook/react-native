@@ -31,6 +31,7 @@ module.exports = {
     extraNodeModules: {
       'react-native': path.resolve(__dirname, '../react-native'),
     },
+    platforms: ['ios', 'macos', 'android'],
   },
   serializer: {
     getPolyfills,
