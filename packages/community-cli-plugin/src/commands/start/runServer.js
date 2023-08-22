@@ -34,7 +34,7 @@ import {
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import attachKeyHandlers from './attachKeyHandlers';
 
-export type Args = {
+export type StartCommandArgs = {
   assetPlugins?: string[],
   cert?: string,
   customLogReporterPath?: string,
@@ -53,7 +53,11 @@ export type Args = {
   interactive: boolean,
 };
 
-async function runServer(_argv: Array<string>, ctx: Config, args: Args) {
+async function runServer(
+  _argv: Array<string>,
+  ctx: Config,
+  args: StartCommandArgs,
+) {
   let port = args.port ?? 8081;
   let packager = true;
   const packagerStatus = await isPackagerRunning(port);

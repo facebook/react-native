@@ -10,30 +10,22 @@
  */
 
 import type {Command, Config} from '@react-native-community/cli-types';
-import type {CommandLineArgs} from './bundleCommandLineArgs';
+import type {BundleCommandArgs} from '../bundle';
 
-import outputUnbundle from 'metro/src/shared/output/RamBundle';
-import {bundleWithOutput} from './bundle';
-import bundleCommandLineArgs from './bundleCommandLineArgs';
+import metroRamBundle from 'metro/src/shared/output/RamBundle';
+import bundleCommand from '../bundle';
+import buildBundle from '../bundle/buildBundle';
 
-/**
- * Builds the bundle starting to look for dependencies at the given entry path.
- */
-function ramBundle(
-  argv: Array<string>,
-  config: Config,
-  args: CommandLineArgs,
-): Promise<void> {
-  return bundleWithOutput(argv, config, args, outputUnbundle);
-}
-
-export default ({
+const ramBundleCommand: Command = {
   name: 'ram-bundle',
   description:
     'Build the RAM bundle for the provided JavaScript entry file. See https://reactnative.dev/docs/ram-bundles-inline-requires.',
-  func: ramBundle,
+  func: (argv: Array<string>, config: Config, args: BundleCommandArgs) => {
+    return buildBundle(argv, config, args, metroRamBundle);
+  },
   options: [
-    ...bundleCommandLineArgs,
+    // $FlowFixMe[incompatible-type] options is nonnull
+    ...bundleCommand.options,
     {
       name: '--indexed-ram-bundle',
       description:
@@ -41,6 +33,6 @@ export default ({
       default: false,
     },
   ],
-}: Command);
+};
 
-export {ramBundle};
+export default ramBundleCommand;
