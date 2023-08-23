@@ -92,6 +92,7 @@ describe('Test is checking inverted flat list', () => {
       await ComponentsScreen.checkFlatListComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickFlatListComponent();
+    await FlatListComponentScreen.scrollUntilOnViewableItemsChangedIsDisplayed();
     expect(
       await FlatListComponentScreen.checkFlatListInvertedScreenIsDisplayed(),
     ).toBeTruthy();
