@@ -45,6 +45,10 @@ public class TransformHelper {
     return inRadians ? value : MatrixMathHelper.degreesToRadians(value);
   }
 
+  public static void processTransform(ReadableArray transforms, double[] result) {
+    processTransform(transforms, result, 0, 0, null);
+  }
+
   public static void processTransform(ReadableArray transforms, double[] result, float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     double[] helperMatrix = sHelperMatrix.get();
     MatrixMathHelper.resetIdentityMatrix(result);

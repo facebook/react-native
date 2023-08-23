@@ -132,6 +132,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return view;
   }
 
+  // Currently. onLayout listener is only attached when transform origin prop is being used.
   @Override
   public void onLayoutChange(View v,
                              int left,
@@ -482,7 +483,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
-  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, ReadableArray transformOrigin) {
+  private static void setTransformProperty(@NonNull View view, ReadableArray transforms, @Nullable ReadableArray transformOrigin) {
     sMatrixDecompositionContext.reset();
     TransformHelper.processTransform(transforms, sTransformDecompositionArray,
       PixelUtil.toDIPFromPixel(view.getWidth()), PixelUtil.toDIPFromPixel(view.getHeight()), transformOrigin);
