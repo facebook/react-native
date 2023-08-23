@@ -49,7 +49,6 @@ export default function splitLayoutProps(props: ?____ViewStyle_Internal): {
         case 'bottom':
         case 'top':
         case 'transform':
-        case 'transformOrigin':
         case 'rowGap':
         case 'columnGap':
         case 'gap':
