@@ -481,7 +481,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
     BOOL isHotLoadingEnabled = self.isHotLoadingEnabled;
     [self.callableJSModules invokeModule:@"HMRClient"
                                   method:@"setup"
-                                withArgs:@[ @"ios", path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
+                                withArgs:@[ RCTPlatformName, path, host, RCTNullIfNil(port), @(isHotLoadingEnabled), scheme ]];
   }
 }
 
