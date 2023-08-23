@@ -189,7 +189,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     if (transformMatrix != null) {
       setTransformProperty(view, transformMatrix, transformOrigin);
     }
-    view.addOnLayoutChangeListener(this);
+    if (transformOrigin != null) {
+      view.addOnLayoutChangeListener(this);
+    } else {
+      view.removeOnLayoutChangeListener(this);
+    }
   }
 
   @Override
