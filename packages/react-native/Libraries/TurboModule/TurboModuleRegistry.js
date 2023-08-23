@@ -30,9 +30,8 @@ function isTurboModuleInteropEnabled() {
   return global.RN$TurboInterop === true;
 }
 
-// TODO(154308585): Remove "module not found" debug info logging
-function shouldReportDebugInfo() {
-  return true;
+function shouldReportLoadedModules() {
+  return isTurboModuleInteropEnabled();
 }
 
 // TODO(148943970): Consider reversing the lookup here:
@@ -42,7 +41,7 @@ function requireModule<T: TurboModule>(name: string): ?T {
     // Backward compatibility layer during migration.
     const legacyModule = NativeModules[name];
     if (legacyModule != null) {
-      if (shouldReportDebugInfo()) {
+      if (shouldReportLoadedModules()) {
         moduleLoadHistory.NativeModules.push(name);
       }
       return ((legacyModule: $FlowFixMe): T);
@@ -52,14 +51,14 @@ function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
     if (module != null) {
-      if (shouldReportDebugInfo()) {
+      if (shouldReportLoadedModules()) {
         moduleLoadHistory.TurboModules.push(name);
       }
       return module;
     }
   }
 
-  if (shouldReportDebugInfo()) {
+  if (shouldReportLoadedModules()) {
     moduleLoadHistory.NotFound.push(name);
   }
   return null;
@@ -75,12 +74,7 @@ export function getEnforcing<T: TurboModule>(name: string): T {
     `TurboModuleRegistry.getEnforcing(...): '${name}' could not be found. ` +
     'Verify that a module by this name is registered in the native binary.';
 
-  if (shouldReportDebugInfo()) {
-    message += 'Bridgeless mode: ' + (isBridgeless() ? 'true' : 'false') + '. ';
-    message +=
-      'TurboModule interop: ' +
-      (isTurboModuleInteropEnabled() ? 'true' : 'false') +
-      '. ';
+  if (shouldReportLoadedModules()) {
     message += 'Modules loaded: ' + JSON.stringify(moduleLoadHistory);
   }
 
