@@ -56,14 +56,14 @@ function StartupTimingExample(): React.Node {
   const [startUpTiming, setStartUpTiming] =
     useState<?ReactNativeStartupTiming>(null);
   const onGetStartupTiming = useCallback(() => {
-    // performance.reactNativeStartupTiming is not included in bom.js yet.
+    // performance.rnStartupTiming is not included in bom.js yet.
     // Once we release the change in flow this can be removed.
     // $FlowFixMe[prop-missing]
     // $FlowFixMe[incompatible-call]
-    setStartUpTiming(performance.reactNativeStartupTiming);
+    setStartUpTiming(performance.rnStartupTiming);
   }, []);
   return (
-    <RNTesterPage noScroll={true} title="performance.reactNativeStartupTiming">
+    <RNTesterPage noScroll={true} title="performance.rnStartupTiming">
       <View style={styles.container}>
         <Button
           onPress={onGetStartupTiming}
@@ -109,7 +109,7 @@ exports.examples = [
     },
   },
   {
-    title: 'performance.reactNativeStartupTiming',
+    title: 'performance.rnStartupTiming',
     render: function (): React.Element<typeof StartupTimingExample> {
       return <StartupTimingExample />;
     },
