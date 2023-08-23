@@ -63,5 +63,7 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
    *
    * E.g. transformOrigin: '30% 80% 15px'
    */
-  transformOrigin?: Array<string | number> | string,
+  transformOrigin?:
+    | [string | number, string | number, string | number]
+    | string,
 |}>;

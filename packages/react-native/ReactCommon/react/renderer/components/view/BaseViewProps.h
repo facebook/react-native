@@ -78,7 +78,6 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
   Transform resolveTransform(LayoutMetrics const &layoutMetrics) const;
-  std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewHeight) const;
   bool getClipsContentToBounds() const;
 
 #if RN_DEBUG_STRING_CONVERTIBLE
