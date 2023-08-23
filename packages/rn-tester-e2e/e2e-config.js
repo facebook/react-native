@@ -32,7 +32,7 @@ const android = {
 
 const ios = {
   platformName: 'iOS',
-  'appium:platformVersion': '16.1',
+  'appium:platformVersion': '16.4',
   'appium:deviceName': 'iPhone 14',
   'appium:automationName': 'XCUITest',
   'appium:app': path.join(process.cwd(), '/apps/rn-tester.app'),
