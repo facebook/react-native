@@ -199,7 +199,7 @@ Size operator*(Size const &size, Transform const &transform);
 Rect operator*(Rect const &rect, Transform const &transform);
 
 /*
- * Applies tranformation to the given EdgeInsets.
+ * Applies transformation to the given EdgeInsets.
  * ONLY SUPPORTS scale transformation.
  */
 EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);

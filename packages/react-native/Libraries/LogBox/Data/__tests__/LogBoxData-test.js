@@ -527,7 +527,7 @@ describe('LogBoxData', () => {
     flushToObservers();
     expect(observer.mock.calls.length).toBe(2);
 
-    // We expect observers to recieve the same Set object in sequential updates
+    // We expect observers to receive the same Set object in sequential updates
     // so that it doesn't break memoization for components observing state.
     expect(observer.mock.calls[0][0].logs).toBe(observer.mock.calls[1][0].logs);
   });

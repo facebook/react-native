@@ -30,7 +30,7 @@ class UnimplementedViewComponentDescriptor final
   ComponentName getComponentName() const override;
 
   /*
-   * In addtion to base implementation, stores a component name inside cloned
+   * In addition to base implementation, stores a component name inside cloned
    * `Props` object.
    */
   Props::Shared cloneProps(

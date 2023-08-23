@@ -27,6 +27,6 @@
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                      reactTag:(NSNumber *)reactTag
-               sizeFlexiblity:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
+              sizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 
 @end

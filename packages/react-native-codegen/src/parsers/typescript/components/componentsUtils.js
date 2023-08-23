@@ -262,6 +262,10 @@ function getCommonTypeAnnotation<T>(
       return {
         type: 'StringTypeAnnotation',
       };
+    case 'UnsafeMixed':
+      return {
+        type: 'MixedTypeAnnotation',
+      };
     default:
       return undefined;
   }

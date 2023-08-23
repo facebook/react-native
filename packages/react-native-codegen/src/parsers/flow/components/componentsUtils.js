@@ -391,6 +391,10 @@ function getTypeAnnotation<+T>(
       throw new Error(
         `Cannot use "${type}" type annotation for "${name}": must use a specific numeric type like Int32, Double, or Float`,
       );
+    case 'UnsafeMixed':
+      return {
+        type: 'MixedTypeAnnotation',
+      };
     default:
       (type: empty);
       throw new Error(

@@ -12,7 +12,7 @@ namespace react {
 
 /*
  * Contains the set of feature flags for the renderer core.
- * Some of them are temporary and may be eventualy phased out
+ * Some of them are temporary and may be eventually phased out
  * as soon as the feature is fully implemented.
  */
 class CoreFeatures {

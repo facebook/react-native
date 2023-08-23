@@ -42,7 +42,7 @@ class YogaStylableProps : public Props {
   YGStyle yogaStyle{};
 
   // Duplicates of existing properties with different names, taking
-  // precendence. E.g. "marginBlock" instead of "marginVertical"
+  // precedence. E.g. "marginBlock" instead of "marginVertical"
   CompactValue inset;
   CompactValue insetInline;
   CompactValue insetInlineEnd;

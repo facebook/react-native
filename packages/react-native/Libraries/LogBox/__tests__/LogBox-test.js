@@ -108,7 +108,7 @@ describe('LogBox', () => {
     jest.mock('../Data/LogBoxData');
     const mockError = new Error('Simulated error');
 
-    // Picking a random implemention detail to simulate throwing.
+    // Picking a random implementation detail to simulate throwing.
     (LogBoxData.isMessageIgnored: any).mockImplementation(() => {
       throw mockError;
     });

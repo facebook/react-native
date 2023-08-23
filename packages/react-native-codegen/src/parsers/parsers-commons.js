@@ -22,6 +22,7 @@ import type {
   NativeModulePropertyShape,
   SchemaType,
   NativeModuleEnumMap,
+  OptionsShape,
 } from '../CodegenSchema.js';
 
 import type {Parser} from './parser';
@@ -60,6 +61,13 @@ const {
 } = require('./errors');
 
 const invariant = require('invariant');
+
+export type CommandOptions = $ReadOnly<{
+  supportedCommands: $ReadOnlyArray<string>,
+}>;
+
+// $FlowFixMe[unclear-type] TODO(T108222691): Use flow-types for @babel/parser
+type OptionsAST = Object;
 
 function wrapModuleSchema(
   nativeModuleSchema: NativeModuleSchema,
@@ -699,6 +707,68 @@ function findNativeComponentType(
   }
 }
 
+function getCommandOptions(
+  commandOptionsExpression: OptionsAST,
+): ?CommandOptions {
+  if (commandOptionsExpression == null) {
+    return null;
+  }
+
+  let foundOptions;
+  try {
+    foundOptions = commandOptionsExpression.properties.reduce(
+      (options, prop) => {
+        options[prop.key.name] = (
+          (prop && prop.value && prop.value.elements) ||
+          []
+        ).map(element => element && element.value);
+        return options;
+      },
+      {},
+    );
+  } catch (e) {
+    throw new Error(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
+  }
+
+  return foundOptions;
+}
+
+function getOptions(optionsExpression: OptionsAST): ?OptionsShape {
+  if (!optionsExpression) {
+    return null;
+  }
+  let foundOptions;
+  try {
+    foundOptions = optionsExpression.properties.reduce((options, prop) => {
+      if (prop.value.type === 'ArrayExpression') {
+        options[prop.key.name] = prop.value.elements.map(
+          element => element.value,
+        );
+      } else {
+        options[prop.key.name] = prop.value.value;
+      }
+      return options;
+    }, {});
+  } catch (e) {
+    throw new Error(
+      'Failed to parse codegen options, please check that they are defined correctly',
+    );
+  }
+
+  if (
+    foundOptions.paperComponentName &&
+    foundOptions.paperComponentNameDeprecated
+  ) {
+    throw new Error(
+      'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
+    );
+  }
+
+  return foundOptions;
+}
+
 module.exports = {
   wrapModuleSchema,
   unwrapNullable,
@@ -714,4 +784,6 @@ module.exports = {
   parseModuleName,
   buildModuleSchema,
   findNativeComponentType,
+  getCommandOptions,
+  getOptions,
 };

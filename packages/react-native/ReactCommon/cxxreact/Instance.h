@@ -111,7 +111,7 @@ class RN_EXPORT Instance {
    *   When all queued NativeModule method calls are flushed by a call from
    *   Native -> JS, if that queue was non-zero in size, JsToNativeBridge
    *   dispatches onBatchComplete. When we turn our NativeModules to
-   *   TurboModuels, there will be less and less pending NativeModule method
+   *   TurboModules, there will be less and less pending NativeModule method
    *   calls, so onBatchComplete will not fire as often. Therefore, the bridge
    *   needs to know how many TurboModule async method calls have been completed
    *   since the last time the bridge was flushed. If this number is non-zero,
@@ -120,7 +120,7 @@ class RN_EXPORT Instance {
    * Why can't we just create and return a new native CallInvoker?
    *
    * - On Android, we have one NativeModule thread. That thread is created and
-   *   managed outisde of NativeToJsBridge. On iOS, we have one MethodQueue per
+   *   managed outside of NativeToJsBridge. On iOS, we have one MethodQueue per
    *   module. Those MethodQueues are also created and managed outside of
    *   NativeToJsBridge. Therefore, we need to pass in a CallInvoker that
    *   schedules work on the respective thread.

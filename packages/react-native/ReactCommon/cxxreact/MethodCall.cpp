@@ -15,7 +15,7 @@ namespace react {
 
 #define REQUEST_MODULE_IDS 0
 #define REQUEST_METHOD_IDS 1
-#define REQUEST_PARAMSS 2
+#define REQUEST_PARAMS 2
 #define REQUEST_CALLID 3
 
 static const char *errorPrefix = "Malformed calls from JS: ";
@@ -30,14 +30,14 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic &&jsonData) {
         errorPrefix, "input isn't array but ", jsonData.typeName()));
   }
 
-  if (jsonData.size() < REQUEST_PARAMSS + 1) {
+  if (jsonData.size() < REQUEST_PARAMS + 1) {
     throw std::invalid_argument(
         folly::to<std::string>(errorPrefix, "size == ", jsonData.size()));
   }
 
   auto &moduleIds = jsonData[REQUEST_MODULE_IDS];
   auto &methodIds = jsonData[REQUEST_METHOD_IDS];
-  auto &params = jsonData[REQUEST_PARAMSS];
+  auto &params = jsonData[REQUEST_PARAMS];
   int callId = -1;
 
   if (!moduleIds.isArray() || !methodIds.isArray() || !params.isArray()) {

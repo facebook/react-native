@@ -32,7 +32,7 @@ class EventDispatcher {
   EventDispatcher(
       EventQueueProcessor const &eventProcessor,
       EventBeat::Factory const &synchonousEventBeatFactory,
-      EventBeat::Factory const &asynchonousEventBeatFactory,
+      EventBeat::Factory const &asynchronousEventBeatFactory,
       EventBeat::SharedOwnerBox const &ownerBox);
 
   /*

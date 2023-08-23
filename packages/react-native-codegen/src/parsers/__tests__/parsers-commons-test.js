@@ -21,6 +21,8 @@ import {
   buildSchema,
   parseModuleName,
   createComponentConfig,
+  getCommandOptions,
+  getOptions,
 } from '../parsers-commons';
 import type {ParserType} from '../errors';
 
@@ -1275,5 +1277,135 @@ describe('createComponentConfig', () => {
       const configs = createComponentConfig(foundConfig, commandsTypeNames);
       expect(configs).toEqual(expectedConfig);
     });
+  });
+});
+
+describe('getCommandOptions', () => {
+  it('returns null when commandOptionsExpression is null', () => {
+    const result = getCommandOptions(null);
+    expect(result).toBeNull();
+  });
+
+  it('parses and returns command options correctly', () => {
+    const commandOptionsExpression = {
+      properties: [
+        {
+          range: [],
+          loc: {},
+          type: '',
+          key: {
+            name: 'hotspotUpdate',
+            loc: {},
+          },
+          value: {
+            elements: [
+              {
+                value: 'value',
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const result = getCommandOptions(commandOptionsExpression);
+    expect(result).toEqual({
+      hotspotUpdate: ['value'],
+    });
+  });
+
+  it('should throw an error if command options are not defined correctly', () => {
+    const commandOptionsExpression = {
+      properties: null,
+    };
+    expect(() => getCommandOptions(commandOptionsExpression)).toThrowError(
+      'Failed to parse command options, please check that they are defined correctly',
+    );
+  });
+});
+
+describe('getOptions', () => {
+  it('returns null if optionsExpression is falsy', () => {
+    expect(getOptions(null)).toBeNull();
+    expect(getOptions(undefined)).toBeNull();
+    expect(getOptions(false)).toBeNull();
+    expect(getOptions(0)).toBeNull();
+    expect(getOptions('')).toBeNull();
+  });
+
+  it('parses and returns options correctly if codegen options are defined correctly', () => {
+    const optionsExpression = {
+      properties: [
+        {
+          value: {
+            type: 'ArrayExpression',
+            value: 'value',
+            elements: [
+              {
+                value: 'value1',
+              },
+            ],
+          },
+          key: {
+            name: 'keyName',
+          },
+        },
+      ],
+    };
+    expect(getOptions(optionsExpression)).toEqual({
+      keyName: ['value1'],
+    });
+  });
+
+  it('throws an error if codegen options are not defined correctly', () => {
+    const optionsExpression = {
+      properties: null,
+    };
+    expect(() => getOptions(optionsExpression)).toThrowError(
+      'Failed to parse codegen options, please check that they are defined correctly',
+    );
+  });
+
+  it('throws an error if both paperComponentName and paperComponentNameDeprecated are used', () => {
+    const optionsExpression = {
+      properties: [
+        {
+          key: {name: 'paperComponentName'},
+          value: {value: 'RCTRefreshControl'},
+        },
+        {
+          key: {name: 'paperComponentNameDeprecated'},
+          value: {value: 'RCTSwitch'},
+        },
+      ],
+    };
+    expect(() => getOptions(optionsExpression)).toThrowError(
+      'Failed to parse codegen options, cannot use both paperComponentName and paperComponentNameDeprecated',
+    );
+  });
+
+  it('returns options if only paperComponentName is used', () => {
+    const optionsExpression = {
+      properties: [
+        {
+          key: {name: 'paperComponentName'},
+          value: {value: 'RCTRefreshControl'},
+        },
+      ],
+    };
+    const expectedOptions = {paperComponentName: 'RCTRefreshControl'};
+    expect(getOptions(optionsExpression)).toEqual(expectedOptions);
+  });
+
+  it('returns options if only paperComponentNameDeprecated is used', () => {
+    const optionsExpression = {
+      properties: [
+        {
+          key: {name: 'paperComponentNameDeprecated'},
+          value: {value: 'RCTRefreshControl'},
+        },
+      ],
+    };
+    const expectedOptions = {paperComponentNameDeprecated: 'RCTRefreshControl'};
+    expect(getOptions(optionsExpression)).toEqual(expectedOptions);
   });
 });

@@ -109,7 +109,7 @@ moveOutputs () {
     ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
 }
 
-withCodgenDiscovery () {
+withCodegenDiscovery () {
     setup_dirs
     find_node
     find_codegen
@@ -127,7 +127,7 @@ noCodegenDiscovery () {
 }
 
 if [ "$RCT_SCRIPT_TYPE" = "withCodegenDiscovery" ]; then
-    withCodgenDiscovery "$@"
+    withCodegenDiscovery "$@"
 else
     noCodegenDiscovery "$@"
 fi

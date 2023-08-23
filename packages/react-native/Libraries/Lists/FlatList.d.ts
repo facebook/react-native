@@ -41,7 +41,7 @@ export interface FlatListProps<ItemT> extends VirtualizedListProps<ItemT> {
 
   /**
    * An array (or array-like list) of items to render. Other data types can be
-   * used by targetting VirtualizedList directly.
+   * used by targeting VirtualizedList directly.
    */
   data: ArrayLike<ItemT> | null | undefined;
 

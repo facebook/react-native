@@ -270,7 +270,7 @@ describe('Native Animated', () => {
       );
     });
 
-    it('shoud map AnimatedValueXY', () => {
+    it('should map AnimatedValueXY', () => {
       const value = new Animated.ValueXY({x: 0, y: 0});
       value.__makeNative();
       const event = Animated.event([{nativeEvent: {state: value}}], {

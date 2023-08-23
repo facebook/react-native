@@ -183,7 +183,7 @@ class SurfaceHandler {
   };
 
   /*
-   * Represents an underlying link to a `ShadowTree` and an `UIMananger`.
+   * Represents an underlying link to a `ShadowTree` and an `UIManager`.
    * Registering, unregistering, starting, and stopping the surface requires
    * acquiring a unique lock; other access needs only a shared lock.
    */

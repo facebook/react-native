@@ -90,7 +90,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   movq $0x10, %rdi
   callq SYMBOL_NAME_PIC(RCTProfileMalloc)
 
-  // store the initial value of calle saved registers %r13 and %r14
+  // store the initial value of caller saved registers %r13 and %r14
   movq %r13, 0x0(%rax)
   movq %r14, 0x8(%rax)
 

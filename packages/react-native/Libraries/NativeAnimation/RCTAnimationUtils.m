@@ -104,8 +104,8 @@ uint32_t RCTInterpolateColorInRange(CGFloat value, NSArray<NSNumber *> *inputRan
 
 uint32_t RCTColorFromComponents(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha)
 {
-  return ((uint32_t)round(alpha * 255) & 0xFF) << 24 | ((uint32_t)round(red) & 0xFF) << 16 | ((uint32_t)round(green) & 0xFF) << 8 |
-      ((uint32_t)round(blue) & 0xFF);
+  return ((uint32_t)round(alpha * 255) & 0xFF) << 24 | ((uint32_t)round(red) & 0xFF) << 16 |
+      ((uint32_t)round(green) & 0xFF) << 8 | ((uint32_t)round(blue) & 0xFF);
 }
 
 #if TARGET_IPHONE_SIMULATOR

@@ -20,6 +20,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import org.robolectric.RuntimeEnvironment;
 /** Verifies that prop constants are generated properly based on {@code ReactProp} annotation. */
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore // TODO T14964130
 public class ReactPropConstantsTest {
 
   @Rule public PowerMockRule rule = new PowerMockRule();

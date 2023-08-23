@@ -35,7 +35,7 @@ class TimelineController final : public UIManagerCommitHook {
 
   /*
    * Consumes and destroys a `TimelineHandler` instance triggering the
-   * destruction of all associated resources and stoping the introspection
+   * destruction of all associated resources and stopping the introspection
    * process.
    */
   void disable(TimelineHandler &&handler) const;

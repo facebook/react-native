@@ -98,7 +98,7 @@ const alignPackageVersions = () => {
     process.exit(1);
   }
 
-  forEachPackage((packageAbsolutePath, _, packageManifest) => {
+  forEachPackage((_, __, packageManifest) => {
     checkIfShouldUpdateDependencyPackageVersion(
       ROOT_LOCATION,
       packageManifest.name,
@@ -111,12 +111,14 @@ const alignPackageVersions = () => {
       packageManifest.version,
     );
 
-    forEachPackage(pathToPackage =>
-      checkIfShouldUpdateDependencyPackageVersion(
-        pathToPackage,
-        packageManifest.name,
-        packageManifest.version,
-      ),
+    forEachPackage(
+      pathToPackage =>
+        checkIfShouldUpdateDependencyPackageVersion(
+          pathToPackage,
+          packageManifest.name,
+          packageManifest.version,
+        ),
+      {includeReactNative: true},
     );
   });
 

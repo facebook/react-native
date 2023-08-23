@@ -15,5 +15,6 @@ declare module 'use-sync-external-store/shim' {
   declare export function useSyncExternalStore<Value>(
     subscribe: (callback: Function) => () => void,
     getCurrentValue: () => Value,
+    getServerSnapshot?: () => Value,
   ): Value;
 }

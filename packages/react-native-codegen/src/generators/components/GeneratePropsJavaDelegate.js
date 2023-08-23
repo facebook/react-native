@@ -144,6 +144,8 @@ function getJavaValueForProp(
       return '(String) value';
     case 'Int32EnumTypeAnnotation':
       return `value == null ? ${typeAnnotation.default} : ((Double) value).intValue()`;
+    case 'MixedTypeAnnotation':
+      return 'new DynamicFromObject(value)';
     default:
       (typeAnnotation: empty);
       throw new Error('Received invalid typeAnnotation');

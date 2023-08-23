@@ -202,11 +202,11 @@ inline void fromRawValue(
     } else if (string == "no-hide-descendants") {
       result = ImportantForAccessibility::NoHideDescendants;
     } else {
-      LOG(ERROR) << "Unsupported ImportantForAccessiblity value: " << string;
+      LOG(ERROR) << "Unsupported ImportantForAccessibility value: " << string;
       react_native_expect(false);
     }
   } else {
-    LOG(ERROR) << "Unsupported ImportantForAccessiblity type";
+    LOG(ERROR) << "Unsupported ImportantForAccessibility type";
   }
 }
 

@@ -301,7 +301,7 @@ public class UIImplementation {
    * Invoked when there is a mutation in a node tree.
    *
    * @param tag react tag of the node we want to manage
-   * @param indicesToRemove ordered (asc) list of indicies at which view should be removed
+   * @param indicesToRemove ordered (asc) list of indices at which view should be removed
    * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
    *     a view which should be added at the specified index
    * @param tagsToDelete list of tags corresponding to views that should be removed

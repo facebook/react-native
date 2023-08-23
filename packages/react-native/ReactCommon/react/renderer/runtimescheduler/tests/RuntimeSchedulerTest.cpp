@@ -6,7 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <hermes/API/hermes/hermes.h>
+#include <hermes/hermes.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <memory>

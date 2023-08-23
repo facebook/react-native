@@ -1,6 +1,6 @@
 load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "CXX", "react_native_xplat_target", "rn_xplat_cxx_library")
 
-# TODO: Expolre merging this module into venice so we don't to load this library seperately
+# TODO: Expolre merging this module into venice so we don't to load this library separately
 rn_xplat_cxx_library(
     name = "jserrorhandler",
     srcs = glob(["*.cpp"]),

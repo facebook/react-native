@@ -46,7 +46,7 @@ public class ModuleHolder {
   private final ReactModuleInfo mReactModuleInfo;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
-  // Outside of the constructur, these should only be checked or set when synchronized on this
+  // Outside of the constructor, these should only be checked or set when synchronized on this
   private @Nullable @GuardedBy("this") NativeModule mModule;
 
   // These are used to communicate phases of creation and initialization across threads

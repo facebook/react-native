@@ -197,7 +197,7 @@ const ALL_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, WithDefault, UnsafeMixed} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {
   ColorValue,
@@ -310,6 +310,10 @@ export interface ModuleProps extends ViewProps {
   dimension_optional_key?: DimensionValue;
   dimension_optional_value: DimensionValue | null | undefined;
   dimension_optional_both?: DimensionValue | null | undefined;
+
+  // Mixed props
+  mixed_required: UnsafeMixed,
+  mixed_optional_key?: UnsafeMixed,
 }
 
 export default codegenNativeComponent<ModuleProps>(

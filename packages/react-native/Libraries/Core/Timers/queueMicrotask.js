@@ -13,7 +13,7 @@
 let resolvedPromise;
 
 /**
- * Polyfill for the microtask queuening API defined by WHATWG HTMP spec.
+ * Polyfill for the microtask queueing API defined by WHATWG HTML spec.
  * https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#dom-queuemicrotask
  *
  * The method must queue a microtask to invoke @param {function} callback, and

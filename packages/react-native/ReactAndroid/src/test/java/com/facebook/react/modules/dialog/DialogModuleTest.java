@@ -7,9 +7,11 @@
 
 package com.facebook.react.modules.dialog;
 
+import static android.os.Looper.getMainLooper;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,6 +21,7 @@ import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
@@ -29,6 +32,7 @@ import org.robolectric.android.controller.ActivityController;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
+@Ignore("Ignored due to unsupported mocking mechanism with JDK 18")
 public class DialogModuleTest {
 
   private ActivityController<FragmentActivity> mActivityController;
@@ -86,8 +90,10 @@ public class DialogModuleTest {
     options.putBoolean("cancelable", false);
 
     mDialogModule.showAlert(options, null, null);
+    shadowOf(getMainLooper()).idle();
 
     final AlertFragment fragment = getFragment();
+
     assertNotNull("Fragment was not displayed", fragment);
     assertFalse(fragment.isCancelable());
 
@@ -104,9 +110,11 @@ public class DialogModuleTest {
 
     final SimpleCallback actionCallback = new SimpleCallback();
     mDialogModule.showAlert(options, null, actionCallback);
+    shadowOf(getMainLooper()).idle();
 
     final AlertDialog dialog = (AlertDialog) getFragment().getDialog();
     dialog.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+    shadowOf(getMainLooper()).idle();
 
     assertEquals(1, actionCallback.getCalls());
     assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.getArgs()[0]);
@@ -120,9 +128,11 @@ public class DialogModuleTest {
 
     final SimpleCallback actionCallback = new SimpleCallback();
     mDialogModule.showAlert(options, null, actionCallback);
+    shadowOf(getMainLooper()).idle();
 
     final AlertDialog dialog = (AlertDialog) getFragment().getDialog();
     dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick();
+    shadowOf(getMainLooper()).idle();
 
     assertEquals(1, actionCallback.getCalls());
     assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.getArgs()[0]);
@@ -136,9 +146,11 @@ public class DialogModuleTest {
 
     final SimpleCallback actionCallback = new SimpleCallback();
     mDialogModule.showAlert(options, null, actionCallback);
+    shadowOf(getMainLooper()).idle();
 
     final AlertDialog dialog = (AlertDialog) getFragment().getDialog();
     dialog.getButton(DialogInterface.BUTTON_NEUTRAL).performClick();
+    shadowOf(getMainLooper()).idle();
 
     assertEquals(1, actionCallback.getCalls());
     assertEquals(DialogModule.ACTION_BUTTON_CLICKED, actionCallback.getArgs()[0]);
@@ -151,8 +163,10 @@ public class DialogModuleTest {
 
     final SimpleCallback actionCallback = new SimpleCallback();
     mDialogModule.showAlert(options, null, actionCallback);
+    shadowOf(getMainLooper()).idle();
 
     getFragment().getDialog().dismiss();
+    shadowOf(getMainLooper()).idle();
 
     assertEquals(1, actionCallback.getCalls());
     assertEquals(DialogModule.ACTION_DISMISSED, actionCallback.getArgs()[0]);

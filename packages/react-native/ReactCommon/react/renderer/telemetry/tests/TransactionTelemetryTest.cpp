@@ -26,7 +26,7 @@ MockClock::time_point MockClock::time_ = {};
  * The OS might decide right before the specified time elapsed to schedule
  * another thread/process, with the result that more time passes in reality than
  * the caller intended. Prefer the `MockClock` and only use this function to
- * verify that at least the specifid time has passed but wihtout making exact
+ * verify that at least the specified time has passed but without making exact
  * verifications.
  */
 static void sleepAtLeast(double durationInSeconds) {

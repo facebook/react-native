@@ -103,7 +103,7 @@ inline static jsi::Value valueFromShadowNodeList(
       std::make_shared<ShadowNodeListWrapper>(std::move(shadowNodeList));
   if (CoreFeatures::useNativeState) {
     // Use the wrapper for NativeState too, otherwise we can't implement
-    // the marker interface. Could be simplifed to a simple struct wrapper.
+    // the marker interface. Could be simplified to a simple struct wrapper.
     jsi::Object obj(runtime);
     obj.setNativeState(runtime, std::move(wrapper));
     return obj;

@@ -29,7 +29,7 @@
 
   NSInteger _ghostTextPosition; // [macOS] only valid if _ghostText != nil
 
-  BOOL _hasInputAccesoryView;
+  BOOL _hasInputAccessoryView;
   // [macOS] remove explicit _predictedText ivar declaration
   BOOL _didMoveToWindow;
 }
@@ -844,18 +844,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)decoder)
 
   // These keyboard types (all are number pads) don't have a "Done" button by default,
   // so we create an `inputAccessoryView` with this button for them.
-  BOOL shouldHaveInputAccesoryView =
+  BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
       textInputView.returnKeyType == UIReturnKeyDone;
 
-  if (_hasInputAccesoryView == shouldHaveInputAccesoryView) {
+  if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
   }
 
-  _hasInputAccesoryView = shouldHaveInputAccesoryView;
+  _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
-  if (shouldHaveInputAccesoryView) {
+  if (shouldHaveInputAccessoryView) {
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =

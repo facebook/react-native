@@ -24,7 +24,7 @@
  * @end
  * ```
  *
- * All the methods implemented by the RCTAppDelegate can be overriden by your AppDelegate if you need to provide a
+ * All the methods implemented by the RCTAppDelegate can be overridden by your AppDelegate if you need to provide a
  custom implementation.
  * If you need to customize the default implementation, you can invoke `[super <method_name>]` and use the returned
  object.

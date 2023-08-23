@@ -24,9 +24,11 @@ const nodeFiles = new RegExp(
     '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc.
   ].join('|'),
 );
-const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
-babelRegisterOnly([]);
+// Use metro-babel-register to build the Babel configuration we need for Node
+// files, but Jest takes care of hooking require so we don't actually register
+// Babel here.
+const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 const transformer = require('metro-react-native-babel-transformer');
 module.exports = {

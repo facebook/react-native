@@ -37,7 +37,7 @@ class ComponentDescriptorProviderRegistry final {
   /*
    * ComponenDescriptorRegistry will call the `request` in case if a component
    * with given name wasn't registered yet.
-   * The request handler must register a ComponentDescripor with requested name
+   * The request handler must register a ComponentDescriptor with requested name
    * synchronously during handling the request.
    * The request can be called on any thread.
    * The methods can be called on any thread.

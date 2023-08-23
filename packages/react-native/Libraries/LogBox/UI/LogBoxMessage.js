@@ -146,12 +146,12 @@ function LogBoxMessage(props: Props): React.Node {
       createUnderLength(key, prevPart);
     }
 
-    const substititionPart = content.substr(
+    const substitutionPart = content.substr(
       substitution.offset,
       substitution.length,
     );
 
-    createUnderLength(key + '.5', substititionPart, substitutionStyle);
+    createUnderLength(key + '.5', substitutionPart, substitutionStyle);
     return substitution.offset + substitution.length;
   }, 0);
 

@@ -20,6 +20,7 @@ import type {
   FloatTypeAnnotation,
   Int32TypeAnnotation,
   PropTypeAnnotation,
+  MixedTypeAnnotation,
 } from '../../../CodegenSchema';
 
 const {capitalize} = require('../../Utils');
@@ -89,7 +90,8 @@ export type PojoTypeAnnotation =
             type: 'ArrayTypeAnnotation',
             elementType: PojoTypeAliasAnnotation,
           }>,
-    }>;
+    }>
+  | MixedTypeAnnotation;
 
 class PojoCollector {
   _pojos: Map<string, Pojo> = new Map();
