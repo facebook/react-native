@@ -80,3 +80,7 @@ WebSocket handler for registering device connections.
 #### `/inspector/debug`
 
 WebSocket handler that proxies CDP messages to/from the corresponding device.
+
+## Contributing
+
+Changes to this package can be made locally and tested against the `rn-tester` app, per the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code). During development, this package is automatically run from source with no build step.

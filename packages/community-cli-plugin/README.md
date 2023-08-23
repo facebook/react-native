@@ -85,3 +85,7 @@ Accepts all options supported by [`bundle`](#bundle) and the following:
 | Option | Description |
 | - | - |
 | `--indexed-ram-bundle` | Force the "Indexed RAM" bundle file format, even when building for Android. |
+
+## Contributing
+
+Changes to this package can be made locally and tested against the `rn-tester` app, per the [Contributing guide](https://reactnative.dev/contributing/overview#contributing-code). During development, this package is automatically run from source with no build step.
