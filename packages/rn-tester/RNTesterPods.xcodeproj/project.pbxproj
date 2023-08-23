@@ -56,7 +56,6 @@
 		E7DB216322B2F3EC005AC45F /* RCTLoggingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */; };
 		E7DB216422B2F3EC005AC45F /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */; };
 		E7DB216522B2F3EC005AC45F /* RNTesterSnapshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */; };
-		E7DB216622B2F3EC005AC45F /* RCTRootViewIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */; };
 		E7DB216722B2F69F005AC45F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB213022B2C649005AC45F /* JavaScriptCore.framework */; };
 		E7DB218C22B41FCD005AC45F /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DB218B22B41FCD005AC45F /* XCTest.framework */; };
 /* End PBXBuildFile section */
@@ -176,7 +175,6 @@
 		E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLoggingTests.m; sourceTree = "<group>"; };
 		E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTUIManagerScenarioTests.m; sourceTree = "<group>"; };
 		E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterSnapshotTests.m; sourceTree = "<group>"; };
-		E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTRootViewIntegrationTests.m; sourceTree = "<group>"; };
 		E7DB218B22B41FCD005AC45F /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -391,7 +389,6 @@
 			children = (
 				E7C1241922BEC44B00DA25C0 /* RNTesterIntegrationTests.m */,
 				E7DB215E22B2F3EC005AC45F /* RCTLoggingTests.m */,
-				E7DB216122B2F3EC005AC45F /* RCTRootViewIntegrationTests.m */,
 				E7DB215F22B2F3EC005AC45F /* RCTUIManagerScenarioTests.m */,
 				E7DB216022B2F3EC005AC45F /* RNTesterSnapshotTests.m */,
 				E7DB215D22B2F3EC005AC45F /* RNTesterTestModule.m */,
@@ -798,7 +795,6 @@
 				E7DB216222B2F3EC005AC45F /* RNTesterTestModule.m in Sources */,
 				E7C1241A22BEC44B00DA25C0 /* RNTesterIntegrationTests.m in Sources */,
 				E7DB216322B2F3EC005AC45F /* RCTLoggingTests.m in Sources */,
-				E7DB216622B2F3EC005AC45F /* RCTRootViewIntegrationTests.m in Sources */,
 				E7DB216422B2F3EC005AC45F /* RCTUIManagerScenarioTests.m in Sources */,
 				E7DB216522B2F3EC005AC45F /* RNTesterSnapshotTests.m in Sources */,
 			);
