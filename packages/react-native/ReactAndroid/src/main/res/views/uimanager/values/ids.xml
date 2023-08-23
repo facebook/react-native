@@ -53,4 +53,7 @@
 
   <!-- tag is used to store role tag-->
   <item type="id" name="role"/>
+
+  <!-- tag is used to invalidate transform style in view manager -->
+  <item type="id" name="invalidate_transform"/>
 </resources>

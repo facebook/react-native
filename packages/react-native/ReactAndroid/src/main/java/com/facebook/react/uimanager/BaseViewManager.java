@@ -173,22 +173,14 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.TRANSFORM)
   public void setTransform(@NonNull T view, @Nullable ReadableArray matrix) {
     view.setTag(R.id.transform, matrix);
-    if (matrix == null) {
-      resetTransformProperty(view);
-    } else {
-      ReadableArray transformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
-      setTransformProperty(view, matrix, transformOrigin);
-    }
+    view.setTag(R.id.invalidate_transform, true);
   }
 
   @Override
   @ReactProp(name = ViewProps.TRANSFORM_ORIGIN)
   public void setTransformOrigin(@NonNull T view, @Nullable ReadableArray transformOrigin) {
     view.setTag(R.id.transform_origin, transformOrigin);
-    ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
-    if (transformMatrix != null) {
-      setTransformProperty(view, transformMatrix, transformOrigin);
-    }
+    view.setTag(R.id.invalidate_transform, true);
     if (transformOrigin != null) {
       view.addOnLayoutChangeListener(this);
     } else {
@@ -575,6 +567,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
+    Boolean invalidateTransform = (Boolean) view.getTag(R.id.invalidate_transform);
+    if (invalidateTransform != null && invalidateTransform) {
+      ReadableArray transformOrigin = (ReadableArray) view.getTag(R.id.transform_origin);
+      ReadableArray transformMatrix = (ReadableArray) view.getTag(R.id.transform);
+      setTransformProperty(view, transformMatrix, transformOrigin);
+      view.setTag(R.id.invalidate_transform, false);
+    }
   }
 
   @Override

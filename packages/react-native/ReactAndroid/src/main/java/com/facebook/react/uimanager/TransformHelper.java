@@ -125,7 +125,7 @@ public class TransformHelper {
     }
   }
 
-  public static float[] getTranslateForTransformOrigin(float viewWidth, float viewHeight, ReadableArray transformOrigin) {
+  private static float[] getTranslateForTransformOrigin(float viewWidth, float viewHeight, ReadableArray transformOrigin) {
     if (transformOrigin == null || (viewHeight == 0 && viewWidth == 0)) {
       return null;
     }
