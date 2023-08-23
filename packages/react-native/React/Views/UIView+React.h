@@ -105,6 +105,10 @@
 @property (nonatomic, readonly) UIEdgeInsets reactCompoundInsets;
 @property (nonatomic, readonly) CGRect reactContentFrame;
 
+/**
+ * The anchorPoint property doesn't work in the same way as on web - updating it updates the frame.
+ * To work around this, we take both the transform and the transform-origin, and compute it ourselves
+ */
 @property (nonatomic, assign) CATransform3D reactTransform;
 @property (nonatomic, assign) RCTTransformOrigin reactTransformOrigin;
 

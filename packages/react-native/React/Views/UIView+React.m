@@ -204,7 +204,7 @@
   self.center = position;
   self.bounds = bounds;
 
-  [self updateTransform];
+  updateTransform(self);
 }
 
 #pragma mark - Transforms
@@ -219,21 +219,23 @@
 {
   objc_setAssociatedObject(
       self, @selector(reactTransform), @(reactTransform), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  [self updateTransform];
+  updateTransform(self);
 }
 
 - (RCTTransformOrigin)reactTransformOrigin
 {
-  RCTTransformOrigin transformOrigin = {
-    (YGValue){50, YGUnitPercent},
-    (YGValue){50, YGUnitPercent},
-    0
-  };
   id obj = objc_getAssociatedObject(self, _cmd);
   if (obj != nil) {
+    RCTTransformOrigin transformOrigin;
     [obj getValue:&transformOrigin];
+    return transformOrigin;
+  } else {
+    return (RCTTransformOrigin) {
+      (YGValue){50, YGUnitPercent},
+      (YGValue){50, YGUnitPercent},
+      0
+    };
   }
-  return transformOrigin;
 }
 
 - (void)setReactTransformOrigin:(RCTTransformOrigin)reactTransformOrigin
@@ -241,13 +243,13 @@
   id obj = [NSValue value:&reactTransformOrigin withObjCType:@encode(RCTTransformOrigin)];
   objc_setAssociatedObject(
       self, @selector(reactTransformOrigin), obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  [self updateTransform];
+  updateTransform(self);
 }
 
-- (void)updateTransform
+static void updateTransform(UIView *view)
 {
-  CGSize size = self.bounds.size;
-  RCTTransformOrigin transformOrigin = self.reactTransformOrigin;
+  CGSize size = view.bounds.size;
+  RCTTransformOrigin transformOrigin = view.reactTransformOrigin;
 
   CGFloat anchorPointX = 0;
   CGFloat anchorPointY = 0;
@@ -268,11 +270,11 @@
   anchorPointZ = transformOrigin.z;
 
   CATransform3D transform = CATransform3DMakeTranslation(anchorPointX, anchorPointY, anchorPointZ);
-  transform = CATransform3DConcat(self.reactTransform, transform);
+  transform = CATransform3DConcat(view.reactTransform, transform);
   transform = CATransform3DTranslate(transform, -anchorPointX, -anchorPointY, -anchorPointZ);
 
-  self.layer.transform = transform;
-  self.layer.allowsEdgeAntialiasing =
+  view.layer.transform = transform;
+    view.layer.allowsEdgeAntialiasing =
     transform.m12 != 0.0f || transform.m21 != 0.0f || transform.m34 != 0.0f;
 }
 
