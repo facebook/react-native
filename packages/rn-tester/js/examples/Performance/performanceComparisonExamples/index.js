@@ -14,3 +14,4 @@ export {default as ReRenderWithObjectPropExample} from './ReRenderWithObjectProp
 export {default as SetStateInWrongEffectExample} from './SetStateInWrongEffectExample';
 export {default as RenderOffscreenContentExample} from './RenderOffscreenContentExample';
 export {default as NotMemoizeExpensiveTaskExample} from './NotMemoizeExpensiveTaskExample';
+export {default as EffectInRenderExample} from './EffectInRenderExample';
