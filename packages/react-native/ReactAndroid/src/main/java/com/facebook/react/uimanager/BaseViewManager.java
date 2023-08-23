@@ -92,6 +92,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
     view.setTag(R.id.transform, null);
     view.setTag(R.id.transform_origin, null);
+    view.setTag(R.id.invalidate_transform, null);
     view.removeOnLayoutChangeListener(this);
     // setShadowColor
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
