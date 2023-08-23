@@ -18,9 +18,10 @@ import type {
 import type {EventReporter} from '../types/EventReporter';
 import type {IncomingMessage, ServerResponse} from 'http';
 
-import Device from './Device';
 import url from 'url';
 import WS from 'ws';
+import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
+import Device from './Device';
 
 const debug = require('debug')('Metro:InspectorProxy');
 
@@ -114,15 +115,13 @@ export default class InspectorProxy {
   ): PageDescription {
     const debuggerUrl = `${this._serverBaseUrl}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
     const webSocketDebuggerUrl = 'ws://' + debuggerUrl;
-    const devtoolsFrontendUrl =
-      'devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=' +
-      encodeURIComponent(debuggerUrl);
+
     return {
       id: `${deviceId}-${page.id}`,
       description: page.app,
       title: page.title,
       faviconUrl: 'https://reactjs.org/favicon.ico',
-      devtoolsFrontendUrl,
+      devtoolsFrontendUrl: getDevToolsFrontendUrl(webSocketDebuggerUrl),
       type: 'node',
       webSocketDebuggerUrl,
       vm: page.vm,
