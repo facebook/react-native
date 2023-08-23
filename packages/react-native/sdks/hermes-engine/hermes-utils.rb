@@ -15,13 +15,14 @@ module HermesEngineSourceType
     BUILD_FROM_GITHUB_COMMIT = :build_from_github_commit
     BUILD_FROM_GITHUB_TAG = :build_from_github_tag
     BUILD_FROM_GITHUB_MAIN = :build_from_github_main
+    BUILD_FROM_LOCAL_SOURCE_DIR = :build_from_local_source_dir
 
     def HermesEngineSourceType.isPrebuilt(source_type)
         return source_type == LOCAL_PREBUILT_TARBALL || source_type == DOWNLOAD_PREBUILD_RELEASE_TARBALL || source_type == DOWNLOAD_PREBUILT_NIGHTLY_TARBALL
     end
 
     def HermesEngineSourceType.isFromSource(source_type)
-        return source_type == BUILD_FROM_GITHUB_COMMIT || source_type == BUILD_FROM_GITHUB_TAG || source_type == BUILD_FROM_GITHUB_MAIN
+        return source_type == BUILD_FROM_GITHUB_COMMIT || source_type == BUILD_FROM_GITHUB_TAG || source_type == BUILD_FROM_GITHUB_MAIN || source_type == BUILD_FROM_LOCAL_SOURCE_DIR
     end
 end
 
@@ -40,6 +41,10 @@ end
 
 # Returns: hermes-engine source type
 def hermes_source_type(version, react_native_path)
+    if override_hermes_dir_envvar_defined()
+        return HermesEngineSourceType::BUILD_FROM_LOCAL_SOURCE_DIR
+    end
+
     if hermes_engine_tarball_envvar_defined()
         return HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
     end
@@ -65,6 +70,10 @@ def hermes_source_type(version, react_native_path)
     end
 
     return HermesEngineSourceType::BUILD_FROM_GITHUB_MAIN
+end
+
+def override_hermes_dir_envvar_defined()
+    return ENV.has_key?('REACT_NATIVE_OVERRIDE_HERMES_DIR')
 end
 
 def hermes_engine_tarball_envvar_defined()
@@ -93,6 +102,8 @@ end
 
 def podspec_source(source_type, version, react_native_path)
     case source_type
+    when HermesEngineSourceType::BUILD_FROM_LOCAL_SOURCE_DIR
+        return podspec_source_build_from_local_source_dir(react_native_path)
     when HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
         return podspec_source_local_prebuilt_tarball()
     when HermesEngineSourceType::BUILD_FROM_GITHUB_COMMIT
@@ -107,6 +118,32 @@ def podspec_source(source_type, version, react_native_path)
         return podspec_source_download_prebuilt_nightly_tarball()
     else
         abort "[Hermes] Unsupported or invalid source type provided: #{source_type}"
+    end
+end
+
+def podspec_source_build_from_local_source_dir(react_native_path)
+    source_dir_path = ENV['REACT_NATIVE_OVERRIDE_HERMES_DIR']
+    if Dir.exist?(source_dir_path)
+        hermes_log("Using source code from local path: #{source_dir_path}")
+        tarball_path = File.join(react_native_path, "sdks", "hermes-engine", "hermes-engine-from-local-source-dir.tar.gz")
+        exclude_paths = [
+            "__tests__",
+            "./external/flowtest",
+            "./external/esprima/test_fixtures"
+        ]
+        .map {|path| "--exclude=#{path}"}
+        .join(' ')
+        tar_command = "tar #{exclude_paths} -czvf #{tarball_path} -C #{source_dir_path} . 2> /dev/null"
+        success = system(tar_command)
+        if !success
+            abort "Failed to create a tarball with the contents of \"#{source_dir_path}\""
+        end
+        return {:http => "file://#{tarball_path}"}
+    else
+        abort <<-EOS
+        [Hermes] REACT_NATIVE_OVERRIDE_HERMES_DIR is set, but points to a non-existing directory: \"#{source_dir_path}\"
+        If you don't want to use local source, run `unset REACT_NATIVE_OVERRIDE_HERMES_DIR`
+        EOS
     end
 end
 
