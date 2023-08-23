@@ -562,7 +562,6 @@ inline void fromRawValue(
      TransformOrigin &result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   auto origins = (std::vector<RawValue>)value;
-  react_native_expect(origins.size() == 3);
 
   TransformOrigin transformOrigin;
 
