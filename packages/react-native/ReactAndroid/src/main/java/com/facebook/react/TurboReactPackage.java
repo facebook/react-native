@@ -41,8 +41,7 @@ public abstract class TurboReactPackage implements ReactPackage {
    * @param name name of the Native Module
    * @param reactContext {@link ReactApplicationContext} context for this
    */
-  public abstract @Nullable NativeModule getModule(
-      String name, final ReactApplicationContext reactContext);
+  public abstract NativeModule getModule(String name, final ReactApplicationContext reactContext);
 
   /**
    * This is a temporary method till we implement TurboModules. Once we implement TurboModules, we
