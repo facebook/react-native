@@ -16,15 +16,16 @@
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/utils/CoreFeatures.h>
 
-namespace {
 
-std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewHeight, facebook::react::TransformOrigin transformOrigin)  {
+namespace facebook::react {
+
+std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewHeight, TransformOrigin transformOrigin)  {
   float viewCenterX = viewWidth / 2;
   float viewCenterY = viewHeight / 2;
 
   std::array<float, 3> origin = {viewCenterX, viewCenterY, transformOrigin.z};
   
-  for (size_t i = 0; i < 2; ++i) {
+  for (size_t i = 0; i < transformOrigin.xy.size(); ++i) {
     auto& currentOrigin = transformOrigin.xy[i];
     if (currentOrigin.unit == YGUnitPoint) {
       origin[i] = currentOrigin.value;
@@ -40,10 +41,6 @@ std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewH
 
   return std::array{newTranslateX, newTranslateY, newTranslateZ};
 }
-
-}
-
-namespace facebook::react {
 
 BaseViewProps::BaseViewProps(
     const PropsParserContext &context,
