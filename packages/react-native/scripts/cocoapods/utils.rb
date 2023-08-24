@@ -59,27 +59,27 @@ class ReactNativePodsUtils
     end
 
     def self.exclude_i386_architecture_while_using_hermes(installer)
-        isUsingHermes = self.has_pod(installer, 'hermes-engine')
-        key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
+        is_using_hermes = self.has_pod(installer, 'hermes-engine')
+        
+        if is_using_hermes
+            key = "EXCLUDED_ARCHS[sdk=iphonesimulator*]"
 
-        projects = self.extract_projects(installer)
+            projects = self.extract_projects(installer)
 
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                current_setting = config.build_settings[key] || ""
+            projects.each do |project|
+                project.build_configurations.each do |config|
+                    current_setting = config.build_settings[key] || ""
 
-                excludesI386 = current_setting.include?("i386")
+                    build_will_skip_I386 = current_setting.include?("i386")
 
-                if isUsingHermes and !excludesI386
-                    # Hermes does not support `i386` architecture
-                    config.build_settings[key] = "#{current_setting} i386".strip
-                else
-                    # leave EXCLUDED_ARCHS unchanged or set it to "" if it doesn't already exist
-                    config.build_settings[key] = current_setting
+                    unless build_will_skip_I386
+                        # Hermes does not support `i386` architecture
+                        config.build_settings[key] = "#{current_setting} i386".strip
+                    end
                 end
-            end
 
-            project.save()
+                project.save()
+            end
         end
     end
 
