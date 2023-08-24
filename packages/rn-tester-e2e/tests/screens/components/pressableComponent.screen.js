@@ -26,6 +26,8 @@ type PressableComponentScreenType = {
   getOnPressText: () => Promise<string>,
 };
 
+const pressMeHeaderText = 'Change content based on Press';
+
 export const PressableComponentScreen: PressableComponentScreenType = {
   // reference in the Components list
   pressableScreenElement: Utils.platformSelect({
@@ -34,8 +36,8 @@ export const PressableComponentScreen: PressableComponentScreenType = {
   }),
   // References to elements within the Pressable Component screen
   pressMeHeaderElement: Utils.platformSelect({
-    ios: iOSName('Change content based on Press'),
-    android: androidWidget('TextView', 'text', 'Change content based on Press'),
+    ios: iOSName(pressMeHeaderText),
+    android: androidWidget('TextView', 'text', pressMeHeaderText),
   }),
   btnPressMeElement: Utils.platformSelect({
     ios: iOSName('one_press_me_button'),

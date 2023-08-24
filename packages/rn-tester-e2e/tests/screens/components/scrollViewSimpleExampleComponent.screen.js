@@ -15,7 +15,7 @@ import {
 } from '../../helpers/utils';
 
 type ScrollViewSimpleExampleComponentScreenType = {
-  scrollVIewSimpleExampleScreenElement: string,
+  scrollViewSimpleExampleScreenElement: string,
   scrollViewItemScreenElement: string,
   checkScrollViewItemsDisplayed: () => Promise<boolean>,
   scrollUntilScrollViewSimpleExampleComponentIsDisplayed: () => Promise<void>,

@@ -21,20 +21,23 @@ type NewAppComponentScreenType = {
   checkNewAppHeaderIsDisplayed: () => Promise<boolean>,
 };
 
+const newAppScreenText = 'New App Screen';
+const newAppScreenHeaderText = 'New App Screen Header';
+
 export const NewAppComponentScreen: NewAppComponentScreenType = {
   // reference in the Components list
   newAppScreenElement: Utils.platformSelect({
-    ios: iOSName('New App Screen'),
-    android: androidWidget('TextView', 'text', 'New App Screen'),
+    ios: iOSName(newAppScreenText),
+    android: androidWidget('TextView', 'text', newAppScreenText),
   }),
   // References to elements within the New App Component screenS
   newAppHeaderScreenElement: Utils.platformSelect({
-    ios: iOSName('New App Screen Header'),
-    android: androidWidget('TextView', 'text', 'New App Screen Header'),
+    ios: iOSName(newAppScreenHeaderText),
+    android: androidWidget('TextView', 'text', newAppScreenHeaderText),
   }),
   // Methods to interact with the elements
   scrollUntilNewAppHeaderComponentIsDisplayed: async function (
-    this: newAppHeaderScreenElement,
+    this: NewAppComponentScreenType,
   ): Promise<void> {
     return await Utils.scrollToElement(this.newAppScreenElement);
   },

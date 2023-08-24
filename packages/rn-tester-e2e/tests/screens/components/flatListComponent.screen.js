@@ -30,8 +30,9 @@ type FlatListComponentScreenType = {
   basicSearchBarScreenElement: string,
   btnCollapseElement: string,
   btnToggleTrueElement: string,
-  btnToogleFalseElement: string,
+  btnToggleFalseElement: string,
   onStartBtnTestElement: string,
+  stickyPizzaElement: string,
   pizzaElement: string,
   iceCreamElement: string,
   contentInsetMenuElement: string,
@@ -73,6 +74,7 @@ type FlatListComponentScreenType = {
   clickFlatListNestedButton: () => Promise<void>,
   clickToggleTrueButton: () => Promise<void>,
 };
+const flatListWithSeparatorsText = 'FlatList with Separators';
 
 export const FlatListComponentScreen: FlatListComponentScreenType = {
   // reference in the Components list
@@ -106,8 +108,8 @@ export const FlatListComponentScreen: FlatListComponentScreenType = {
     android: androidWidget('TextView', 'text', 'onViewableItemsChanged'),
   }),
   flatListWithSeparatorsScreenElement: Utils.platformSelect({
-    ios: iOSName('FlatList with Separators'),
-    android: androidWidget('TextView', 'text', 'FlatList with Separators'),
+    ios: iOSName(flatListWithSeparatorsText),
+    android: androidWidget('TextView', 'text', flatListWithSeparatorsText),
   }),
   multiColumnScreenElement: Utils.platformSelect({
     ios: iOSName('MultiColumn'),

@@ -14,11 +14,13 @@ import {
   iOSName,
 } from '../../helpers/utils';
 
+const plainNetworkImageTitleText = 'Plain Network Image with `source` prop.';
+
 type ImageComponentScreenType = {
   imageScreenElement: string,
-  plainNetworkImageScreenElement: string,
+  plainNetworkImageTitleScreenElement: string,
   scrollUntilImageComponentIsDisplayed: () => Promise<void>,
-  checkPlainNetworkImageIsDisplayed: () => Promise<boolean>,
+  checkPlainNetworkImageTitleIsDisplayed: () => Promise<boolean>,
 };
 
 export const ImageComponentScreen: ImageComponentScreenType = {
@@ -28,9 +30,9 @@ export const ImageComponentScreen: ImageComponentScreenType = {
     android: androidWidget('TextView', 'text', 'Image'),
   }),
   // References to elements within the Image Component screen
-  plainNetworkImageScreenElement: Utils.platformSelect({
-    ios: iOSName('plain_network_image'),
-    android: androidWidget('ImageView', 'resource-id', 'plain_network_image'),
+  plainNetworkImageTitleScreenElement: Utils.platformSelect({
+    ios: iOSName(plainNetworkImageTitleText),
+    android: androidWidget('TextView', 'text', plainNetworkImageTitleText),
   }),
   // Methods to interact with the elements
   scrollUntilImageComponentIsDisplayed: async function (
@@ -38,11 +40,11 @@ export const ImageComponentScreen: ImageComponentScreenType = {
   ): Promise<void> {
     return await Utils.scrollToElement(this.imageScreenElement);
   },
-  checkPlainNetworkImageIsDisplayed: async function (
+  checkPlainNetworkImageTitleIsDisplayed: async function (
     this: ImageComponentScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(
-      this.plainNetworkImageScreenElement,
+      this.plainNetworkImageTitleScreenElement,
     );
   },
 };

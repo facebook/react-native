@@ -24,7 +24,7 @@ describe('Test is checking plain image component', () => {
     ).toBeTruthy();
     await ComponentsScreen.clickImageComponent();
     expect(
-      await ImageComponentScreen.checkPlainNetworkImageIsDisplayed(),
+      await ImageComponentScreen.checkPlainNetworkImageTitleIsDisplayed(),
     ).toBeTruthy();
   });
 });

@@ -22,11 +22,12 @@ type ModalComponentScreenType = {
   btnCloseElement: string,
   checkShowModalIsDisplayed: () => Promise<boolean>,
   checkModalAnimationTypeIsDisplayed: () => Promise<boolean>,
-  checkModalModeIsDisplayed: () => Promise<boolean>,
   scrollUntilModalComponentIsDisplayed: () => Promise<void>,
   clickShowModalButton: () => Promise<void>,
   clickCloseButton: () => Promise<void>,
 };
+
+const showModalBtnText = 'Show Modal';
 
 export const ModalComponentScreen: ModalComponentScreenType = {
   // reference in the Components list
@@ -36,8 +37,8 @@ export const ModalComponentScreen: ModalComponentScreenType = {
   }),
   // References to elements within the Modal Component screen
   btnShowModalElement: Utils.platformSelect({
-    ios: iOSName('Show Modal'),
-    android: androidWidget('TextView', 'text', 'Show Modal'),
+    ios: iOSName(showModalBtnText),
+    android: androidWidget('TextView', 'text', showModalBtnText),
   }),
   modalAnimationTypeTextElement: Utils.platformSelect({
     ios: iOSName('modal_animationType_text'),

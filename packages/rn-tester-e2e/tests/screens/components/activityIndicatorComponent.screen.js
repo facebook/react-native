@@ -21,6 +21,8 @@ type ActivityIndicatorComponentScreenType = {
   checkDefaultActivityIndicatorIsDisplayed: () => Promise<boolean>,
 };
 
+const defaultActivityIndicatorTextDesc = 'Wait for content to load!';
+
 export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenType =
   {
     // reference in the Components list
@@ -30,11 +32,11 @@ export const ActivityIndicatorComponentScreen: ActivityIndicatorComponentScreenT
     }),
     // References to elements within the Activity Indicator Component screen
     defaultActivityIndicatorScreenElement: Utils.platformSelect({
-      ios: iOSLabel('Wait for content to load!'),
+      ios: iOSLabel(defaultActivityIndicatorTextDesc),
       android: androidWidget(
         'FrameLayout',
         'content-desc',
-        'Wait for content to load!',
+        defaultActivityIndicatorTextDesc,
       ),
     }),
     // Methods to interact with the elements
