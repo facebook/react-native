@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
 #include <jsi/jsi.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <react/utils/CoreFeatures.h>
