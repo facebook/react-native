@@ -106,7 +106,7 @@ Pod::Spec.new do |spec|
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path}
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermesc-xcode.sh #{hermesc_path} ${REACT_NATIVE_PATH}/ReactCommon/jsi
           EOS
         },
         {
@@ -118,7 +118,7 @@ Pod::Spec.new do |spec|
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
           EOS
         }
       ]

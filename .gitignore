@@ -137,6 +137,7 @@ package-lock.json
 /packages/react-native/sdks/download
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
+/packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
 # Visual studio
 .vscode
