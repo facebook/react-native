@@ -566,7 +566,9 @@ inline void fromRawValue(
 
   TransformOrigin transformOrigin;
 
-   for (size_t i = 0; i < std::min(origins.size(), static_cast<size_t>(2)); i++) {
+   const size_t maxIndex = 2;
+
+   for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
      const auto& origin = origins[i];
      if (origin.hasType<Float>()) {
        transformOrigin.xy[i] = yogaStyleValueFromFloat((Float)origin);
