@@ -104,7 +104,7 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
   }
 
   @Override
-  public @Nullable NativeModule getModule(String name, ReactApplicationContext context) {
+  public NativeModule getModule(String name, ReactApplicationContext context) {
     switch (name) {
       case AccessibilityInfoModule.NAME:
         return new AccessibilityInfoModule(context);
@@ -151,7 +151,8 @@ public class MainReactPackage extends TurboReactPackage implements ViewManagerOn
       case DevToolsSettingsManagerModule.NAME:
         return new DevToolsSettingsManagerModule(context);
       default:
-        return null;
+        throw new IllegalArgumentException(
+            "Could not find Native module for " + name + " in MainReactPackage.");
     }
   }
 
