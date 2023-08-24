@@ -3,16 +3,14 @@
 namespace facebook::react {
 
 enum class UnitType {
-  UNDEFINED,
-  POINT,
-  PERCENT
+  Undefined,
+  Point,
+  Percent,
 };
 
 struct ValueUnit {
-  float value;
-  UnitType unit;
-  
-  ValueUnit() : value(0.0f), unit(UnitType::UNDEFINED) {}
+  float value{0.0f};
+  UnitType unit{UnitType::Undefined};
   
   ValueUnit(float v, UnitType u) : value(v), unit(u) {}
   
