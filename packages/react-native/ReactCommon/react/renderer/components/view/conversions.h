@@ -22,6 +22,7 @@
 #include <yoga/Yoga.h>
 #include <cmath>
 #include <optional>
+#include <algorithm>
 
 namespace facebook::react {
 
@@ -565,7 +566,7 @@ inline void fromRawValue(
 
   TransformOrigin transformOrigin;
 
-   for (size_t i = 0; i < std::min(origins.size(), 2); i++) {
+   for (size_t i = 0; i < std::min(origins.size(), static_cast<size_t>(2)); i++) {
      const auto& origin = origins[i];
      if (origin.hasType<Float>()) {
        transformOrigin.xy[i] = yogaStyleValueFromFloat((Float)origin);
