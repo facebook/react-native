@@ -65,7 +65,7 @@ Pod::Spec.new do |spec|
       }
     end
 
-  elsif source_type == HermesEngineSourceType::isFromSource(source_type) then
+  elsif HermesEngineSourceType::isFromSource(source_type) then
 
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
