@@ -12,15 +12,8 @@ react_native_path = File.join(__dir__, "..", "..")
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
 
-# sdks/.hermesversion
-hermestag_file = File.join(react_native_path, "sdks", ".hermesversion")
-build_from_source = ENV['BUILD_FROM_SOURCE'] === 'true'
-
-git = "https://github.com/facebook/hermes.git"
-
-abort_if_invalid_tarball_provided!
-
-source = compute_hermes_source(build_from_source, hermestag_file, git, version, react_native_path)
+source_type = hermes_source_type(version, react_native_path)
+source = podspec_source(source_type, version, react_native_path)
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
@@ -44,7 +37,7 @@ Pod::Spec.new do |spec|
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
   spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
-  if source[:http] then
+  if HermesEngineSourceType::isPrebuilt(source_type) then
 
     spec.subspec 'Pre-built' do |ss|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
@@ -61,7 +54,7 @@ Pod::Spec.new do |spec|
     # We use this only for Apps created using the template. RNTester and Nightlies should not be used to build for Release.
     # We ignore this if we provide a specific tarball: the assumption here is that if you are providing a tarball, is because you want to
     # test something specific for that tarball.
-    if source[:http].include?('https://repo1.maven.org/')
+    if source_type == HermesEngineSourceType::DOWNLOAD_PREBUILD_RELEASE_TARBALL
       spec.script_phase = {
         :name => "[Hermes] Replace Hermes for the right configuration, if needed",
         :execution_position => :before_compile,
@@ -72,7 +65,7 @@ Pod::Spec.new do |spec|
       }
     end
 
-  elsif source[:git] then
+  elsif source_type == HermesEngineSourceType::isFromSource(source_type) then
 
     spec.subspec 'Hermes' do |ss|
       ss.source_files = ''
