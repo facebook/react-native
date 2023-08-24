@@ -62,7 +62,7 @@ describe('generateCode', () => {
     expect(child_process.execSync).toHaveBeenCalledTimes(1);
     expect(child_process.execSync).toHaveBeenNthCalledWith(
       1,
-      `cp -R ${tmpOutputDir}/* ${iosOutputDir}`,
+      `cp -R ${tmpOutputDir}/* "${iosOutputDir}"`,
     );
 
     expect(fs.mkdirSync).toHaveBeenCalledTimes(2);

@@ -10,7 +10,6 @@
 #include <react/bridging/Convert.h>
 
 #include <ReactCommon/CallInvoker.h>
-#include <butter/function.h>
 #include <jsi/jsi.h>
 
 #include <cstdint>
@@ -36,12 +35,12 @@ struct function_wrapper;
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...)> {
-  using type = butter::function<R(Args...)>;
+  using type = std::function<R(Args...)>;
 };
 
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...) const> {
-  using type = butter::function<R(Args...)>;
+  using type = std::function<R(Args...)>;
 };
 
 template <typename T, typename = void>

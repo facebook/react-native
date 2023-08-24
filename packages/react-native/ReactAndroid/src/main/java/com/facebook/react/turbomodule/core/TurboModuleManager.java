@@ -20,7 +20,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
@@ -72,7 +71,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
             delegate);
-    installJSIBindings(shouldCreateLegacyModules());
+    installJSIBindings(shouldEnableLegacyModuleInterop());
 
     mEagerInitModuleNames =
         delegate == null ? new ArrayList<>() : delegate.getEagerInitModuleNames();
@@ -85,7 +84,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
             : moduleName -> (NativeModule) delegate.getModule(moduleName);
 
     mLegacyModuleProvider =
-        delegate == null || !shouldCreateLegacyModules()
+        delegate == null || !shouldEnableLegacyModuleInterop()
             ? nullProvider
             : moduleName -> {
               NativeModule nativeModule = delegate.getLegacyModule(moduleName);
@@ -108,15 +107,13 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return mDelegate != null && mDelegate.unstable_isLegacyModuleRegistered(moduleName);
   }
 
-  private static boolean shouldCreateLegacyModules() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  private boolean shouldEnableLegacyModuleInterop() {
+    return mDelegate != null && mDelegate.unstable_shouldEnableLegacyModuleInterop();
   }
 
-  private static boolean shouldRouteTurboModulesThroughInteropLayer() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop
-        && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+  private boolean shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mDelegate != null
+        && mDelegate.unstable_shouldRouteTurboModulesThroughLegacyModuleInterop();
   }
 
   @Override
@@ -134,7 +131,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private NativeModule getLegacyJavaModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
+    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
       final NativeModule module = getModule(moduleName);
       return !(module instanceof CxxModuleWrapper) ? module : null;
     }
@@ -157,7 +154,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
+    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
       final NativeModule module = getModule(moduleName);
       return module instanceof CxxModuleWrapper ? (CxxModuleWrapper) module : null;
     }
@@ -180,7 +177,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getTurboLegacyCxxModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
+    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
       return null;
     }
 
@@ -201,7 +198,7 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private TurboModule getTurboJavaModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
+    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
       return null;
     }
 
@@ -398,9 +395,9 @@ public class TurboModuleManager implements JSIModule, TurboModuleRegistry {
     return false;
   }
 
-  private static void logError(String message) {
+  private void logError(String message) {
     FLog.e("TurboModuleManager", message);
-    if (shouldRouteTurboModulesThroughInteropLayer()) {
+    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
       ReactSoftExceptionLogger.logSoftException(
           "TurboModuleManager", new ReactNoCrashSoftException(message));
     }

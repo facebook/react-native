@@ -284,6 +284,10 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
     CoreFeatures::disableScrollEventThrottleRequirement = true;
   }
 
+  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_default_async_batched_priority")) {
+    CoreFeatures::enableDefaultAsyncBatchedPriority = true;
+  }
+
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           EventDispatcher::Weak const &eventDispatcher, ContextContainer::Shared const &contextContainer) {

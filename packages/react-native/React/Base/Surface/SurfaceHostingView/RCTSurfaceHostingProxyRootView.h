@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) NSString *moduleName;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
-@property (nonatomic, readonly) BOOL hasBridge;
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
 @property (nonatomic, strong, readonly) id<RCTEventDispatcherProtocol> eventDispatcher;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
@@ -45,7 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Bridgeless mode initializer
  */
-- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface
+                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
+                 moduleRegistry:(RCTModuleRegistry *)moduleRegistry;
 
 - (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface;
 

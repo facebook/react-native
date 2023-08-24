@@ -15,6 +15,18 @@
 
 namespace facebook::react {
 
+// Helper struct to package a PointerEvent and SharedEventTarget together
+struct PointerEventTarget {
+  PointerEvent event;
+  SharedEventTarget target;
+};
+
+// Helper struct to contain an active pointer's event data along with additional
+// metadata
+struct ActivePointer {
+  PointerEvent event;
+};
+
 using DispatchEvent = std::function<void(
     jsi::Runtime &runtime,
     const EventTarget *eventTarget,
@@ -26,11 +38,8 @@ using PointerIdentifier = int32_t;
 using CaptureTargetOverrideRegistry =
     std::unordered_map<PointerIdentifier, ShadowNode::Weak>;
 
-// Helper struct to package a PointerEvent and SharedEventTarget together
-struct PointerEventTarget {
-  PointerEvent event;
-  SharedEventTarget target;
-};
+using ActivePointerRegistry =
+    std::unordered_map<PointerIdentifier, ActivePointer>;
 
 class PointerEventsProcessor final {
  public:
@@ -54,11 +63,19 @@ class PointerEventsProcessor final {
       ShadowNode const *shadowNode);
 
  private:
+  ActivePointer *getActivePointer(PointerIdentifier pointerId);
+
+  void registerActivePointer(PointerEvent const &event);
+  void updateActivePointer(PointerEvent const &event);
+  void unregisterActivePointer(PointerEvent const &event);
+
   void processPendingPointerCapture(
       PointerEvent const &event,
       jsi::Runtime &runtime,
       DispatchEvent const &eventDispatcher,
       UIManager const &uiManager);
+
+  ActivePointerRegistry activePointers_;
 
   CaptureTargetOverrideRegistry pendingPointerCaptureTargetOverrides_;
   CaptureTargetOverrideRegistry activePointerCaptureTargetOverrides_;

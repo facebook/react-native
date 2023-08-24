@@ -23,6 +23,7 @@ boost_compiler_flags = '-Wno-documentation'
 
 header_search_paths = [
   "$(PODS_ROOT)/boost",
+  "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_TARGET_SRCROOT)/../../../..",
   "$(PODS_TARGET_SRCROOT)/../../../../..",
 ]

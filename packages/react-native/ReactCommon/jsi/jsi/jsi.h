@@ -943,7 +943,8 @@ class JSI_EXPORT ArrayBuffer : public Object {
   ArrayBuffer(Runtime& runtime, std::shared_ptr<MutableBuffer> buffer)
       : ArrayBuffer(runtime.createArrayBuffer(std::move(buffer))) {}
 
-  /// \return the size of the ArrayBuffer, according to its byteLength property.
+  /// \return the size of the ArrayBuffer storage. This is not affected by
+  /// overriding the byteLength property.
   /// (C++ naming convention)
   size_t size(Runtime& runtime) const {
     return runtime.size(*this);

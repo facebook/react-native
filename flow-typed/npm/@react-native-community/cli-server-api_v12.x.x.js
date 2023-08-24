@@ -23,9 +23,7 @@ declare module '@react-native-community/cli-server-api' {
   ): {
     middleware: Server,
     websocketEndpoints: {
-      '/debugger-proxy': ws$WebSocketServer,
-      '/message': ws$WebSocketServer,
-      '/events': ws$WebSocketServer,
+      [path: string]: ws$WebSocketServer,
     },
     debuggerProxyEndpoint: {
       server: ws$WebSocketServer,

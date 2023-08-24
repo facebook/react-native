@@ -12,6 +12,7 @@ const {spawnSync} = require('child_process');
 
 const {PUBLISH_PACKAGES_TAG} = require('./constants');
 const forEachPackage = require('./for-each-package');
+const {publishPackage} = require('../npm-utils');
 
 const ROOT_LOCATION = path.join(__dirname, '..', '..');
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
