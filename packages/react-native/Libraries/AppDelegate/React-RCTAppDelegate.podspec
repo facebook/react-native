@@ -92,6 +92,7 @@ Pod::Spec.new do |s|
   s.dependency "React-NativeModulesApple"
   s.dependency "React-CoreModules"
   s.dependency "React-nativeconfig"
+  s.dependency "React-runtimescheduler"
 
   if is_new_arch_enabled
     s.dependency "React-BridgelessCore"
