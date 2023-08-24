@@ -727,7 +727,6 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   opacity?: AnimatableNumericValue,
   elevation?: number,
   pointerEvents?: 'auto' | 'none' | 'box-none' | 'box-only',
-  transformOrigin?: string,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
