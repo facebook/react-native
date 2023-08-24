@@ -48,7 +48,7 @@ function ContentPress() {
             setTimesPressed(current => current + 1);
           }}>
           {({pressed}) => (
-            <Text testID="one_press_me_button" fistyle={styles.text}>
+            <Text testID="one_press_me_button" style={styles.text}>
               {pressed ? 'Pressed!' : 'Press Me'}
             </Text>
           )}
