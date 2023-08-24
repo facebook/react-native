@@ -1,7 +1,4 @@
 [ignore]
-; Ignore other platform suffixes
-.*\.android\.js$
-
 ; Ignore templates for 'react-native init'
 <PROJECT_ROOT>/packages/react-native/template/.*
 
@@ -10,9 +7,6 @@
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
-
-; Flow doesn't support platforms
-.*/packages/react-native/Libraries/Utilities/LoadingView.js
 
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
@@ -41,7 +35,10 @@ format.bracket_spacing=false
 
 module.file_ext=.js
 module.file_ext=.json
-module.file_ext=.ios.js
+
+experimental.multi_platform=true
+experimental.multi_platform.extensions=.ios
+experimental.multi_platform.extensions=.android
 
 munge_underscores=true
 
