@@ -114,6 +114,9 @@ package-lock.json
 /packages/react-native/template/ios/Podfile.lock
 /packages/rn-tester/Gemfile.lock
 
+# RNTester sourcemaps [macOS]
+/packages/rn-tester/sourcemap.*.map
+
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
