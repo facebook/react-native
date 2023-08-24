@@ -23,8 +23,9 @@ describe('Test is checking plain image component', () => {
       await ComponentsScreen.checkImageComponentIsDisplayed(),
     ).toBeTruthy();
     await ComponentsScreen.clickImageComponent();
+    await ImageComponentScreen.scrollUntilNormalThumbImageComponentIsDisplayed();
     expect(
-      await ImageComponentScreen.checkPlainNetworkImageTitleIsDisplayed(),
+      await ImageComponentScreen.checkNormalThumbImageIsDisplayed(),
     ).toBeTruthy();
   });
 });

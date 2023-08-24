@@ -14,13 +14,12 @@ import {
   iOSName,
 } from '../../helpers/utils';
 
-const plainNetworkImageTitleText = 'Plain Network Image with `source` prop.';
-
 type ImageComponentScreenType = {
   imageScreenElement: string,
-  plainNetworkImageTitleScreenElement: string,
+  normalThumbImageScreenElement: string,
   scrollUntilImageComponentIsDisplayed: () => Promise<void>,
-  checkPlainNetworkImageTitleIsDisplayed: () => Promise<boolean>,
+  scrollUntilNormalThumbImageComponentIsDisplayed: () => Promise<void>,
+  checkNormalThumbImageIsDisplayed: () => Promise<boolean>,
 };
 
 export const ImageComponentScreen: ImageComponentScreenType = {
@@ -30,9 +29,9 @@ export const ImageComponentScreen: ImageComponentScreenType = {
     android: androidWidget('TextView', 'text', 'Image'),
   }),
   // References to elements within the Image Component screen
-  plainNetworkImageTitleScreenElement: Utils.platformSelect({
-    ios: iOSName(plainNetworkImageTitleText),
-    android: androidWidget('TextView', 'text', plainNetworkImageTitleText),
+  normalThumbImageScreenElement: Utils.platformSelect({
+    ios: iOSName('normal_thumb_image'),
+    android: androidWidget('ImageView', 'resource-id', 'normal_thumb_image'),
   }),
   // Methods to interact with the elements
   scrollUntilImageComponentIsDisplayed: async function (
@@ -40,11 +39,16 @@ export const ImageComponentScreen: ImageComponentScreenType = {
   ): Promise<void> {
     return await Utils.scrollToElement(this.imageScreenElement);
   },
-  checkPlainNetworkImageTitleIsDisplayed: async function (
+  scrollUntilNormalThumbImageComponentIsDisplayed: async function (
+    this: ImageComponentScreenType,
+  ): Promise<void> {
+    return await Utils.scrollToElement(this.normalThumbImageScreenElement);
+  },
+  checkNormalThumbImageIsDisplayed: async function (
     this: ImageComponentScreenType,
   ): Promise<boolean> {
     return await Utils.checkElementExistence(
-      this.plainNetworkImageTitleScreenElement,
+      this.normalThumbImageScreenElement,
     );
   },
 };
