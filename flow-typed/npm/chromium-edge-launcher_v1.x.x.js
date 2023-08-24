@@ -9,18 +9,18 @@
  * @oncall react_native
  */
 
-declare module 'chrome-launcher' {
+declare module 'chromium-edge-launcher' {
   import typeof fs from 'fs';
   import typeof childProcess from 'child_process';
   import type {ChildProcess} from 'child_process';
 
   declare export type Options = {
     startingUrl?: string,
-    chromeFlags?: Array<string>,
+    edgeFlags?: Array<string>,
     prefs?: mixed,
     port?: number,
     handleSIGINT?: boolean,
-    chromePath?: string,
+    edgePath?: string,
     userDataDir?: string | boolean,
     logLevel?: 'verbose' | 'info' | 'error' | 'warn' | 'silent',
     ignoreDefaultFlags?: boolean,
@@ -29,7 +29,7 @@ declare module 'chrome-launcher' {
     envVars?: {[key: string]: ?string},
   };
 
-  declare export type LaunchedChrome = {
+  declare export type LaunchedEdge = {
     pid: number,
     port: number,
     process: ChildProcess,
@@ -42,9 +42,12 @@ declare module 'chrome-launcher' {
   };
 
   declare class Launcher {
-    getChromePath(): string;
-    launch(options: Options): Promise<LaunchedChrome>;
+    getFirstInstallation(): string;
+    launch(options: Options): Promise<LaunchedEdge>;
   }
 
-  declare module.exports: Launcher;
+  declare module.exports: {
+    default: Launcher,
+    Launcher: Launcher,
+  };
 }

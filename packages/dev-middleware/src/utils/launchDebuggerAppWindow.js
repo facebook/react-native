@@ -15,6 +15,7 @@ import path from 'path';
 import osTempDir from 'temp-dir';
 
 const ChromeLauncher = require('chrome-launcher');
+const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
 
 /**
  * Attempt to open a debugger frontend URL as a Google Chrome app window.
@@ -27,24 +28,37 @@ export default async function launchDebuggerAppWindow(
    */
   intent: 'open-debugger',
 ): Promise<LaunchedChrome> {
-  const browserType = 'chrome';
+  let browserType = 'chrome';
+  let chromePath;
+
+  try {
+    // Locate Chrome installation path, will throw if not found
+    chromePath = ChromeLauncher.getChromePath();
+  } catch (e) {
+    browserType = 'edge';
+    chromePath = EdgeLauncher.getFirstInstallation();
+
+    if (chromePath == null) {
+      throw new Error(
+        'Unable to find a browser on the host to open the debugger. ' +
+          'Supported browsers: Google Chrome, Microsoft Edge.\n' +
+          url,
+      );
+    }
+  }
+
   const userDataDir = await createTempDir(
     `react-native-${intent}-${browserType}`,
   );
 
-  try {
-    return ChromeLauncher.launch({
-      chromeFlags: [
-        `--app=${url}`,
-        `--user-data-dir=${userDataDir}`,
-        '--window-size=1200,600',
-      ],
-    });
-  } catch (e) {
-    throw new Error(
-      'Unable to find a browser on the host to open the debugger. Supported browsers: Google Chrome',
-    );
-  }
+  return ChromeLauncher.launch({
+    chromePath,
+    chromeFlags: [
+      `--app=${url}`,
+      `--user-data-dir=${userDataDir}`,
+      '--window-size=1200,600',
+    ],
+  });
 }
 
 async function createTempDir(dirName: string): Promise<string> {
