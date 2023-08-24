@@ -57,7 +57,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig  = {
     "USE_HEADERMAP" => "NO",
     "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+    "DEFINES_MODULE" => "YES",
   }
 
   s.dependency "RCT-Folly/Fabric"
