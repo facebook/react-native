@@ -282,8 +282,7 @@ static void YGTransferLayoutOutputsRecursive(
     JNIEnv* env,
     jobject thiz,
     YGNodeRef root,
-    void* layoutContext,
-    bool shouldCleanLocalRef) {
+    void* layoutContext) {
   if (!YGNodeGetHasNewLayout(root)) {
     return;
   }
@@ -337,28 +336,26 @@ static void YGTransferLayoutOutputsRecursive(
     arr[borderStartIndex + 3] = YGNodeLayoutGetBorder(root, YGEdgeBottom);
   }
 
-  // Don't change this field name without changing the name of the field in
-  // Database.java
-  auto objectClass = facebook::yoga::vanillajni::make_local_ref(
-      env, env->GetObjectClass(obj.get()));
-  static const jfieldID arrField = facebook::yoga::vanillajni::getFieldId(
-      env, objectClass.get(), "arr", "[F");
+  // Create scope to make sure to release any local refs created here
+  {
+    // Don't change this field name without changing the name of the field in
+    // Database.java
+    auto objectClass = facebook::yoga::vanillajni::make_local_ref(
+        env, env->GetObjectClass(obj.get()));
+    static const jfieldID arrField = facebook::yoga::vanillajni::getFieldId(
+        env, objectClass.get(), "arr", "[F");
 
-  ScopedLocalRef<jfloatArray> arrFinal =
-      make_local_ref(env, env->NewFloatArray(arrSize));
-  env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
-  env->SetObjectField(obj.get(), arrField, arrFinal.get());
-
-  if (shouldCleanLocalRef) {
-    objectClass.reset();
-    arrFinal.reset();
+    ScopedLocalRef<jfloatArray> arrFinal =
+        make_local_ref(env, env->NewFloatArray(arrSize));
+    env->SetFloatArrayRegion(arrFinal.get(), 0, arrSize, arr);
+    env->SetObjectField(obj.get(), arrField, arrFinal.get());
   }
 
   YGNodeSetHasNewLayout(root, false);
 
   for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
     YGTransferLayoutOutputsRecursive(
-        env, thiz, YGNodeGetChild(root, i), layoutContext, shouldCleanLocalRef);
+        env, thiz, YGNodeGetChild(root, i), layoutContext);
   }
 }
 
@@ -380,17 +377,13 @@ static void jni_YGNodeCalculateLayoutJNI(
     }
 
     const YGNodeRef root = _jlong2YGNodeRef(nativePointer);
-    const bool shouldCleanLocalRef =
-        root->getConfig()->isExperimentalFeatureEnabled(
-            YGExperimentalFeatureFixJNILocalRefOverflows);
     YGNodeCalculateLayoutWithContext(
         root,
         static_cast<float>(width),
         static_cast<float>(height),
         YGNodeStyleGetDirection(_jlong2YGNodeRef(nativePointer)),
         layoutContext);
-    YGTransferLayoutOutputsRecursive(
-        env, obj, root, layoutContext, shouldCleanLocalRef);
+    YGTransferLayoutOutputsRecursive(env, obj, root, layoutContext);
   } catch (const YogaJniException& jniException) {
     ScopedLocalRef<jthrowable> throwable = jniException.getThrowable();
     if (throwable.get()) {

@@ -65,8 +65,7 @@ YG_DEFINE_ENUM_FLAG_OPERATORS(YGErrata)
 YG_ENUM_SEQ_DECL(
     YGExperimentalFeature,
     YGExperimentalFeatureWebFlexBasis,
-    YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge,
-    YGExperimentalFeatureFixJNILocalRefOverflows)
+    YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge)
 
 YG_ENUM_SEQ_DECL(
     YGFlexDirection,
