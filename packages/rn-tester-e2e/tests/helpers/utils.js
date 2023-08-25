@@ -40,7 +40,8 @@ class Utils {
     let {width, height} = await driver.getWindowSize();
     let elementIsFound;
     try {
-      do {
+      elementIsFound = await driver.$(locator).isDisplayed();
+      while (!elementIsFound) {
         driver.touchPerform([
           {
             action: 'press',
@@ -52,7 +53,7 @@ class Utils {
           {
             action: 'wait',
             options: {
-              ms: 2000,
+              ms: 1000,
             },
           },
           {
@@ -67,7 +68,7 @@ class Utils {
           },
         ]);
         elementIsFound = await driver.$(locator).isDisplayed();
-      } while (!elementIsFound);
+      }
     } catch (err) {
       console.log('Element is not found');
     }
