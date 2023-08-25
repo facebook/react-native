@@ -9,20 +9,20 @@
  * @oncall react_native
  */
 
-import type {LaunchedChrome} from 'chrome-launcher';
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
+import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Logger} from '../types/Logger';
 
 import url from 'url';
 import getDevServerUrl from '../utils/getDevServerUrl';
-import launchDebuggerAppWindow from '../utils/launchDebuggerAppWindow';
 import queryInspectorTargets from '../utils/queryInspectorTargets';
 
-const debuggerInstances = new Map<string, LaunchedChrome>();
+const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
+  browserLauncher: BrowserLauncher,
   logger?: Logger,
   eventReporter?: EventReporter,
 }>;
@@ -36,6 +36,7 @@ type Options = $ReadOnly<{
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
 export default function openDebuggerMiddleware({
+  browserLauncher,
   eventReporter,
   logger,
 }: Options): NextHandleFunction {
@@ -78,12 +79,11 @@ export default function openDebuggerMiddleware({
 
       try {
         logger?.info('Launching JS debugger...');
-        debuggerInstances.get(appId)?.kill();
+        await debuggerInstances.get(appId)?.kill();
         debuggerInstances.set(
           appId,
-          await launchDebuggerAppWindow(
+          await browserLauncher.launchDebuggerAppWindow(
             target.devtoolsFrontendUrl,
-            'open-debugger',
           ),
         );
         res.end();
