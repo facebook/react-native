@@ -16,6 +16,7 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Transform.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
@@ -571,7 +572,12 @@ inline void fromRawValue(
    for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
      const auto& origin = origins[i];
      if (origin.hasType<Float>()) {
-       transformOrigin.xy[i] = yogaStyleValueFromFloat((Float)origin);
+       const float originFloat = (float) origin;
+       if (std::isfinite(originFloat)) {
+         transformOrigin.xy[i] = ValueUnit(originFloat, UnitType::Point);
+       } else {
+         transformOrigin.xy[i] = ValueUnit(0.0f, UnitType::Undefined);
+       }
      } else if (origin.hasType<std::string>()) {
        const auto stringValue = (std::string)origin;
 
@@ -579,7 +585,7 @@ inline void fromRawValue(
          auto tryValue = folly::tryTo<float>(
                                              std::string_view(stringValue).substr(0, stringValue.length() - 1));
          if (tryValue.hasValue()) {
-           transformOrigin.xy[i] = YGValue{tryValue.value(), YGUnitPercent};
+           transformOrigin.xy[i] = ValueUnit(tryValue.value(), UnitType::Percent);
          }
        }
      }

@@ -27,9 +27,9 @@ std::array<float, 3> getTranslateForTransformOrigin(float viewWidth, float viewH
   
   for (size_t i = 0; i < transformOrigin.xy.size(); ++i) {
     auto& currentOrigin = transformOrigin.xy[i];
-    if (currentOrigin.unit == YGUnitPoint) {
+    if (currentOrigin.unit == UnitType::Point) {
       origin[i] = currentOrigin.value;
-    } else if (currentOrigin.unit == YGUnitPercent) {
+    } else if (currentOrigin.unit == UnitType::Percent) {
         origin[i] = ((i == 0) ? viewWidth : viewHeight) * currentOrigin.value / 100.0f;
       }
     }

@@ -16,7 +16,7 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 #include <react/renderer/graphics/Vector.h>
-#include <yoga/YGValue.h>
+#include <react/renderer/graphics/ValueUnit.h>
 
 #ifdef ANDROID
 #include <folly/dynamic.h>
@@ -52,7 +52,7 @@ struct TransformOperation {
 };
 
 struct TransformOrigin {
-  std::array<YGValue, 2> xy;
+  std::array<ValueUnit, 2> xy;
   float z = 0.0f;
 
   bool operator==(const TransformOrigin& other) const {
@@ -60,10 +60,10 @@ struct TransformOrigin {
   }
   bool operator!=(const TransformOrigin& other) const {
     return !(*this == other);
-  };
+  }
   bool isSet() const {
-    return xy[0].value != 0.0f || xy[0].unit != YGUnitUndefined
-        || xy[1].value != 0.0f || xy[1].unit != YGUnitUndefined
+    return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined
+        || xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined
         || z != 0.0f;
   }
 };
