@@ -44,6 +44,10 @@ jsi::Value PointerEvent::asJSIValue(jsi::Runtime &runtime) const {
   return object;
 }
 
+EventPayloadType PointerEvent::getType() const {
+  return EventPayloadType::PointerEvent;
+}
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(PointerEvent const & /*pointerEvent*/) {

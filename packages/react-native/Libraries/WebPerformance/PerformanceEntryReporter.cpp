@@ -66,7 +66,7 @@ void PerformanceEntryReporter::stopReporting() {
 }
 
 GetPendingEntriesResult PerformanceEntryReporter::popPendingEntries() {
-  std::lock_guard<std::mutex> lock(entriesMutex_);
+  std::scoped_lock lock(entriesMutex_);
   GetPendingEntriesResult res = {
       std::vector<RawPerformanceEntry>(), droppedEntryCount_};
   for (auto &buffer : buffers_) {
@@ -99,7 +99,7 @@ void PerformanceEntryReporter::logEntry(const RawPerformanceEntry &entry) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(entriesMutex_);
+  std::scoped_lock lock(entriesMutex_);
 
   auto &buffer = buffers_[entry.entryType];
 
@@ -367,7 +367,7 @@ EventTag PerformanceEntryReporter::onEventStart(const char *name) {
 
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(std::make_pair(
         sCurrentEventTag_, EventEntry{reportedName, timeStamp, 0.0}));
   }
@@ -380,7 +380,7 @@ void PerformanceEntryReporter::onEventDispatch(EventTag tag) {
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it != eventsInFlight_.end()) {
       it->second.dispatchTime = timeStamp;
@@ -394,7 +394,7 @@ void PerformanceEntryReporter::onEventEnd(EventTag tag) {
   }
   auto timeStamp = getCurrentTimeStamp();
   {
-    std::lock_guard<std::mutex> lock(eventsInFlightMutex_);
+    std::scoped_lock lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
     if (it == eventsInFlight_.end()) {
       return;

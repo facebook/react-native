@@ -105,6 +105,7 @@ void YogaStylableProps::setProp(
     const char *propName,
     RawValue const &value) {
   static const auto ygDefaults = YGStyle{};
+  static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
 
@@ -132,8 +133,6 @@ void YogaStylableProps::setProp(
     REBUILD_FIELD_YG_EDGES(margin, "margin", "");
     REBUILD_FIELD_YG_EDGES(padding, "padding", "");
     REBUILD_FIELD_YG_EDGES(border, "border", "Width");
-
-    static const auto defaults = YogaStylableProps{};
 
     // Aliases
     RAW_SET_PROP_SWITCH_CASE(inset, "inset");

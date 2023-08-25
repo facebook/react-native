@@ -115,6 +115,7 @@ struct PointerEvent : public EventPayload {
    * EventPayload implementations
    */
   jsi::Value asJSIValue(jsi::Runtime &runtime) const override;
+  EventPayloadType getType() const override;
 };
 
 #if RN_DEBUG_STRING_CONVERTIBLE

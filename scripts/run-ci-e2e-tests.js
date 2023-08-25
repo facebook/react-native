@@ -88,7 +88,8 @@ try {
   describe('Set up Verdaccio');
   VERDACCIO_PID = setupVerdaccio(ROOT, VERDACCIO_CONFIG_PATH);
 
-  describe('Publish packages');
+  describe('Build and publish packages');
+  exec('node ./scripts/build/build.js', {cwd: ROOT});
   forEachPackage(
     (packageAbsolutePath, packageRelativePathFromRoot, packageManifest) => {
       if (packageManifest.private) {

@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModule} from '../../types/RNTesterTypes';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
 
 const RNTesterBlock = require('../../components/RNTesterBlock');
@@ -981,11 +982,7 @@ function TextBaseLineLayoutExample(props: {}): React.Node {
   );
 }
 
-exports.title = 'Text';
-exports.documentationURL = 'https://reactnative.dev/docs/text';
-exports.category = 'Basic';
-exports.description = 'Base component for rendering styled text.';
-exports.examples = [
+const examples = [
   {
     title: 'Basic text',
     render: function (): React.Element<typeof TextExample> {
@@ -1031,3 +1028,12 @@ exports.examples = [
     },
   },
 ];
+
+module.exports = ({
+  title: 'Text',
+  documentationURL: 'https://reactnative.dev/docs/text',
+  category: 'Basic',
+  description: 'Base component for rendering styled text.',
+  displayName: 'TextExample',
+  examples,
+}: RNTesterModule);

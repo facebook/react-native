@@ -21,6 +21,7 @@ folly_version = '2021.07.22.00'
 
 header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
+    "\"$(PODS_ROOT)/boost\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -60,8 +61,6 @@ Pod::Spec.new do |s|
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsi"
   end
 
 end

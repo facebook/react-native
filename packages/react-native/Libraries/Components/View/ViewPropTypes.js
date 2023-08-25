@@ -569,7 +569,16 @@ export type ViewProps = $ReadOnly<{|
   collapsable?: ?boolean,
 
   /**
-   * Used to locate this view from native classes.
+   * Contols whether this view, and its transitive children, are laid in a way
+   * consistent with web browsers ('strict'), or consistent with existing
+   * React Native code which may rely on incorrect behavior ('classic').
+   *
+   * This prop only works when using Fabric.
+   */
+  experimental_layoutConformance?: ?('strict' | 'classic'),
+
+  /**
+   * Used to locate this view from native classes. Has precedence over `nativeID` prop.
    *
    * > This disables the 'layout-only view removal' optimization for this view!
    *

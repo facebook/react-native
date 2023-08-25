@@ -81,9 +81,6 @@ public class ReactFeatureFlags {
    */
   public static volatile boolean warnOnLegacyNativeModuleSystemUse = false;
 
-  /** Should we dispatch TurboModule methods with promise returns to the NativeModules thread? */
-  public static volatile boolean enableTurboModulePromiseAsyncDispatch = false;
-
   /** This feature flag enables logs for Fabric */
   public static boolean enableFabricLogs = false;
 
@@ -151,4 +148,19 @@ public class ReactFeatureFlags {
 
   /** Fixes a leak in SurfaceMountingManager.mTagSetForStoppedSurface */
   public static boolean fixStoppedSurfaceTagSetLeak = true;
+
+  /** Disable the background executor for layout in Fabric */
+  public static boolean enableBackgroundExecutor = false;
+
+  /** Use native view configs in bridgeless mode. */
+  public static boolean useNativeViewConfigsInBridgelessMode = false;
+
+  /** Only swap left and right on Android in RTL scripts. */
+  public static boolean doNotSwapLeftAndRightOnAndroidInLTR = false;
+
+  /** Clean yoga node when <Text /> does not change. */
+  public static boolean enableCleanParagraphYogaNode = false;
+
+  /** Default state updates and events to async batched priority. */
+  public static boolean enableDefaultAsyncBatchedPriority = false;
 }

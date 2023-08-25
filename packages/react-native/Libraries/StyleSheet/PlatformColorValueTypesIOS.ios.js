@@ -10,7 +10,7 @@
 
 import type {ColorValue} from './StyleSheet';
 
-import {DynamicColorIOSPrivate} from './PlatformColorValueTypes';
+import {DynamicColorIOSPrivate} from './PlatformColorValueTypes.ios';
 
 export type DynamicColorIOSTuple = {
   light: ColorValue,

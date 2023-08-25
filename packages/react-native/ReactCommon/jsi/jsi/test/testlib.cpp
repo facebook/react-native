@@ -478,6 +478,20 @@ TEST_P(JSITest, ArrayTest) {
   Array alpha2 = Array(rt, 1);
   alpha2 = std::move(alpha);
   EXPECT_EQ(alpha2.size(rt), 4);
+
+  // Test getting/setting an element that is an accessor.
+  auto arrWithAccessor =
+      eval(
+          "Object.defineProperty([], '0', {set(){ throw 72 }, get(){ return 45 }});")
+          .getObject(rt)
+          .getArray(rt);
+  try {
+    arrWithAccessor.setValueAtIndex(rt, 0, 1);
+    FAIL() << "Expected exception";
+  } catch (const JSError& err) {
+    EXPECT_EQ(err.value().getNumber(), 72);
+  }
+  EXPECT_EQ(arrWithAccessor.getValueAtIndex(rt, 0).getNumber(), 45);
 }
 
 TEST_P(JSITest, FunctionTest) {
@@ -740,7 +754,7 @@ TEST_P(JSITest, HostFunctionTest) {
           .utf8(rt),
       "A cat was called with std::function::target");
   EXPECT_TRUE(callable.isHostFunction(rt));
-  EXPECT_NE(callable.getHostFunction(rt).target<Callable>(), nullptr);
+  EXPECT_TRUE(callable.getHostFunction(rt).target<Callable>() != nullptr);
 
   std::string strval = "strval1";
   auto getter = Object(rt);
@@ -1231,7 +1245,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
       0,
       [](Runtime& rt, const Value& thisVal, const Value* args, size_t count) {
         MultiRuntime* funcmrt = dynamic_cast<MultiRuntime*>(&rt);
-        EXPECT_NE(funcmrt, nullptr);
+        EXPECT_TRUE(funcmrt != nullptr);
         EXPECT_EQ(funcmrt->count(), 3);
         EXPECT_EQ(funcmrt->nest(), 1);
         return Value::undefined();
@@ -1425,7 +1439,19 @@ TEST_P(JSITest, MultilevelDecoratedHostObject) {
   EXPECT_EQ(1, RD2::numGets);
 }
 
-INSTANTIATE_TEST_SUITE_P(
+TEST_P(JSITest, ArrayBufferSizeTest) {
+  auto ab =
+      eval("var x = new ArrayBuffer(10); x").getObject(rt).getArrayBuffer(rt);
+  EXPECT_EQ(ab.size(rt), 10);
+  // Ensure we can safely write some data to the buffer.
+  memset(ab.data(rt), 0xab, 10);
+
+  // Ensure that setting the byteLength property does not change the length.
+  eval("Object.defineProperty(x, 'byteLength', {value: 20})");
+  EXPECT_EQ(ab.size(rt), 10);
+}
+
+INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
     ::testing::ValuesIn(runtimeGenerators()));

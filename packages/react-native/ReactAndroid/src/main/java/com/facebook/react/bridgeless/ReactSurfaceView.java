@@ -33,7 +33,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   private static final String TAG = "ReactSurfaceView";
 
-  private ReactSurface mSurface;
+  private final ReactSurfaceImpl mSurface;
 
   private final JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
@@ -42,7 +42,7 @@ public class ReactSurfaceView extends ReactRootView {
   private int mWidthMeasureSpec = 0;
   private int mHeightMeasureSpec = 0;
 
-  public ReactSurfaceView(Context context, ReactSurface surface) {
+  public ReactSurfaceView(Context context, ReactSurfaceImpl surface) {
     super(context);
     mSurface = surface;
     mJSTouchDispatcher = new JSTouchDispatcher(this);
@@ -138,31 +138,38 @@ public class ReactSurfaceView extends ReactRootView {
    * from the child's onTouchIntercepted implementation.
    */
   @Override
-  public void onChildStartedNativeGesture(MotionEvent ev) {
-    if (mJSTouchDispatcher != null && mSurface.getEventDispatcher() != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, mSurface.getEventDispatcher());
-    }
-  }
-
-  /**
-   * Called when a child starts a native gesture (e.g. a scroll in a ScrollView). Should be called
-   * from the child's onTouchIntercepted implementation.
-   */
-  @Override
   public void onChildStartedNativeGesture(View childView, MotionEvent ev) {
-    onChildStartedNativeGesture(ev);
+    EventDispatcher eventDispatcher = mSurface.getEventDispatcher();
+    if (eventDispatcher == null) {
+      return;
+    }
+
+    if (mJSTouchDispatcher != null) {
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+    }
+    if (childView != null && mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
+    }
   }
 
   @Override
   public void onChildEndedNativeGesture(View childView, MotionEvent ev) {
+    EventDispatcher eventDispatcher = mSurface.getEventDispatcher();
+    if (eventDispatcher == null) {
+      return;
+    }
+
     if (mJSTouchDispatcher != null && mSurface.getEventDispatcher() != null) {
       mJSTouchDispatcher.onChildEndedNativeGesture(ev, mSurface.getEventDispatcher());
+    }
+    if (mJSPointerDispatcher != null) {
+      mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
     }
   }
 
   @Override
   public void handleException(Throwable t) {
-    ReactHost reactHost = mSurface.getReactHost();
+    ReactHostImpl reactHost = mSurface.getReactHost();
     if (reactHost != null) {
       String errorMessage = Objects.toString(t.getMessage(), "");
       Exception e = new IllegalViewOperationException(errorMessage, this, t);

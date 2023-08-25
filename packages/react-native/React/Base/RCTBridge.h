@@ -32,12 +32,6 @@
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 
 /**
- * These blocks are used to report whether an additional bundle
- * fails or succeeds loading.
- */
-typedef void (^RCTLoadAndExecuteErrorBlock)(NSError *error);
-
-/**
  * This function returns the module name for a given class.
  */
 RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -49,14 +43,6 @@ RCT_EXTERN NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 RCT_EXTERN BOOL RCTTurboModuleEnabled(void);
 RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 
-// Turn on TurboModule eager initialization
-RCT_EXTERN BOOL RCTTurboModuleEagerInitEnabled(void);
-RCT_EXTERN void RCTEnableTurboModuleEagerInit(BOOL enabled);
-
-// Turn off TurboModule delegate locking
-RCT_EXTERN BOOL RCTTurboModuleManagerDelegateLockingDisabled(void);
-RCT_EXTERN void RCTDisableTurboModuleManagerDelegateLocking(BOOL enabled);
-
 // Turn on TurboModule interop
 RCT_EXTERN BOOL RCTTurboModuleInteropEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
@@ -64,6 +50,15 @@ RCT_EXTERN void RCTEnableTurboModuleInterop(BOOL enabled);
 // Turn on TurboModule interop's Bridge proxy
 RCT_EXTERN BOOL RCTTurboModuleInteropBridgeProxyEnabled(void);
 RCT_EXTERN void RCTEnableTurboModuleInteropBridgeProxy(BOOL enabled);
+
+typedef enum {
+  kRCTBridgeProxyLoggingLevelNone,
+  kRCTBridgeProxyLoggingLevelWarning,
+  kRCTBridgeProxyLoggingLevelError,
+} RCTBridgeProxyLoggingLevel;
+
+RCT_EXTERN RCTBridgeProxyLoggingLevel RCTTurboModuleInteropBridgeProxyLogLevel(void);
+RCT_EXTERN void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logLevel);
 
 // Route all TurboModules through TurboModule interop
 RCT_EXTERN BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);

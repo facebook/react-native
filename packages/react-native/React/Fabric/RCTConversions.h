@@ -19,7 +19,7 @@ inline NSString *RCTNSStringFromString(
     const std::string &string,
     const NSStringEncoding &encoding = NSUTF8StringEncoding)
 {
-  return [NSString stringWithCString:string.c_str() encoding:encoding];
+  return [NSString stringWithCString:string.c_str() encoding:encoding] ?: @"";
 }
 
 inline NSString *_Nullable RCTNSStringFromStringNilIfEmpty(
@@ -56,8 +56,8 @@ inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor
   return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
 }
 
-inline CF_RETURNS_RETAINED CGColorRef
-RCTCreateCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor)
+inline CF_RETURNS_RETAINED CGColorRef _Nullable RCTCreateCGColorRefFromSharedColor(
+    const facebook::react::SharedColor &sharedColor)
 {
   return CGColorRetain(RCTUIColorFromSharedColor(sharedColor).CGColor);
 }

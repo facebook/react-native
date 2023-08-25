@@ -9,10 +9,12 @@
 
 #include <cxxreact/ErrorUtils.h>
 #include <cxxreact/JSBigString.h>
+#include <cxxreact/JSExecutor.h>
 #include <cxxreact/SystraceSection.h>
 #include <glog/logging.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
-#include <jsi/jsi/JSIDynamic.h>
+#include <jsireact/JSIExecutor.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #include <cxxreact/ReactMarker.h>
@@ -218,6 +220,9 @@ void ReactInstance::loadScript(
           if (hasLogger) {
             ReactMarker::logTaggedMarkerBridgeless(
                 ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
+            ReactMarker::logMarkerBridgeless(
+                ReactMarker::INIT_REACT_RUNTIME_STOP);
+            ReactMarker::logMarkerBridgeless(ReactMarker::APP_STARTUP_STOP);
           }
           if (auto strongBufferedRuntimeExecuter =
                   weakBufferedRuntimeExecuter.lock()) {
@@ -339,6 +344,9 @@ void ReactInstance::initializeRuntime(
   runtimeScheduler_->scheduleWork([this, options, bindingsInstallFunc](
                                       jsi::Runtime &runtime) {
     SystraceSection s("ReactInstance::initializeRuntime");
+
+    bindNativePerformanceNow(runtime);
+
     RuntimeSchedulerBinding::createAndInstallIfNeeded(
         runtime, runtimeScheduler_);
 

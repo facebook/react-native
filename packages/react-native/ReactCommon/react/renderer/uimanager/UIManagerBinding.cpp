@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/components/view/PointerEvent.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/debug/SystraceSection.h>
@@ -96,6 +97,36 @@ void UIManagerBinding::dispatchEvent(
     const EventPayload &eventPayload) const {
   SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
+  if (eventPayload.getType() == EventPayloadType::PointerEvent) {
+    auto pointerEvent = static_cast<const PointerEvent &>(eventPayload);
+    auto dispatchCallback = [this](
+                                jsi::Runtime &runtime,
+                                EventTarget const *eventTarget,
+                                std::string const &type,
+                                ReactEventPriority priority,
+                                const EventPayload &eventPayload) {
+      this->dispatchEventToJS(
+          runtime, eventTarget, type, priority, eventPayload);
+    };
+    pointerEventsProcessor_.interceptPointerEvent(
+        runtime,
+        eventTarget,
+        type,
+        priority,
+        pointerEvent,
+        dispatchCallback,
+        *uiManager_);
+  } else {
+    dispatchEventToJS(runtime, eventTarget, type, priority, eventPayload);
+  }
+}
+
+void UIManagerBinding::dispatchEventToJS(
+    jsi::Runtime &runtime,
+    EventTarget const *eventTarget,
+    std::string const &type,
+    ReactEventPriority priority,
+    const EventPayload &eventPayload) const {
   auto payload = eventPayload.asJSIValue(runtime);
 
   // If a payload is null, the factory has decided to cancel the event
@@ -1173,6 +1204,66 @@ jsi::Value UIManagerBinding::get(
               jsi::Value{
                   runtime,
                   scrollPosition.y == 0 ? 0 : (double)-scrollPosition.y});
+        });
+  }
+
+  /**
+   * Pointer Capture APIs
+   */
+  if (methodName == "hasPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          bool isCapturing = pointerEventsProcessor_.hasPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value(isCapturing);
+        });
+  }
+
+  if (methodName == "setPointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_.setPointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]));
+          return jsi::Value::undefined();
+        });
+  }
+
+  if (methodName == "releasePointerCapture") {
+    auto paramCount = 2;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        paramCount,
+        [this, methodName, paramCount](
+            jsi::Runtime &runtime,
+            jsi::Value const & /*thisValue*/,
+            jsi::Value const *arguments,
+            size_t count) -> jsi::Value {
+          validateArgumentCount(runtime, methodName, paramCount, count);
+          pointerEventsProcessor_.releasePointerCapture(
+              static_cast<int>(arguments[1].asNumber()),
+              shadowNodeFromValue(runtime, arguments[0]).get());
+          return jsi::Value::undefined();
         });
   }
 

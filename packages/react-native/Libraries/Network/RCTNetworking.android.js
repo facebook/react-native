@@ -9,6 +9,7 @@
  */
 
 import type {RequestBody} from './convertRequestBody';
+import type {NativeResponseType} from './XMLHttpRequest';
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
@@ -54,7 +55,7 @@ class RCTNetworking extends NativeEventEmitter<$FlowFixMe> {
     url: string,
     headers: Object,
     data: RequestBody,
-    responseType: 'text' | 'base64',
+    responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
     callback: (requestId: number) => mixed,

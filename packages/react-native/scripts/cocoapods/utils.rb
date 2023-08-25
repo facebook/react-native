@@ -171,7 +171,7 @@ class ReactNativePodsUtils
         end
 
         if lib_search_paths.include?("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)") || lib_search_paths.include?("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
-            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple M1)
+            # $(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME) causes problem with Xcode 12.5 + arm64 (Apple Silicon)
             # since the libraries there are only built for x86_64 and i386.
             lib_search_paths.delete("$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)")
             lib_search_paths.delete("\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\"")
@@ -186,11 +186,15 @@ class ReactNativePodsUtils
     def self.create_xcode_env_if_missing(file_manager: File)
         relative_path = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
         file_path = file_manager.join(relative_path, '.xcode.env')
-        if file_manager.exist?(file_path)
-            return
+
+        if !file_manager.exist?(file_path)
+            system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
         end
 
-        system("echo 'export NODE_BINARY=$(command -v node)' > #{file_path}")
+        if !file_manager.exist?("#{file_path}.local")
+            node_binary = `command -v node`
+            system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
+        end
     end
 
     # It examines the target_definition property and sets the appropriate value for
@@ -228,6 +232,7 @@ class ReactNativePodsUtils
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios")
+                header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers")
                 header_search_paths = self.add_search_path_if_not_included(header_search_paths, "${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios")
 
@@ -384,6 +389,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-RCTFabric", [
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\"",
+            "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers\"",
             "\"${PODS_CONFIGURATION_BUILD_DIR}/React-Graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\"",

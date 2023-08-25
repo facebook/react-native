@@ -87,7 +87,7 @@ const Components: Array<RNTesterModuleInfo> = [
   },
   {
     key: 'ScrollViewIndicatorInsetsExample',
-    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsExample'),
+    module: require('../examples/ScrollView/ScrollViewIndicatorInsetsIOSExample'),
   },
   {
     key: 'SectionListIndex',
@@ -135,6 +135,11 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'NewArchitectureExample',
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
+  },
+  {
+    key: 'PerformanceComparisonExample',
+    category: 'Basic',
+    module: require('../examples/Performance/PerformanceComparisonExample'),
   },
 ];
 

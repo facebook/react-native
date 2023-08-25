@@ -16,6 +16,7 @@
 #include <react/renderer/core/TraitCast.h>
 #include <react/renderer/graphics/rounding.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
+#include <react/utils/CoreFeatures.h>
 
 #include "ParagraphState.h"
 
@@ -24,6 +25,20 @@ namespace facebook::react {
 using Content = ParagraphShadowNode::Content;
 
 char const ParagraphComponentName[] = "Paragraph";
+
+ParagraphShadowNode::ParagraphShadowNode(
+    ShadowNode const &sourceShadowNode,
+    ShadowNodeFragment const &fragment)
+    : ConcreteViewShadowNode(sourceShadowNode, fragment) {
+  if (CoreFeatures::enableCleanParagraphYogaNode) {
+    if (!fragment.children && !fragment.props) {
+      // This ParagraphShadowNode was cloned but did not change
+      // in a way that affects its layout. Let's mark it clean
+      // to stop Yoga from traversing it.
+      cleanLayout();
+    }
+  }
+}
 
 Content const &ParagraphShadowNode::getContent(
     LayoutContext const &layoutContext) const {

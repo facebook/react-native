@@ -616,18 +616,31 @@ static inline ViewEvents convertRawProp(
       "onClickCapture",
       sourceValue[Offset::ClickCapture],
       defaultValue[Offset::ClickCapture]);
-  result[Offset::GotPointerCapture] = convertRawProp(
+  result[Offset::PointerDown] = convertRawProp(
       context,
       rawProps,
-      "onGotPointerCapture",
-      sourceValue[Offset::GotPointerCapture],
-      defaultValue[Offset::GotPointerCapture]);
-  result[Offset::LostPointerCapture] = convertRawProp(
+      "onPointerDown",
+      sourceValue[Offset::PointerDown],
+      defaultValue[Offset::PointerDown]);
+  result[Offset::PointerDownCapture] = convertRawProp(
       context,
       rawProps,
-      "onLostPointerCapture",
-      sourceValue[Offset::LostPointerCapture],
-      defaultValue[Offset::LostPointerCapture]);
+      "onPointerDownCapture",
+      sourceValue[Offset::PointerDownCapture],
+      defaultValue[Offset::PointerDownCapture]);
+  result[Offset::PointerUp] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUp",
+      sourceValue[Offset::PointerUp],
+      defaultValue[Offset::PointerUp]);
+  result[Offset::PointerUpCapture] = convertRawProp(
+      context,
+      rawProps,
+      "onPointerUpCapture",
+      sourceValue[Offset::PointerUpCapture],
+      defaultValue[Offset::PointerUpCapture]);
+  // TODO: gotPointerCapture & lostPointerCapture
 
   // PanResponder callbacks
   result[Offset::MoveShouldSetResponder] = convertRawProp(
@@ -737,57 +750,5 @@ static inline ViewEvents convertRawProp(
 
   return result;
 }
-
-#ifdef ANDROID
-
-static inline void fromRawValue(
-    const PropsParserContext &context,
-    RawValue const &rawValue,
-    NativeDrawable &result) {
-  auto map = (butter::map<std::string, RawValue>)rawValue;
-
-  auto typeIterator = map.find("type");
-  react_native_expect(
-      typeIterator != map.end() && typeIterator->second.hasType<std::string>());
-  std::string type = (std::string)typeIterator->second;
-
-  if (type == "ThemeAttrAndroid") {
-    auto attrIterator = map.find("attribute");
-    react_native_expect(
-        attrIterator != map.end() &&
-        attrIterator->second.hasType<std::string>());
-
-    result = NativeDrawable{
-        (std::string)attrIterator->second,
-        {},
-        NativeDrawable::Kind::ThemeAttr,
-    };
-  } else if (type == "RippleAndroid") {
-    auto color = map.find("color");
-    auto borderless = map.find("borderless");
-    auto rippleRadius = map.find("rippleRadius");
-
-    result = NativeDrawable{
-        std::string{},
-        NativeDrawable::Ripple{
-            color != map.end() && color->second.hasType<int32_t>()
-                ? (int32_t)color->second
-                : std::optional<int32_t>{},
-            rippleRadius != map.end() && rippleRadius->second.hasType<Float>()
-                ? (Float)rippleRadius->second
-                : std::optional<Float>{},
-            borderless != map.end() && borderless->second.hasType<bool>()
-                ? (bool)borderless->second
-                : false,
-        },
-        NativeDrawable::Kind::Ripple,
-    };
-  } else {
-    LOG(ERROR) << "Unknown native drawable type: " << type;
-    react_native_expect(false);
-  }
-}
-
-#endif
 
 } // namespace facebook::react

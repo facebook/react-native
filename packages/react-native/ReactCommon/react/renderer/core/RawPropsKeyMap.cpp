@@ -38,6 +38,8 @@ void RawPropsKeyMap::insert(
   item.value = value;
   key.render(item.name, &item.length);
   items_.push_back(item);
+  react_native_assert(
+      items_.size() < std::numeric_limits<RawPropsPropNameLength>::max());
 }
 
 void RawPropsKeyMap::reindex() noexcept {
