@@ -24,17 +24,13 @@ import type {
 */
 
 const {parseSync, transformFromAstSync} = require('@babel/core');
-const inlineRequiresPlugin = require('babel-preset-fbjs/plugins/inline-requires');
 const crypto = require('crypto');
 const fs = require('fs');
 const makeHMRConfig = require('@react-native/babel-preset/src/configs/hmr');
 const nullthrows = require('nullthrows');
 const path = require('path');
 
-const cacheKeyParts = [
-  fs.readFileSync(__filename),
-  require('babel-preset-fbjs/package.json').version,
-];
+const cacheKeyParts = [fs.readFileSync(__filename)];
 
 // TS detection conditions copied from @react-native/babel-preset
 function isTypeScriptSource(fileName /*: string */) {
@@ -154,17 +150,10 @@ function buildBabelConfig(
     ...extraConfig,
   };
 
-  // Add extra plugins
-  const extraPlugins = [];
-
-  if (options.inlineRequires) {
-    extraPlugins.push(inlineRequiresPlugin);
-  }
-
-  const withExtrPlugins = (config.plugins = extraPlugins.concat(
-    config.plugins,
-    plugins,
-  ));
+  const withExtraPlugins = (config.plugins = [
+    ...(config.plugins ?? []),
+    ...plugins,
+  ]);
 
   if (options.dev && options.hot) {
     // Note: this intentionally doesn't include the path separator because
@@ -177,7 +166,7 @@ function buildBabelConfig(
 
     if (mayContainEditableReactComponents) {
       const hmrConfig = makeHMRConfig();
-      hmrConfig.plugins = withExtrPlugins.concat(hmrConfig.plugins);
+      hmrConfig.plugins = withExtraPlugins.concat(hmrConfig.plugins);
       config = {...config, ...hmrConfig};
     }
   }

@@ -62,6 +62,10 @@ struct ViewEvents {
     ClickCapture = 31,
     GotPointerCapture = 32,
     LostPointerCapture = 33,
+    PointerDown = 34,
+    PointerDownCapture = 35,
+    PointerUp = 36,
+    PointerUpCapture = 37,
   };
 
   constexpr bool operator[](const Offset offset) const {
@@ -86,6 +90,8 @@ enum class BackfaceVisibility : uint8_t { Auto, Visible, Hidden };
 enum class BorderCurve : uint8_t { Circular, Continuous };
 
 enum class BorderStyle : uint8_t { Solid, Dotted, Dashed };
+
+enum class LayoutConformance : uint8_t { Undefined, Classic, Strict };
 
 template <typename T>
 struct CascadedRectangleEdges {

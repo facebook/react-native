@@ -16,6 +16,7 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+import type {EventArgumentReturnType} from '../../parsers-commons';
 
 const {
   throwIfEventHasNoName,
@@ -25,6 +26,8 @@ const {
 const {
   getEventArgument,
   buildPropertiesForEvent,
+  handleEventHandler,
+  emitBuildEventSchema,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -178,11 +181,7 @@ function findEventArgumentsAndType(
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-): {
-  argumentProps: $FlowFixMe,
-  bubblingType: ?('direct' | 'bubble'),
-  paperTopLevelNameDeprecated: ?$FlowFixMe,
-} {
+): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
   const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
@@ -192,25 +191,12 @@ function findEventArgumentsAndType(
       bubblingType,
     };
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
-    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
-    const paperTopLevelNameDeprecated =
-      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
-    if (
-      typeAnnotation.typeParameters.params[0].type ===
-      parser.nullLiteralTypeAnnotation
-    ) {
-      return {
-        argumentProps: [],
-        bubblingType: eventType,
-        paperTopLevelNameDeprecated,
-      };
-    }
-    return findEventArgumentsAndType(
+    return handleEventHandler(
+      name,
+      typeAnnotation,
       parser,
-      typeAnnotation.typeParameters.params[0],
       types,
-      eventType,
-      paperTopLevelNameDeprecated,
+      findEventArgumentsAndType,
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
@@ -260,36 +246,19 @@ function buildEventSchema(
   );
   const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
-  if (paperTopLevelNameDeprecated != null) {
-    return {
-      name,
-      optional,
-      bubblingType: nonNullableBubblingType,
-      paperTopLevelNameDeprecated,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(
-          nonNullableArgumentProps,
-          parser,
-          getPropertyType,
-        ),
-      },
-    };
-  }
+  const argument = getEventArgument(
+    nonNullableArgumentProps,
+    parser,
+    getPropertyType,
+  );
 
-  return {
+  return emitBuildEventSchema(
+    paperTopLevelNameDeprecated,
     name,
     optional,
-    bubblingType: nonNullableBubblingType,
-    typeAnnotation: {
-      type: 'EventTypeAnnotation',
-      argument: getEventArgument(
-        nonNullableArgumentProps,
-        parser,
-        getPropertyType,
-      ),
-    },
-  };
+    nonNullableBubblingType,
+    argument,
+  );
 }
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs

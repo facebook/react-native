@@ -390,6 +390,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
   metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
   metrics.zoomScale = _scrollView.zoomScale;
+
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
+  }
+
   return metrics;
 }
 
@@ -675,16 +680,16 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
+  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
+    // Adjusting offset.x in right to left layout direction.
+    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
+  }
+
   if (CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     return;
   }
 
   [self _forceDispatchNextScrollEvent];
-
-  if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
-    // Adjusting offset.x in right to left layout direction.
-    offset.x = self.contentSize.width - _scrollView.frame.size.width - offset.x;
-  }
 
   [_scrollView setContentOffset:offset animated:animated];
 

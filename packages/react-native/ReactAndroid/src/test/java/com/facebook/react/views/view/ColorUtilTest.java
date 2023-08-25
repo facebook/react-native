@@ -11,20 +11,14 @@ import static org.junit.Assert.*;
 
 import android.graphics.PixelFormat;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 /** Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco). */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @Ignore // TODO T110934492
 public class ColorUtilTest {
-
-  @Rule public PowerMockRule rule = new PowerMockRule();
 
   @Test
   public void testMultiplyColorAlpha() {

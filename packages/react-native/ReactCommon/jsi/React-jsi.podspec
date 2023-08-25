@@ -44,18 +44,10 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
 
-  if js_engine == :jsc
-    s.source_files  = "**/*.{cpp,h}"
-    s.exclude_files = [
-                        "jsi/jsilib-posix.cpp",
-                        "jsi/jsilib-windows.cpp",
-                        "**/test/*"
-                      ]
-
-  elsif js_engine == :hermes
-    # JSI is provided by hermes-engine when Hermes is enabled
-    # Just need to provide JSIDynamic in this case.
-    s.source_files = "jsi/JSIDynamic.{cpp,h}"
-    s.dependency "hermes-engine"
-  end
+  s.source_files  = "**/*.{cpp,h}"
+  s.exclude_files = [
+                      "jsi/jsilib-posix.cpp",
+                      "jsi/jsilib-windows.cpp",
+                      "**/test/*"
+                    ]
 end

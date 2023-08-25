@@ -52,11 +52,6 @@ export interface SwitchProps extends SwitchPropsIOS {
   thumbColor?: ColorValue | undefined;
 
   /**
-   * Color of the active foreground switch grip.
-   */
-  activeThumbColor?: ColorValue | undefined;
-
-  /**
    * Custom colors for the switch track
    *
    * Color when false and color when true

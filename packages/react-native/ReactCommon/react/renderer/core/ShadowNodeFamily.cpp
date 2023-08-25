@@ -116,7 +116,7 @@ void ShadowNodeFamily::setMostRecentState(State::Shared const &state) const {
    * Nodes (the evolution of nodes is not linear), however, we never back out
    * states (they progress linearly).
    */
-  if (state && state->isObsolete_) {
+  if (state && (state->isObsolete_ || state == mostRecentState_)) {
     return;
   }
 

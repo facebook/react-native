@@ -34,14 +34,26 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   private final Map<ModuleProvider, Map<String, ReactModuleInfo>> mPackageModuleInfos =
       new HashMap<>();
 
-  private static boolean shouldSupportLegacyPackages() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  private final boolean mShouldEnableLegacyModuleInterop =
+      ReactFeatureFlags.enableBridgelessArchitecture
+          && ReactFeatureFlags.unstable_useTurboModuleInterop;
+
+  private final boolean mShouldRouteTurboModulesThroughLegacyModuleInterop =
+      mShouldEnableLegacyModuleInterop
+          && ReactFeatureFlags.unstable_useTurboModuleInteropForAllTurboModules;
+
+  @Override
+  public boolean unstable_shouldEnableLegacyModuleInterop() {
+    return mShouldEnableLegacyModuleInterop;
   }
 
-  private static boolean shouldCreateLegacyModules() {
-    return ReactFeatureFlags.enableBridgelessArchitecture
-        && ReactFeatureFlags.unstable_useTurboModuleInterop;
+  @Override
+  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
+    return mShouldRouteTurboModulesThroughLegacyModuleInterop;
+  }
+
+  private boolean shouldSupportLegacyPackages() {
+    return unstable_shouldEnableLegacyModuleInterop();
   }
 
   protected ReactPackageTurboModuleManagerDelegate(
@@ -191,7 +203,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate extends TurboModule
   @Nullable
   @Override
   public NativeModule getLegacyModule(String moduleName) {
-    if (!shouldCreateLegacyModules()) {
+    if (!unstable_shouldEnableLegacyModuleInterop()) {
       return null;
     }
 

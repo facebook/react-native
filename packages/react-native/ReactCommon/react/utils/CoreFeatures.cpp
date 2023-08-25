@@ -20,5 +20,7 @@ bool CoreFeatures::enableMountHooks = false;
 bool CoreFeatures::doNotSwapLeftAndRightOnAndroidInLTR = false;
 bool CoreFeatures::enableCleanParagraphYogaNode = false;
 bool CoreFeatures::disableScrollEventThrottleRequirement = false;
+bool CoreFeatures::enableGranularShadowTreeStateReconciliation = false;
+bool CoreFeatures::enableDefaultAsyncBatchedPriority = false;
 
 } // namespace facebook::react

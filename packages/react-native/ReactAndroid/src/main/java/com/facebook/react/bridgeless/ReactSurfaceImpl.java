@@ -38,7 +38,7 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   private final AtomicReference<ReactSurfaceView> mSurfaceView = new AtomicReference<>(null);
 
-  private final AtomicReference<ReactHost> mReactHost = new AtomicReference<>(null);
+  private final AtomicReference<ReactHostImpl> mReactHost = new AtomicReference<>(null);
 
   private final SurfaceHandler mSurfaceHandler;
 
@@ -93,7 +93,7 @@ public class ReactSurfaceImpl implements ReactSurface {
    *
    * @param host The ReactHost to attach.
    */
-  public void attach(ReactHost host) {
+  public void attach(ReactHostImpl host) {
     if (!mReactHost.compareAndSet(null, host)) {
       throw new IllegalStateException("This surface is already attached to a host!");
     }
@@ -118,18 +118,19 @@ public class ReactSurfaceImpl implements ReactSurface {
   }
 
   @VisibleForTesting
-  ReactHost getReactHost() {
+  ReactHostImpl getReactHost() {
     // NULLSAFE_FIXME[Return Not Nullable]
     return mReactHost.get();
   }
 
   /** Detach the ReactSurface from its ReactHost. */
+  @Override
   public void detach() {
     mReactHost.set(null);
   }
 
-  @Override
-  public SurfaceHandler getSurfaceHandler() {
+  /** package */
+  SurfaceHandler getSurfaceHandler() {
     return mSurfaceHandler;
   }
 
@@ -140,7 +141,7 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   @Override
   public TaskInterface<Void> prerender() {
-    ReactHost host = mReactHost.get();
+    ReactHostImpl host = mReactHost.get();
     if (host == null) {
       return Task.forError(
           new IllegalStateException(
@@ -157,7 +158,7 @@ public class ReactSurfaceImpl implements ReactSurface {
               "Trying to call ReactSurface.start(), but view is not created."));
     }
 
-    ReactHost host = mReactHost.get();
+    ReactHostImpl host = mReactHost.get();
     if (host == null) {
       return Task.forError(
           new IllegalStateException(
@@ -168,7 +169,7 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   @Override
   public TaskInterface<Void> stop() {
-    ReactHost host = mReactHost.get();
+    ReactHostImpl host = mReactHost.get();
     if (host == null) {
       return Task.forError(
           new IllegalStateException(
@@ -214,7 +215,7 @@ public class ReactSurfaceImpl implements ReactSurface {
 
   /* package */ @Nullable
   EventDispatcher getEventDispatcher() {
-    ReactHost host = mReactHost.get();
+    ReactHostImpl host = mReactHost.get();
     if (host == null) {
       return null;
     }

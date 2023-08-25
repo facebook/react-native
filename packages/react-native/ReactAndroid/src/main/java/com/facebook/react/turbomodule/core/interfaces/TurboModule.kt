@@ -11,6 +11,9 @@ interface TurboModule {
   /** Initialize the TurboModule. */
   fun initialize()
 
-  /** Called before React Native is torn down. Clean up after the TurboModule. */
+  /**
+   * Called during the turn down process of ReactHost. This method is called before React Native is
+   * stopped. Override this method to clean up resources used by the TurboModule.
+   */
   fun invalidate()
 }

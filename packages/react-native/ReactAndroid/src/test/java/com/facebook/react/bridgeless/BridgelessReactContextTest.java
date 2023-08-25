@@ -27,13 +27,13 @@ import org.robolectric.RobolectricTestRunner;
 public class BridgelessReactContextTest {
 
   private Context mContext;
-  private ReactHost mReactHost;
+  private ReactHostImpl mReactHost;
   private BridgelessReactContext mBridgelessReactContext;
 
   @Before
   public void setUp() {
     mContext = Robolectric.buildActivity(Activity.class).create().get();
-    mReactHost = Mockito.mock(ReactHost.class);
+    mReactHost = Mockito.mock(ReactHostImpl.class);
     mBridgelessReactContext = new BridgelessReactContext(mContext, mReactHost);
   }
 

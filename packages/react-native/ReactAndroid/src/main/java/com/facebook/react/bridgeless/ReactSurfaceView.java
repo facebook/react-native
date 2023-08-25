@@ -169,7 +169,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   @Override
   public void handleException(Throwable t) {
-    ReactHost reactHost = mSurface.getReactHost();
+    ReactHostImpl reactHost = mSurface.getReactHost();
     if (reactHost != null) {
       String errorMessage = Objects.toString(t.getMessage(), "");
       Exception e = new IllegalViewOperationException(errorMessage, this, t);

@@ -39,7 +39,7 @@ void ImageResponseObserverCoordinator::addObserver(
 
 void ImageResponseObserverCoordinator::removeObserver(
     ImageResponseObserver const &observer) const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   // We remove only one element to maintain a balance between add/remove calls.
   auto position = std::find(observers_.begin(), observers_.end(), &observer);
