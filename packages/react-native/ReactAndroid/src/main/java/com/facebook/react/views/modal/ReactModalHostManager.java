@@ -35,7 +35,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
     implements ModalHostViewManagerInterface<ReactModalHostView> {
 
   public static final String REACT_CLASS = "RCTModalHostView";
-  private static final int UNSET = -1;
 
   private final ViewManagerDelegate<ReactModalHostView> mDelegate;
 
