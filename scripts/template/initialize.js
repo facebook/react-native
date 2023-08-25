@@ -11,6 +11,7 @@
 
 const yargs = require('yargs');
 const {execSync} = require('child_process');
+const path = require('path');
 
 const forEachPackage = require('../monorepo/for-each-package');
 const setupVerdaccio = require('../setup-verdaccio');
@@ -41,6 +42,7 @@ const {argv} = yargs
 
 const {reactNativeRootPath, templateName, templateConfigPath, directory} = argv;
 
+const REPO_ROOT = path.resolve(__dirname, '../..');
 const VERDACCIO_CONFIG_PATH = `${reactNativeRootPath}/.circleci/verdaccio.yml`;
 
 async function install() {
@@ -50,6 +52,12 @@ async function install() {
   );
   try {
     process.stdout.write('Bootstrapped Verdaccio \u2705\n');
+
+    process.stdout.write('Building packages...\n');
+    execSync('node ./scripts/build/build.js', {
+      cwd: REPO_ROOT,
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
 
     process.stdout.write('Starting to publish every package...\n');
     forEachPackage(

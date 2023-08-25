@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-utils"
-  # s.dependency "React-runtimescheduler"
+  s.dependency "React-runtimescheduler"
   s.dependency "React-rendererdebug"
   s.dependency "React-cxxreact"
 
@@ -296,15 +296,6 @@ Pod::Spec.new do |s|
     ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
-    ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
-  end
-
-  s.subspec "runtimescheduler" do |ss|
-    ss.dependency             folly_dep_name, folly_version
-    ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "react/renderer/runtimescheduler/**/*.{cpp,h}"
-    ss.exclude_files        = "react/renderer/runtimescheduler/tests"
-    ss.header_dir           = "react/renderer/runtimescheduler"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }
   end
 end

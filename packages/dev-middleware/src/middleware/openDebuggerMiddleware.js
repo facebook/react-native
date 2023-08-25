@@ -17,7 +17,7 @@ import type {Logger} from '../types/Logger';
 
 import url from 'url';
 import getDevServerUrl from '../utils/getDevServerUrl';
-import launchChromeDevTools from '../utils/launchChromeDevTools';
+import launchDebuggerAppWindow from '../utils/launchDebuggerAppWindow';
 import queryInspectorTargets from '../utils/queryInspectorTargets';
 
 const debuggerInstances = new Map<string, LaunchedChrome>();
@@ -81,7 +81,10 @@ export default function openDebuggerMiddleware({
         debuggerInstances.get(appId)?.kill();
         debuggerInstances.set(
           appId,
-          await launchChromeDevTools(target.webSocketDebuggerUrl),
+          await launchDebuggerAppWindow(
+            target.devtoolsFrontendUrl,
+            'open-debugger',
+          ),
         );
         res.end();
         eventReporter?.logEvent({

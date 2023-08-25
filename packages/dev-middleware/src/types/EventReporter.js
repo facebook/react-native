@@ -24,6 +24,13 @@ type CodedErrorResult<ErrorCode: string> = {
   errorDetails?: string,
 };
 
+type DebuggerSessionIDs = {
+  appId: string,
+  deviceName: string,
+  deviceId: string,
+  pageId: string | null,
+};
+
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
@@ -34,7 +41,32 @@ export type ReportableEvent =
     }
   | {
       type: 'connect_debugger_frontend',
-      ...SuccessResult<void> | ErrorResult<mixed>,
+      ...
+        | SuccessResult<{
+            ...DebuggerSessionIDs,
+            frontendUserAgent: string | null,
+          }>
+        | ErrorResult<mixed>,
+    }
+  | {
+      type: 'debugger_command',
+      protocol: 'CDP',
+      // With some errors, the method might not be known
+      method: string | null,
+      requestOrigin: 'proxy' | 'debugger' | null,
+      responseOrigin: 'proxy' | 'device',
+      timeSinceStart: number | null,
+      ...DebuggerSessionIDs,
+      frontendUserAgent: string | null,
+      ...
+        | SuccessResult<void>
+        | CodedErrorResult<
+            | 'TIMED_OUT'
+            | 'DEVICE_DISCONNECTED'
+            | 'DEBUGGER_DISCONNECTED'
+            | 'UNMATCHED_REQUEST_ID'
+            | 'PROTOCOL_ERROR',
+          >,
     };
 
 /**

@@ -34,6 +34,11 @@ export type DimensionsPayload = {|
   screenPhysicalPixels?: DisplayMetricsAndroid,
 |};
 
+export type DeviceInfoConstants = {|
+  +Dimensions: DimensionsPayload,
+  +isIPhoneX_deprecated?: boolean,
+|};
+
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     +Dimensions: DimensionsPayload,
@@ -42,13 +47,10 @@ export interface Spec extends TurboModule {
 }
 
 const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
-let constants = null;
+let constants: ?DeviceInfoConstants = null;
 
 const NativeDeviceInfo = {
-  getConstants(): {|
-    +Dimensions: DimensionsPayload,
-    +isIPhoneX_deprecated?: boolean,
-  |} {
+  getConstants(): DeviceInfoConstants {
     if (constants == null) {
       constants = NativeModule.getConstants();
     }

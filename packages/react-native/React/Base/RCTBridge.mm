@@ -328,6 +328,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   RCT_PROFILE_BEGIN_EVENT(0, @"-[RCTBridge setUp]", nil);
 
   _performanceLogger = [RCTPerformanceLogger new];
+  [_performanceLogger markStartForTag:RCTPLInitReactRuntime];
   [_performanceLogger markStartForTag:RCTPLBridgeStartup];
   [_performanceLogger markStartForTag:RCTPLTTI];
 

@@ -20,6 +20,7 @@ import type {
   SetBreakpointByUrlRequest,
 } from './types';
 
+import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import * as path from 'path';
 import fetch from 'node-fetch';
@@ -45,7 +46,7 @@ type DebuggerInfo = {
   originalSourceURLAddress?: string,
   prependedFilePrefix: boolean,
   pageId: string,
-  ...
+  userAgent: string | null,
 };
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
@@ -90,7 +91,7 @@ export default class Device {
   // Root of the project used for relative to absolute source path conversion.
   _projectRoot: string;
 
-  _eventReporter: ?EventReporter;
+  _deviceEventReporter: ?DeviceEventReporter;
 
   constructor(
     id: string,
@@ -106,7 +107,13 @@ export default class Device {
     this._pages = [];
     this._deviceSocket = socket;
     this._projectRoot = projectRoot;
-    this._eventReporter = eventReporter;
+    this._deviceEventReporter = eventReporter
+      ? new DeviceEventReporter(eventReporter, {
+          deviceId: id,
+          deviceName: name,
+          appId: app,
+        })
+      : null;
 
     // $FlowFixMe[incompatible-call]
     this._deviceSocket.on('message', (message: string) => {
@@ -126,6 +133,7 @@ export default class Device {
       this._handleMessageFromDevice(parsedMessage);
     });
     this._deviceSocket.on('close', () => {
+      this._deviceEventReporter?.logDisconnection('device');
       // Device disconnected - close debugger connection.
       if (this._debuggerConnection) {
         this._debuggerConnection.socket.close();
@@ -162,11 +170,21 @@ export default class Device {
   // 1. Sends connect event to device
   // 2. Forwards all messages from the debugger to device as wrappedEvent
   // 3. Sends disconnect event to device when debugger connection socket closes.
-  handleDebuggerConnection(socket: WS, pageId: string) {
-    this._eventReporter?.logEvent({
-      type: 'connect_debugger_frontend',
-      status: 'success',
+  handleDebuggerConnection(
+    socket: WS,
+    pageId: string,
+    metadata: $ReadOnly<{
+      userAgent: string | null,
+    }>,
+  ) {
+    // Clear any commands we were waiting on.
+    this._deviceEventReporter?.logDisconnection('debugger');
+
+    this._deviceEventReporter?.logConnection('debugger', {
+      pageId,
+      frontendUserAgent: metadata.userAgent,
     });
+
     // Disconnect current debugger if we already have debugger connected.
     if (this._debuggerConnection) {
       this._debuggerConnection.socket.close();
@@ -177,6 +195,7 @@ export default class Device {
       socket,
       prependedFilePrefix: false,
       pageId,
+      userAgent: metadata.userAgent,
     };
     this._debuggerConnection = debuggerInfo;
 
@@ -193,6 +212,10 @@ export default class Device {
     socket.on('message', (message: string) => {
       debug('(Debugger) -> (Proxy)    (Device): ' + message);
       const debuggerRequest = JSON.parse(message);
+      this._deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: metadata.userAgent,
+      });
       const handled = this._interceptMessageFromDebugger(
         debuggerRequest,
         debuggerInfo,
@@ -211,6 +234,7 @@ export default class Device {
     });
     socket.on('close', () => {
       debug(`Debugger for page ${pageId} and ${this._name} disconnected.`);
+      this._deviceEventReporter?.logDisconnection('debugger');
       this._sendMessageToDevice({
         event: 'disconnect',
         payload: {
@@ -256,6 +280,9 @@ export default class Device {
       newDevice.handleDebuggerConnection(
         oldDebugger.socket,
         oldDebugger.pageId,
+        {
+          userAgent: oldDebugger.userAgent,
+        },
       );
     }
   }
@@ -315,6 +342,12 @@ export default class Device {
       }
 
       const parsedPayload = JSON.parse(message.payload.wrappedEvent);
+      if ('id' in parsedPayload) {
+        this._deviceEventReporter?.logResponse(parsedPayload, 'device', {
+          pageId: this._debuggerConnection?.pageId ?? null,
+          frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
+        });
+      }
 
       if (this._debuggerConnection) {
         // Wrapping just to make flow happy :)
@@ -392,6 +425,10 @@ export default class Device {
     ];
 
     for (const message of toSend) {
+      this._deviceEventReporter?.logRequest(message, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
+      });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
         payload: {
@@ -484,11 +521,16 @@ export default class Device {
       //
       // This is not an issue in VSCode/Nuclide where the IDE knows to resume
       // at its convenience.
+      const resumeMessage = {method: 'Debugger.resume', id: 0};
+      this._deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
+      });
       this._sendMessageToDevice({
         event: 'wrappedEvent',
         payload: {
           pageId: this._mapToDevicePageId(debuggerInfo.pageId),
-          wrappedEvent: JSON.stringify({method: 'Debugger.resume', id: 0}),
+          wrappedEvent: JSON.stringify(resumeMessage),
         },
       });
 
@@ -548,15 +590,25 @@ export default class Device {
   _processDebuggerGetScriptSource(req: GetScriptSourceRequest, socket: WS) {
     const sendSuccessResponse = (scriptSource: string) => {
       const result: GetScriptSourceResponse = {scriptSource};
-      socket.send(JSON.stringify({id: req.id, result}));
+      const response = {id: req.id, result};
+      socket.send(JSON.stringify(response));
+      this._deviceEventReporter?.logResponse(response, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
+      });
     };
     const sendErrorResponse = (error: string) => {
       // Tell the client that the request failed
       const result: ErrorResponse = {error: {message: error}};
-      socket.send(JSON.stringify({id: req.id, result}));
+      const response = {id: req.id, result};
+      socket.send(JSON.stringify(response));
 
       // Send to the console as well, so the user can see it
       this._sendErrorToDebugger(error);
+      this._deviceEventReporter?.logResponse(response, 'proxy', {
+        pageId: this._debuggerConnection?.pageId ?? null,
+        frontendUserAgent: this._debuggerConnection?.userAgent ?? null,
+      });
     };
 
     const pathToSource = this._scriptIdToSourcePathMapping.get(

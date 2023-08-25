@@ -222,6 +222,16 @@ void PointerEventsProcessor::interceptPointerEvent(
     eventTarget = retargeted.target.get();
   }
 
+  if (type == "topPointerDown") {
+    registerActivePointer(pointerEvent);
+  } else if (type == "topPointerMove") {
+    // TODO: Remove the need for this check by properly handling
+    // pointerenter/pointerleave events emitted from the native platform
+    if (getActivePointer(pointerEvent.pointerId) != nullptr) {
+      updateActivePointer(pointerEvent);
+    }
+  }
+
   eventTarget->retain(runtime);
   auto shadowNode = getShadowNodeFromEventTarget(runtime, *eventTarget);
   if (shadowNode != nullptr &&
@@ -237,30 +247,45 @@ void PointerEventsProcessor::interceptPointerEvent(
     processPendingPointerCapture(
         pointerEvent, runtime, eventDispatcher, uiManager);
   }
+
+  if (type == "topPointerUp" || type == "topPointerCancel") {
+    unregisterActivePointer(pointerEvent);
+  }
 }
 
 void PointerEventsProcessor::setPointerCapture(
     PointerIdentifier pointerId,
     ShadowNode::Shared const &shadowNode) {
-  // TODO: Throw DOMException with name "NotFoundError" when pointerId does not
-  // match any of the active pointers
-  pendingPointerCaptureTargetOverrides_[pointerId] = shadowNode;
+  if (auto activePointer = getActivePointer(pointerId)) {
+    // As per the spec this method should silently fail if the pointer in
+    // question does not have any active buttons
+    if (activePointer->event.buttons == 0) {
+      return;
+    }
+
+    pendingPointerCaptureTargetOverrides_[pointerId] = shadowNode;
+  } else {
+    // TODO: Throw DOMException with name "NotFoundError" when pointerId does
+    // not match any of the active pointers
+  }
 }
 
 void PointerEventsProcessor::releasePointerCapture(
     PointerIdentifier pointerId,
     ShadowNode const *shadowNode) {
-  // TODO: Throw DOMException with name "NotFoundError" when pointerId does not
-  // match any of the active pointers
-
-  // We only clear the pointer's capture target override if release was called
-  // on the shadowNode which has the capture override, otherwise the result
-  // should no-op
-  auto pendingTarget = getCaptureTargetOverride(
-      pointerId, pendingPointerCaptureTargetOverrides_);
-  if (pendingTarget != nullptr &&
-      pendingTarget->getTag() == shadowNode->getTag()) {
-    pendingPointerCaptureTargetOverrides_.erase(pointerId);
+  if (getActivePointer(pointerId) != nullptr) {
+    // We only clear the pointer's capture target override if release was called
+    // on the shadowNode which has the capture override, otherwise the result
+    // should no-op
+    auto pendingTarget = getCaptureTargetOverride(
+        pointerId, pendingPointerCaptureTargetOverrides_);
+    if (pendingTarget != nullptr &&
+        pendingTarget->getTag() == shadowNode->getTag()) {
+      pendingPointerCaptureTargetOverrides_.erase(pointerId);
+    }
+  } else {
+    // TODO: Throw DOMException with name "NotFoundError" when pointerId does
+    // not match any of the active pointers
   }
 }
 
@@ -273,6 +298,38 @@ bool PointerEventsProcessor::hasPointerCapture(
     return pendingTarget->getTag() == shadowNode->getTag();
   }
   return false;
+}
+
+ActivePointer *PointerEventsProcessor::getActivePointer(
+    PointerIdentifier pointerId) {
+  auto it = activePointers_.find(pointerId);
+  return (it == activePointers_.end()) ? nullptr : &it->second;
+}
+
+void PointerEventsProcessor::registerActivePointer(PointerEvent const &event) {
+  ActivePointer activePointer = {};
+  activePointer.event = event;
+
+  activePointers_[event.pointerId] = activePointer;
+}
+
+void PointerEventsProcessor::updateActivePointer(PointerEvent const &event) {
+  if (auto activePointer = getActivePointer(event.pointerId)) {
+    activePointer->event = event;
+  } else {
+    LOG(WARNING)
+        << "Inconsistency between local and platform pointer registries: attempting to update an active pointer which has never been registered.";
+  }
+}
+
+void PointerEventsProcessor::unregisterActivePointer(
+    PointerEvent const &event) {
+  if (getActivePointer(event.pointerId) != nullptr) {
+    activePointers_.erase(event.pointerId);
+  } else {
+    LOG(WARNING)
+        << "Inconsistency between local and platform pointer registries: attempting to unregister an active pointer which has never been registered.";
+  }
 }
 
 void PointerEventsProcessor::processPendingPointerCapture(

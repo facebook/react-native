@@ -1,0 +1,19 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
+
+declare const APIs: Array<RNTesterModuleInfo>;
+declare const Components: Array<RNTesterModuleInfo>;
+declare const Modules: {...};
+
+module.exports = {APIs, Components, Modules};

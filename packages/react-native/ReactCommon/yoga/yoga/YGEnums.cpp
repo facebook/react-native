@@ -107,8 +107,6 @@ const char* YGExperimentalFeatureToString(const YGExperimentalFeature value) {
       return "web-flex-basis";
     case YGExperimentalFeatureAbsolutePercentageAgainstPaddingEdge:
       return "absolute-percentage-against-padding-edge";
-    case YGExperimentalFeatureFixJNILocalRefOverflows:
-      return "fix-jnilocal-ref-overflows";
   }
   return "unknown";
 }

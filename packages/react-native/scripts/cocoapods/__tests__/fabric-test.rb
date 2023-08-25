@@ -22,24 +22,12 @@ class FabricTest < Test::Unit::TestCase
     # ================== #
     # TEST - setupFabric #
     # ================== #
-    def test_setupFabric_whenNewArchDisabled_installsPods
+    def test_setupFabric_installsPods
         # Arrange
         prefix = "../.."
 
         # Act
         setup_fabric!(:react_native_path => prefix)
-
-        # Assert
-        check_installed_pods(prefix)
-    end
-
-    def test_setupFabric_whenNewArchEnabled_installPods
-        # Arrange
-        prefix = "../.."
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-
-        # Act
-        setup_fabric!(:react_native_path => prefix, new_arch_enabled: true)
 
         # Assert
         check_installed_pods(prefix)
