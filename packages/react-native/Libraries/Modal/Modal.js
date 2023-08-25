@@ -12,10 +12,7 @@ import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
-import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
-import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 
@@ -25,30 +22,13 @@ const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Platform = require('../Utilities/Platform');
 const React = require('react');
-
-type ModalEventDefinitions = {
-  modalDismissed: [{modalID: number}],
-};
-
-const ModalEventEmitter = new NativeEventEmitter<ModalEventDefinitions>(
-  // T88715063: NativeEventEmitter only used this parameter on iOS. Now it uses it on all platforms, so this code was modified automatically to preserve its behavior
-  // If you want to use the native module on other platforms, please remove this condition and test its behavior
-  Platform.OS !== 'ios' ? null : NativeModalManager,
-);
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
  *
  * See https://reactnative.dev/docs/modal
  */
-
-// In order to route onDismiss callbacks, we need to uniquely identifier each
-// <Modal> on screen. There can be different ones, either nested or as siblings.
-// We cannot pass the onDismiss callback to native as the view will be
-// destroyed before the callback is fired.
-let uniqueModalIdentifier = 0;
 
 type OrientationChangeEvent = $ReadOnly<{|
   orientation: 'portrait' | 'landscape',
@@ -178,43 +158,28 @@ class Modal extends React.Component<Props> {
 
   static contextType: React.Context<RootTag> = RootTagContext;
 
-  _identifier: number;
-  _eventSubscription: ?EventSubscription;
-
   constructor(props: Props) {
     super(props);
+    this.state = {
+      isRendering: props.visible,
+    };
     if (__DEV__) {
       confirmProps(props);
     }
-    this._identifier = uniqueModalIdentifier++;
   }
 
-  componentDidMount() {
-    // 'modalDismissed' is for the old renderer
-    this._eventSubscription = ModalEventEmitter.addListener(
-      'modalDismissed',
-      event => {
-        if (event.modalID === this._identifier && this.props.onDismiss) {
-          this.props.onDismiss();
-        }
-      },
-    );
-  }
-
-  componentWillUnmount() {
-    if (this._eventSubscription) {
-      this._eventSubscription.remove();
+  componentDidUpdate(prevProps) {
+    if (!prevProps.visible && this.props.visible) {
+      this.setState({isRendering: true});
     }
-  }
 
-  componentDidUpdate() {
     if (__DEV__) {
       confirmProps(this.props);
     }
   }
 
   render(): React.Node {
-    if (this.props.visible !== true) {
+    if (!this.props.visible && !this.state.isRendering) {
       return null;
     }
 
@@ -248,13 +213,14 @@ class Modal extends React.Component<Props> {
         onRequestClose={this.props.onRequestClose}
         onShow={this.props.onShow}
         onDismiss={() => {
-          if (this.props.onDismiss) {
-            this.props.onDismiss();
-          }
+          this.setState({isRendering: false}, () => {
+            if (this.props.onDismiss) {
+              this.props.onDismiss();
+            }
+          });
         }}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
-        identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         onStartShouldSetResponder={this._shouldSetResponder}

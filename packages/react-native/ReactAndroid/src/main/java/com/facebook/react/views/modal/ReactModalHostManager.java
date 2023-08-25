@@ -37,8 +37,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   public static final String REACT_CLASS = "RCTModalHostView";
   private static final int UNSET = -1;
 
-  private int mIdentifier = UNSET;
-
   private final ViewManagerDelegate<ReactModalHostView> mDelegate;
 
   public ReactModalHostManager() {
@@ -100,7 +98,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   @ReactProp(name = "visible")
   public void setVisible(ReactModalHostView view, boolean visible) {
-    // iOS only
+    view.setVisible(visible);
   }
 
   @Override
@@ -114,12 +112,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   @ReactProp(name = "supportedOrientations")
   public void setSupportedOrientations(ReactModalHostView view, @Nullable ReadableArray value) {}
-
-  @Override
-  @ReactProp(name = "identifier")
-  public void setIdentifier(ReactModalHostView view, int value) {
-    mIdentifier = value;
-  }
 
   @Override
   protected void addEventEmitters(
@@ -175,7 +167,7 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
   @Override
   protected void onAfterUpdateTransaction(ReactModalHostView view) {
     super.onAfterUpdateTransaction(view);
-    view.showOrUpdate();
+    view.showOrDismiss();
   }
 
   @Override
