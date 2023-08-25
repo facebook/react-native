@@ -55,8 +55,8 @@ public abstract class TurboReactPackage implements ReactPackage {
    * @param reactContext
    * @return
    */
-  /** package */
-  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
+  public Iterable<ModuleHolder> getNativeModuleIterator(
+      final ReactApplicationContext reactContext) {
     final Set<Map.Entry<String, ReactModuleInfo>> entrySet =
         getReactModuleInfoProvider().getReactModuleInfos().entrySet();
     final Iterator<Map.Entry<String, ReactModuleInfo>> entrySetIterator = entrySet.iterator();

@@ -25,8 +25,7 @@ public class ReactPackageHelper {
    * @param reactInstanceManager
    * @return
    */
-  /** package */
-  static Iterable<ModuleHolder> getNativeModuleIterator(
+  public static Iterable<ModuleHolder> getNativeModuleIterator(
       ReactPackage reactPackage,
       ReactApplicationContext reactApplicationContext,
       ReactInstanceManager reactInstanceManager) {
