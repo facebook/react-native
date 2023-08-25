@@ -10,18 +10,21 @@
  */
 
 import type {NextHandleFunction} from 'connect';
+import type {BrowserLauncher} from './types/BrowserLauncher';
 import type {EventReporter} from './types/EventReporter';
 import type {Logger} from './types/Logger';
 
 import connect from 'connect';
 import openDebuggerMiddleware from './middleware/openDebuggerMiddleware';
 import InspectorProxy from './inspector-proxy/InspectorProxy';
+import DefaultBrowserLauncher from './utils/DefaultBrowserLauncher';
 
 type Options = $ReadOnly<{
   host: string,
   port: number,
   projectRoot: string,
   logger?: Logger,
+  unstable_browserLauncher?: BrowserLauncher,
   unstable_eventReporter?: EventReporter,
 }>;
 
@@ -35,6 +38,7 @@ export default function createDevMiddleware({
   port,
   projectRoot,
   logger,
+  unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
 }: Options): DevMiddlewareAPI {
   const inspectorProxy = new InspectorProxy(
@@ -47,6 +51,7 @@ export default function createDevMiddleware({
       '/open-debugger',
       openDebuggerMiddleware({
         logger,
+        browserLauncher: unstable_browserLauncher,
         eventReporter: unstable_eventReporter,
       }),
     )
