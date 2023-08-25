@@ -136,6 +136,10 @@ export type Props = $ReadOnly<{|
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
 |}>;
 
+type State = {|
+  isRendering: boolean,
+|};
+
 function confirmProps(props: Props) {
   if (__DEV__) {
     if (
@@ -150,7 +154,7 @@ function confirmProps(props: Props) {
   }
 }
 
-class Modal extends React.Component<Props> {
+class Modal extends React.Component<Props, State> {
   static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
     visible: true,
     hardwareAccelerated: false,
@@ -161,15 +165,15 @@ class Modal extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      isRendering: props.visible,
+      isRendering: props.visible === true,
     };
     if (__DEV__) {
       confirmProps(props);
     }
   }
 
-  componentDidUpdate(prevProps) {
-    if (!prevProps.visible && this.props.visible) {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.visible !== true && this.props.visible === true) {
       this.setState({isRendering: true});
     }
 
@@ -179,7 +183,7 @@ class Modal extends React.Component<Props> {
   }
 
   render(): React.Node {
-    if (!this.props.visible && !this.state.isRendering) {
+    if (this.props.visible !== true && !this.state.isRendering) {
       return null;
     }
 
