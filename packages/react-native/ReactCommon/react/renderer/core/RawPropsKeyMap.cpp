@@ -9,6 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 
+#include <glog/logging.h>
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
@@ -51,15 +52,26 @@ void RawPropsKeyMap::reindex() noexcept {
       &RawPropsKeyMap::shouldFirstOneBeBeforeSecondOne);
 
   // Filtering out duplicating keys.
-  // If some `*Props` object requests a prop more than once, only the first
-  // request will be fulfilled. E.g. `TextInputProps` class has a sub-property
-  // `backgroundColor` twice, the first time as part of `ViewProps` base-class
-  // and the second as part of `BaseTextProps` base-class. In this
-  // configuration, the only one which comes first (from `ViewProps`, which
-  // appear first) will be assigned.
-  items_.erase(
-      std::unique(items_.begin(), items_.end(), &RawPropsKeyMap::hasSameName),
-      items_.end());
+  // Accessing the same key twice is supported by RawPropsPorser, but the
+  // RawPropsKey used must be identical, and if not, lookup will be
+  // inconsistent.
+  auto it = items_.begin();
+  auto end = items_.end();
+  // Implements std::unique with additional logging
+  if (it != end) {
+    auto result = it;
+    while (++it != end) {
+      if (hasSameName(*result, *it)) {
+        LOG(ERROR)
+            << "Component property map contains multiple entries for '"
+            << std::string_view(it->name, it->length)
+            << "'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.";
+      } else if (++result != it) {
+        *result = *it;
+      }
+    }
+    items_.erase(++result, items_.end());
+  }
 
   buckets_.resize(kPropNameLengthHardCap);
 

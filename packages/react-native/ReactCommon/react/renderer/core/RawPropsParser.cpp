@@ -52,18 +52,18 @@ RawValue const *RawPropsParser::at(
   // index, there's no need to do any lookups. However, it's possible for keys
   // to be accessed out-of-order or multiple times, in which case we start
   // searching again from index 0.
-  // To prevent infinite loops (which can occur if
-  // you look up a key that doesn't exist) we keep track of whether or not we've
-  // already looped around, and log and return nullptr if so. However, we ONLY
-  // do this in debug mode, where you're more likely to look up a nonexistent
-  // key as part of debugging. You can (and must) ensure infinite loops are not
-  // possible in production by: (1) constructing all props objects without
-  // conditionals, or (2) if there are conditionals, ensure that in the parsing
-  // setup case, the Props constructor will access _all_ possible props. To
-  // ensure this performance optimization is utilized, always access props in
-  // the same order every time. This is trivial if you have a simple Props
-  // constructor, but difficult or impossible if you have a shared sub-prop
-  // Struct that is used by multiple parent Props.
+  // To prevent infinite loops (which can occur if you look up a key that
+  // doesn't exist) we keep track of whether or not we've already looped around,
+  // and log and return nullptr if so. However, we ONLY do this in debug mode,
+  // where you're more likely to look up a nonexistent key as part of debugging.
+  // You can (and must) ensure infinite loops are not possible in production by:
+  // (1) constructing all props objects without conditionals, or (2) if there
+  // are conditionals, ensure that in the parsing setup case, the Props
+  // constructor will access _all_ possible props. To ensure this performance
+  // optimization is utilized, always access props in the same order every time.
+  // This is trivial if you have a simple Props constructor, but difficult or
+  // impossible if you have a shared sub-prop Struct that is used by multiple
+  // parent Props.
 #ifdef REACT_NATIVE_DEBUG
   bool resetLoop = false;
 #endif
@@ -73,8 +73,9 @@ RawValue const *RawPropsParser::at(
     if (UNLIKELY(rawProps.keyIndexCursor_ >= keys_.size())) {
 #ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
-        LOG(ERROR) << "Looked up RawProps key that does not exist: "
-                   << (std::string)key;
+        LOG(ERROR)
+            << "Looked up property name which was not seen when preparing: "
+            << (std::string)key;
         return nullptr;
       }
       resetLoop = true;
