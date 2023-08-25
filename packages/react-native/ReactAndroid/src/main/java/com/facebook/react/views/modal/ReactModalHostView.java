@@ -80,6 +80,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
   private boolean mStatusBarTranslucent;
   private String mAnimationType;
   private boolean mHardwareAccelerated;
+  private boolean mVisible;
   // Set this flag to true if changing a particular property on the view requires a new Dialog to
   // be created.  For instance, animation does since it affects Dialog creation through the theme
   // but transparency does not since we can access the window to update the property.
@@ -215,6 +216,10 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     mPropertyRequiresNewDialog = true;
   }
 
+  protected void setVisible(boolean visible) {
+    mVisible = visible;
+  }
+
   void setEventDispatcher(EventDispatcher eventDispatcher) {
     mHostView.setEventDispatcher(eventDispatcher);
   }
@@ -348,6 +353,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
         }
       }
       mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+    }
+  }
+
+  protected void showOrDismiss() {
+    if (mVisible) {
+      showOrUpdate();
+    } else {
+      dismiss();
     }
   }
 
