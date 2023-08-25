@@ -147,11 +147,8 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
           new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-              if (mIdentifier != UNSET) {
-                WritableMap args = Arguments.createMap();
-                args.putInt("modalID", mIdentifier);
-                reactContext.emitDeviceEvent("modalDismissed", args);
-              }
+              dispatcher.dispatchEvent(
+                  new DismissEvent(UIManagerHelper.getSurfaceId(reactContext), view.getId()));
             }
           });
       view.setEventDispatcher(dispatcher);
@@ -168,7 +165,6 @@ public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView>
         MapBuilder.<String, Object>builder()
             .put(RequestCloseEvent.EVENT_NAME, MapBuilder.of("registrationName", "onRequestClose"))
             .put(ShowEvent.EVENT_NAME, MapBuilder.of("registrationName", "onShow"))
-            // iOS only
             .put("topDismiss", MapBuilder.of("registrationName", "onDismiss"))
             // iOS only
             .put("topOrientationChange", MapBuilder.of("registrationName", "onOrientationChange"))
