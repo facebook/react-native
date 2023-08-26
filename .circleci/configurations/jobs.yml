@@ -40,17 +40,16 @@ jobs:
           name: Set server.max_workers=1 in .flowconfig
           command: |
             sed -i '/\[options\]/a server.max_workers=1' .flowconfig
-            sed -i '/\[options\]/a server.max_workers=1' .flowconfig.android
           when: always
 
       - run:
           name: Check for errors in code using Flow (iOS)
-          command: yarn flow-check-ios
+          command: yarn flow-check
           when: always
 
       - run:
           name: Check for errors in code using Flow (Android)
-          command: yarn flow-check-android
+          command: yarn flow-check
           when: always
 
       - run:
@@ -744,11 +743,8 @@ jobs:
       # -------------------------
       # Run Tests
       - run:
-          name: "Flow: Check Android"
-          command: yarn flow-check-android
-      - run:
-          name: "Flow: Check iOS"
-          command: yarn flow-check-ios
+          name: "Flow Check"
+          command: yarn flow-check
       - run:
           name: "Run Tests: JavaScript Tests"
           command: yarn test
