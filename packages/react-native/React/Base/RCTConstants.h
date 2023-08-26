@@ -10,6 +10,8 @@
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotification;
 RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey;
 
+RCT_EXTERN NSString *const RCTRootViewFrameDidChangeNotification;
+
 /**
  * This notification fires when the bridge initializes.
  */
