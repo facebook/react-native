@@ -11,6 +11,12 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
+; Ignore scripts/build
+<PROJECT_ROOT>/scripts/build/
+
+; Ignore packages/dev-middleware
+<PROJECT_ROOT>/packages/dev-middleware/
+
 ; Flow doesn't support platforms
 .*/packages/react-native/Libraries/Utilities/LoadingView.js
 
