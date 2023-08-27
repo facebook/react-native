@@ -7,6 +7,10 @@
 
 #import "RCTAppSetupUtils.h"
 
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+
 #if RCT_NEW_ARCH_ENABLED
 // Turbo Module
 #import <React/CoreModulesPlugins.h>
@@ -16,13 +20,11 @@
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTHTTPRequestHandler.h>
 #import <React/RCTImageLoader.h>
-#import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTNetworking.h>
 
 // Fabric
-#import <React/RCTFabricSurfaceHostingProxyRootView.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#import <React/RCTFabricSurface.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
 #endif
 
 #ifdef FB_SONARKIT_ENABLED
@@ -68,9 +70,10 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 {
 #if RCT_NEW_ARCH_ENABLED
   if (fabricEnabled) {
-    return [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:bridge
-                                                             moduleName:moduleName
-                                                      initialProperties:initialProperties];
+    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                   moduleName:moduleName
+                                                            initialProperties:initialProperties];
+    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
   }
 #endif
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
@@ -118,13 +121,13 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
    * NativeModule.
    */
   [turboModuleManager moduleForName:"RCTDevMenu"];
-#endif
+#endif // end RCT_DEV
 
 #if RCT_USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
 #else
   return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif
+#endif // end RCT_USE_HERMES
       facebook::react::RCTJSIExecutorRuntimeInstaller(
           [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
             if (!bridge || !turboModuleManager) {
@@ -137,4 +140,24 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
           }));
 }
 
-#endif
+#else // else !RCT_NEW_ARCH_ENABLED
+
+std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
+    RCTBridge *bridge,
+    std::shared_ptr<facebook::react::RuntimeScheduler> const &runtimeScheduler)
+{
+#if RCT_USE_HERMES
+  return std::make_unique<facebook::react::HermesExecutorFactory>(
+#else
+  return std::make_unique<facebook::react::JSCExecutorFactory>(
+#endif // end RCT_USE_HERMES
+      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+        if (!bridge) {
+          return;
+        }
+        if (runtimeScheduler) {
+          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+        }
+      }));
+}
+#endif // end RCT_NEW_ARCH_ENABLED

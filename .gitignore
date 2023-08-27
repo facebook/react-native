@@ -137,6 +137,7 @@ package-lock.json
 /packages/react-native/sdks/download
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
+/packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
 # Visual studio
 .vscode
@@ -151,3 +152,6 @@ package-lock.json
 # E2E files
 /packages/rn-tester-e2e/apps/*.apk
 /packages/rn-tester-e2e/apps/*.app
+
+# CircleCI
+.circleci/generated_config.yml

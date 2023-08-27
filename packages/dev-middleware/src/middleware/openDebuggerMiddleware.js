@@ -4,25 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  * @oncall react_native
  */
 
-import type {LaunchedChrome} from 'chrome-launcher';
 import type {NextHandleFunction} from 'connect';
 import type {IncomingMessage, ServerResponse} from 'http';
+import type {BrowserLauncher, LaunchedBrowser} from '../types/BrowserLauncher';
+import type {EventReporter} from '../types/EventReporter';
 import type {Logger} from '../types/Logger';
 
 import url from 'url';
 import getDevServerUrl from '../utils/getDevServerUrl';
-import launchChromeDevTools from '../utils/launchChromeDevTools';
 import queryInspectorTargets from '../utils/queryInspectorTargets';
 
-const debuggerInstances = new Map<string, LaunchedChrome>();
+const debuggerInstances = new Map<string, ?LaunchedBrowser>();
 
 type Options = $ReadOnly<{
+  browserLauncher: BrowserLauncher,
   logger?: Logger,
+  eventReporter?: EventReporter,
 }>;
 
 /**
@@ -34,6 +36,8 @@ type Options = $ReadOnly<{
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
 export default function openDebuggerMiddleware({
+  browserLauncher,
+  eventReporter,
   logger,
 }: Options): NextHandleFunction {
   return async (
@@ -48,6 +52,11 @@ export default function openDebuggerMiddleware({
       if (typeof appId !== 'string') {
         res.writeHead(400);
         res.end();
+        eventReporter?.logEvent({
+          type: 'launch_debugger_frontend',
+          status: 'coded_error',
+          errorCode: 'MISSING_APP_ID',
+        });
         return;
       }
 
@@ -60,17 +69,29 @@ export default function openDebuggerMiddleware({
         logger?.warn(
           'No compatible apps connected. JavaScript debugging can only be used with the Hermes engine.',
         );
+        eventReporter?.logEvent({
+          type: 'launch_debugger_frontend',
+          status: 'coded_error',
+          errorCode: 'NO_APPS_FOUND',
+        });
         return;
       }
 
       try {
         logger?.info('Launching JS debugger...');
-        debuggerInstances.get(appId)?.kill();
+        await debuggerInstances.get(appId)?.kill();
         debuggerInstances.set(
           appId,
-          await launchChromeDevTools(target.webSocketDebuggerUrl),
+          await browserLauncher.launchDebuggerAppWindow(
+            target.devtoolsFrontendUrl,
+          ),
         );
         res.end();
+        eventReporter?.logEvent({
+          type: 'launch_debugger_frontend',
+          status: 'success',
+          appId,
+        });
         return;
       } catch (e) {
         logger?.error(
@@ -78,6 +99,11 @@ export default function openDebuggerMiddleware({
         );
         res.writeHead(500);
         res.end();
+        eventReporter?.logEvent({
+          type: 'launch_debugger_frontend',
+          status: 'error',
+          error: e,
+        });
         return;
       }
     }

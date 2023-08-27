@@ -1038,9 +1038,15 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
     _coalescingKey++;
     _lastEmittedEventName = [eventName copy];
   }
+
+  CGPoint offset = scrollView.contentOffset;
+  if ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+    offset.x = scrollView.contentSize.width - scrollView.frame.size.width - offset.x;
+  }
+
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:self.reactTag
-                                                  scrollViewContentOffset:scrollView.contentOffset
+                                                  scrollViewContentOffset:offset
                                                    scrollViewContentInset:scrollView.contentInset
                                                     scrollViewContentSize:scrollView.contentSize
                                                           scrollViewFrame:scrollView.frame

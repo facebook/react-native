@@ -94,7 +94,7 @@ class TypeScriptParser implements Parser {
     return 'TypeScript';
   }
 
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string {
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
     return typeAnnotation?.typeName?.name;
   }
 
@@ -413,7 +413,7 @@ class TypeScriptParser implements Parser {
         break;
       }
 
-      const typeAnnotationName = this.nameForGenericTypeAnnotation(node);
+      const typeAnnotationName = this.getTypeAnnotationName(node);
       const resolvedTypeAnnotation = types[typeAnnotationName];
       if (resolvedTypeAnnotation == null) {
         break;
@@ -447,7 +447,7 @@ class TypeScriptParser implements Parser {
       return false;
     }
     const eventNames = new Set(['BubblingEventHandler', 'DirectEventHandler']);
-    return eventNames.has(typeAnnotation.typeName.name);
+    return eventNames.has(this.getTypeAnnotationName(typeAnnotation));
   }
 
   isProp(name: string, typeAnnotation: $FlowFixMe): boolean {
@@ -457,7 +457,7 @@ class TypeScriptParser implements Parser {
     const isStyle =
       name === 'style' &&
       typeAnnotation.type === 'GenericTypeAnnotation' &&
-      typeAnnotation.typeName.name === 'ViewStyleProp';
+      this.getTypeAnnotationName(typeAnnotation) === 'ViewStyleProp';
     return !isStyle;
   }
 

@@ -29,7 +29,8 @@ CompositeTurboModuleManagerDelegate::getTurboModule(
     const std::string &moduleName,
     const std::shared_ptr<CallInvoker> &jsInvoker) {
   for (auto delegate : mDelegates_) {
-    if (auto turboModule = delegate->getTurboModule(moduleName, jsInvoker)) {
+    if (auto turboModule =
+            delegate->cthis()->getTurboModule(moduleName, jsInvoker)) {
       return turboModule;
     }
   }
@@ -41,7 +42,8 @@ CompositeTurboModuleManagerDelegate::getTurboModule(
     const std::string &moduleName,
     const JavaTurboModule::InitParams &params) {
   for (auto delegate : mDelegates_) {
-    if (auto turboModule = delegate->getTurboModule(moduleName, params)) {
+    if (auto turboModule =
+            delegate->cthis()->getTurboModule(moduleName, params)) {
       return turboModule;
     }
   }
@@ -49,9 +51,8 @@ CompositeTurboModuleManagerDelegate::getTurboModule(
 }
 
 void CompositeTurboModuleManagerDelegate::addTurboModuleManagerDelegate(
-    jni::alias_ref<TurboModuleManagerDelegate::javaobject>
-        turboModuleManagerDelegate) {
-  mDelegates_.insert(turboModuleManagerDelegate->cthis());
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate) {
+  mDelegates_.push_back(jni::make_global(delegate));
 }
 
 } // namespace facebook::react

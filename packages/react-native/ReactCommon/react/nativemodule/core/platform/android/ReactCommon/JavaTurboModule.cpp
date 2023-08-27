@@ -16,7 +16,6 @@
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
 #include <ReactCommon/TurboModuleUtils.h>
-#include <butter/function.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/jni/NativeMap.h>

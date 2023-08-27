@@ -50,7 +50,7 @@
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
+@interface RCTAppDelegate : UIResponder <UIApplicationDelegate, UISceneDelegate, RCTBridgeDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong) UIWindow *window;

@@ -12,6 +12,7 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
+#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -58,14 +59,20 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(
-      Data &&newData,
-      EventPriority priority = EventPriority::AsynchronousUnbatched) const {
+  void updateState(Data &&newData, EventPriority priority) const {
     updateState(
         [data{std::move(newData)}](Data const &oldData) -> SharedData {
           return std::make_shared<Data const>(data);
         },
         priority);
+  }
+
+  void updateState(Data &&newData) const {
+    updateState(
+        std::move(newData),
+        CoreFeatures::enableDefaultAsyncBatchedPriority
+            ? EventPriority::AsynchronousBatched
+            : EventPriority::AsynchronousUnbatched);
   }
 
   /*

@@ -35,11 +35,17 @@ class StubViewTree {
   size_t size() const;
 
  private:
-  Tag rootTag;
-  std::unordered_map<Tag, StubView::Shared> registry{};
+  Tag rootTag_{};
+  std::unordered_map<Tag, StubView::Shared> registry_{};
 
   friend bool operator==(StubViewTree const &lhs, StubViewTree const &rhs);
   friend bool operator!=(StubViewTree const &lhs, StubViewTree const &rhs);
+
+  std::ostream &dumpTags(std::ostream &stream);
+
+  bool hasTag(Tag tag) const {
+    return registry_.find(tag) != registry_.end();
+  }
 };
 
 bool operator==(StubViewTree const &lhs, StubViewTree const &rhs);

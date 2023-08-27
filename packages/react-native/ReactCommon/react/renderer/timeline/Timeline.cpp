@@ -22,13 +22,13 @@ SurfaceId Timeline::getSurfaceId() const noexcept {
 }
 
 void Timeline::pause() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   assert(!paused_ && "");
   paused_ = true;
 }
 
 void Timeline::resume() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   if (!snapshots_.empty()) {
     rewind(snapshots_.at(snapshots_.size() - 1));
@@ -39,12 +39,12 @@ void Timeline::resume() const noexcept {
 }
 
 bool Timeline::isPaused() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   return paused_;
 }
 
 TimelineFrame::List Timeline::getFrames() const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   auto frames = TimelineFrame::List{};
   frames.reserve(snapshots_.size());
@@ -60,7 +60,7 @@ TimelineFrame Timeline::getCurrentFrame() const noexcept {
 }
 
 void Timeline::rewind(TimelineFrame const &frame) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
   rewind(snapshots_.at(frame.getIndex()));
 }
 
@@ -68,7 +68,7 @@ RootShadowNode::Unshared Timeline::shadowTreeWillCommit(
     ShadowTree const & /*shadowTree*/,
     RootShadowNode::Shared const & /*oldRootShadowNode*/,
     RootShadowNode::Unshared const &newRootShadowNode) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   if (rewinding_) {
     return newRootShadowNode;
@@ -96,7 +96,7 @@ void Timeline::record(
 }
 
 void Timeline::rewind(TimelineSnapshot const &snapshot) const noexcept {
-  std::lock_guard<std::recursive_mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   currentSnapshotIndex_ = snapshot.getFrame().getIndex();
 

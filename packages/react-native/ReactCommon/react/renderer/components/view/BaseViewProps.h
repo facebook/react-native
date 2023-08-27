@@ -70,7 +70,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool removeClippedSubviews{false};
 
-  Float elevation{}; /* Android-only */
+  LayoutConformance experimental_layoutConformance{};
 
 #pragma mark - Convenience Methods
 

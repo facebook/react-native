@@ -68,6 +68,7 @@ class EventTarget {
   const InstanceHandle::Shared instanceHandle_;
   mutable bool enabled_{false}; // Protected by `EventEmitter::DispatchMutex()`.
   mutable jsi::Value strongInstanceHandle_; // Protected by `jsi::Runtime &`.
+  mutable size_t retainCount_{0}; // Protected by `jsi::Runtime &`.
 };
 
 using SharedEventTarget = std::shared_ptr<const EventTarget>;

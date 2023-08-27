@@ -611,7 +611,7 @@ function emitCommonTypes(
   }
 
   const genericTypeAnnotationName =
-    parser.nameForGenericTypeAnnotation(typeAnnotation);
+    parser.getTypeAnnotationName(typeAnnotation);
 
   const emitter = typeMap[genericTypeAnnotationName];
   if (!emitter) {

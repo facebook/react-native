@@ -39,7 +39,7 @@
     "prettier": ">=3"
   },
   "devDependencies": {
-    "eslint": "^8.19.0",
+    "eslint": "^8.23.1",
     "prettier": "3.0.0"
   }
 }

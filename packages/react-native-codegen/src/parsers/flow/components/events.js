@@ -16,6 +16,7 @@ import type {
   EventTypeAnnotation,
 } from '../../../CodegenSchema.js';
 import type {Parser} from '../../parser';
+import type {EventArgumentReturnType} from '../../parsers-commons';
 
 const {
   throwIfEventHasNoName,
@@ -25,6 +26,8 @@ const {
 const {
   getEventArgument,
   buildPropertiesForEvent,
+  handleEventHandler,
+  emitBuildEventSchema,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -45,7 +48,7 @@ function getPropertyType(
   typeAnnotation: $FlowFixMe,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -94,7 +97,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'BooleanTypeAnnotation':
@@ -163,19 +166,24 @@ function prettify(jsonObject: $FlowFixMe): string {
   return JSON.stringify(jsonObject, null, 2);
 }
 
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'GenericTypeAnnotation'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
+}
+
 function findEventArgumentsAndType(
   parser: Parser,
   typeAnnotation: $FlowFixMe,
   types: TypeMap,
   bubblingType: void | 'direct' | 'bubble',
   paperName: ?$FlowFixMe,
-): {
-  argumentProps: $FlowFixMe,
-  bubblingType: ?('direct' | 'bubble'),
-  paperTopLevelNameDeprecated: ?$FlowFixMe,
-} {
+): EventArgumentReturnType {
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.id.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === '$ReadOnly') {
     return {
       argumentProps: typeAnnotation.typeParameters.params[0].properties,
@@ -183,25 +191,12 @@ function findEventArgumentsAndType(
       bubblingType,
     };
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
-    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
-    const paperTopLevelNameDeprecated =
-      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
-    if (
-      typeAnnotation.typeParameters.params[0].type ===
-      parser.nullLiteralTypeAnnotation
-    ) {
-      return {
-        argumentProps: [],
-        bubblingType: eventType,
-        paperTopLevelNameDeprecated,
-      };
-    }
-    return findEventArgumentsAndType(
+    return handleEventHandler(
+      name,
+      typeAnnotation,
       parser,
-      typeAnnotation.typeParameters.params[0],
       types,
-      eventType,
-      paperTopLevelNameDeprecated,
+      findEventArgumentsAndType,
     );
   } else if (types[name]) {
     return findEventArgumentsAndType(
@@ -236,8 +231,8 @@ function buildEventSchema(
 
   if (
     typeAnnotation.type !== 'GenericTypeAnnotation' ||
-    (typeAnnotation.id.name !== 'BubblingEventHandler' &&
-      typeAnnotation.id.name !== 'DirectEventHandler')
+    (parser.getTypeAnnotationName(typeAnnotation) !== 'BubblingEventHandler' &&
+      parser.getTypeAnnotationName(typeAnnotation) !== 'DirectEventHandler')
   ) {
     return null;
   }
@@ -251,36 +246,19 @@ function buildEventSchema(
   );
   const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
-  if (paperTopLevelNameDeprecated != null) {
-    return {
-      name,
-      optional,
-      bubblingType: nonNullableBubblingType,
-      paperTopLevelNameDeprecated,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(
-          nonNullableArgumentProps,
-          parser,
-          getPropertyType,
-        ),
-      },
-    };
-  }
+  const argument = getEventArgument(
+    nonNullableArgumentProps,
+    parser,
+    getPropertyType,
+  );
 
-  return {
+  return emitBuildEventSchema(
+    paperTopLevelNameDeprecated,
     name,
     optional,
-    bubblingType: nonNullableBubblingType,
-    typeAnnotation: {
-      type: 'EventTypeAnnotation',
-      argument: getEventArgument(
-        nonNullableArgumentProps,
-        parser,
-        getPropertyType,
-      ),
-    },
-  };
+    nonNullableBubblingType,
+    argument,
+  );
 }
 
 // $FlowFixMe[unclear-type] there's no flowtype for ASTs

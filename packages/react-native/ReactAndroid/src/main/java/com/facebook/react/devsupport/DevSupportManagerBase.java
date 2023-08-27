@@ -1138,7 +1138,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
    */
   private void compatRegisterReceiver(
       Context context, BroadcastReceiver receiver, IntentFilter filter, boolean exported) {
-    if (Build.VERSION.SDK_INT >= 34 && context.getApplicationInfo().targetSdkVersion >= 34) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        && context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       context.registerReceiver(
           receiver, filter, exported ? Context.RECEIVER_EXPORTED : Context.RECEIVER_NOT_EXPORTED);
     } else {

@@ -47,7 +47,7 @@ int InspectorImpl::addPage(
     const std::string &title,
     const std::string &vm,
     ConnectFunc connectFunc) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   int pageId = nextPageId_++;
   titles_[pageId] = std::make_tuple(title, vm);
@@ -57,14 +57,14 @@ int InspectorImpl::addPage(
 }
 
 void InspectorImpl::removePage(int pageId) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   titles_.erase(pageId);
   connectFuncs_.erase(pageId);
 }
 
 std::vector<InspectorPage> InspectorImpl::getPages() const {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock lock(mutex_);
 
   std::vector<InspectorPage> inspectorPages;
   for (auto &it : titles_) {
@@ -81,7 +81,7 @@ std::unique_ptr<ILocalConnection> InspectorImpl::connect(
   IInspector::ConnectFunc connectFunc;
 
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock lock(mutex_);
 
     auto it = connectFuncs_.find(pageId);
     if (it != connectFuncs_.end()) {

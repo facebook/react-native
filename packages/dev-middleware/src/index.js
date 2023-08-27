@@ -17,4 +17,4 @@ if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
   require('../../../scripts/build/babel-register').registerForMonorepo();
 }
 
-module.exports = require('./index.flow');
+export * from './index.flow';

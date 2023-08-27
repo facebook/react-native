@@ -33,7 +33,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   private static final String TAG = "ReactSurfaceView";
 
-  private final ReactSurface mSurface;
+  private final ReactSurfaceImpl mSurface;
 
   private final JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
@@ -42,7 +42,7 @@ public class ReactSurfaceView extends ReactRootView {
   private int mWidthMeasureSpec = 0;
   private int mHeightMeasureSpec = 0;
 
-  public ReactSurfaceView(Context context, ReactSurface surface) {
+  public ReactSurfaceView(Context context, ReactSurfaceImpl surface) {
     super(context);
     mSurface = surface;
     mJSTouchDispatcher = new JSTouchDispatcher(this);
@@ -169,7 +169,7 @@ public class ReactSurfaceView extends ReactRootView {
 
   @Override
   public void handleException(Throwable t) {
-    ReactHost reactHost = mSurface.getReactHost();
+    ReactHostImpl reactHost = mSurface.getReactHost();
     if (reactHost != null) {
       String errorMessage = Objects.toString(t.getMessage(), "");
       Exception e = new IllegalViewOperationException(errorMessage, this, t);

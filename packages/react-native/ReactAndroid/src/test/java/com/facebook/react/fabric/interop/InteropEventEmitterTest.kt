@@ -10,6 +10,7 @@ package com.facebook.react.fabric.interop
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
+import com.facebook.testutils.fakes.FakeEventDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -21,7 +22,7 @@ import org.robolectric.RuntimeEnvironment
 @RunWith(RobolectricTestRunner::class)
 class InteropEventEmitterTest {
   lateinit var reactContext: ReactContext
-  lateinit var eventDispatcher: FakeEventDispatcher
+  private lateinit var eventDispatcher: FakeEventDispatcher
 
   @Before
   fun setup() {

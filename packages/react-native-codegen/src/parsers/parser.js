@@ -127,11 +127,11 @@ export interface Parser {
    */
   language(): ParserType;
   /**
-   * Given a type annotation for a generic type, it returns the type name.
+   * Given a type annotation, it returns the type name.
    * @parameter typeAnnotation: the annotation for a type in the AST.
    * @returns: the name of the type.
    */
-  nameForGenericTypeAnnotation(typeAnnotation: $FlowFixMe): string;
+  getTypeAnnotationName(typeAnnotation: $FlowFixMe): string;
   /**
    * Given a type arguments, it returns a boolean specifying if the Module is Invalid.
    * @parameter typeArguments: the type arguments.

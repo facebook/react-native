@@ -27,6 +27,8 @@ const {
 const {
   getEventArgument,
   buildPropertiesForEvent,
+  handleEventHandler,
+  emitBuildEventSchema,
 } = require('../../parsers-commons');
 const {
   emitBoolProp,
@@ -51,7 +53,10 @@ function getPropertyType(
   const topLevelType = parseTopLevelType(annotation);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type =
+    typeAnnotation.type === 'TSTypeReference'
+      ? parser.getTypeAnnotationName(typeAnnotation)
+      : typeAnnotation.type;
 
   switch (type) {
     case 'TSBooleanKeyword':
@@ -92,7 +97,7 @@ function extractArrayElementType(
   name: string,
   parser: Parser,
 ): EventTypeAnnotation {
-  const type = parser.extractTypeFromTypeAnnotation(typeAnnotation);
+  const type = extractTypeFromTypeAnnotation(typeAnnotation, parser);
 
   switch (type) {
     case 'TSParenthesizedType':
@@ -154,6 +159,15 @@ function extractArrayElementType(
   }
 }
 
+function extractTypeFromTypeAnnotation(
+  typeAnnotation: $FlowFixMe,
+  parser: Parser,
+): string {
+  return typeAnnotation.type === 'TSTypeReference'
+    ? parser.getTypeAnnotationName(typeAnnotation)
+    : typeAnnotation.type;
+}
+
 function findEventArgumentsAndType(
   parser: Parser,
   typeAnnotation: $FlowFixMe,
@@ -182,7 +196,7 @@ function findEventArgumentsAndType(
   }
 
   throwIfEventHasNoName(typeAnnotation, parser);
-  const name = typeAnnotation.typeName.name;
+  const name = parser.getTypeAnnotationName(typeAnnotation);
   if (name === 'Readonly') {
     return findEventArgumentsAndType(
       parser,
@@ -192,27 +206,13 @@ function findEventArgumentsAndType(
       paperName,
     );
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
-    const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
-    const paperTopLevelNameDeprecated =
-      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
-
-    switch (typeAnnotation.typeParameters.params[0].type) {
-      case parser.nullLiteralTypeAnnotation:
-      case parser.undefinedLiteralTypeAnnotation:
-        return {
-          argumentProps: [],
-          bubblingType: eventType,
-          paperTopLevelNameDeprecated,
-        };
-      default:
-        return findEventArgumentsAndType(
-          parser,
-          typeAnnotation.typeParameters.params[0],
-          types,
-          eventType,
-          paperTopLevelNameDeprecated,
-        );
-    }
+    return handleEventHandler(
+      name,
+      typeAnnotation,
+      parser,
+      types,
+      findEventArgumentsAndType,
+    );
   } else if (types[name]) {
     let elementType = types[name];
     if (elementType.type === 'TSTypeAliasDeclaration') {
@@ -260,36 +260,19 @@ function buildEventSchema(
   );
   const nonNullableBubblingType = throwIfBubblingTypeIsNull(bubblingType, name);
 
-  if (paperTopLevelNameDeprecated != null) {
-    return {
-      name,
-      optional,
-      bubblingType: nonNullableBubblingType,
-      paperTopLevelNameDeprecated,
-      typeAnnotation: {
-        type: 'EventTypeAnnotation',
-        argument: getEventArgument(
-          nonNullableArgumentProps,
-          parser,
-          getPropertyType,
-        ),
-      },
-    };
-  }
+  const argument = getEventArgument(
+    nonNullableArgumentProps,
+    parser,
+    getPropertyType,
+  );
 
-  return {
+  return emitBuildEventSchema(
+    paperTopLevelNameDeprecated,
     name,
     optional,
-    bubblingType: nonNullableBubblingType,
-    typeAnnotation: {
-      type: 'EventTypeAnnotation',
-      argument: getEventArgument(
-        nonNullableArgumentProps,
-        parser,
-        getPropertyType,
-      ),
-    },
-  };
+    nonNullableBubblingType,
+    argument,
+  );
 }
 
 function getEvents(
