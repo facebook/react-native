@@ -8,15 +8,6 @@
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
 
-; Ignore scripts/build
-<PROJECT_ROOT>/scripts/build/
-
-; Ignore packages/community-cli-plugin
-<PROJECT_ROOT>/packages/community-cli-plugin/
-
-; Ignore packages/dev-middleware
-<PROJECT_ROOT>/packages/dev-middleware/
-
 .*/node_modules/resolve/test/resolver/malformed_package_json/package\.json$
 
 [untyped]
