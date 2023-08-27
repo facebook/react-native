@@ -130,7 +130,7 @@ async function buildFile(file /*: string */, silent /*: boolean */ = false) {
   const prettierConfig = {parser: 'babel'};
 
   // Transform source file using Babel
-  const transformed = prettier.format(
+  const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
     prettierConfig,
   );
@@ -187,7 +187,7 @@ async function rewritePackageExports(packageName /*: string */) {
 
   await fs.writeFile(
     packageJsonPath,
-    prettier.format(JSON.stringify(pkg), {parser: 'json'}),
+    await prettier.format(JSON.stringify(pkg), {parser: 'json'}),
   );
 }
 
