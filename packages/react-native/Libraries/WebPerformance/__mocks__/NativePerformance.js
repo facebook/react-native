@@ -58,8 +58,6 @@ const NativePerformanceMock: NativePerformance = {
       endTime: 0,
       executeJavaScriptBundleEntryPointStart: 0,
       executeJavaScriptBundleEntryPointEnd: 0,
-      initializeRuntimeStart: 0,
-      initializeRuntimeEnd: 0,
     };
   },
 };

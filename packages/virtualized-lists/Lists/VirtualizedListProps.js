@@ -331,13 +331,6 @@ export function onEndReachedThresholdOrDefault(
   return onEndReachedThreshold ?? 2;
 }
 
-// scrollEventThrottleOrDefault(this.props.scrollEventThrottle)
-export function scrollEventThrottleOrDefault(
-  scrollEventThrottle: ?number,
-): number {
-  return scrollEventThrottle ?? 50;
-}
-
 // windowSizeOrDefault(this.props.windowSize)
 export function windowSizeOrDefault(windowSize: ?number): number {
   return windowSize ?? 21;

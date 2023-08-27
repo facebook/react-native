@@ -38,7 +38,6 @@ public abstract class ReactNativeHost {
   /** Get the current {@link ReactInstanceManager} instance, or create one. */
   public ReactInstanceManager getReactInstanceManager() {
     if (mReactInstanceManager == null) {
-      ReactMarker.logMarker(ReactMarkerConstants.INIT_REACT_RUNTIME_START);
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START);
       mReactInstanceManager = createReactInstanceManager();
       ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END);

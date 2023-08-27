@@ -81,6 +81,7 @@ class DebugStringConvertible {
 
 #else
 
+struct DebugStringConvertibleOptions {};
 class DebugStringConvertible {};
 
 #endif

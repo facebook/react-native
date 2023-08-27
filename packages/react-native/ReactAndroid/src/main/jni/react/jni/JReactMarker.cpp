@@ -72,12 +72,6 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
     case ReactMarker::APP_STARTUP_STOP:
       JReactMarker::logMarker("APP_STARTUP_END");
       break;
-    case ReactMarker::INIT_REACT_RUNTIME_START:
-      JReactMarker::logMarker("INIT_REACT_RUNTIME_START");
-      break;
-    case ReactMarker::INIT_REACT_RUNTIME_STOP:
-      JReactMarker::logMarker("INIT_REACT_RUNTIME_END");
-      break;
     case ReactMarker::RUN_JS_BUNDLE_START:
       JReactMarker::logMarker("RUN_JS_BUNDLE_START", tag, instanceKey);
       break;
@@ -126,12 +120,6 @@ void JReactMarker::nativeLogMarker(
   } else if (markerNameStr == "APP_STARTUP_END") {
     ReactMarker::logMarkerDone(
         ReactMarker::APP_STARTUP_STOP, (double)markerTime);
-  } else if (markerNameStr == "INIT_REACT_RUNTIME_START") {
-    ReactMarker::logMarkerDone(
-        ReactMarker::INIT_REACT_RUNTIME_START, (double)markerTime);
-  } else if (markerNameStr == "INIT_REACT_RUNTIME_END") {
-    ReactMarker::logMarkerDone(
-        ReactMarker::INIT_REACT_RUNTIME_STOP, (double)markerTime);
   } else if (markerNameStr == "RUN_JS_BUNDLE_START") {
     ReactMarker::logMarkerDone(
         ReactMarker::RUN_JS_BUNDLE_START, (double)markerTime);

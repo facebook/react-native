@@ -34,6 +34,7 @@ const {
   emitStringProp,
   emitInt32Prop,
   emitObjectProp,
+  emitUnionProp,
 } = require('../../parsers-primitives');
 
 function getPropertyType(
@@ -73,14 +74,7 @@ function getPropertyType(
         extractArrayElementType,
       );
     case 'UnionTypeAnnotation':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.value),
-        },
-      };
+      return emitUnionProp(name, optional, parser, typeAnnotation);
     case 'UnsafeMixed':
       return emitMixedProp(name, optional);
     case 'ArrayTypeAnnotation':
@@ -119,7 +113,9 @@ function extractArrayElementType(
     case 'UnionTypeAnnotation':
       return {
         type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option => option.value),
+        options: typeAnnotation.types.map(option =>
+          parser.getLiteralValue(option),
+        ),
       };
     case 'UnsafeMixed':
       return {type: 'MixedTypeAnnotation'};
@@ -189,9 +185,7 @@ function findEventArgumentsAndType(
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
-      typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].value
-        : null;
+      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
     if (
       typeAnnotation.typeParameters.params[0].type ===
       parser.nullLiteralTypeAnnotation

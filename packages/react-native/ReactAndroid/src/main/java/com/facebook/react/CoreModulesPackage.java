@@ -119,12 +119,7 @@ public class CoreModulesPackage extends TurboReactPackage implements ReactPackag
                 TurboModule.class.isAssignableFrom(moduleClass)));
       }
 
-      return new ReactModuleInfoProvider() {
-        @Override
-        public Map<String, ReactModuleInfo> getReactModuleInfos() {
-          return reactModuleInfoMap;
-        }
-      };
+      return () -> reactModuleInfoMap;
     } catch (InstantiationException e) {
       throw new RuntimeException(
           "No ReactModuleInfoProvider for CoreModulesPackage$$ReactModuleInfoProvider", e);

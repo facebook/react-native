@@ -476,12 +476,12 @@ final class ReactInstance {
   /**
    * @return The {@link EventDispatcher} used by {@link FabricUIManager} to emit UI events to JS.
    */
-  /* protected */ EventDispatcher getEventDispatcher() {
+  /* package */ EventDispatcher getEventDispatcher() {
     return mFabricUIManager.getEventDispatcher();
   }
 
   /** @return The {@link FabricUIManager} if it's been initialized. */
-  /* protected */ FabricUIManager getUIManager() {
+  /* package */ FabricUIManager getUIManager() {
     return mFabricUIManager;
   }
 

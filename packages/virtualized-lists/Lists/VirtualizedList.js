@@ -62,7 +62,6 @@ import {
   maxToRenderPerBatchOrDefault,
   onStartReachedThresholdOrDefault,
   onEndReachedThresholdOrDefault,
-  scrollEventThrottleOrDefault,
   windowSizeOrDefault,
 } from './VirtualizedListProps';
 
@@ -833,15 +832,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     props: Props,
   ): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
-    const last = Math.min(itemCount - 1, cells.last);
+    const lastPossibleCellIndex = itemCount - 1;
 
+    // Constraining `last` may significantly shrink the window. Adjust `first`
+    // to expand the window if the new `last` results in a new window smaller
+    // than the number of cells rendered per batch.
     const maxToRenderPerBatch = maxToRenderPerBatchOrDefault(
       props.maxToRenderPerBatch,
     );
+    const maxFirst = Math.max(0, lastPossibleCellIndex - maxToRenderPerBatch);
 
     return {
-      first: clamp(0, itemCount - 1 - maxToRenderPerBatch, cells.first),
-      last,
+      first: clamp(0, cells.first, maxFirst),
+      last: Math.min(lastPossibleCellIndex, cells.last),
     };
   }
 
@@ -1069,9 +1072,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollBegin: this._onMomentumScrollBegin,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
-      scrollEventThrottle: scrollEventThrottleOrDefault(
-        this.props.scrollEventThrottle,
-      ), // TODO: Android support
+      // iOS/macOS requires a non-zero scrollEventThrottle to fire more than a
+      // single notification while scrolling. This will otherwise no-op.
+      scrollEventThrottle: this.props.scrollEventThrottle ?? 0.0001,
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
           ? this.props.invertStickyHeaders
@@ -1080,6 +1083,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       style: inversionStyle
         ? [inversionStyle, this.props.style]
         : this.props.style,
+      isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
           ? {
@@ -1604,9 +1608,32 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _onContentSizeChange = (width: number, height: number) => {
+    this._listMetrics.notifyListContentLayout({
+      layout: {width, height},
+      orientation: this._orientation(),
+    });
+
+    this._maybeScrollToInitialScrollIndex(width, height);
+
+    if (this.props.onContentSizeChange) {
+      this.props.onContentSizeChange(width, height);
+    }
+    this._scheduleCellsToRenderUpdate();
+    this._maybeCallOnEdgeReached();
+  };
+
+  /**
+   * Scroll to a specified `initialScrollIndex` prop after the ScrollView
+   * content has been laid out, if it is still valid. Only a single scroll is
+   * triggered throughout the lifetime of the list.
+   */
+  _maybeScrollToInitialScrollIndex(
+    contentWidth: number,
+    contentHeight: number,
+  ) {
     if (
-      width > 0 &&
-      height > 0 &&
+      contentWidth > 0 &&
+      contentHeight > 0 &&
       this.props.initialScrollIndex != null &&
       this.props.initialScrollIndex > 0 &&
       !this._hasTriggeredInitialScrollToIndex
@@ -1626,16 +1653,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       }
       this._hasTriggeredInitialScrollToIndex = true;
     }
-    if (this.props.onContentSizeChange) {
-      this.props.onContentSizeChange(width, height);
-    }
-    this._listMetrics.notifyListContentLayout({
-      layout: {width, height},
-      orientation: this._orientation(),
-    });
-    this._scheduleCellsToRenderUpdate();
-    this._maybeCallOnEdgeReached();
-  };
+  }
 
   /* Translates metrics from a scroll event in a parent VirtualizedList into
    * coordinates relative to the child list.
@@ -1974,9 +1992,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  verticallyInverted: {
-    transform: [{scaleY: -1}],
-  },
+  verticallyInverted:
+    Platform.OS === 'android'
+      ? {transform: [{scale: -1}]}
+      : {transform: [{scaleY: -1}]},
   horizontallyInverted: {
     transform: [{scaleX: -1}],
   },

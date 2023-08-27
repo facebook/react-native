@@ -36,6 +36,7 @@ const {
   emitStringProp,
   emitInt32Prop,
   emitObjectProp,
+  emitUnionProp,
 } = require('../../parsers-primitives');
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -72,14 +73,7 @@ function getPropertyType(
         extractArrayElementType,
       );
     case 'TSUnionType':
-      return {
-        name,
-        optional,
-        typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: typeAnnotation.types.map(option => option.literal.value),
-        },
-      };
+      return emitUnionProp(name, optional, parser, typeAnnotation);
     case 'UnsafeMixed':
       return emitMixedProp(name, optional);
     case 'TSArrayType':
@@ -127,7 +121,9 @@ function extractArrayElementType(
     case 'TSUnionType':
       return {
         type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option => option.literal.value),
+        options: typeAnnotation.types.map(option =>
+          parser.getLiteralValue(option),
+        ),
       };
     case 'TSTypeLiteral':
       return {
@@ -198,9 +194,7 @@ function findEventArgumentsAndType(
   } else if (name === 'BubblingEventHandler' || name === 'DirectEventHandler') {
     const eventType = name === 'BubblingEventHandler' ? 'bubble' : 'direct';
     const paperTopLevelNameDeprecated =
-      typeAnnotation.typeParameters.params.length > 1
-        ? typeAnnotation.typeParameters.params[1].literal.value
-        : null;
+      parser.getPaperTopLevelNameDeprecated(typeAnnotation);
 
     switch (typeAnnotation.typeParameters.params[0].type) {
       case parser.nullLiteralTypeAnnotation:

@@ -482,4 +482,14 @@ export class MockedParser implements Parser {
   getObjectProperties(typeAnnotation: $FlowFixMe): $FlowFixMe {
     return typeAnnotation.properties;
   }
+
+  getLiteralValue(option: $FlowFixMe): $FlowFixMe {
+    return option.value;
+  }
+
+  getPaperTopLevelNameDeprecated(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    return typeAnnotation.typeParameters.params.length > 1
+      ? typeAnnotation.typeParameters.params[1].value
+      : null;
+  }
 }

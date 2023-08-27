@@ -50,6 +50,12 @@ class CoreFeatures {
 
   // Report mount operations from the host platform to notify mount hooks.
   static bool enableMountHooks;
+
+  // Only swap left and right on Android in RTL scripts.
+  static bool doNotSwapLeftAndRightOnAndroidInLTR;
+
+  // Clean yoga node when <Text /> does not change.
+  static bool enableCleanParagraphYogaNode;
 };
 
 } // namespace facebook::react

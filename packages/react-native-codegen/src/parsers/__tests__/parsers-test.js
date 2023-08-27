@@ -430,6 +430,22 @@ describe('FlowParser', () => {
       expect(parser.getObjectProperties(declaration)).toEqual(undefined);
     });
   });
+  describe('getLiteralValue', () => {
+    it('returns value of an union represented, given an option', () => {
+      const option = {
+        value: 'LiteralValue',
+      };
+      const expected = option.value;
+
+      expect(parser.getLiteralValue(option)).toEqual(expected);
+    });
+
+    it('returns undefined if option does not have value', () => {
+      const option = {};
+
+      expect(parser.getLiteralValue(option)).toEqual(undefined);
+    });
+  });
 });
 
 describe('TypeScriptParser', () => {
@@ -819,6 +835,28 @@ describe('TypeScriptParser', () => {
       };
 
       expect(parser.getObjectProperties(declaration)).toEqual(undefined);
+    });
+  });
+
+  describe('getLiteralValue', () => {
+    it('returns literal value of an union represented, given an option', () => {
+      const literal = {
+        value: 'LiteralValue',
+      };
+      const option = {
+        literal,
+      };
+      const expected = literal.value;
+
+      expect(parser.getLiteralValue(option)).toEqual(expected);
+    });
+
+    it('returns undefined if literal does not have value', () => {
+      const option = {
+        literal: {},
+      };
+
+      expect(parser.getLiteralValue(option)).toEqual(undefined);
     });
   });
 });

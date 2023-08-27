@@ -17,8 +17,6 @@ namespace ReactMarker {
 enum ReactMarkerId {
   APP_STARTUP_START,
   APP_STARTUP_STOP,
-  INIT_REACT_RUNTIME_START,
-  INIT_REACT_RUNTIME_STOP,
   NATIVE_REQUIRE_START,
   NATIVE_REQUIRE_STOP,
   RUN_JS_BUNDLE_START,
@@ -67,14 +65,12 @@ struct ReactMarkerEvent {
   double time;
 };
 
-class StartupLogger {
+class RN_EXPORT StartupLogger {
  public:
   static StartupLogger &getInstance();
 
   void logStartupEvent(const ReactMarkerId markerName, double markerTime);
   double getAppStartupStartTime();
-  double getInitReactRuntimeStartTime();
-  double getInitReactRuntimeEndTime();
   double getRunJSBundleStartTime();
   double getRunJSBundleEndTime();
   double getAppStartupEndTime();
@@ -86,8 +82,6 @@ class StartupLogger {
 
   double appStartupStartTime;
   double appStartupEndTime;
-  double initReactRuntimeStartTime;
-  double initReactRuntimeEndTime;
   double runJSBundleStartTime;
   double runJSBundleEndTime;
 };
