@@ -15,8 +15,8 @@ import {UtilsSingleton as Utils, iOSLabel} from '../helpers/utils';
 const buttonComponentLabel = 'Button Simple React Native button component.';
 const activityIndicatorComponentLabel =
   'ActivityIndicator Animated loading indicators.';
-const imageComponentLabel =
-  'Image Base component for displaying different types of images.';
+const keyboardAvoidingViewComponentLabel =
+  'KeyboardAvoidingView Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
 const flatListComponentLabel = 'FlatList Performant, scrollable list of data.';
 const jsResponderHandlerComponentLabel =
   'JSResponderHandler Simple example to test JSResponderHandler.';
@@ -33,7 +33,7 @@ const scrollViewSimpleExampleComponentLabel =
 type ComponentsScreenType = {
   buttonComponentLabelElement: string,
   activityIndicatorComponentLabelElement: string,
-  imageComponentLabelElement: string,
+  keyboardAvoidingViewComponentLabelElement: string,
   flatListComponentLabelElement: string,
   jsResponderHandlerComponentLabelElement: string,
   modalComponentLabelElement: string,
@@ -43,7 +43,7 @@ type ComponentsScreenType = {
   scrollViewSimpleExampleComponentLabelElement: string,
   checkButtonComponentIsDisplayed: () => Promise<boolean>,
   checkActivityIndicatorComponentIsDisplayed: () => Promise<boolean>,
-  checkImageComponentIsDisplayed: () => Promise<boolean>,
+  checkKeyboardAvoidingViewComponentIsDisplayed: () => Promise<boolean>,
   checkFlatListComponentIsDisplayed: () => Promise<boolean>,
   checkJSResponderHandlerComponentIsDisplayed: () => Promise<boolean>,
   checkModalComponentIsDisplayed: () => Promise<boolean>,
@@ -53,7 +53,7 @@ type ComponentsScreenType = {
   checkScrollViewSimpleExampleComponentIsDisplayed: () => Promise<boolean>,
   clickButtonComponent: () => Promise<void>,
   clickActivityIndicatorComponent: () => Promise<void>,
-  clickImageComponent: () => Promise<void>,
+  clickKeyboardAvoidingViewComponent: () => Promise<void>,
   clickFlatListComponent: () => Promise<void>,
   clickJSResponderHandlerComponent: () => Promise<void>,
   clickModalComponent: () => Promise<void>,
@@ -73,9 +73,9 @@ export const ComponentsScreen: ComponentsScreenType = {
     ios: iOSLabel(activityIndicatorComponentLabel),
     android: `~${activityIndicatorComponentLabel}`,
   }),
-  imageComponentLabelElement: Utils.platformSelect({
-    ios: iOSLabel(imageComponentLabel),
-    android: `~${imageComponentLabel}`,
+  keyboardAvoidingViewComponentLabelElement: Utils.platformSelect({
+    ios: iOSLabel(keyboardAvoidingViewComponentLabel),
+    android: `~${keyboardAvoidingViewComponentLabel}`,
   }),
   flatListComponentLabelElement: Utils.platformSelect({
     ios: iOSLabel(flatListComponentLabel),
@@ -118,10 +118,12 @@ export const ComponentsScreen: ComponentsScreenType = {
       this.activityIndicatorComponentLabelElement,
     );
   },
-  checkImageComponentIsDisplayed: async function (
+  checkKeyboardAvoidingViewComponentIsDisplayed: async function (
     this: ComponentsScreenType,
   ): Promise<boolean> {
-    return await Utils.checkElementExistence(this.imageComponentLabelElement);
+    return await Utils.checkElementExistence(
+      this.keyboardAvoidingViewComponentLabelElement,
+    );
   },
   checkFlatListComponentIsDisplayed: async function (
     this: ComponentsScreenType,
@@ -180,10 +182,10 @@ export const ComponentsScreen: ComponentsScreenType = {
   ): Promise<void> {
     await Utils.clickElement(this.activityIndicatorComponentLabelElement);
   },
-  clickImageComponent: async function (
+  clickKeyboardAvoidingViewComponent: async function (
     this: ComponentsScreenType,
   ): Promise<void> {
-    await Utils.clickElement(this.imageComponentLabelElement);
+    await Utils.clickElement(this.keyboardAvoidingViewComponentLabelElement);
   },
   clickFlatListComponent: async function (
     this: ComponentsScreenType,

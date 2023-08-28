@@ -829,7 +829,6 @@ exports.examples = [
       return (
         <View style={styles.horizontal}>
           <Image
-            testID="normal_thumb_image"
             source={require('../../assets/uie_thumb_normal.png')}
             style={styles.icon}
           />
