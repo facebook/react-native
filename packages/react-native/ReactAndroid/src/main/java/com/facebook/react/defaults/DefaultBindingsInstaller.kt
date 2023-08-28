@@ -8,8 +8,8 @@
 package com.facebook.react.defaults
 
 import com.facebook.jni.annotations.DoNotStrip
-import com.facebook.react.bridgeless.BindingsInstaller
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.runtime.BindingsInstaller
 
 /**
  * A utility class that provides users a default [BindingsInstaller] class that's used to initialize
