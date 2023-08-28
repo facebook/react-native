@@ -766,6 +766,13 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     [valueComponents addObject:RCTLocalizedString("busy", "an element currently being updated or modified")];
   }
 
+  // Using super.accessibilityValue:
+  // 1. to access the value that is set to accessibilityValue in updateProps
+  // 2. can't access from self.accessibilityElement because it resolves to self
+  if (super.accessibilityValue) {
+    [valueComponents addObject:super.accessibilityValue];
+  }
+
   if (valueComponents.count > 0) {
     return [valueComponents componentsJoinedByString:@", "];
   }
