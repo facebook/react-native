@@ -1,6 +1,6 @@
 ---
+InheritParentConfig: true
 Checks: '
-*,
 -cert-err60-cpp,
 -cppcoreguidelines-pro-bounds-pointer-arithmetic,
 -cppcoreguidelines-special-member-functions,
@@ -15,6 +15,6 @@ Checks: '
 -misc-non-private-member-variables-in-classes,
 -misc-unused-parameters,
 -modernize-use-trailing-return-type,
--performance-unnecessary-value-param
+-performance-unnecessary-value-param,
 '
 ...
