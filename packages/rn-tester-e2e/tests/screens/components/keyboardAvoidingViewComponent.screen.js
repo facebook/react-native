@@ -22,7 +22,6 @@ type KeyboardAvoidingViewComponentScreenType = {
   registerAlertBoxElement: string,
   btnOKElement: string,
   scrollUntilKeyboardAvoidingViewComponentIsDisplayed: () => Promise<void>,
-  scrollUntilNormalThumbImageComponentIsDisplayed: () => Promise<void>,
   checkBtnDifferentBehaviorsOpenExampleIsDisplayed: () => Promise<boolean>,
   checkBtnRegisterIsDisplayed: () => Promise<boolean>,
   clickDifferentBehaviorsOpenExampleButton: () => Promise<void>,
