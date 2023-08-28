@@ -10,7 +10,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTCxxUtils.h>
 
-static NSString *const RCTJSThreadName = @"com.facebook.react.bridgeless.JavaScript";
+static NSString *const RCTJSThreadName = @"com.facebook.react.runtime.JavaScript";
 
 #define RCTAssertJSThread() \
   RCTAssert(self->_jsThread == [NSThread currentThread], @"This method must be called on JS thread")
