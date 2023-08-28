@@ -31,10 +31,10 @@
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-#import <react/bridgeless/JSEngineInstance.h>
 #import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
+#import <react/runtime/JSEngineInstance.h>
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
