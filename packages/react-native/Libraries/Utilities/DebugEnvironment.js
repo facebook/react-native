@@ -15,5 +15,5 @@ if (__DEV__) {
   isAsyncDebugging =
     !global.nativeExtensions &&
     !global.nativeCallSyncHook &&
-    !global.RN$Bridgeless;
+    !global.RN$Runtime;
 }

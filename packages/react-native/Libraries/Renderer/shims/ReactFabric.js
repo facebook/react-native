@@ -26,7 +26,7 @@ if (__DEV__) {
 
 global.RN$stopSurface = ReactFabric.stopSurface;
 
-if (global.RN$Bridgeless !== true) {
+if (global.RN$Runtime !== true) {
   BatchedBridge.registerCallableModule('ReactFabric', ReactFabric);
 }
 

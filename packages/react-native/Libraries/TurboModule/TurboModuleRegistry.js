@@ -23,7 +23,7 @@ const moduleLoadHistory = {
 };
 
 function isBridgeless() {
-  return global.RN$Bridgeless === true;
+  return global.RN$Runtime === true;
 }
 
 function isTurboModuleInteropEnabled() {

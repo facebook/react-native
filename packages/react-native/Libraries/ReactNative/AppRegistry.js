@@ -361,7 +361,7 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless !== true) {
+if (global.RN$Runtime !== true) {
   BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
 }
 

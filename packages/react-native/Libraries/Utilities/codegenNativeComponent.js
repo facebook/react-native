@@ -35,7 +35,7 @@ function codegenNativeComponent<Props>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {
-  if (global.RN$Bridgeless === true) {
+  if (global.RN$Runtime === true) {
     const errorMessage =
       "Native Component '" +
       componentName +

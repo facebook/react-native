@@ -76,7 +76,7 @@ declare var global: {
 
   // Internal-specific
   +__DEV__?: boolean,
-  +RN$Bridgeless?: boolean,
+  +RN$Runtime?: boolean,
 
   // setupDOM
   +DOMRect: typeof DOMRect,

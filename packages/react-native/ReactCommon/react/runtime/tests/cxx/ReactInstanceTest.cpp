@@ -212,10 +212,10 @@ class ReactInstanceTest : public ::testing::Test {
 };
 
 TEST_F(ReactInstanceTest, testBridgelessFlagIsSet) {
-  eval("RN$Bridgeless === true");
+  eval("RN$Runtime === true");
   expectError();
   initializeRuntimeWithScript("");
-  auto val = eval("RN$Bridgeless === true");
+  auto val = eval("RN$Runtime === true");
   EXPECT_EQ(val.getBool(), true);
 }
 

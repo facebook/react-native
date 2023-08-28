@@ -57,7 +57,7 @@ export function dispatchCommand(
   command: string,
   args: Array<mixed>,
 ): void {
-  if (global.RN$Bridgeless === true) {
+  if (global.RN$Runtime === true) {
     // Note: this function has the same implementation in the legacy and new renderer.
     // However, evaluating the old renderer comes with some side effects.
     return require('../Renderer/shims/ReactFabric').dispatchCommand(

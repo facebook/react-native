@@ -322,7 +322,7 @@ namespace {
 void defineReactInstanceFlags(
     jsi::Runtime &runtime,
     ReactInstance::JSRuntimeFlags options) noexcept {
-  defineReadOnlyGlobal(runtime, "RN$Bridgeless", jsi::Value(true));
+  defineReadOnlyGlobal(runtime, "RN$Runtime", jsi::Value(true));
 
   if (options.isProfiling) {
     defineReadOnlyGlobal(runtime, "__RCTProfileIsProfiling", jsi::Value(true));

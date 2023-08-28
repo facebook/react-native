@@ -11,7 +11,7 @@
 'use strict';
 
 let registerModule;
-if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
+if (global.RN$Runtime === true && global.RN$registerCallableModule) {
   registerModule = global.RN$registerCallableModule;
 } else {
   const BatchedBridge = require('../BatchedBridge/BatchedBridge');
@@ -33,7 +33,7 @@ if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
 }
 
 registerModule('Systrace', () => require('../Performance/Systrace'));
-if (!(global.RN$Bridgeless === true)) {
+if (!(global.RN$Runtime === true)) {
   registerModule('JSTimers', () => require('./Timers/JSTimers'));
 }
 registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));

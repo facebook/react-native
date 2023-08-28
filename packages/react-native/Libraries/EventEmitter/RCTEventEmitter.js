@@ -14,7 +14,7 @@ const BatchedBridge = require('../BatchedBridge/BatchedBridge');
 
 const RCTEventEmitter = {
   register(eventEmitter: any) {
-    if (global.RN$Bridgeless) {
+    if (global.RN$Runtime) {
       global.RN$registerCallableModule('RCTEventEmitter', () => eventEmitter);
     } else {
       BatchedBridge.registerCallableModule('RCTEventEmitter', eventEmitter);

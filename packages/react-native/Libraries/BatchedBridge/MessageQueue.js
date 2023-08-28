@@ -412,7 +412,7 @@ class MessageQueue {
       const callableModuleNameList = callableModuleNames.join(', ');
 
       // TODO(T122225939): Remove after investigation: Why are we getting to this line in bridgeless mode?
-      const isBridgelessMode = global.RN$Bridgeless === true ? 'true' : 'false';
+      const isBridgelessMode = global.RN$Runtime === true ? 'true' : 'false';
       invariant(
         false,
         `Failed to call into JavaScript module method ${module}.${method}(). Module has not been registered as callable. Bridgeless Mode: ${isBridgelessMode}. Registered callable JavaScript modules (n = ${n}): ${callableModuleNameList}.

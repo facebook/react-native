@@ -28,7 +28,7 @@ const hasNativePromise = isNativeFunction(Promise);
 const hasPromiseQueuedToJSVM = hasNativePromise || hasHermesPromiseQueuedToJSVM;
 
 // In bridgeless mode, timers are host functions installed from cpp.
-if (global.RN$Bridgeless !== true) {
+if (global.RN$Runtime !== true) {
   /**
    * Set up timers.
    * You can use this module directly, or just require InitializeCore.
@@ -75,7 +75,7 @@ if (hasPromiseQueuedToJSVM) {
   // When promise was polyfilled hence is queued to the RN microtask queue,
   // we polyfill the immediate APIs as aliases to the ReactNativeMicrotask APIs.
   // Note that in bridgeless mode, immediate APIs are installed from cpp.
-  if (global.RN$Bridgeless !== true) {
+  if (global.RN$Runtime !== true) {
     polyfillGlobal(
       'setImmediate',
       () => require('./Timers/JSTimers').queueReactNativeMicrotask,

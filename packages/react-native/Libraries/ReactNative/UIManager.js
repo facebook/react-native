@@ -40,7 +40,7 @@ function isFabricReactTag(reactTag: number): boolean {
 }
 
 const UIManagerImpl: UIManagerJSInterface =
-  global.RN$Bridgeless === true
+  global.RN$Runtime === true
     ? require('./BridgelessUIManager')
     : require('./PaperUIManager');
 

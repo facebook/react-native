@@ -122,7 +122,7 @@ void TurboModuleBinding::install(
             return binding.getModule(rt, moduleName);
           }));
 
-  if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
+  if (runtime.global().hasProperty(runtime, "RN$Runtime")) {
     if (legacyModuleProvider != nullptr) {
       defineReadOnlyGlobal(runtime, "RN$TurboInterop", jsi::Value(true));
       defineReadOnlyGlobal(
