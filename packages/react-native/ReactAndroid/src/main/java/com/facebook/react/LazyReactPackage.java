@@ -37,6 +37,7 @@ public abstract class LazyReactPackage implements ReactPackage {
       LazyReactPackage lazyReactPackage) {
     return Collections::emptyMap;
   }
+
   /**
    * We return an iterable
    *
@@ -44,8 +45,8 @@ public abstract class LazyReactPackage implements ReactPackage {
    * @return {@link Iterable<ModuleHolder>} that contains all native modules registered for the
    *     context
    */
-  public Iterable<ModuleHolder> getNativeModuleIterator(
-      final ReactApplicationContext reactContext) {
+  /** package */
+  Iterable<ModuleHolder> getNativeModuleIterator(final ReactApplicationContext reactContext) {
     final Map<String, ReactModuleInfo> reactModuleInfoMap =
         getReactModuleInfoProvider().getReactModuleInfos();
     final List<ModuleSpec> nativeModules = getNativeModules(reactContext);
