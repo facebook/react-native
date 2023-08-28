@@ -50,6 +50,10 @@ module.exports = {
     'eslint/lib/rules/(.*)': '<rootDir>/node_modules/eslint/lib/rules/$1',
     '^react-native(.*)': '<rootDir>/packages/react-native$1',
   },
+  modulePathIgnorePatterns: [
+    // [macOS] ignore packages that differ from facebook/react-native, since we publish these to verdaccio
+    '<rootDir>/packages/virtualized-lists/',
+  ],
   collectCoverageFrom: ['packages/react-native/Libraries/**/*.js'],
   coveragePathIgnorePatterns: [
     '/__tests__/',
