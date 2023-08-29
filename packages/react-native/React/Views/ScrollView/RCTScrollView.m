@@ -453,6 +453,18 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   if ([changedProps containsObject:@"contentSize"]) {
     [self updateContentSizeIfNeeded];
   }
+  if ([changedProps containsObject:@"showsScrollIndex"]) {
+    [self updateScrollIndex];
+  }
+}
+
+- (void)updateScrollIndex
+{
+  if (!self.showsScrollIndex) {
+      self.scrollView.indexDisplayMode = UIScrollViewIndexDisplayModeAlwaysHidden;
+  } else {
+      self.scrollView.indexDisplayMode = UIScrollViewIndexDisplayModeAutomatic;
+  }
 }
 
 - (BOOL)centerContent
