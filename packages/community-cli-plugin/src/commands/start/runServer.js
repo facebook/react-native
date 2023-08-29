@@ -69,6 +69,8 @@ async function runServer(
     watchFolders,
   } = metroConfig;
 
+  logger.info(`Welcome to React Native v${ctx.reactNativeVersion}`);
+
   const serverStatus = await isDevServerRunning(host, port, projectRoot);
 
   if (serverStatus === 'matched_server_running') {
@@ -84,7 +86,7 @@ async function runServer(
     return;
   }
 
-  logger.info(`Starting dev server on port ${chalk.bold(String(port))}`);
+  logger.info(`Starting dev server on port ${chalk.bold(String(port))}...`);
 
   if (args.assetPlugins) {
     // $FlowIgnore[cannot-write] Assigning to readonly property
@@ -121,6 +123,7 @@ async function runServer(
         reportEvent(event);
       }
       if (args.interactive && event.type === 'dep_graph_loaded') {
+        logger.info('Dev server ready');
         attachKeyHandlers(ctx, messageSocketEndpoint);
       }
     },
