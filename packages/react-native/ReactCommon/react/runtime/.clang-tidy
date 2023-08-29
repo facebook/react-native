@@ -12,6 +12,6 @@ Checks: '
 -misc-non-private-member-variables-in-classes,
 -misc-unused-parameters,
 -modernize-use-trailing-return-type,
--performance-unnecessary-value-param
+-performance-unnecessary-value-param,
 '
 ...
