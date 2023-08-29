@@ -91,11 +91,12 @@ export default function attachKeyHandlers(
   keyPressHandler.startInterceptingKeyStrokes();
 
   logger.log(
-    [
-      `${chalk.bold('r')} - reload app`,
-      `${chalk.bold('d')} - open Dev Menu`,
-      `${chalk.bold('r')} - run on iOS`,
-      `${chalk.bold('a')} - run on Android`,
-    ].join('\n'),
+    '\n' +
+      [
+        `${chalk.bold('r')} - reload app`,
+        `${chalk.bold('d')} - open Dev Menu`,
+        `${chalk.bold('i')} - run on iOS`,
+        `${chalk.bold('a')} - run on Android`,
+      ].join('\n'),
   );
 }
