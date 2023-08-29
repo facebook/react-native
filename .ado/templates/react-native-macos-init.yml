@@ -11,6 +11,9 @@ steps:
 
   - template: apple-tools-setup.yml
 
+  - template: verdaccio-init.yml
+  - template: verdaccio-publish.yml
+
   # First do a build of the local package, since we point the cli at the local files, it needs to be pre-built
   - task: CmdLine@2
     displayName: yarn install (local react-native-macos)
@@ -30,15 +33,6 @@ steps:
       script: |
         cd packages/react-native-macos-init
         yarn build
-
-  - template: verdaccio-init.yml
-
-  - task: CmdLine@2
-    displayName: Set package version
-    inputs:
-      script: node scripts/set-rn-version.js -b dry-run -v 1000.0.0
-
-  - template: verdaccio-publish.yml
 
   - task: CmdLine@2
     displayName: Init new project
