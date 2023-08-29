@@ -4,9 +4,6 @@ parameters:
 steps:
   - template: apple-tools-setup.yml
 
-  - template: verdaccio-init.yml
-  - template: verdaccio-publish.yml
-
   - template: apple-install-dependencies.yml
 
   # Extra steps needed for *-stable releases
