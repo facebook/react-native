@@ -578,6 +578,32 @@ class UtilsTests < Test::Unit::TestCase
     end
 
     # ==================================== #
+    # Test - Set USE_HERMES Build Setting #
+    # ==================================== #
+
+    def test_setUseHermesBuildSetting_addTheUserSetting
+        # Arrange
+        react_native_path = "react_native/node_modules"
+        user_project_mock = prepare_empty_user_project_mock()
+        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}})
+        installer = InstallerMock.new(pods_projects_mock, [
+            AggregatedProjectMock.new(user_project_mock)
+        ])
+
+        # Act
+        ReactNativePodsUtils.set_use_hermes_build_setting(installer, false)
+
+        # Assert
+        user_project_mock.build_configurations.each do |config|
+            assert_equal(config.build_settings["USE_HERMES"], false)
+        end
+
+        assert_equal(user_project_mock.save_invocation_count, 1)
+        assert_equal(pods_projects_mock.save_invocation_count, 1)
+        assert_equal(Pod::UI.collected_messages, ["Setting USE_HERMES build settings"])
+    end
+
+    # ==================================== #
     # Test - Set Node_Modules User Setting #
     # ==================================== #
 

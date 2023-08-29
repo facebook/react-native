@@ -247,14 +247,16 @@ def react_native_post_install(
   end
 
   fabric_enabled = ReactNativePodsUtils.has_pod(installer, 'React-Fabric')
+  hermes_enabled = ReactNativePodsUtils.has_pod(installer, "React-hermes")
 
-  if ReactNativePodsUtils.has_pod(installer, "React-hermes")
+  if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
     ReactNativePodsUtils.exclude_i386_architecture_while_using_hermes(installer)
   end
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
+  ReactNativePodsUtils.set_use_hermes_build_setting(installer, hermes_enabled)
   ReactNativePodsUtils.set_node_modules_user_settings(installer, react_native_path)
   ReactNativePodsUtils.apply_flags_for_fabric(installer, fabric_enabled: fabric_enabled)
   ReactNativePodsUtils.apply_xcode_15_patch(installer)
