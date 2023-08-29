@@ -9,7 +9,7 @@
 # and relies on environment variables (including PWD) set by Xcode
 
 # Print commands before executing them (useful for troubleshooting)
-set -x
+set -x -e
 DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
 
 # Enables iOS devices to get the IP address of the machine running Metro
