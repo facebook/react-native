@@ -12,7 +12,7 @@
 #include <jsi/jsi.h>
 #include <react/jni/NativeMap.h>
 
-#include <react/bridgeless/nativeviewconfig/LegacyUIManagerConstantsProviderBinding.h>
+#include <react/runtime/nativeviewconfig/LegacyUIManagerConstantsProviderBinding.h>
 #include "UIConstantsProviderManager.h"
 
 namespace facebook::react {
