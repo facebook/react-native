@@ -5,24 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <float.h>
+#include <string.h>
 #include <algorithm>
 #include <atomic>
-#include <cfloat>
-#include <cstring>
 #include <memory>
-#include <stdexcept>
 
 #include <yoga/Yoga.h>
-#include <yoga/Yoga-internal.h>
 
-#include <yoga/algorithm/CollectFlexItemsRowValues.h>
-#include <yoga/algorithm/FlexDirection.h>
-#include <yoga/algorithm/ResolveValue.h>
 #include <yoga/debug/Log.h>
 #include <yoga/debug/NodeToString.h>
-#include <yoga/event/event.h>
+#include <yoga/Utils.h>
 #include <yoga/node/Node.h>
-#include <yoga/numeric/Comparison.h>
+#include <yoga/Yoga-internal.h>
+#include "event/event.h"
 
 using namespace facebook;
 using namespace facebook::yoga;
@@ -1043,7 +1039,8 @@ static inline YGAlign YGNodeAlignItem(
   const YGAlign align = child->getStyle().alignSelf() == YGAlignAuto
       ? node->getStyle().alignItems()
       : child->getStyle().alignSelf();
-  if (align == YGAlignBaseline && isColumn(node->getStyle().flexDirection())) {
+  if (align == YGAlignBaseline &&
+      YGFlexDirectionIsColumn(node->getStyle().flexDirection())) {
     return YGAlignFlexStart;
   }
   return align;
@@ -1098,7 +1095,7 @@ static float YGBaseline(yoga::Node* node, void* layoutContext) {
 }
 
 static bool YGIsBaselineLayout(const yoga::Node* node) {
-  if (isColumn(node->getStyle().flexDirection())) {
+  if (YGFlexDirectionIsColumn(node->getStyle().flexDirection())) {
     return false;
   }
   if (node->getStyle().alignItems() == YGAlignBaseline) {
@@ -1158,15 +1155,15 @@ static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
   YGFloatOptional min;
   YGFloatOptional max;
 
-  if (isColumn(axis)) {
-    min = yoga::resolveValue(
+  if (YGFlexDirectionIsColumn(axis)) {
+    min = YGResolveValue(
         node->getStyle().minDimensions()[YGDimensionHeight], axisSize);
-    max = yoga::resolveValue(
+    max = YGResolveValue(
         node->getStyle().maxDimensions()[YGDimensionHeight], axisSize);
-  } else if (isRow(axis)) {
-    min = yoga::resolveValue(
+  } else if (YGFlexDirectionIsRow(axis)) {
+    min = YGResolveValue(
         node->getStyle().minDimensions()[YGDimensionWidth], axisSize);
-    max = yoga::resolveValue(
+    max = YGResolveValue(
         node->getStyle().maxDimensions()[YGDimensionWidth], axisSize);
   }
 
@@ -1189,7 +1186,7 @@ static inline float YGNodeBoundAxis(
     const float value,
     const float axisSize,
     const float widthSize) {
-  return yoga::maxOrDefined(
+  return YGFloatMax(
       YGNodeBoundAxisWithinMinAndMax(
           node, axis, YGFloatOptional{value}, axisSize)
           .unwrap(),
@@ -1215,7 +1212,7 @@ static void YGConstrainMaxSizeForMode(
     YGMeasureMode* mode,
     float* size) {
   const YGFloatOptional maxSize =
-      yoga::resolveValue(
+      YGResolveValue(
           node->getStyle().maxDimensions()[dim[axis]], ownerAxisSize) +
       YGFloatOptional(node->getMarginForAxis(axis, ownerWidth));
   switch (*mode) {
@@ -1250,8 +1247,8 @@ static void YGNodeComputeFlexBasisForChild(
     const uint32_t depth,
     const uint32_t generationCount) {
   const YGFlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
-  const bool isMainAxisRow = isRow(mainAxis);
+      YGResolveFlexDirection(node->getStyle().flexDirection(), direction);
+  const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
   const float mainAxisSize = isMainAxisRow ? width : height;
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
 
@@ -1261,7 +1258,7 @@ static void YGNodeComputeFlexBasisForChild(
   YGMeasureMode childHeightMeasureMode;
 
   const YGFloatOptional resolvedFlexBasis =
-      yoga::resolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize);
+      YGResolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize);
   const bool isRowStyleDimDefined =
       YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, ownerWidth);
   const bool isColumnStyleDimDefined =
@@ -1275,15 +1272,15 @@ static void YGNodeComputeFlexBasisForChild(
       const YGFloatOptional paddingAndBorder = YGFloatOptional(
           YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth));
       child->setLayoutComputedFlexBasis(
-          yoga::maxOrDefined(resolvedFlexBasis, paddingAndBorder));
+          YGFloatOptionalMax(resolvedFlexBasis, paddingAndBorder));
     }
   } else if (isMainAxisRow && isRowStyleDimDefined) {
     // The width is definite, so use that as the flex basis.
     const YGFloatOptional paddingAndBorder = YGFloatOptional(
         YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, ownerWidth));
 
-    child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        yoga::resolveValue(
+    child->setLayoutComputedFlexBasis(YGFloatOptionalMax(
+        YGResolveValue(
             child->getResolvedDimensions()[YGDimensionWidth], ownerWidth),
         paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
@@ -1291,8 +1288,8 @@ static void YGNodeComputeFlexBasisForChild(
     const YGFloatOptional paddingAndBorder =
         YGFloatOptional(YGNodePaddingAndBorderForAxis(
             child, YGFlexDirectionColumn, ownerWidth));
-    child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
-        yoga::resolveValue(
+    child->setLayoutComputedFlexBasis(YGFloatOptionalMax(
+        YGResolveValue(
             child->getResolvedDimensions()[YGDimensionHeight], ownerHeight),
         paddingAndBorder));
   } else {
@@ -1310,7 +1307,7 @@ static void YGNodeComputeFlexBasisForChild(
 
     if (isRowStyleDimDefined) {
       childWidth =
-          yoga::resolveValue(
+          YGResolveValue(
               child->getResolvedDimensions()[YGDimensionWidth], ownerWidth)
               .unwrap() +
           marginRow;
@@ -1318,7 +1315,7 @@ static void YGNodeComputeFlexBasisForChild(
     }
     if (isColumnStyleDimDefined) {
       childHeight =
-          yoga::resolveValue(
+          YGResolveValue(
               child->getResolvedDimensions()[YGDimensionHeight], ownerHeight)
               .unwrap() +
           marginColumn;
@@ -1426,7 +1423,7 @@ static void YGNodeComputeFlexBasisForChild(
         depth,
         generationCount);
 
-    child->setLayoutComputedFlexBasis(YGFloatOptional(yoga::maxOrDefined(
+    child->setLayoutComputedFlexBasis(YGFloatOptional(YGFloatMax(
         child->getLayout().measuredDimensions[dim[mainAxis]],
         YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth))));
   }
@@ -1446,9 +1443,9 @@ static void YGNodeAbsoluteLayoutChild(
     const uint32_t depth,
     const uint32_t generationCount) {
   const YGFlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
-  const YGFlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
-  const bool isMainAxisRow = isRow(mainAxis);
+      YGResolveFlexDirection(node->getStyle().flexDirection(), direction);
+  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
+  const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
 
   float childWidth = YGUndefined;
   float childHeight = YGUndefined;
@@ -1460,9 +1457,9 @@ static void YGNodeAbsoluteLayoutChild(
       child->getMarginForAxis(YGFlexDirectionColumn, width).unwrap();
 
   if (YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, width)) {
-    childWidth = yoga::resolveValue(
-                     child->getResolvedDimensions()[YGDimensionWidth], width)
-                     .unwrap() +
+    childWidth =
+        YGResolveValue(child->getResolvedDimensions()[YGDimensionWidth], width)
+            .unwrap() +
         marginRow;
   } else {
     // If the child doesn't have a specified width, compute the width based on
@@ -1481,7 +1478,7 @@ static void YGNodeAbsoluteLayoutChild(
   }
 
   if (YGNodeIsStyleDimDefined(child, YGFlexDirectionColumn, height)) {
-    childHeight = yoga::resolveValue(
+    childHeight = YGResolveValue(
                       child->getResolvedDimensions()[YGDimensionHeight], height)
                       .unwrap() +
         marginColumn;
@@ -1700,10 +1697,10 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
   // We want to make sure we don't call measure with negative size
   const float innerWidth = YGFloatIsUndefined(availableWidth)
       ? availableWidth
-      : yoga::maxOrDefined(0, availableWidth - paddingAndBorderAxisRow);
+      : YGFloatMax(0, availableWidth - paddingAndBorderAxisRow);
   const float innerHeight = YGFloatIsUndefined(availableHeight)
       ? availableHeight
-      : yoga::maxOrDefined(0, availableHeight - paddingAndBorderAxisColumn);
+      : YGFloatMax(0, availableHeight - paddingAndBorderAxisColumn);
 
   if (widthMeasureMode == YGMeasureModeExactly &&
       heightMeasureMode == YGMeasureModeExactly) {
@@ -1876,20 +1873,20 @@ static float YGNodeCalculateAvailableInnerDim(
   if (!YGFloatIsUndefined(availableInnerDim)) {
     // We want to make sure our available height does not violate min and max
     // constraints
-    const YGFloatOptional minDimensionOptional = yoga::resolveValue(
-        node->getStyle().minDimensions()[dimension], ownerDim);
+    const YGFloatOptional minDimensionOptional =
+        YGResolveValue(node->getStyle().minDimensions()[dimension], ownerDim);
     const float minInnerDim = minDimensionOptional.isUndefined()
         ? 0.0f
         : minDimensionOptional.unwrap() - paddingAndBorder;
 
-    const YGFloatOptional maxDimensionOptional = yoga::resolveValue(
-        node->getStyle().maxDimensions()[dimension], ownerDim);
+    const YGFloatOptional maxDimensionOptional =
+        YGResolveValue(node->getStyle().maxDimensions()[dimension], ownerDim);
 
     const float maxInnerDim = maxDimensionOptional.isUndefined()
         ? FLT_MAX
         : maxDimensionOptional.unwrap() - paddingAndBorder;
-    availableInnerDim = yoga::maxOrDefined(
-        yoga::minOrDefined(availableInnerDim, maxInnerDim), minInnerDim);
+    availableInnerDim =
+        YGFloatMax(YGFloatMin(availableInnerDim, maxInnerDim), minInnerDim);
   }
 
   return availableInnerDim;
@@ -1913,7 +1910,7 @@ static float YGNodeComputeFlexBasisForChildren(
   YGNodeRef singleFlexChild = nullptr;
   const auto& children = node->getChildren();
   YGMeasureMode measureModeMainDim =
-      isRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
+      YGFlexDirectionIsRow(mainAxis) ? widthMeasureMode : heightMeasureMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
   // the computedFlexBasis to 0 instead of measuring and shrinking / flexing the
   // child to exactly match the remaining space
@@ -1921,8 +1918,8 @@ static float YGNodeComputeFlexBasisForChildren(
     for (auto child : children) {
       if (child->isNodeFlexible()) {
         if (singleFlexChild != nullptr ||
-            yoga::inexactEquals(child->resolveFlexGrow(), 0.0f) ||
-            yoga::inexactEquals(child->resolveFlexShrink(), 0.0f)) {
+            YGFloatsEqual(child->resolveFlexGrow(), 0.0f) ||
+            YGFloatsEqual(child->resolveFlexShrink(), 0.0f)) {
           // There is already a flexible child, or this flexible child doesn't
           // have flexGrow and flexShrink, abort
           singleFlexChild = nullptr;
@@ -1945,10 +1942,12 @@ static float YGNodeComputeFlexBasisForChildren(
     if (performLayout) {
       // Set the initial position (relative to the owner).
       const YGDirection childDirection = child->resolveDirection(direction);
-      const float mainDim =
-          isRow(mainAxis) ? availableInnerWidth : availableInnerHeight;
-      const float crossDim =
-          isRow(mainAxis) ? availableInnerHeight : availableInnerWidth;
+      const float mainDim = YGFlexDirectionIsRow(mainAxis)
+          ? availableInnerWidth
+          : availableInnerHeight;
+      const float crossDim = YGFlexDirectionIsRow(mainAxis)
+          ? availableInnerHeight
+          : availableInnerWidth;
       child->setPosition(
           childDirection, mainDim, crossDim, availableInnerWidth);
     }
@@ -1990,7 +1989,7 @@ static float YGNodeComputeFlexBasisForChildren(
 // computedFlexBasis properly computed(To do this use
 // YGNodeComputeFlexBasisForChildren function). This function calculates
 // YGCollectFlexItemsRowMeasurement
-static CollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
+static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
     yoga::Node* const node,
     const YGDirection ownerDirection,
     const float mainAxisownerSize,
@@ -1998,11 +1997,11 @@ static CollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
     const float availableInnerMainDim,
     const uint32_t startOfLineIndex,
     const uint32_t lineCount) {
-  CollectFlexItemsRowValues flexAlgoRowMeasurement = {};
+  YGCollectFlexItemsRowValues flexAlgoRowMeasurement = {};
   flexAlgoRowMeasurement.relativeChildren.reserve(node->getChildren().size());
 
   float sizeConsumedOnCurrentLineIncludingMinConstraint = 0;
-  const YGFlexDirection mainAxis = resolveDirection(
+  const YGFlexDirection mainAxis = YGResolveFlexDirection(
       node->getStyle().flexDirection(), node->resolveDirection(ownerDirection));
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
   const float gap = node->getGapForAxis(mainAxis, availableInnerWidth).unwrap();
@@ -2082,7 +2081,7 @@ static CollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
 // function the child nodes would have proper size. Prior using this function
 // please ensure that YGDistributeFreeSpaceFirstPass is called.
 static float YGDistributeFreeSpaceSecondPass(
-    CollectFlexItemsRowValues& collectedFlexItemsValues,
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     yoga::Node* const node,
     const YGFlexDirection mainAxis,
     const YGFlexDirection crossAxis,
@@ -2103,7 +2102,7 @@ static float YGDistributeFreeSpaceSecondPass(
   float flexShrinkScaledFactor = 0;
   float flexGrowFactor = 0;
   float deltaFreeSpace = 0;
-  const bool isMainAxisRow = isRow(mainAxis);
+  const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
 
   for (auto currentRelativeChild : collectedFlexItemsValues.relativeChildren) {
@@ -2203,7 +2202,7 @@ static float YGDistributeFreeSpaceSecondPass(
           : YGMeasureModeAtMost;
     } else {
       childCrossSize =
-          yoga::resolveValue(
+          YGResolveValue(
               currentRelativeChild->getResolvedDimension(dim[crossAxis]),
               availableInnerCrossDim)
               .unwrap() +
@@ -2280,7 +2279,7 @@ static float YGDistributeFreeSpaceSecondPass(
 // whose min and max constraints are triggered, those flex item's clamped size
 // is removed from the remaingfreespace.
 static void YGDistributeFreeSpaceFirstPass(
-    CollectFlexItemsRowValues& collectedFlexItemsValues,
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const YGFlexDirection mainAxis,
     const float mainAxisownerSize,
     const float availableInnerMainDim,
@@ -2387,7 +2386,7 @@ static void YGDistributeFreeSpaceFirstPass(
 //
 static void YGResolveFlexibleLength(
     yoga::Node* const node,
-    CollectFlexItemsRowValues& collectedFlexItemsValues,
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const YGFlexDirection mainAxis,
     const YGFlexDirection crossAxis,
     const float mainAxisownerSize,
@@ -2438,7 +2437,7 @@ static void YGResolveFlexibleLength(
 
 static void YGJustifyMainAxis(
     yoga::Node* const node,
-    CollectFlexItemsRowValues& collectedFlexItemsValues,
+    YGCollectFlexItemsRowValues& collectedFlexItemsValues,
     const uint32_t startOfLineIndex,
     const YGFlexDirection mainAxis,
     const YGFlexDirection crossAxis,
@@ -2462,8 +2461,7 @@ static void YGJustifyMainAxis(
   if (measureModeMainDim == YGMeasureModeAtMost &&
       collectedFlexItemsValues.remainingFreeSpace > 0) {
     if (!style.minDimensions()[dim[mainAxis]].isUndefined() &&
-        !yoga::resolveValue(
-             style.minDimensions()[dim[mainAxis]], mainAxisownerSize)
+        !YGResolveValue(style.minDimensions()[dim[mainAxis]], mainAxisownerSize)
              .isUndefined()) {
       // This condition makes sure that if the size of main dimension(after
       // considering child nodes main dim, leading and trailing padding etc)
@@ -2473,14 +2471,14 @@ static void YGJustifyMainAxis(
       // `minAvailableMainDim` denotes minimum available space in which child
       // can be laid out, it will exclude space consumed by padding and border.
       const float minAvailableMainDim =
-          yoga::resolveValue(
+          YGResolveValue(
               style.minDimensions()[dim[mainAxis]], mainAxisownerSize)
               .unwrap() -
           leadingPaddingAndBorderMain - trailingPaddingAndBorderMain;
       const float occupiedSpaceByChildNodes =
           availableInnerMainDim - collectedFlexItemsValues.remainingFreeSpace;
-      collectedFlexItemsValues.remainingFreeSpace = yoga::maxOrDefined(
-          0, minAvailableMainDim - occupiedSpaceByChildNodes);
+      collectedFlexItemsValues.remainingFreeSpace =
+          YGFloatMax(0, minAvailableMainDim - occupiedSpaceByChildNodes);
     } else {
       collectedFlexItemsValues.remainingFreeSpace = 0;
     }
@@ -2519,8 +2517,7 @@ static void YGJustifyMainAxis(
       case YGJustifySpaceBetween:
         if (collectedFlexItemsValues.itemsOnLine > 1) {
           betweenMainDim +=
-              yoga::maxOrDefined(
-                  collectedFlexItemsValues.remainingFreeSpace, 0) /
+              YGFloatMax(collectedFlexItemsValues.remainingFreeSpace, 0) /
               (collectedFlexItemsValues.itemsOnLine - 1);
         }
         break;
@@ -2631,14 +2628,14 @@ static void YGJustifyMainAxis(
                 ascent;
 
             maxAscentForCurrentLine =
-                yoga::maxOrDefined(maxAscentForCurrentLine, ascent);
+                YGFloatMax(maxAscentForCurrentLine, ascent);
             maxDescentForCurrentLine =
-                yoga::maxOrDefined(maxDescentForCurrentLine, descent);
+                YGFloatMax(maxDescentForCurrentLine, descent);
           } else {
             // The cross dimension is the max of the elements dimension since
             // there can only be one element in that cross dimension in the case
             // when the items are not baseline aligned
-            collectedFlexItemsValues.crossDim = yoga::maxOrDefined(
+            collectedFlexItemsValues.crossDim = YGFloatMax(
                 collectedFlexItemsValues.crossDim,
                 YGNodeDimWithMargin(child, crossAxis, availableInnerWidth));
           }
@@ -2762,9 +2759,9 @@ static void YGNodelayoutImpl(
   node->setLayoutDirection(direction);
 
   const YGFlexDirection flexRowDirection =
-      resolveDirection(YGFlexDirectionRow, direction);
+      YGResolveFlexDirection(YGFlexDirectionRow, direction);
   const YGFlexDirection flexColumnDirection =
-      resolveDirection(YGFlexDirectionColumn, direction);
+      YGResolveFlexDirection(YGFlexDirectionColumn, direction);
 
   const YGEdge startEdge =
       direction == YGDirectionLTR ? YGEdgeLeft : YGEdgeRight;
@@ -2854,9 +2851,9 @@ static void YGNodelayoutImpl(
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const YGFlexDirection mainAxis =
-      resolveDirection(node->getStyle().flexDirection(), direction);
-  const YGFlexDirection crossAxis = resolveCrossDirection(mainAxis, direction);
-  const bool isMainAxisRow = isRow(mainAxis);
+      YGResolveFlexDirection(node->getStyle().flexDirection(), direction);
+  const YGFlexDirection crossAxis = YGFlexDirectionCross(mainAxis, direction);
+  const bool isMainAxisRow = YGFlexDirectionIsRow(mainAxis);
   const bool isNodeFlexWrap = node->getStyle().flexWrap() != YGWrapNoWrap;
 
   const float mainAxisownerSize = isMainAxisRow ? ownerWidth : ownerHeight;
@@ -2951,7 +2948,7 @@ static void YGNodelayoutImpl(
 
   // Max main dimension of all the lines.
   float maxLineMainDim = 0;
-  CollectFlexItemsRowValues collectedFlexItemsValues;
+  YGCollectFlexItemsRowValues collectedFlexItemsValues;
   for (; endOfLineIndex < childCount;
        lineCount++, startOfLineIndex = endOfLineIndex) {
     collectedFlexItemsValues = YGCalculateCollectFlexItemsRowValues(
@@ -2981,19 +2978,17 @@ static void YGNodelayoutImpl(
       const auto& minDimensions = node->getStyle().minDimensions();
       const auto& maxDimensions = node->getStyle().maxDimensions();
       const float minInnerWidth =
-          yoga::resolveValue(minDimensions[YGDimensionWidth], ownerWidth)
-              .unwrap() -
+          YGResolveValue(minDimensions[YGDimensionWidth], ownerWidth).unwrap() -
           paddingAndBorderAxisRow;
       const float maxInnerWidth =
-          yoga::resolveValue(maxDimensions[YGDimensionWidth], ownerWidth)
-              .unwrap() -
+          YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap() -
           paddingAndBorderAxisRow;
       const float minInnerHeight =
-          yoga::resolveValue(minDimensions[YGDimensionHeight], ownerHeight)
+          YGResolveValue(minDimensions[YGDimensionHeight], ownerHeight)
               .unwrap() -
           paddingAndBorderAxisColumn;
       const float maxInnerHeight =
-          yoga::resolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
+          YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
               .unwrap() -
           paddingAndBorderAxisColumn;
 
@@ -3246,14 +3241,13 @@ static void YGNodelayoutImpl(
 
             if (child->marginLeadingValue(crossAxis).unit == YGUnitAuto &&
                 child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
-              leadingCrossDim +=
-                  yoga::maxOrDefined(0.0f, remainingCrossDim / 2);
+              leadingCrossDim += YGFloatMax(0.0f, remainingCrossDim / 2);
             } else if (
                 child->marginTrailingValue(crossAxis).unit == YGUnitAuto) {
               // No-Op
             } else if (
                 child->marginLeadingValue(crossAxis).unit == YGUnitAuto) {
-              leadingCrossDim += yoga::maxOrDefined(0.0f, remainingCrossDim);
+              leadingCrossDim += YGFloatMax(0.0f, remainingCrossDim);
             } else if (alignItem == YGAlignFlexStart) {
               // No-Op
             } else if (alignItem == YGAlignCenter) {
@@ -3274,7 +3268,7 @@ static void YGNodelayoutImpl(
     const float appliedCrossGap = lineCount != 0 ? crossAxisGap : 0.0f;
     totalLineCrossDim += collectedFlexItemsValues.crossDim + appliedCrossGap;
     maxLineMainDim =
-        yoga::maxOrDefined(maxLineMainDim, collectedFlexItemsValues.mainDim);
+        YGFloatMax(maxLineMainDim, collectedFlexItemsValues.mainDim);
   }
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
@@ -3337,7 +3331,7 @@ static void YGNodelayoutImpl(
             break;
           }
           if (YGNodeIsLayoutDimDefined(child, crossAxis)) {
-            lineHeight = yoga::maxOrDefined(
+            lineHeight = YGFloatMax(
                 lineHeight,
                 child->getLayout().measuredDimensions[dim[crossAxis]] +
                     child->getMarginForAxis(crossAxis, availableInnerWidth)
@@ -3357,10 +3351,10 @@ static void YGNodelayoutImpl(
                     .unwrap() -
                 ascent;
             maxAscentForCurrentLine =
-                yoga::maxOrDefined(maxAscentForCurrentLine, ascent);
+                YGFloatMax(maxAscentForCurrentLine, ascent);
             maxDescentForCurrentLine =
-                yoga::maxOrDefined(maxDescentForCurrentLine, descent);
-            lineHeight = yoga::maxOrDefined(
+                YGFloatMax(maxDescentForCurrentLine, descent);
+            lineHeight = YGFloatMax(
                 lineHeight, maxAscentForCurrentLine + maxDescentForCurrentLine);
           }
         }
@@ -3428,11 +3422,11 @@ static void YGNodelayoutImpl(
                              .unwrap())
                       : lineHeight;
 
-                  if (!(yoga::inexactEquals(
+                  if (!(YGFloatsEqual(
                             childWidth,
                             child->getLayout()
                                 .measuredDimensions[YGDimensionWidth]) &&
-                        yoga::inexactEquals(
+                        YGFloatsEqual(
                             childHeight,
                             child->getLayout()
                                 .measuredDimensions[YGDimensionHeight]))) {
@@ -3516,8 +3510,8 @@ static void YGNodelayoutImpl(
       measureModeMainDim == YGMeasureModeAtMost &&
       node->getStyle().overflow() == YGOverflowScroll) {
     node->setLayoutMeasuredDimension(
-        yoga::maxOrDefined(
-            yoga::minOrDefined(
+        YGFloatMax(
+            YGFloatMin(
                 availableInnerMainDim + paddingAndBorderAxisMain,
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
@@ -3547,8 +3541,8 @@ static void YGNodelayoutImpl(
       measureModeCrossDim == YGMeasureModeAtMost &&
       node->getStyle().overflow() == YGOverflowScroll) {
     node->setLayoutMeasuredDimension(
-        yoga::maxOrDefined(
-            yoga::minOrDefined(
+        YGFloatMax(
+            YGFloatMin(
                 availableInnerCrossDim + paddingAndBorderAxisCross,
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
@@ -3665,7 +3659,7 @@ static inline bool YGMeasureModeSizeIsExactAndMatchesOldMeasuredSize(
     float size,
     float lastComputedSize) {
   return sizeMode == YGMeasureModeExactly &&
-      yoga::inexactEquals(size, lastComputedSize);
+      YGFloatsEqual(size, lastComputedSize);
 }
 
 static inline bool YGMeasureModeOldSizeIsUnspecifiedAndStillFits(
@@ -3675,7 +3669,7 @@ static inline bool YGMeasureModeOldSizeIsUnspecifiedAndStillFits(
     float lastComputedSize) {
   return sizeMode == YGMeasureModeAtMost &&
       lastSizeMode == YGMeasureModeUndefined &&
-      (size >= lastComputedSize || yoga::inexactEquals(size, lastComputedSize));
+      (size >= lastComputedSize || YGFloatsEqual(size, lastComputedSize));
 }
 
 static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(
@@ -3688,7 +3682,7 @@ static inline bool YGMeasureModeNewMeasureSizeIsStricterAndStillValid(
       sizeMode == YGMeasureModeAtMost && !YGFloatIsUndefined(lastSize) &&
       !YGFloatIsUndefined(size) && !YGFloatIsUndefined(lastComputedSize) &&
       lastSize > size &&
-      (lastComputedSize <= size || yoga::inexactEquals(size, lastComputedSize));
+      (lastComputedSize <= size || YGFloatsEqual(size, lastComputedSize));
 }
 
 YOGA_EXPORT float YGRoundValueToPixelGrid(
@@ -3718,10 +3712,10 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
     //   - Finding the `floor`: -2.2 - fractial2 = -2.2 - 0.8 = -3
     ++fractial;
   }
-  if (yoga::inexactEquals(fractial, 0)) {
+  if (YGDoubleEqual(fractial, 0)) {
     // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;
-  } else if (yoga::inexactEquals(fractial, 1.0)) {
+  } else if (YGDoubleEqual(fractial, 1.0)) {
     scaledValue = scaledValue - fractial + 1.0;
   } else if (forceCeil) {
     // Next we check if we need to use forced rounding
@@ -3732,7 +3726,7 @@ YOGA_EXPORT float YGRoundValueToPixelGrid(
     // Finally we just round the value
     scaledValue = scaledValue - fractial +
         (!YGDoubleIsUndefined(fractial) &&
-                 (fractial > 0.5 || yoga::inexactEquals(fractial, 0.5))
+                 (fractial > 0.5 || YGDoubleEqual(fractial, 0.5))
              ? 1.0
              : 0.0);
   }
@@ -3780,9 +3774,9 @@ YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
       : lastHeight;
 
   const bool hasSameWidthSpec = lastWidthMode == widthMode &&
-      yoga::inexactEquals(effectiveLastWidth, effectiveWidth);
+      YGFloatsEqual(effectiveLastWidth, effectiveWidth);
   const bool hasSameHeightSpec = lastHeightMode == heightMode &&
-      yoga::inexactEquals(effectiveLastHeight, effectiveHeight);
+      YGFloatsEqual(effectiveLastHeight, effectiveHeight);
 
   const bool widthIsCompatible =
       hasSameWidthSpec ||
@@ -3914,19 +3908,17 @@ bool YGLayoutNodeInternal(
       }
     }
   } else if (performLayout) {
-    if (yoga::inexactEquals(
-            layout->cachedLayout.availableWidth, availableWidth) &&
-        yoga::inexactEquals(
-            layout->cachedLayout.availableHeight, availableHeight) &&
+    if (YGFloatsEqual(layout->cachedLayout.availableWidth, availableWidth) &&
+        YGFloatsEqual(layout->cachedLayout.availableHeight, availableHeight) &&
         layout->cachedLayout.widthMeasureMode == widthMeasureMode &&
         layout->cachedLayout.heightMeasureMode == heightMeasureMode) {
       cachedResults = &layout->cachedLayout;
     }
   } else {
     for (uint32_t i = 0; i < layout->nextCachedMeasurementsIndex; i++) {
-      if (yoga::inexactEquals(
+      if (YGFloatsEqual(
               layout->cachedMeasurements[i].availableWidth, availableWidth) &&
-          yoga::inexactEquals(
+          YGFloatsEqual(
               layout->cachedMeasurements[i].availableHeight, availableHeight) &&
           layout->cachedMeasurements[i].widthMeasureMode == widthMeasureMode &&
           layout->cachedMeasurements[i].heightMeasureMode ==
@@ -4153,11 +4145,11 @@ static void YGRoundToPixelGrid(
   // whole number, we don't have any fraction To verify if the result is close
   // to whole number we want to check both floor and ceil numbers
   const bool hasFractionalWidth =
-      !yoga::inexactEquals(fmod(nodeWidth * pointScaleFactor, 1.0), 0) &&
-      !yoga::inexactEquals(fmod(nodeWidth * pointScaleFactor, 1.0), 1.0);
+      !YGDoubleEqual(fmod(nodeWidth * pointScaleFactor, 1.0), 0) &&
+      !YGDoubleEqual(fmod(nodeWidth * pointScaleFactor, 1.0), 1.0);
   const bool hasFractionalHeight =
-      !yoga::inexactEquals(fmod(nodeHeight * pointScaleFactor, 1.0), 0) &&
-      !yoga::inexactEquals(fmod(nodeHeight * pointScaleFactor, 1.0), 1.0);
+      !YGDoubleEqual(fmod(nodeHeight * pointScaleFactor, 1.0), 0) &&
+      !YGDoubleEqual(fmod(nodeHeight * pointScaleFactor, 1.0), 1.0);
 
   node->setLayoutDimension(
       YGRoundValueToPixelGrid(
@@ -4207,15 +4199,15 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
   const auto& maxDimensions = node->getStyle().maxDimensions();
   if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, ownerWidth)) {
     width =
-        (yoga::resolveValue(
+        (YGResolveValue(
              node->getResolvedDimension(dim[YGFlexDirectionRow]), ownerWidth) +
          node->getMarginForAxis(YGFlexDirectionRow, ownerWidth))
             .unwrap();
     widthMeasureMode = YGMeasureModeExactly;
-  } else if (!yoga::resolveValue(maxDimensions[YGDimensionWidth], ownerWidth)
+  } else if (!YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth)
                   .isUndefined()) {
-    width = yoga::resolveValue(maxDimensions[YGDimensionWidth], ownerWidth)
-                .unwrap();
+    width =
+        YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap();
     widthMeasureMode = YGMeasureModeAtMost;
   } else {
     width = ownerWidth;
@@ -4226,16 +4218,16 @@ YOGA_EXPORT void YGNodeCalculateLayoutWithContext(
   float height = YGUndefined;
   YGMeasureMode heightMeasureMode = YGMeasureModeUndefined;
   if (YGNodeIsStyleDimDefined(node, YGFlexDirectionColumn, ownerHeight)) {
-    height = (yoga::resolveValue(
+    height = (YGResolveValue(
                   node->getResolvedDimension(dim[YGFlexDirectionColumn]),
                   ownerHeight) +
               node->getMarginForAxis(YGFlexDirectionColumn, ownerWidth))
                  .unwrap();
     heightMeasureMode = YGMeasureModeExactly;
-  } else if (!yoga::resolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
+  } else if (!YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
                   .isUndefined()) {
-    height = yoga::resolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
-                 .unwrap();
+    height =
+        YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight).unwrap();
     heightMeasureMode = YGMeasureModeAtMost;
   } else {
     height = ownerHeight;
@@ -4296,14 +4288,6 @@ YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
   }
 }
 
-static void fatalWithMessage(const char* message) {
-#if defined(__cpp_exceptions)
-  throw std::logic_error(message);
-#else
-  std::terminate();
-#endif
-}
-
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
     yoga::log(
@@ -4312,7 +4296,7 @@ void YGAssert(const bool condition, const char* message) {
         nullptr,
         "%s\n",
         message);
-    fatalWithMessage(message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4327,7 +4311,7 @@ void YGAssertWithNode(
         nullptr,
         "%s\n",
         message);
-    fatalWithMessage(message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 
@@ -4342,7 +4326,7 @@ void YGAssertWithConfig(
         nullptr,
         "%s\n",
         message);
-    fatalWithMessage(message);
+    throwLogicalErrorWithMessage(message);
   }
 }
 

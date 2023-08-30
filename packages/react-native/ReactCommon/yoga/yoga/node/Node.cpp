@@ -5,13 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <yoga/node/Node.h>
 #include <algorithm>
 #include <iostream>
-
-#include <yoga/algorithm/FlexDirection.h>
-#include <yoga/algorithm/ResolveValue.h>
-#include <yoga/node/Node.h>
-#include <yoga/numeric/Comparison.h>
+#include <yoga/Utils.h>
 
 namespace facebook::yoga {
 
@@ -113,7 +110,7 @@ CompactValue Node::computeColumnGap(
 YGFloatOptional Node::getLeadingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
-  auto leadingPosition = isRow(axis)
+  auto leadingPosition = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
@@ -121,13 +118,13 @@ YGFloatOptional Node::getLeadingPosition(
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.position(), leading[axis], CompactValue::ofZero());
-  return yoga::resolveValue(leadingPosition, axisSize);
+  return YGResolveValue(leadingPosition, axisSize);
 }
 
 YGFloatOptional Node::getTrailingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
-  auto trailingPosition = isRow(axis)
+  auto trailingPosition = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
@@ -135,11 +132,11 @@ YGFloatOptional Node::getTrailingPosition(
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.position(), trailing[axis], CompactValue::ofZero());
-  return yoga::resolveValue(trailingPosition, axisSize);
+  return YGResolveValue(trailingPosition, axisSize);
 }
 
 bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
-  auto leadingPosition = isRow(axis)
+  auto leadingPosition = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeStart,
@@ -151,7 +148,7 @@ bool Node::isLeadingPositionDefined(const YGFlexDirection axis) const {
 }
 
 bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
-  auto trailingPosition = isRow(axis)
+  auto trailingPosition = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.position(),
             YGEdgeEnd,
@@ -165,26 +162,23 @@ bool Node::isTrailingPosDefined(const YGFlexDirection axis) const {
 YGFloatOptional Node::getLeadingMargin(
     const YGFlexDirection axis,
     const float widthSize) const {
-  auto leadingMargin = isRow(axis)
+  auto leadingMargin = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.margin(), YGEdgeStart, leading[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.margin(), leading[axis], CompactValue::ofZero());
-  return leadingMargin.isAuto() ? YGFloatOptional{0}
-                                : yoga::resolveValue(leadingMargin, widthSize);
+  return YGResolveValueMargin(leadingMargin, widthSize);
 }
 
 YGFloatOptional Node::getTrailingMargin(
     const YGFlexDirection axis,
     const float widthSize) const {
-  auto trailingMargin = isRow(axis)
+  auto trailingMargin = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.margin(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.margin(), trailing[axis], CompactValue::ofZero());
-  return trailingMargin.isAuto()
-      ? YGFloatOptional{0}
-      : yoga::resolveValue(trailingMargin, widthSize);
+  return YGResolveValueMargin(trailingMargin, widthSize);
 }
 
 YGFloatOptional Node::getMarginForAxis(
@@ -196,10 +190,10 @@ YGFloatOptional Node::getMarginForAxis(
 YGFloatOptional Node::getGapForAxis(
     const YGFlexDirection axis,
     const float widthSize) const {
-  auto gap = isRow(axis)
+  auto gap = YGFlexDirectionIsRow(axis)
       ? computeColumnGap(style_.gap(), CompactValue::ofZero())
       : computeRowGap(style_.gap(), CompactValue::ofZero());
-  return yoga::resolveValue(gap, widthSize);
+  return YGResolveValue(gap, widthSize);
 }
 
 YGSize Node::measure(
@@ -376,9 +370,9 @@ void Node::setPosition(
   const YGDirection directionRespectingRoot =
       owner_ != nullptr ? direction : YGDirectionLTR;
   const YGFlexDirection mainAxis =
-      yoga::resolveDirection(style_.flexDirection(), directionRespectingRoot);
+      YGResolveFlexDirection(style_.flexDirection(), directionRespectingRoot);
   const YGFlexDirection crossAxis =
-      yoga::resolveCrossDirection(mainAxis, directionRespectingRoot);
+      YGFlexDirectionCross(mainAxis, directionRespectingRoot);
 
   // Here we should check for `YGPositionTypeStatic` and in this case zero inset
   // properties (left, right, top, bottom, begin, end).
@@ -405,7 +399,8 @@ void Node::setPosition(
 }
 
 YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeStart].isUndefined()) {
+  if (YGFlexDirectionIsRow(axis) &&
+      !style_.margin()[YGEdgeStart].isUndefined()) {
     return style_.margin()[YGEdgeStart];
   } else {
     return style_.margin()[leading[axis]];
@@ -413,7 +408,7 @@ YGValue Node::marginLeadingValue(const YGFlexDirection axis) const {
 }
 
 YGValue Node::marginTrailingValue(const YGFlexDirection axis) const {
-  if (isRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
+  if (YGFlexDirectionIsRow(axis) && !style_.margin()[YGEdgeEnd].isUndefined()) {
     return style_.margin()[YGEdgeEnd];
   } else {
     return style_.margin()[trailing[axis]];
@@ -436,8 +431,7 @@ void Node::resolveDimension() {
   const Style& style = getStyle();
   for (auto dim : {YGDimensionWidth, YGDimensionHeight}) {
     if (!style.maxDimensions()[dim].isUndefined() &&
-        yoga::inexactEquals(
-            style.maxDimensions()[dim], style.minDimensions()[dim])) {
+        YGValueEqual(style.maxDimensions()[dim], style.minDimensions()[dim])) {
       resolvedDimensions_[dim] = style.maxDimensions()[dim];
     } else {
       resolvedDimensions_[dim] = style.dimensions()[dim];
@@ -517,7 +511,7 @@ bool Node::isNodeFlexible() {
 }
 
 float Node::getLeadingBorder(const YGFlexDirection axis) const {
-  YGValue leadingBorder = isRow(axis)
+  YGValue leadingBorder = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.border(), YGEdgeStart, leading[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
@@ -526,7 +520,7 @@ float Node::getLeadingBorder(const YGFlexDirection axis) const {
 }
 
 float Node::getTrailingBorder(const YGFlexDirection axis) const {
-  YGValue trailingBorder = isRow(axis)
+  YGValue trailingBorder = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.border(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
@@ -537,7 +531,7 @@ float Node::getTrailingBorder(const YGFlexDirection axis) const {
 YGFloatOptional Node::getLeadingPadding(
     const YGFlexDirection axis,
     const float widthSize) const {
-  auto leadingPadding = isRow(axis)
+  auto leadingPadding = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.padding(),
             YGEdgeStart,
@@ -545,20 +539,20 @@ YGFloatOptional Node::getLeadingPadding(
             CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.padding(), leading[axis], CompactValue::ofZero());
-  return yoga::maxOrDefined(
-      yoga::resolveValue(leadingPadding, widthSize), YGFloatOptional(0.0f));
+  return YGFloatOptionalMax(
+      YGResolveValue(leadingPadding, widthSize), YGFloatOptional(0.0f));
 }
 
 YGFloatOptional Node::getTrailingPadding(
     const YGFlexDirection axis,
     const float widthSize) const {
-  auto trailingPadding = isRow(axis)
+  auto trailingPadding = YGFlexDirectionIsRow(axis)
       ? computeEdgeValueForRow(
             style_.padding(), YGEdgeEnd, trailing[axis], CompactValue::ofZero())
       : computeEdgeValueForColumn(
             style_.padding(), trailing[axis], CompactValue::ofZero());
-  return yoga::maxOrDefined(
-      yoga::resolveValue(trailingPadding, widthSize), YGFloatOptional(0.0f));
+  return YGFloatOptionalMax(
+      YGResolveValue(trailingPadding, widthSize), YGFloatOptional(0.0f));
 }
 
 YGFloatOptional Node::getLeadingPaddingAndBorder(

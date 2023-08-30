@@ -6,7 +6,7 @@
  */
 
 #include <yoga/style/Style.h>
-#include <yoga/numeric/Comparison.h>
+#include <yoga/Utils.h>
 
 namespace facebook::yoga {
 
@@ -21,7 +21,7 @@ bool operator==(const Style& lhs, const Style& rhs) {
       lhs.positionType() == rhs.positionType() &&
       lhs.flexWrap() == rhs.flexWrap() && lhs.overflow() == rhs.overflow() &&
       lhs.display() == rhs.display() &&
-      yoga::inexactEquals(lhs.flexBasis(), rhs.flexBasis()) &&
+      YGValueEqual(lhs.flexBasis(), rhs.flexBasis()) &&
       lhs.margin() == rhs.margin() && lhs.position() == rhs.position() &&
       lhs.padding() == rhs.padding() && lhs.border() == rhs.border() &&
       lhs.gap() == rhs.gap() && lhs.dimensions() == rhs.dimensions() &&

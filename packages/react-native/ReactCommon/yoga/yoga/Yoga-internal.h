@@ -41,6 +41,8 @@ inline bool isUndefined(double value) {
   return std::isnan(value);
 }
 
+void throwLogicalErrorWithMessage(const char* message);
+
 } // namespace facebook::yoga
 
 extern const std::array<YGEdge, 4> trailing;
@@ -147,3 +149,5 @@ public:
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;
 static const float kWebDefaultFlexShrink = 1.0f;
+
+extern bool YGFloatsEqual(const float a, const float b);
