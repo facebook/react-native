@@ -11,7 +11,8 @@
 #include "Utils.h"
 
 using namespace facebook;
-using facebook::yoga::detail::CompactValue;
+using namespace facebook::yoga;
+using facebook::yoga::CompactValue;
 
 YGNode::YGNode(const YGConfigRef config) : config_{config} {
   YGAssert(
@@ -53,7 +54,7 @@ void YGNode::print(void* printContext) {
 }
 
 CompactValue YGNode::computeEdgeValueForRow(
-    const YGStyle::Edges& edges,
+    const Style::Edges& edges,
     YGEdge rowEdge,
     YGEdge edge,
     CompactValue defaultValue) {
@@ -71,7 +72,7 @@ CompactValue YGNode::computeEdgeValueForRow(
 }
 
 CompactValue YGNode::computeEdgeValueForColumn(
-    const YGStyle::Edges& edges,
+    const Style::Edges& edges,
     YGEdge edge,
     CompactValue defaultValue) {
   if (!edges[edge].isUndefined()) {
@@ -86,7 +87,7 @@ CompactValue YGNode::computeEdgeValueForColumn(
 }
 
 CompactValue YGNode::computeRowGap(
-    const YGStyle::Gutters& gutters,
+    const Style::Gutters& gutters,
     CompactValue defaultValue) {
   if (!gutters[YGGutterRow].isUndefined()) {
     return gutters[YGGutterRow];
@@ -98,7 +99,7 @@ CompactValue YGNode::computeRowGap(
 }
 
 CompactValue YGNode::computeColumnGap(
-    const YGStyle::Gutters& gutters,
+    const Style::Gutters& gutters,
     CompactValue defaultValue) {
   if (!gutters[YGGutterColumn].isUndefined()) {
     return gutters[YGGutterColumn];
@@ -431,7 +432,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
 
 void YGNode::resolveDimension() {
   using namespace yoga;
-  const YGStyle& style = getStyle();
+  const Style& style = getStyle();
   for (auto dim : {YGDimensionWidth, YGDimensionHeight}) {
     if (!style.maxDimensions()[dim].isUndefined() &&
         YGValueEqual(style.maxDimensions()[dim], style.minDimensions()[dim])) {
