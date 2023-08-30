@@ -473,7 +473,7 @@ void YogaLayoutableShadowNode::configureYogaTree(
     const auto &child = *yogaLayoutableChildren_[i];
     auto childLayoutMetrics = child.getLayoutMetrics();
     auto childErrata =
-        YGConfigGetErrata(const_cast<YGConfigRef>(&child.yogaConfig_));
+        YGConfigGetErrata(const_cast<yoga::Config *>(&child.yogaConfig_));
 
     if (child.yogaTreeHasBeenConfigured_ &&
         childLayoutMetrics.pointScaleFactor == pointScaleFactor &&
@@ -834,8 +834,8 @@ YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
       *static_cast<ShadowNode *>(yogaNode->getContext()));
 }
 
-YGConfig &YogaLayoutableShadowNode::initializeYogaConfig(
-    YGConfig &config,
+yoga::Config &YogaLayoutableShadowNode::initializeYogaConfig(
+    yoga::Config &config,
     const YGConfigRef previousConfig) {
   YGConfigSetCloneNodeFunc(
       &config, YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
