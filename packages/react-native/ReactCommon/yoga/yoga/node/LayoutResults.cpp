@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "YGLayout.h"
-#include "Utils.h"
+#include <yoga/node/LayoutResults.h>
+#include <yoga/Utils.h>
 
-using namespace facebook;
+namespace facebook::yoga {
 
-bool YGLayout::operator==(YGLayout layout) const {
+bool LayoutResults::operator==(LayoutResults layout) const {
   bool isEqual = YGFloatArrayEqual(position, layout.position) &&
       YGFloatArrayEqual(dimensions, layout.dimensions) &&
       YGFloatArrayEqual(margin, layout.margin) &&
@@ -40,3 +40,5 @@ bool YGLayout::operator==(YGLayout layout) const {
 
   return isEqual;
 }
+
+} // namespace facebook::yoga
