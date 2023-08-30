@@ -83,7 +83,7 @@ jobs:
         displayName: Actual NPM Publish
         inputs:
           script: |
-            npm publish --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+            npm publish packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
 
       # Set the git tag and push the version update back to Github
 
