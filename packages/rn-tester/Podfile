@@ -3,6 +3,22 @@ require_relative '../react-native/scripts/react_native_pods'
 source 'https://cdn.cocoapods.org/'
 platform :ios, min_ios_version_supported
 
+cmake_path = `command -v cmake`
+
+if cmake_path == ""
+  brew_path = `command -v brew`
+  if brew_path != ""
+    Pod::UI.puts "Installing CMake using brew. This is required to build RNTester.".red
+    `brew install cmake`
+  else
+    Pod::UI.puts "In order to build RNTester locally, you need cmake installed, please install it and try again".red
+    return
+  end
+else
+  Pod::UI.puts "Cmake found at: #{cmake_path}".green
+end
+
+
 prepare_react_native_project!
 
 IN_CI = ENV['CI'] == 'true'
