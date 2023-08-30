@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Manually bump virtualized-lists to 0.72.0",
-  "packageName": "@react-native-mac/virtualized-lists",
-  "email": "adgleitm@microsoft.com",
-  "dependentChangeType": "patch"
-}
