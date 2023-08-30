@@ -406,7 +406,7 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    YGStyle::ValueRepr &result) {
+    yoga::Style::ValueRepr &result) {
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
@@ -440,7 +440,7 @@ inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
     YGValue &result) {
-  YGStyle::ValueRepr ygValue{};
+  yoga::Style::ValueRepr ygValue{};
   fromRawValue(context, value, ygValue);
   result = ygValue;
 }
@@ -826,11 +826,11 @@ inline std::string toString(const YGFloatOptional &value) {
   return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
-inline std::string toString(const YGStyle::Dimensions &value) {
+inline std::string toString(const yoga::Style::Dimensions &value) {
   return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
 }
 
-inline std::string toString(const YGStyle::Edges &value) {
+inline std::string toString(const yoga::Style::Edges &value) {
   static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
       {"left",
        "top",

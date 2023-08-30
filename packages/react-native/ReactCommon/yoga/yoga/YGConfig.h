@@ -9,8 +9,8 @@
 
 #include <yoga/Yoga.h>
 
-#include "BitUtils.h"
-#include "Yoga-internal.h"
+#include <yoga/BitUtils.h>
+#include <yoga/Yoga-internal.h>
 
 namespace facebook::yoga {
 
