@@ -142,7 +142,7 @@ MapBuffer convertBorderRadii(CascadedBorderRadii const &radii) {
   return builder.build();
 }
 
-MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
+MapBuffer convertBorderWidths(yoga::Style::Edges const &border) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
       builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));

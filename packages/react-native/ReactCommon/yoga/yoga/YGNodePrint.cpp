@@ -13,7 +13,7 @@
 
 #include "YGNodePrint.h"
 #include "YGNode.h"
-#include "Yoga-internal.h"
+#include <yoga/Yoga-internal.h>
 #include "Utils.h"
 
 namespace facebook::yoga {
@@ -25,7 +25,7 @@ static void indent(string& base, uint32_t level) {
   }
 }
 
-static bool areFourValuesEqual(const YGStyle::Edges& four) {
+static bool areFourValuesEqual(const Style::Edges& four) {
   return YGValueEqual(four[0], four[1]) && YGValueEqual(four[0], four[2]) &&
       YGValueEqual(four[0], four[3]);
 }
@@ -90,10 +90,10 @@ static void appendNumberIfNotZero(
 static void appendEdges(
     string& base,
     const string& key,
-    const YGStyle::Edges& edges) {
+    const Style::Edges& edges) {
   if (areFourValuesEqual(edges)) {
     auto edgeValue = YGNode::computeEdgeValueForColumn(
-        edges, YGEdgeLeft, detail::CompactValue::ofZero());
+        edges, YGEdgeLeft, CompactValue::ofZero());
     appendNumberIfNotZero(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
@@ -106,14 +106,14 @@ static void appendEdges(
 static void appendEdgeIfNotUndefined(
     string& base,
     const string& str,
-    const YGStyle::Edges& edges,
+    const Style::Edges& edges,
     const YGEdge edge) {
   // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
   auto value = (edge == YGEdgeLeft || edge == YGEdgeRight)
       ? YGNode::computeEdgeValueForRow(
-            edges, edge, edge, detail::CompactValue::ofUndefined())
+            edges, edge, edge, CompactValue::ofUndefined())
       : YGNode::computeEdgeValueForColumn(
-            edges, edge, detail::CompactValue::ofUndefined());
+            edges, edge, CompactValue::ofUndefined());
   appendNumberIfNotUndefined(base, str, value);
 }
 
@@ -188,17 +188,15 @@ void YGNodeToString(
     appendEdges(str, "padding", style.padding());
     appendEdges(str, "border", style.border());
 
-    if (YGNode::computeColumnGap(
-            style.gap(), detail::CompactValue::ofUndefined()) !=
+    if (YGNode::computeColumnGap(style.gap(), CompactValue::ofUndefined()) !=
         YGNode::computeColumnGap(
-            YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+            YGNode().getStyle().gap(), CompactValue::ofUndefined())) {
       appendNumberIfNotUndefined(
           str, "column-gap", style.gap()[YGGutterColumn]);
     }
-    if (YGNode::computeRowGap(
-            style.gap(), detail::CompactValue::ofUndefined()) !=
+    if (YGNode::computeRowGap(style.gap(), CompactValue::ofUndefined()) !=
         YGNode::computeRowGap(
-            YGNode().getStyle().gap(), detail::CompactValue::ofUndefined())) {
+            YGNode().getStyle().gap(), CompactValue::ofUndefined())) {
       appendNumberIfNotUndefined(str, "row-gap", style.gap()[YGGutterRow]);
     }
 
