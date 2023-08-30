@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "BitUtils.h"
-#include "YGFloatOptional.h"
-#include "Yoga-internal.h"
+#include <yoga/BitUtils.h>
+#include <yoga/YGFloatOptional.h>
+#include <yoga/Yoga-internal.h>
 
 struct YGLayout {
   std::array<float, 4> position = {};
