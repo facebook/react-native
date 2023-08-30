@@ -14,7 +14,7 @@ using namespace facebook;
 using namespace facebook::yoga;
 using facebook::yoga::CompactValue;
 
-YGNode::YGNode(const YGConfigRef config) : config_{config} {
+YGNode::YGNode(yoga::Config* config) : config_{config} {
   YGAssert(
       config != nullptr, "Attempting to construct YGNode with null config");
 
@@ -264,7 +264,7 @@ void YGNode::insertChild(YGNodeRef child, uint32_t index) {
   children_.insert(children_.begin() + index, child);
 }
 
-void YGNode::setConfig(YGConfigRef config) {
+void YGNode::setConfig(yoga::Config* config) {
   YGAssert(config != nullptr, "Attempting to set a null config on a YGNode");
   YGAssertWithConfig(
       config,
