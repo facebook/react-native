@@ -12,12 +12,13 @@
 #include <string>
 
 #include <yoga/Yoga.h>
+#include <yoga/node/Node.h>
 
 namespace facebook::yoga {
 
 void YGNodeToString(
     std::string& str,
-    YGNodeRef node,
+    yoga::Node* node,
     YGPrintOptions options,
     uint32_t level);
 
