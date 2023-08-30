@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
                                "GCC_WARN_PEDANTIC" => "YES" }
   if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = File.absolute_path('./')
+    s.header_mappings_dir     = './'
   end
 
 

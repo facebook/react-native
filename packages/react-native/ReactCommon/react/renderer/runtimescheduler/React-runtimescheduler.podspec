@@ -47,7 +47,7 @@ Pod::Spec.new do |s|
 
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_runtimescheduler"
-    s.header_mappings_dir  = File.absolute_path("../../..")
+    s.header_mappings_dir  = "../../.."
   end
 
   s.dependency "React-jsi"
