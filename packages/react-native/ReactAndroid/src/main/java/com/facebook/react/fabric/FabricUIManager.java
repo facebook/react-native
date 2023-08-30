@@ -764,7 +764,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       long layoutStartTime,
       long layoutEndTime,
       long finishTransactionStartTime,
-      long finishTransactionEndTime) {
+      long finishTransactionEndTime,
+      int affectedLayoutNodesCount) {
     // When Binding.cpp calls scheduleMountItems during a commit phase, it always calls with
     // a BatchMountItem. No other sites call into this with a BatchMountItem, and Binding.cpp only
     // calls scheduleMountItems with a BatchMountItem.
@@ -837,7 +838,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReactMarker.logFabricMarker(
           ReactMarkerConstants.FABRIC_LAYOUT_START, null, commitNumber, layoutStartTime);
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_LAYOUT_END, null, commitNumber, layoutEndTime);
+          ReactMarkerConstants.FABRIC_LAYOUT_END,
+          null,
+          commitNumber,
+          layoutEndTime,
+          affectedLayoutNodesCount);
       ReactMarker.logFabricMarker(ReactMarkerConstants.FABRIC_COMMIT_END, null, commitNumber);
     }
   }

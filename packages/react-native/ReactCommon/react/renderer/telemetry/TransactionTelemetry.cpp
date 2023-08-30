@@ -84,6 +84,11 @@ void TransactionTelemetry::didLayout() {
   layoutEndTime_ = now_();
 }
 
+void TransactionTelemetry::didLayout(int affectedLayoutNodesCount) {
+  didLayout();
+  affectedLayoutNodesCount_ = affectedLayoutNodesCount;
+}
+
 void TransactionTelemetry::willMount() {
   react_native_assert(mountStartTime_ == kTelemetryUndefinedTimePoint);
   react_native_assert(mountEndTime_ == kTelemetryUndefinedTimePoint);
@@ -158,6 +163,10 @@ int TransactionTelemetry::getNumberOfTextMeasurements() const {
 
 int TransactionTelemetry::getRevisionNumber() const {
   return revisionNumber_;
+}
+
+int TransactionTelemetry::getAffectedLayoutNodesCount() const {
+  return affectedLayoutNodesCount_;
 }
 
 } // namespace facebook::react

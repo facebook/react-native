@@ -369,7 +369,7 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.setAsThreadLocal();
   newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.unsetAsThreadLocal();
-  telemetry.didLayout();
+  telemetry.didLayout(affectedLayoutableNodes.size());
 
   // Seal the shadow node so it can no longer be mutated
   newRootShadowNode->sealRecursive();
