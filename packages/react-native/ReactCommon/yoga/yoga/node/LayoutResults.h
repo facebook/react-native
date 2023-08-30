@@ -8,7 +8,7 @@
 #pragma once
 
 #include <yoga/BitUtils.h>
-#include <yoga/YGFloatOptional.h>
+#include <yoga/numeric/FloatOptional.h>
 #include <yoga/Yoga-internal.h>
 
 namespace facebook::yoga {
@@ -28,7 +28,7 @@ private:
 
 public:
   uint32_t computedFlexBasisGeneration = 0;
-  YGFloatOptional computedFlexBasis = {};
+  FloatOptional computedFlexBasis = {};
 
   // Instead of recomputing the entire layout every single time, we cache some
   // information to break early when nothing changed
