@@ -10,15 +10,20 @@
 #include <cstdint>
 #include <stdio.h>
 #include <yoga/config/Config.h>
-#include "YGLayout.h"
+#include <yoga/node/LayoutResults.h>
 #include <yoga/Yoga-internal.h>
 
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
 
+// Tag struct used to form the opaque YGNodeRef for the public C API
+struct YGNode {};
+
+namespace facebook::yoga {
+
 #pragma pack(push)
 #pragma pack(1)
-struct YGNodeFlags {
+struct NodeFlags {
   bool hasNewLayout : 1;
   bool isReferenceBaseline : 1;
   bool isDirty : 1;
@@ -29,7 +34,8 @@ struct YGNodeFlags {
 };
 #pragma pack(pop)
 
-struct YOGA_EXPORT YGNode {
+class YOGA_EXPORT Node : public ::YGNode {
+public:
   using MeasureWithContextFn =
       YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
   using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
@@ -37,7 +43,7 @@ struct YOGA_EXPORT YGNode {
 
 private:
   void* context_ = nullptr;
-  YGNodeFlags flags_ = {};
+  NodeFlags flags_ = {};
   union {
     YGMeasureFunc noContext;
     MeasureWithContextFn withContext;
@@ -51,12 +57,12 @@ private:
     PrintWithContextFn withContext;
   } print_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
-  facebook::yoga::Style style_ = {};
-  YGLayout layout_ = {};
+  Style style_ = {};
+  LayoutResults layout_ = {};
   uint32_t lineIndex_ = 0;
-  YGNodeRef owner_ = nullptr;
-  YGVector children_ = {};
-  facebook::yoga::Config* config_;
+  Node* owner_ = nullptr;
+  std::vector<Node*> children_ = {};
+  Config* config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -77,27 +83,24 @@ private:
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
   // use this after checking that there are no children.
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
-  YGNode& operator=(YGNode&&) = default;
-
-  using CompactValue = facebook::yoga::CompactValue;
+  Node& operator=(Node&&) = default;
 
 public:
-  YGNode()
-      : YGNode{static_cast<facebook::yoga::Config*>(YGConfigGetDefault())} {
+  Node() : Node{static_cast<Config*>(YGConfigGetDefault())} {
     flags_.hasNewLayout = true;
   }
-  explicit YGNode(facebook::yoga::Config* config);
-  ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
+  explicit Node(Config* config);
+  ~Node() = default; // cleanup of owner/children relationships in YGNodeFree
 
-  YGNode(YGNode&&);
+  Node(Node&&);
 
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
-  YGNode(const YGNode& node) = default;
+  Node(const Node& node) = default;
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
-  YGNode& operator=(const YGNode&) = delete;
+  Node& operator=(const Node&) = delete;
 
   // Getters
   void* getContext() const { return context_; }
@@ -125,38 +128,39 @@ public:
   YGDirtiedFunc getDirtied() const { return dirtied_; }
 
   // For Performance reasons passing as reference.
-  facebook::yoga::Style& getStyle() { return style_; }
+  Style& getStyle() { return style_; }
 
-  const facebook::yoga::Style& getStyle() const { return style_; }
+  const Style& getStyle() const { return style_; }
 
   // For Performance reasons passing as reference.
-  YGLayout& getLayout() { return layout_; }
+  LayoutResults& getLayout() { return layout_; }
 
-  const YGLayout& getLayout() const { return layout_; }
+  const LayoutResults& getLayout() const { return layout_; }
 
   uint32_t getLineIndex() const { return lineIndex_; }
 
   bool isReferenceBaseline() { return flags_.isReferenceBaseline; }
 
-  // returns the YGNodeRef that owns this YGNode. An owner is used to identify
-  // the YogaTree that a YGNode belongs to. This method will return the parent
-  // of the YGNode when a YGNode only belongs to one YogaTree or nullptr when
-  // the YGNode is shared between two or more YogaTrees.
-  YGNodeRef getOwner() const { return owner_; }
+  // returns the Node that owns this Node. An owner is used to identify
+  // the YogaTree that a Node belongs to. This method will return the parent
+  // of the Node when a Node only belongs to one YogaTree or nullptr when
+  // the Node is shared between two or more YogaTrees.
+  Node* getOwner() const { return owner_; }
 
   // Deprecated, use getOwner() instead.
-  YGNodeRef getParent() const { return getOwner(); }
+  Node* getParent() const { return getOwner(); }
 
-  const YGVector& getChildren() const { return children_; }
+  const std::vector<Node*>& getChildren() const { return children_; }
 
   // Applies a callback to all children, after cloning them if they are not
   // owned.
   template <typename T>
   void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
     int i = 0;
-    for (YGNodeRef& child : children_) {
+    for (Node*& child : children_) {
       if (child->getOwner() != this) {
-        child = config_->cloneNode(child, this, i, cloneContext);
+        child = static_cast<Node*>(
+            config_->cloneNode(child, this, i, cloneContext));
         child->setOwner(this);
       }
       i += 1;
@@ -165,9 +169,9 @@ public:
     }
   }
 
-  YGNodeRef getChild(uint32_t index) const { return children_.at(index); }
+  Node* getChild(uint32_t index) const { return children_.at(index); }
 
-  facebook::yoga::Config* getConfig() const { return config_; }
+  Config* getConfig() const { return config_; }
 
   bool isDirty() const { return flags_.isDirty; }
 
@@ -180,22 +184,22 @@ public:
   }
 
   static CompactValue computeEdgeValueForColumn(
-      const facebook::yoga::Style::Edges& edges,
+      const Style::Edges& edges,
       YGEdge edge,
       CompactValue defaultValue);
 
   static CompactValue computeEdgeValueForRow(
-      const facebook::yoga::Style::Edges& edges,
+      const Style::Edges& edges,
       YGEdge rowEdge,
       YGEdge edge,
       CompactValue defaultValue);
 
   static CompactValue computeRowGap(
-      const facebook::yoga::Style::Gutters& gutters,
+      const Style::Gutters& gutters,
       CompactValue defaultValue);
 
   static CompactValue computeColumnGap(
-      const facebook::yoga::Style::Gutters& gutters,
+      const Style::Gutters& gutters,
       CompactValue defaultValue);
 
   // Methods related to positions, margin, padding and border
@@ -275,9 +279,9 @@ public:
 
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
 
-  void setStyle(const facebook::yoga::Style& style) { style_ = style; }
+  void setStyle(const Style& style) { style_ = style; }
 
-  void setLayout(const YGLayout& layout) { layout_ = layout; }
+  void setLayout(const LayoutResults& layout) { layout_ = layout; }
 
   void setLineIndex(uint32_t lineIndex) { lineIndex_ = lineIndex; }
 
@@ -285,13 +289,13 @@ public:
     flags_.isReferenceBaseline = isReferenceBaseline;
   }
 
-  void setOwner(YGNodeRef owner) { owner_ = owner; }
+  void setOwner(Node* owner) { owner_ = owner; }
 
-  void setChildren(const YGVector& children) { children_ = children; }
+  void setChildren(const std::vector<Node*>& children) { children_ = children; }
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(facebook::yoga::Config* config);
+  void setConfig(Config* config);
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
@@ -321,11 +325,11 @@ public:
   YGDirection resolveDirection(const YGDirection ownerDirection);
   void clearChildren();
   /// Replaces the occurrences of oldChild with newChild
-  void replaceChild(YGNodeRef oldChild, YGNodeRef newChild);
-  void replaceChild(YGNodeRef child, uint32_t index);
-  void insertChild(YGNodeRef child, uint32_t index);
+  void replaceChild(Node* oldChild, Node* newChild);
+  void replaceChild(Node* child, uint32_t index);
+  void insertChild(Node* child, uint32_t index);
   /// Removes the first occurrence of child
-  bool removeChild(YGNodeRef child);
+  bool removeChild(Node* child);
   void removeChild(uint32_t index);
 
   void cloneChildrenIfNeeded(void*);
@@ -335,3 +339,5 @@ public:
   bool isNodeFlexible();
   void reset();
 };
+
+} // namespace facebook::yoga
