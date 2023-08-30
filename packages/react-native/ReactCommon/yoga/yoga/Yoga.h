@@ -343,6 +343,7 @@ void YGConfigSetUseLegacyStretchBehaviour(
 // YGConfig
 WIN_EXPORT YGConfigRef YGConfigNew(void);
 WIN_EXPORT void YGConfigFree(YGConfigRef config);
+WIN_EXPORT void YGConfigCopy(YGConfigRef dest, YGConfigRef src);
 WIN_EXPORT int32_t YGConfigGetInstanceCount(void);
 
 WIN_EXPORT void YGConfigSetExperimentalFeatureEnabled(

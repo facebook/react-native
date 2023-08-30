@@ -93,7 +93,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   /*
    * Yoga config associated (only) with this particular node.
    */
-  yoga::Config yogaConfig_;
+  YGConfig yogaConfig_;
 
   /*
    * All Yoga functions only accept non-const arguments, so we have to mark
@@ -153,8 +153,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   YogaLayoutableShadowNode &cloneChildInPlace(int32_t layoutableChildIndex);
 
-  static yoga::Config &initializeYogaConfig(
-      yoga::Config &config,
+  static YGConfig &initializeYogaConfig(
+      YGConfig &config,
       YGConfigRef previousConfig = nullptr);
   static YGNode *yogaNodeCloneCallbackConnector(
       YGNode *oldYogaNode,

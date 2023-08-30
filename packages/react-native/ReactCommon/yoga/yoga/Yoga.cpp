@@ -20,7 +20,6 @@
 #include <yoga/Yoga-internal.h>
 #include "event/event.h"
 
-using namespace facebook;
 using namespace facebook::yoga;
 using detail::Log;
 
@@ -120,7 +119,7 @@ YOGA_EXPORT YGConfigRef YGNodeGetConfig(YGNodeRef node) {
 }
 
 YOGA_EXPORT void YGNodeSetConfig(YGNodeRef node, YGConfigRef config) {
-  node->setConfig(static_cast<yoga::Config*>(config));
+  node->setConfig(config);
 }
 
 YOGA_EXPORT bool YGNodeHasMeasureFunc(YGNodeRef node) {
@@ -162,7 +161,7 @@ YOGA_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node) {
 }
 
 YOGA_EXPORT void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled) {
-  static_cast<yoga::Config*>(config)->setShouldPrintTree(enabled);
+  config->setShouldPrintTree(enabled);
 }
 
 YOGA_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout) {
@@ -189,7 +188,7 @@ YOGA_EXPORT void YGNodeMarkDirtyAndPropagateToDescendants(
 int32_t gConfigInstanceCount = 0;
 
 YOGA_EXPORT WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
-  const YGNodeRef node = new YGNode{static_cast<yoga::Config*>(config)};
+  const YGNodeRef node = new YGNode{config};
   YGAssert(config != nullptr, "Tried to construct YGNode with null config");
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
@@ -273,17 +272,21 @@ YOGA_EXPORT int32_t YGConfigGetInstanceCount(void) {
 
 YOGA_EXPORT YGConfigRef YGConfigNew(void) {
 #ifdef ANDROID
-  const YGConfigRef config = new yoga::Config(YGAndroidLog);
+  const YGConfigRef config = new YGConfig(YGAndroidLog);
 #else
-  const YGConfigRef config = new yoga::Config(YGDefaultLog);
+  const YGConfigRef config = new YGConfig(YGDefaultLog);
 #endif
   gConfigInstanceCount++;
   return config;
 }
 
 YOGA_EXPORT void YGConfigFree(const YGConfigRef config) {
-  delete static_cast<yoga::Config*>(config);
+  delete config;
   gConfigInstanceCount--;
+}
+
+void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
+  memcpy(dest, src, sizeof(YGConfig));
 }
 
 YOGA_EXPORT void YGNodeSetIsReferenceBaseline(
@@ -3712,22 +3715,22 @@ YOGA_EXPORT bool YGNodeCanUseCachedMeasurement(
     return false;
   }
   bool useRoundedComparison =
-      config != nullptr && YGConfigGetPointScaleFactor(config) != 0;
+      config != nullptr && config->getPointScaleFactor() != 0;
   const float effectiveWidth = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            width, YGConfigGetPointScaleFactor(config), false, false)
+            width, config->getPointScaleFactor(), false, false)
       : width;
   const float effectiveHeight = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            height, YGConfigGetPointScaleFactor(config), false, false)
+            height, config->getPointScaleFactor(), false, false)
       : height;
   const float effectiveLastWidth = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            lastWidth, YGConfigGetPointScaleFactor(config), false, false)
+            lastWidth, config->getPointScaleFactor(), false, false)
       : lastWidth;
   const float effectiveLastHeight = useRoundedComparison
       ? YGRoundValueToPixelGrid(
-            lastHeight, YGConfigGetPointScaleFactor(config), false, false)
+            lastHeight, config->getPointScaleFactor(), false, false)
       : lastHeight;
 
   const bool hasSameWidthSpec = lastWidthMode == widthMode &&
@@ -4054,14 +4057,14 @@ YOGA_EXPORT void YGConfigSetPointScaleFactor(
   // We store points for Pixel as we will use it for rounding
   if (pixelsInPoint == 0.0f) {
     // Zero is used to skip rounding
-    static_cast<yoga::Config*>(config)->setPointScaleFactor(0.0f);
+    config->setPointScaleFactor(0.0f);
   } else {
-    static_cast<yoga::Config*>(config)->setPointScaleFactor(pixelsInPoint);
+    config->setPointScaleFactor(pixelsInPoint);
   }
 }
 
 YOGA_EXPORT float YGConfigGetPointScaleFactor(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getPointScaleFactor();
+  return config->getPointScaleFactor();
 }
 
 static void YGRoundToPixelGrid(
@@ -4236,12 +4239,12 @@ YOGA_EXPORT void YGNodeCalculateLayout(
 
 YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
   if (logger != nullptr) {
-    static_cast<yoga::Config*>(config)->setLogger(logger);
+    config->setLogger(logger);
   } else {
 #ifdef ANDROID
-    static_cast<yoga::Config*>(config)->setLogger(&YGAndroidLog);
+    config->setLogger(&YGAndroidLog);
 #else
-    static_cast<yoga::Config*>(config)->setLogger(&YGDefaultLog);
+    config->setLogger(&YGDefaultLog);
 #endif
   }
 }
@@ -4268,12 +4271,7 @@ void YGAssertWithConfig(
     const bool condition,
     const char* message) {
   if (!condition) {
-    Log::log(
-        static_cast<yoga::Config*>(config),
-        YGLogLevelFatal,
-        nullptr,
-        "%s\n",
-        message);
+    Log::log(config, YGLogLevelFatal, nullptr, "%s\n", message);
     throwLogicalErrorWithMessage(message);
   }
 }
@@ -4282,61 +4280,58 @@ YOGA_EXPORT void YGConfigSetExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature,
     const bool enabled) {
-  static_cast<yoga::Config*>(config)->setExperimentalFeatureEnabled(
-      feature, enabled);
+  config->setExperimentalFeatureEnabled(feature, enabled);
 }
 
 YOGA_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature) {
-  return static_cast<yoga::Config*>(config)->isExperimentalFeatureEnabled(
-      feature);
+  return config->isExperimentalFeatureEnabled(feature);
 }
 
 YOGA_EXPORT void YGConfigSetUseWebDefaults(
     const YGConfigRef config,
     const bool enabled) {
-  static_cast<yoga::Config*>(config)->setUseWebDefaults(enabled);
+  config->setUseWebDefaults(enabled);
 }
 
 YOGA_EXPORT bool YGConfigGetUseLegacyStretchBehaviour(
     const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->hasErrata(
-      YGErrataStretchFlexBasis);
+  return config->hasErrata(YGErrataStretchFlexBasis);
 }
 
 YOGA_EXPORT void YGConfigSetUseLegacyStretchBehaviour(
     const YGConfigRef config,
     const bool useLegacyStretchBehaviour) {
   if (useLegacyStretchBehaviour) {
-    static_cast<yoga::Config*>(config)->addErrata(YGErrataStretchFlexBasis);
+    config->addErrata(YGErrataStretchFlexBasis);
   } else {
-    static_cast<yoga::Config*>(config)->removeErrata(YGErrataStretchFlexBasis);
+    config->removeErrata(YGErrataStretchFlexBasis);
   }
 }
 
 bool YGConfigGetUseWebDefaults(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->useWebDefaults();
+  return config->useWebDefaults();
 }
 
 YOGA_EXPORT void YGConfigSetContext(const YGConfigRef config, void* context) {
-  static_cast<yoga::Config*>(config)->setContext(context);
+  config->setContext(context);
 }
 
 YOGA_EXPORT void* YGConfigGetContext(const YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getContext();
+  return config->getContext();
 }
 
 YOGA_EXPORT void YGConfigSetErrata(YGConfigRef config, YGErrata errata) {
-  static_cast<yoga::Config*>(config)->setErrata(errata);
+  config->setErrata(errata);
 }
 
 YOGA_EXPORT YGErrata YGConfigGetErrata(YGConfigRef config) {
-  return static_cast<yoga::Config*>(config)->getErrata();
+  return config->getErrata();
 }
 
 YOGA_EXPORT void YGConfigSetCloneNodeFunc(
     const YGConfigRef config,
     const YGCloneNodeFunc callback) {
-  static_cast<yoga::Config*>(config)->setCloneNodeCallback(callback);
+  config->setCloneNodeCallback(callback);
 }

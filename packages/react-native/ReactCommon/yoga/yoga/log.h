@@ -8,7 +8,6 @@
 #pragma once
 
 #include <yoga/YGEnums.h>
-#include <yoga/config/Config.h>
 
 struct YGNode;
 struct YGConfig;
@@ -24,7 +23,7 @@ struct Log {
       ...) noexcept;
 
   static void log(
-      yoga::Config* config,
+      YGConfig* config,
       YGLogLevel level,
       void*,
       const char* format,
