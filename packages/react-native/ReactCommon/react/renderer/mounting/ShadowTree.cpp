@@ -364,12 +364,15 @@ CommitStatus ShadowTree::tryCommit(
   // Layout nodes.
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
+  int totalLayoutableNodesCount = 0;
 
   telemetry.willLayout();
   telemetry.setAsThreadLocal();
-  newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
+  newRootShadowNode->layoutIfNeeded(
+      &affectedLayoutableNodes, &totalLayoutableNodesCount);
   telemetry.unsetAsThreadLocal();
-  telemetry.didLayout(affectedLayoutableNodes.size());
+  telemetry.didLayout(
+      affectedLayoutableNodes.size(), totalLayoutableNodesCount);
 
   // Seal the shadow node so it can no longer be mutated
   newRootShadowNode->sealRecursive();

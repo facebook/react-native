@@ -15,7 +15,8 @@ namespace facebook::react {
 const char RootComponentName[] = "RootView";
 
 bool RootShadowNode::layoutIfNeeded(
-    std::vector<LayoutableShadowNode const *> *affectedNodes) {
+    std::vector<LayoutableShadowNode const *> *affectedNodes,
+    int *totalLayoutNodesCount) {
   SystraceSection s("RootShadowNode::layout");
 
   if (getIsLayoutClean()) {
@@ -26,6 +27,7 @@ bool RootShadowNode::layoutIfNeeded(
 
   auto layoutContext = getConcreteProps().layoutContext;
   layoutContext.affectedNodes = affectedNodes;
+  layoutContext.totalLayoutNodesCount = totalLayoutNodesCount;
 
   layoutTree(layoutContext, getConcreteProps().layoutConstraints);
 

@@ -302,6 +302,7 @@ Size LayoutableShadowNode::measure(
 
   auto localLayoutContext = layoutContext;
   localLayoutContext.affectedNodes = nullptr;
+  localLayoutContext.totalLayoutNodesCount = nullptr;
 
   layoutableShadowNode.layoutTree(localLayoutContext, layoutConstraints);
 

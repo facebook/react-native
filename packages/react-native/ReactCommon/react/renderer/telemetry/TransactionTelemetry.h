@@ -43,7 +43,7 @@ class TransactionTelemetry final {
   void willMeasureText();
   void didMeasureText();
   void didLayout();
-  void didLayout(int affectedLayoutNodesCount);
+  void didLayout(int affectedLayoutNodesCount, int totalLayoutNodesCount);
   void willMount();
   void didMount();
 
@@ -66,6 +66,7 @@ class TransactionTelemetry final {
   int getRevisionNumber() const;
 
   int getAffectedLayoutNodesCount() const;
+  int getTotalLayoutNodesCount() const;
 
  private:
   TelemetryTimePoint diffStartTime_{kTelemetryUndefinedTimePoint};
@@ -85,6 +86,7 @@ class TransactionTelemetry final {
   std::function<TelemetryTimePoint()> now_;
 
   int affectedLayoutNodesCount_{0};
+  int totalLayoutNodesCount_{0};
 };
 
 } // namespace facebook::react

@@ -84,9 +84,12 @@ void TransactionTelemetry::didLayout() {
   layoutEndTime_ = now_();
 }
 
-void TransactionTelemetry::didLayout(int affectedLayoutNodesCount) {
+void TransactionTelemetry::didLayout(
+    int affectedLayoutNodesCount,
+    int totalLayoutNodesCount) {
   didLayout();
   affectedLayoutNodesCount_ = affectedLayoutNodesCount;
+  totalLayoutNodesCount_ = totalLayoutNodesCount;
 }
 
 void TransactionTelemetry::willMount() {
@@ -167,6 +170,10 @@ int TransactionTelemetry::getRevisionNumber() const {
 
 int TransactionTelemetry::getAffectedLayoutNodesCount() const {
   return affectedLayoutNodesCount_;
+}
+
+int TransactionTelemetry::getTotalLayoutNodesCount() const {
+  return totalLayoutNodesCount_;
 }
 
 } // namespace facebook::react

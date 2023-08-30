@@ -45,7 +45,8 @@ class RootShadowNode final
    * Returns `false` if the three is already laid out.
    */
   bool layoutIfNeeded(
-      std::vector<LayoutableShadowNode const *> *affectedNodes = {});
+      std::vector<LayoutableShadowNode const *> *affectedNodes = {},
+      int *totalLayoutableNodesCount = 0);
 
   /*
    * Clones the node with given `layoutConstraints` and `layoutContext`.

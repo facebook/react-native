@@ -36,6 +36,14 @@ struct LayoutContext {
   std::vector<LayoutableShadowNode const *> *affectedNodes{};
 
   /*
+   * A raw pointer to total layout nodes that were evaluated by the re-layout
+   * pass. If the field is not `nullptr`, a particular `LayoutableShadowNode`
+   * implementation should increment this field so that we have cheap tracking
+   * on size of the layout work in shadow tree.
+   */
+  int *totalLayoutNodesCount{0};
+
+  /*
    * Flag indicating whether in reassignment of direction
    * aware properties should take place. If yes, following
    * reassignment will occur in RTL context.
@@ -65,12 +73,14 @@ inline bool operator==(LayoutContext const &lhs, LayoutContext const &rhs) {
   return std::tie(
              lhs.pointScaleFactor,
              lhs.affectedNodes,
+             lhs.totalLayoutNodesCount,
              lhs.swapLeftAndRightInRTL,
              lhs.fontSizeMultiplier,
              lhs.viewportOffset) ==
       std::tie(
              rhs.pointScaleFactor,
              rhs.affectedNodes,
+             rhs.totalLayoutNodesCount,
              rhs.swapLeftAndRightInRTL,
              rhs.fontSizeMultiplier,
              rhs.viewportOffset);

@@ -690,6 +690,10 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
     // Verifying that the Yoga node belongs to the ShadowNode.
     react_native_assert(&childNode.yogaNode_ == childYogaNode);
 
+    if (layoutContext.totalLayoutNodesCount != nullptr) {
+      (*layoutContext.totalLayoutNodesCount)++;
+    }
+
     if (childYogaNode->getHasNewLayout()) {
       childYogaNode->setHasNewLayout(false);
 

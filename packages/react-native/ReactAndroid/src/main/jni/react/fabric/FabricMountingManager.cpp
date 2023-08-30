@@ -513,6 +513,7 @@ void FabricMountingManager::executeMount(
                                           jlong,
                                           jlong,
                                           jlong,
+                                          jint,
                                           jint)>("scheduleMountItem");
 
   if (batchMountItemIntsSize == 0) {
@@ -529,7 +530,8 @@ void FabricMountingManager::executeMount(
         telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
         telemetryTimePointToMilliseconds(finishTransactionStartTime),
         telemetryTimePointToMilliseconds(finishTransactionEndTime),
-        telemetry.getAffectedLayoutNodesCount());
+        telemetry.getAffectedLayoutNodesCount(),
+        telemetry.getTotalLayoutNodesCount());
     return;
   }
 
@@ -817,7 +819,8 @@ void FabricMountingManager::executeMount(
       telemetryTimePointToMilliseconds(telemetry.getLayoutEndTime()),
       telemetryTimePointToMilliseconds(finishTransactionStartTime),
       telemetryTimePointToMilliseconds(finishTransactionEndTime),
-      telemetry.getAffectedLayoutNodesCount());
+      telemetry.getAffectedLayoutNodesCount(),
+      telemetry.getTotalLayoutNodesCount());
 
   env->DeleteLocalRef(intBufferArray);
 }
