@@ -9,7 +9,7 @@
 
 #include <cmath>
 #include <limits>
-#include "Yoga-internal.h"
+#include <yoga/Yoga-internal.h>
 
 struct YGFloatOptional {
 private:
