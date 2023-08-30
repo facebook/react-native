@@ -82,7 +82,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode_.setContext(this);
 
   // Newly created node must be `dirty` just because it is new.
-  // This is not a default for `YGNode`.
+  // This is not a default for `yoga::Node`.
   yogaNode_.setDirty(true);
 
   if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
@@ -106,7 +106,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       yogaConfig_(FabricDefaultYogaLog),
       yogaNode_(static_cast<YogaLayoutableShadowNode const &>(sourceShadowNode)
                     .yogaNode_) {
-  // Note, cloned `YGNode` instance (copied using copy-constructor) inherits
+  // Note, cloned `yoga::Node` instance (copied using copy-constructor) inherits
   // dirty flag, measure function, and other properties being set originally in
   // the `YogaLayoutableShadowNode` constructor above.
 
@@ -321,7 +321,8 @@ bool YogaLayoutableShadowNode::doesOwn(
 void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
   for (auto &childYogaNode : yogaNode_.getChildren()) {
     if (childYogaNode->getOwner() == &yogaNode_) {
-      childYogaNode->setOwner(reinterpret_cast<YGNodeRef>(0xBADC0FFEE0DDF00D));
+      childYogaNode->setOwner(
+          reinterpret_cast<yoga::Node *>(0xBADC0FFEE0DDF00D));
     }
   }
 }
@@ -336,7 +337,9 @@ void YogaLayoutableShadowNode::updateYogaChildren() {
   bool isClean = !yogaNode_.isDirty() &&
       getChildren().size() == yogaNode_.getChildren().size();
 
-  auto oldYogaChildren = isClean ? yogaNode_.getChildren() : YGVector{};
+  auto oldYogaChildren =
+      isClean ? yogaNode_.getChildren() : std::vector<yoga::Node *>{};
+
   yogaNode_.setChildren({});
   yogaLayoutableChildren_.clear();
 
@@ -829,9 +832,9 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 YogaLayoutableShadowNode &YogaLayoutableShadowNode::shadowNodeFromContext(
-    YGNode *yogaNode) {
+    YGNodeRef yogaNode) {
   return traitCast<YogaLayoutableShadowNode &>(
-      *static_cast<ShadowNode *>(yogaNode->getContext()));
+      *static_cast<ShadowNode *>(YGNodeGetContext(yogaNode)));
 }
 
 yoga::Config &YogaLayoutableShadowNode::initializeYogaConfig(
