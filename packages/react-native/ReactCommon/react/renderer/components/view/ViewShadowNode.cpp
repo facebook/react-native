@@ -60,7 +60,7 @@ void ViewShadowNode::initialize() noexcept {
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) ||
-      !(viewProps.yogaStyle.border() == YGStyle::Edges{}) ||
+      !(viewProps.yogaStyle.border() == yoga::Style::Edges{}) ||
       !viewProps.testId.empty() ||
       HostPlatformViewTraitsInitializer::formsView(viewProps);
 

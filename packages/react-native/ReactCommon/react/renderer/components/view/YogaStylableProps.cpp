@@ -104,7 +104,7 @@ void YogaStylableProps::setProp(
     RawPropsPropNameHash hash,
     const char *propName,
     RawValue const &value) {
-  static const auto ygDefaults = YGStyle{};
+  static const auto ygDefaults = yoga::Style{};
   static const auto defaults = YogaStylableProps{};
 
   Props::setProp(context, hash, propName, value);
@@ -161,7 +161,7 @@ void YogaStylableProps::setProp(
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList YogaStylableProps::getDebugProps() const {
-  auto const defaultYogaStyle = YGStyle{};
+  auto const defaultYogaStyle = yoga::Style{};
   return {
       debugStringConvertibleItem(
           "direction", yogaStyle.direction(), defaultYogaStyle.direction()),
