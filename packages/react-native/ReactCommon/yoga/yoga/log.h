@@ -8,16 +8,14 @@
 #pragma once
 
 #include <yoga/YGEnums.h>
+#include <yoga/node/Node.h>
 #include <yoga/config/Config.h>
-
-struct YGNode;
-struct YGConfig;
 
 namespace facebook::yoga::detail {
 
 struct Log {
   static void log(
-      YGNode* node,
+      yoga::Node* node,
       YGLogLevel level,
       void*,
       const char* message,
