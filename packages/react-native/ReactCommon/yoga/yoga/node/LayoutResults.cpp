@@ -6,16 +6,16 @@
  */
 
 #include <yoga/node/LayoutResults.h>
-#include <yoga/Utils.h>
+#include <yoga/numeric/Comparison.h>
 
 namespace facebook::yoga {
 
 bool LayoutResults::operator==(LayoutResults layout) const {
-  bool isEqual = YGFloatArrayEqual(position, layout.position) &&
-      YGFloatArrayEqual(dimensions, layout.dimensions) &&
-      YGFloatArrayEqual(margin, layout.margin) &&
-      YGFloatArrayEqual(border, layout.border) &&
-      YGFloatArrayEqual(padding, layout.padding) &&
+  bool isEqual = yoga::inexactEquals(position, layout.position) &&
+      yoga::inexactEquals(dimensions, layout.dimensions) &&
+      yoga::inexactEquals(margin, layout.margin) &&
+      yoga::inexactEquals(border, layout.border) &&
+      yoga::inexactEquals(padding, layout.padding) &&
       direction() == layout.direction() &&
       hadOverflow() == layout.hadOverflow() &&
       lastOwnerDirection == layout.lastOwnerDirection &&
