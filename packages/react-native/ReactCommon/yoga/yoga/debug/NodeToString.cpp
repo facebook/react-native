@@ -12,8 +12,8 @@
 #include <yoga/YGEnums.h>
 
 #include <yoga/debug/NodeToString.h>
+#include <yoga/numeric/Comparison.h>
 #include <yoga/Yoga-internal.h>
-#include <yoga/Utils.h>
 
 namespace facebook::yoga {
 
@@ -24,8 +24,9 @@ static void indent(std::string& base, uint32_t level) {
 }
 
 static bool areFourValuesEqual(const Style::Edges& four) {
-  return YGValueEqual(four[0], four[1]) && YGValueEqual(four[0], four[2]) &&
-      YGValueEqual(four[0], four[3]);
+  return yoga::inexactEquals(four[0], four[1]) &&
+      yoga::inexactEquals(four[0], four[2]) &&
+      yoga::inexactEquals(four[0], four[3]);
 }
 
 static void appendFormattedString(std::string& str, const char* fmt, ...) {
@@ -80,7 +81,7 @@ static void appendNumberIfNotZero(
     const YGValue number) {
   if (number.unit == YGUnitAuto) {
     base.append(str + ": auto; ");
-  } else if (!YGFloatsEqual(number.value, 0)) {
+  } else if (!yoga::inexactEquals(number.value, 0)) {
     appendNumberIfNotUndefined(base, str, number);
   }
 }
