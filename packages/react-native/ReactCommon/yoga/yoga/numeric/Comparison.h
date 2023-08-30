@@ -10,7 +10,7 @@
 #include <array>
 
 #include <yoga/Yoga.h>
-#include <yoga/YGFloatOptional.h>
+#include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
 namespace facebook::yoga {
@@ -30,7 +30,7 @@ inline float minOrDefined(const float a, const float b) {
   return std::isnan(a) ? b : a;
 }
 
-inline YGFloatOptional maxOrDefined(YGFloatOptional op1, YGFloatOptional op2) {
+inline FloatOptional maxOrDefined(FloatOptional op1, FloatOptional op2) {
   if (op1 >= op2) {
     return op1;
   }

@@ -8,24 +8,22 @@
 #pragma once
 
 #include <yoga/Yoga.h>
-#include <yoga/YGFloatOptional.h>
+#include <yoga/numeric/FloatOptional.h>
 
 namespace facebook::yoga {
 
-inline YGFloatOptional resolveValue(
-    const YGValue value,
-    const float ownerSize) {
+inline FloatOptional resolveValue(const YGValue value, const float ownerSize) {
   switch (value.unit) {
     case YGUnitPoint:
-      return YGFloatOptional{value.value};
+      return FloatOptional{value.value};
     case YGUnitPercent:
-      return YGFloatOptional{value.value * ownerSize * 0.01f};
+      return FloatOptional{value.value * ownerSize * 0.01f};
     default:
-      return YGFloatOptional{};
+      return FloatOptional{};
   }
 }
 
-inline YGFloatOptional resolveValue(CompactValue value, float ownerSize) {
+inline FloatOptional resolveValue(CompactValue value, float ownerSize) {
   return resolveValue((YGValue) value, ownerSize);
 }
 

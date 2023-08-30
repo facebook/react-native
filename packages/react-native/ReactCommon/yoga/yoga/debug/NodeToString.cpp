@@ -45,7 +45,7 @@ static void appendFormattedString(std::string& str, const char* fmt, ...) {
 static void appendFloatOptionalIfDefined(
     std::string& base,
     const std::string key,
-    const YGFloatOptional num) {
+    const FloatOptional num) {
   if (!num.isUndefined()) {
     appendFormattedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
