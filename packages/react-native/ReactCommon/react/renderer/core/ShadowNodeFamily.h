@@ -35,9 +35,9 @@ class State;
  * retain ownership of them.
  */
 struct ShadowNodeFamilyFragment {
-  Tag const tag;
-  SurfaceId const surfaceId;
-  InstanceHandle::Shared const &instanceHandle;
+  const Tag tag;
+  const SurfaceId surfaceId;
+  const InstanceHandle::Shared &instanceHandle;
 };
 
 /*
@@ -46,26 +46,26 @@ struct ShadowNodeFamilyFragment {
  */
 class ShadowNodeFamily final {
  public:
-  using Shared = std::shared_ptr<ShadowNodeFamily const>;
-  using Weak = std::weak_ptr<ShadowNodeFamily const>;
+  using Shared = std::shared_ptr<const ShadowNodeFamily>;
+  using Weak = std::weak_ptr<const ShadowNodeFamily>;
 
   using AncestorList = butter::small_vector<
       std::pair<
-          std::reference_wrapper<ShadowNode const> /* parentNode */,
+          std::reference_wrapper<const ShadowNode> /* parentNode */,
           int /* childIndex */>,
       64>;
 
   ShadowNodeFamily(
-      ShadowNodeFamilyFragment const &fragment,
+      const ShadowNodeFamilyFragment &fragment,
       EventDispatcher::Weak eventDispatcher,
-      ComponentDescriptor const &componentDescriptor);
+      const ComponentDescriptor &componentDescriptor);
 
   /*
    * Sets the parent.
    * This is not technically thread-safe, but practically it mutates the object
    * only once (and the model enforces that this first call is not concurrent).
    */
-  void setParent(ShadowNodeFamily::Shared const &parent) const;
+  void setParent(const ShadowNodeFamily::Shared &parent) const;
 
   /*
    * Returns a handle (or name) associated with the component.
@@ -87,7 +87,7 @@ class ShadowNodeFamily final {
    * Can be called from any thread.
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
-  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
+  AncestorList getAncestors(const ShadowNode &ancestorShadowNode) const;
 
   SurfaceId getSurfaceId() const;
 
@@ -96,8 +96,8 @@ class ShadowNodeFamily final {
   /*
    * Sets and gets the most recent state.
    */
-  std::shared_ptr<State const> getMostRecentState() const;
-  void setMostRecentState(std::shared_ptr<State const> const &state) const;
+  std::shared_ptr<const State> getMostRecentState() const;
+  void setMostRecentState(const std::shared_ptr<State const> &state) const;
 
   /*
    * Dispatches a state update with given priority.
@@ -121,22 +121,22 @@ class ShadowNodeFamily final {
    * otherwise returns `nullptr`.
    * To be used by `State` only.
    */
-  std::shared_ptr<State const> getMostRecentStateIfObsolete(
-      State const &state) const;
+  std::shared_ptr<const State> getMostRecentStateIfObsolete(
+      const State &state) const;
 
   EventDispatcher::Weak eventDispatcher_;
-  mutable std::shared_ptr<State const> mostRecentState_;
+  mutable std::shared_ptr<const State> mostRecentState_;
   mutable std::shared_mutex mutex_;
 
   /*
    * Deprecated.
    */
-  Tag const tag_;
+  const Tag tag_;
 
   /*
    * Identifier of a running Surface instance.
    */
-  SurfaceId const surfaceId_;
+  const SurfaceId surfaceId_;
 
   /*
    * Weak reference to the React instance handle
@@ -146,13 +146,13 @@ class ShadowNodeFamily final {
   /*
    * `EventEmitter` associated with all nodes of the family.
    */
-  SharedEventEmitter const eventEmitter_;
+  const SharedEventEmitter eventEmitter_;
 
   /*
    * Reference to a concrete `ComponentDescriptor` that manages nodes of this
    * type.
    */
-  ComponentDescriptor const &componentDescriptor_;
+  const ComponentDescriptor &componentDescriptor_;
 
   /*
    * ComponentHandle and ComponentName must be stored (cached) inside the object

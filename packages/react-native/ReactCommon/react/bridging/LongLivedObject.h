@@ -39,8 +39,8 @@ class LongLivedObjectCollection {
  public:
   static LongLivedObjectCollection &get();
 
-  LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
-  void operator=(LongLivedObjectCollection const &) = delete;
+  LongLivedObjectCollection(const LongLivedObjectCollection &) = delete;
+  void operator=(const LongLivedObjectCollection &) = delete;
 
   void add(std::shared_ptr<LongLivedObject> o);
   void remove(const LongLivedObject *o);

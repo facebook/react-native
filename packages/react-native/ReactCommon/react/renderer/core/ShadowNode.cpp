@@ -36,8 +36,8 @@ ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
  * is finished.
  */
 Props::Shared ShadowNode::propsForClonedShadowNode(
-    ShadowNode const &sourceShadowNode,
-    Props::Shared const &props) {
+    const ShadowNode &sourceShadowNode,
+    const Props::Shared &props) {
 #ifdef ANDROID
   bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
   bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
@@ -58,7 +58,7 @@ bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
-    ShadowNodeFragment const &fragment,
+    const ShadowNodeFragment &fragment,
     ShadowNodeFamily::Shared family,
     ShadowNodeTraits traits)
     :
@@ -78,7 +78,7 @@ ShadowNode::ShadowNode(
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
 
-  for (auto const &child : *children_) {
+  for (const auto &child : *children_) {
     child->family_->setParent(family_);
   }
 
@@ -87,8 +87,8 @@ ShadowNode::ShadowNode(
 }
 
 ShadowNode::ShadowNode(
-    ShadowNode const &sourceShadowNode,
-    ShadowNodeFragment const &fragment)
+    const ShadowNode &sourceShadowNode,
+    const ShadowNodeFragment &fragment)
     :
 #if RN_DEBUG_STRING_CONVERTIBLE
       revision_(sourceShadowNode.revision_ + 1),
@@ -117,8 +117,8 @@ ShadowNode::ShadowNode(
 
 ShadowNode::Unshared ShadowNode::clone(
     const ShadowNodeFragment &fragment) const {
-  auto const &family = *family_;
-  auto const &componentDescriptor = family.componentDescriptor_;
+  const auto &family = *family_;
+  const auto &componentDescriptor = family.componentDescriptor_;
   if (family.nativeProps_DEPRECATED != nullptr) {
     auto propsParserContext = PropsParserContext{family_->getSurfaceId(), {}};
     if (fragment.props == ShadowNodeFragment::propsPlaceholder()) {
@@ -216,7 +216,7 @@ void ShadowNode::sealRecursive() const {
 
   props_->seal();
 
-  for (auto const &child : *children_) {
+  for (const auto &child : *children_) {
     child->sealRecursive();
   }
 }
@@ -234,8 +234,8 @@ void ShadowNode::appendChild(const ShadowNode::Shared &child) {
 }
 
 void ShadowNode::replaceChild(
-    ShadowNode const &oldChild,
-    ShadowNode::Shared const &newChild,
+    const ShadowNode &oldChild,
+    const ShadowNode::Shared &newChild,
     int32_t suggestedIndex) {
   ensureUnsealed();
 
@@ -282,13 +282,13 @@ void ShadowNode::setMounted(bool mounted) const {
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-ShadowNodeFamily const &ShadowNode::getFamily() const {
+const ShadowNodeFamily &ShadowNode::getFamily() const {
   return *family_;
 }
 
 ShadowNode::Unshared ShadowNode::cloneTree(
-    ShadowNodeFamily const &shadowNodeFamily,
-    std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)> const
+    const ShadowNodeFamily &shadowNodeFamily,
+    const std::function<ShadowNode::Unshared(ShadowNode const &oldShadowNode)>
         &callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
@@ -341,7 +341,7 @@ std::string ShadowNode::getDebugValue() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
   auto debugChildren = SharedDebugStringConvertibleList{};
 
-  for (auto const &child : *children_) {
+  for (const auto &child : *children_) {
     auto debugChild =
         std::dynamic_pointer_cast<const DebugStringConvertible>(child);
     if (debugChild) {

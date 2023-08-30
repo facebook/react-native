@@ -56,7 +56,7 @@ struct NativeDrawable {
 
 static inline void fromRawValue(
     const PropsParserContext & /*context*/,
-    RawValue const &rawValue,
+    const RawValue &rawValue,
     NativeDrawable &result) {
   auto map = (butter::map<std::string, RawValue>)rawValue;
 

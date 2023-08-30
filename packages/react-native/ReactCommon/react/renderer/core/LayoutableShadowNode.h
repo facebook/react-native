@@ -32,13 +32,13 @@ struct LayoutContext;
 class LayoutableShadowNode : public ShadowNode {
  public:
   LayoutableShadowNode(
-      ShadowNodeFragment const &fragment,
-      ShadowNodeFamily::Shared const &family,
+      const ShadowNodeFragment &fragment,
+      const ShadowNodeFamily::Shared &family,
       ShadowNodeTraits traits);
 
   LayoutableShadowNode(
-      ShadowNode const &sourceShadowNode,
-      ShadowNodeFragment const &fragment);
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment);
 
   static ShadowNodeTraits BaseTraits();
   static ShadowNodeTraits::Trait IdentifierTrait();
@@ -59,15 +59,15 @@ class LayoutableShadowNode : public ShadowNode {
    * tree.
    */
   static LayoutMetrics computeRelativeLayoutMetrics(
-      ShadowNodeFamily const &descendantNodeFamily,
-      LayoutableShadowNode const &ancestorNode,
+      const ShadowNodeFamily &descendantNodeFamily,
+      const LayoutableShadowNode &ancestorNode,
       LayoutInspectingPolicy policy);
 
   /*
    * Computes the layout metrics of a node relative to its specified ancestors.
    */
   static LayoutMetrics computeRelativeLayoutMetrics(
-      AncestorList const &ancestors,
+      const AncestorList &ancestors,
       LayoutInspectingPolicy policy);
 
   /*
@@ -85,8 +85,8 @@ class LayoutableShadowNode : public ShadowNode {
    * Default implementation returns zero size.
    */
   virtual Size measureContent(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const;
+      const LayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const;
 
   /*
    * Measures the node with given `layoutContext` and `layoutConstraints`.
@@ -94,8 +94,8 @@ class LayoutableShadowNode : public ShadowNode {
    * should *not* be included. Default implementation returns zero size.
    */
   virtual Size measure(
-      LayoutContext const &layoutContext,
-      LayoutConstraints const &layoutConstraints) const;
+      const LayoutContext &layoutContext,
+      const LayoutConstraints &layoutConstraints) const;
 
   /*
    * Computes layout recursively.
@@ -140,7 +140,7 @@ class LayoutableShadowNode : public ShadowNode {
    * parameter.
    */
   static ShadowNode::Shared findNodeAtPoint(
-      ShadowNode::Shared const &node,
+      const ShadowNode::Shared &node,
       Point point);
 
   /*

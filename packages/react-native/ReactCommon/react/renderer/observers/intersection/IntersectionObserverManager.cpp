@@ -19,7 +19,7 @@ void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
     const ShadowNode::Shared &shadowNode,
     std::vector<Float> thresholds,
-    UIManager const &uiManager) {
+    const UIManager &uiManager) {
   SystraceSection s("IntersectionObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
@@ -45,7 +45,7 @@ void IntersectionObserverManager::observe(
   auto &shadowTreeRegistry = uiManager.getShadowTreeRegistry();
   MountingCoordinator::Shared mountingCoordinator = nullptr;
   RootShadowNode::Shared rootShadowNode = nullptr;
-  shadowTreeRegistry.visit(surfaceId, [&](ShadowTree const &shadowTree) {
+  shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     mountingCoordinator = shadowTree.getMountingCoordinator();
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
@@ -67,7 +67,7 @@ void IntersectionObserverManager::observe(
 
 void IntersectionObserverManager::unobserve(
     IntersectionObserverObserverId intersectionObserverId,
-    ShadowNode const &shadowNode) {
+    const ShadowNode &shadowNode) {
   SystraceSection s("IntersectionObserverManager::unobserve");
 
   std::unique_lock lock(observersMutex_);
@@ -85,7 +85,7 @@ void IntersectionObserverManager::unobserve(
       std::remove_if(
           observers.begin(),
           observers.end(),
-          [intersectionObserverId, &shadowNode](auto const &observer) {
+          [intersectionObserverId, &shadowNode](const auto &observer) {
             return observer.getIntersectionObserverId() ==
                 intersectionObserverId &&
                 ShadowNode::sameFamily(
@@ -139,13 +139,13 @@ IntersectionObserverManager::takeRecords() {
 }
 
 void IntersectionObserverManager::shadowTreeDidMount(
-    RootShadowNode::Shared const &rootShadowNode,
+    const RootShadowNode::Shared &rootShadowNode,
     double mountTime) noexcept {
   updateIntersectionObservations(*rootShadowNode, mountTime);
 }
 
 void IntersectionObserverManager::updateIntersectionObservations(
-    RootShadowNode const &rootShadowNode,
+    const RootShadowNode &rootShadowNode,
     double mountTime) {
   SystraceSection s(
       "IntersectionObserverManager::updateIntersectionObservations");

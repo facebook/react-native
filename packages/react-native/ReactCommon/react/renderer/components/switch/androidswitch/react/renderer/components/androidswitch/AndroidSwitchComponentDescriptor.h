@@ -21,12 +21,12 @@ class AndroidSwitchComponentDescriptor final
     : public ConcreteComponentDescriptor<AndroidSwitchShadowNode> {
  public:
   AndroidSwitchComponentDescriptor(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor(parameters),
         measurementsManager_(std::make_shared<AndroidSwitchMeasurementsManager>(
             contextContainer_)) {}
 
-  void adopt(ShadowNode::Unshared const &shadowNode) const override {
+  void adopt(const ShadowNode::Unshared &shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
     auto &androidSwitchShadowNode =

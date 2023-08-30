@@ -22,7 +22,7 @@
 RCT_MOCK_DEF(RCTView, RCTContentInsets);
 #define RCTContentInsets RCT_MOCK_USE(RCTView, RCTContentInsets)
 
-UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+const UIAccessibilityTraits SwitchAccessibilityTrait = 0x20000000000001;
 
 @implementation UIView (RCTViewUnmounting)
 

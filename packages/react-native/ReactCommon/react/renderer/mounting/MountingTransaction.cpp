@@ -21,7 +21,7 @@ MountingTransaction::MountingTransaction(
       mutations_(std::move(mutations)),
       telemetry_(std::move(telemetry)) {}
 
-ShadowViewMutationList const &MountingTransaction::getMutations() const & {
+const ShadowViewMutationList &MountingTransaction::getMutations() const & {
   return mutations_;
 }
 

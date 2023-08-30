@@ -11,10 +11,10 @@
 namespace facebook::react {
 
 static MapBuffer convertAccessibilityActions(
-    std::vector<AccessibilityAction> const &actions) {
+    const std::vector<AccessibilityAction> &actions) {
   MapBufferBuilder builder(actions.size());
   for (auto i = 0; i < actions.size(); i++) {
-    auto const &action = actions[i];
+    const auto &action = actions[i];
     MapBufferBuilder actionsBuilder(2);
     actionsBuilder.putString(ACCESSIBILITY_ACTION_NAME, action.name);
     if (action.label.has_value()) {
@@ -27,7 +27,7 @@ static MapBuffer convertAccessibilityActions(
 }
 
 static MapBuffer convertAccessibilityLabelledBy(
-    AccessibilityLabelledBy const &labelledBy) {
+    const AccessibilityLabelledBy &labelledBy) {
   MapBufferBuilder builder(labelledBy.value.size());
   for (auto i = 0; i < labelledBy.value.size(); i++) {
     builder.putString(i, labelledBy.value[i]);
@@ -42,7 +42,7 @@ constexpr MapBuffer::Key ACCESSIBILITY_STATE_EXPANDED = 2;
 constexpr MapBuffer::Key ACCESSIBILITY_STATE_SELECTED = 3;
 constexpr MapBuffer::Key ACCESSIBILITY_STATE_CHECKED = 4;
 
-MapBuffer convertAccessibilityState(AccessibilityState const &state) {
+MapBuffer convertAccessibilityState(const AccessibilityState &state) {
   MapBufferBuilder builder(5);
   builder.putBool(ACCESSIBILITY_STATE_BUSY, state.busy);
   builder.putBool(ACCESSIBILITY_STATE_DISABLED, state.disabled);
@@ -69,7 +69,7 @@ MapBuffer convertAccessibilityState(AccessibilityState const &state) {
 
 // TODO: Currently unsupported: nextFocusForward/Left/Up/Right/Down
 void AccessibilityProps::propsDiffMapBuffer(
-    Props const *oldPropsPtr,
+    const Props *oldPropsPtr,
     MapBufferBuilder &builder) const {
   // Call with default props if necessary
   if (oldPropsPtr == nullptr) {
@@ -78,9 +78,9 @@ void AccessibilityProps::propsDiffMapBuffer(
     return;
   }
 
-  AccessibilityProps const &oldProps =
+  const AccessibilityProps &oldProps =
       *(reinterpret_cast<const AccessibilityProps *>(oldPropsPtr));
-  AccessibilityProps const &newProps = *this;
+  const AccessibilityProps &newProps = *this;
 
   if (oldProps.accessibilityActions != newProps.accessibilityActions) {
     builder.putMapBuffer(

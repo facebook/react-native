@@ -36,7 +36,7 @@ void EventQueueProcessor::flushEvents(
     }
   }
 
-  for (auto const &event : events) {
+  for (const auto &event : events) {
     if (event.category == RawEvent::Category::ContinuousEnd) {
       hasContinuousEventStarted_ = false;
     }

@@ -81,7 +81,7 @@ class RawValue {
    * internal use, but it's needed for user-code that does `auto val =
    * (butter::map<std::string, RawValue>)rawVal;`
    */
-  RawValue(RawValue const &other) noexcept : dynamic_(other.dynamic_) {}
+  RawValue(const RawValue &other) noexcept : dynamic_(other.dynamic_) {}
 
   RawValue &operator=(const RawValue &other) noexcept {
     if (this != &other) {

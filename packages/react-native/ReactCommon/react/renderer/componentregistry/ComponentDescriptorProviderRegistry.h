@@ -50,7 +50,7 @@ class ComponentDescriptorProviderRegistry final {
    * The methods can be called on any thread.
    */
   ComponentDescriptorRegistry::Shared createComponentDescriptorRegistry(
-      ComponentDescriptorParameters const &parameters) const;
+      const ComponentDescriptorParameters &parameters) const;
 
  private:
   friend class ComponentDescriptorRegistry;
@@ -58,7 +58,7 @@ class ComponentDescriptorProviderRegistry final {
   void request(ComponentName componentName) const;
 
   mutable std::shared_mutex mutex_;
-  mutable std::vector<std::weak_ptr<ComponentDescriptorRegistry const>>
+  mutable std::vector<std::weak_ptr<const ComponentDescriptorRegistry>>
       componentDescriptorRegistries_;
   mutable butter::map<ComponentHandle, ComponentDescriptorProvider const>
       componentDescriptorProviders_;

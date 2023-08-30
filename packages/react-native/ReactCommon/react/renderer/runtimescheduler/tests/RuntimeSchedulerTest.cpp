@@ -53,8 +53,8 @@ class RuntimeSchedulerTest : public testing::Test {
         3,
         [this, callback = std::move(callback)](
             jsi::Runtime & /*unused*/,
-            jsi::Value const & /*unused*/,
-            jsi::Value const *arguments,
+            const jsi::Value & /*unused*/,
+            const jsi::Value *arguments,
             size_t /*unused*/) -> jsi::Value {
           ++hostFunctionCallCount_;
           auto didUserCallbackTimeout = arguments[0].getBool();
@@ -318,7 +318,7 @@ TEST_F(RuntimeSchedulerTest, getCurrentPriorityLevel) {
 TEST_F(RuntimeSchedulerTest, scheduleWorkWithYielding) {
   bool wasCalled = false;
   runtimeScheduler_->scheduleWork(
-      [&](jsi::Runtime const & /*unused*/) { wasCalled = true; });
+      [&](const jsi::Runtime & /*unused*/) { wasCalled = true; });
 
   EXPECT_FALSE(wasCalled);
 
@@ -346,7 +346,7 @@ TEST_F(RuntimeSchedulerTest, normalTaskYieldsToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime & /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_FALSE(didRunJavaScriptTask);
     EXPECT_FALSE(runtimeScheduler_->getShouldYield());
@@ -373,7 +373,7 @@ TEST_F(RuntimeSchedulerTest, expiredTaskDoesntYieldToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::NormalPriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime & /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_TRUE(didRunJavaScriptTask);
   });
@@ -401,7 +401,7 @@ TEST_F(RuntimeSchedulerTest, immediateTaskDoesntYieldToPlatformEvent) {
   runtimeScheduler_->scheduleTask(
       SchedulerPriority::ImmediatePriority, std::move(callback));
 
-  runtimeScheduler_->scheduleWork([&](jsi::Runtime const & /*unused*/) {
+  runtimeScheduler_->scheduleWork([&](const jsi::Runtime & /*unused*/) {
     didRunPlatformWork = true;
     EXPECT_TRUE(didRunJavaScriptTask);
   });

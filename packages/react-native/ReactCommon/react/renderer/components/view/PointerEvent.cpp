@@ -50,12 +50,12 @@ EventPayloadType PointerEvent::getType() const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(PointerEvent const & /*pointerEvent*/) {
+std::string getDebugName(const PointerEvent & /*pointerEvent*/) {
   return "PointerEvent";
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    PointerEvent const &pointerEvent,
+    const PointerEvent &pointerEvent,
     DebugStringConvertibleOptions options) {
   return {
       {"pointerId", getDebugDescription(pointerEvent.pointerId, options)},

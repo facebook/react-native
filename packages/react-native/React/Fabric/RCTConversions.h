@@ -34,7 +34,7 @@ inline std::string RCTStringFromNSString(NSString *string)
   return std::string{string.UTF8String ?: ""};
 }
 
-inline UIColor *_Nullable RCTUIColorFromSharedColor(facebook::react::SharedColor const &sharedColor)
+inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::SharedColor &sharedColor)
 {
   if (!sharedColor) {
     return nil;
@@ -82,7 +82,7 @@ inline UIEdgeInsets RCTUIEdgeInsetsFromEdgeInsets(const facebook::react::EdgeIns
   return {edgeInsets.top, edgeInsets.left, edgeInsets.bottom, edgeInsets.right};
 }
 
-UIAccessibilityTraits const AccessibilityTraitSwitch = 0x20000000000001;
+const UIAccessibilityTraits AccessibilityTraitSwitch = 0x20000000000001;
 
 inline UIAccessibilityTraits RCTUIAccessibilityTraitsFromAccessibilityTraits(
     facebook::react::AccessibilityTraits accessibilityTraits)

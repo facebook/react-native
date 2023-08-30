@@ -25,8 +25,8 @@ class RuntimeScheduler final {
   /*
    * Not copyable.
    */
-  RuntimeScheduler(RuntimeScheduler const &) = delete;
-  RuntimeScheduler &operator=(RuntimeScheduler const &) = delete;
+  RuntimeScheduler(const RuntimeScheduler &) = delete;
+  RuntimeScheduler &operator=(const RuntimeScheduler &) = delete;
 
   /*
    * Not movable.
@@ -115,7 +115,7 @@ class RuntimeScheduler final {
       TaskPriorityComparer>
       taskQueue_;
 
-  RuntimeExecutor const runtimeExecutor_;
+  const RuntimeExecutor runtimeExecutor_;
   mutable SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
   /*

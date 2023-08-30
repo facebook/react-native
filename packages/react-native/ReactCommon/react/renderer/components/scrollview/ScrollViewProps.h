@@ -21,14 +21,14 @@ class ScrollViewProps final : public ViewProps {
   ScrollViewProps() = default;
   ScrollViewProps(
       const PropsParserContext &context,
-      ScrollViewProps const &sourceProps,
-      RawProps const &rawProps);
+      const ScrollViewProps &sourceProps,
+      const RawProps &rawProps);
 
   void setProp(
       const PropsParserContext &context,
       RawPropsPropNameHash hash,
       const char *propName,
-      RawValue const &value);
+      const RawValue &value);
 
 #pragma mark - Props
 

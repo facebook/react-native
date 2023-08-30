@@ -24,19 +24,19 @@ namespace facebook::react {
  */
 struct ShadowView final {
   ShadowView() = default;
-  ShadowView(ShadowView const &shadowView) = default;
+  ShadowView(const ShadowView &shadowView) = default;
   ShadowView(ShadowView &&shadowView) noexcept = default;
 
   /*
    * Constructs a `ShadowView` from given `ShadowNode`.
    */
-  explicit ShadowView(ShadowNode const &shadowNode);
+  explicit ShadowView(const ShadowNode &shadowNode);
 
-  ShadowView &operator=(ShadowView const &other) = default;
+  ShadowView &operator=(const ShadowView &other) = default;
   ShadowView &operator=(ShadowView &&other) = default;
 
-  bool operator==(ShadowView const &rhs) const;
-  bool operator!=(ShadowView const &rhs) const;
+  bool operator==(const ShadowView &rhs) const;
+  bool operator!=(const ShadowView &rhs) const;
 
   ComponentName componentName{};
   ComponentHandle componentHandle{};
@@ -51,9 +51,9 @@ struct ShadowView final {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(ShadowView const &object);
+std::string getDebugName(const ShadowView &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    ShadowView const &object,
+    const ShadowView &object,
     DebugStringConvertibleOptions options);
 
 #endif
@@ -70,7 +70,7 @@ struct ShadowViewNodePair final {
       small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
-  ShadowNode const *shadowNode;
+  const ShadowNode *shadowNode;
   bool flattened{false};
   bool isConcreteView{true};
   Point contextOrigin{0, 0};
@@ -83,7 +83,7 @@ struct ShadowViewNodePair final {
    * rely on this more heavily to simplify the diffing algorithm
    * overall?
    */
-  mutable ShadowViewNodePair const *otherTreePair{nullptr};
+  mutable const ShadowViewNodePair *otherTreePair{nullptr};
 
   /*
    * The stored pointer to `ShadowNode` represents an identity of the pair.
@@ -107,7 +107,7 @@ struct ShadowViewNodePairLegacy final {
       kShadowNodeChildrenSmallVectorSize>;
 
   ShadowView shadowView;
-  ShadowNode const *shadowNode;
+  const ShadowNode *shadowNode;
   bool flattened{false};
   bool isConcreteView{true};
 

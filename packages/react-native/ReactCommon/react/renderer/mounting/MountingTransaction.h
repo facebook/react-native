@@ -58,7 +58,7 @@ class MountingTransaction final {
    * Returns a list of mutations that represent the transaction. The list can be
    * empty (theoretically).
    */
-  ShadowViewMutationList const &getMutations() const &;
+  const ShadowViewMutationList &getMutations() const &;
   ShadowViewMutationList getMutations() &&;
 
   /*

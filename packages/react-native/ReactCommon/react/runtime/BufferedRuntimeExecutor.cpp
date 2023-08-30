@@ -50,7 +50,7 @@ void BufferedRuntimeExecutor::flush() {
 
 void BufferedRuntimeExecutor::unsafeFlush() {
   while (queue_.size() > 0) {
-    BufferedWork const &bufferedWork = queue_.top();
+    const BufferedWork &bufferedWork = queue_.top();
     Work work = std::move(bufferedWork.work_);
     runtimeExecutor_(std::move(work));
     queue_.pop();

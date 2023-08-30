@@ -19,8 +19,8 @@ namespace facebook::react {
 
 HostPlatformViewProps::HostPlatformViewProps(
     const PropsParserContext &context,
-    HostPlatformViewProps const &sourceProps,
-    RawProps const &rawProps,
+    const HostPlatformViewProps &sourceProps,
+    const RawProps &rawProps,
     bool shouldSetRawProps)
     : BaseViewProps(context, sourceProps, rawProps, shouldSetRawProps),
       elevation(
@@ -101,7 +101,7 @@ void HostPlatformViewProps::setProp(
     const PropsParserContext &context,
     RawPropsPropNameHash hash,
     const char *propName,
-    RawValue const &value) {
+    const RawValue &value) {
   // All Props structs setProp methods must always, unconditionally,
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.

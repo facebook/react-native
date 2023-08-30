@@ -25,7 +25,7 @@ using SharedImageManager = std::shared_ptr<ImageManager>;
  */
 class ImageManager {
  public:
-  ImageManager(ContextContainer::Shared const &contextContainer);
+  ImageManager(const ContextContainer::Shared &contextContainer);
   ~ImageManager();
 
   ImageRequest requestImage(const ImageSource &imageSource, SurfaceId surfaceId)

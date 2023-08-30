@@ -23,9 +23,9 @@ using namespace facebook::jni;
 namespace facebook::react {
 
 Size measureAndroidComponent(
-    ContextContainer::Shared const &contextContainer,
+    const ContextContainer::Shared &contextContainer,
     Tag rootTag,
-    std::string const &componentName,
+    const std::string &componentName,
     folly::dynamic localData,
     folly::dynamic props,
     folly::dynamic state,
@@ -94,7 +94,7 @@ Size measureAndroidComponent(
 Size measureAndroidComponentMapBuffer(
     const ContextContainer::Shared &contextContainer,
     Tag rootTag,
-    std::string const &componentName,
+    const std::string &componentName,
     MapBuffer localData,
     MapBuffer props,
     float minWidth,
@@ -157,15 +157,15 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox const &attributedStringBox,
-    ParagraphAttributes const &paragraphAttributes,
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
     LayoutConstraints layoutConstraints,
     std::shared_ptr<void> /* hostTextStorage */) const {
   auto &attributedString = attributedStringBox.getValue();
 
   auto measurement = measureCache_.get(
       {attributedString, paragraphAttributes, layoutConstraints},
-      [&](TextMeasureCacheKey const & /*key*/) {
+      [&](const TextMeasureCacheKey & /*key*/) {
         auto telemetry = TransactionTelemetry::threadLocalTelemetry();
         if (telemetry != nullptr) {
           telemetry->willMeasureText();
@@ -185,15 +185,15 @@ TextMeasurement TextLayoutManager::measure(
   return measurement;
 }
 std::shared_ptr<void> TextLayoutManager::getHostTextStorage(
-    AttributedString const & /* attributedStringBox */,
-    ParagraphAttributes const & /* paragraphAttributes */,
+    const AttributedString & /* attributedStringBox */,
+    const ParagraphAttributes & /* paragraphAttributes */,
     LayoutConstraints /* layoutConstraints */) const {
   return nullptr;
 }
 
 TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
-    ParagraphAttributes const &paragraphAttributes,
+    const ParagraphAttributes &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   auto env = Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
@@ -227,8 +227,8 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString const &attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const AttributedString &attributedString,
+    const ParagraphAttributes &paragraphAttributes,
     Size size) const {
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
@@ -256,7 +256,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   LinesMeasurements lineMeasurements;
   lineMeasurements.reserve(dynamicArray.size());
 
-  for (auto const &data : dynamicArray) {
+  for (const auto &data : dynamicArray) {
     lineMeasurements.push_back(LineMeasurement(data));
   }
 
@@ -269,12 +269,12 @@ LinesMeasurements TextLayoutManager::measureLines(
 
 TextMeasurement TextLayoutManager::doMeasure(
     AttributedString attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const ParagraphAttributes &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto const &fragment : attributedString.getFragments()) {
+  for (const auto &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }
@@ -304,9 +304,9 @@ TextMeasurement TextLayoutManager::doMeasure(
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentsCount > 0) {
-    folly::dynamic const &fragments = serializedAttributedString["fragments"];
+    const folly::dynamic &fragments = serializedAttributedString["fragments"];
     int attachmentIndex = 0;
-    for (auto const &fragment : fragments) {
+    for (const auto &fragment : fragments) {
       auto isAttachment = fragment.find("isAttachment");
       if (isAttachment != fragment.items().end() &&
           isAttachment->second.getBool()) {
@@ -333,12 +333,12 @@ TextMeasurement TextLayoutManager::doMeasure(
 
 TextMeasurement TextLayoutManager::doMeasureMapBuffer(
     AttributedString attributedString,
-    ParagraphAttributes const &paragraphAttributes,
+    const ParagraphAttributes &paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   layoutConstraints.maximumSize.height = std::numeric_limits<Float>::infinity();
 
   int attachmentsCount = 0;
-  for (auto const &fragment : attributedString.getFragments()) {
+  for (const auto &fragment : attributedString.getFragments()) {
     if (fragment.isAttachment()) {
       attachmentsCount++;
     }

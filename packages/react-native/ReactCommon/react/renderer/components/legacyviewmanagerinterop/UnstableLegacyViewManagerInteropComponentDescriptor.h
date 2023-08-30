@@ -25,7 +25,7 @@ class UnstableLegacyViewManagerInteropComponentDescriptor
           ConcreteViewShadowNode<concreteComponentName, ViewProps>> {
  public:
   UnstableLegacyViewManagerInteropComponentDescriptor<concreteComponentName>(
-      ComponentDescriptorParameters const &parameters)
+      const ComponentDescriptorParameters &parameters)
       : ConcreteComponentDescriptor<
             ConcreteViewShadowNode<concreteComponentName, ViewProps>>(
             parameters) {}

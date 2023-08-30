@@ -19,7 +19,7 @@ class InstanceHandle {
 
   InstanceHandle(
       jsi::Runtime &runtime,
-      jsi::Value const &instanceHandle,
+      const jsi::Value &instanceHandle,
       Tag tag);
 
   /*

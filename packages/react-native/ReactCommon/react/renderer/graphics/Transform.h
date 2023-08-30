@@ -63,7 +63,7 @@ struct Transform {
    * For debugging only. Prints out the matrix.
    */
 #if RN_DEBUG_STRING_CONVERTIBLE
-  static void print(Transform const &t, std::string prefix);
+  static void print(const Transform &t, std::string prefix);
 #endif
 
   /*
@@ -132,30 +132,30 @@ struct Transform {
    */
   static Transform Interpolate(
       Float animationProgress,
-      Transform const &lhs,
-      Transform const &rhs);
+      const Transform &lhs,
+      const Transform &rhs);
 
-  static bool isVerticalInversion(Transform const &transform);
-  static bool isHorizontalInversion(Transform const &transform);
+  static bool isVerticalInversion(const Transform &transform);
+  static bool isHorizontalInversion(const Transform &transform);
 
   /*
    * Equality operators.
    */
-  bool operator==(Transform const &rhs) const;
-  bool operator!=(Transform const &rhs) const;
+  bool operator==(const Transform &rhs) const;
+  bool operator!=(const Transform &rhs) const;
 
   /*
    * Matrix subscript.
    */
   Float &at(int i, int j);
-  Float const &at(int i, int j) const;
+  const Float &at(int i, int j) const;
 
   /*
    * Concatenates (multiplies) transform matrices.
    */
-  Transform operator*(Transform const &rhs) const;
+  Transform operator*(const Transform &rhs) const;
 
-  Rect applyWithCenter(Rect const &rect, Point const &center) const;
+  Rect applyWithCenter(const Rect &rect, const Point &center) const;
 
   /**
    * Convert to folly::dynamic.
@@ -186,26 +186,26 @@ struct Transform {
 /*
  * Applies transformation to the given point.
  */
-Point operator*(Point const &point, Transform const &transform);
+Point operator*(const Point &point, const Transform &transform);
 
 /*
  * Applies transformation to the given size.
  */
-Size operator*(Size const &size, Transform const &transform);
+Size operator*(const Size &size, const Transform &transform);
 
 /*
  * Applies transformation to the given rect.
  * ONLY SUPPORTS scale and translation transformation.
  */
-Rect operator*(Rect const &rect, Transform const &transform);
+Rect operator*(const Rect &rect, const Transform &transform);
 
 /*
  * Applies transformation to the given EdgeInsets.
  * ONLY SUPPORTS scale transformation.
  */
-EdgeInsets operator*(EdgeInsets const &edgeInsets, Transform const &transform);
+EdgeInsets operator*(const EdgeInsets &edgeInsets, const Transform &transform);
 
-Vector operator*(Transform const &transform, Vector const &vector);
+Vector operator*(const Transform &transform, const Vector &vector);
 
 } // namespace facebook::react
 

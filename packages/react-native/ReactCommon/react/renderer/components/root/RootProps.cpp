@@ -17,8 +17,8 @@ namespace facebook::react {
 // RootShadowNode first.
 RootProps::RootProps(
     const PropsParserContext &context,
-    RootProps const &sourceProps,
-    RawProps const &rawProps)
+    const RootProps &sourceProps,
+    const RawProps &rawProps)
     : ViewProps(context, sourceProps, rawProps) {}
 
 // Note that a default/empty context may be passed here from RootShadowNode.
@@ -26,9 +26,9 @@ RootProps::RootProps(
 // RootShadowNode first.
 RootProps::RootProps(
     const PropsParserContext & /*context*/,
-    RootProps const & /*sourceProps*/,
-    LayoutConstraints const &layoutConstraints,
-    LayoutContext const &layoutContext)
+    const RootProps & /*sourceProps*/,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext)
     : ViewProps(),
       layoutConstraints(layoutConstraints),
       layoutContext(layoutContext){};

@@ -38,7 +38,7 @@ ShadowNode::Shared UITemplateProcessor::runCommand(
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
+    const std::shared_ptr<const ReactNativeConfig> &reactNativeConfig) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
@@ -51,7 +51,7 @@ ShadowNode::Shared UITemplateProcessor::runCommand(
         tag + tagOffset, type, surfaceId, props, nullptr);
     if (parentTag > -1) { // parentTag == -1 indicates root node
       auto parentShadowNode = nodes[static_cast<size_t>(parentTag)];
-      auto const &componentDescriptor = componentDescriptorRegistry.at(
+      const auto &componentDescriptor = componentDescriptorRegistry.at(
           parentShadowNode->getComponentHandle());
       componentDescriptor.appendChild(parentShadowNode, nodes[tag]);
     }
@@ -105,7 +105,7 @@ ShadowNode::Shared UITemplateProcessor::buildShadowTree(
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
-    std::shared_ptr<const ReactNativeConfig> const &reactNativeConfig) {
+    const std::shared_ptr<const ReactNativeConfig> &reactNativeConfig) {
   if (DEBUG_FLY) {
     LOG(INFO)
         << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";

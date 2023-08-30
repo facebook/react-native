@@ -24,7 +24,7 @@ class DefaultComponentsRegistry
   static void registerNatives();
 
   static std::function<void(
-      std::shared_ptr<ComponentDescriptorProviderRegistry const>)>
+      std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
       registerComponentDescriptorsFromEntryPoint;
 
   DefaultComponentsRegistry(ComponentFactory *delegate);
@@ -32,7 +32,7 @@ class DefaultComponentsRegistry
  private:
   friend HybridBase;
 
-  static std::shared_ptr<ComponentDescriptorProviderRegistry const>
+  static std::shared_ptr<const ComponentDescriptorProviderRegistry>
   sharedProviderRegistry();
 
   const ComponentFactory *delegate_;

@@ -13,9 +13,9 @@
 
 namespace facebook::react {
 
-static LayoutMetrics layoutMetricsFromShadowNode(ShadowNode const &shadowNode) {
+static LayoutMetrics layoutMetricsFromShadowNode(const ShadowNode &shadowNode) {
   auto layoutableShadowNode =
-      traitCast<LayoutableShadowNode const *>(&shadowNode);
+      traitCast<const LayoutableShadowNode *>(&shadowNode);
   return layoutableShadowNode != nullptr
       ? layoutableShadowNode->getLayoutMetrics()
       : EmptyLayoutMetrics;
@@ -57,12 +57,12 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 
-std::string getDebugName(ShadowView const &object) {
+std::string getDebugName(const ShadowView &object) {
   return object.componentHandle == 0 ? "Invalid" : object.componentName;
 }
 
 std::vector<DebugStringConvertibleObject> getDebugProps(
-    ShadowView const &object,
+    const ShadowView &object,
     DebugStringConvertibleOptions options) {
   return {
       {"surfaceId", getDebugDescription(object.surfaceId, options)},

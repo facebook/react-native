@@ -32,7 +32,7 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  */
 class EventEmitter {
  public:
-  using Shared = std::shared_ptr<EventEmitter const>;
+  using Shared = std::shared_ptr<const EventEmitter>;
 
   static std::mutex &DispatchMutex();
 
@@ -56,7 +56,7 @@ class EventEmitter {
    */
   void setEnabled(bool enabled) const;
 
-  SharedEventTarget const &getEventTarget() const;
+  const SharedEventTarget &getEventTarget() const;
 
  protected:
 #ifdef ANDROID

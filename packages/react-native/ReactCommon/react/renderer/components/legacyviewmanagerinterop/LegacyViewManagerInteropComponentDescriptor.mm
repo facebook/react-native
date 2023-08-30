@@ -73,9 +73,9 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   return nil;
 }
 
-static std::shared_ptr<void> const constructCoordinator(
-    ContextContainer::Shared const &contextContainer,
-    ComponentDescriptor::Flavor const &flavor)
+static const std::shared_ptr<void> constructCoordinator(
+    const ContextContainer::Shared &contextContainer,
+    const ComponentDescriptor::Flavor &flavor)
 {
   auto componentName = *std::static_pointer_cast<std::string const>(flavor);
   Class viewManagerClass = getViewManagerFromComponentName(componentName);
@@ -108,7 +108,7 @@ static std::shared_ptr<void> const constructCoordinator(
 }
 
 LegacyViewManagerInteropComponentDescriptor::LegacyViewManagerInteropComponentDescriptor(
-    ComponentDescriptorParameters const &parameters)
+    const ComponentDescriptorParameters &parameters)
     : ConcreteComponentDescriptor(parameters), _coordinator(constructCoordinator(contextContainer_, flavor_))
 {
 }
@@ -120,10 +120,10 @@ ComponentHandle LegacyViewManagerInteropComponentDescriptor::getComponentHandle(
 
 ComponentName LegacyViewManagerInteropComponentDescriptor::getComponentName() const
 {
-  return static_cast<std::string const *>(flavor_.get())->c_str();
+  return static_cast<const std::string *>(flavor_.get())->c_str();
 }
 
-void LegacyViewManagerInteropComponentDescriptor::adopt(ShadowNode::Unshared const &shadowNode) const
+void LegacyViewManagerInteropComponentDescriptor::adopt(const ShadowNode::Unshared &shadowNode) const
 {
   ConcreteComponentDescriptor::adopt(shadowNode);
 

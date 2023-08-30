@@ -17,7 +17,7 @@ namespace facebook::react {
 
 Size AndroidProgressBarMeasurementsManager::measure(
     SurfaceId surfaceId,
-    AndroidProgressBarProps const &props,
+    const AndroidProgressBarProps &props,
     LayoutConstraints layoutConstraints) const {
   {
     std::scoped_lock lock(mutex_);

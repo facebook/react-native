@@ -91,7 +91,7 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-Fragments const &AttributedString::getFragments() const {
+const Fragments &AttributedString::getFragments() const {
   return fragments_;
 }
 

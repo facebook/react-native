@@ -26,7 +26,7 @@ SynchronousEventBeat::SynchronousEventBeat(
 }
 
 void SynchronousEventBeat::activityDidChange(
-    RunLoopObserver::Delegate const *delegate,
+    const RunLoopObserver::Delegate *delegate,
     RunLoopObserver::Activity /*activity*/) const noexcept {
   react_native_assert(delegate == this);
   lockExecutorAndBeat();

@@ -14,7 +14,7 @@ namespace facebook::react {
 
 static jsi::Value getModule(
     jsi::Runtime &runtime,
-    std::string const &moduleName) {
+    const std::string &moduleName) {
   auto batchedBridge =
       runtime.global().getPropertyAsObject(runtime, "__fbBatchedBridge");
   auto getCallableModule =
@@ -55,8 +55,8 @@ static bool checkGetCallableModuleIsActive(jsi::Runtime &runtime) {
 
 jsi::Value callMethodOfModule(
     jsi::Runtime &runtime,
-    std::string const &moduleName,
-    std::string const &methodName,
+    const std::string &moduleName,
+    const std::string &methodName,
     std::initializer_list<jsi::Value> args) {
   if (checkGetCallableModuleIsActive(runtime)) {
     auto module = getModule(runtime, moduleName);

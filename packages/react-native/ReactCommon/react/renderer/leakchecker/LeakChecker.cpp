@@ -18,7 +18,7 @@ LeakChecker::LeakChecker(RuntimeExecutor runtimeExecutor)
     : runtimeExecutor_(std::move(runtimeExecutor)) {}
 
 void LeakChecker::uiManagerDidCreateShadowNodeFamily(
-    ShadowNodeFamily::Shared const &shadowNodeFamily) const {
+    const ShadowNodeFamily::Shared &shadowNodeFamily) const {
   registry_.add(shadowNodeFamily);
 }
 
@@ -43,7 +43,7 @@ void LeakChecker::stopSurface(SurfaceId surfaceId) {
 void LeakChecker::checkSurfaceForLeaks(SurfaceId surfaceId) const {
   auto weakFamilies = registry_.weakFamiliesForSurfaceId(surfaceId);
   unsigned int numberOfLeaks = 0;
-  for (auto const &weakFamily : weakFamilies) {
+  for (const auto &weakFamily : weakFamilies) {
     auto strong = weakFamily.lock();
     if (strong) {
       ++numberOfLeaks;
