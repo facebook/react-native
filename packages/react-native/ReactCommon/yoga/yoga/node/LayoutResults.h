@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <yoga/bits/NumericBitfield.h>
+#include <yoga/BitUtils.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/Yoga-internal.h>
 
@@ -23,7 +23,7 @@ struct LayoutResults {
 private:
   static constexpr size_t directionOffset = 0;
   static constexpr size_t hadOverflowOffset =
-      directionOffset + minimumBitCount<YGDirection>();
+      directionOffset + facebook::yoga::detail::bitWidthFn<YGDirection>();
   uint8_t flags = 0;
 
 public:
@@ -43,16 +43,21 @@ public:
   YGCachedMeasurement cachedLayout = YGCachedMeasurement();
 
   YGDirection direction() const {
-    return getEnumData<YGDirection>(flags, directionOffset);
+    return facebook::yoga::detail::getEnumData<YGDirection>(
+        flags, directionOffset);
   }
 
   void setDirection(YGDirection direction) {
-    setEnumData<YGDirection>(flags, directionOffset, direction);
+    facebook::yoga::detail::setEnumData<YGDirection>(
+        flags, directionOffset, direction);
   }
 
-  bool hadOverflow() const { return getBooleanData(flags, hadOverflowOffset); }
+  bool hadOverflow() const {
+    return facebook::yoga::detail::getBooleanData(flags, hadOverflowOffset);
+  }
   void setHadOverflow(bool hadOverflow) {
-    setBooleanData(flags, hadOverflowOffset, hadOverflow);
+    facebook::yoga::detail::setBooleanData(
+        flags, hadOverflowOffset, hadOverflow);
   }
 
   bool operator==(LayoutResults layout) const;

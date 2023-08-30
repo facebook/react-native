@@ -14,8 +14,8 @@
 
 #include <yoga/Yoga.h>
 #include <yoga/Yoga-internal.h>
+#include <yoga/BitUtils.h>
 
-#include <yoga/bits/NumericBitfield.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
@@ -34,9 +34,11 @@ public:
   struct BitfieldRef {
     Style& style;
     size_t offset;
-    operator T() const { return getEnumData<T>(style.flags, offset); }
+    operator T() const {
+      return facebook::yoga::detail::getEnumData<T>(style.flags, offset);
+    }
     BitfieldRef<T>& operator=(T x) {
-      setEnumData<T>(style.flags, offset, x);
+      facebook::yoga::detail::setEnumData<T>(style.flags, offset, x);
       return *this;
     }
   };
@@ -83,23 +85,23 @@ public:
 private:
   static constexpr size_t directionOffset = 0;
   static constexpr size_t flexdirectionOffset =
-      directionOffset + minimumBitCount<YGDirection>();
-  static constexpr size_t justifyContentOffset =
-      flexdirectionOffset + minimumBitCount<YGFlexDirection>();
+      directionOffset + facebook::yoga::detail::bitWidthFn<YGDirection>();
+  static constexpr size_t justifyContentOffset = flexdirectionOffset +
+      facebook::yoga::detail::bitWidthFn<YGFlexDirection>();
   static constexpr size_t alignContentOffset =
-      justifyContentOffset + minimumBitCount<YGJustify>();
+      justifyContentOffset + facebook::yoga::detail::bitWidthFn<YGJustify>();
   static constexpr size_t alignItemsOffset =
-      alignContentOffset + minimumBitCount<YGAlign>();
+      alignContentOffset + facebook::yoga::detail::bitWidthFn<YGAlign>();
   static constexpr size_t alignSelfOffset =
-      alignItemsOffset + minimumBitCount<YGAlign>();
+      alignItemsOffset + facebook::yoga::detail::bitWidthFn<YGAlign>();
   static constexpr size_t positionTypeOffset =
-      alignSelfOffset + minimumBitCount<YGAlign>();
+      alignSelfOffset + facebook::yoga::detail::bitWidthFn<YGAlign>();
   static constexpr size_t flexWrapOffset =
-      positionTypeOffset + minimumBitCount<YGPositionType>();
+      positionTypeOffset + facebook::yoga::detail::bitWidthFn<YGPositionType>();
   static constexpr size_t overflowOffset =
-      flexWrapOffset + minimumBitCount<YGWrap>();
+      flexWrapOffset + facebook::yoga::detail::bitWidthFn<YGWrap>();
   static constexpr size_t displayOffset =
-      overflowOffset + minimumBitCount<YGOverflow>();
+      overflowOffset + facebook::yoga::detail::bitWidthFn<YGOverflow>();
 
   uint32_t flags = 0;
 
@@ -123,56 +125,65 @@ public:
   using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
   YGDirection direction() const {
-    return getEnumData<YGDirection>(flags, directionOffset);
+    return facebook::yoga::detail::getEnumData<YGDirection>(
+        flags, directionOffset);
   }
   BitfieldRef<YGDirection> direction() { return {*this, directionOffset}; }
 
   YGFlexDirection flexDirection() const {
-    return getEnumData<YGFlexDirection>(flags, flexdirectionOffset);
+    return facebook::yoga::detail::getEnumData<YGFlexDirection>(
+        flags, flexdirectionOffset);
   }
   BitfieldRef<YGFlexDirection> flexDirection() {
     return {*this, flexdirectionOffset};
   }
 
   YGJustify justifyContent() const {
-    return getEnumData<YGJustify>(flags, justifyContentOffset);
+    return facebook::yoga::detail::getEnumData<YGJustify>(
+        flags, justifyContentOffset);
   }
   BitfieldRef<YGJustify> justifyContent() {
     return {*this, justifyContentOffset};
   }
 
   YGAlign alignContent() const {
-    return getEnumData<YGAlign>(flags, alignContentOffset);
+    return facebook::yoga::detail::getEnumData<YGAlign>(
+        flags, alignContentOffset);
   }
   BitfieldRef<YGAlign> alignContent() { return {*this, alignContentOffset}; }
 
   YGAlign alignItems() const {
-    return getEnumData<YGAlign>(flags, alignItemsOffset);
+    return facebook::yoga::detail::getEnumData<YGAlign>(
+        flags, alignItemsOffset);
   }
   BitfieldRef<YGAlign> alignItems() { return {*this, alignItemsOffset}; }
 
   YGAlign alignSelf() const {
-    return getEnumData<YGAlign>(flags, alignSelfOffset);
+    return facebook::yoga::detail::getEnumData<YGAlign>(flags, alignSelfOffset);
   }
   BitfieldRef<YGAlign> alignSelf() { return {*this, alignSelfOffset}; }
 
   YGPositionType positionType() const {
-    return getEnumData<YGPositionType>(flags, positionTypeOffset);
+    return facebook::yoga::detail::getEnumData<YGPositionType>(
+        flags, positionTypeOffset);
   }
   BitfieldRef<YGPositionType> positionType() {
     return {*this, positionTypeOffset};
   }
 
-  YGWrap flexWrap() const { return getEnumData<YGWrap>(flags, flexWrapOffset); }
+  YGWrap flexWrap() const {
+    return facebook::yoga::detail::getEnumData<YGWrap>(flags, flexWrapOffset);
+  }
   BitfieldRef<YGWrap> flexWrap() { return {*this, flexWrapOffset}; }
 
   YGOverflow overflow() const {
-    return getEnumData<YGOverflow>(flags, overflowOffset);
+    return facebook::yoga::detail::getEnumData<YGOverflow>(
+        flags, overflowOffset);
   }
   BitfieldRef<YGOverflow> overflow() { return {*this, overflowOffset}; }
 
   YGDisplay display() const {
-    return getEnumData<YGDisplay>(flags, displayOffset);
+    return facebook::yoga::detail::getEnumData<YGDisplay>(flags, displayOffset);
   }
   BitfieldRef<YGDisplay> display() { return {*this, displayOffset}; }
 

@@ -46,7 +46,7 @@ bool Config::isExperimentalFeatureEnabled(YGExperimentalFeature feature) const {
   return experimentalFeatures_.test(feature);
 }
 
-EnumBitset<YGExperimentalFeature> Config::getEnabledExperiments() const {
+ExperimentalFeatureSet Config::getEnabledExperiments() const {
   return experimentalFeatures_;
 }
 

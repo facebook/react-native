@@ -13,7 +13,11 @@
 
 #include <yoga/YGEnums.h>
 
-namespace facebook::yoga::details {
+namespace facebook::yoga::detail {
+
+// std::bitset with one bit for each option defined in YG_ENUM_SEQ_DECL
+template <typename Enum>
+using EnumBitset = std::bitset<facebook::yoga::enums::count<Enum>()>;
 
 constexpr size_t log2ceilFn(size_t n) {
   return n < 1 ? 0 : (1 + log2ceilFn(n / 2));
@@ -23,37 +27,30 @@ constexpr int mask(size_t bitWidth, size_t index) {
   return ((1 << bitWidth) - 1) << index;
 }
 
-} // namespace facebook::yoga::details
-
-namespace facebook::yoga {
-
 // The number of bits necessary to represent enums defined with YG_ENUM_SEQ_DECL
 template <typename Enum>
-constexpr size_t minimumBitCount() {
+constexpr size_t bitWidthFn() {
   static_assert(
       enums::count<Enum>() > 0, "Enums must have at least one entries");
-  return details::log2ceilFn(enums::count<Enum>() - 1);
+  return log2ceilFn(enums::count<Enum>() - 1);
 }
 
 template <typename Enum>
 constexpr Enum getEnumData(int flags, size_t index) {
-  return static_cast<Enum>(
-      (flags & details::mask(minimumBitCount<Enum>(), index)) >> index);
+  return static_cast<Enum>((flags & mask(bitWidthFn<Enum>(), index)) >> index);
 }
 
 template <typename Enum>
 void setEnumData(uint32_t& flags, size_t index, int newValue) {
-  flags = (flags & ~details::mask(minimumBitCount<Enum>(), index)) |
-      ((newValue << index) & (details::mask(minimumBitCount<Enum>(), index)));
+  flags = (flags & ~mask(bitWidthFn<Enum>(), index)) |
+      ((newValue << index) & (mask(bitWidthFn<Enum>(), index)));
 }
 
 template <typename Enum>
 void setEnumData(uint8_t& flags, size_t index, int newValue) {
-  flags =
-      (flags &
-       ~static_cast<uint8_t>(details::mask(minimumBitCount<Enum>(), index))) |
+  flags = (flags & ~static_cast<uint8_t>(mask(bitWidthFn<Enum>(), index))) |
       ((newValue << index) &
-       (static_cast<uint8_t>(details::mask(minimumBitCount<Enum>(), index))));
+       (static_cast<uint8_t>(mask(bitWidthFn<Enum>(), index))));
 }
 
 constexpr bool getBooleanData(int flags, size_t index) {
@@ -68,4 +65,4 @@ inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
   }
 }
 
-} // namespace facebook::yoga
+} // namespace facebook::yoga::detail
