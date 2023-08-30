@@ -13,10 +13,10 @@
 #include <type_traits>
 
 #include <yoga/Yoga.h>
-#include <yoga/YGFloatOptional.h>
 #include <yoga/Yoga-internal.h>
 #include <yoga/BitUtils.h>
 
+#include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/CompactValue.h>
 
 namespace facebook::yoga {
@@ -105,9 +105,9 @@ private:
 
   uint32_t flags = 0;
 
-  YGFloatOptional flex_ = {};
-  YGFloatOptional flexGrow_ = {};
-  YGFloatOptional flexShrink_ = {};
+  FloatOptional flex_ = {};
+  FloatOptional flexGrow_ = {};
+  FloatOptional flexShrink_ = {};
   CompactValue flexBasis_ = CompactValue::ofAuto();
   Edges margin_ = {};
   Edges position_ = {};
@@ -118,7 +118,7 @@ private:
   Dimensions minDimensions_ = {};
   Dimensions maxDimensions_ = {};
   // Yoga specific properties, not compatible with flexbox specification
-  YGFloatOptional aspectRatio_ = {};
+  FloatOptional aspectRatio_ = {};
 
 public:
   // for library users needing a type
@@ -187,14 +187,14 @@ public:
   }
   BitfieldRef<YGDisplay> display() { return {*this, displayOffset}; }
 
-  YGFloatOptional flex() const { return flex_; }
-  Ref<YGFloatOptional, &Style::flex_> flex() { return {*this}; }
+  FloatOptional flex() const { return flex_; }
+  Ref<FloatOptional, &Style::flex_> flex() { return {*this}; }
 
-  YGFloatOptional flexGrow() const { return flexGrow_; }
-  Ref<YGFloatOptional, &Style::flexGrow_> flexGrow() { return {*this}; }
+  FloatOptional flexGrow() const { return flexGrow_; }
+  Ref<FloatOptional, &Style::flexGrow_> flexGrow() { return {*this}; }
 
-  YGFloatOptional flexShrink() const { return flexShrink_; }
-  Ref<YGFloatOptional, &Style::flexShrink_> flexShrink() { return {*this}; }
+  FloatOptional flexShrink() const { return flexShrink_; }
+  Ref<FloatOptional, &Style::flexShrink_> flexShrink() { return {*this}; }
 
   CompactValue flexBasis() const { return flexBasis_; }
   Ref<CompactValue, &Style::flexBasis_> flexBasis() { return {*this}; }
@@ -228,8 +228,8 @@ public:
   }
 
   // Yoga specific properties, not compatible with flexbox specification
-  YGFloatOptional aspectRatio() const { return aspectRatio_; }
-  Ref<YGFloatOptional, &Style::aspectRatio_> aspectRatio() { return {*this}; }
+  FloatOptional aspectRatio() const { return aspectRatio_; }
+  Ref<FloatOptional, &Style::aspectRatio_> aspectRatio() { return {*this}; }
 };
 
 YOGA_EXPORT bool operator==(const Style& lhs, const Style& rhs);
