@@ -11,13 +11,14 @@
 
 #include <yoga/YGEnums.h>
 
-#include <yoga/debug/NodeToString.h>
+#include "YGNodePrint.h"
 #include <yoga/Yoga-internal.h>
 #include <yoga/Utils.h>
 
 namespace facebook::yoga {
+typedef std::string string;
 
-static void indent(std::string& base, uint32_t level) {
+static void indent(string& base, uint32_t level) {
   for (uint32_t i = 0; i < level; ++i) {
     base.append("  ");
   }
@@ -28,7 +29,7 @@ static bool areFourValuesEqual(const Style::Edges& four) {
       YGValueEqual(four[0], four[3]);
 }
 
-static void appendFormattedString(std::string& str, const char* fmt, ...) {
+static void appendFormattedString(string& str, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
   va_list argsCopy;
@@ -37,13 +38,13 @@ static void appendFormattedString(std::string& str, const char* fmt, ...) {
   va_end(args);
   vsnprintf(buf.data(), buf.size(), fmt, argsCopy);
   va_end(argsCopy);
-  std::string result = std::string(buf.begin(), buf.end() - 1);
+  string result = string(buf.begin(), buf.end() - 1);
   str.append(result);
 }
 
 static void appendFloatOptionalIfDefined(
-    std::string& base,
-    const std::string key,
+    string& base,
+    const string key,
     const YGFloatOptional num) {
   if (!num.isUndefined()) {
     appendFormattedString(base, "%s: %g; ", key.c_str(), num.unwrap());
@@ -51,14 +52,14 @@ static void appendFloatOptionalIfDefined(
 }
 
 static void appendNumberIfNotUndefined(
-    std::string& base,
-    const std::string key,
+    string& base,
+    const string key,
     const YGValue number) {
   if (number.unit != YGUnitUndefined) {
     if (number.unit == YGUnitAuto) {
       base.append(key + ": auto; ");
     } else {
-      std::string unit = number.unit == YGUnitPoint ? "px" : "%%";
+      string unit = number.unit == YGUnitPoint ? "px" : "%%";
       appendFormattedString(
           base, "%s: %g%s; ", key.c_str(), number.value, unit.c_str());
     }
@@ -66,8 +67,8 @@ static void appendNumberIfNotUndefined(
 }
 
 static void appendNumberIfNotAuto(
-    std::string& base,
-    const std::string& key,
+    string& base,
+    const string& key,
     const YGValue number) {
   if (number.unit != YGUnitAuto) {
     appendNumberIfNotUndefined(base, key, number);
@@ -75,8 +76,8 @@ static void appendNumberIfNotAuto(
 }
 
 static void appendNumberIfNotZero(
-    std::string& base,
-    const std::string& str,
+    string& base,
+    const string& str,
     const YGValue number) {
   if (number.unit == YGUnitAuto) {
     base.append(str + ": auto; ");
@@ -86,8 +87,8 @@ static void appendNumberIfNotZero(
 }
 
 static void appendEdges(
-    std::string& base,
-    const std::string& key,
+    string& base,
+    const string& key,
     const Style::Edges& edges) {
   if (areFourValuesEqual(edges)) {
     auto edgeValue = yoga::Node::computeEdgeValueForColumn(
@@ -95,15 +96,15 @@ static void appendEdges(
     appendNumberIfNotZero(base, key, edgeValue);
   } else {
     for (int edge = YGEdgeLeft; edge != YGEdgeAll; ++edge) {
-      std::string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
+      string str = key + "-" + YGEdgeToString(static_cast<YGEdge>(edge));
       appendNumberIfNotZero(base, str, edges[edge]);
     }
   }
 }
 
 static void appendEdgeIfNotUndefined(
-    std::string& base,
-    const std::string& str,
+    string& base,
+    const string& str,
     const Style::Edges& edges,
     const YGEdge edge) {
   // TODO: this doesn't take RTL / YGEdgeStart / YGEdgeEnd into account
@@ -115,7 +116,7 @@ static void appendEdgeIfNotUndefined(
   appendNumberIfNotUndefined(base, str, value);
 }
 
-void nodeToString(
+void YGNodeToString(
     std::string& str,
     yoga::Node* node,
     YGPrintOptions options,
@@ -231,7 +232,7 @@ void nodeToString(
   if (options & YGPrintOptionsChildren && childCount > 0) {
     for (uint32_t i = 0; i < childCount; i++) {
       appendFormattedString(str, "\n");
-      nodeToString(str, node->getChild(i), options, level + 1);
+      YGNodeToString(str, node->getChild(i), options, level + 1);
     }
     appendFormattedString(str, "\n");
     indent(str, level);

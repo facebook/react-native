@@ -5,9 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/debug/Log.h>
+#include <yoga/Yoga.h>
 
-namespace facebook::yoga {
+#include "log.h"
+#include <yoga/config/Config.h>
+#include <yoga/node/Node.h>
+
+namespace facebook::yoga::detail {
 
 namespace {
 
@@ -25,7 +29,7 @@ void vlog(
 }
 } // namespace
 
-void log(
+YOGA_EXPORT void Log::log(
     yoga::Node* node,
     YGLogLevel level,
     void* context,
@@ -43,7 +47,7 @@ void log(
   va_end(args);
 }
 
-void log(
+void Log::log(
     yoga::Config* config,
     YGLogLevel level,
     void* context,
@@ -55,4 +59,4 @@ void log(
   va_end(args);
 }
 
-} // namespace facebook::yoga
+} // namespace facebook::yoga::detail

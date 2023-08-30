@@ -13,15 +13,16 @@
 
 #include <yoga/Yoga.h>
 
-#include <yoga/debug/Log.h>
-#include <yoga/debug/NodeToString.h>
+#include "log.h"
 #include <yoga/Utils.h>
 #include <yoga/node/Node.h>
+#include "YGNodePrint.h"
 #include <yoga/Yoga-internal.h>
 #include "event/event.h"
 
 using namespace facebook;
 using namespace facebook::yoga;
+using detail::Log;
 
 #ifdef ANDROID
 static int YGAndroidLog(
@@ -1004,8 +1005,8 @@ YOGA_EXPORT void YGNodePrint(
     const YGPrintOptions options) {
   const auto node = static_cast<yoga::Node*>(nodeRef);
   std::string str;
-  yoga::nodeToString(str, node, options, 0);
-  yoga::log(node, YGLogLevelDebug, nullptr, str.c_str());
+  facebook::yoga::YGNodeToString(str, node, options, 0);
+  Log::log(node, YGLogLevelDebug, nullptr, str.c_str());
 }
 #endif
 
@@ -3938,7 +3939,7 @@ bool YGLayoutNodeInternal(
                    : layoutMarkerData.cachedMeasures) += 1;
 
     if (gPrintChanges && gPrintSkips) {
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -3946,7 +3947,7 @@ bool YGLayoutNodeInternal(
           YGSpacer(depth),
           depth);
       node->print(layoutContext);
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -3961,7 +3962,7 @@ bool YGLayoutNodeInternal(
     }
   } else {
     if (gPrintChanges) {
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -3970,7 +3971,7 @@ bool YGLayoutNodeInternal(
           depth,
           needToVisitNode ? "*" : "");
       node->print(layoutContext);
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -4000,7 +4001,7 @@ bool YGLayoutNodeInternal(
         reason);
 
     if (gPrintChanges) {
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -4009,7 +4010,7 @@ bool YGLayoutNodeInternal(
           depth,
           needToVisitNode ? "*" : "");
       node->print(layoutContext);
-      yoga::log(
+      Log::log(
           node,
           YGLogLevelVerbose,
           nullptr,
@@ -4031,8 +4032,7 @@ bool YGLayoutNodeInternal(
       }
       if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
-          yoga::log(
-              node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
+          Log::log(node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
         }
         layout->nextCachedMeasurementsIndex = 0;
       }
@@ -4290,7 +4290,7 @@ YOGA_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
 
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
-    yoga::log(
+    Log::log(
         static_cast<yoga::Node*>(nullptr),
         YGLogLevelFatal,
         nullptr,
@@ -4305,7 +4305,7 @@ void YGAssertWithNode(
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(
+    Log::log(
         static_cast<yoga::Node*>(node),
         YGLogLevelFatal,
         nullptr,
@@ -4320,7 +4320,7 @@ void YGAssertWithConfig(
     const bool condition,
     const char* message) {
   if (!condition) {
-    yoga::log(
+    Log::log(
         static_cast<yoga::Config*>(config),
         YGLogLevelFatal,
         nullptr,

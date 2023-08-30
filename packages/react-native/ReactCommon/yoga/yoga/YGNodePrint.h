@@ -16,7 +16,7 @@
 
 namespace facebook::yoga {
 
-void nodeToString(
+void YGNodeToString(
     std::string& str,
     yoga::Node* node,
     YGPrintOptions options,
