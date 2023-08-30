@@ -9,14 +9,12 @@
 
 #include <cstdint>
 #include <stdio.h>
-#include "YGConfig.h"
+#include <yoga/config/Config.h>
 #include "YGLayout.h"
 #include <yoga/Yoga-internal.h>
 
 #include <yoga/style/CompactValue.h>
 #include <yoga/style/Style.h>
-
-YGConfigRef YGConfigGetDefault();
 
 #pragma pack(push)
 #pragma pack(1)
@@ -58,7 +56,7 @@ private:
   uint32_t lineIndex_ = 0;
   YGNodeRef owner_ = nullptr;
   YGVector children_ = {};
-  YGConfigRef config_;
+  facebook::yoga::Config* config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -84,8 +82,11 @@ private:
   using CompactValue = facebook::yoga::CompactValue;
 
 public:
-  YGNode() : YGNode{YGConfigGetDefault()} { flags_.hasNewLayout = true; }
-  explicit YGNode(const YGConfigRef config);
+  YGNode()
+      : YGNode{static_cast<facebook::yoga::Config*>(YGConfigGetDefault())} {
+    flags_.hasNewLayout = true;
+  }
+  explicit YGNode(facebook::yoga::Config* config);
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
   YGNode(YGNode&&);
@@ -166,7 +167,7 @@ public:
 
   YGNodeRef getChild(uint32_t index) const { return children_.at(index); }
 
-  YGConfigRef getConfig() const { return config_; }
+  facebook::yoga::Config* getConfig() const { return config_; }
 
   bool isDirty() const { return flags_.isDirty; }
 
@@ -290,7 +291,7 @@ public:
 
   // TODO: rvalue override for setChildren
 
-  void setConfig(YGConfigRef config);
+  void setConfig(facebook::yoga::Config* config);
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);

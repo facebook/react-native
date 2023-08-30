@@ -19,6 +19,8 @@
 // API and use that
 #include <yoga/YGNode.h>
 
+using namespace facebook;
+using namespace facebook::yoga;
 using namespace facebook::yoga::vanillajni;
 
 static inline ScopedLocalRef<jobject> YGNodeJobject(
@@ -194,7 +196,7 @@ static void jni_YGConfigSetLoggerJNI(
     }
 
     *context = newGlobalRef(env, logger);
-    config->setLogger(YGJNILogFunc);
+    static_cast<yoga::Config*>(config)->setLogger(YGJNILogFunc);
   } else {
     if (context != nullptr) {
       delete context;
