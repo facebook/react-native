@@ -38,7 +38,7 @@ static_assert(
 #define VISIBLE_FOR_TESTING private:
 #endif
 
-namespace facebook::yoga::detail {
+namespace facebook::yoga {
 
 // This class stores YGValue in 32 bits.
 // - The value does not matter for Undefined and Auto. NaNs are used for their
@@ -207,4 +207,4 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
   return !(a == b);
 }
 
-} // namespace facebook::yoga::detail
+} // namespace facebook::yoga

@@ -14,7 +14,7 @@
 
 #include <yoga/Yoga.h>
 
-#include "CompactValue.h"
+#include <yoga/style/CompactValue.h>
 
 using YGVector = std::vector<YGNodeRef>;
 
