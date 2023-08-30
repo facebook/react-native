@@ -66,7 +66,7 @@ private:
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
-  FloatOptional relativePosition(
+  YGFloatOptional relativePosition(
       const YGFlexDirection axis,
       const float axisSize) const;
 
@@ -203,39 +203,40 @@ public:
       CompactValue defaultValue);
 
   // Methods related to positions, margin, padding and border
-  FloatOptional getLeadingPosition(
+  YGFloatOptional getLeadingPosition(
       const YGFlexDirection axis,
       const float axisSize) const;
   bool isLeadingPositionDefined(const YGFlexDirection axis) const;
   bool isTrailingPosDefined(const YGFlexDirection axis) const;
-  FloatOptional getTrailingPosition(
+  YGFloatOptional getTrailingPosition(
       const YGFlexDirection axis,
       const float axisSize) const;
-  FloatOptional getLeadingMargin(
+  YGFloatOptional getLeadingMargin(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getTrailingMargin(
+  YGFloatOptional getTrailingMargin(
       const YGFlexDirection axis,
       const float widthSize) const;
   float getLeadingBorder(const YGFlexDirection flexDirection) const;
   float getTrailingBorder(const YGFlexDirection flexDirection) const;
-  FloatOptional getLeadingPadding(
+  YGFloatOptional getLeadingPadding(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getTrailingPadding(
+  YGFloatOptional getTrailingPadding(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getLeadingPaddingAndBorder(
+  YGFloatOptional getLeadingPaddingAndBorder(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getTrailingPaddingAndBorder(
+  YGFloatOptional getTrailingPaddingAndBorder(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getMarginForAxis(
+  YGFloatOptional getMarginForAxis(
       const YGFlexDirection axis,
       const float widthSize) const;
-  FloatOptional getGapForAxis(const YGFlexDirection axis, const float widthSize)
-      const;
+  YGFloatOptional getGapForAxis(
+      const YGFlexDirection axis,
+      const float widthSize) const;
   // Setters
 
   void setContext(void* context) { context_ = context; }
@@ -298,7 +299,7 @@ public:
 
   void setDirty(bool isDirty);
   void setLayoutLastOwnerDirection(YGDirection direction);
-  void setLayoutComputedFlexBasis(const FloatOptional computedFlexBasis);
+  void setLayoutComputedFlexBasis(const YGFloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, int index);

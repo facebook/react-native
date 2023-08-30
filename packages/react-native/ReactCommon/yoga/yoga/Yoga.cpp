@@ -636,12 +636,12 @@ YOGA_EXPORT YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
   return static_cast<const yoga::Node*>(node)->getStyle().display();
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
-  updateStyle<MSVC_HINT(flex)>(node, &Style::flex, FloatOptional{flex});
+  updateStyle<MSVC_HINT(flex)>(node, &Style::flex, YGFloatOptional{flex});
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
   auto node = static_cast<const yoga::Node*>(nodeRef);
   return node->getStyle().flex().isUndefined()
@@ -649,20 +649,20 @@ YOGA_EXPORT float YGNodeStyleGetFlex(const YGNodeConstRef nodeRef) {
       : node->getStyle().flex().unwrap();
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetFlexGrow(
     const YGNodeRef node,
     const float flexGrow) {
   updateStyle<MSVC_HINT(flexGrow)>(
-      node, &Style::flexGrow, FloatOptional{flexGrow});
+      node, &Style::flexGrow, YGFloatOptional{flexGrow});
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetFlexShrink(
     const YGNodeRef node,
     const float flexShrink) {
   updateStyle<MSVC_HINT(flexShrink)>(
-      node, &Style::flexShrink, FloatOptional{flexShrink});
+      node, &Style::flexShrink, YGFloatOptional{flexShrink});
 }
 
 YOGA_EXPORT YGValue YGNodeStyleGetFlexBasis(const YGNodeConstRef node) {
@@ -756,7 +756,7 @@ YOGA_EXPORT YGValue YGNodeStyleGetPadding(YGNodeConstRef node, YGEdge edge) {
   return static_cast<const yoga::Node*>(node)->getStyle().padding()[edge];
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetBorder(
     const YGNodeRef node,
     const YGEdge edge,
@@ -771,7 +771,7 @@ YOGA_EXPORT float YGNodeStyleGetBorder(
   auto border = static_cast<const yoga::Node*>(node)->getStyle().border()[edge];
   if (border.isUndefined() || border.isAuto()) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
-    // return FloatOptional.
+    // return YGFloatOptional.
     return YGUndefined;
   }
 
@@ -793,7 +793,7 @@ YOGA_EXPORT float YGNodeStyleGetGap(
       static_cast<const yoga::Node*>(node)->getStyle().gap()[gutter];
   if (gapLength.isUndefined() || gapLength.isAuto()) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
-    // return FloatOptional.
+    // return YGFloatOptional.
     return YGUndefined;
   }
 
@@ -802,19 +802,19 @@ YOGA_EXPORT float YGNodeStyleGetGap(
 
 // Yoga specific properties, not compatible with flexbox specification
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT float YGNodeStyleGetAspectRatio(const YGNodeConstRef node) {
-  const FloatOptional op =
+  const YGFloatOptional op =
       static_cast<const yoga::Node*>(node)->getStyle().aspectRatio();
   return op.isUndefined() ? YGUndefined : op.unwrap();
 }
 
-// TODO(T26792433): Change the API to accept FloatOptional.
+// TODO(T26792433): Change the API to accept YGFloatOptional.
 YOGA_EXPORT void YGNodeStyleSetAspectRatio(
     const YGNodeRef node,
     const float aspectRatio) {
   updateStyle<MSVC_HINT(aspectRatio)>(
-      node, &Style::aspectRatio, FloatOptional{aspectRatio});
+      node, &Style::aspectRatio, YGFloatOptional{aspectRatio});
 }
 
 YOGA_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float points) {
@@ -1150,13 +1150,13 @@ static inline bool YGNodeIsLayoutDimDefined(
   return !YGFloatIsUndefined(value) && value >= 0.0f;
 }
 
-static FloatOptional YGNodeBoundAxisWithinMinAndMax(
+static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const yoga::Node* const node,
     const YGFlexDirection axis,
-    const FloatOptional value,
+    const YGFloatOptional value,
     const float axisSize) {
-  FloatOptional min;
-  FloatOptional max;
+  YGFloatOptional min;
+  YGFloatOptional max;
 
   if (isColumn(axis)) {
     min = yoga::resolveValue(
@@ -1170,11 +1170,11 @@ static FloatOptional YGNodeBoundAxisWithinMinAndMax(
         node->getStyle().maxDimensions()[YGDimensionWidth], axisSize);
   }
 
-  if (max >= FloatOptional{0} && value > max) {
+  if (max >= YGFloatOptional{0} && value > max) {
     return max;
   }
 
-  if (min >= FloatOptional{0} && value < min) {
+  if (min >= YGFloatOptional{0} && value < min) {
     return min;
   }
 
@@ -1190,7 +1190,8 @@ static inline float YGNodeBoundAxis(
     const float axisSize,
     const float widthSize) {
   return yoga::maxOrDefined(
-      YGNodeBoundAxisWithinMinAndMax(node, axis, FloatOptional{value}, axisSize)
+      YGNodeBoundAxisWithinMinAndMax(
+          node, axis, YGFloatOptional{value}, axisSize)
           .unwrap(),
       YGNodePaddingAndBorderForAxis(node, axis, widthSize));
 }
@@ -1213,10 +1214,10 @@ static void YGConstrainMaxSizeForMode(
     const float ownerWidth,
     YGMeasureMode* mode,
     float* size) {
-  const FloatOptional maxSize =
+  const YGFloatOptional maxSize =
       yoga::resolveValue(
           node->getStyle().maxDimensions()[dim[axis]], ownerAxisSize) +
-      FloatOptional(node->getMarginForAxis(axis, ownerWidth));
+      YGFloatOptional(node->getMarginForAxis(axis, ownerWidth));
   switch (*mode) {
     case YGMeasureModeExactly:
     case YGMeasureModeAtMost:
@@ -1259,7 +1260,7 @@ static void YGNodeComputeFlexBasisForChild(
   YGMeasureMode childWidthMeasureMode;
   YGMeasureMode childHeightMeasureMode;
 
-  const FloatOptional resolvedFlexBasis =
+  const YGFloatOptional resolvedFlexBasis =
       yoga::resolveValue(child->resolveFlexBasisPtr(), mainAxisownerSize);
   const bool isRowStyleDimDefined =
       YGNodeIsStyleDimDefined(child, YGFlexDirectionRow, ownerWidth);
@@ -1271,14 +1272,14 @@ static void YGNodeComputeFlexBasisForChild(
         (child->getConfig()->isExperimentalFeatureEnabled(
              YGExperimentalFeatureWebFlexBasis) &&
          child->getLayout().computedFlexBasisGeneration != generationCount)) {
-      const FloatOptional paddingAndBorder = FloatOptional(
+      const YGFloatOptional paddingAndBorder = YGFloatOptional(
           YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth));
       child->setLayoutComputedFlexBasis(
           yoga::maxOrDefined(resolvedFlexBasis, paddingAndBorder));
     }
   } else if (isMainAxisRow && isRowStyleDimDefined) {
     // The width is definite, so use that as the flex basis.
-    const FloatOptional paddingAndBorder = FloatOptional(
+    const YGFloatOptional paddingAndBorder = YGFloatOptional(
         YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, ownerWidth));
 
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
@@ -1287,8 +1288,8 @@ static void YGNodeComputeFlexBasisForChild(
         paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
-    const FloatOptional paddingAndBorder =
-        FloatOptional(YGNodePaddingAndBorderForAxis(
+    const YGFloatOptional paddingAndBorder =
+        YGFloatOptional(YGNodePaddingAndBorderForAxis(
             child, YGFlexDirectionColumn, ownerWidth));
     child->setLayoutComputedFlexBasis(yoga::maxOrDefined(
         yoga::resolveValue(
@@ -1425,7 +1426,7 @@ static void YGNodeComputeFlexBasisForChild(
         depth,
         generationCount);
 
-    child->setLayoutComputedFlexBasis(FloatOptional(yoga::maxOrDefined(
+    child->setLayoutComputedFlexBasis(YGFloatOptional(yoga::maxOrDefined(
         child->getLayout().measuredDimensions[dim[mainAxis]],
         YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth))));
   }
@@ -1875,13 +1876,13 @@ static float YGNodeCalculateAvailableInnerDim(
   if (!YGFloatIsUndefined(availableInnerDim)) {
     // We want to make sure our available height does not violate min and max
     // constraints
-    const FloatOptional minDimensionOptional = yoga::resolveValue(
+    const YGFloatOptional minDimensionOptional = yoga::resolveValue(
         node->getStyle().minDimensions()[dimension], ownerDim);
     const float minInnerDim = minDimensionOptional.isUndefined()
         ? 0.0f
         : minDimensionOptional.unwrap() - paddingAndBorder;
 
-    const FloatOptional maxDimensionOptional = yoga::resolveValue(
+    const YGFloatOptional maxDimensionOptional = yoga::resolveValue(
         node->getStyle().maxDimensions()[dimension], ownerDim);
 
     const float maxInnerDim = maxDimensionOptional.isUndefined()
@@ -1957,7 +1958,7 @@ static float YGNodeComputeFlexBasisForChildren(
     }
     if (child == singleFlexChild) {
       child->setLayoutComputedFlexBasisGeneration(generationCount);
-      child->setLayoutComputedFlexBasis(FloatOptional(0));
+      child->setLayoutComputedFlexBasis(YGFloatOptional(0));
     } else {
       YGNodeComputeFlexBasisForChild(
           node,
@@ -3521,7 +3522,7 @@ static void YGNodelayoutImpl(
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
                     mainAxis,
-                    FloatOptional{maxLineMainDim},
+                    YGFloatOptional{maxLineMainDim},
                     mainAxisownerSize)
                     .unwrap()),
             paddingAndBorderAxisMain),
@@ -3552,7 +3553,7 @@ static void YGNodelayoutImpl(
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
                     crossAxis,
-                    FloatOptional{
+                    YGFloatOptional{
                         totalLineCrossDim + paddingAndBorderAxisCross},
                     crossAxisownerSize)
                     .unwrap()),

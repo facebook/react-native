@@ -55,16 +55,16 @@ inline float yogaFloatFromFloat(Float value) {
 }
 
 /*
- * `yoga::FloatOptional` <-> React Native's `Float`
+ * `YGFloatOptional` <-> React Native's `Float`
  *
- * `yoga::FloatOptional` represents optional dimensionless float values in Yoga
+ * `YGFloatOptional` represents optional dimensionless float values in Yoga
  * Style object (e.g. `flex`). The most suitable analogy to empty
- * `yoga::FloatOptional` is `NaN` value.
- * `yoga::FloatOptional` values are usually parsed from some outside data source
+ * `YGFloatOptional` is `NaN` value.
+ * `YGFloatOptional` values are usually parsed from some outside data source
  * which usually has some special corresponding representation for an empty
  * value.
  */
-inline Float floatFromYogaOptionalFloat(yoga::FloatOptional value) {
+inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
     return std::numeric_limits<Float>::quiet_NaN();
   }
@@ -72,12 +72,12 @@ inline Float floatFromYogaOptionalFloat(yoga::FloatOptional value) {
   return floatFromYogaFloat(value.unwrap());
 }
 
-inline yoga::FloatOptional yogaOptionalFloatFromFloat(Float value) {
+inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
   if (std::isnan(value)) {
-    return yoga::FloatOptional();
+    return YGFloatOptional();
   }
 
-  return yoga::FloatOptional((float)value);
+  return YGFloatOptional((float)value);
 }
 
 /*
@@ -448,9 +448,9 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext &context,
     const RawValue &value,
-    yoga::FloatOptional &result) {
-  result = value.hasType<float>() ? yoga::FloatOptional((float)value)
-                                  : yoga::FloatOptional();
+    YGFloatOptional &result) {
+  result = value.hasType<float>() ? YGFloatOptional((float)value)
+                                  : YGFloatOptional();
 }
 
 inline Float toRadians(
@@ -818,7 +818,7 @@ inline std::string toString(const YGValue &value) {
   }
 }
 
-inline std::string toString(const yoga::FloatOptional &value) {
+inline std::string toString(const YGFloatOptional &value) {
   if (value.isUndefined()) {
     return "undefined";
   }
