@@ -9,11 +9,12 @@
 
 #include <cstdint>
 #include <stdio.h>
-#include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
-#include "YGStyle.h"
-#include "Yoga-internal.h"
+#include <yoga/Yoga-internal.h>
+
+#include <yoga/style/CompactValue.h>
+#include <yoga/style/Style.h>
 
 YGConfigRef YGConfigGetDefault();
 
@@ -52,7 +53,7 @@ private:
     PrintWithContextFn withContext;
   } print_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
-  YGStyle style_ = {};
+  facebook::yoga::Style style_ = {};
   YGLayout layout_ = {};
   uint32_t lineIndex_ = 0;
   YGNodeRef owner_ = nullptr;
@@ -80,7 +81,7 @@ private:
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
   YGNode& operator=(YGNode&&) = default;
 
-  using CompactValue = facebook::yoga::detail::CompactValue;
+  using CompactValue = facebook::yoga::CompactValue;
 
 public:
   YGNode() : YGNode{YGConfigGetDefault()} { flags_.hasNewLayout = true; }
@@ -123,9 +124,9 @@ public:
   YGDirtiedFunc getDirtied() const { return dirtied_; }
 
   // For Performance reasons passing as reference.
-  YGStyle& getStyle() { return style_; }
+  facebook::yoga::Style& getStyle() { return style_; }
 
-  const YGStyle& getStyle() const { return style_; }
+  const facebook::yoga::Style& getStyle() const { return style_; }
 
   // For Performance reasons passing as reference.
   YGLayout& getLayout() { return layout_; }
@@ -178,22 +179,22 @@ public:
   }
 
   static CompactValue computeEdgeValueForColumn(
-      const YGStyle::Edges& edges,
+      const facebook::yoga::Style::Edges& edges,
       YGEdge edge,
       CompactValue defaultValue);
 
   static CompactValue computeEdgeValueForRow(
-      const YGStyle::Edges& edges,
+      const facebook::yoga::Style::Edges& edges,
       YGEdge rowEdge,
       YGEdge edge,
       CompactValue defaultValue);
 
   static CompactValue computeRowGap(
-      const YGStyle::Gutters& gutters,
+      const facebook::yoga::Style::Gutters& gutters,
       CompactValue defaultValue);
 
   static CompactValue computeColumnGap(
-      const YGStyle::Gutters& gutters,
+      const facebook::yoga::Style::Gutters& gutters,
       CompactValue defaultValue);
 
   // Methods related to positions, margin, padding and border
@@ -273,7 +274,7 @@ public:
 
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) { dirtied_ = dirtiedFunc; }
 
-  void setStyle(const YGStyle& style) { style_ = style; }
+  void setStyle(const facebook::yoga::Style& style) { style_ = style; }
 
   void setLayout(const YGLayout& layout) { layout_ = layout; }
 
