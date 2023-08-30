@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include <yoga/YGNode.h>
+#include <yoga/node/Node.h>
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/components/view/YogaStylableProps.h>
@@ -100,7 +100,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    * Yoga node as `mutable` here to avoid `static_cast`ing the pointer to this
    * all the time.
    */
-  mutable YGNode yogaNode_;
+  mutable yoga::Node yogaNode_;
 
  private:
   /*
@@ -156,17 +156,17 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
   static yoga::Config &initializeYogaConfig(
       yoga::Config &config,
       YGConfigRef previousConfig = nullptr);
-  static YGNode *yogaNodeCloneCallbackConnector(
-      YGNode *oldYogaNode,
-      YGNode *parentYogaNode,
+  static YGNodeRef yogaNodeCloneCallbackConnector(
+      YGNodeRef oldYogaNode,
+      YGNodeRef parentYogaNode,
       int childIndex);
   static YGSize yogaNodeMeasureCallbackConnector(
-      YGNode *yogaNode,
+      YGNodeRef yogaNode,
       float width,
       YGMeasureMode widthMode,
       float height,
       YGMeasureMode heightMode);
-  static YogaLayoutableShadowNode &shadowNodeFromContext(YGNode *yogaNode);
+  static YogaLayoutableShadowNode &shadowNodeFromContext(YGNodeRef yogaNode);
 
 #pragma mark - RTL Legacy Autoflip
 
