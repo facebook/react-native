@@ -944,4 +944,9 @@ export class TextInput extends TextInputBase {
    * Removes all text from the input.
    */
   clear: () => void;
+
+  /**
+   * Sets the start and end positions of text selection.
+   */
+  setSelection: (start: number, end: number) => void;
 }
