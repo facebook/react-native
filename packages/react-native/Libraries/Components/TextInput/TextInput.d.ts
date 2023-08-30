@@ -948,5 +948,5 @@ export class TextInput extends TextInputBase {
   /**
    * Sets the start and end positions of text selection.
    */
-  setSelection: (start: number, end: number) => void
+  setSelection: (start: number, end: number) => void;
 }
