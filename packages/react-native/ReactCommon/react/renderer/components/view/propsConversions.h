@@ -17,13 +17,13 @@ namespace facebook::react {
 
 // Nearly this entire file can be deleted when iterator-style Prop parsing
 // ships fully for View
-static inline yoga::Style::Dimensions convertRawProp(
+static inline YGStyle::Dimensions convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
     char const *widthName,
     char const *heightName,
-    yoga::Style::Dimensions const &sourceValue,
-    yoga::Style::Dimensions const &defaultValue) {
+    YGStyle::Dimensions const &sourceValue,
+    YGStyle::Dimensions const &defaultValue) {
   auto dimensions = defaultValue;
   dimensions[YGDimensionWidth] = convertRawProp(
       context,
@@ -40,13 +40,13 @@ static inline yoga::Style::Dimensions convertRawProp(
   return dimensions;
 }
 
-static inline yoga::Style::Edges convertRawProp(
+static inline YGStyle::Edges convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
     char const *prefix,
     char const *suffix,
-    yoga::Style::Edges const &sourceValue,
-    yoga::Style::Edges const &defaultValue) {
+    YGStyle::Edges const &sourceValue,
+    YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -123,11 +123,11 @@ static inline yoga::Style::Edges convertRawProp(
   return result;
 }
 
-static inline yoga::Style::Edges convertRawProp(
+static inline YGStyle::Edges convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
-    yoga::Style::Edges const &sourceValue,
-    yoga::Style::Edges const &defaultValue) {
+    YGStyle::Edges const &sourceValue,
+    YGStyle::Edges const &defaultValue) {
   auto result = defaultValue;
   result[YGEdgeLeft] = convertRawProp(
       context,
@@ -168,11 +168,11 @@ static inline yoga::Style::Edges convertRawProp(
   return result;
 }
 
-static inline yoga::Style convertRawProp(
+static inline YGStyle convertRawProp(
     const PropsParserContext &context,
     RawProps const &rawProps,
-    yoga::Style const &sourceValue) {
-  auto yogaStyle = yoga::Style{};
+    YGStyle const &sourceValue) {
+  auto yogaStyle = YGStyle{};
   yogaStyle.direction() = convertRawProp(
       context,
       rawProps,

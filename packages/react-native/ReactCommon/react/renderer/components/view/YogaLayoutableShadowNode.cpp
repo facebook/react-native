@@ -378,10 +378,10 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   yogaNode_.setStyle(styleResult);
 }
 
-/*static*/ yoga::Style YogaLayoutableShadowNode::applyAliasedProps(
-    const yoga::Style &baseStyle,
+/*static*/ YGStyle YogaLayoutableShadowNode::applyAliasedProps(
+    const YGStyle &baseStyle,
     const YogaStylableProps &props) {
-  yoga::Style result{baseStyle};
+  YGStyle result{baseStyle};
 
   // Aliases with precedence
   if (!props.inset.isUndefined()) {
@@ -864,9 +864,9 @@ void YogaLayoutableShadowNode::swapLeftAndRightInYogaStyleProps(
     YogaLayoutableShadowNode const &shadowNode) {
   auto yogaStyle = shadowNode.yogaNode_.getStyle();
 
-  yoga::Style::Edges const &position = yogaStyle.position();
-  yoga::Style::Edges const &padding = yogaStyle.padding();
-  yoga::Style::Edges const &margin = yogaStyle.margin();
+  YGStyle::Edges const &position = yogaStyle.position();
+  YGStyle::Edges const &padding = yogaStyle.padding();
+  YGStyle::Edges const &margin = yogaStyle.margin();
 
   // Swap Yoga node values, position, padding and margin.
 
@@ -950,7 +950,7 @@ void YogaLayoutableShadowNode::swapLeftAndRightInViewProps(
     props.borderStyles.right.reset();
   }
 
-  yoga::Style::Edges const &border = props.yogaStyle.border();
+  YGStyle::Edges const &border = props.yogaStyle.border();
 
   if (props.yogaStyle.border()[YGEdgeLeft] != YGValueUndefined) {
     props.yogaStyle.border()[YGEdgeStart] = border[YGEdgeLeft];

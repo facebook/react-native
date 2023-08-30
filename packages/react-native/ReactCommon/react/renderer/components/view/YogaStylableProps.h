@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <yoga/style/Style.h>
+#include <yoga/YGStyle.h>
 
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -16,7 +16,7 @@
 namespace facebook::react {
 
 class YogaStylableProps : public Props {
-  using CompactValue = facebook::yoga::CompactValue;
+  using CompactValue = facebook::yoga::detail::CompactValue;
 
  public:
   YogaStylableProps() = default;
@@ -38,7 +38,7 @@ class YogaStylableProps : public Props {
 #endif
 
 #pragma mark - Props
-  yoga::Style yogaStyle{};
+  YGStyle yogaStyle{};
 
   // Duplicates of existing properties with different names, taking
   // precedence. E.g. "marginBlock" instead of "marginVertical"

@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <yoga/style/Style.h>
-#include <yoga/Utils.h>
-
-namespace facebook::yoga {
+#include "YGStyle.h"
+#include "Utils.h"
 
 // Yoga specific properties, not compatible with flexbox specification
-bool operator==(const Style& lhs, const Style& rhs) {
+bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
   bool areNonFloatValuesEqual = lhs.direction() == rhs.direction() &&
       lhs.flexDirection() == rhs.flexDirection() &&
       lhs.justifyContent() == rhs.justifyContent() &&
@@ -56,5 +54,3 @@ bool operator==(const Style& lhs, const Style& rhs) {
 
   return areNonFloatValuesEqual;
 }
-
-} // namespace facebook::yoga

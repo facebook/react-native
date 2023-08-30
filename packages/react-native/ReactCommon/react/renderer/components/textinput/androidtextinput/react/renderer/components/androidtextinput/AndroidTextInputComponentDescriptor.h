@@ -11,9 +11,9 @@
 
 #include <fbjni/fbjni.h>
 
+#include <yoga/CompactValue.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
-#include <yoga/style/CompactValue.h>
 
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 
@@ -38,7 +38,7 @@ class AndroidTextInputComponentDescriptor final
       ShadowNodeFamily::Shared const &family) const override {
     int surfaceId = family->getSurfaceId();
 
-    yoga::Style::Edges theme;
+    YGStyle::Edges theme;
     // TODO: figure out RTL/start/end/left/right stuff here
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
         surfaceIdToThemePaddingMap_.end()) {
@@ -97,7 +97,7 @@ class AndroidTextInputComponentDescriptor final
     int surfaceId = textInputShadowNode.getSurfaceId();
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
         surfaceIdToThemePaddingMap_.end()) {
-      yoga::Style::Edges theme = surfaceIdToThemePaddingMap_[surfaceId];
+      YGStyle::Edges theme = surfaceIdToThemePaddingMap_[surfaceId];
 
       auto &textInputProps = textInputShadowNode.getConcreteProps();
 
@@ -106,7 +106,7 @@ class AndroidTextInputComponentDescriptor final
       // TODO: T62959168 account for RTL and paddingLeft when setting default
       // paddingStart, and vice-versa with paddingRight/paddingEnd.
       // For now this assumes no RTL.
-      yoga::Style::Edges result = textInputProps.yogaStyle.padding();
+      YGStyle::Edges result = textInputProps.yogaStyle.padding();
       bool changedPadding = false;
       if (!textInputProps.hasPadding && !textInputProps.hasPaddingStart &&
           !textInputProps.hasPaddingLeft &&
@@ -171,7 +171,7 @@ class AndroidTextInputComponentDescriptor final
       "com/facebook/react/fabric/FabricUIManager";
 
   SharedTextLayoutManager textLayoutManager_;
-  mutable butter::map<int, yoga::Style::Edges> surfaceIdToThemePaddingMap_;
+  mutable butter::map<int, YGStyle::Edges> surfaceIdToThemePaddingMap_;
 };
 
 } // namespace facebook::react

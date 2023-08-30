@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-MapBuffer convertBorderWidths(yoga::Style::Edges const &border) {
+MapBuffer convertBorderWidths(YGStyle::Edges const &border) {
   MapBufferBuilder builder(7);
   putOptionalFloat(
       builder, EDGE_TOP, optionalFloatFromYogaValue(border[YGEdgeTop]));

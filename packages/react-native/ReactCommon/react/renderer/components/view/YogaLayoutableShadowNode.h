@@ -22,7 +22,7 @@
 namespace facebook::react {
 
 class YogaLayoutableShadowNode : public LayoutableShadowNode {
-  using CompactValue = facebook::yoga::CompactValue;
+  using CompactValue = facebook::yoga::detail::CompactValue;
 
  public:
   using Shared = std::shared_ptr<YogaLayoutableShadowNode const>;
@@ -202,11 +202,11 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       YogaLayoutableShadowNode const &shadowNode);
 
   /*
-   * Combine a base yoga::Style with aliased properties which should be
-   * flattened into it. E.g. reconciling "marginInlineStart" and "marginStart".
+   * Combine a base YGStyle with aliased properties which should be flattened
+   * into it. E.g. reconciling "marginInlineStart" and "marginStart".
    */
-  static yoga::Style applyAliasedProps(
-      const yoga::Style &baseStyle,
+  static YGStyle applyAliasedProps(
+      const YGStyle &baseStyle,
       const YogaStylableProps &props);
 
 #pragma mark - Consistency Ensuring Helpers

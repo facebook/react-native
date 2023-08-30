@@ -8,8 +8,8 @@
 #pragma once
 
 #include "YGNode.h"
-#include <yoga/Yoga-internal.h>
-#include <yoga/style/CompactValue.h>
+#include "Yoga-internal.h"
+#include "CompactValue.h"
 
 // This struct is an helper model to hold the data for step 4 of flexbox algo,
 // which is collecting the flex items in a line.
@@ -56,8 +56,8 @@ struct YGCollectFlexItemsRowValues {
 
 bool YGValueEqual(const YGValue& a, const YGValue& b);
 inline bool YGValueEqual(
-    facebook::yoga::CompactValue a,
-    facebook::yoga::CompactValue b) {
+    facebook::yoga::detail::CompactValue a,
+    facebook::yoga::detail::CompactValue b) {
   return YGValueEqual((YGValue) a, (YGValue) b);
 }
 
@@ -115,7 +115,7 @@ inline YGFloatOptional YGResolveValue(
 }
 
 inline YGFloatOptional YGResolveValue(
-    facebook::yoga::CompactValue value,
+    facebook::yoga::detail::CompactValue value,
     float ownerSize) {
   return YGResolveValue((YGValue) value, ownerSize);
 }
@@ -140,7 +140,7 @@ inline YGFlexDirection YGResolveFlexDirection(
 }
 
 inline YGFloatOptional YGResolveValueMargin(
-    facebook::yoga::CompactValue value,
+    facebook::yoga::detail::CompactValue value,
     const float ownerSize) {
   return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }
