@@ -7,12 +7,14 @@
 
 #pragma once
 
-#include <yoga/Yoga.h>
-
 #include <functional>
 #include <vector>
 #include <array>
+#include <yoga/YGEnums.h>
 #include <stdint.h>
+
+struct YGConfig;
+struct YGNode;
 
 namespace facebook::yoga {
 
@@ -61,7 +63,7 @@ struct YOGA_EXPORT Event {
     NodeBaselineEnd,
   };
   class Data;
-  using Subscriber = void(YGNodeConstRef, Type, Data);
+  using Subscriber = void(const YGNode&, Type, Data);
   using Subscribers = std::vector<std::function<Subscriber>>;
 
   template <Type E>
@@ -85,22 +87,27 @@ struct YOGA_EXPORT Event {
   static void subscribe(std::function<Subscriber>&& subscriber);
 
   template <Type E>
-  static void publish(YGNodeConstRef node, const TypedData<E>& eventData = {}) {
+  static void publish(const YGNode& node, const TypedData<E>& eventData = {}) {
     publish(node, E, Data{eventData});
   }
 
+  template <Type E>
+  static void publish(const YGNode* node, const TypedData<E>& eventData = {}) {
+    publish<E>(*node, eventData);
+  }
+
 private:
-  static void publish(YGNodeConstRef, Type, const Data&);
+  static void publish(const YGNode&, Type, const Data&);
 };
 
 template <>
 struct Event::TypedData<Event::NodeAllocation> {
-  YGConfigRef config;
+  YGConfig* config;
 };
 
 template <>
 struct Event::TypedData<Event::NodeDeallocation> {
-  YGConfigRef config;
+  YGConfig* config;
 };
 
 template <>

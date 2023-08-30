@@ -12,6 +12,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 #include <react/utils/CoreFeatures.h>
+#include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 
 #include "conversions.h"

@@ -79,7 +79,7 @@ WIN_EXPORT void YGNodeRemoveAllChildren(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(YGNodeRef node, uint32_t index);
 WIN_EXPORT YGNodeRef YGNodeGetOwner(YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetParent(YGNodeRef node);
-WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeConstRef node);
+WIN_EXPORT uint32_t YGNodeGetChildCount(YGNodeRef node);
 WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef owner,
     const YGNodeRef* children,

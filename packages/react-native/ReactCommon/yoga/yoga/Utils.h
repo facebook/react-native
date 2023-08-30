@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <yoga/node/Node.h>
+#include "YGNode.h"
 #include <yoga/Yoga-internal.h>
 #include <yoga/style/CompactValue.h>
 
@@ -43,7 +43,7 @@ struct YGCollectFlexItemsRowValues {
   float totalFlexGrowFactors;
   float totalFlexShrinkScaledFactors;
   uint32_t endOfLineIndex;
-  std::vector<facebook::yoga::Node*> relativeChildren;
+  std::vector<YGNodeRef> relativeChildren;
   float remainingFreeSpace;
   // The size of the mainDim for the row after considering size, padding, margin
   // and border of flex items. This is used to calculate maxLineDim after going

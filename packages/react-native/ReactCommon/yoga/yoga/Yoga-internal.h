@@ -16,6 +16,8 @@
 
 #include <yoga/style/CompactValue.h>
 
+using YGVector = std::vector<YGNodeRef>;
+
 YG_EXTERN_C_BEGIN
 
 void YGNodeCalculateLayoutWithContext(

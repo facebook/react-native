@@ -11,9 +11,7 @@
 #include <yoga/YGFloatOptional.h>
 #include <yoga/Yoga-internal.h>
 
-namespace facebook::yoga {
-
-struct LayoutResults {
+struct YGLayout {
   std::array<float, 4> position = {};
   std::array<float, 2> dimensions = {{YGUndefined, YGUndefined}};
   std::array<float, 4> margin = {};
@@ -60,8 +58,6 @@ public:
         flags, hadOverflowOffset, hadOverflow);
   }
 
-  bool operator==(LayoutResults layout) const;
-  bool operator!=(LayoutResults layout) const { return !(*this == layout); }
+  bool operator==(YGLayout layout) const;
+  bool operator!=(YGLayout layout) const { return !(*this == layout); }
 };
-
-} // namespace facebook::yoga

@@ -14,12 +14,11 @@
 #include "jni.h"
 
 class PtrJNodeMapVanilla {
-  std::map<YGNodeConstRef, size_t> ptrsToIdxs_{};
-  jobjectArray javaNodes_{};
+  std::map<YGNodeRef, size_t> ptrsToIdxs_;
+  jobjectArray javaNodes_;
 
 public:
-  PtrJNodeMapVanilla() = default;
-
+  PtrJNodeMapVanilla() : ptrsToIdxs_{}, javaNodes_{} {}
   PtrJNodeMapVanilla(jlongArray javaNativePointers, jobjectArray javaNodes)
       : javaNodes_{javaNodes} {
     using namespace facebook::yoga::vanillajni;
@@ -31,11 +30,11 @@ public:
         javaNativePointers, 0, nativePointersSize, nativePointers.data());
 
     for (size_t i = 0; i < nativePointersSize; ++i) {
-      ptrsToIdxs_[(YGNodeConstRef) nativePointers[i]] = i;
+      ptrsToIdxs_[(YGNodeRef) nativePointers[i]] = i;
     }
   }
 
-  facebook::yoga::vanillajni::ScopedLocalRef<jobject> ref(YGNodeConstRef node) {
+  facebook::yoga::vanillajni::ScopedLocalRef<jobject> ref(YGNodeRef node) {
     using namespace facebook::yoga::vanillajni;
 
     JNIEnv* env = getCurrentEnv();

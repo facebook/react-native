@@ -9,7 +9,7 @@
 
 #include "log.h"
 #include <yoga/config/Config.h>
-#include <yoga/node/Node.h>
+#include "YGNode.h"
 
 namespace facebook::yoga::detail {
 
@@ -17,7 +17,7 @@ namespace {
 
 void vlog(
     yoga::Config* config,
-    yoga::Node* node,
+    YGNode* node,
     YGLogLevel level,
     void* context,
     const char* format,
@@ -30,7 +30,7 @@ void vlog(
 } // namespace
 
 YOGA_EXPORT void Log::log(
-    yoga::Node* node,
+    YGNode* node,
     YGLogLevel level,
     void* context,
     const char* format,

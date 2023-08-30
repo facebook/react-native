@@ -18,8 +18,8 @@
 #include <react/renderer/graphics/Transform.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
+#include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
-#include <yoga/node/Node.h>
 #include <cmath>
 #include <optional>
 
@@ -113,7 +113,7 @@ inline std::optional<Float> optionalFloatFromYogaValue(
   }
 }
 
-inline LayoutMetrics layoutMetricsFromYogaNode(yoga::Node &yogaNode) {
+inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
   auto layoutMetrics = LayoutMetrics{};
 
   layoutMetrics.frame = Rect{
