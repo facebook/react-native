@@ -200,6 +200,14 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
     public long getBatchExecutionDuration() {
       return getBatchExecutionEnd() - getBatchExecutionStart();
     }
+
+    public String toString() {
+      StringBuilder builder = new StringBuilder("FabricCommitPoint{");
+      builder.append("mCommitNumber=").append(mCommitNumber);
+      builder.append(", mPoints=").append(mPoints);
+      builder.append('}');
+      return builder.toString();
+    }
   }
 
   public void addDevToolsReactPerfLoggerListener(DevToolsReactPerfLoggerListener listener) {
@@ -222,7 +230,7 @@ public class DevToolsReactPerfLogger implements ReactMarker.FabricMarkerListener
       }
       commitPoint.addPoint(name, timestamp);
 
-      if (name == ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END) {
+      if (name == ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END && timestamp > 0) {
         onFabricCommitEnd(commitPoint);
         mFabricCommitMarkers.remove(instanceKey);
       }
