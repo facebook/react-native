@@ -15,6 +15,7 @@
   },
   "license": "BSD-3-Clause",
   "files": [
+    "index.js",
     "dist",
     "BUILD_INFO"
   ],
