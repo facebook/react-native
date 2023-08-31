@@ -6,7 +6,7 @@
  */
 
 #include "ConnectionDemux.h"
-#include "Connection.h"
+#include <hermes/inspector/chrome/CDPHandler.h>
 
 #include <jsinspector/InspectorInterfaces.h>
 
@@ -24,7 +24,7 @@ namespace {
 class LocalConnection : public ILocalConnection {
  public:
   LocalConnection(
-      std::shared_ptr<Connection> conn,
+      std::shared_ptr<hermes::inspector::chrome::CDPHandler> conn,
       std::shared_ptr<std::unordered_set<std::string>> inspectedContexts);
   ~LocalConnection();
 
@@ -32,12 +32,12 @@ class LocalConnection : public ILocalConnection {
   void disconnect() override;
 
  private:
-  std::shared_ptr<Connection> conn_;
+  std::shared_ptr<hermes::inspector::chrome::CDPHandler> conn_;
   std::shared_ptr<std::unordered_set<std::string>> inspectedContexts_;
 };
 
 LocalConnection::LocalConnection(
-    std::shared_ptr<Connection> conn,
+    std::shared_ptr<hermes::inspector::chrome::CDPHandler> conn,
     std::shared_ptr<std::unordered_set<std::string>> inspectedContexts)
     : conn_(conn), inspectedContexts_(inspectedContexts) {
   inspectedContexts_->insert(conn->getTitle());
@@ -46,12 +46,12 @@ LocalConnection::LocalConnection(
 LocalConnection::~LocalConnection() = default;
 
 void LocalConnection::sendMessage(std::string str) {
-  conn_->sendMessage(std::move(str));
+  conn_->handle(std::move(str));
 }
 
 void LocalConnection::disconnect() {
   inspectedContexts_->erase(conn_->getTitle());
-  conn_->disconnect();
+  conn_->unregisterCallback();
 }
 
 } // namespace
@@ -86,8 +86,8 @@ DebugSessionToken ConnectionDemux::enableDebugging(
 
   auto waitForDebugger =
       (inspectedContexts_->find(title) != inspectedContexts_->end());
-  return addPage(
-      std::make_shared<Connection>(std::move(adapter), title, waitForDebugger));
+  return addPage(std::make_shared<hermes::inspector::chrome::CDPHandler>(
+      std::move(adapter), title, waitForDebugger));
 }
 
 void ConnectionDemux::disableDebugging(DebugSessionToken session) {
@@ -98,10 +98,19 @@ void ConnectionDemux::disableDebugging(DebugSessionToken session) {
   removePage(session);
 }
 
-int ConnectionDemux::addPage(std::shared_ptr<Connection> conn) {
+int ConnectionDemux::addPage(
+    std::shared_ptr<hermes::inspector::chrome::CDPHandler> conn) {
   auto connectFunc = [conn, this](std::unique_ptr<IRemoteConnection> remoteConn)
       -> std::unique_ptr<ILocalConnection> {
-    if (!conn->connect(std::move(remoteConn))) {
+    // This cannot be unique_ptr as std::function is copyable but unique_ptr
+    // isn't. TODO: Change the CDPHandler API to accommodate this and not
+    // require a copyable callback?
+    std::shared_ptr<IRemoteConnection> sharedConn = std::move(remoteConn);
+    if (!conn->registerCallback(
+            [sharedConn = std::move(sharedConn)](const std::string &message) {
+              sharedConn->onMessage(message);
+              // TODO: @nocommit call remoteConn->onDisconnect() as appropriate
+            })) {
       return nullptr;
     }
 
@@ -121,7 +130,7 @@ void ConnectionDemux::removePage(int pageId) {
   auto conn = conns_.at(pageId);
   std::string title = conn->getTitle();
   inspectedContexts_->erase(title);
-  conn->disconnect();
+  conn->unregisterCallback();
   conns_.erase(pageId);
 }
 
