@@ -1,0 +1,12 @@
+{
+  "name": "react-native-env-test-module",
+  "description": "This module is used by react-native-env-test.js to ensure the custom Jest environment is a Node environment",
+  "version": "0.0.1",
+  "exports": {
+    ".": {
+      "node": "./src/node.js",
+      "browser": "./src/browser.js",
+      "default": "./src/browser.js"
+    }
+  }
+}

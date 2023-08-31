@@ -100,6 +100,7 @@
     "prettier-plugin-hermes-parser": "0.14.0",
     "react": "18.2.0",
     "react-test-renderer": "18.2.0",
+    "react-native-env-test-module": "file:./packages/react-native/jest/__tests__/react-native-env-test-module",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
     "typescript": "5.0.4",
