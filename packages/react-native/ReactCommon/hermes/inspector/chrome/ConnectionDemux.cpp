@@ -106,11 +106,11 @@ int ConnectionDemux::addPage(
     // isn't. TODO: Change the CDPHandler API to accommodate this and not
     // require a copyable callback?
     std::shared_ptr<IRemoteConnection> sharedConn = std::move(remoteConn);
-    if (!conn->registerCallback(
-            [sharedConn = std::move(sharedConn)](const std::string &message) {
-              sharedConn->onMessage(message);
-              // TODO: @nocommit call remoteConn->onDisconnect() as appropriate
-            })) {
+
+    auto cb = [sharedConn = std::move(sharedConn)](const std::string &message) {
+      sharedConn->onMessage(message);
+    };
+    if (!conn->registerCallback(cb)) {
       return nullptr;
     }
 
