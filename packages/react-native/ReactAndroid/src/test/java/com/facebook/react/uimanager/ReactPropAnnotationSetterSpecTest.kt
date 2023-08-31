@@ -16,23 +16,17 @@ import org.robolectric.RobolectricTestRunner
 
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
 @RunWith(RobolectricTestRunner::class)
+@Suppress("UNUSED_PARAMETER")
 class ReactPropAnnotationSetterSpecTest {
   private abstract inner class BaseViewManager : ViewManager<View, ReactShadowNode<*>>() {
-    override fun getName(): String {
-      return "IgnoredName"
-    }
+    override fun getName(): String = "IgnoredName"
 
-    override fun createShadowNodeInstance(): ReactShadowNode<*> {
-      return createShadowNodeInstance()
-    }
+    override fun createShadowNodeInstance(): ReactShadowNode<*> = createShadowNodeInstance()
 
-    override fun getShadowNodeClass(): Class<out ReactShadowNode<*>> {
-      return ReactShadowNode::class.java
-    }
+    override fun getShadowNodeClass(): Class<out ReactShadowNode<*>> = ReactShadowNode::class.java
 
-    override fun createViewInstance(reactContext: ThemedReactContext): View {
-      return createViewInstance(reactContext)
-    }
+    override fun createViewInstance(reactContext: ThemedReactContext): View =
+        createViewInstance(reactContext)
 
     override fun updateExtraData(root: View, extraData: Any) {}
   }
